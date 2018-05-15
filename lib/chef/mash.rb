@@ -105,6 +105,12 @@ class Mash < Hash
     regular_writer(convert_key(key), convert_value(value))
   end
 
+  # internal API for use by Chef's deep merge cache
+  # @api private
+  def internal_set(key, value)
+    regular_writer(key, convert_value(value))
+  end
+
   # @param other_hash<Hash>
   #   A hash to update values in the mash with. The keys and the values will be
   #   converted to Mash format.
@@ -149,7 +155,7 @@ class Mash < Hash
   #
   # @return [Mash] A new mash with the hash values merged in.
   def merge(hash)
-    self.dup.update(hash)
+    dup.update(hash)
   end
 
   # @param key<Object>

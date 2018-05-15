@@ -64,7 +64,7 @@ class Chef
       def use_tempfile_if_missing(file)
         tempfile = nil
         unless File.exists?(file)
-          Chef::Log.debug("File #{file} does not exist to diff against, using empty tempfile")
+          Chef::Log.trace("File #{file} does not exist to diff against, using empty tempfile")
           tempfile = Tempfile.new("chef-diff")
           file = tempfile.path
         end
@@ -117,7 +117,7 @@ class Chef
           end
         end
         diff_str << old_hunk.diff(:unified) << "\n"
-        return diff_str
+        diff_str
       end
 
       private
@@ -139,7 +139,7 @@ class Chef
         return "(new content is binary, diff output suppressed)" if is_binary?(new_file)
 
         begin
-          Chef::Log.debug("Running: diff -u #{old_file} #{new_file}")
+          Chef::Log.trace("Running: diff -u #{old_file} #{new_file}")
           diff_str = udiff(old_file, new_file)
 
         rescue Exception => e

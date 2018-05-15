@@ -7,7 +7,7 @@ class Chef
       class EnvironmentDataHandler < DataHandlerBase
         def normalize(environment, entry)
           normalize_hash(environment, {
-            "name" => remove_dot_json(entry.name),
+            "name" => remove_file_extension(entry.name),
             "description" => "",
             "cookbook_versions" => {},
             "default_attributes" => {},
@@ -18,7 +18,7 @@ class Chef
         end
 
         def preserve_key?(key)
-          return key == "name"
+          key == "name"
         end
 
         def chef_class

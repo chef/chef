@@ -24,7 +24,7 @@ describe Chef::Knife::ClientBulkDelete do
   let(:stderr_io) { StringIO.new }
   let(:stderr) { stderr_io.string }
 
-  let(:knife) {
+  let(:knife) do
     k = Chef::Knife::ClientBulkDelete.new
     k.name_args = name_args
     k.config = option_args
@@ -33,7 +33,7 @@ describe Chef::Knife::ClientBulkDelete do
     allow(k.ui).to receive(:confirm).and_return(knife_confirm)
     allow(k.ui).to receive(:confirm_without_exit).and_return(knife_confirm)
     k
-  }
+  end
 
   let(:name_args) { [ "." ] }
   let(:option_args) { {} }
@@ -41,7 +41,7 @@ describe Chef::Knife::ClientBulkDelete do
   let(:knife_confirm) { true }
 
   let(:nonvalidator_client_names) { %w{tim dan stephen} }
-  let(:nonvalidator_clients) {
+  let(:nonvalidator_clients) do
     clients = Hash.new
 
     nonvalidator_client_names.each do |client_name|
@@ -52,10 +52,10 @@ describe Chef::Knife::ClientBulkDelete do
     end
 
     clients
-  }
+  end
 
   let(:validator_client_names) { %w{myorg-validator} }
-  let(:validator_clients) {
+  let(:validator_clients) do
     clients = Hash.new
 
     validator_client_names.each do |validator_client_name|
@@ -67,12 +67,12 @@ describe Chef::Knife::ClientBulkDelete do
     end
 
     clients
-  }
+  end
 
   let(:client_names) { nonvalidator_client_names + validator_client_names }
-  let(:clients) {
+  let(:clients) do
     nonvalidator_clients.merge(validator_clients)
-  }
+  end
 
   before(:each) do
     allow(Chef::ApiClientV1).to receive(:list).and_return(clients)

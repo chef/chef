@@ -25,13 +25,13 @@ class Chef
       class Chocolatey < Chef::Provider::Package
         include Chef::Mixin::PowershellOut
 
-        provides :chocolatey_package, os: "windows"
+        provides :chocolatey_package
 
         # Declare that our arguments should be arrays
         use_multipackage_api
 
-        PATHFINDING_POWERSHELL_COMMAND = "[System.Environment]::GetEnvironmentVariable('ChocolateyInstall', 'MACHINE')"
-        CHOCO_MISSING_MSG = <<-EOS
+        PATHFINDING_POWERSHELL_COMMAND = "[System.Environment]::GetEnvironmentVariable('ChocolateyInstall', 'MACHINE')".freeze
+        CHOCO_MISSING_MSG = <<-EOS.freeze
 Could not locate your Chocolatey install. To install chocolatey, we recommend
 the 'chocolatey' cookbook (https://github.com/chocolatey/chocolatey-cookbook).
 If Chocolatey is installed, ensure that the 'ChocolateyInstall' environment
@@ -59,8 +59,8 @@ EOS
           # so we want to assert candidates exist for the alternate source
           requirements.assert(:upgrade, :install) do |a|
             a.assertion { candidates_exist_for_all_uninstalled? }
-            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
-            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
+            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(', ')}")
+            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(', ')} would have been configured")
           end
         end
 
@@ -84,7 +84,7 @@ EOS
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("install -y -version", version, cmd_args, name)
+            choco_command("install -y --version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
@@ -106,7 +106,7 @@ EOS
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("upgrade -y -version", version, cmd_args, name)
+            choco_command("upgrade -y --version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
@@ -124,23 +124,25 @@ EOS
           choco_command("uninstall -y", cmd_args(include_source: false), *names)
         end
 
-        # Support :uninstall as an action in order for users to easily convert
-        # from the `chocolatey` provider in the cookbook.  It is, however,
-        # already deprecated.
-        def action_uninstall
-          Chef::Log.deprecation "The use of action :uninstall on the chocolatey_package provider is deprecated, please use :remove"
-          action_remove
-        end
-
         # Choco does not have dpkg's distinction between purge and remove
-        alias_method :purge_package, :remove_package
+        alias purge_package remove_package
 
         # Override the superclass check.  The semantics for our new_resource.source is not files to
         # install from, but like the rubygem provider's sources which are more like repos.
-        def check_resource_semantics!
-        end
+        def check_resource_semantics!; end
 
         private
+
+        def version_compare(v1, v2)
+          if v1 == "latest" || v2 == "latest"
+            return 0
+          end
+
+          gem_v1 = Gem::Version.new(v1)
+          gem_v2 = Gem::Version.new(v2)
+
+          gem_v1 <=> gem_v2
+        end
 
         # Magic to find where chocolatey is installed in the system, and to
         # return the full path of choco.exe
@@ -160,7 +162,7 @@ EOS
         def choco_install_path
           @choco_install_path ||= powershell_out!(
             PATHFINDING_POWERSHELL_COMMAND
-            ).stdout.chomp
+          ).stdout.chomp
         end
 
         # Helper to dispatch a choco command through shell_out using the timeout
@@ -169,7 +171,7 @@ EOS
         # @param args [String] variable number of string arguments
         # @return [Mixlib::ShellOut] object returned from shell_out!
         def choco_command(*args)
-          shell_out_with_timeout!(args_to_string(choco_exe, *args))
+          shell_out_with_timeout!(args_to_string(choco_exe, *args), returns: new_resource.returns)
         end
 
         # Use the available_packages Hash helper to create an array suitable for
@@ -227,17 +229,21 @@ EOS
         #
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
-          @available_packages ||=
-            begin
-              cmd = [ "list -ar #{package_name_array.join ' '}" ]
-              cmd.push( "-source #{new_resource.source}" ) if new_resource.source
-              parse_list_output(*cmd).each_with_object({}) do |name_version, available|
-                name, version = name_version
-                if desired_name_versions[name].nil? || desired_name_versions[name] == version
-                  available[name] = version
+          return @available_packages if @available_packages
+          @available_packages = {}
+          package_name_array.each do |pkg|
+            available_versions =
+              begin
+                cmd = [ "list -r #{pkg}" ]
+                cmd.push( "-source #{new_resource.source}" ) if new_resource.source
+                raw = parse_list_output(*cmd)
+                raw.keys.each_with_object({}) do |name, available|
+                  available[name] = desired_name_versions[name] || raw[name]
                 end
               end
-            end
+            @available_packages.merge! available_versions
+          end
+          @available_packages
         end
 
         # Installed packages in chocolatey as a Hash of names mapped to versions
@@ -246,20 +252,22 @@ EOS
         # @return [Hash] name-to-version mapping of installed packages
         def installed_packages
           @installed_packages ||= Hash[*parse_list_output("list -l -r").flatten]
+          @installed_packages
         end
 
         # Helper to convert choco.exe list output to a Hash
         # (names are downcased for case-insenstive matching)
         #
         # @param cmd [String] command to run
-        # @return [Array] list output converted to ruby Hash
+        # @return [Hash] list output converted to ruby Hash
         def parse_list_output(*args)
-          list = []
+          hash = {}
           choco_command(*args).stdout.each_line do |line|
+            next if line.start_with?("Chocolatey v")
             name, version = line.split("|")
-            list << [ name.downcase, version.chomp ]
+            hash[name.downcase] = version&.chomp
           end
-          list
+          hash
         end
 
         # Helper to downcase all names in an array
@@ -267,7 +275,7 @@ EOS
         # @param names [Array] original mixed case names
         # @return [Array] same names in lower case
         def lowercase_names(names)
-          names.map { |name| name.downcase }
+          names.map(&:downcase)
         end
       end
     end

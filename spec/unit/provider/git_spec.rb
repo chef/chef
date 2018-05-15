@@ -58,7 +58,7 @@ describe Chef::Provider::Git do
     it "determines the current revision when there is one" do
       expect(::File).to receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
       @stdout = "9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13\n"
-      expect(@provider).to receive(:shell_out!).with("git rev-parse HEAD", { :cwd => "/my/deploy/dir", :returns => [0, 128] }).and_return(double("ShellOut result", :stdout => @stdout))
+      expect(@provider).to receive(:shell_out!).with("git rev-parse HEAD", { :cwd => "/my/deploy/dir", :returns => [0, 128], :log_tag => "git[web2.0 app]" }).and_return(double("ShellOut result", :stdout => @stdout))
       expect(@provider.find_current_revision).to eql("9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13")
     end
 
@@ -66,7 +66,7 @@ describe Chef::Provider::Git do
       expect(::File).to receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
       @stderr = "fatal: Not a git repository (or any of the parent directories): .git"
       @stdout = ""
-      expect(@provider).to receive(:shell_out!).with("git rev-parse HEAD", :cwd => "/my/deploy/dir", :returns => [0, 128]).and_return(double("ShellOut result", :stdout => "", :stderr => @stderr))
+      expect(@provider).to receive(:shell_out!).with("git rev-parse HEAD", :cwd => "/my/deploy/dir", :returns => [0, 128], :log_tag => "git[web2.0 app]" ).and_return(double("ShellOut result", :stdout => "", :stderr => @stderr))
       expect(@provider.find_current_revision).to be_nil
     end
   end
@@ -81,6 +81,61 @@ describe Chef::Provider::Git do
   it "keeps the node and resource passed to it on initialize" do
     expect(@provider.node).to equal(@node)
     expect(@provider.new_resource).to equal(@resource)
+  end
+
+  context "cast git version into gem version object" do
+    it "returns correct version with standard git" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 2.14.1"))
+      expect(@provider.git_gem_version).to eq Gem::Version.new("2.14.1")
+    end
+
+    it "returns correct version with Apple git" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 2.11.0 (Apple Git-81)"))
+      expect(@provider.git_gem_version).to eq Gem::Version.new("2.11.0")
+    end
+
+    it "maintains deprecated method name" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 1.2.3"))
+      expect(@provider.git_minor_version).to eq Gem::Version.new("1.2.3")
+    end
+
+    it "does not know how to handle other version" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version home-grown-git-99"))
+      expect(@provider.git_gem_version).to be_nil
+    end
+
+    it "determines single branch option when it fails to parse git version" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version home-grown-git-99"))
+      expect(@provider.git_has_single_branch_option?).to be false
+    end
+
+    it "determines single branch option as true when it parses git version and version is large" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 1.8.0"))
+      expect(@provider.git_has_single_branch_option?).to be true
+    end
+
+    it "determines single branch option as false when it parses git version and version is small" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 1.7.4"))
+      expect(@provider.git_has_single_branch_option?).to be false
+    end
+
+    it "is compatible with git in travis" do
+      expect(@provider.git_gem_version).to be > Gem::Version.new("1.0")
+    end
   end
 
   context "resolving revisions to a SHA" do
@@ -218,7 +273,7 @@ SHAS
   context "with an ssh wrapper" do
     let(:deploy_user)  { "deployNinja" }
     let(:wrapper)      { "do_it_this_way.sh" }
-    let(:expected_cmd) { 'git clone  "git://github.com/opscode/chef.git" "/my/deploy/dir"' }
+    let(:expected_cmd) { 'git clone "git://github.com/opscode/chef.git" "/my/deploy/dir"' }
     let(:default_options) do
       {
         :user => deploy_user,
@@ -267,16 +322,52 @@ SHAS
     end
   end
 
+  context "with a user id" do
+    let(:deploy_user)  { 123 }
+    let(:expected_cmd) { 'git clone "git://github.com/opscode/chef.git" "/my/deploy/dir"' }
+    let(:default_options) do
+      {
+        :user => 123,
+        :environment => { "HOME" => "/home/deployNinja" },
+        :log_tag => "git[web2.0 app]",
+      }
+    end
+    before do
+      @resource.user deploy_user
+      allow(Etc).to receive(:getpwuid).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/deployNinja"))
+    end
+    context "with a specific home" do
+      let (:override_home) do
+        { "HOME" => "/home/masterNinja" }
+      end
+      let(:overrided_options) do
+        {
+          :user => 123,
+          :environment => { "HOME" => "/home/masterNinja" },
+          :log_tag => "git[web2.0 app]",
+        }
+      end
+      before do
+        @resource.environment(override_home)
+      end
+      before { @resource.environment(override_home) }
+      it "clones a repo with amended git options with specific home" do
+        expect(@provider).to receive(:shell_out!).with(expected_cmd, hash_including(overrided_options))
+        @provider.clone
+      end
+    end
+  end
+
   it "runs a clone command with escaped destination" do
     @resource.user "deployNinja"
     allow(Etc).to receive(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/deployNinja"))
     @resource.destination "/Application Support/with/space"
     @resource.ssh_wrapper "do_it_this_way.sh"
-    expected_cmd = "git clone  \"git://github.com/opscode/chef.git\" \"/Application Support/with/space\""
+    expected_cmd = "git clone \"git://github.com/opscode/chef.git\" \"/Application Support/with/space\""
     expect(@provider).to receive(:shell_out!).with(expected_cmd, :user => "deployNinja",
-                                                                 :environment => { "GIT_SSH" => "do_it_this_way.sh",
-                                                                                   "HOME" => "/home/deployNinja" },
-                                                                 :log_tag => "git[web2.0 app]")
+                                                                 :log_tag => "git[web2.0 app]",
+                                                                 :environment => { "HOME" => "/home/deployNinja",
+                                                                                   "GIT_SSH" => "do_it_this_way.sh" })
     @provider.clone
   end
 
@@ -334,8 +425,12 @@ SHAS
 
   it "runs a sync command with default options" do
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
-    expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    expect(@provider).to receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
+    expected_cmd1 = "git fetch --prune origin"
+    expect(@provider).to receive(:shell_out!).with(expected_cmd1, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
+    expected_cmd2 = "git fetch origin --tags"
+    expect(@provider).to receive(:shell_out!).with(expected_cmd2, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
+    expected_cmd3 = "git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
+    expect(@provider).to receive(:shell_out!).with(expected_cmd3, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
   end
 
@@ -344,27 +439,46 @@ SHAS
     allow(Etc).to receive(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/whois"))
     @resource.group("thisis")
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
-    expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    expect(@provider).to receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir",
-                                                                 :user => "whois", :group => "thisis",
-                                                                 :log_tag => "git[web2.0 app]",
-                                                                 :environment => { "HOME" => "/home/whois" })
+
+    expected_cmd1 = "git fetch --prune origin"
+    expect(@provider).to receive(:shell_out!).with(expected_cmd1, :cwd => "/my/deploy/dir",
+                                                                  :user => "whois", :group => "thisis",
+                                                                  :log_tag => "git[web2.0 app]",
+                                                                  :environment => { "HOME" => "/home/whois" })
+    expected_cmd2 = "git fetch origin --tags"
+    expect(@provider).to receive(:shell_out!).with(expected_cmd2, :cwd => "/my/deploy/dir",
+                                                                  :user => "whois", :group => "thisis",
+                                                                  :log_tag => "git[web2.0 app]",
+                                                                  :environment => { "HOME" => "/home/whois" })
+    expected_cmd3 = "git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
+    expect(@provider).to receive(:shell_out!).with(expected_cmd3, :cwd => "/my/deploy/dir",
+                                                                  :user => "whois", :group => "thisis",
+                                                                  :log_tag => "git[web2.0 app]",
+                                                                  :environment => { "HOME" => "/home/whois" })
     @provider.fetch_updates
   end
 
   it "configures remote tracking branches when remote is ``origin''" do
     @resource.remote "origin"
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
-    fetch_command = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    expect(@provider).to receive(:shell_out!).with(fetch_command, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
+    fetch_command1 = "git fetch --prune origin"
+    expect(@provider).to receive(:shell_out!).with(fetch_command1, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
+    fetch_command2 = "git fetch origin --tags"
+    expect(@provider).to receive(:shell_out!).with(fetch_command2, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
+    fetch_command3 = "git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
+    expect(@provider).to receive(:shell_out!).with(fetch_command3, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
   end
 
   it "configures remote tracking branches when remote is not ``origin''" do
     @resource.remote "opscode"
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
-    fetch_command = "git fetch opscode && git fetch opscode --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    expect(@provider).to receive(:shell_out!).with(fetch_command, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
+    fetch_command1 = "git fetch --prune opscode"
+    expect(@provider).to receive(:shell_out!).with(fetch_command1, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
+    fetch_command2 = "git fetch opscode --tags"
+    expect(@provider).to receive(:shell_out!).with(fetch_command2, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
+    fetch_command3 = "git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
+    expect(@provider).to receive(:shell_out!).with(fetch_command3, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
   end
 

@@ -28,12 +28,15 @@ class Chef
 end
 
 describe Chef::Provider::User::Windows do
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+
   before(:each) do
     @node = Chef::Node.new
-    @new_resource = Chef::Resource::User.new("monkey")
+    @new_resource = Chef::Resource::User::WindowsUser.new("monkey")
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @current_resource = Chef::Resource::User.new("monkey")
+    allow(@run_context).to receive(:logger).and_return(logger)
+    @current_resource = Chef::Resource::User::WindowsUser.new("monkey")
 
     @net_user = double("Chef::Util::Windows::NetUser")
     allow(Chef::Util::Windows::NetUser).to receive(:new).and_return(@net_user)
@@ -89,7 +92,7 @@ describe Chef::Provider::User::Windows do
 
     describe "and the attributes do not match" do
       before do
-        @current_resource = Chef::Resource::User.new("adam")
+        @current_resource = Chef::Resource::User::WindowsUser.new("adam")
         @current_resource.comment   "Adam Jacob-foo"
         @current_resource.uid       1111
         @current_resource.gid       1111
@@ -127,19 +130,19 @@ describe Chef::Provider::User::Windows do
 
   describe "when creating the user" do
     it "should call @net_user.add with the return of set_options" do
-      allow(@provider).to receive(:set_options).and_return(:name => "monkey")
-      expect(@net_user).to receive(:add).with(:name => "monkey")
+      allow(@provider).to receive(:set_options).and_return(name: "monkey")
+      expect(@net_user).to receive(:add).with(name: "monkey")
       @provider.create_user
     end
   end
 
   describe "manage_user" do
     before(:each) do
-      allow(@provider).to receive(:set_options).and_return(:name => "monkey")
+      allow(@provider).to receive(:set_options).and_return(name: "monkey")
     end
 
     it "should call @net_user.update with the return of set_options" do
-      expect(@net_user).to receive(:update).with(:name => "monkey")
+      expect(@net_user).to receive(:update).with(name: "monkey")
       @provider.manage_user
     end
   end

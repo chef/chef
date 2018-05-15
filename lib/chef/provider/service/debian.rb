@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,8 +35,6 @@ class Chef
 
         def load_current_resource
           super
-          @priority_success = true
-          @rcd_status = nil
           current_resource.priority(get_priority)
           current_resource.enabled(service_currently_enabled?(current_resource.priority))
           current_resource
@@ -54,8 +52,8 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @priority_success }
-            a.failure_message Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{current_resource.service_name} failed - #{@rcd_status.inspect}"
+            a.assertion { @got_priority == true }
+            a.failure_message Chef::Exceptions::Service, "Unable to determine priority for service"
             # This can happen if the service is not yet installed,so we'll fake it.
             a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.",
                       "Assigning temporary priorities to continue.",
@@ -72,23 +70,38 @@ class Chef
           end
         end
 
+        # returns a list of levels that the service should be stopped or started on
+        def parse_init_file(path)
+          return [] unless ::File.exist?(path)
+          in_info = false
+          ::File.readlines(path).each_with_object([]) do |line, acc|
+            if line =~ /^### BEGIN INIT INFO/
+              in_info = true
+            elsif line =~ /^### END INIT INFO/
+              in_info = false
+            elsif in_info
+              if line =~ /Default-(Start|Stop):\s+(\d.*)/
+                acc << $2.split(" ")
+              end
+            end
+          end.flatten
+        end
+
         def get_priority
           priority = {}
+          rc_files = []
 
-          @rcd_status = popen4("/usr/sbin/update-rc.d -n -f #{current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
+          levels = parse_init_file(@init_command)
+          levels.each do |level|
+            rc_files.push Dir.glob("/etc/rc#{level}.d/[SK][0-9][0-9]#{current_resource.service_name}")
+          end
 
-            [stdout, stderr].each do |iop|
-              iop.each_line do |line|
-                if UPDATE_RC_D_PRIORITIES =~ line
-                  # priority[runlevel] = [ S|K, priority ]
-                  # S = Start, K = Kill
-                  # debian runlevels: 0 Halt, 1 Singleuser, 2 Multiuser, 3-5 == 2, 6 Reboot
-                  priority[$1] = [($2 == "S" ? :start : :stop), $3]
-                end
-                if line =~ UPDATE_RC_D_ENABLED_MATCHES
-                  enabled = true
-                end
-              end
+          rc_files.flatten.each do |line|
+            if UPDATE_RC_D_PRIORITIES =~ line
+              # priority[runlevel] = [ S|K, priority ]
+              # S = Start, K = Kill
+              # debian runlevels: 0 Halt, 1 Singleuser, 2 Multiuser, 3-5 == 2, 6 Reboot
+              priority[$1] = [($2 == "S" ? :start : :stop), $3]
             end
           end
 
@@ -98,21 +111,19 @@ class Chef
             priority = priority[2].last
           end
 
-          unless @rcd_status.exitstatus == 0
-            @priority_success = false
-          end
+          @got_priority = true
           priority
         end
 
         def service_currently_enabled?(priority)
           enabled = false
-          priority.each { |runlevel, arguments|
-            Chef::Log.debug("#{new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
+          priority.each do |runlevel, arguments|
+            logger.trace("#{new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
             # if we are in a update-rc.d default startup runlevel && we start in this runlevel
             if %w{ 1 2 3 4 5 S }.include?(runlevel) && arguments[0] == :start
               enabled = true
             end
-          }
+          end
 
           enabled
         end
@@ -125,11 +136,11 @@ class Chef
             priority_ok = @current_resource.priority == new_resource.priority
           end
           if current_resource.enabled && priority_ok
-            Chef::Log.debug("#{new_resource} already enabled - nothing to do")
+            logger.trace("#{new_resource} already enabled - nothing to do")
           else
             converge_by("enable service #{new_resource}") do
               enable_service
-              Chef::Log.info("#{new_resource} enabled")
+              logger.info("#{new_resource} enabled")
             end
           end
           load_new_resource_state

@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2016 Chef Software Inc.
+# Copyright:: Copyright (c) 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,133 +15,80 @@
 # limitations under the License.
 #
 
-require_relative "bundle_util"
-require_relative "bundle"
-require_relative "../version_policy"
+require "bundler"
 
 desc "Tasks to update and check dependencies"
 namespace :dependencies do
+
+  # Running update_ci on your local system wont' work. The best way to update
+  # dependencies locally is by running the dependency update script.
+  desc "Update all dependencies. dependencies:update to update as little as possible."
+  task :update do |t, rake_args|
+    # FIXME: probably broken, and needs less indirection
+    system("#{File.join(Dir.pwd, "ci", "dependency_update.sh")}")
+  end
+
+  desc "Force update (when adding new gems to Gemfiles)"
+  task :force_update do |t, rake_args|
+    # FIXME: probably broken, and needs less indirection
+    FileUtils.rm_f(File.join(Dir.pwd, ".bundle", "config"))
+    system("#{File.join(Dir.pwd, "ci", "dependency_update.sh")}")
+  end
+
   # Update all dependencies to the latest constraint-matching version
-  desc "Update all dependencies. dependencies:update[conservative] to update as little as possible."
-  task :update, [:conservative] => %w{
+  desc "Update all dependencies. dependencies:update to update as little as possible (CI-only)."
+  task :update_ci => %w{
                     dependencies:update_gemfile_lock
-                    dependencies:update_omnibus_overrides
                     dependencies:update_omnibus_gemfile_lock
                     dependencies:update_acceptance_gemfile_lock
-                    dependencies:update_kitchen_tests_gemfile_lock
-                    dependencies:update_kitchen_tests_berksfile_lock
+                    dependencies:update_audit_tests_berksfile_lock
                   }
 
-  desc "Update Gemfile.lock and all Gemfile.<platform>.locks. update_gemfile_lock[conservative] to update as little as possible."
-  task :update_gemfile_lock, [:conservative] do |t, rake_args|
-    conservative = rake_args[:conservative]
-    if conservative
-      Rake::Task["bundle:install"].invoke
-    else
-      Rake::Task["bundle:update"].invoke
-    end
-  end
-
-  def gemfile_lock_task(task_name, dirs: [], other_platforms: true, leave_frozen: true)
-    dirs.each do |dir|
-      desc "Update #{dir}/Gemfile.lock. #{task_name}[conservative] to update as little as possible."
-      task task_name, [:conservative] do |t, rake_args|
-        extend BundleUtil
-        conservative = rake_args[:conservative]
-        puts ""
-        puts "-------------------------------------------------------------------"
-        puts "Updating #{dir}/Gemfile.lock#{conservative ? " (conservatively)" : ""} ..."
-        puts "-------------------------------------------------------------------"
-        with_bundle_unfrozen(cwd: dir, leave_frozen: leave_frozen) do
-          bundle "install", cwd: dir, delete_gemfile_lock: !conservative
-          if other_platforms
-            # Include all other supported platforms into the lockfile as well
-            platforms.each do |platform|
-              bundle "lock", cwd: dir, platform: platform
-            end
-          end
+  def bundle_update_locked_multiplatform_task(task_name, dir)
+    desc "Update #{dir}/Gemfile.lock."
+    task task_name do
+      Dir.chdir(dir) do
+        Bundler.with_clean_env do
+          rm_f "#{dir}/Gemfile.lock"
+          sh "bundle lock --update --add-platform ruby"
+          sh "bundle lock --update --add-platform x64-mingw32"
+          sh "bundle lock --update --add-platform x86-mingw32"
         end
       end
     end
   end
 
-  def berksfile_lock_task(task_name, dirs: [])
-    dirs.each do |dir|
-      desc "Update #{dir}/Berksfile.lock. #{task_name}[conservative] to update as little as possible."
-      task task_name, [:conservative] do |t, rake_args|
-        extend BundleUtil
-        conservative = rake_args[:conservative]
-        puts ""
-        puts "-------------------------------------------------------------------"
-        puts "Updating #{dir}/Berksfile.lock#{conservative ? " (conservatively)" : ""} ..."
-        puts "-------------------------------------------------------------------"
-        if !conservative && File.exist?("#{project_root}/#{dir}/Berksfile.lock")
-          File.delete("#{project_root}/#{dir}/Berksfile.lock")
-        end
-        Dir.chdir("#{project_root}/#{dir}") do
-          Bundler.with_clean_env do
-            sh "bundle exec berks install"
-          end
+  def bundle_update_task(task_name, dir)
+    desc "Update #{dir}/Gemfile.lock."
+    task task_name do
+      Dir.chdir(dir) do
+        Bundler.with_clean_env do
+          sh "bundle update"
         end
       end
     end
   end
 
-  gemfile_lock_task :update_omnibus_gemfile_lock, dirs: %w{omnibus}
-  gemfile_lock_task :update_acceptance_gemfile_lock, dirs: %w{acceptance},
-                                                     other_platforms: false, leave_frozen: false
-  gemfile_lock_task :update_kitchen_tests_gemfile_lock, dirs: %w{
-    kitchen-tests
-    kitchen-tests/test/integration/webapp/serverspec
-  }
-  berksfile_lock_task :update_kitchen_tests_berksfile_lock, dirs: %w{
-    kitchen-tests
-    kitchen-tests/cookbooks/audit_test
-  }
-  # kitchen-tests/cookbooks/webapp isn't solving right now ....
-
-  desc "Update omnibus overrides, including versions in version_policy.rb and latest version of gems: #{OMNIBUS_RUBYGEMS_AT_LATEST_VERSION.keys}. update_omnibus_overrides[conservative] does nothing."
-  task :update_omnibus_overrides, [:conservative] do |t, rake_args|
-    conservative = rake_args[:conservative]
-    unless conservative
-      puts ""
-      puts "-------------------------------------------------------------------"
-      puts "Updating omnibus_overrides.rb ..."
-      puts "-------------------------------------------------------------------"
-
-      # Generate the new overrides file
-      overrides = "# DO NOT EDIT. Generated by \"rake dependencies\". Edit version_policy.rb instead.\n"
-
-      # Replace the bundler and rubygems versions
-      OMNIBUS_RUBYGEMS_AT_LATEST_VERSION.each do |override_name, gem_name|
-        # Get the latest bundler version
-        puts "Running gem list -r #{gem_name} ..."
-        gem_list = `gem list -r #{gem_name}`
-        unless gem_list =~ /^#{gem_name}\s*\(([^)]*)\)$/
-          raise "gem list -r #{gem_name} failed with output:\n#{gem_list}"
+  def berks_update_task(task_name, dir)
+    desc "Update #{dir}/Berksfile.lock."
+    task task_name do
+      FileUtils.rm_f("#{dir}/Berksfile.lock")
+      Dir.chdir(dir) do
+        Bundler.with_clean_env do
+          sh "bundle exec berks install"
         end
-
-        # Emit it
-        puts "Latest version of #{gem_name} is #{$1}"
-        overrides << "override #{override_name.inspect}, version: #{$1.inspect}\n"
-      end
-
-      # Add explicit overrides
-      OMNIBUS_OVERRIDES.each do |override_name, version|
-        overrides << "override #{override_name.inspect}, version: #{version.inspect}\n"
-      end
-
-      # Write the file out (if changed)
-      overrides_path = File.expand_path("../../omnibus_overrides.rb", __FILE__)
-      if overrides != IO.read(overrides_path)
-        puts "Overrides changed!"
-        puts `git diff #{overrides_path}`
-        puts "Writing modified #{overrides_path} ..."
-        IO.write(overrides_path, overrides)
       end
     end
   end
+
+  bundle_update_locked_multiplatform_task :update_gemfile_lock, "."
+  bundle_update_locked_multiplatform_task :update_omnibus_gemfile_lock, "omnibus"
+  bundle_update_task :update_acceptance_gemfile_lock, "acceptance"
+  berks_update_task :update_audit_tests_berksfile_lock, "kitchen-tests/cookbooks/audit_test"
+
 end
-desc "Update all dependencies and check for outdated gems. Call dependencies[conservative] to update as little as possible."
-task :dependencies, [:conservative] => [ "dependencies:update", "bundle:outdated" ]
-task :update, [:conservative] => [ "dependencies:update", "bundle:outdated"]
+
+desc "Update all dependencies and check for outdated gems."
+task :dependencies_ci => [ "dependencies:update_ci" ]
+task :dependencies => [ "dependencies:update" ]
+task :update => [ "dependencies:update" ]

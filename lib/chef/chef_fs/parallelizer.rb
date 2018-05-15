@@ -86,19 +86,17 @@ class Chef
       private
 
       def worker_loop
-        begin
-          until @stop_thread[Thread.current]
-            begin
-              task = @tasks.pop
-              task.call
-            rescue
-              puts "ERROR #{$!}"
-              puts $!.backtrace
-            end
+        until @stop_thread[Thread.current]
+          begin
+            task = @tasks.pop
+            task.call
+          rescue
+            puts "ERROR #{$!}"
+            puts $!.backtrace
           end
-        ensure
-          @stop_thread.delete(Thread.current)
         end
+      ensure
+        @stop_thread.delete(Thread.current)
       end
     end
   end

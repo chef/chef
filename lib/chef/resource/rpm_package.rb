@@ -17,13 +17,14 @@
 #
 
 require "chef/resource/package"
-require "chef/provider/package/rpm"
 
 class Chef
   class Resource
     class RpmPackage < Chef::Resource::Package
       resource_name :rpm_package
-      provides :rpm_package, os: %w{linux aix}
+      provides :rpm_package
+
+      description "Use the rpm_package resource to manage packages for the RPM Package Manager platform."
 
       property :allow_downgrade, [ true, false ], default: false, desired_state: false
 

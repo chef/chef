@@ -17,7 +17,6 @@
 #
 
 require "chef/provider/group/groupadd"
-require "chef/mixin/shell_out"
 
 class Chef
   class Provider
@@ -33,48 +32,42 @@ class Chef
         end
 
         def create_group
-          command = "mkgroup"
-          command << set_options << " #{@new_resource.group_name}"
-          run_command(:command => command)
+          shell_out_compact!("mkgroup", set_options, new_resource.group_name)
           modify_group_members
         end
 
         def manage_group
-          command = "chgroup"
           options = set_options
-          #Usage: chgroup [-R load_module] "attr=value" ... group
           if options.size > 0
-            command << options << " #{@new_resource.group_name}"
-            run_command(:command => command)
+            shell_out_compact!("chgroup", options, new_resource.group_name)
           end
           modify_group_members
         end
 
         def remove_group
-          run_command(:command => "rmgroup #{@new_resource.group_name}")
+          shell_out_compact!("rmgroup", new_resource.group_name)
         end
 
         def add_member(member)
-          shell_out!("chgrpmem -m + #{member} #{@new_resource.group_name}")
+          shell_out_compact!("chgrpmem", "-m", "+", member, new_resource.group_name)
         end
 
         def set_members(members)
           return if members.empty?
-          shell_out!("chgrpmem -m = #{members.join(',')} #{@new_resource.group_name}")
+          shell_out_compact!("chgrpmem", "-m", "=", members.join(","), new_resource.group_name)
         end
 
         def remove_member(member)
-          shell_out!("chgrpmem -m - #{member} #{@new_resource.group_name}")
+          shell_out_compact!("chgrpmem", "-m", "-", member, new_resource.group_name)
         end
 
         def set_options
-          opts = ""
-          { :gid => "id" }.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
-            if @current_resource.send(field) != @new_resource.send(field)
-              if @new_resource.send(field)
-                Chef::Log.debug("#{@new_resource} setting #{field} to #{@new_resource.send(field)}")
-                opts << " '#{option}=#{@new_resource.send(field)}'"
-              end
+          opts = []
+          { gid: "id" }.sort_by { |a| a[0] }.each do |field, option|
+            next unless current_resource.send(field) != new_resource.send(field)
+            if new_resource.send(field)
+              logger.trace("#{new_resource} setting #{field} to #{new_resource.send(field)}")
+              opts << "#{option}=#{new_resource.send(field)}"
             end
           end
           opts

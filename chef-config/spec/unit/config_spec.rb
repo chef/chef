@@ -68,6 +68,91 @@ RSpec.describe ChefConfig::Config do
     end
   end
 
+  describe "parsing arbitrary config from the CLI" do
+
+    def apply_config
+      described_class.apply_extra_config_options(extra_config_options)
+    end
+
+    context "when no arbitrary config is given" do
+
+      let(:extra_config_options) { nil }
+
+      it "succeeds" do
+        expect { apply_config }.to_not raise_error
+      end
+
+    end
+
+    context "when given a simple string option" do
+
+      let(:extra_config_options) { [ "node_name=bobotclown" ] }
+
+      it "applies the string option" do
+        apply_config
+        expect(described_class[:node_name]).to eq("bobotclown")
+      end
+
+    end
+
+    context "when given a blank value" do
+
+      let(:extra_config_options) { [ "http_retries=" ] }
+
+      it "sets the value to nil" do
+        # ensure the value is actually changed in the test
+        described_class[:http_retries] = 55
+        apply_config
+        expect(described_class[:http_retries]).to eq(nil)
+      end
+    end
+
+    context "when given spaces between `key = value`" do
+
+      let(:extra_config_options) { [ "node_name = bobo" ] }
+
+      it "handles the extra spaces and applies the config option" do
+        apply_config
+        expect(described_class[:node_name]).to eq("bobo")
+      end
+
+    end
+
+    context "when given an integer value" do
+
+      let(:extra_config_options) { [ "http_retries=9000" ] }
+
+      it "converts to a numeric type and applies the config option" do
+        apply_config
+        expect(described_class[:http_retries]).to eq(9000)
+      end
+
+    end
+
+    context "when given a boolean" do
+
+      let(:extra_config_options) { [ "boolean_thing=true" ] }
+
+      it "converts to a boolean type and applies the config option" do
+        apply_config
+        expect(described_class[:boolean_thing]).to eq(true)
+      end
+
+    end
+
+    context "when given input that is not in key=value form" do
+
+      let(:extra_config_options) { [ "http_retries:9000" ] }
+
+      it "raises UnparsableConfigOption" do
+        message = 'Unparsable config option "http_retries:9000"'
+        expect { apply_config }.to raise_error(ChefConfig::UnparsableConfigOption, message)
+      end
+
+    end
+
+  end
+
   describe "when configuring formatters" do
       # if TTY and not(force-logger)
       #   formatter = configured formatter or default formatter
@@ -118,16 +203,41 @@ RSpec.describe ChefConfig::Config do
       before :each do
         allow(ChefConfig).to receive(:windows?).and_return(is_windows)
       end
-
-      describe "class method: platform_specific_path" do
+      describe "class method: windows_installation_drive" do
+        before do
+          allow(File).to receive(:expand_path).and_return("D:/Path/To/Executable")
+        end
         if is_windows
-          it "should return a windows path on windows systems" do
-            path = "/etc/chef/cookbooks"
-            allow(ChefConfig::Config).to receive(:env).and_return({ "SYSTEMDRIVE" => "C:" })
-            # match on a regex that looks for the base path with an optional
-            # system drive at the beginning (c:)
-            # system drive is not hardcoded b/c it can change and b/c it is not present on linux systems
-            expect(ChefConfig::Config.platform_specific_path(path)).to eq("C:\\chef\\cookbooks")
+          it "should return D: on a windows system" do
+            expect(ChefConfig::Config.windows_installation_drive).to eq("D:")
+          end
+        else
+          it "should return nil on a non-windows system" do
+            expect(ChefConfig::Config.windows_installation_drive).to eq(nil)
+          end
+        end
+      end
+      describe "class method: platform_specific_path" do
+        before do
+          allow(ChefConfig::Config).to receive(:env).and_return({ "SYSTEMDRIVE" => "C:" })
+        end
+        if is_windows
+          path = "/etc/chef/cookbooks"
+          context "a windows system with chef installed on C: drive" do
+            before do
+              allow(ChefConfig::Config).to receive(:windows_installation_drive).and_return("C:")
+            end
+            it "should return a windows path rooted in C:" do
+              expect(ChefConfig::Config.platform_specific_path(path)).to eq("C:\\chef\\cookbooks")
+            end
+          end
+          context "a windows system with chef installed on D: drive" do
+            before do
+              allow(ChefConfig::Config).to receive(:windows_installation_drive).and_return("D:")
+            end
+            it "should return a windows path rooted in D:" do
+              expect(ChefConfig::Config.platform_specific_path(path)).to eq("D:\\chef\\cookbooks")
+            end
           end
         else
           it "should return given path on non-windows systems" do
@@ -163,6 +273,56 @@ RSpec.describe ChefConfig::Config do
           end
 
           allow(ChefConfig::Config).to receive(:path_accessible?).and_return(false)
+        end
+
+        describe "ChefConfig::Config[:fips]" do
+          let(:fips_enabled) { false }
+
+          before(:all) do
+            @original_env = ENV.to_hash
+          end
+
+          after(:all) do
+            ENV.clear
+            ENV.update(@original_env)
+          end
+
+          before(:each) do
+            ENV["CHEF_FIPS"] = nil
+            allow(ChefConfig).to receive(:fips?).and_return(fips_enabled)
+          end
+
+          it "returns false when no environment is set and not enabled on system" do
+            expect(ChefConfig::Config[:fips]).to eq(false)
+          end
+
+          context "when ENV['CHEF_FIPS'] is empty" do
+            before do
+              ENV["CHEF_FIPS"] = ""
+            end
+
+            it "returns false" do
+              expect(ChefConfig::Config[:fips]).to eq(false)
+            end
+          end
+
+          context "when ENV['CHEF_FIPS'] is set" do
+            before do
+              ENV["CHEF_FIPS"] = "1"
+            end
+
+            it "returns true" do
+              expect(ChefConfig::Config[:fips]).to eq(true)
+            end
+          end
+
+          context "when fips is enabled on system" do
+            let(:fips_enabled) { true }
+
+            it "returns true" do
+              expect(ChefConfig::Config[:fips]).to eq(true)
+            end
+          end
         end
 
         describe "ChefConfig::Config[:chef_server_root]" do
@@ -210,6 +370,11 @@ RSpec.describe ChefConfig::Config do
         end
 
         describe "ChefConfig::Config[:cache_path]" do
+          before do
+            if is_windows
+              allow(File).to receive(:expand_path).and_return("#{ChefConfig::Config.env["SYSTEMDRIVE"]}/Path/To/Executable")
+            end
+          end
           context "when /var/chef exists and is accessible" do
             it "defaults to /var/chef" do
               allow(ChefConfig::Config).to receive(:path_accessible?).with(to_platform("/var/chef")).and_return(true)
@@ -602,8 +767,8 @@ RSpec.describe ChefConfig::Config do
         shared_examples_for "a suitable locale" do
           it "returns an English UTF-8 locale" do
             expect(ChefConfig.logger).to_not receive(:warn).with(/Please install an English UTF-8 locale for Chef to use/)
-            expect(ChefConfig.logger).to_not receive(:debug).with(/Defaulting to locale en_US.UTF-8 on Windows/)
-            expect(ChefConfig.logger).to_not receive(:debug).with(/No usable locale -a command found/)
+            expect(ChefConfig.logger).to_not receive(:trace).with(/Defaulting to locale en_US.UTF-8 on Windows/)
+            expect(ChefConfig.logger).to_not receive(:trace).with(/No usable locale -a command found/)
             expect(ChefConfig::Config.guess_internal_locale).to eq expected_locale
           end
         end
@@ -672,9 +837,9 @@ RSpec.describe ChefConfig::Config do
 
           it "should default to 'en_US.UTF-8'" do
             if is_windows
-              expect(ChefConfig.logger).to receive(:debug).with("Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else.")
+              expect(ChefConfig.logger).to receive(:trace).with("Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else.")
             else
-              expect(ChefConfig.logger).to receive(:debug).with("No usable locale -a command found, assuming you have en_US.UTF-8 installed.")
+              expect(ChefConfig.logger).to receive(:trace).with("No usable locale -a command found, assuming you have en_US.UTF-8 installed.")
             end
             expect(ChefConfig::Config.guess_internal_locale).to eq "en_US.UTF-8"
           end
@@ -687,9 +852,13 @@ RSpec.describe ChefConfig::Config do
     before(:all) do
       @original_env = ENV.to_hash
       ENV["http_proxy"] = nil
+      ENV["HTTP_PROXY"] = nil
       ENV["https_proxy"] = nil
+      ENV["HTTPS_PROXY"] = nil
       ENV["ftp_proxy"] = nil
+      ENV["FTP_PROXY"] = nil
       ENV["no_proxy"] = nil
+      ENV["NO_PROXY"] = nil
     end
 
     after(:all) do
@@ -988,6 +1157,36 @@ RSpec.describe ChefConfig::Config do
       it "defaults to NOT treating deprecation warnings as errors" do
         expect(ChefConfig::Config[:treat_deprecation_warnings_as_errors]).to be(false)
       end
+    end
+
+  end
+
+  describe "data collector URL" do
+
+    context "when using default settings" do
+
+      context "for Chef Client" do
+
+        it "configures the data collector URL as a relative path to the Chef Server URL" do
+          ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/myorg"
+          expect(ChefConfig::Config[:data_collector][:server_url]).to eq("https://chef.example/organizations/myorg/data-collector")
+        end
+
+      end
+
+      context "for Chef Solo" do
+
+        before do
+          ChefConfig::Config[:solo] = true
+        end
+
+        it "sets the data collector server URL to nil" do
+          ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/myorg"
+          expect(ChefConfig::Config[:data_collector][:server_url]).to be_nil
+        end
+
+      end
+
     end
 
   end

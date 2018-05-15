@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright (c) 2010-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,10 +36,12 @@ class Chef
       # Installs the gems into the omnibus gemset.
       #
       def install
-        cookbook_gems = []
+        cookbook_gems = Hash.new { |h, k| h[k] = [] }
 
-        cookbook_collection.each do |cookbook_name, cookbook_version|
-          cookbook_gems += cookbook_version.metadata.gems
+        cookbook_collection.each_value do |cookbook_version|
+          cookbook_version.metadata.gems.each do |args|
+            cookbook_gems[args.first] += args[1..-1]
+          end
         end
 
         events.cookbook_gem_start(cookbook_gems)
@@ -48,17 +50,20 @@ class Chef
           begin
             Dir.mktmpdir("chef-gem-bundle") do |dir|
               File.open("#{dir}/Gemfile", "w+") do |tf|
-                tf.puts "source '#{Chef::Config[:rubygems_url]}'"
-                cookbook_gems.each do |args|
-                  tf.puts "gem(*#{args.inspect})"
+                Array(Chef::Config[:rubygems_url] || "https://www.rubygems.org").each do |s|
+                  tf.puts "source '#{s}'"
+                end
+                cookbook_gems.each do |gem_name, args|
+                  tf.puts "gem(*#{([gem_name] + args).inspect})"
                 end
                 tf.close
-                Chef::Log.debug("generated Gemfile contents:")
-                Chef::Log.debug(IO.read(tf.path))
+                Chef::Log.trace("generated Gemfile contents:")
+                Chef::Log.trace(IO.read(tf.path))
                 so = shell_out!("bundle install", cwd: dir, env: { "PATH" => path_with_prepended_ruby_bin })
                 Chef::Log.info(so.stdout)
               end
             end
+            Gem.clear_paths
           rescue Exception => e
             events.cookbook_gem_failed(e)
             raise

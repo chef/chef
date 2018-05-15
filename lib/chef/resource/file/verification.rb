@@ -80,6 +80,10 @@ class Chef
           c
         end
 
+        def logger
+          @parent_resource.logger
+        end
+
         def initialize(parent_resource, command, opts, &block)
           @command, @command_opts = command, opts
           @block = block
@@ -87,7 +91,7 @@ class Chef
         end
 
         def verify(path, opts = {})
-          Chef::Log.debug("Running verification[#{self}] on #{path}")
+          logger.trace("Running verification[#{self}] on #{path}")
           if @block
             verify_block(path, opts)
           elsif @command.is_a?(Symbol)
@@ -106,13 +110,10 @@ class Chef
         # We reuse Chef::GuardInterpreter in order to support
         # the same set of options that the not_if/only_if blocks do
         def verify_command(path, opts)
-          # First implementation interpolated `file`; docs & RFC claim `path`
-          # is interpolated. Until `file` can be deprecated, interpolate both.
-          Chef.log_deprecation(
-            "%{file} is deprecated in verify command and will not be "\
-            "supported in Chef 13. Please use %{path} instead."
-          ) if @command.include?("%{file}")
-          command = @command % { :file => path, :path => path }
+          if @command.include?("%{file}")
+            raise ArgumentError, "The %{file} expansion for verify commands has been removed. Please use %{path} instead."
+          end
+          command = @command % { :path => path }
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
           interpreter.evaluate
         end
@@ -121,6 +122,16 @@ class Chef
           verification_class = Chef::Resource::File::Verification.lookup(@command)
           v = verification_class.new(@parent_resource, @command, @command_opts, &@block)
           v.verify(path, opts)
+        end
+
+        def to_s
+          if @block
+            "<Proc>"
+          elsif @command.is_a?(Symbol)
+            "#{@command.inspect} (#{Chef::Resource::File::Verification.lookup(@command).name})"
+          elsif @command.is_a?(String)
+            @command
+          end
         end
       end
     end

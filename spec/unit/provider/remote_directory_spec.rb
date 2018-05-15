@@ -99,6 +99,21 @@ describe Chef::Provider::RemoteDirectory do
       expect(cookbook_file.owner).to          eq("toor")
       expect(cookbook_file.backup).to         eq(23)
     end
+
+    it "respects sensitive flag" do
+      @resource.cookbook "gondola_rides"
+      @resource.sensitive true
+      cookbook_file = @provider.send(:cookbook_file_resource,
+                                    "/target/destination/path.txt",
+                                    "relative/source/path.txt")
+      expect(cookbook_file.sensitive).to eq(true)
+
+      @resource.sensitive false
+      cookbook_file = @provider.send(:cookbook_file_resource,
+                                    "/target/destination/path.txt",
+                                    "relative/source/path.txt")
+      expect(cookbook_file.sensitive).to eq(false)
+    end
   end
 
   describe "when creating the remote directory" do
@@ -106,7 +121,7 @@ describe Chef::Provider::RemoteDirectory do
       @node.automatic_attrs[:platform] = :just_testing
       @node.automatic_attrs[:platform_version] = :just_testing
 
-      @destination_dir = Dir.mktmpdir << "/remote_directory_test"
+      @destination_dir = make_canonical_temp_directory << "/remote_directory_test"
       @resource.path(@destination_dir)
     end
 
@@ -178,7 +193,7 @@ describe Chef::Provider::RemoteDirectory do
         expect(::File.exist?(@destination_dir + "/a/multiply/nested/directory/qux.txt")).to be_falsey
       end
 
-      it "removes directory symlinks properly", :not_supported_on_win2k3 do
+      it "removes directory symlinks properly" do
         symlinked_dir_path = @destination_dir + "/symlinked_dir"
         @provider.action = :create
         @provider.run_action

@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2016, 2011-2015 Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,11 +21,14 @@ require "chef/resource"
 require "chef/platform/query_helpers"
 require "chef/mixin/securable"
 require "chef/resource/file/verification"
+require "pathname"
 
 class Chef
   class Resource
     class File < Chef::Resource
       include Chef::Mixin::Securable
+
+      description "Use the file resource to manage files directly on a node."
 
       if Platform.windows?
         # Use Windows rights instead of standard *nix permissions
@@ -42,20 +45,20 @@ class Chef
       # mutate the new_resource.checksum which would change the
       # user intent in the new_resource if the resource is reused.
       #
-      # @returns [String] Checksum of the file we actually rendered
+      # @return [String] Checksum of the file we actually rendered
       attr_accessor :final_checksum
 
       default_action :create
       allowed_actions :create, :delete, :touch, :create_if_missing
 
       property :path, String, name_property: true, identity: true
-      property :atomic_update, [ true, false ], desired_state: false, default: lazy { Chef::Config[:file_atomic_update] }
+      property :atomic_update, [ TrueClass, FalseClass ], desired_state: false, default: lazy { |r| r.docker? && r.special_docker_files?(r.path) ? false : Chef::Config[:file_atomic_update] }
       property :backup, [ Integer, false ], desired_state: false, default: 5
       property :checksum, [ /^[a-zA-Z0-9]{64}$/, nil ]
       property :content, [ String, nil ], desired_state: false
       property :diff, [ String, nil ], desired_state: false
-      property :force_unlink, [ true, false ], desired_state: false, default: false
-      property :manage_symlink_source, [ true, false ], desired_state: false
+      property :force_unlink, [ TrueClass, FalseClass ], desired_state: false, default: false
+      property :manage_symlink_source, [ TrueClass, FalseClass ], desired_state: false
       property :verifications, Array, default: lazy { [] }
 
       def verify(command = nil, opts = {}, &block)
@@ -77,6 +80,10 @@ class Chef
           state_attrs[:checksum] = final_checksum
         end
         state_attrs
+      end
+
+      def special_docker_files?(file)
+        %w{/etc/hosts /etc/hostname /etc/resolv.conf}.include?(Pathname(file.scrub).cleanpath.to_path)
       end
     end
   end

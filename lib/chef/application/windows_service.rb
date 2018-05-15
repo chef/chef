@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Maier (<maier@lambda.local>)
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright 2011-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -109,9 +109,9 @@ class Chef
 
         # Daemon class needs to have all the signal callbacks return
         # before service_main returns.
-        Chef::Log.debug("Giving signal callbacks some time to exit...")
+        Chef::Log.trace("Giving signal callbacks some time to exit...")
         sleep 1
-        Chef::Log.debug("Exiting service...")
+        Chef::Log.trace("Exiting service...")
       end
 
       ################################################################################
@@ -135,7 +135,7 @@ class Chef
               run_warning_displayed = true
             end
 
-            Chef::Log.debug("Waiting for chef-client run...")
+            Chef::Log.trace("Waiting for chef-client run...")
             sleep 1
           end
         end
@@ -183,39 +183,38 @@ class Chef
         # The chef client will be started in a new process. We have used shell_out to start the chef-client.
         # The log_location and config_file of the parent process is passed to the new chef-client process.
         # We need to add the --no-fork, as by default it is set to fork=true.
-        begin
-          Chef::Log.info "Starting chef-client in a new process"
-          # Pass config params to the new process
-          config_params = " --no-fork"
-          config_params += " -c #{Chef::Config[:config_file]}" unless Chef::Config[:config_file].nil?
-          # log_location might be an event logger and if so we cannot pass as a command argument
-          # but shed no tears! If the logger is an event logger, it must have been configured
-          # as such in the config file and chef-client will use that when no arg is passed here
-          config_params += " -L #{resolve_log_location}" if resolve_log_location.is_a?(String)
 
-          # Starts a new process and waits till the process exits
+        Chef::Log.info "Starting chef-client in a new process"
+        # Pass config params to the new process
+        config_params = " --no-fork"
+        config_params += " -c #{Chef::Config[:config_file]}" unless Chef::Config[:config_file].nil?
+        # log_location might be an event logger and if so we cannot pass as a command argument
+        # but shed no tears! If the logger is an event logger, it must have been configured
+        # as such in the config file and chef-client will use that when no arg is passed here
+        config_params += " -L #{resolve_log_location}" if resolve_log_location.is_a?(String)
 
-          result = shell_out(
-            "chef-client.bat #{config_params}",
-            :timeout => Chef::Config[:windows_service][:watchdog_timeout],
-            :logger => Chef::Log
-          )
-          Chef::Log.debug "#{result.stdout}"
-          Chef::Log.debug "#{result.stderr}"
-        rescue Mixlib::ShellOut::CommandTimeout => e
-          Chef::Log.error "chef-client timed out\n(#{e})"
-          Chef::Log.error(<<-EOF)
+        # Starts a new process and waits till the process exits
+
+        result = shell_out(
+          "chef-client.bat #{config_params}",
+          :timeout => Chef::Config[:windows_service][:watchdog_timeout],
+          :logger => Chef::Log
+        )
+        Chef::Log.trace "#{result.stdout}"
+        Chef::Log.trace "#{result.stderr}"
+      rescue Mixlib::ShellOut::CommandTimeout => e
+        Chef::Log.error "chef-client timed out\n(#{e})"
+        Chef::Log.error(<<-EOF)
             Your chef-client run timed out. You can increase the time chef-client is given
             to complete by configuring windows_service.watchdog_timeout in your client.rb.
           EOF
-        rescue Mixlib::ShellOut::ShellCommandFailed => e
-          Chef::Log.warn "Not able to start chef-client in new process (#{e})"
-        rescue => e
-          Chef::Log.error e
-        ensure
-          # Once process exits, we log the current process' pid
-          Chef::Log.info "Child process exited (pid: #{Process.pid})"
-        end
+      rescue Mixlib::ShellOut::ShellCommandFailed => e
+        Chef::Log.warn "Not able to start chef-client in new process (#{e})"
+      rescue => e
+        Chef::Log.error e
+      ensure
+        # Once process exits, we log the current process' pid
+        Chef::Log.info "Child process exited (pid: #{Process.pid})"
       end
 
       def apply_config(config_file_path)
@@ -257,13 +256,13 @@ class Chef
       # Based on config and whether or not STDOUT is a tty, should we setup a
       # secondary logger for stdout?
       def want_additional_logger?
-        ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && (!Chef::Config[:daemonize]) && (Chef::Config[:force_logger])
+        ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && !Chef::Config[:daemonize]
       end
 
       # Use of output formatters is assumed if `force_formatter` is set or if
-      # `force_logger` is not set and STDOUT is to a console (tty)
+      # `force_logger` is not set
       def using_output_formatter?
-        Chef::Config[:force_formatter] || (!Chef::Config[:force_logger] && STDOUT.tty?)
+        Chef::Config[:force_formatter] || !Chef::Config[:force_logger]
       end
 
       def auto_log_level?
@@ -319,11 +318,11 @@ class Chef
 
           Chef::Config.merge!(config)
         rescue SocketError
-          Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}", 2)
+          Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}")
         rescue Chef::Exceptions::ConfigurationError => error
-          Chef::Application.fatal!("Error processing config file #{Chef::Config[:config_file]} with error #{error.message}", 2)
+          Chef::Application.fatal!("Error processing config file #{Chef::Config[:config_file]} with error #{error.message}")
         rescue Exception => error
-          Chef::Application.fatal!("Unknown error processing config file #{Chef::Config[:config_file]} with error #{error.message}", 2)
+          Chef::Application.fatal!("Unknown error processing config file #{Chef::Config[:config_file]} with error #{error.message}")
         end
       end
 

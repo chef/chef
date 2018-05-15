@@ -17,6 +17,7 @@
 #
 
 require "chef/knife"
+require "chef/knife/key_list"
 require "chef/knife/key_list_base"
 
 class Chef

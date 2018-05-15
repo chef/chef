@@ -5,8 +5,11 @@ set -evx
 # Set up a custom tmpdir, and clean it up before and after the tests
 TMPDIR="${TMPDIR:-/tmp}/cheftest"
 export TMPDIR
-rm -rf $TMPDIR
+sudo rm -rf $TMPDIR
 mkdir -p $TMPDIR
+
+# Verify that we kill any orphaned test processes. Kill any orphaned rspec processes.
+ps ax | egrep 'rspec' | grep -v grep | awk '{ print $1 }' | xargs sudo kill -s KILL || true
 
 # $PROJECT_NAME is set by Jenkins, this allows us to use the same script to verify
 # Chef and Angry Chef
@@ -64,7 +67,8 @@ for ruby_env_var in _ORIGINAL_GEM_PATH \
                     RUBYOPT \
                     RUBY_ENGINE \
                     RUBY_ROOT \
-                    RUBY_VERSION
+                    RUBY_VERSION \
+                    BUNDLER_VERSION
 
 do
   unset $ruby_env_var
@@ -83,39 +87,36 @@ $EMBEDDED_BIN_DIR/rspec --version
 FORCE_FFI_YAJL=ext
 export FORCE_FFI_YAJL
 
+OLD_PATH=$PATH
+PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
+
+gem_list=`gem which chef`
+lib_dir=`dirname $gem_list`
+CHEF_GEM=`dirname $lib_dir`
+
 # ACCEPTANCE environment variable will be set on acceptance testers.
 # If is it set; we run the acceptance tests, otherwise run rspec tests.
 if [ "x$ACCEPTANCE" != "x" ]; then
   # Find the Chef gem and cd there.
-  OLD_PATH=$PATH
-  PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
-  cd /opt/$PROJECT_NAME
-  CHEF_GEM=`bundle show chef`
   PATH=$OLD_PATH
-  cd $CHEF_GEM/acceptance
 
   # On acceptance testers we have Chef DK. We will use its Ruby environment
   # to cut down the gem installation time.
   PATH=/opt/chefdk/bin:/opt/chefdk/embedded/bin:$PATH
   export PATH
 
-  # Test against the Chef bundle
-  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID ARTIFACTORY_USERNAME=$ARTIFACTORY_USERNAME ARTIFACTORY_PASSWORD=$ARTIFACTORY_PASSWORD pwd
-  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID ARTIFACTORY_USERNAME=$ARTIFACTORY_USERNAME ARTIFACTORY_PASSWORD=$ARTIFACTORY_PASSWORD bundle config
-  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID ARTIFACTORY_USERNAME=$ARTIFACTORY_USERNAME ARTIFACTORY_PASSWORD=$ARTIFACTORY_PASSWORD bundle install
-  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID ARTIFACTORY_USERNAME=$ARTIFACTORY_USERNAME ARTIFACTORY_PASSWORD=$ARTIFACTORY_PASSWORD KITCHEN_DRIVER=ec2 bundle exec chef-acceptance test --force-destroy
+  # copy acceptance suites into workspace
+  SUITE_PATH=$WORKSPACE/acceptance
+  mkdir -p $SUITE_PATH
+  cp -R $CHEF_GEM/acceptance/. $SUITE_PATH
+  sudo chown -R $USER:$USER $SUITE_PATH
+
+  cd $SUITE_PATH
+
+  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle install --deployment
+  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID KITCHEN_DRIVER=ec2 KITCHEN_CHEF_CHANNEL=unstable bundle exec chef-acceptance test --force-destroy --data-path $WORKSPACE/chef-acceptance-data
 else
-  PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
-  export PATH
-
-  # Test against the installed Chef gem
-  cd /opt/$PROJECT_NAME
-  CHEF_GEM=`bundle show chef`
   cd $CHEF_GEM
-  if [ ! -f "Gemfile.lock" ]; then
-    echo "Chef gem does not contain a Gemfile.lock! This is needed to run any tests."
-    exit 1
-  fi
 
-  sudo env BUNDLE_GEMFILE=/opt/$PROJECT_NAME/Gemfile BUNDLE_IGNORE_CONFIG=true BUNDLE_FROZEN=1 PATH=$PATH TERM=xterm bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec/functional
+  sudo bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec/functional
 fi

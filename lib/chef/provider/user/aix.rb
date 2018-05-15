@@ -14,13 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "chef/provider/user/useradd"
+
 class Chef
   class Provider
     class User
       class Aix < Chef::Provider::User::Useradd
-        provides :user, platform: %w{aix}
+        provides :user, os: "aix"
+        provides :aix_user
 
-        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
+        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]].freeze
 
         def create_user
           super
@@ -41,53 +44,52 @@ class Chef
         end
 
         def check_lock
-          lock_info = shell_out!("lsuser -a account_locked #{new_resource.username}")
+          lock_info = shell_out_compact!("lsuser", "-a", "account_locked", new_resource.username)
           if whyrun_mode? && passwd_s.stdout.empty? && lock_info.stderr.match(/does not exist/)
             # if we're in whyrun mode and the user is not yet created we assume it would be
             return false
           end
-          raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if lock_info.stdout.empty?
+          raise Chef::Exceptions::User, "Cannot determine if #{new_resource} is locked!" if lock_info.stdout.empty?
 
           status = /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)
-          if status && status[1] == "true"
-            @locked = true
-          else
-            @locked = false
-          end
+          @locked =
+            if status && status[1] == "true"
+              true
+            else
+              false
+            end
 
           @locked
         end
 
         def lock_user
-          shell_out!("chuser account_locked=true #{new_resource.username}")
+          shell_out_compact!("chuser", "account_locked=true", new_resource.username)
         end
 
         def unlock_user
-          shell_out!("chuser account_locked=false #{new_resource.username}")
+          shell_out_compact!("chuser", "account_locked=false", new_resource.username)
         end
 
-      private
+        private
 
         def add_password
-          if @current_resource.password != @new_resource.password && @new_resource.password
-            Chef::Log.debug("#{@new_resource.username} setting password to #{@new_resource.password}")
-            command = "echo '#{@new_resource.username}:#{@new_resource.password}' | chpasswd -e"
-            shell_out!(command)
-          end
+          return unless current_resource.password != new_resource.password && new_resource.password
+          logger.trace("#{new_resource.username} setting password to #{new_resource.password}")
+          command = "echo '#{new_resource.username}:#{new_resource.password}' | chpasswd -e"
+          shell_out!(command)
         end
 
         # Aix specific handling to update users home directory.
         def manage_home
+          return unless updating_home? && new_resource.manage_home
           # -m option does not work on aix, so move dir.
-          if updating_home? && managing_home_dir?
-            universal_options.delete("-m")
-            if ::File.directory?(@current_resource.home)
-              Chef::Log.debug("Changing users home directory from #{@current_resource.home} to #{new_resource.home}")
-              shell_out!("mv #{@current_resource.home} #{new_resource.home}")
-            else
-              Chef::Log.debug("Creating users home directory #{new_resource.home}")
-              shell_out!("mkdir -p #{new_resource.home}")
-            end
+          universal_options.delete("-m")
+          if ::File.directory?(current_resource.home)
+            logger.trace("Changing users home directory from #{current_resource.home} to #{new_resource.home}")
+            FileUtils.mv current_resource.home, new_resource.home
+          else
+            logger.trace("Creating users home directory #{new_resource.home}")
+            FileUtils.mkdir_p new_resource.home
           end
         end
 

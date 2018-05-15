@@ -75,10 +75,15 @@ class Chef
         #     will return if the user does not set one. If this is `lazy`, it will
         #     be run in the context of the instance (and able to access other
         #     properties).
+        #   @option options [String] :description A description of the property.
+        #   @option options [String] :introduced The release that introduced this property
         #   @option options [Boolean] :desired_state `true` if this property is
         #     part of desired state. Defaults to `true`.
         #   @option options [Boolean] :identity `true` if this property
         #     is part of object identity. Defaults to `false`.
+        #   @option options [Boolean] :sensitive `true` if this property could
+        #     contain sensitive information and whose value should be redacted
+        #     in any resource reporting / auditing output. Defaults to `false`.
         #
         # @example Bare property
         #   property :x
@@ -142,6 +147,10 @@ class Chef
         #
         def property_type(**options)
           Property.derive(**options)
+        end
+
+        def deprecated_property_alias(from, to, message)
+          Property.emit_deprecated_alias(from, to, message, self)
         end
 
         #
@@ -297,6 +306,17 @@ class Chef
         property = self.class.properties[name.to_sym]
         raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
         property.reset(self)
+      end
+
+      #
+      # The description of the property
+      #
+      # @param name [Symbol] The name of the property.
+      # @return [String] The description of the property.
+      def property_description(name)
+        property = self.class.properties[name.to_sym]
+        raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+        property.description
       end
     end
   end

@@ -27,6 +27,9 @@ class Chef
       resource_name :homebrew_package
       provides :package, os: "darwin"
 
+      description "Use the homebrew_package resource to manage packages for the macOS platform."
+      introduced "12.0"
+
       property :homebrew_user, [ String, Integer ]
 
     end

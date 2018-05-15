@@ -31,12 +31,10 @@ describe Chef::Resource::GemPackage, "initialize" do
 end
 
 describe Chef::Resource::GemPackage, "gem_binary" do
-  before(:each) do
-    @resource = Chef::Resource::GemPackage.new("foo")
-  end
+  let(:resource) { Chef::Resource::GemPackage.new("foo") }
 
-  it "should set the gem_binary variable to whatever is passed in" do
-    @resource.gem_binary("/opt/local/bin/gem")
-    expect(@resource.gem_binary).to eql("/opt/local/bin/gem")
+  it "sets the gem_binary variable to whatever is passed in" do
+    resource.gem_binary("/opt/local/bin/gem")
+    expect(resource.gem_binary).to eql("/opt/local/bin/gem")
   end
 end

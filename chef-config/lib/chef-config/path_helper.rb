@@ -79,7 +79,7 @@ module ChefConfig
         end
 
         if windows_max_length_exceeded?(path)
-          ChefConfig.logger.debug("Path '#{path}' is longer than #{WIN_MAX_PATH}, prefixing with'\\\\?\\'")
+          ChefConfig.logger.trace("Path '#{path}' is longer than #{WIN_MAX_PATH}, prefixing with'\\\\?\\'")
           path.insert(0, "\\\\?\\")
         end
       end
@@ -187,7 +187,7 @@ module ChefConfig
     #
     # See self.all_homes.
     def self.home(*args)
-      @@home_dir ||= self.all_homes { |p| break p }
+      @@home_dir ||= all_homes { |p| break p }
       if @@home_dir
         path = File.join(@@home_dir, *args)
         block_given? ? (yield path) : path
@@ -235,7 +235,7 @@ module ChefConfig
       paths = paths.map { |home_path| home_path.gsub(path_separator, ::File::SEPARATOR) if home_path }
 
       # Filter out duplicate paths and paths that don't exist.
-      valid_paths = paths.select { |home_path| home_path && Dir.exists?(home_path.force_encoding("utf-8")) }
+      valid_paths = paths.select { |home_path| home_path && Dir.exist?(home_path.force_encoding("utf-8")) }
       valid_paths = valid_paths.uniq
 
       # Join all optional path elements at the end.

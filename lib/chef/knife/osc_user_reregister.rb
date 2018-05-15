@@ -49,7 +49,7 @@ class Chef
         end
 
         user = Chef::User.load(@user_name).reregister
-        Chef::Log.debug("Updated user data: #{user.inspect}")
+        Chef::Log.trace("Updated user data: #{user.inspect}")
         key = user.private_key
         if config[:file]
           File.open(config[:file], "w") do |f|

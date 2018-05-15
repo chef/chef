@@ -37,4 +37,18 @@ describe Chef::Mixin::Checksum do
     expect(@checksum_user.checksum(@file)).to eq("09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394")
   end
 
+  describe "short_cksum" do
+    context "nil provided for checksum" do
+      it "returns none" do
+        expect(@checksum_user.short_cksum(nil)).to eq("none")
+      end
+    end
+
+    context "non-nil provided for checksum" do
+      it "returns the short checksum" do
+        expect(@checksum_user.short_cksum("u7ghbxikk3i9blsimmy2y2ionmxx")).to eq("u7ghbx")
+      end
+    end
+  end
+
 end

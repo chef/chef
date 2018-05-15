@@ -36,7 +36,7 @@ describe Chef::Mixin do
     end
 
     it "warns when accessing the deprecated constant" do
-      Chef::Mixin::DeprecatedClass
+      Chef::Mixin::DeprecatedClass # rubocop:disable Lint/Void
       expect(@log_io.string).to include("This is a test deprecation")
     end
   end

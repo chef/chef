@@ -32,10 +32,10 @@ class Chef
         include Chef::Mixin::Uris
 
         def file_for_provider
-          Chef::Log.debug("#{@new_resource} checking for changes")
+          logger.trace("#{@new_resource} checking for changes")
 
           if current_resource_matches_target_checksum?
-            Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
+            logger.trace("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
           else
             sources = @new_resource.source
             raw_file = try_multiple_sources(sources)
@@ -54,10 +54,10 @@ class Chef
                     as_uri(source)
                   end
             raw_file = grab_file_from_uri(uri)
-          rescue SocketError, Errno::ECONNREFUSED, Errno::ENOENT, Errno::EACCES, Timeout::Error, Net::HTTPServerException, Net::HTTPFatalError, Net::FTPError => e
-            Chef::Log.warn("#{@new_resource} cannot be downloaded from #{source}: #{e}")
+          rescue SocketError, Errno::ECONNREFUSED, Errno::ENOENT, Errno::EACCES, Timeout::Error, Net::HTTPServerException, Net::HTTPFatalError, Net::FTPError, Errno::ETIMEDOUT => e
+            logger.warn("#{@new_resource} cannot be downloaded from #{source}: #{e}")
             if source = sources.shift
-              Chef::Log.info("#{@new_resource} trying to download from another mirror")
+              logger.info("#{@new_resource} trying to download from another mirror")
               retry
             else
               raise e

@@ -21,37 +21,21 @@ require "chef/resource/service"
 class Chef
   class Resource
     class MacosxService < Chef::Resource::Service
-
-      provides :macosx_service, os: "darwin"
+      resource_name :macosx_service
+      provides :macosx_service
       provides :service, os: "darwin"
+
+      description "Use the macosx_service resource to manage services on the macOS platform."
 
       identity_attr :service_name
 
       state_attrs :enabled, :running
 
-      def initialize(name, run_context = nil)
-        super
-        @plist = nil
-        @session_type = nil
-      end
-
       # This will enable user to pass a plist in the case
       # that the filename and label for the service dont match
-      def plist(arg = nil)
-        set_or_return(
-          :plist,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :plist, String
 
-      def session_type(arg = nil)
-        set_or_return(
-          :session_type,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :session_type, String
 
     end
   end

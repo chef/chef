@@ -31,12 +31,14 @@ class Chef
     class CookbookCompiler
       attr_reader :events
       attr_reader :run_list_expansion
+      attr_reader :logger
 
       def initialize(run_context, run_list_expansion, events)
         @run_context = run_context
         @events = events
         @run_list_expansion = run_list_expansion
         @cookbook_order = nil
+        @logger = run_context.logger.with_child(subsystem: "cookbook_compiler")
       end
 
       # Chef::Node object for the current run.
@@ -57,6 +59,7 @@ class Chef
 
       # Run the compile phase of the chef run. Loads files in the following order:
       # * Libraries
+      # * Ohai
       # * Attributes
       # * LWRPs
       # * Resource Definitions
@@ -69,6 +72,7 @@ class Chef
       # #cookbook_order for more information.
       def compile
         compile_libraries
+        compile_ohai_plugins
         compile_attributes
         compile_lwrps
         compile_resource_definitions
@@ -87,7 +91,7 @@ class Chef
             cookbook = Chef::Recipe.parse_recipe_name(recipe).first
             add_cookbook_with_deps(ordered_cookbooks, seen_cookbooks, cookbook)
           end
-          Chef::Log.debug("Cookbooks to compile: #{ordered_cookbooks.inspect}")
+          logger.debug("Cookbooks to compile: #{ordered_cookbooks.inspect}")
           ordered_cookbooks
         end
       end
@@ -101,11 +105,32 @@ class Chef
         @events.library_load_complete
       end
 
+      # Loads Ohai Plugins from cookbooks, and ensure any old ones are
+      # properly cleaned out
+      def compile_ohai_plugins
+        ohai_plugin_count = count_files_by_segment(:ohai)
+        @events.ohai_plugin_load_start(ohai_plugin_count)
+        FileUtils.rm_rf(Chef::Config[:ohai_segment_plugin_path])
+
+        cookbook_order.each do |cookbook|
+          load_ohai_plugins_from_cookbook(cookbook)
+        end
+
+        # Doing a full ohai system check is costly, so only do so if we've loaded additional plugins
+        if ohai_plugin_count > 0
+          # FIXME(log): figure out what the ohai logger looks like here
+          ohai = Ohai::System.new.run_additional_plugins(Chef::Config[:ohai_segment_plugin_path])
+          node.consume_ohai_data(ohai)
+        end
+
+        @events.ohai_plugin_load_complete
+      end
+
       # Loads attributes files from cookbooks. Attributes files are loaded
       # according to #cookbook_order; within a cookbook, +default.rb+ is loaded
       # first, then the remaining attributes files in lexical sort order.
       def compile_attributes
-        @events.attribute_load_start(count_files_by_segment(:attributes))
+        @events.attribute_load_start(count_files_by_segment(:attributes, "attributes.rb"))
         cookbook_order.each do |cookbook|
           load_attributes_from_cookbook(cookbook)
         end
@@ -137,13 +162,14 @@ class Chef
         @events.recipe_load_start(run_list_expansion.recipes.size)
         run_list_expansion.recipes.each do |recipe|
           begin
+            path = resolve_recipe(recipe)
             @run_context.load_recipe(recipe)
+            @events.recipe_file_loaded(path, recipe)
           rescue Chef::Exceptions::RecipeNotFound => e
             @events.recipe_not_found(e)
             raise
           rescue Exception => e
-            path = resolve_recipe(recipe)
-            @events.recipe_file_load_failed(path, e)
+            @events.recipe_file_load_failed(path, e, recipe)
             raise
           end
         end
@@ -165,7 +191,16 @@ class Chef
 
       def load_attributes_from_cookbook(cookbook_name)
         list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
-        if default_file = list_of_attr_files.find { |path| File.basename(path) == "default.rb" }
+        root_alias = cookbook_collection[cookbook_name].files_for(:root_files).find { |record| record[:name] == "attributes.rb" }
+        default_file = list_of_attr_files.find { |path| File.basename(path) == "default.rb" }
+        if root_alias
+          if default_file
+            logger.error("Cookbook #{cookbook_name} contains both attributes.rb and and attributes/default.rb, ignoring attributes/default.rb")
+            list_of_attr_files.delete(default_file)
+          end
+          # The actual root_alias path decoding is handled in CookbookVersion#attribute_filenames_by_short_filename
+          load_attribute_file(cookbook_name.to_s, "default")
+        elsif default_file
           list_of_attr_files.delete(default_file)
           load_attribute_file(cookbook_name.to_s, default_file)
         end
@@ -176,7 +211,8 @@ class Chef
       end
 
       def load_attribute_file(cookbook_name, filename)
-        Chef::Log.debug("Node #{node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
+        # FIXME(log): should be trace
+        logger.debug("Node #{node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
         attr_file_basename = ::File.basename(filename, ".rb")
         node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
       rescue Exception => e
@@ -188,7 +224,8 @@ class Chef
         files_in_cookbook_by_segment(cookbook_name, :libraries).each do |filename|
           next unless File.extname(filename) == ".rb"
           begin
-            Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
+            # FIXME(log): should be trace
+            logger.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
             Kernel.load(filename)
             @events.library_file_loaded(filename)
           rescue Exception => e
@@ -208,7 +245,8 @@ class Chef
       end
 
       def load_lwrp_provider(cookbook_name, filename)
-        Chef::Log.debug("Loading cookbook #{cookbook_name}'s providers from #{filename}")
+        # FIXME(log): should be trace
+        logger.debug("Loading cookbook #{cookbook_name}'s providers from #{filename}")
         Chef::Provider::LWRPBase.build_from_file(cookbook_name, filename, self)
         @events.lwrp_file_loaded(filename)
       rescue Exception => e
@@ -217,7 +255,8 @@ class Chef
       end
 
       def load_lwrp_resource(cookbook_name, filename)
-        Chef::Log.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
+        # FIXME(log): should be trace
+        logger.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
         Chef::Resource::LWRPBase.build_from_file(cookbook_name, filename, self)
         @events.lwrp_file_loaded(filename)
       rescue Exception => e
@@ -225,14 +264,29 @@ class Chef
         raise
       end
 
+      def load_ohai_plugins_from_cookbook(cookbook_name)
+        target = Chef::Config[:ohai_segment_plugin_path]
+        files_in_cookbook_by_segment(cookbook_name, :ohai).each do |filename|
+          next unless File.extname(filename) == ".rb"
+
+          # FIXME(log): should be trace
+          logger.debug "Loading Ohai plugin: #{filename} from #{cookbook_name}"
+          target_name = File.join(target, cookbook_name.to_s, File.basename(filename))
+
+          FileUtils.mkdir_p(File.dirname(target_name))
+          FileUtils.cp(filename, target_name)
+        end
+      end
+
       def load_resource_definitions_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :definitions).each do |filename|
           begin
-            Chef::Log.debug("Loading cookbook #{cookbook_name}'s definitions from #{filename}")
+            # FIXME(log): should be trace
+            logger.debug("Loading cookbook #{cookbook_name}'s definitions from #{filename}")
             resourcelist = Chef::ResourceDefinitionList.new
             resourcelist.from_file(filename)
             definitions.merge!(resourcelist.defines) do |key, oldval, newval|
-              Chef::Log.info("Overriding duplicate definition #{key}, new definition found in #{filename}")
+              logger.info("Overriding duplicate definition #{key}, new definition found in #{filename}")
               newval
             end
             @events.definition_file_loaded(filename)
@@ -258,16 +312,16 @@ class Chef
         ordered_cookbooks << cookbook
       end
 
-      def count_files_by_segment(segment)
+      def count_files_by_segment(segment, root_alias = nil)
         cookbook_collection.inject(0) do |count, cookbook_by_name|
-          count + cookbook_by_name[1].segment_filenames(segment).size
+          count + cookbook_by_name[1].segment_filenames(segment).size + (root_alias ? cookbook_by_name[1].files_for(:root_files).select { |record| record[:name] == root_alias }.size : 0)
         end
       end
 
       # Lists the local paths to files in +cookbook+ of type +segment+
       # (attribute, recipe, etc.), sorted lexically.
       def files_in_cookbook_by_segment(cookbook, segment)
-        cookbook_collection[cookbook].segment_filenames(segment).sort
+        cookbook_collection[cookbook].files_for(segment).map { |record| record[:full_path] }.sort
       end
 
       # Yields the name, as a symbol, of each cookbook depended on by

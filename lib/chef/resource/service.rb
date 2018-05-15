@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 #
 
 require "chef/resource"
+require "shellwords"
 
 class Chef
   class Resource
@@ -26,9 +27,15 @@ class Chef
 
       state_attrs :enabled, :running, :masked
 
+      description "Use the service resource to manage a service."
+
       default_action :nothing
       allowed_actions :enable, :disable, :start, :stop, :restart, :reload,
                       :mask, :unmask
+
+      # this is a poor API please do not re-use this pattern
+      property :supports, Hash, default: { restart: nil, reload: nil, status: nil },
+                                coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
       def initialize(name, run_context = nil)
         super
@@ -36,6 +43,7 @@ class Chef
         @enabled = nil
         @running = nil
         @masked = nil
+        @options = nil
         @parameters = nil
         @pattern = service_name
         @start_command = nil
@@ -48,7 +56,6 @@ class Chef
         @timeout = nil
         @run_levels = nil
         @user = nil
-        @supports = { :restart => nil, :reload => nil, :status => nil }
       end
 
       def service_name(arg = nil)
@@ -73,7 +80,7 @@ class Chef
         set_or_return(
           :start_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, NilClass, FalseClass ]
         )
       end
 
@@ -82,7 +89,7 @@ class Chef
         set_or_return(
           :stop_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, NilClass, FalseClass ]
         )
       end
 
@@ -91,7 +98,7 @@ class Chef
         set_or_return(
           :status_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, NilClass, FalseClass ]
         )
       end
 
@@ -100,7 +107,7 @@ class Chef
         set_or_return(
           :restart_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, NilClass, FalseClass ]
         )
       end
 
@@ -108,7 +115,7 @@ class Chef
         set_or_return(
           :reload_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, NilClass, FalseClass ]
         )
       end
 
@@ -149,6 +156,14 @@ class Chef
           :masked,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def options(arg = nil)
+        set_or_return(
+          :options,
+          arg.respond_to?(:split) ? arg.shellsplit : arg,
+          :kind_of => [ Array, String ]
         )
       end
 
@@ -201,17 +216,6 @@ class Chef
           :kind_of => [ String ]
         )
       end
-
-      def supports(args = {})
-        if args.is_a? Array
-          args.each { |arg| @supports[arg] = true }
-        elsif args.any?
-          @supports = args
-        else
-          @supports
-        end
-      end
-
     end
   end
 end

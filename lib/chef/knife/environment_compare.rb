@@ -81,7 +81,7 @@ class Chef
 
       def constraint_list(environments)
         constraints = {}
-        environments.each do |env, url|
+        environments.each do |env, url| # rubocop:disable Performance/HashEachMethods
           # Because you cannot modify the default environment I filter it out here.
           unless env == "_default"
             envdata = Chef::Environment.load(env)
@@ -94,17 +94,17 @@ class Chef
 
       def cookbook_list(constraints)
         result = {}
-        constraints.each { |env, cb| result.merge!(cb) }
+        constraints.each_value { |cb| result.merge!(cb) }
         result
       end
 
       def matrix_output(cookbooks, constraints)
         rows = [ "" ]
         environments = []
-        constraints.each { |e, v| environments << e.to_s }
+        constraints.each_key { |e| environments << e.to_s }
         columns = environments.count + 1
         environments.each { |env| rows << ui.color(env, :bold) }
-        cookbooks.each do |c, v|
+        cookbooks.each_key do |c|
           total = []
           environments.each { |n| total << constraints[n][c] }
           if total.uniq.count == 1

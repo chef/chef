@@ -21,28 +21,30 @@ require "chef/util/dsc/resource_store"
 
 describe Chef::Util::DSC::ResourceStore do
   let(:resource_store) { Chef::Util::DSC::ResourceStore.new }
-  let(:resource_a) { {
+  let(:resource_a) do
+    {
     "ResourceType" => "AFoo",
     "Name" => "Foo",
     "Module" => { "Name" => "ModuleA" },
     }
-  }
+  end
 
-  let(:resource_b) { {
+  let(:resource_b) do
+    {
     "ResourceType" => "BFoo",
     "Name" => "Foo",
     "Module" => { "Name" => "ModuleB" },
     }
-  }
+  end
 
   context "when resources are not cached" do
-    context 'when calling #resources' do
+    context "when calling #resources" do
       it "returns an empty array" do
         expect(resource_store.resources).to eql([])
       end
     end
 
-    context 'when calling #find' do
+    context "when calling #find" do
       it "returns an empty list if it cannot find any matching resources" do
         expect(resource_store).to receive(:query_resource).and_return([])
         expect(resource_store.find("foo")).to eql([])

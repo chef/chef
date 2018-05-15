@@ -107,7 +107,7 @@ UINT MsiCloseHandle(
           end
 
           msi_close_handle(pkg_ptr.read_pointer)
-          return buffer.chomp(0.chr)
+          buffer.chomp(0.chr)
         end
 
         # Opens a Microsoft Installer (MSI) file from an absolute path and returns a pointer to a handle
@@ -124,7 +124,7 @@ UINT MsiCloseHandle(
           else
             raise Chef::Exceptions::Package, "msi_open_package: unexpected status #{status}: #{Chef::ReservedNames::Win32::Error.format_message(status)}"
           end
-          return pkg_ptr
+          pkg_ptr
         end
 
         # All installed product_codes should have a VersionString

@@ -254,7 +254,7 @@ describe Chef::PolicyBuilder::Dynamic do
       context "when running chef solo" do
 
         before do
-          Chef::Config[:solo] = true
+          Chef::Config[:solo_legacy_mode] = true
           expect(Chef::Node).to receive(:build).with(node_name).and_return(node)
           expect(policy_builder).to receive(:select_implementation).with(node)
           expect(implementation).to receive(:finish_load_node).with(node)

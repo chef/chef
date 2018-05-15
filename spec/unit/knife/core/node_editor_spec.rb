@@ -41,7 +41,7 @@ describe Chef::Knife::NodeEditor do
 
   subject { described_class.new(node, ui, config) }
 
-  describe '#view' do
+  describe "#view" do
     it "returns a Hash with only the name, chef_environment, normal, " +
       "policy_name, policy_group, and run_list properties" do
       expected = node_data.select do |key,|
@@ -55,13 +55,13 @@ describe Chef::Knife::NodeEditor do
     context "when config[:all_attributes] == true" do
       let(:config) { base_config.merge(all_attributes: true) }
 
-      it 'returns a Hash with all of the node\'s properties' do
+      it "returns a Hash with all of the node's properties" do
         expect(subject.view).to eq(node_data)
       end
     end
   end
 
-  describe '#apply_updates' do
+  describe "#apply_updates" do
     context "when the node name is changed" do
       before(:each) do
         allow(ui).to receive(:warn)
@@ -100,10 +100,10 @@ describe Chef::Knife::NodeEditor do
         expect(updated_node).to be_a(Chef::Node)
 
         # Expected to have been changed
-        expect(updated_node.chef_environment).to eql(updated_data["chef_environment"])
         expect(updated_node.normal_attrs).to eql(updated_data["normal"])
         expect(updated_node.policy_name).to eql(updated_data["policy_name"])
         expect(updated_node.policy_group).to eql(updated_data["policy_group"])
+        expect(updated_node.chef_environment).to eql(updated_data["policy_group"])
         expect(updated_node.run_list.map(&:to_s)).to eql(updated_data["run_list"])
 
         # Expected not to have changed
@@ -131,7 +131,7 @@ describe Chef::Knife::NodeEditor do
         updated_node = subject.apply_updates(updated_data)
         expect(updated_node).to be_a(Chef::Node)
 
-        expect(updated_node.chef_environment).to eql(updated_data["chef_environment"])
+        expect(updated_node.chef_environment).to eql(updated_data["policy_group"])
         expect(updated_node.automatic_attrs).to eql(updated_data["automatic"])
         expect(updated_node.normal_attrs).to eql(updated_data["normal"])
         expect(updated_node.default_attrs).to eql(updated_data["default"])
@@ -143,7 +143,7 @@ describe Chef::Knife::NodeEditor do
     end
   end
 
-  describe '#updated?' do
+  describe "#updated?" do
     context "before the node has been edited" do
       it "returns false" do
         expect(subject.updated?).to be false
@@ -173,7 +173,7 @@ describe Chef::Knife::NodeEditor do
           end
 
           it "returns an array of the changed property names" do
-            expect(subject.updated?).to eql %w{ normal policy_name policy_group run_list }
+            expect(subject.updated?).to eql %w{ chef_environment normal policy_name policy_group run_list }
           end
         end
 
@@ -188,9 +188,9 @@ describe Chef::Knife::NodeEditor do
             subject.edit_node
           end
 
-          it 'returns an array of property names that doesn\'t include ' +
+          it "returns an array of property names that doesn't include " +
             "the non-editable properties" do
-            expect(subject.updated?).to eql %w{ normal policy_name policy_group run_list }
+            expect(subject.updated?).to eql %w{ chef_environment normal policy_name policy_group run_list }
           end
         end
       end

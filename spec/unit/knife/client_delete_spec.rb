@@ -34,6 +34,22 @@ describe Chef::Knife::ClientDelete do
       @knife.run
     end
 
+    context "receives multiple clients" do
+      let(:clients) { %w{ adam ben charlie } }
+
+      before(:each) do
+        @knife.name_args = clients
+      end
+
+      it "deletes all clients" do
+        clients.each do |client|
+          expect(@knife).to receive(:delete_object).with(Chef::ApiClientV1, client, "client")
+        end
+
+        @knife.run
+      end
+    end
+
     it "should print usage and exit when a client name is not provided" do
       @knife.name_args = []
       expect(@knife).to receive(:show_usage)

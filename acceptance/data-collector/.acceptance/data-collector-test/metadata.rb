@@ -1,0 +1,7 @@
+name 'data-collector-test'
+maintainer 'Adam Leff'
+maintainer_email 'adamleff@chef.io'
+license 'Apache-2.0'
+description 'Installs/Configures data-collector-test'
+long_description 'Installs/Configures data-collector-test'
+version '0.1.0'

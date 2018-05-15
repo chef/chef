@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,13 +18,19 @@
 #
 
 require "chef/resource"
-require "chef/provider/execute"
 
 class Chef
   class Resource
     class Execute < Chef::Resource
+      resource_name :execute
+      provides :execute
 
       identity_attr :command
+
+      description "Use the execute resource to execute a single command. Commands that"\
+                  " are executed with this resource are (by their nature) not idempotent,"\
+                  " as they are typically unique to the environment in which they are run."\
+                  " Use not_if and only_if to guard this resource for idempotence."
 
       # The ResourceGuardInterpreter wraps a resource's guards in another resource.  That inner resource
       # needs to behave differently during (for example) why_run mode, so we flag it here. For why_run mode
@@ -38,26 +44,8 @@ class Chef
         super
         @command = name
         @backup = 5
-        @creates = nil
-        @cwd = nil
-        @environment = nil
-        @group = nil
-        @path = nil
-        @returns = 0
-        @timeout = nil
-        @user = nil
-        @umask = nil
         @default_guard_interpreter = :execute
         @is_guard_interpreter = false
-        @live_stream = false
-      end
-
-      def umask(arg = nil)
-        set_or_return(
-          :umask,
-          arg,
-          :kind_of => [ String, Integer ]
-        )
       end
 
       def command(arg = nil)
@@ -67,81 +55,25 @@ class Chef
           :kind_of => [ String, Array ]
         )
       end
-
-      def creates(arg = nil)
-        set_or_return(
-          :creates,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def cwd(arg = nil)
-        set_or_return(
-          :cwd,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def environment(arg = nil)
-        set_or_return(
-          :environment,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
+      property :umask, [ String, Integer ]
+      property :creates, String
+      property :cwd, String
+      property :environment, Hash
 
       alias :env :environment
 
-      def group(arg = nil)
-        set_or_return(
-          :group,
-          arg,
-          :kind_of => [ String, Integer ]
-        )
-      end
+      property :group, [ String, Integer ]
+      property :live_stream, [ TrueClass, FalseClass ], default: false
+      property :returns, [ Integer, Array ], default: 0
+      property :timeout, [ Integer, Float ]
+      property :user, [ String, Integer ]
+      property :domain, String
+      property :password, String, sensitive: true
 
-      def live_stream(arg = nil)
-        set_or_return(
-          :live_stream,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ])
-      end
+      # lazy used to set default value of sensitive to true if password is set
+      property :sensitive, [ TrueClass, FalseClass ], default: lazy { |r| r.password ? true : false }
 
-      def path(arg = nil)
-        Chef::Log.warn "The 'path' attribute of 'execute' is not used by any provider in Chef 11 or Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
-
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => [ Array ]
-        )
-      end
-
-      def returns(arg = nil)
-        set_or_return(
-          :returns,
-          arg,
-          :kind_of => [ Integer, Array ]
-        )
-      end
-
-      def timeout(arg = nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => [ Integer, Float ]
-        )
-      end
-
-      def user(arg = nil)
-        set_or_return(
-          :user,
-          arg,
-          :kind_of => [ String, Integer ]
-        )
-      end
+      property :elevated, [ TrueClass, FalseClass ], default: false
 
       def self.set_guard_inherited_attributes(*inherited_attributes)
         @class_inherited_attributes = inherited_attributes
@@ -157,6 +89,72 @@ class Chef
         end
 
         ancestor_attributes.concat(@class_inherited_attributes ? @class_inherited_attributes : []).uniq
+      end
+
+      def after_created
+        validate_identity_platform(user, password, domain, elevated)
+        identity = qualify_user(user, password, domain)
+        domain(identity[:domain])
+        user(identity[:user])
+      end
+
+      def validate_identity_platform(specified_user, password = nil, specified_domain = nil, elevated = false)
+        if node[:platform_family] == "windows"
+          if specified_user && password.nil?
+            raise ArgumentError, "A value for `password` must be specified when a value for `user` is specified on the Windows platform"
+          end
+
+          if elevated && !specified_user && !password
+            raise ArgumentError, "`elevated` option should be passed only with `username` and `password`."
+          end
+        else
+          if password || specified_domain
+            raise Exceptions::UnsupportedPlatform, "Values for `domain` and `password` are only supported on the Windows platform"
+          end
+
+          if elevated
+            raise Exceptions::UnsupportedPlatform, "Value for `elevated` is only supported on the Windows platform"
+          end
+        end
+      end
+
+      def qualify_user(specified_user, password = nil, specified_domain = nil)
+        domain = specified_domain
+        user = specified_user
+
+        if specified_user.nil? && ! specified_domain.nil?
+          raise ArgumentError, "The domain `#{specified_domain}` was specified, but no user name was given"
+        end
+
+        # if domain is provided in both username and domain
+        if specified_user && ((specified_user.include? '\\') || (specified_user.include? "@")) && specified_domain
+          raise ArgumentError, "The domain is provided twice. Username: `#{specified_user}`, Domain: `#{specified_domain}`. Please specify domain only once."
+        end
+
+        if ! specified_user.nil? && specified_domain.nil?
+          # Splitting username of format: Domain\Username
+          domain_and_user = user.split('\\')
+
+          if domain_and_user.length == 2
+            domain = domain_and_user[0]
+            user = domain_and_user[1]
+          elsif domain_and_user.length == 1
+            # Splitting username of format: Username@Domain
+            domain_and_user = user.split("@")
+            if domain_and_user.length == 2
+              domain = domain_and_user[1]
+              user = domain_and_user[0]
+            elsif domain_and_user.length != 1
+              raise ArgumentError, "The specified user name `#{user}` is not a syntactically valid user name"
+            end
+          end
+        end
+
+        if ( password || domain ) && user.nil?
+          raise ArgumentError, "A value for `password` or `domain` was specified without specification of a value for `user`"
+        end
+
+        { domain: domain, user: user }
       end
 
       set_guard_inherited_attributes(

@@ -18,19 +18,6 @@
 
 require "spec_helper"
 
-describe "Chef::Platform#windows_server_2003?" do
-  it "returns false early when not on windows" do
-    allow(ChefConfig).to receive(:windows?).and_return(false)
-    expect(Chef::Platform).not_to receive(:require)
-    expect(Chef::Platform.windows_server_2003?).to be_falsey
-  end
-
-  # CHEF-4888: Need to call WIN32OLE.ole_initialize in new threads
-  it "does not raise an exception" do
-    expect { Thread.fork { Chef::Platform.windows_server_2003? }.join }.not_to raise_error
-  end
-end
-
 describe "Chef::Platform#windows_nano_server?" do
   include_context "Win32"
 
@@ -151,7 +138,7 @@ describe "Chef::Platform#supports_msi?" do
   end
 end
 
-describe 'Chef::Platform#supports_dsc?' do
+describe "Chef::Platform#supports_dsc?" do
   it "returns false if powershell is not present" do
     node = Chef::Node.new
     expect(Chef::Platform.supports_dsc?(node)).to be_falsey
@@ -174,7 +161,7 @@ describe 'Chef::Platform#supports_dsc?' do
   end
 end
 
-describe 'Chef::Platform#supports_dsc_invoke_resource?' do
+describe "Chef::Platform#supports_dsc_invoke_resource?" do
   it "returns false if powershell is not present" do
     node = Chef::Node.new
     expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_falsey
@@ -195,7 +182,7 @@ describe 'Chef::Platform#supports_dsc_invoke_resource?' do
   end
 end
 
-describe 'Chef::Platform#dsc_refresh_mode_disabled?' do
+describe "Chef::Platform#dsc_refresh_mode_disabled?" do
   let(:node) { instance_double("Chef::Node") }
   let(:cmdlet) { instance_double("Chef::Util::Powershell::Cmdlet") }
   let(:cmdlet_result) { instance_double("Chef::Util::Powershell::CmdletResult") }

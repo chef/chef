@@ -54,7 +54,7 @@ class Chef
         end
 
         def client_d
-          @cliend_d ||= client_d_content
+          @client_d ||= client_d_content
         end
 
         def encrypted_data_bag_secret
@@ -67,12 +67,36 @@ class Chef
           @trusted_certs ||= trusted_certs_content
         end
 
+        def get_log_location
+          if !(@chef_config[:config_log_location].class == IO ) && (@chef_config[:config_log_location].nil? || @chef_config[:config_log_location].to_s.empty?)
+            "STDOUT"
+          elsif @chef_config[:config_log_location].equal?(:win_evt)
+            raise "The value :win_evt is not supported for config_log_location on Linux Platforms \n"
+          elsif @chef_config[:config_log_location].equal?(:syslog)
+            ":syslog"
+          elsif @chef_config[:config_log_location].equal?(STDOUT)
+            "STDOUT"
+          elsif @chef_config[:config_log_location].equal?(STDERR)
+            "STDERR"
+          elsif @chef_config[:config_log_location]
+            %Q{"#{@chef_config[:config_log_location]}"}
+          else
+            "STDOUT"
+          end
+        end
+
         def config_content
           client_rb = <<-CONFIG
-log_location     STDOUT
 chef_server_url  "#{@chef_config[:chef_server_url]}"
 validation_client_name "#{@chef_config[:validation_client_name]}"
           CONFIG
+
+          if !(@chef_config[:config_log_level].nil? || @chef_config[:config_log_level].empty?)
+            client_rb << %Q{log_level   :#{@chef_config[:config_log_level]}\n}
+          end
+
+          client_rb << "log_location   #{get_log_location}\n"
+
           if @config[:chef_node_name]
             client_rb << %Q{node_name "#{@config[:chef_node_name]}"\n}
           else
@@ -114,6 +138,16 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
             client_rb << %Q{https_proxy       "#{knife_config[:bootstrap_proxy]}"\n}
           end
 
+          if knife_config[:bootstrap_proxy_user]
+            client_rb << %Q{http_proxy_user   "#{knife_config[:bootstrap_proxy_user]}"\n}
+            client_rb << %Q{https_proxy_user  "#{knife_config[:bootstrap_proxy_user]}"\n}
+          end
+
+          if knife_config[:bootstrap_proxy_pass]
+            client_rb << %Q{http_proxy_pass   "#{knife_config[:bootstrap_proxy_pass]}"\n}
+            client_rb << %Q{https_proxy_pass  "#{knife_config[:bootstrap_proxy_pass]}"\n}
+          end
+
           if knife_config[:bootstrap_no_proxy]
             client_rb << %Q{no_proxy       "#{knife_config[:bootstrap_no_proxy]}"\n}
           end
@@ -127,13 +161,14 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
           end
 
           if Chef::Config[:fips]
-            client_rb << <<-CONFIG
-fips true
-chef_version = ::Chef::VERSION.split(".")
-unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 8)
-  raise "FIPS Mode requested but not supported by this client"
-end
-CONFIG
+            client_rb << <<-CONFIG.gsub(/^ {14}/, "")
+              fips true
+              require "chef/version"
+              chef_version = ::Chef::VERSION.split(".")
+              unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 8)
+                raise "FIPS Mode requested but not supported by this client"
+              end
+            CONFIG
           end
 
           client_rb
@@ -143,7 +178,11 @@ CONFIG
           # If the user doesn't have a client path configure, let bash use the PATH for what it was designed for
           client_path = @chef_config[:chef_client_path] || "chef-client"
           s = "#{client_path} -j /etc/chef/first-boot.json"
-          s << " -l debug" if @config[:verbosity] && @config[:verbosity] >= 2
+          if @config[:verbosity] && @config[:verbosity] >= 3
+            s << " -l trace"
+          elsif @config[:verbosity] && @config[:verbosity] >= 2
+            s << " -l debug"
+          end
           s << " -E #{bootstrap_environment}" unless bootstrap_environment.nil?
           s << " --no-color" unless @config[:color]
           s
@@ -188,6 +227,7 @@ CONFIG
               attributes[:run_list] = @run_list
             end
 
+            attributes.delete(:run_list) if attributes[:policy_name] && !attributes[:policy_name].empty?
             attributes.merge!(:tags => @config[:tags]) if @config[:tags] && !@config[:tags].empty?
           end
         end
@@ -219,7 +259,7 @@ CONFIG
                   content << "mkdir #{file_on_node}\n"
                 else
                   content << "cat > #{file_on_node} <<'EOP'\n" +
-                    f.read + "\nEOP\n"
+                    f.read.gsub("'", "'\\\\''") + "\nEOP\n"
                 end
               end
             end

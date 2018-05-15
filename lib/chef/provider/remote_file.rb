@@ -18,33 +18,46 @@
 #
 
 require "chef/provider/file"
-require "chef/deprecation/provider/remote_file"
-require "chef/deprecation/warnings"
 
 class Chef
   class Provider
     class RemoteFile < Chef::Provider::File
       provides :remote_file
 
-      extend Chef::Deprecation::Warnings
-      include Chef::Deprecation::Provider::RemoteFile
-      add_deprecation_warnings_for(Chef::Deprecation::Provider::RemoteFile.instance_methods)
-
       def initialize(new_resource, run_context)
         @content_class = Chef::Provider::RemoteFile::Content
         super
       end
 
+      def define_resource_requirements
+        [ new_resource.remote_user, new_resource.remote_domain,
+          new_resource.remote_password ].each do |prop|
+          requirements.assert(:all_actions) do |a|
+            a.assertion do
+              if prop
+                node[:platform_family] == "windows"
+              else
+                true
+              end
+            end
+            a.failure_message Chef::Exceptions::UnsupportedPlatform, "'remote_user', 'remote_domain' and 'remote_password' properties are supported only for Windows platform"
+            a.whyrun("Assuming that the platform is Windows while passing 'remote_user', 'remote_domain' and 'remote_password' properties")
+          end
+        end
+
+        super
+      end
+
       def load_current_resource
-        @current_resource = Chef::Resource::RemoteFile.new(@new_resource.name)
+        @current_resource = Chef::Resource::RemoteFile.new(new_resource.name)
         super
       end
 
       private
 
       def managing_content?
-        return true if @new_resource.checksum
-        return true if !@new_resource.source.nil? && @action != :create_if_missing
+        return true if new_resource.checksum
+        return true if !new_resource.source.nil? && @action != :create_if_missing
         false
       end
 

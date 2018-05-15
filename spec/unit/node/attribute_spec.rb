@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,11 @@ require "spec_helper"
 require "chef/node/attribute"
 
 describe Chef::Node::Attribute do
+  let(:events) { instance_double(Chef::EventDispatch::Dispatcher) }
+  let(:run_context) { instance_double(Chef::RunContext, :events => events) }
+  let(:node) { instance_double(Chef::Node, :run_context => run_context) }
   before(:each) do
+    allow(events).to receive(:attribute_changed)
     @attribute_hash =
       { "dmi" => {},
         "command" => { "ps" => "ps -ef" },
@@ -166,7 +170,7 @@ describe Chef::Node::Attribute do
       },
     }
     @automatic_hash = { "week" => "friday" }
-    @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash)
+    @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash, node)
   end
 
   describe "initialize" do
@@ -204,7 +208,7 @@ describe Chef::Node::Attribute do
   end
 
   describe "when debugging attributes" do
-    before do
+    it "gives the value at each level of precedence for a path spec" do
       @attributes.default[:foo][:bar] = "default"
       @attributes.env_default[:foo][:bar] = "env_default"
       @attributes.role_default[:foo][:bar] = "role_default"
@@ -215,10 +219,8 @@ describe Chef::Node::Attribute do
       @attributes.env_override[:foo][:bar] = "env_override"
       @attributes.force_override[:foo][:bar] = "force_override"
       @attributes.automatic[:foo][:bar] = "automatic"
-    end
 
-    it "gives the value at each level of precedence for a path spec" do
-      expected = [["set_unless_enabled?", false],
+      expected = [
         %w{default default},
         %w{env_default env_default},
         %w{role_default role_default},
@@ -231,6 +233,25 @@ describe Chef::Node::Attribute do
         %w{automatic automatic},
       ]
       expect(@attributes.debug_value(:foo, :bar)).to eq(expected)
+    end
+
+    it "works through arrays" do
+      @attributes.default["foo"] = [ { "bar" => "baz" } ]
+
+      expect(@attributes.debug_value(:foo, 0)).to eq(
+        [
+          ["default", { "bar" => "baz" }],
+          ["env_default", :not_present],
+          ["role_default", :not_present],
+          ["force_default", :not_present],
+          ["normal", :not_present],
+          ["override", :not_present],
+          ["role_override", :not_present],
+          ["env_override", :not_present],
+          ["force_override", :not_present],
+          ["automatic", :not_present],
+        ]
+      )
     end
   end
 
@@ -417,12 +438,6 @@ describe Chef::Node::Attribute do
       expect(@attributes.normal["foo"]["bar"]).to eq(:baz)
     end
 
-    it "should optionally skip setting the value if one already exists" do
-      @attributes.set_unless_value_present = true
-      @attributes.normal["hostname"] = "bar"
-      expect(@attributes["hostname"]).to eq("latte")
-    end
-
     it "does not support ||= when setting" do
       # This is a limitation of auto-vivification.
       # Users who need this behavior can use set_unless and friends
@@ -461,8 +476,7 @@ describe Chef::Node::Attribute do
       expect(@attributes.default["foo"]).to eql({ "bar" => [ "fizz" ] })
     end
 
-    it "mutating strings should not mutate the attributes" do
-      pending "this is a bug that should be fixed"
+    it "mutating strings should not mutate the attributes in a hash" do
       @attributes.default["foo"]["bar"]["baz"] = "fizz"
       hash = @attributes["foo"].to_hash
       expect(hash).to eql({ "bar" => { "baz" => "fizz" } })
@@ -470,12 +484,39 @@ describe Chef::Node::Attribute do
       expect(hash).to eql({ "bar" => { "baz" => "fizzbuzz" } })
       expect(@attributes.default["foo"]).to eql({ "bar" => { "baz" => "fizz" } })
     end
+
+    it "mutating array elements should not mutate the attributes" do
+      @attributes.default["foo"]["bar"] = [ "fizz" ]
+      hash = @attributes["foo"].to_hash
+      expect(hash).to eql({ "bar" => [ "fizz" ] })
+      hash["bar"][0] << "buzz"
+      expect(hash).to eql({ "bar" => [ "fizzbuzz" ] })
+      expect(@attributes.default["foo"]).to eql({ "bar" => [ "fizz" ] })
+    end
   end
 
   describe "dup" do
     it "array can be duped even if some elements can't" do
       @attributes.default[:foo] = %w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ]
       @attributes.default[:foo].dup
+    end
+
+    it "mutating strings should not mutate the attributes in a hash" do
+      @attributes.default["foo"]["bar"]["baz"] = "fizz"
+      hash = @attributes["foo"].dup
+      expect(hash).to eql({ "bar" => { "baz" => "fizz" } })
+      hash["bar"]["baz"] << "buzz"
+      expect(hash).to eql({ "bar" => { "baz" => "fizzbuzz" } })
+      expect(@attributes.default["foo"]).to eql({ "bar" => { "baz" => "fizz" } })
+    end
+
+    it "mutating array elements should not mutate the attributes" do
+      @attributes.default["foo"]["bar"] = [ "fizz" ]
+      hash = @attributes["foo"].dup
+      expect(hash).to eql({ "bar" => [ "fizz" ] })
+      hash["bar"][0] << "buzz"
+      expect(hash).to eql({ "bar" => [ "fizzbuzz" ] })
+      expect(@attributes.default["foo"]).to eql({ "bar" => [ "fizz" ] })
     end
   end
 
@@ -490,10 +531,6 @@ describe Chef::Node::Attribute do
 
     it "should return false if an attribute does not exist using dot notation" do
       expect(@attributes.has_key?("does_not_exist_at_all")).to eq(false)
-    end
-
-    it "should return true if an attribute exists but is set to nil using dot notation" do
-      expect(@attributes.music.deeper.has_key?("gates_of_ishtar")).to eq(true)
     end
 
     it "should return true if an attribute exists but is set to false" do
@@ -531,17 +568,6 @@ describe Chef::Node::Attribute do
 
   end
 
-  describe "method_missing" do
-    it "should behave like a [] lookup" do
-      expect(@attributes.music.mastodon).to eq("rocks")
-    end
-
-    it "should allow the last method to set a value if it has an = sign on the end" do
-      @attributes.normal.music.mastodon = %w{dream still shining}
-      expect(@attributes.normal.music.mastodon).to eq(%w{dream still shining})
-    end
-  end
-
   describe "keys" do
     before(:each) do
       @attributes = Chef::Node::Attribute.new(
@@ -564,7 +590,7 @@ describe Chef::Node::Attribute do
 
     it "should yield each top level key" do
       collect = Array.new
-      @attributes.keys.each do |k|
+      @attributes.each_key do |k|
         collect << k
       end
       expect(collect.include?("one")).to eq(true)
@@ -577,7 +603,7 @@ describe Chef::Node::Attribute do
 
     it "should yield lower if we go deeper" do
       collect = Array.new
-      @attributes.one.keys.each do |k|
+      @attributes["one"].each_key do |k|
         collect << k
       end
       expect(collect.include?("two")).to eq(true)
@@ -587,7 +613,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should not raise an exception if one of the hashes has a nil value on a deep lookup" do
-      expect { @attributes.place.keys { |k| } }.not_to raise_error
+      expect { @attributes["place"].keys { |k| } }.not_to raise_error
     end
   end
 
@@ -1108,25 +1134,25 @@ describe Chef::Node::Attribute do
   describe "when setting a component attribute to a new value" do
     it "converts the input in to a VividMash tree (default)" do
       @attributes.default = {}
-      @attributes.default.foo = "bar"
+      @attributes.default["foo"] = "bar"
       expect(@attributes.merged_attributes[:foo]).to eq("bar")
     end
 
     it "converts the input in to a VividMash tree (normal)" do
       @attributes.normal = {}
-      @attributes.normal.foo = "bar"
+      @attributes.normal["foo"] = "bar"
       expect(@attributes.merged_attributes[:foo]).to eq("bar")
     end
 
     it "converts the input in to a VividMash tree (override)" do
       @attributes.override = {}
-      @attributes.override.foo = "bar"
+      @attributes.override["foo"] = "bar"
       expect(@attributes.merged_attributes[:foo]).to eq("bar")
     end
 
     it "converts the input in to a VividMash tree (automatic)" do
       @attributes.automatic = {}
-      @attributes.automatic.foo = "bar"
+      @attributes.automatic["foo"] = "bar"
       expect(@attributes.merged_attributes[:foo]).to eq("bar")
     end
   end
@@ -1169,11 +1195,82 @@ describe Chef::Node::Attribute do
     it "raises an error when using []=" do
       expect { @attributes[:new_key] = "new value" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
-
-    it "raises an error when using `attr=value`" do
-      expect { @attributes.new_key = "new value" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
-    end
-
   end
 
+  describe "deeply converting values" do
+    it "converts values through an array" do
+      @attributes.default[:foo] = [ { bar: true } ]
+      expect(@attributes["foo"].class).to eql(Chef::Node::ImmutableArray)
+      expect(@attributes["foo"][0].class).to eql(Chef::Node::ImmutableMash)
+      expect(@attributes["foo"][0]["bar"]).to be true
+    end
+
+    it "converts values through nested arrays" do
+      @attributes.default[:foo] = [ [ { bar: true } ] ]
+      expect(@attributes["foo"].class).to eql(Chef::Node::ImmutableArray)
+      expect(@attributes["foo"][0].class).to eql(Chef::Node::ImmutableArray)
+      expect(@attributes["foo"][0][0].class).to eql(Chef::Node::ImmutableMash)
+      expect(@attributes["foo"][0][0]["bar"]).to be true
+    end
+
+    it "converts values through nested hashes" do
+      @attributes.default[:foo] = { baz: { bar: true } }
+      expect(@attributes["foo"].class).to eql(Chef::Node::ImmutableMash)
+      expect(@attributes["foo"]["baz"].class).to eql(Chef::Node::ImmutableMash)
+      expect(@attributes["foo"]["baz"]["bar"]).to be true
+    end
+  end
+
+  describe "node state" do
+    it "sets __root__ correctly" do
+      @attributes.default["foo"]["bar"]["baz"] = "quux"
+      expect(@attributes["foo"].__root__).to eql(@attributes)
+      expect(@attributes["foo"]["bar"].__root__).to eql(@attributes)
+      expect(@attributes.default["foo"].__root__).to eql(@attributes)
+      expect(@attributes.default["foo"]["bar"].__root__).to eql(@attributes)
+    end
+
+    it "sets __node__ correctly" do
+      @attributes.default["foo"]["bar"]["baz"] = "quux"
+      expect(@attributes["foo"].__node__).to eql(node)
+      expect(@attributes["foo"]["bar"].__node__).to eql(node)
+      expect(@attributes.default["foo"].__node__).to eql(node)
+      expect(@attributes.default["foo"]["bar"].__node__).to eql(node)
+    end
+
+    it "sets __path__ correctly" do
+      @attributes.default["foo"]["bar"]["baz"] = "quux"
+      expect(@attributes["foo"].__path__).to eql(["foo"])
+      expect(@attributes["foo"]["bar"].__path__).to eql(%w{foo bar})
+      expect(@attributes.default["foo"].__path__).to eql(["foo"])
+      expect(@attributes.default["foo"]["bar"].__path__).to eql(%w{foo bar})
+    end
+
+    it "sets __precedence__ correctly" do
+      @attributes.default["foo"]["bar"]["baz"] = "quux"
+      expect(@attributes["foo"].__precedence__).to eql(:merged)
+      expect(@attributes["foo"]["bar"].__precedence__).to eql(:merged)
+      expect(@attributes.default["foo"].__precedence__).to eql(:default)
+      expect(@attributes.default["foo"]["bar"].__precedence__).to eql(:default)
+    end
+
+    it "notifies on attribute changes" do
+      expect(events).to receive(:attribute_changed).with(:default, ["foo"], {})
+      expect(events).to receive(:attribute_changed).with(:default, %w{foo bar}, {})
+      expect(events).to receive(:attribute_changed).with(:default, %w{foo bar baz}, "quux")
+      @attributes.default["foo"]["bar"]["baz"] = "quux"
+    end
+  end
+
+  describe "frozen immutable strings" do
+    it "strings in hashes should be frozen" do
+      @attributes.default["foo"]["bar"]["baz"] = "fizz"
+      expect { @attributes["foo"]["bar"]["baz"] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
+    end
+
+    it "strings in arrays should be frozen" do
+      @attributes.default["foo"]["bar"] = [ "fizz" ]
+      expect { @attributes["foo"]["bar"][0] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
+    end
+  end
 end

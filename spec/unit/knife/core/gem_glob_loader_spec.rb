@@ -40,7 +40,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
 
   it "finds files installed via rubygems" do
     expect(loader.find_subcommands_via_rubygems).to include("chef/knife/node_create")
-    loader.find_subcommands_via_rubygems.each { |rel_path, abs_path| expect(abs_path).to match(%r{chef/knife/.+}) }
+    loader.find_subcommands_via_rubygems.each_value { |abs_path| expect(abs_path).to match(%r{chef/knife/.+}) }
   end
 
   it "finds files from latest version of installed gems" do
@@ -65,7 +65,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
 
   it "finds files using a dirglob when rubygems is not available" do
     expect(loader.find_subcommands_via_dirglob).to include("chef/knife/node_create")
-    loader.find_subcommands_via_dirglob.each { |rel_path, abs_path| expect(abs_path).to match(%r{chef/knife/.+}) }
+    loader.find_subcommands_via_dirglob.each_value { |abs_path| expect(abs_path).to match(%r{chef/knife/.+}) }
   end
 
   it "finds user-specific subcommands in the user's ~/.chef directory" do
@@ -78,7 +78,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
     expect(loader.site_subcommands).to include(expected_command)
   end
 
-  # https://github.com/opscode/chef-dk/issues/227
+  # https://github.com/chef/chef-dk/issues/227
   #
   # `knife` in ChefDK isn't from a gem install, it's directly run from a clone
   # of the source, but there can be one or more versions of chef also installed

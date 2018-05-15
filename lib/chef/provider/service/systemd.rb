@@ -20,6 +20,7 @@
 require "chef/resource/service"
 require "chef/provider/service/simple"
 require "chef/mixin/which"
+require "shellwords"
 
 class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
@@ -41,7 +42,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     @status_check_success = true
 
     if new_resource.status_command
-      Chef::Log.debug("#{new_resource} you have specified a status command, running..")
+      logger.trace("#{new_resource} you have specified a status command, running..")
 
       unless shell_out(new_resource.status_command).error?
         current_resource.running(true)
@@ -76,12 +77,12 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def get_systemctl_options_args
     if new_resource.user
-      uid = node["etc"]["passwd"][new_resource.user]["uid"]
+      uid = Etc.getpwuid(new_resource.user).uid
       options = {
-        "environment" => {
+        :environment => {
           "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{uid}/bus",
         },
-        "user" => new_resource.user,
+        :user => new_resource.user,
       }
       args = "--user"
     else
@@ -89,31 +90,31 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       args = "--system"
     end
 
-    return options, args
+    [options, args]
   end
 
   def start_service
     if current_resource.running
-      Chef::Log.debug("#{new_resource} already running, not starting")
+      logger.trace("#{new_resource} already running, not starting")
     else
       if new_resource.start_command
         super
       else
         options, args = get_systemctl_options_args
-        shell_out_with_systems_locale!("#{systemctl_path} #{args} start #{new_resource.service_name}", options)
+        shell_out_with_systems_locale!("#{systemctl_path} #{args} start #{Shellwords.escape(new_resource.service_name)}", options)
       end
     end
   end
 
   def stop_service
     unless current_resource.running
-      Chef::Log.debug("#{new_resource} not running, not stopping")
+      logger.trace("#{new_resource} not running, not stopping")
     else
       if new_resource.stop_command
         super
       else
         options, args = get_systemctl_options_args
-        shell_out_with_systems_locale!("#{systemctl_path} #{args} stop #{new_resource.service_name}", options)
+        shell_out_with_systems_locale!("#{systemctl_path} #{args} stop #{Shellwords.escape(new_resource.service_name)}", options)
       end
     end
   end
@@ -123,7 +124,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       super
     else
       options, args = get_systemctl_options_args
-      shell_out_with_systems_locale!("#{systemctl_path} #{args} restart #{new_resource.service_name}", options)
+      shell_out_with_systems_locale!("#{systemctl_path} #{args} restart #{Shellwords.escape(new_resource.service_name)}", options)
     end
   end
 
@@ -133,7 +134,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     else
       if current_resource.running
         options, args = get_systemctl_options_args
-        shell_out_with_systems_locale!("#{systemctl_path} #{args} reload #{new_resource.service_name}", options)
+        shell_out_with_systems_locale!("#{systemctl_path} #{args} reload #{Shellwords.escape(new_resource.service_name)}", options)
       else
         start_service
       end
@@ -142,37 +143,37 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def enable_service
     options, args = get_systemctl_options_args
-    shell_out!("#{systemctl_path} #{args} enable #{new_resource.service_name}", options)
+    shell_out!("#{systemctl_path} #{args} enable #{Shellwords.escape(new_resource.service_name)}", options)
   end
 
   def disable_service
     options, args = get_systemctl_options_args
-    shell_out!("#{systemctl_path} #{args} disable #{new_resource.service_name}", options)
+    shell_out!("#{systemctl_path} #{args} disable #{Shellwords.escape(new_resource.service_name)}", options)
   end
 
   def mask_service
     options, args = get_systemctl_options_args
-    shell_out!("#{systemctl_path} #{args} mask #{new_resource.service_name}", options)
+    shell_out!("#{systemctl_path} #{args} mask #{Shellwords.escape(new_resource.service_name)}", options)
   end
 
   def unmask_service
     options, args = get_systemctl_options_args
-    shell_out!("#{systemctl_path} #{args} unmask #{new_resource.service_name}", options)
+    shell_out!("#{systemctl_path} #{args} unmask #{Shellwords.escape(new_resource.service_name)}", options)
   end
 
   def is_active?
     options, args = get_systemctl_options_args
-    shell_out("#{systemctl_path} #{args} is-active #{new_resource.service_name} --quiet", options).exitstatus == 0
+    shell_out("#{systemctl_path} #{args} is-active #{Shellwords.escape(new_resource.service_name)} --quiet", options).exitstatus == 0
   end
 
   def is_enabled?
     options, args = get_systemctl_options_args
-    shell_out("#{systemctl_path} #{args} is-enabled #{new_resource.service_name} --quiet", options).exitstatus == 0
+    shell_out("#{systemctl_path} #{args} is-enabled #{Shellwords.escape(new_resource.service_name)} --quiet", options).exitstatus == 0
   end
 
   def is_masked?
     options, args = get_systemctl_options_args
-    s = shell_out("#{systemctl_path} #{args} is-enabled #{new_resource.service_name}", options)
+    s = shell_out("#{systemctl_path} #{args} is-enabled #{Shellwords.escape(new_resource.service_name)}", options)
     s.exitstatus != 0 && s.stdout.include?("masked")
   end
 

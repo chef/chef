@@ -19,6 +19,7 @@
 class Chef
   class Provider
     class SnakeOil < Chef::Provider
+      provides :cat
 
       def load_current_resource
         true

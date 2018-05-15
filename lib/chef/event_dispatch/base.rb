@@ -36,11 +36,11 @@ class Chef
       end
 
       # Called at the end a successful Chef run.
-      def run_completed(node)
+      def run_completed(node, run_status)
       end
 
       # Called at the end of a failed Chef run.
-      def run_failed(exception)
+      def run_failed(exception, run_status)
       end
 
       # Called right after ohai runs.
@@ -195,6 +195,22 @@ class Chef
       def lwrp_load_complete
       end
 
+      # Called when an ohai plugin file loading starts
+      def ohai_plugin_load_start(file_count)
+      end
+
+      # Called when an ohai plugin file has been loaded
+      def ohai_plugin_file_loaded(path)
+      end
+
+      # Called when an ohai plugin file has an error on load.
+      def ohai_plugin_file_load_failed(path, exception)
+      end
+
+      # Called when an ohai plugin file loading has finished
+      def ohai_plugin_load_complete
+      end
+
       # Called before attribute files are loaded
       def attribute_load_start(attribute_file_count)
       end
@@ -232,11 +248,11 @@ class Chef
       end
 
       # Called after the recipe has been loaded
-      def recipe_file_loaded(path)
+      def recipe_file_loaded(path, recipe)
       end
 
       # Called after a recipe file fails to load
-      def recipe_file_load_failed(path, exception)
+      def recipe_file_load_failed(path, exception, recipe)
       end
 
       # Called when a recipe cannot be resolved
@@ -421,6 +437,9 @@ class Chef
       def msg(message)
       end
 
+      # Called when an attribute is changed by simple assignment
+      def attribute_changed(precedence, keys, value)
+      end
     end
   end
 end

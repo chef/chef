@@ -1,7 +1,7 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,26 +25,26 @@ class Chef
   class Provider
     class DscScript < Chef::Provider
 
-      provides :dsc_script, os: "windows"
+      provides :dsc_script
 
       def initialize(dsc_resource, run_context)
         super(dsc_resource, run_context)
         @dsc_resource = dsc_resource
         @resource_converged = false
         @operations = {
-          :set => Proc.new { |config_manager, document, shellout_flags|
+          :set => Proc.new do |config_manager, document, shellout_flags|
             config_manager.set_configuration(document, shellout_flags)
-          },
-          :test => Proc.new { |config_manager, document, shellout_flags|
+          end,
+          :test => Proc.new do |config_manager, document, shellout_flags|
             config_manager.test_configuration(document, shellout_flags)
-          } }
+          end }
       end
 
       def action_run
         if ! @resource_converged
           converge_by(generate_description) do
             run_configuration(:set)
-            Chef::Log.info("DSC resource configuration completed successfully")
+            logger.info("DSC resource configuration completed successfully")
           end
         end
       end
@@ -56,10 +56,6 @@ class Chef
             !resource.changes_state?
           end
         end
-      end
-
-      def whyrun_supported?
-        true
       end
 
       def define_resource_requirements
@@ -99,7 +95,7 @@ class Chef
           configuration_document = generate_configuration_document(config_directory, configuration_flags)
           @operations[operation].call(config_manager, configuration_document, shellout_flags)
         rescue Exception => e
-          Chef::Log.error("DSC operation failed: #{e.message}")
+          logger.error("DSC operation failed: #{e.message}")
           raise e
         ensure
           ::FileUtils.rm_rf(config_directory)
@@ -128,7 +124,7 @@ class Chef
           generator.configuration_document_from_script_path(@dsc_resource.command, configuration_name, configuration_flags, shellout_flags)
         else
           # If code is also not provided, we mimic what the other script resources do (execute nothing)
-          Chef::Log.warn("Neither code or command were provided for dsc_resource[#{@dsc_resource.name}].") unless @dsc_resource.code
+          logger.warn("Neither code or command were provided for dsc_resource[#{@dsc_resource.name}].") unless @dsc_resource.code
           generator.configuration_document_from_script_code(@dsc_resource.code || "", configuration_flags, @dsc_resource.imports, shellout_flags)
         end
       end
@@ -165,7 +161,11 @@ class Chef
             if resource.changes_state?
               # We ignore the last log message because it only contains the time it took, which looks weird
               cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, "").strip }
-              "converge DSC resource #{resource.name} by #{cleaned_messages.find_all { |c| c != '' }.join("\n")}"
+              unless cleaned_messages.empty?
+                "converge DSC resource #{resource.name} by #{cleaned_messages.find_all { |c| c != '' }.join("\n")}"
+              else
+                "converge DSC resource #{resource.name}"
+              end
             else
               # This is needed because a dsc script can have resources that are both converged and not
               "converge DSC resource #{resource.name} by doing nothing because it is already converged"

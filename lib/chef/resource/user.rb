@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,9 @@ require "chef/resource"
 
 class Chef
   class Resource
+    # Use the user resource to add users, update existing users, remove users, and to lock/unlock user passwords.
     class User < Chef::Resource
+      resource_name :user_resource_abstract_base_class # this prevents magickal class name DSL wiring
       identity_attr :username
 
       state_attrs :uid, :gid, :home
@@ -41,10 +43,6 @@ class Chef
         @manage_home = false
         @force = false
         @non_unique = false
-        @supports = {
-          :manage_home => false,
-          :non_unique => false,
-        }
         @iterations = 27855
         @salt = nil
       end
@@ -65,19 +63,21 @@ class Chef
         )
       end
 
-      def uid(arg = nil)
+      def uid(arg = Chef::NOT_PASSED)
         set_or_return(
           :uid,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [ String, Integer, NilClass ],
+          :coerce => proc { |x| x || nil }
         )
       end
 
-      def gid(arg = nil)
+      def gid(arg = Chef::NOT_PASSED)
         set_or_return(
           :gid,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [ String, Integer, NilClass ],
+          :coerce => proc { |x| x || nil }
         )
       end
 
@@ -154,7 +154,6 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
-
     end
   end
 end

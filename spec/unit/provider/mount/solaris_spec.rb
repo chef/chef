@@ -41,7 +41,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
   let(:options) { nil }
 
-  let(:new_resource) {
+  let(:new_resource) do
     new_resource = Chef::Resource::Mount.new(mountpoint)
     new_resource.device      device
     new_resource.device_type device_type
@@ -50,13 +50,13 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     new_resource.options     options
     new_resource.supports :remount => false
     new_resource
-  }
+  end
 
-  let(:provider) {
+  let(:provider) do
     Chef::Provider::Mount::Solaris.new(new_resource, run_context)
-  }
+  end
 
-  let(:vfstab_file_contents) {
+  let(:vfstab_file_contents) do
     <<-EOF.gsub /^\s*/, ""
     #device         device          mount           FS      fsck    mount   mount
     #to mount       to fsck         point           type    pass    at boot options
@@ -74,21 +74,21 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     # ufs
     /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
     EOF
-  }
+  end
 
-  let(:vfstab_file) {
+  let(:vfstab_file) do
     t = Tempfile.new("rspec-vfstab")
     t.write(vfstab_file_contents)
     t.close
     t
-  }
+  end
 
-  let(:mount_output) {
+  let(:mount_output) do
     <<-EOF.gsub /^\s*/, ""
     /dev/dsk/c0t0d0s0 on / type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200000 on Tue Jul 31 22:34:46 2012
     /dev/dsk/c0t2d0s7 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
     EOF
-  }
+  end
 
   before do
     stub_const("Chef::Provider::Mount::Solaris::VFSTAB", vfstab_file.path )
@@ -214,7 +214,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
   describe "#load_current_resource" do
     context "when loading a normal UFS filesystem with noauto, don't mount at boot" do
 
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         #device         device          mount           FS      fsck    mount   mount
         #to mount       to fsck         point           type    pass    at boot options
@@ -232,7 +232,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         # ufs
         /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       no     -
         EOF
-      }
+      end
 
       before do
         provider.load_current_resource
@@ -244,16 +244,16 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the device is an smbfs mount" do
-      let(:mount_output) {
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ""
         //solarsystem/tmp on /mnt type smbfs read/write/setuid/devices/dev=5080000 on Tue Mar 29 11:40:18 2011
         EOF
-      }
-      let(:vfstab_file_contents) {
+      end
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         //WORKGROUP;username:password@host/share    -   /mountpoint smbfs   -   no  fileperms=0777,dirperms=0777
         EOF
-      }
+      end
 
       let(:fsck_device) { "-" }
 
@@ -263,17 +263,17 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the device is an NFS mount" do
-      let(:mount_output) {
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ""
         cartman:/share2 on /cartman type nfs rsize=32768,wsize=32768,NFSv4,dev=4000004 on Tue Mar 29 11:40:18 2011
         EOF
-      }
+      end
 
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         cartman:/share2         -                       /cartman        nfs     -       yes     rw,soft
         EOF
-      }
+      end
 
       let(:fsck_device) { "-" }
 
@@ -334,17 +334,17 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       let(:target) { "/dev/mapper/target" }
 
-      let(:mount_output) {
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ""
         #{target} on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         EOF
-      }
+      end
 
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         #{target}       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
       before do
         expect(File).to receive(:symlink?).with(device).at_least(:once).and_return(true)
@@ -371,17 +371,17 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       let(:absolute_target) { File.expand_path(target, File.dirname(device)) }
 
-      let(:mount_output) {
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ""
         #{absolute_target} on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         EOF
-      }
+      end
 
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         #{absolute_target}       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
       before do
         expect(File).to receive(:symlink?).with(device).at_least(:once).and_return(true)
@@ -404,12 +404,12 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the matching mount point is last in the mounts list" do
-      let(:mount_output) {
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ""
         /dev/dsk/c0t0d0s0 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200000 on Tue Jul 31 22:34:46 2012
         /dev/dsk/c0t2d0s7 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         EOF
-      }
+      end
       it "should set mounted true" do
         provider.load_current_resource()
         expect(provider.current_resource.mounted).to be_truthy
@@ -417,12 +417,12 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the matching mount point is not last in the mounts list" do
-      let(:mount_output) {
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ""
         /dev/dsk/c0t2d0s7 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         /dev/dsk/c0t0d0s0 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200000 on Tue Jul 31 22:34:46 2012
         EOF
-      }
+      end
       it "should set mounted false" do
         provider.load_current_resource()
         expect(provider.current_resource.mounted).to be_falsey
@@ -430,11 +430,11 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the matching mount point is not in the mounts list (mountpoint wrong)" do
-      let(:mount_output) {
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ""
         /dev/dsk/c0t2d0s7 on /mnt/foob type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         EOF
-      }
+      end
       it "should set mounted false" do
         provider.load_current_resource()
         expect(provider.current_resource.mounted).to be_falsey
@@ -442,11 +442,11 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the matching mount point is not in the mounts list (raw device wrong)" do
-      let(:mount_output) {
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ""
         /dev/dsk/c0t2d0s72 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         EOF
-      }
+      end
       it "should set mounted false" do
         provider.load_current_resource()
         expect(provider.current_resource.mounted).to be_falsey
@@ -454,12 +454,12 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the mount point is last in fstab" do
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
       it "should set enabled to true" do
         provider.load_current_resource
@@ -468,12 +468,12 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the mount point is not last in fstab and is a substring of another mount" do
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s7      /mnt/foo/bar            ufs     2       yes     -
         EOF
-      }
+      end
 
       it "should set enabled to true" do
         provider.load_current_resource
@@ -482,12 +482,12 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the mount point is not last in fstab" do
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s72      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
       it "should set enabled to false" do
         provider.load_current_resource
@@ -496,11 +496,11 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the mount point is not in fstab, but the mountpoint is a substring of one that is" do
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foob            ufs     2       yes     -
         EOF
-      }
+      end
 
       it "should set enabled to false" do
         provider.load_current_resource
@@ -509,11 +509,11 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the mount point is not in fstab, but the device is a substring of one that is" do
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
       it "should set enabled to false" do
         provider.load_current_resource
@@ -522,11 +522,11 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     end
 
     context "when the mountpoint line is commented out" do
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ""
         #/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
       it "should set enabled to false" do
         provider.load_current_resource
@@ -538,7 +538,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
   context "after the mount's state has been discovered" do
     describe "mount_fs" do
       it "should mount the filesystem" do
-        expect(provider).to receive(:shell_out!).with("mount -F #{fstype} -o defaults #{device} #{mountpoint}")
+        expect(provider).to receive(:shell_out!).with("mount -F #{fstype} #{device} #{mountpoint}")
         provider.mount_fs()
       end
 
@@ -600,7 +600,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       context "in the typical case" do
         let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
 
-        let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\tdefaults\n" }
+        let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\t-\n" }
 
         let(:vfstab_file_contents) { [other_mount].join("\n") }
 

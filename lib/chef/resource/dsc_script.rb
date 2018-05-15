@@ -24,7 +24,17 @@ class Chef
     class DscScript < Chef::Resource
       include Chef::DSL::Powershell
 
-      provides :dsc_script, os: "windows"
+      resource_name :dsc_script
+      provides :dsc_script
+
+      description "Many DSC resources are comparable to built-in Chef resources. For"\
+                  " example, both DSC and Chef have file, package, and service resources."\
+                  " The dsc_script resource is most useful for those DSC resources that"\
+                  " do not have a direct comparison to a resource in Chef, such as the"\
+                  " Archive resource, a custom DSC resource, an existing DSC script"\
+                  " that performs an important task, and so on. Use the dsc_script resource"\
+                  " to embed the code that defines a DSC configuration directly within a"\
+                  " Chef recipe."
 
       default_action :run
 
@@ -104,37 +114,10 @@ class Chef
         end
       end
 
-      def flags(arg = nil)
-        set_or_return(
-          :flags,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
-
-      def cwd(arg = nil)
-        set_or_return(
-          :cwd,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def environment(arg = nil)
-        set_or_return(
-          :environment,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
-
-      def timeout(arg = nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => [ Integer ]
-        )
-      end
+      property :flags, Hash
+      property :cwd, String
+      property :environment, Hash
+      property :timeout, Integer
     end
   end
 end

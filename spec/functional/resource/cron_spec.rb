@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -120,7 +120,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
       return if %w{aix solaris}.include?(ohai[:platform])
       # Test if the attribute exists on newly created cron
       cron_should_exists(cron_name, "")
-      expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{attribute.upcase}=#{value}\"").exitstatus).to eq(0)
+      expect(shell_out("crontab -l -u #{new_resource.user} | grep '#{attribute.upcase}=\"#{value}\"'").exitstatus).to eq(0)
     end
 
     after do
@@ -146,6 +146,13 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
       new_resource.home "/home/opscode"
       create_and_validate_with_attribute(new_resource, "home", "/home/opscode")
     end
+
+    %i{ home mailto path shell }.each do |attr|
+      it "supports an empty string for #{attr} attribute" do
+        new_resource.send(attr, "")
+        create_and_validate_with_attribute(new_resource, attr.to_s, "")
+      end
+    end
   end
 
   describe "negative tests for create action" do
@@ -154,7 +161,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
 
     def cron_create_should_raise_exception
-      expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron, /Error updating state of #{new_resource.name}, exit: 1/)
+      expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron)
       cron_should_not_exists(new_resource.name)
     end
 

@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Nuo Yan (<yan.nuo@gmail.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -146,12 +146,12 @@ class Chef
           end
 
           if upload_failures == 0
-            ui.info "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""}."
+            ui.info "Uploaded #{upload_ok} cookbook#{upload_ok == 1 ? "" : "s"}."
           elsif upload_failures > 0 && upload_ok > 0
-            ui.warn "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""} ok but #{upload_failures} " +
-              "cookbook#{upload_failures > 1 ? "s" : ""} upload failed."
+            ui.warn "Uploaded #{upload_ok} cookbook#{upload_ok == 1 ? "" : "s"} ok but #{upload_failures} " +
+              "cookbook#{upload_failures == 1 ? "" : "s"} upload failed."
           elsif upload_failures > 0 && upload_ok == 0
-            ui.error "Failed to upload #{upload_failures} cookbook#{upload_failures > 1 ? "s" : ""}."
+            ui.error "Failed to upload #{upload_failures} cookbook#{upload_failures == 1 ? "" : "s"}."
             exit 1
           end
         end
@@ -172,7 +172,7 @@ class Chef
                 if ! upload_set.has_key?(cookbook_name)
                   upload_set[cookbook_name] = cookbook_repo[cookbook_name]
                   if config[:depends]
-                    upload_set[cookbook_name].metadata.dependencies.each { |dep, ver| @name_args << dep }
+                    upload_set[cookbook_name].metadata.dependencies.each_key { |dep| @name_args << dep }
                   end
                 end
               rescue Exceptions::CookbookNotFoundInRepo => e

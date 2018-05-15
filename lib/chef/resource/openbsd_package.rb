@@ -30,6 +30,9 @@ class Chef
 
       resource_name :openbsd_package
       provides :package, os: "openbsd"
+
+      description "Use the openbsd_package resource to manage packages for the OpenBSD platform."
+      introduced "12.1"
     end
   end
 end

@@ -30,6 +30,8 @@ describe Chef::Knife::Core::BootstrapContext do
   let(:run_list) { Chef::RunList.new("recipe[tmux]", "role[base]") }
   let(:chef_config) do
     {
+      :config_log_level => "info",
+      :config_log_location => "/tmp/log",
       :validation_key => File.join(CHEF_SPEC_DATA, "ssl", "private_key.pem"),
       :chef_server_url => "http://chef.example.com:4444",
       :validation_client_name => "chef-validator-testing",
@@ -68,16 +70,13 @@ describe Chef::Knife::Core::BootstrapContext do
 
   it "generates the config file data" do
     expected = <<-EXPECTED
-log_location     STDOUT
 chef_server_url  "http://chef.example.com:4444"
 validation_client_name "chef-validator-testing"
+log_level   :info
+log_location   "/tmp/log"
 # Using default node name (fqdn)
 EXPECTED
     expect(bootstrap_context.config_content).to eq expected
-  end
-
-  it "does not set a default log_level" do
-    expect(bootstrap_context.config_content).not_to match(/log_level/)
   end
 
   describe "alternate chef-client path" do
@@ -214,6 +213,23 @@ EXPECTED
     end
   end
 
+  describe "fips mode" do
+    before do
+      Chef::Config[:fips] = true
+    end
+
+    it "adds the chef version check" do
+      expect(bootstrap_context.config_content).to include <<-CONFIG.gsub(/^ {8}/, "")
+        fips true
+        require "chef/version"
+        chef_version = ::Chef::VERSION.split(".")
+        unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 8)
+          raise "FIPS Mode requested but not supported by this client"
+        end
+      CONFIG
+    end
+  end
+
   describe "verify_api_cert" do
     it "isn't set in the config_content by default" do
       expect(bootstrap_context.config_content).not_to include("verify_api_cert")
@@ -254,4 +270,55 @@ EXPECTED
     end
   end
 
+  describe "#config_log_location" do
+    context "when config_log_location is nil" do
+      let(:chef_config) { { :config_log_location => nil } }
+      it "sets the default config_log_location  in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq "STDOUT"
+      end
+    end
+
+    context "when config_log_location is empty" do
+      let(:chef_config) { { :config_log_location => "" } }
+      it "sets the default config_log_location  in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq "STDOUT"
+      end
+    end
+
+    context "when config_log_location is :win_evt" do
+      let(:chef_config) { { :config_log_location => :win_evt } }
+      it "raise error when config_log_location is :win_evt " do
+        expect { bootstrap_context.get_log_location }.to raise_error("The value :win_evt is not supported for config_log_location on Linux Platforms \n")
+      end
+    end
+
+    context "when config_log_location is :syslog" do
+      let(:chef_config) { { :config_log_location => :syslog } }
+      it "sets the config_log_location value as :syslog in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq ":syslog"
+      end
+    end
+
+    context "When config_log_location is STDOUT" do
+      let(:chef_config) { { :config_log_location => STDOUT } }
+      it "Sets the config_log_location value as STDOUT in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq "STDOUT"
+      end
+    end
+
+    context "when config_log_location is STDERR" do
+      let(:chef_config) { { :config_log_location => STDERR } }
+      it "sets the config_log_location value as STDERR  in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq "STDERR"
+      end
+    end
+
+    context "when config_log_location is a path" do
+      let(:chef_config) { { :config_log_location => "/tmp/ChefLogFile" } }
+      it "sets the config_log_location path in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq "\"/tmp/ChefLogFile\""
+      end
+    end
+
+  end
 end

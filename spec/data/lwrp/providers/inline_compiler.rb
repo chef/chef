@@ -1,6 +1,4 @@
 
-use_inline_resources
-
 action :test do
 
   ruby_block "interior-ruby-block-1" do

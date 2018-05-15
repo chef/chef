@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 require "chef/constants"
 require "chef/property"
 require "chef/delayed_evaluator"
+require "chef/exceptions"
 
 class Chef
   module Mixin
@@ -34,6 +35,8 @@ class Chef
       # map options are:
       #
       # @param opts [Hash<Symbol,Object>] Validation opts.
+      #   @option opts [String] :validation_message A custom message to return
+      #     should validation fail.
       #   @option opts [Object,Array] :is An object, or list of
       #     objects, that must match the value using Ruby's `===` operator
       #     (`opts[:is].any? { |v| v === value }`). (See #_pv_is.)
@@ -90,20 +93,24 @@ class Chef
         raise ArgumentError, "Options must be a hash" unless opts.kind_of?(Hash)
         raise ArgumentError, "Validation Map must be a hash" unless map.kind_of?(Hash)
 
+        @validation_message ||= {}
+
         map.each do |key, validation|
           unless key.kind_of?(Symbol) || key.kind_of?(String)
             raise ArgumentError, "Validation map keys must be symbols or strings!"
           end
+
           case validation
           when true
             _pv_required(opts, key)
           when false
             true
           when Hash
+            @validation_message[key] = validation.delete(:validation_message) if validation.has_key?(:validation_message)
             validation.each do |check, carg|
               check_method = "_pv_#{check}"
-              if self.respond_to?(check_method, true)
-                self.send(check_method, opts, key, carg)
+              if respond_to?(check_method, true)
+                send(check_method, opts, key, carg)
               else
                 raise ArgumentError, "Validation map has unknown check: #{check}"
               end
@@ -124,8 +131,8 @@ class Chef
 
       private
 
-      def explicitly_allows_nil?(key, validation)
-        validation.has_key?(:is) && _pv_is({ key => nil }, key, validation[:is], raise_error: false)
+      def _validation_message(key, default)
+        @validation_message.has_key?(key) ? @validation_message[key] : default
       end
 
       # Return the value of a parameter, or nil if it doesn't exist.
@@ -144,7 +151,7 @@ class Chef
         if is_required
           return true if opts.has_key?(key.to_s) && (explicitly_allows_nil || !opts[key.to_s].nil?)
           return true if opts.has_key?(key.to_sym) && (explicitly_allows_nil || !opts[key.to_sym].nil?)
-          raise Exceptions::ValidationFailed, "Required argument #{key.inspect} is missing!"
+          raise Exceptions::ValidationFailed, _validation_message(key, "Required argument #{key.inspect} is missing!")
         end
         true
       end
@@ -167,7 +174,7 @@ class Chef
           to_be.each do |tb|
             return true if value == tb
           end
-          raise Exceptions::ValidationFailed, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}.")
         end
       end
 
@@ -186,7 +193,7 @@ class Chef
           to_be.each do |tb|
             return true if value.kind_of?(tb)
           end
-          raise Exceptions::ValidationFailed, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
+          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}.")
         end
       end
 
@@ -201,7 +208,7 @@ class Chef
         unless value.nil?
           Array(method_name_list).each do |method_name|
             unless value.respond_to?(method_name)
-              raise Exceptions::ValidationFailed, "Option #{key} must have a #{method_name} method!"
+              raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must have a #{method_name} method!")
             end
           end
         end
@@ -233,7 +240,7 @@ class Chef
 
             if value.respond_to?(predicate_method)
               if value.send(predicate_method)
-                raise Exceptions::ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
+                raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} cannot be #{predicate_method_base_name}")
               end
             end
           end
@@ -293,7 +300,7 @@ class Chef
           Array(regex).flatten.each do |r|
             return true if r.match(value.to_s)
           end
-          raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}"
+          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}")
         end
       end
 
@@ -315,7 +322,7 @@ class Chef
         if !value.nil?
           callbacks.each do |message, zeproc|
             unless zeproc.call(value)
-              raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} #{message}!"
+              raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key}'s value #{value} #{message}!")
             end
           end
         end
@@ -332,8 +339,8 @@ class Chef
       def _pv_name_property(opts, key, is_name_property = true)
         if is_name_property
           if opts[key].nil?
-            raise CannotValidateStaticallyError, "name_property cannot be evaluated without a resource." if self == Chef::Mixin::ParamsValidate
-            opts[key] = self.instance_variable_get(:"@name")
+            raise Exceptions::CannotValidateStaticallyError, "name_property cannot be evaluated without a resource." if self == Chef::Mixin::ParamsValidate
+            opts[key] = instance_variable_get(:"@name")
           end
         end
       end
@@ -396,7 +403,7 @@ class Chef
       #   x nil      #=> invalid
       #   ```
       #
-      def _pv_is(opts, key, to_be, raise_error: true)
+      def _pv_is(opts, key, to_be)
         return true if !opts.has_key?(key.to_s) && !opts.has_key?(key.to_sym)
         value = _pv_opts_lookup(opts, key)
         to_be = [ to_be ].flatten(1)
@@ -404,7 +411,7 @@ class Chef
         passed = to_be.any? do |tb|
           case tb
           when Proc
-            raise CannotValidateStaticallyError, "is: proc { } must be evaluated once for each resource" if self == Chef::Mixin::ParamsValidate
+            raise Exceptions::CannotValidateStaticallyError, "is: proc { } must be evaluated once for each resource" if self == Chef::Mixin::ParamsValidate
             instance_exec(value, &tb)
           when Property
             begin
@@ -427,7 +434,7 @@ class Chef
           unless errors.empty?
             message << " Errors:\n#{errors.map { |m| "- #{m}" }.join("\n")}"
           end
-          raise Exceptions::ValidationFailed, message
+          raise Exceptions::ValidationFailed, _validation_message(key, message)
         end
       end
 
@@ -448,10 +455,10 @@ class Chef
       #
       def _pv_coerce(opts, key, coercer)
         if opts.has_key?(key.to_s)
-          raise CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
+          raise Exceptions::CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
           opts[key.to_s] = instance_exec(opts[key], &coercer)
         elsif opts.has_key?(key.to_sym)
-          raise CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
+          raise Exceptions::CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
           opts[key.to_sym] = instance_exec(opts[key], &coercer)
         end
       end

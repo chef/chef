@@ -110,7 +110,7 @@ class Chef
       end
 
       def remove_uninteresting_ruby_files(file_list)
-        file_list.reject { |f| f =~ %r{#{cookbook_path}/(files|templates)/} }
+        file_list.reject { |f| f =~ %r{#{Regexp.quote(cookbook_path)}/(files|templates)/} }
       end
 
       def ruby_files
@@ -124,7 +124,7 @@ class Chef
       def untested_ruby_files
         ruby_files.reject do |file|
           if validated?(file)
-            Chef::Log.debug("Ruby file #{file} is unchanged, skipping syntax check")
+            Chef::Log.trace("Ruby file #{file} is unchanged, skipping syntax check")
             true
           else
             false
@@ -139,7 +139,7 @@ class Chef
       def untested_template_files
         template_files.reject do |file|
           if validated?(file)
-            Chef::Log.debug("Template #{file} is unchanged, skipping syntax check")
+            Chef::Log.trace("Template #{file} is unchanged, skipping syntax check")
             true
           else
             false
@@ -170,12 +170,12 @@ class Chef
       end
 
       def validate_template(erb_file)
-        Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
+        Chef::Log.trace("Testing template #{erb_file} for syntax errors...")
         validate_erb_file_inline(erb_file)
       end
 
       def validate_ruby_file(ruby_file)
-        Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
+        Chef::Log.trace("Testing #{ruby_file} for syntax errors...")
         validate_ruby_file_inline(ruby_file)
       end
 

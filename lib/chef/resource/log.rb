@@ -18,59 +18,30 @@
 #
 
 require "chef/resource"
-require "chef/provider/log"
 
 class Chef
   class Resource
+    # @example logging at default info level
+    #   log "your string to log"
+    #
+    # @example logging at specified debug level
+    #   log "a debug string" do
+    #     level :debug
+    #   end
     class Log < Chef::Resource
+      resource_name :log
 
-      identity_attr :message
+      description "Use the log resource to create log entries. The log resource behaves"\
+                  " like any other resource: built into the resource collection during the"\
+                  " compile phase, and then run during the execution phase. (To create a log"\
+                  " entry that is not built into the resource collection, use Chef::Log instead"\
+                  " of the log resource.)"
 
+      property :message, String, name_property: true, identity: true
+      property :level, Symbol, equal_to: [ :debug, :info, :warn, :error, :fatal ], default: :info
+
+      allowed_actions :write
       default_action :write
-
-      # Sends a string from a recipe to a log provider
-      #
-      # log "some string to log" do
-      #   level :info  # (default)  also supports :warn, :debug, and :error
-      # end
-      #
-      # === Example
-      # log "your string to log"
-      #
-      # or
-      #
-      # log "a debug string" { level :debug }
-      #
-
-      # Initialize log resource with a name as the string to log
-      #
-      # === Parameters
-      # name<String>:: Message to log
-      # collection<Array>:: Collection of included recipes
-      # node<Chef::Node>:: Node where resource will be used
-      def initialize(name, run_context = nil)
-        super
-        @level = :info
-        @message = name
-      end
-
-      def message(arg = nil)
-        set_or_return(
-          :message,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      # <Symbol> Log level, one of :debug, :info, :warn, :error or :fatal
-      def level(arg = nil)
-        set_or_return(
-          :level,
-          arg,
-          :equal_to => [ :debug, :info, :warn, :error, :fatal ]
-        )
-      end
-
     end
   end
 end

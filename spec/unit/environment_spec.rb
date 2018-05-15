@@ -3,7 +3,7 @@
 # Author:: Seth Falcon (<seth@ospcode.com>)
 # Author:: John Keiser (<jkeiser@ospcode.com>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -250,7 +250,7 @@ describe Chef::Environment do
     end
 
     it "should validate the version string of each cookbook" do
-      @cookbook_versions.each do |cookbook, version|
+      @cookbook_versions.each_value do |version|
         expect(Chef::Environment).to receive(:validate_cookbook_version).with(version).and_return true
       end
       Chef::Environment.validate_cookbook_versions(@cookbook_versions)
@@ -288,17 +288,17 @@ describe Chef::Environment do
 
     describe "in solo mode" do
       before do
-        Chef::Config[:solo] = true
+        Chef::Config[:solo_legacy_mode] = true
       end
 
       after do
-        Chef::Config[:solo] = false
+        Chef::Config[:solo_legacy_mode] = false
       end
 
-      it "should raise and exception" do
-        expect {
+      it "should raise an exception" do
+        expect do
           Chef::Environment.validate_cookbook_version("= 1.2.3.4")
-        }.to raise_error Chef::Exceptions::IllegalVersionConstraint,
+        end.to raise_error Chef::Exceptions::IllegalVersionConstraint,
                              "Environment cookbook version constraints not allowed in chef-solo"
       end
     end
@@ -392,12 +392,12 @@ describe Chef::Environment do
   describe "when loading" do
     describe "in solo mode" do
       before do
-        Chef::Config[:solo] = true
+        Chef::Config[:solo_legacy_mode] = true
         Chef::Config[:environment_path] = "/var/chef/environments"
       end
 
       after do
-        Chef::Config[:solo] = false
+        Chef::Config[:solo_legacy_mode] = false
       end
 
       it "should get the environment from the environment_path" do
@@ -450,9 +450,9 @@ describe Chef::Environment do
       it "should raise an error if the configured environment_path is invalid" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(false)
 
-        expect {
+        expect do
           Chef::Environment.load("foo")
-        }.to raise_error Chef::Exceptions::InvalidEnvironmentPath, "Environment path '/var/chef/environments' is invalid"
+        end.to raise_error Chef::Exceptions::InvalidEnvironmentPath, "Environment path '/var/chef/environments' is invalid"
       end
 
       it "should raise an error if the file does not exist" do
@@ -460,9 +460,9 @@ describe Chef::Environment do
         expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(false)
         expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(false)
 
-        expect {
+        expect do
           Chef::Environment.load("foo")
-        }.to raise_error Chef::Exceptions::EnvironmentNotFound, "Environment 'foo' could not be loaded from disk"
+        end.to raise_error Chef::Exceptions::EnvironmentNotFound, "Environment 'foo' could not be loaded from disk"
       end
     end
   end

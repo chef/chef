@@ -19,8 +19,7 @@
 class Chef
   class Resource
     class OneTwoThreeFour < Chef::Resource
-
-      attr_reader :i_can_count
+      provides :one_two_three_four
 
       def i_can_count(tf)
         @i_can_count = tf

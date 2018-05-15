@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ SOURCE = File.join(File.dirname(__FILE__), "..", "MAINTAINERS.toml")
 TARGET = File.join(File.dirname(__FILE__), "..", "MAINTAINERS.md")
 
 # The list of repositories that teams should own
-REPOSITORIES = ["chef/chef", "chef/chef-census", "chef/chef-repo",
+REPOSITORIES = ["chef/chef", "chef/chef-dk", "chef/chef-census", "chef/chef-repo",
                 "chef/client-docs", "chef/ffi-yajl", "chef/libyajl2-gem",
                 "chef/mixlib-authentication", "chef/mixlib-cli",
                 "chef/mixlib-config", "chef/mixlib-install", "chef/mixlib-log",
@@ -46,9 +46,9 @@ begin
       out << format_person(source["Org"]["Lead"]["person"]) + "\n\n"
 
       out << format_components(source["Org"]["Components"])
-      File.open(TARGET, "w") { |fn|
+      File.open(TARGET, "w") do |fn|
         fn.write out
-      }
+      end
     end
 
     desc "Synchronize GitHub teams"
@@ -131,7 +131,7 @@ begin
     else
       %w{maintainers lieutenant title}.each { |k| cmp.delete(k) }
     end
-    cmp.each { |_k, v| prepare_teams(v) }
+    cmp.each_value { |v| prepare_teams(v) }
   end
 
   def update_team(team, additions, deletions)
@@ -139,8 +139,8 @@ begin
     update_team_privacy(team)
     add_team_members(team, additions)
     remove_team_members(team, deletions)
-  rescue
-    puts "failed for #{team}"
+  rescue => e
+    puts "failed for #{team}: #{e.message}"
   end
 
   def update_team_privacy(team)
@@ -189,7 +189,7 @@ begin
     end
     out << format_maintainers(cmp.delete("maintainers")) + "\n" if cmp.has_key?("maintainers")
     cmp.delete("paths")
-    cmp.each { |k, v| out << format_components(v) }
+    cmp.each_value { |v| out << format_components(v) }
     out
   end
 

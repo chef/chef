@@ -221,7 +221,7 @@ RUNNING_PS
       # end
 
       it "should call the start command if one is specified" do
-        allow(@new_resource).to receive(:start_command).and_return("/etc/rc.d/chef startyousillysally")
+        @new_resource.start_command("/etc/rc.d/chef startyousillysally")
         expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/chef startyousillysally")
         @provider.start_service()
       end
@@ -247,7 +247,7 @@ RUNNING_PS
       # end
 
       it "should call the stop command if one is specified" do
-        allow(@new_resource).to receive(:stop_command).and_return("/etc/rc.d/chef itoldyoutostop")
+        @new_resource.stop_command("/etc/rc.d/chef itoldyoutostop")
         expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/chef itoldyoutostop")
         @provider.stop_service()
       end
@@ -274,13 +274,13 @@ RUNNING_PS
       # end
 
       it "should call 'restart' on the service_name if the resource supports it" do
-        allow(@new_resource).to receive(:supports).and_return({ :restart => true })
+        @new_resource.supports({ :restart => true })
         expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} restart")
         @provider.restart_service()
       end
 
       it "should call the restart_command if one has been specified" do
-        allow(@new_resource).to receive(:restart_command).and_return("/etc/rc.d/chef restartinafire")
+        @new_resource.restart_command("/etc/rc.d/chef restartinafire")
         expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} restartinafire")
         @provider.restart_service()
       end
@@ -309,13 +309,13 @@ RUNNING_PS
       # end
 
       it "should call 'reload' on the service if it supports it" do
-        allow(@new_resource).to receive(:supports).and_return({ :reload => true })
+        @new_resource.supports({ :reload => true })
         expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} reload")
         @provider.reload_service()
       end
 
       it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
-        allow(@new_resource).to receive(:reload_command).and_return("/etc/rc.d/chef lollerpants")
+        @new_resource.reload_command("/etc/rc.d/chef lollerpants")
         expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} lollerpants")
         @provider.reload_service()
       end

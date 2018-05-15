@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
@@ -78,7 +78,7 @@ class Chef
     # @api private
     def load_cookbooks_without_shadow_warning
       preload_cookbooks
-      @loaders_by_name.each do |cookbook_name, _loaders|
+      @loaders_by_name.each_key do |cookbook_name|
         load_cookbook(cookbook_name)
       end
       @cookbooks_by_name
@@ -137,9 +137,17 @@ class Chef
     alias :key? :has_key?
 
     def each
-      @cookbooks_by_name.keys.sort { |a, b| a.to_s <=> b.to_s }.each do |cname|
+      @cookbooks_by_name.keys.sort_by(&:to_s).each do |cname|
         yield(cname, @cookbooks_by_name[cname])
       end
+    end
+
+    def each_key(&block)
+      cookbook_names.each(&block)
+    end
+
+    def each_value(&block)
+      values.each(&block)
     end
 
     def cookbook_names

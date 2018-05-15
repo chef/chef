@@ -26,10 +26,6 @@ class Chef
       module Repository
         class ClientKeysSubDir < Repository::Directory
 
-          def can_have_child?(name, is_dir)
-            !is_dir && File.extname(name) == ".json"
-          end
-
           protected
 
           def make_child_entry(child_name)

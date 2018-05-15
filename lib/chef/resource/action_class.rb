@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,13 @@
 # limitations under the License.
 #
 
+require "chef/provider"
 require "chef/exceptions"
 require "chef/dsl/recipe"
 
 class Chef
   class Resource
-    module ActionClass
+    class ActionClass < Chef::Provider
       include Chef::DSL::Recipe
 
       def to_s
@@ -39,7 +40,7 @@ class Chef
           # We clear desired state in the copy, because it is supposed to be actual state.
           # We keep identity properties and non-desired-state, which are assumed to be
           # "control" values like `recurse: true`
-          current_resource.class.properties.each do |name, property|
+          current_resource.class.properties.each_value do |property|
             if property.desired_state? && !property.identity? && !property.name_property?
               property.reset(current_resource)
             end
@@ -63,27 +64,26 @@ class Chef
         @current_resource = current_resource
       end
 
-      def self.included(other)
-        other.extend(ClassMethods)
-        other.use_inline_resources
-        other.include_resource_dsl true
+      # XXX: remove in Chef-14
+      def self.include_resource_dsl?
+        true
       end
 
-      module ClassMethods
+      class << self
         #
         # The Chef::Resource class this ActionClass was declared against.
         #
         # @return [Class] The Chef::Resource class this ActionClass was declared against.
         #
         attr_accessor :resource_class
+      end
 
-        def to_s
-          "#{resource_class} action provider"
-        end
+      def self.to_s
+        "#{resource_class} action provider"
+      end
 
-        def inspect
-          to_s
-        end
+      def self.inspect
+        to_s
       end
     end
   end

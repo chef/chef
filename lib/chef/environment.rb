@@ -3,7 +3,7 @@
 # Author:: Seth Falcon (<seth@chef.io>)
 # Author:: John Keiser (<jkeiser@ospcode.com>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,8 +33,6 @@ class Chef
 
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::FromFile
-
-    attr_accessor :chef_server_rest
 
     COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/
 
@@ -171,7 +169,7 @@ class Chef
       unless params[:cookbook_version].nil?
         params[:cookbook_version].each do |index, cookbook_constraint_spec|
           unless cookbook_constraint_spec.nil? || cookbook_constraint_spec.size == 0
-            valid = valid && update_cookbook_constraint_from_param(index, cookbook_constraint_spec)
+            valid &&= update_cookbook_constraint_from_param(index, cookbook_constraint_spec)
           end
         end
       end
@@ -216,11 +214,6 @@ class Chef
       end
     end
 
-    def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Environment#from_hash")
-      from_hash(o)
-    end
-
     def self.from_hash(o)
       environment = new
       environment.name(o["name"])
@@ -244,10 +237,10 @@ class Chef
     end
 
     def self.load(name)
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         load_from_file(name)
       else
-        self.from_hash(chef_server_rest.get("environments/#{name}"))
+        from_hash(chef_server_rest.get("environments/#{name}"))
       end
     end
 
@@ -302,24 +295,22 @@ class Chef
 
     def self.validate_cookbook_versions(cv)
       return false unless cv.kind_of?(Hash)
-      cv.each do |cookbook, version|
+      cv.each_value do |version|
         return false unless Chef::Environment.validate_cookbook_version(version)
       end
       true
     end
 
     def self.validate_cookbook_version(version)
-      begin
-        if Chef::Config[:solo]
-          raise Chef::Exceptions::IllegalVersionConstraint,
-                "Environment cookbook version constraints not allowed in chef-solo"
-        else
-          Chef::VersionConstraint.new version
-          true
-        end
-      rescue ArgumentError
-        false
+      if Chef::Config[:solo_legacy_mode]
+        raise Chef::Exceptions::IllegalVersionConstraint,
+              "Environment cookbook version constraints not allowed in chef-solo"
+      else
+        Chef::VersionConstraint.new version
+        true
       end
+    rescue ArgumentError
+      false
     end
 
   end

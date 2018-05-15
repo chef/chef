@@ -3,7 +3,7 @@
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
 #
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,8 +92,8 @@ describe Chef::ResourceReporter do
 
   context "when chef fails" do
     before do
-      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" });
-      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" });
+      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" })
+      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" })
 
     end
 
@@ -259,10 +259,34 @@ describe Chef::ResourceReporter do
   describe "when generating a report for the server" do
 
     before do
-      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" });
-      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" });
+      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" })
+      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" })
 
       @resource_reporter.run_started(@run_status)
+    end
+
+    context "when the new_resource is sensitive" do
+      before do
+        @execute_resource = Chef::Resource::Execute.new("sensitive-resource")
+        @execute_resource.name("sensitive-resource")
+        @execute_resource.command('echo "password: SECRET"')
+        @execute_resource.sensitive(true)
+        @resource_reporter.resource_action_start(@execute_resource, :run)
+        @resource_reporter.resource_current_state_loaded(@execute_resource, :run, @current_resource)
+        @resource_reporter.resource_updated(@execute_resource, :run)
+        @resource_reporter.resource_completed(@execute_resource)
+        @run_status.stop_clock
+        @report = @resource_reporter.prepare_run_data
+        @first_update_report = @report["resources"].first
+      end
+
+      it "resource_name in prepared_run_data should be the same" do
+        expect(@first_update_report["name"]).to eq("sensitive-resource")
+      end
+
+      it "resource_command in prepared_run_data should be blank" do
+        expect(@first_update_report["after"]).to eq({ :command => "sensitive-resource" })
+      end
     end
 
     context "when the new_resource does not have a string for name and identity" do
@@ -375,11 +399,11 @@ describe Chef::ResourceReporter do
       end
 
       it "includes an updated resource's initial state" do
-        expect(@first_update_report["before"]).to eq(current_resource.state)
+        expect(@first_update_report["before"]).to eq(current_resource.state_for_resource_reporter)
       end
 
       it "includes an updated resource's final state" do
-        expect(@first_update_report["after"]).to eq(new_resource.state)
+        expect(@first_update_report["after"]).to eq(new_resource.state_for_resource_reporter)
       end
 
       it "includes the resource's name" do
@@ -516,11 +540,11 @@ describe Chef::ResourceReporter do
       end
 
       it "includes an updated resource's initial state" do
-        expect(@first_update_report["before"]).to eq(@current_resource.state)
+        expect(@first_update_report["before"]).to eq(@current_resource.state_for_resource_reporter)
       end
 
       it "includes an updated resource's final state" do
-        expect(@first_update_report["after"]).to eq(@new_resource.state)
+        expect(@first_update_report["after"]).to eq(@new_resource.state_for_resource_reporter)
       end
 
       it "includes the resource's name" do
@@ -611,7 +635,7 @@ describe Chef::ResourceReporter do
       end
 
       it "prints an error about the 404" do
-        expect(Chef::Log).to receive(:debug).with(/404/)
+        expect(Chef::Log).to receive(:trace).with(/404/)
         @resource_reporter.run_started(@run_status)
       end
 
@@ -664,9 +688,9 @@ describe Chef::ResourceReporter do
 
       it "fails the run and prints an message about the error" do
         expect(Chef::Log).to receive(:error).with(/500/)
-        expect {
+        expect do
           @resource_reporter.run_started(@run_status)
-        }.to raise_error(Net::HTTPServerException)
+        end.to raise_error(Net::HTTPServerException)
       end
     end
 
@@ -749,9 +773,9 @@ describe Chef::ResourceReporter do
       it "should raise if an unkwown error happens" do
         allow(@rest_client).to receive(:raw_request).and_raise(Exception.new)
 
-        expect {
+        expect do
           @resource_reporter.post_reporting_data
-        }.to raise_error(Exception)
+        end.to raise_error(Exception)
       end
     end
   end

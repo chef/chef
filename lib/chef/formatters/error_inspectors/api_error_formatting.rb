@@ -172,11 +172,10 @@ E
         # .../lib/ruby/1.9.1/net/http.rb:2709:in `read_body'
         # .../lib/ruby/1.9.1/net/http.rb:2736:in `body'
         # .../lib/chef/formatters/error_inspectors/api_error_formatting.rb:91:in `rescue in format_rest_error'
-        begin
-          exception.response.body
-        rescue Exception
-          "Cannot fetch the contents of the response."
-        end
+
+        exception.response.body
+      rescue Exception
+        "Cannot fetch the contents of the response."
       end
 
     end

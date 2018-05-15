@@ -17,6 +17,7 @@
 #
 
 require "chef/knife"
+require "chef/knife/key_create"
 require "chef/knife/key_create_base"
 
 class Chef
@@ -29,6 +30,8 @@ class Chef
     # @attr_reader [String] actor the name of the client that this key is for
     class ClientKeyCreate < Knife
       include Chef::Knife::KeyCreateBase
+
+      banner "knife client key create CLIENT (options)"
 
       attr_reader :actor
 

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,7 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should allow you to check what kind_of? thing an argument is with kind_of" do
-    expect {
+    expect do
       @vo.validate(
         { :one => "string" },
         {
@@ -65,9 +65,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.not_to raise_error
+    end.not_to raise_error
 
-    expect {
+    expect do
       @vo.validate(
         { :one => "string" },
         {
@@ -76,11 +76,11 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should allow you to specify an argument is required with required" do
-    expect {
+    expect do
       @vo.validate(
         { :one => "string" },
         {
@@ -89,9 +89,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.not_to raise_error
+    end.not_to raise_error
 
-    expect {
+    expect do
       @vo.validate(
         { :two => "string" },
         {
@@ -100,9 +100,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
 
-    expect {
+    expect do
       @vo.validate(
         { :two => "string" },
         {
@@ -111,11 +111,11 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.not_to raise_error
+    end.not_to raise_error
   end
 
   it "should allow you to specify whether an object has a method with respond_to" do
-    expect {
+    expect do
       @vo.validate(
         { :one => @vo },
         {
@@ -124,9 +124,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.not_to raise_error
+    end.not_to raise_error
 
-    expect {
+    expect do
       @vo.validate(
         { :one => @vo },
         {
@@ -135,11 +135,11 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should allow you to specify whether an object has all the given methods with respond_to and an array" do
-    expect {
+    expect do
       @vo.validate(
         { :one => @vo },
         {
@@ -148,9 +148,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.not_to raise_error
+    end.not_to raise_error
 
-    expect {
+    expect do
       @vo.validate(
         { :one => @vo },
         {
@@ -159,7 +159,7 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should let you set a default value with default => value" do
@@ -173,7 +173,7 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should let you check regular expressions" do
-    expect {
+    expect do
       @vo.validate(
         { :one => "is good" },
         {
@@ -182,9 +182,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.not_to raise_error
+    end.not_to raise_error
 
-    expect {
+    expect do
       @vo.validate(
         { :one => "is good" },
         {
@@ -193,44 +193,44 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should let you specify your own callbacks" do
-    expect {
+    expect do
       @vo.validate(
         { :one => "is good" },
         {
           :one => {
             :callbacks => {
-              "should be equal to is good" => lambda { |a|
+              "should be equal to is good" => lambda do |a|
                 a == "is good"
-              },
+              end,
             },
           },
         }
       )
-    }.not_to raise_error
+    end.not_to raise_error
 
-    expect {
+    expect do
       @vo.validate(
         { :one => "is bad" },
         {
           :one => {
             :callbacks => {
-              "should be equal to 'is good'" => lambda { |a|
+              "should be equal to 'is good'" => lambda do |a|
                 a == "is good"
-              },
+              end,
             },
           },
         }
       )
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should let you combine checks" do
     args = { :one => "is good", :two => "is bad" }
-    expect {
+    expect do
       @vo.validate(
         args,
         {
@@ -239,9 +239,9 @@ describe Chef::Mixin::ParamsValidate do
             :respond_to => [ :to_s, :upcase ],
             :regex => /^is good/,
             :callbacks => {
-              "should be your friend" => lambda { |a|
+              "should be your friend" => lambda do |a|
                 a == "is good"
-              },
+              end,
             },
             :required => true,
           },
@@ -252,9 +252,9 @@ describe Chef::Mixin::ParamsValidate do
           :three => { :default => "neato mosquito" },
         }
       )
-    }.not_to raise_error
+    end.not_to raise_error
     expect(args[:three]).to eq("neato mosquito")
-    expect {
+    expect do
       @vo.validate(
         args,
         {
@@ -263,9 +263,9 @@ describe Chef::Mixin::ParamsValidate do
             :respond_to => [ :to_s, :upcase ],
             :regex => /^is good/,
             :callbacks => {
-              "should be your friend" => lambda { |a|
+              "should be your friend" => lambda do |a|
                 a == "is good"
-              },
+              end,
             },
             :required => true,
           },
@@ -276,11 +276,12 @@ describe Chef::Mixin::ParamsValidate do
           :three => { :default => "neato mosquito" },
         }
       )
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should raise an ArgumentError if the validation map has an unknown check" do
-    expect { @vo.validate(
+    expect do
+      @vo.validate(
         { :one => "two" },
         {
           :one => {
@@ -288,17 +289,17 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should accept keys that are strings in the options" do
-    expect {
+    expect do
       @vo.validate({ "one" => "two" }, { :one => { :regex => /^two$/ } })
-    }.not_to raise_error
+    end.not_to raise_error
   end
 
   it "should allow an array to kind_of" do
-    expect {
+    expect do
       @vo.validate(
         { :one => "string" },
         {
@@ -307,8 +308,8 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.not_to raise_error
-    expect {
+    end.not_to raise_error
+    expect do
       @vo.validate(
         { :one => ["string"] },
         {
@@ -317,8 +318,8 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.not_to raise_error
-    expect {
+    end.not_to raise_error
+    expect do
       @vo.validate(
         { :one => Hash.new },
         {
@@ -327,7 +328,7 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "asserts that a value returns false from a predicate method" do
@@ -339,6 +340,17 @@ describe Chef::Mixin::ParamsValidate do
       @vo.validate({ :not_blank => "" },
                    { :not_blank => { :cannot_be => [ :nil, :empty ] } })
     end.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "allows a custom validation message" do
+    expect do
+      @vo.validate({ :not_blank => "should pass" },
+                   { :not_blank => { :cannot_be => [ :nil, :empty ], validation_message: "my validation message" } })
+    end.not_to raise_error
+    expect do
+      @vo.validate({ :not_blank => "" },
+                   { :not_blank => { :cannot_be => [ :nil, :empty ], validation_message: "my validation message" } })
+    end.to raise_error(Chef::Exceptions::ValidationFailed, "my validation message")
   end
 
   it "should set and return a value, then return the same value" do
@@ -354,15 +366,15 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should raise an ArgumentError when argument is nil and required is true" do
-    expect {
+    expect do
       @vo.set_or_return(:test, nil, { :required => true })
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should not raise an error when argument is nil and required is false" do
-    expect {
+    expect do
       @vo.set_or_return(:test, nil, { :required => false })
-    }.not_to raise_error
+    end.not_to raise_error
   end
 
   it "should set and return @name, then return @name for foo when argument is nil" do

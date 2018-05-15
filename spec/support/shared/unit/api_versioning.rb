@@ -43,13 +43,13 @@ shared_examples_for "user and client reregister" do
   let(:generic_exception) { Exception.new }
   let(:min_version) { "2" }
   let(:max_version) { "5" }
-  let(:return_hash_406) {
+  let(:return_hash_406) do
     {
       "min_version" => min_version,
       "max_version" => max_version,
       "request_version" => "30",
     }
-  }
+  end
 
   context "when V0 is not supported by the server" do
     context "when the exception is 406 and returns x-ops-server-api-version header" do

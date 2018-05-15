@@ -2,7 +2,7 @@
 # Author:: AJ Christensen (<aj@chef.io)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,8 @@ require "chef/handler/error_report"
 require "chef/workstation_config_loader"
 require "chef/mixin/shell_out"
 require "chef-config/mixin/dot_d"
+require "mixlib/archive"
+require "uri"
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut
@@ -39,6 +41,14 @@ class Chef::Application::Client < Chef::Application
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
     :description => "The configuration file to use"
+
+  option :config_option,
+    :long         => "--config-option OPTION=VALUE",
+    :description  => "Override a single configuration option",
+    :proc         => lambda { |option, existing|
+      (existing ||= []) << option
+      existing
+    }
 
   option :formatter,
     :short        => "-F FORMATTER",
@@ -73,7 +83,7 @@ class Chef::Application::Client < Chef::Application
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
-    :description  => "Set the log level (auto, debug, info, warn, error, fatal)",
+    :description  => "Set the log level (auto, trace, debug, info, warn, error, fatal)",
     :proc         => lambda { |l| l.to_sym }
 
   option :log_location,
@@ -193,22 +203,22 @@ class Chef::Application::Client < Chef::Application
     :short        => "-o RunlistItem,RunlistItem...",
     :long         => "--override-runlist RunlistItem,RunlistItem...",
     :description  => "Replace current run list with specified items for a single run",
-    :proc         => lambda {|items|
+    :proc         => lambda { |items|
       items = items.split(",")
-      items.compact.map {|item|
+      items.compact.map do |item|
         Chef::RunList::RunListItem.new(item)
-      }
+      end
     }
 
   option :runlist,
     :short        => "-r RunlistItem,RunlistItem...",
     :long         => "--runlist RunlistItem,RunlistItem...",
     :description  => "Permanently replace current run list with specified items",
-    :proc         => lambda {|items|
+    :proc         => lambda { |items|
       items = items.split(",")
-      items.compact.map {|item|
+      items.compact.map do |item|
         Chef::RunList::RunListItem.new(item)
-      }
+      end
     }
   option :why_run,
     :short        => "-W",
@@ -219,8 +229,7 @@ class Chef::Application::Client < Chef::Application
   option :client_fork,
     :short        => "-f",
     :long         => "--[no-]fork",
-    :description  => "Fork client",
-    :boolean      => true
+    :description  => "Fork client"
 
   option :recipe_url,
     :long         => "--recipe-url=RECIPE_URL",
@@ -277,10 +286,10 @@ class Chef::Application::Client < Chef::Application
   option :listen,
     :long           => "--[no-]listen",
     :description    => "Whether a local mode (-z) server binds to a port",
-    :boolean        => true
+    :boolean        => false
 
   option :fips,
-    :long         => "--fips",
+    :long         => "--[no-]fips",
     :description  => "Enable fips mode",
     :boolean      => true
 
@@ -295,6 +304,7 @@ class Chef::Application::Client < Chef::Application
     :boolean        => false
 
   IMMEDIATE_RUN_SIGNAL = "1".freeze
+  RECONFIGURE_SIGNAL = "H".freeze
 
   attr_reader :chef_client_json
 
@@ -324,18 +334,19 @@ class Chef::Application::Client < Chef::Application
 
     if Chef::Config[:recipe_url]
       if !Chef::Config.local_mode
-        Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
+        Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode")
       else
         if Chef::Config[:delete_entire_chef_repo]
-          Chef::Log.debug "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
+          Chef::Log.trace "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
           FileUtils.rm_rf(recipes_path, :secure => true)
         end
-        Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
+        Chef::Log.trace "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
         FileUtils.mkdir_p(Chef::Config.chef_repo_path)
         tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
         fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-        result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
-        Chef::Log.debug "#{result.stdout}"
+        Mixlib::Archive.new(tarball_path).extract(Chef::Config.chef_repo_path, perms: false, ignore: /^\.$/)
+        config_path = File.join(Chef::Config.chef_repo_path, ".chef/config.rb")
+        Chef::Config.from_string(IO.read(config_path), config_path) if File.file?(config_path)
       end
     end
 
@@ -349,6 +360,11 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config[:once]
       Chef::Config[:interval] = nil
       Chef::Config[:splay] = nil
+    end
+
+    # supervisor processes are enabled by default for interval-running processes but not for one-shot runs
+    if Chef::Config[:client_fork].nil?
+      Chef::Config[:client_fork] = !!Chef::Config[:interval]
     end
 
     if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?
@@ -401,8 +417,14 @@ class Chef::Application::Client < Chef::Application
       SELF_PIPE.replace IO.pipe
 
       trap("USR1") do
-        Chef::Log.info("SIGUSR1 received, waking up")
+        Chef::Log.info("SIGUSR1 received, will run now or after the current run")
         SELF_PIPE[1].putc(IMMEDIATE_RUN_SIGNAL) # wakeup master process from select
+      end
+
+      # Override the trap setup in the parent so we can avoid running reconfigure during a run
+      trap("HUP") do
+        Chef::Log.info("SIGHUP received, will reconfigure now or after the current run")
+        SELF_PIPE[1].putc(RECONFIGURE_SIGNAL) # wakeup master process from select
       end
     end
   end
@@ -420,7 +442,7 @@ class Chef::Application::Client < Chef::Application
       rescue SystemExit
         raise
       rescue Exception => e
-        Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+        Chef::Application.fatal!("#{e.class}: #{e.message}", e)
       end
     else
       interval_run_chef_client
@@ -446,28 +468,24 @@ class Chef::Application::Client < Chef::Application
   end
 
   def sleep_then_run_chef_client(sleep_sec)
-    @signal = test_signal
-    unless @signal == IMMEDIATE_RUN_SIGNAL
-      Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
-      interval_sleep(sleep_sec)
-    end
-    @signal = nil
+    Chef::Log.trace("Sleeping for #{sleep_sec} seconds")
+
+    # interval_sleep will return early if we received a signal (unless on windows)
+    interval_sleep(sleep_sec)
 
     run_chef_client(Chef::Config[:specific_recipes])
+
+    reconfigure
   rescue SystemExit => e
     raise
   rescue Exception => e
     if Chef::Config[:interval]
       Chef::Log.error("#{e.class}: #{e}")
-      Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
+      Chef::Log.trace("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
       retry
     end
 
-    Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
-  end
-
-  def test_signal
-    @signal = interval_sleep(0)
+    Chef::Application.fatal!("#{e.class}: #{e.message}", e)
   end
 
   def time_to_sleep
@@ -477,18 +495,24 @@ class Chef::Application::Client < Chef::Application
     duration
   end
 
+  # sleep and handle queued signals
   def interval_sleep(sec)
     unless SELF_PIPE.empty?
-      client_sleep(sec)
+      # mimic sleep with a timeout on IO.select, listening for signals setup in #setup_signal_handlers
+      return unless IO.select([ SELF_PIPE[0] ], nil, nil, sec)
+
+      signal = SELF_PIPE[0].getc.chr
+
+      return if signal == IMMEDIATE_RUN_SIGNAL # be explicit about this behavior
+
+      # we need to sleep again after reconfigure to avoid stampeding when logrotate runs out of cron
+      if signal == RECONFIGURE_SIGNAL
+        reconfigure
+        interval_sleep(sec)
+      end
     else
-      # Windows
       sleep(sec)
     end
-  end
-
-  def client_sleep(sec)
-    return unless IO.select([ SELF_PIPE[0] ], nil, nil, sec)
-    @signal = SELF_PIPE[0].getc.chr
   end
 
   def unforked_interval_error_message
@@ -510,11 +534,18 @@ class Chef::Application::Client < Chef::Application
   end
 
   def fetch_recipe_tarball(url, path)
-    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
-    File.open(path, "wb") do |f|
-      open(url) do |r|
-        f.write(r.read)
+    Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
+    if url =~ URI.regexp
+      File.open(path, "wb") do |f|
+        open(url) do |r|
+          f.write(r.read)
+        end
       end
+    elsif File.exist?(url)
+      FileUtils.cp(url, path)
+    else
+      Chef::Application.fatal! "You specified --recipe-url but the value is neither a valid URL nor a path to a file that exists on disk." +
+        "Please confirm the location of the tarball and try again."
     end
   end
 end

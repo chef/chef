@@ -24,13 +24,15 @@ require "chef/http/json_input"
 require "chef/http/json_output"
 require "chef/http/remote_request_id"
 require "chef/http/validate_content_length"
+require "chef/http/api_versions"
 
 class Chef
   class ServerAPI < Chef::HTTP
 
     def initialize(url = Chef::Config[:chef_server_url], options = {})
       options[:client_name] ||= Chef::Config[:node_name]
-      options[:signing_key_filename] ||= Chef::Config[:client_key]
+      options[:raw_key] ||= Chef::Config[:client_key_contents]
+      options[:signing_key_filename] ||= Chef::Config[:client_key] unless options[:raw_key]
       options[:signing_key_filename] = nil if chef_zero_uri?(url)
       options[:inflate_json_class] = false
       super(url, options)
@@ -42,6 +44,7 @@ class Chef
     use Chef::HTTP::Decompressor
     use Chef::HTTP::Authenticator
     use Chef::HTTP::RemoteRequestID
+    use Chef::HTTP::APIVersions
 
     # ValidateContentLength should come after Decompressor
     # because the order of middlewares is reversed when handling

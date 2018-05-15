@@ -7,7 +7,7 @@ class Chef
       class RoleDataHandler < DataHandlerBase
         def normalize(role, entry)
           result = normalize_hash(role, {
-            "name" => remove_dot_json(entry.name),
+            "name" => remove_file_extension(entry.name),
             "description" => "",
             "json_class" => "Chef::Role",
             "chef_type" => "role",
@@ -24,7 +24,7 @@ class Chef
         end
 
         def preserve_key?(key)
-          return key == "name"
+          key == "name"
         end
 
         def chef_class

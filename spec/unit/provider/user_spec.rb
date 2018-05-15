@@ -58,7 +58,7 @@ describe Chef::Provider::User do
   describe "executing load_current_resource" do
     before(:each) do
       @node = Chef::Node.new
-      #@new_resource = double("Chef::Resource::User",
+      # @new_resource = double("Chef::Resource::User",
       #  :null_object => true,
       #  :username => "adam",
       #  :comment => "Adam Jacob",
@@ -68,7 +68,7 @@ describe Chef::Provider::User do
       #  :shell => "/usr/bin/zsh",
       #  :password => nil,
       #  :updated => nil
-      #)
+      # )
       allow(Chef::Resource::User).to receive(:new).and_return(@current_resource)
       @pw_user = EtcPwnamIsh.new
       @pw_user.name = "adam"
@@ -110,11 +110,11 @@ describe Chef::Provider::User do
 
     # The mapping between the Chef::Resource::User and Getpwnam struct
     user_attrib_map = {
-      :uid => :uid,
-      :gid => :gid,
-      :comment => :gecos,
-      :home => :dir,
-      :shell => :shell,
+      uid: :uid,
+      gid: :gid,
+      comment: :gecos,
+      home: :dir,
+      shell: :shell,
     }
     user_attrib_map.each do |user_attrib, getpwnam_attrib|
       it "should set the current resources #{user_attrib} based on getpwnam #{getpwnam_attrib}" do
@@ -129,7 +129,7 @@ describe Chef::Provider::User do
     end
 
     it "shouldn't try and convert the group gid if none has been supplied" do
-      allow(@new_resource).to receive(:gid).and_return(nil)
+      @new_resource.gid(false)
       expect(@provider).not_to receive(:convert_group_name)
       @provider.load_current_resource
     end
@@ -140,18 +140,16 @@ describe Chef::Provider::User do
 
     describe "and running assertions" do
       def self.shadow_lib_unavail?
-        begin
-          require "rubygems"
-          require "shadow"
-        rescue LoadError
-          skip "ruby-shadow gem not installed for dynamic load test"
-          true
-        else
-          false
-        end
+        require "rubygems"
+        require "shadow"
+      rescue LoadError
+        skip "ruby-shadow gem not installed for dynamic load test"
+        true
+      else
+        false
       end
 
-      before (:each) do
+      before(:each) do
         user = @pw_user.dup
         user.name = "root"
         user.passwd = "x"
@@ -161,15 +159,15 @@ describe Chef::Provider::User do
 
       unless shadow_lib_unavail?
         context "and we have the ruby-shadow gem" do
-          skip "and we are not root (rerun this again as root)", :requires_unprivileged_user => true
+          skip "and we are not root (rerun this again as root)", requires_unprivileged_user: true
 
-          context "and we are root", :requires_root => true do
+          context "and we are root", requires_root: true do
             it "should pass assertions when ruby-shadow can be loaded" do
               @provider.action = "create"
               original_method = @provider.method(:require)
               expect(@provider).to receive(:require) { |*args| original_method.call(*args) }
-              passwd_info = Struct::PasswdEntry.new(:sp_namp => "adm ", :sp_pwdp => "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", :sp_lstchg => 14861, :sp_min => 0, :sp_max => 99999,
-                                                    :sp_warn => 7, :sp_inact => -1, :sp_expire => -1, :sp_flag => -1)
+              passwd_info = Struct::PasswdEntry.new(sp_namp: "adm ", sp_pwdp: "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", sp_lstchg: 14861, sp_min: 0, sp_max: 99999,
+                                                    sp_warn: 7, sp_inact: -1, sp_expire: -1, sp_flag: -1)
               expect(Shadow::Passwd).to receive(:getspnam).with("adam").and_return(passwd_info)
               @provider.load_current_resource
               @provider.define_resource_requirements
@@ -190,7 +188,7 @@ describe Chef::Provider::User do
   end
 
   describe "compare_user" do
-    let(:mapping) {
+    let(:mapping) do
       {
         "username" => %w{adam Adam},
         "comment" => ["Adam Jacob", "adam jacob"],
@@ -200,7 +198,7 @@ describe Chef::Provider::User do
         "shell" => ["/usr/bin/zsh", "/bin/bash"],
         "password" => %w{abcd 12345},
       }
-    }
+    end
 
     %w{uid gid comment home shell password}.each do |attribute|
       it "should return true if #{attribute} doesn't match" do
@@ -219,6 +217,12 @@ describe Chef::Provider::User do
     end
 
     it "should return false if the objects are identical" do
+      expect(@provider.compare_user).to eql(false)
+    end
+
+    it "should ignore differences in trailing slash in home paths" do
+      @new_resource.home "/home/adam"
+      @current_resource.home "/home/adam/"
       expect(@provider.compare_user).to eql(false)
     end
   end

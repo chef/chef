@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,12 +27,12 @@ end
 describe Chef::Mixin::PowershellTypeCoercions do
   let (:test_class) { Chef::PSTypeTester.new }
 
-  describe '#translate_type' do
+  describe "#translate_type" do
     it "single quotes a string" do
       expect(test_class.translate_type("foo")).to eq("'foo'")
     end
 
-    ["'", '"', '#', "`"].each do |c|
+    ["'", '"', "#", "`"].each do |c|
       it "base64 encodes a string that contains #{c}" do
         expect(test_class.translate_type("#{c}")).to match(Base64.strict_encode64(c))
       end
@@ -64,14 +64,15 @@ describe Chef::Mixin::PowershellTypeCoercions do
     end
 
     it "translates a Chef::Node::ImmutableMash like a hash" do
-      test_mash = Chef::Node::ImmutableMash.new({ "a" => 1, "b" => 1.2,
-                                                  "c" => false, "d" => true })
-      expect(test_class.translate_type(test_mash)).to eq("@{a=1;b=1.2;c=$false;d=$true}")
+      node = Chef::Node.new
+      node.default[:test] = { "a" => 1, "b" => 1.2, "c" => false, "d" => true }
+      expect(test_class.translate_type(node[:test])).to eq("@{a=1;b=1.2;c=$false;d=$true}")
     end
 
     it "translates a Chef::Node::ImmutableArray like an array" do
-      test_array = Chef::Node::ImmutableArray.new([true, false])
-      expect(test_class.translate_type(test_array)).to eq("@($true,$false)")
+      node = Chef::Node.new
+      node.default[:test] = [ true, false ]
+      expect(test_class.translate_type(node[:test])).to eq("@($true,$false)")
     end
 
     it "falls back :to_psobject if we have not defined at explicit rule" do

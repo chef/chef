@@ -13,11 +13,11 @@ describe "Notifications" do
 
   # We always pretend we are on OSx because that has a specific provider (HomebrewProvider) so it
   # tests the translation from Provider => HomebrewProvider
-  let(:node) {
+  let(:node) do
     n = Chef::Node.new
     n.override[:os] = "darwin"
     n
-  }
+  end
   let(:cookbook_collection) { double("Chef::CookbookCollection").as_null_object }
   let(:events) { double("Chef::EventDispatch::Dispatcher").as_null_object }
   let(:run_context) { Chef::RunContext.new(node, cookbook_collection, events) }
@@ -26,7 +26,7 @@ describe "Notifications" do
 
   before do
     # By default, every provider will do nothing
-    p = Chef::Provider.new(nil, run_context)
+    p = Chef::Provider.new(Chef::Resource.new("lies"), run_context)
     allow_any_instance_of(Chef::Resource).to receive(:provider_for_action).and_return(p)
     allow(p).to receive(:run_action)
   end

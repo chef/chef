@@ -20,21 +20,17 @@ require "spec_helper"
 
 describe Chef::Resource::Perl do
 
-  before(:each) do
-    @resource = Chef::Resource::Perl.new("fakey_fakerton")
+  let(:resource) { Chef::Resource::Perl.new("fakey_fakerton") }
+
+  it "is a subclass of Chef::Resource::Script" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Script)
   end
 
-  it "should create a new Chef::Resource::Perl" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::Perl)
+  it "has a resource name of :perl" do
+    expect(resource.resource_name).to eql(:perl)
   end
 
-  it "should have a resource name of :perl" do
-    expect(@resource.resource_name).to eql(:perl)
+  it "has an interpreter of perl" do
+    expect(resource.interpreter).to eql("perl")
   end
-
-  it "should have an interpreter of perl" do
-    expect(@resource.interpreter).to eql("perl")
-  end
-
 end

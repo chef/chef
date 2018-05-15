@@ -23,7 +23,7 @@ class Chef
   class Provider
     class PowershellScript < Chef::Provider::WindowsScript
 
-      provides :powershell_script, os: "windows"
+      provides :powershell_script
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context, ".ps1")
@@ -36,7 +36,7 @@ class Chef
       end
 
       def command
-        basepath = is_forced_32bit ? wow64_directory : run_context.node.kernel.os_info.system_directory
+        basepath = is_forced_32bit ? wow64_directory : run_context.node["kernel"]["os_info"]["system_directory"]
 
         # Powershell.exe is always in "v1.0" folder (for backwards compatibility)
         interpreter_path = Chef::Util::PathHelper.join(basepath, "WindowsPowerShell", "v1.0", interpreter)
@@ -60,8 +60,8 @@ class Chef
       def flags
         interpreter_flags = [*default_interpreter_flags].join(" ")
 
-        if ! (@new_resource.flags.nil?)
-          interpreter_flags = [@new_resource.flags, interpreter_flags].join(" ")
+        if ! (new_resource.flags.nil?)
+          interpreter_flags = [new_resource.flags, interpreter_flags].join(" ")
         end
 
         interpreter_flags
@@ -73,8 +73,8 @@ class Chef
       # special handling to cover common use cases.
       def add_exit_status_wrapper
         self.code = wrapper_script
-        Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
-        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
+        logger.trace("powershell_script provider called with script code:\n\n#{new_resource.code}\n")
+        logger.trace("powershell_script provider will execute transformed code:\n\n#{code}\n")
       end
 
       def validate_script_syntax!
@@ -87,7 +87,7 @@ class Chef
           # actually running the script.
           user_code_wrapped_in_powershell_script_block = <<-EOH
 {
-  #{@new_resource.code}
+  #{new_resource.code}
 }
 EOH
           user_script_file.puts user_code_wrapped_in_powershell_script_block
@@ -149,6 +149,14 @@ EOH
         <<-EOH
 # Chef Client wrapper for powershell_script resources
 
+# In rare cases, such as when PowerShell is executed
+# as an alternate user, the new-variable cmdlet is not
+# available, so import it just in case
+if ( get-module -ListAvailable Microsoft.PowerShell.Utility )
+{
+    Import-Module Microsoft.PowerShell.Utility
+}
+
 # LASTEXITCODE can be uninitialized -- make it explictly 0
 # to avoid incorrect detection of failure (non-zero) codes
 $global:LASTEXITCODE = 0
@@ -159,7 +167,7 @@ $global:LASTEXITCODE = 0
 trap [Exception] {write-error ($_.Exception.Message);exit 1}
 
 # Variable state that should not be accessible to the user code
-new-variable -name interpolatedexitcode -visibility private -value $#{@new_resource.convert_boolean_return}
+new-variable -name interpolatedexitcode -visibility private -value $#{new_resource.convert_boolean_return}
 new-variable -name chefscriptresult -visibility private
 
 # Initialize a variable we use to capture $? inside a block
@@ -168,7 +176,7 @@ $global:lastcmdlet = $null
 # Execute the user's code in a script block --
 $chefscriptresult =
 {
- #{@new_resource.code}
+ #{new_resource.code}
 
  # This assignment doesn't affect the block's return value
  $global:lastcmdlet = $?

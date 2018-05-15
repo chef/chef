@@ -31,7 +31,7 @@ class Chef
   # inspired by http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
   class CookbookSiteStreamingUploader
 
-    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION }
+    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION } # rubocop:disable Naming/ConstantName
 
     class << self
 
@@ -41,21 +41,19 @@ class Chef
         tmp_cookbook_dir = tmp_cookbook_path.path
         File.unlink(tmp_cookbook_dir)
         FileUtils.mkdir_p(tmp_cookbook_dir)
-        Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
+        Chef::Log.trace("Staging at #{tmp_cookbook_dir}")
         checksums_to_on_disk_paths = cookbook.checksums
-        Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
-          cookbook.manifest[segment].each do |manifest_record|
-            path_in_cookbook = manifest_record[:path]
-            on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
-            dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
-            FileUtils.mkdir_p(File.dirname(dest))
-            Chef::Log.debug("Staging #{on_disk_path} to #{dest}")
-            FileUtils.cp(on_disk_path, dest)
-          end
+        cookbook.each_file do |manifest_record|
+          path_in_cookbook = manifest_record[:path]
+          on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
+          dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
+          FileUtils.mkdir_p(File.dirname(dest))
+          Chef::Log.trace("Staging #{on_disk_path} to #{dest}")
+          FileUtils.cp(on_disk_path, dest)
         end
 
         # First, generate metadata
-        Chef::Log.debug("Generating metadata")
+        Chef::Log.trace("Generating metadata")
         kcm = Chef::Knife::CookbookMetadata.new
         kcm.config[:cookbook_path] = [ tmp_cookbook_dir ]
         kcm.name_args = [ cookbook.name.to_s ]
@@ -149,11 +147,11 @@ class Chef
           alias :to_s :body
 
           # BUGBUG this makes the response compatible with what respsonse_steps expects to test headers (response.headers[] -> response[])
-          def headers
+          def headers # rubocop:disable Lint/NestedMethodDefinition
             self
           end
 
-          def status
+          def status  # rubocop:disable Lint/NestedMethodDefinition
             code.to_i
           end
         end

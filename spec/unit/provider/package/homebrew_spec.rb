@@ -20,7 +20,8 @@ require "spec_helper"
 describe Chef::Provider::Package::Homebrew do
   let(:node) { Chef::Node.new }
   let(:events) { double("Chef::Events").as_null_object }
-  let(:run_context) { double("Chef::RunContext", node: node, events: events) }
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+  let(:run_context) { double("Chef::RunContext", node: node, events: events, logger: logger) }
   let(:new_resource) { Chef::Resource::HomebrewPackage.new("emacs") }
   let(:current_resource) { Chef::Resource::HomebrewPackage.new("emacs") }
 
@@ -209,7 +210,7 @@ describe Chef::Provider::Package::Homebrew do
         allow(provider.new_resource).to receive(:version).and_return("24.3")
         allow(provider.current_resource).to receive(:version).and_return(nil)
         allow(provider).to receive(:brew_info).and_return(uninstalled_brew_info)
-        expect(provider).to receive(:get_response_from_command).with("brew install  emacs")
+        expect(provider).to receive(:get_response_from_command).with("brew", "install", nil, "emacs")
         provider.install_package("emacs", "24.3")
       end
 
@@ -221,9 +222,9 @@ describe Chef::Provider::Package::Homebrew do
       end
 
       it "uses options to the brew command if specified" do
-        allow(provider.new_resource).to receive(:options).and_return("--cocoa")
+        new_resource.options "--cocoa"
         allow(provider.current_resource).to receive(:version).and_return("24.3")
-        allow(provider).to receive(:get_response_from_command).with("brew install --cocoa emacs")
+        allow(provider).to receive(:get_response_from_command).with("brew", "install", "--cocoa", "emacs")
         provider.install_package("emacs", "24.3")
       end
     end
@@ -232,7 +233,7 @@ describe Chef::Provider::Package::Homebrew do
       it "uses brew upgrade to upgrade the package if it is installed" do
         allow(provider.current_resource).to receive(:version).and_return("24")
         allow(provider).to receive(:brew_info).and_return(installed_brew_info)
-        expect(provider).to receive(:get_response_from_command).with("brew upgrade  emacs")
+        expect(provider).to receive(:get_response_from_command).with("brew", "upgrade", nil, "emacs")
         provider.upgrade_package("emacs", "24.3")
       end
 
@@ -246,15 +247,15 @@ describe Chef::Provider::Package::Homebrew do
       it "uses brew install to install the package if it is not installed" do
         allow(provider.current_resource).to receive(:version).and_return(nil)
         allow(provider).to receive(:brew_info).and_return(uninstalled_brew_info)
-        expect(provider).to receive(:get_response_from_command).with("brew install  emacs")
+        expect(provider).to receive(:get_response_from_command).with("brew", "install", nil, "emacs")
         provider.upgrade_package("emacs", "24.3")
       end
 
       it "uses options to the brew command if specified" do
         allow(provider.current_resource).to receive(:version).and_return("24")
         allow(provider).to receive(:brew_info).and_return(installed_brew_info)
-        allow(provider.new_resource).to receive(:options).and_return("--cocoa")
-        expect(provider).to receive(:get_response_from_command).with("brew upgrade --cocoa emacs")
+        new_resource.options "--cocoa"
+        expect(provider).to receive(:get_response_from_command).with("brew", "upgrade", [ "--cocoa" ], "emacs")
         provider.upgrade_package("emacs", "24.3")
       end
     end
@@ -263,7 +264,7 @@ describe Chef::Provider::Package::Homebrew do
       it "uninstalls the package with brew uninstall" do
         allow(provider.current_resource).to receive(:version).and_return("24.3")
         allow(provider).to receive(:brew_info).and_return(installed_brew_info)
-        expect(provider).to receive(:get_response_from_command).with("brew uninstall  emacs")
+        expect(provider).to receive(:get_response_from_command).with("brew", "uninstall", nil, "emacs")
         provider.remove_package("emacs", "24.3")
       end
 
@@ -278,7 +279,7 @@ describe Chef::Provider::Package::Homebrew do
       it "uninstalls the package with brew uninstall --force" do
         allow(provider.current_resource).to receive(:version).and_return("24.3")
         allow(provider).to receive(:brew_info).and_return(installed_brew_info)
-        expect(provider).to receive(:get_response_from_command).with("brew uninstall  --force emacs")
+        expect(provider).to receive(:get_response_from_command).with("brew", "uninstall", "--force", nil, "emacs")
         provider.purge_package("emacs", "24.3")
       end
 

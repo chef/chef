@@ -22,7 +22,9 @@ class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
       resource_name :pacman_package
-      provides :pacman_package, os: "linux"
+      provides :pacman_package
+
+      description "Use the pacman_package resource to manage packages (using pacman) on the Arch Linux platform."
     end
   end
 end

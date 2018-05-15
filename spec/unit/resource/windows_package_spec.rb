@@ -33,8 +33,8 @@ describe Chef::Resource::WindowsPackage, "initialize" do
 
   let(:resource) { Chef::Resource::WindowsPackage.new("solitaire.msi") }
 
-  it "returns a Chef::Resource::WindowsPackage" do
-    expect(resource).to be_a_kind_of(Chef::Resource::WindowsPackage)
+  it "is a subclass of Chef::Resource::Package" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Package)
   end
 
   it "sets the resource_name to :windows_package" do
@@ -88,7 +88,7 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     let(:resource_source) { "https://foo.bar/solitare.msi" }
     let(:resource) { Chef::Resource::WindowsPackage.new(resource_source) }
 
-    it "should return the source unmodified" do
+    it "returns the source unmodified" do
       expect(resource.source).to eq(resource_source)
     end
   end

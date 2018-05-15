@@ -30,7 +30,7 @@ class Chef
       # Note that we will silently miss any other platform-specific reboot notices besides Windows+Ubuntu.
       def reboot_pending?
         # don't break when used as a mixin in contexts without #node (e.g. specs).
-        if self.respond_to?(:node, true) && node.run_context.reboot_requested?
+        if respond_to?(:node, true) && node.run_context.reboot_requested?
           true
         elsif platform?("windows")
           # PendingFileRenameOperations contains pairs (REG_MULTI_SZ) of filenames that cannot be updated
@@ -44,14 +44,7 @@ class Chef
             registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired') ||
 
           # Vista + Server 2008 and newer may have reboots pending from CBS
-            registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending') ||
-
-          # The mere existence of the UpdateExeVolatile key should indicate a pending restart for certain updates
-          # http://support.microsoft.com/kb/832475
-            Chef::Platform.windows_server_2003? &&
-              (registry_key_exists?('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile') &&
-              !registry_get_values('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').select { |v| v[:name] == "Flags" }[0].nil? &&
-              [1, 2, 3].include?(registry_get_values('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').select { |v| v[:name] == "Flags" }[0][:data]))
+            registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
         elsif platform?("ubuntu")
           # This should work for Debian as well if update-notifier-common happens to be installed. We need an API for that.
           File.exists?("/var/run/reboot-required")

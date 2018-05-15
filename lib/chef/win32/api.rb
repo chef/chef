@@ -29,12 +29,10 @@ class Chef
       # function into the calling module.  If this fails a dummy method is
       # defined which when called, raises a helpful exception to the end-user.
       def safe_attach_function(win32_func, *args)
-        begin
-          attach_function(win32_func.to_sym, *args)
-        rescue FFI::NotFoundError
-          define_method(win32_func.to_sym) do |*margs|
-            raise Chef::Exceptions::Win32APIFunctionNotImplemented, "This version of Windows does not implement the Win32 function [#{win32_func}]."
-          end
+        attach_function(win32_func.to_sym, *args)
+      rescue FFI::NotFoundError
+        define_method(win32_func.to_sym) do |*margs|
+          raise Chef::Exceptions::Win32APIFunctionNotImplemented, "This version of Windows does not implement the Win32 function [#{win32_func}]."
         end
       end
 

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ require "spec_helper"
 describe Chef::Provider::PowershellScript, "action_run" do
 
   let(:powershell_version) { nil }
-  let(:node) {
+  let(:node) do
     node = Chef::Node.new
     node.default["kernel"] = Hash.new
     node.default["kernel"][:machine] = :x86_64.to_s
@@ -28,14 +28,24 @@ describe Chef::Provider::PowershellScript, "action_run" do
       node.default[:languages] = { :powershell => { :version => powershell_version } }
     end
     node
-  }
+  end
 
-  let(:provider) {
-    empty_events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, empty_events)
+  # code block is mandatory for the powershell provider
+  let(:code) { "" }
+
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+
+  let(:run_context) { run_context = Chef::RunContext.new(node, {}, events) }
+
+  let(:new_resource) do
     new_resource = Chef::Resource::PowershellScript.new("run some powershell code", run_context)
+    new_resource.code code
+    new_resource
+  end
+
+  let(:provider) do
     Chef::Provider::PowershellScript.new(new_resource, run_context)
-  }
+  end
 
   context "when setting interpreter flags" do
     context "on nano" do
@@ -43,8 +53,8 @@ describe Chef::Provider::PowershellScript, "action_run" do
         allow(Chef::Platform).to receive(:windows_nano_server?).and_return(true)
         allow(provider).to receive(:is_forced_32bit).and_return(false)
         os_info_double = double("os_info")
-        allow(provider.run_context.node.kernel).to receive(:os_info).and_return(os_info_double)
-        allow(os_info_double).to receive(:system_directory).and_return("C:\\Windows\\system32")
+        allow(provider.run_context.node["kernel"]).to receive(:[]).with("os_info").and_return(os_info_double)
+        allow(os_info_double).to receive(:[]).with("system_directory").and_return("C:\\Windows\\system32")
       end
 
       it "sets the -Command flag as the last flag" do
@@ -58,8 +68,8 @@ describe Chef::Provider::PowershellScript, "action_run" do
         allow(Chef::Platform).to receive(:windows_nano_server?).and_return(false)
         allow(provider).to receive(:is_forced_32bit).and_return(false)
         os_info_double = double("os_info")
-        allow(provider.run_context.node.kernel).to receive(:os_info).and_return(os_info_double)
-        allow(os_info_double).to receive(:system_directory).and_return("C:\\Windows\\system32")
+        allow(provider.run_context.node["kernel"]).to receive(:[]).with("os_info").and_return(os_info_double)
+        allow(os_info_double).to receive(:[]).with("system_directory").and_return("C:\\Windows\\system32")
       end
 
       it "sets the -File flag as the last flag" do
@@ -74,7 +84,7 @@ describe Chef::Provider::PowershellScript, "action_run" do
 
         provider_flags.find do |value|
           execution_policy_index += 1
-          execution_policy_specified = value.casecmp("-ExecutionPolicy".downcase).zero?
+          execution_policy_specified = value.casecmp("-ExecutionPolicy".downcase) == 0
         end
 
         execution_policy = execution_policy_specified ? provider_flags[execution_policy_index] : nil

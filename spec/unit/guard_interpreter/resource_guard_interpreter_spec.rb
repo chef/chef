@@ -105,9 +105,9 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
             parent_resource
           end
 
-          let(:shell_out) {
+          let(:shell_out) do
             instance_double(Mixlib::ShellOut, :live_stream => true, :run_command => true, :error! => nil)
-          }
+          end
 
           before do
             # TODO for some reason Windows is failing on executing a ruby script

@@ -34,6 +34,8 @@ class Chef
       # This tries to find the user to execute brew as.  If a user is provided, that overrides the brew
       # executable user.  It is an error condition if the brew executable owner is root or we cannot find
       # the brew executable.
+      # @param [String, Integer] provided_user
+      # @return [Integer] UID of the user
       def find_homebrew_uid(provided_user = nil)
         # They could provide us a user name or a UID
         if provided_user
@@ -41,8 +43,17 @@ class Chef
           return Etc.getpwnam(provided_user).uid
         end
 
-        @homebrew_owner ||= calculate_owner
-        @homebrew_owner
+        @homebrew_owner_uid ||= calculate_owner
+        @homebrew_owner_uid
+      end
+
+      # Use find_homebrew_uid to return the UID and then lookup the
+      # name from that UID because sometimes you want the name not the UID
+      # @param [String, Integer] provided_user
+      # @return [String] username
+      def find_homebrew_username(provided_user = nil)
+        @homebrew_owner_username ||= Etc.getpwuid(find_homebrew_uid(provided_user)).name
+        @homebrew_owner_username
       end
 
       private

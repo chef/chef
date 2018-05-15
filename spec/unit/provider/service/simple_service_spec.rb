@@ -106,7 +106,7 @@ NOMOCKINGSTRINGSPLZ
 
   describe "when starting the service" do
     it "should call the start command if one is specified" do
-      allow(@new_resource).to receive(:start_command).and_return("#{@new_resource.start_command}")
+      @new_resource.start_command("#{@new_resource.start_command}")
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("#{@new_resource.start_command}")
       @provider.start_service()
     end

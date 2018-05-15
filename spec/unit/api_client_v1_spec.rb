@@ -326,13 +326,13 @@ describe Chef::ApiClientV1 do
   describe "Versioned API Interactions" do
     let(:response_406) { OpenStruct.new(:code => "406") }
     let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
-    let(:payload) {
+    let(:payload) do
       {
         :name => "some_name",
         :validator => true,
         :admin => true,
       }
-    }
+    end
 
     before do
       @client = Chef::ApiClientV1.new

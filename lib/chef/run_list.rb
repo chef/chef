@@ -47,13 +47,13 @@ class Chef
     end
 
     def role_names
-      @run_list_items.inject([]) { |memo, run_list_item| memo << run_list_item.name if run_list_item.role? ; memo }
+      @run_list_items.inject([]) { |memo, run_list_item| memo << run_list_item.name if run_list_item.role?; memo }
     end
 
     alias :roles :role_names
 
     def recipe_names
-      @run_list_items.inject([]) { |memo, run_list_item| memo << run_list_item.name if run_list_item.recipe? ; memo }
+      @run_list_items.inject([]) { |memo, run_list_item| memo << run_list_item.name if run_list_item.recipe?; memo }
     end
 
     alias :recipes :recipe_names

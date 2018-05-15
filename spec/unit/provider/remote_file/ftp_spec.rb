@@ -19,12 +19,12 @@
 require "spec_helper"
 
 describe Chef::Provider::RemoteFile::FTP do
-  let(:enclosing_directory) {
+  let(:enclosing_directory) do
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-  }
-  let(:resource_path) {
+  end
+  let(:resource_path) do
     canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-  }
+  end
 
   let(:new_resource) do
     r = Chef::Resource::RemoteFile.new("remote file ftp backend test (new resource)")

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-if Chef::Platform.windows? && (not Chef::Platform.windows_server_2003?)
+if Chef::Platform.windows?
   if !defined? Chef::Win32EventLogLoaded
     if defined? Windows::Constants
       [:INFINITE, :WAIT_FAILED, :FORMAT_MESSAGE_IGNORE_INSERTS, :ERROR_INSUFFICIENT_BUFFER].each do |c|
@@ -26,6 +26,6 @@ if Chef::Platform.windows? && (not Chef::Platform.windows_server_2003?)
     end
 
     require "win32/eventlog"
-    Chef::Win32EventLogLoaded = true
+    Chef::Win32EventLogLoaded = true # rubocop:disable Naming/ConstantName
   end
 end

@@ -72,7 +72,7 @@ EOM
           file "data_bags/x/y.json", {}
           file "environments/_default.json", { "description" => "The default Chef environment" }
           file "environments/x.json", {}
-          file "nodes/x.json", {}
+          file "nodes/x.json", { "normal" => { "tags" => [] } }
           file "roles/x.json", {}
           file "users/admin.json", { "admin" => true, "public_key" => ChefZero::PUBLIC_KEY }
           file "users/x.json", { "public_key" => ChefZero::PUBLIC_KEY }
@@ -366,7 +366,7 @@ EOM
           file "data_bags/x/y.json", {}
           file "environments/_default.json", { "description" => "The default Chef environment" }
           file "environments/x.json", {}
-          file "nodes/x.json", {}
+          file "nodes/x.json", { "normal" => { "tags" => [] } }
           file "roles/x.json", {}
           file "users/admin.json", { "admin" => true, "public_key" => ChefZero::PUBLIC_KEY }
           file "users/x.json", { "public_key" => ChefZero::PUBLIC_KEY }

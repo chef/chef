@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ class Chef
         # @api private
         attr_accessor :current_run_levels
 
-        provides :service, platform_family: %w{rhel fedora suse} do |node|
+        provides :service, platform_family: %w{rhel fedora suse amazon} do |node|
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
         end
 
@@ -109,7 +109,7 @@ class Chef
           (run_levels.nil? || run_levels.empty?) ? "" : "--level #{run_levels.join('')} "
         end
 
-        def enable_service()
+        def enable_service
           unless run_levels.nil? || run_levels.empty?
             disable_levels = current_run_levels - run_levels
             shell_out! "/sbin/chkconfig --level #{disable_levels.join('')} #{new_resource.service_name} off" unless disable_levels.empty?
@@ -117,7 +117,7 @@ class Chef
           shell_out! "/sbin/chkconfig #{levels}#{new_resource.service_name} on"
         end
 
-        def disable_service()
+        def disable_service
           shell_out! "/sbin/chkconfig #{levels}#{new_resource.service_name} off"
         end
       end

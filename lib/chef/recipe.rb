@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,16 +18,7 @@
 #
 
 require "chef/dsl/recipe"
-require "chef/dsl/data_query"
-require "chef/dsl/platform_introspection"
-require "chef/dsl/include_recipe"
-require "chef/dsl/registry_helper"
-require "chef/dsl/reboot_pending"
-require "chef/dsl/audit"
-require "chef/dsl/powershell"
-
 require "chef/mixin/from_file"
-
 require "chef/mixin/deprecation"
 
 class Chef
@@ -75,12 +66,6 @@ class Chef
       run_context.node
     end
 
-    # Used by the DSL to look up resources when executing in the context of a
-    # recipe.
-    def resources(*args)
-      run_context.resource_collection.find(*args)
-    end
-
     # This was moved to Chef::Node#tag, redirecting here for compatibility
     def tag(*tags)
       run_context.node.tag(*tags)
@@ -112,6 +97,14 @@ class Chef
       tags.each do |tag|
         run_context.node.tags.delete(tag)
       end
+    end
+
+    def to_s
+      "cookbook: #{cookbook_name ? cookbook_name : "(none)"}, recipe: #{recipe_name ? recipe_name : "(none)"} "
+    end
+
+    def inspect
+      to_s
     end
   end
 end

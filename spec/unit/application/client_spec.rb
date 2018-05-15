@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,6 +74,8 @@ describe Chef::Application::Client, "reconfigure" do
   end
 
   before do
+    Chef::Config.reset
+
     allow(Kernel).to receive(:trap).and_return(:ok)
     allow(::File).to receive(:read).and_call_original
     allow(::File).to receive(:read).with(Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_return("")
@@ -105,6 +107,7 @@ describe Chef::Application::Client, "reconfigure" do
     shared_examples "sets the configuration" do |cli_arguments, expected_config|
       describe cli_arguments do
         before do
+          cli_arguments ||= ""
           ARGV.replace(cli_arguments.split)
           app.reconfigure
         end
@@ -141,6 +144,69 @@ describe Chef::Application::Client, "reconfigure" do
                         :daemonize => true
       end
     end
+
+    describe "--[no]-fork" do
+      before do
+        Chef::Config[:interval] = nil # FIXME: we're overriding the before block setting this
+      end
+
+      context "by default" do
+        it_behaves_like "sets the configuration", "", client_fork: false
+      end
+
+      context "with --fork" do
+        it_behaves_like "sets the configuration", "--fork", client_fork: true
+      end
+
+      context "with --no-fork" do
+        it_behaves_like "sets the configuration", "--no-fork", client_fork: false
+      end
+
+      context "with an interval" do
+        it_behaves_like "sets the configuration", "--interval 1800", client_fork: true
+      end
+
+      context "with once" do
+        it_behaves_like "sets the configuration", "--once", client_fork: false
+      end
+
+      context "with daemonize", :unix_only do
+        it_behaves_like "sets the configuration", "--daemonize", client_fork: true
+      end
+    end
+
+    describe "--config-option" do
+      context "with a single value" do
+        it_behaves_like "sets the configuration", "--config-option chef_server_url=http://example",
+                        :chef_server_url => "http://example"
+      end
+
+      context "with two values" do
+        it_behaves_like "sets the configuration", "--config-option chef_server_url=http://example --config-option policy_name=web",
+                        :chef_server_url => "http://example", :policy_name => "web"
+      end
+
+      context "with a boolean value" do
+        it_behaves_like "sets the configuration", "--config-option minimal_ohai=true",
+                        :minimal_ohai => true
+      end
+
+      context "with an empty value" do
+        it "should terminate with message" do
+          expect(Chef::Application).to receive(:fatal!).with('Unparsable config option ""').and_raise("so ded")
+          ARGV.replace(["--config-option", ""])
+          expect { app.reconfigure }.to raise_error "so ded"
+        end
+      end
+
+      context "with an invalid value" do
+        it "should terminate with message" do
+          expect(Chef::Application).to receive(:fatal!).with('Unparsable config option "asdf"').and_raise("so ded")
+          ARGV.replace(["--config-option", "asdf"])
+          expect { app.reconfigure }.to raise_error "so ded"
+        end
+      end
+    end
   end
 
   describe "when configured to not fork the client process" do
@@ -151,21 +217,16 @@ describe Chef::Application::Client, "reconfigure" do
       Chef::Config[:splay] = nil
     end
 
-    context "when interval is given" do
-      before do
-        Chef::Config[:interval] = 600
-        allow(ChefConfig).to receive(:windows?).and_return(false)
-      end
-
-      it "should terminate with message" do
-        expect(Chef::Application).to receive(:fatal!).with(
-"Unforked chef-client interval runs are disabled in Chef 12.
+    it "should terminal with message when interval is given" do
+      Chef::Config[:interval] = 600
+      allow(ChefConfig).to receive(:windows?).and_return(false)
+      expect(Chef::Application).to receive(:fatal!).with(
+        "Unforked chef-client interval runs are disabled in Chef 12.
 Configuration settings:
   interval  = 600 seconds
 Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
-        )
-        app.reconfigure
-      end
+      )
+      app.reconfigure
     end
 
     context "when interval is given on windows" do
@@ -222,6 +283,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       before do
         allow(@app).to receive(:interval_sleep).with(wait_secs).and_return true
         allow(@app).to receive(:interval_sleep).with(0).and_call_original
+        allow(@app).to receive(:time_to_sleep).and_return(1)
       end
 
       it "sleeps for the amount of time passed" do
@@ -385,6 +447,7 @@ describe Chef::Application::Client, "configure_chef" do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
+    allow(::File).to receive(:read).and_call_original
     allow(::File).to receive(:read).with(Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_return("")
     app.configure_chef
   end
@@ -484,6 +547,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
     end
 
     it "shouldn't sleep when sent USR1" do
+      allow(@app).to receive(:interval_sleep).and_return true
       allow(@app).to receive(:interval_sleep).with(0).and_call_original
       pid = fork do
         @app.run_application

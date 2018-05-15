@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-require "chef/chef_fs/file_system/operation_failed_error"
+require "chef/chef_fs/file_system/exceptions"
 
 describe Chef::ChefFS::FileSystem::OperationFailedError do
   context "message" do
@@ -30,17 +30,17 @@ describe Chef::ChefFS::FileSystem::OperationFailedError do
         allow(@response).to receive(:code).and_return("400")
         allow(@response).to receive(:body).and_return(response_body)
         exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
-        expect {
+        expect do
           raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, exception), error_message
-        }.to raise_error(Chef::ChefFS::FileSystem::OperationFailedError, "#{error_message} cause: #{response_body}")
+        end.to raise_error(Chef::ChefFS::FileSystem::OperationFailedError, "#{error_message} cause: #{response_body}")
       end
     end
 
     context "does not have a cause attribute" do
       it "does not include error cause" do
-        expect {
+        expect do
           raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self), error_message
-        }.to raise_error(Chef::ChefFS::FileSystem::OperationFailedError, error_message)
+        end.to raise_error(Chef::ChefFS::FileSystem::OperationFailedError, error_message)
       end
     end
   end

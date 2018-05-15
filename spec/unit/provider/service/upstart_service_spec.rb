@@ -71,12 +71,8 @@ describe Chef::Provider::Service::Upstart do
       @current_resource = Chef::Resource::Service.new("rsyslog")
       allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
 
-      @status = double("Status", :exitstatus => 0)
-      allow(@provider).to receive(:popen4).and_return(@status)
-      @stdin = StringIO.new
-      @stdout = StringIO.new
-      @stderr = StringIO.new
-      @pid = double("PID")
+      @status = double("Status", exitstatus: 0, stdout: "", stderr: "")
+      allow(@provider).to receive(:shell_out).and_return(@status)
 
       allow(::File).to receive(:exists?).and_return(true)
       allow(::File).to receive(:open).and_return(true)
@@ -100,59 +96,65 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should run '/sbin/status rsyslog'" do
-      expect(@provider).to receive(:popen4).with("/sbin/status rsyslog").and_return(@status)
+      expect(@provider).to receive(:shell_out).with("/sbin/status rsyslog").and_return(@status)
       @provider.load_current_resource
     end
 
     describe "when the status command uses the new format" do
-      before do
-      end
-
-      it "should set running to true if the status command returns 0" do
-        @stdout = StringIO.new("rsyslog start/running")
-        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      it "should set running to true if the goal state is 'start'" do
+        expect(@status).to receive(:stdout).and_return("rsyslog start/running")
         @provider.load_current_resource
         expect(@current_resource.running).to be_truthy
       end
 
-      it "should set running to false if the status command returns anything except 0" do
-        @stdout = StringIO.new("rsyslog stop/waiting")
-        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      it "should set running to true if the goal state is 'start' but current state is not 'running'" do
+        expect(@status).to receive(:stdout).and_return("rsyslog start/starting")
+        @provider.load_current_resource
+        expect(@current_resource.running).to be_truthy
+      end
+
+      it "should set running to false if the goal state is 'stop'" do
+        expect(@status).to receive(:stdout).and_return("rsyslog stop/waiting")
         @provider.load_current_resource
         expect(@current_resource.running).to be_falsey
       end
     end
 
     describe "when the status command uses the new format with an instance" do
-      before do
-      end
-
-      it "should set running to true if the status command returns 0" do
-        @stdout = StringIO.new("rsyslog (test) start/running, process 100")
-        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      it "should set running to true if the goal state is 'start'" do
+        expect(@status).to receive(:stdout).and_return("rsyslog (test) start/running, process 100")
         @provider.load_current_resource
         expect(@current_resource.running).to be_truthy
       end
 
-      it "should set running to false if the status command returns anything except 0" do
-        @stdout = StringIO.new("rsyslog (test) stop/waiting, process 100")
-        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      it "should set running to true if the goal state is 'start' but current state is not 'running'" do
+        expect(@status).to receive(:stdout).and_return("rsyslog (test) start/starting, process 100")
+        @provider.load_current_resource
+        expect(@current_resource.running).to be_truthy
+      end
+
+      it "should set running to false if the goal state is 'stop'" do
+        expect(@status).to receive(:stdout).and_return("rsyslog (test) stop/waiting, process 100")
         @provider.load_current_resource
         expect(@current_resource.running).to be_falsey
       end
     end
 
     describe "when the status command uses the old format" do
-      it "should set running to true if the status command returns 0" do
-        @stdout = StringIO.new("rsyslog (start) running, process 32225")
-        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      it "should set running to true if the goal state is 'start'" do
+        expect(@status).to receive(:stdout).and_return("rsyslog (start) running, process 32225")
         @provider.load_current_resource
         expect(@current_resource.running).to be_truthy
       end
 
-      it "should set running to false if the status command returns anything except 0" do
-        @stdout = StringIO.new("rsyslog (stop) waiting")
-        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      it "should set running to true if the goal state is 'start' but current state is not 'running'" do
+        expect(@status).to receive(:stdout).and_return("rsyslog (start) starting, process 32225")
+        @provider.load_current_resource
+        expect(@current_resource.running).to be_truthy
+      end
+
+      it "should set running to false if the goal state is 'stop'" do
+        expect(@status).to receive(:stdout).and_return("rsyslog (stop) waiting")
         @provider.load_current_resource
         expect(@current_resource.running).to be_falsey
       end
@@ -192,7 +194,7 @@ describe Chef::Provider::Service::Upstart do
 
     describe "when a status command has been specified" do
       before do
-        allow(@new_resource).to receive(:status_command).and_return("/bin/chefhasmonkeypants status")
+        @new_resource.status_command("/bin/chefhasmonkeypants status")
       end
 
       it "should run the services status command if one has been specified" do
@@ -214,8 +216,8 @@ describe Chef::Provider::Service::Upstart do
       end
     end
 
-    it "should track state when we fail to obtain service status via upstart_state" do
-      expect(@provider).to receive(:upstart_state).and_raise Chef::Exceptions::Exec
+    it "should track state when we fail to obtain service status via upstart_goal_state" do
+      expect(@provider).to receive(:upstart_goal_state).and_raise Chef::Exceptions::Exec
       @provider.load_current_resource
       expect(@provider.instance_variable_get("@command_success")).to eq(false)
     end
@@ -263,18 +265,20 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should call the start command if one is specified" do
-      allow(@new_resource).to receive(:start_command).and_return("/sbin/rsyslog startyousillysally")
+      @provider.upstart_service_running = false
+      @new_resource.start_command("/sbin/rsyslog startyousillysally")
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog startyousillysally")
       @provider.start_service()
     end
 
     it "should call '/sbin/start service_name' if no start command is specified" do
+      @provider.upstart_service_running = false
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(shell_out_success)
       @provider.start_service()
     end
 
     it "should not call '/sbin/start service_name' if it is already running" do
-      allow(@current_resource).to receive(:running).and_return(true)
+      @provider.upstart_service_running = true
       expect(@provider).not_to receive(:shell_out_with_systems_locale!)
       @provider.start_service()
     end
@@ -290,18 +294,21 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call the restart command if one is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
-      allow(@new_resource).to receive(:restart_command).and_return("/sbin/rsyslog restartyousillysally")
+      @new_resource.restart_command("/sbin/rsyslog restartyousillysally")
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog restartyousillysally")
       @provider.restart_service()
     end
 
-    it "should call '/sbin/restart service_name' if no restart command is specified" do
-      allow(@current_resource).to receive(:running).and_return(true)
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/restart #{@new_resource.service_name}").and_return(shell_out_success)
+    it "should call start/sleep/stop if no restart command is specified" do
+      @provider.upstart_service_running = true
+      expect(@provider).to receive(:stop_service)
+      expect(@provider).to receive(:sleep).with(1)
+      expect(@provider).to receive(:start_service)
       @provider.restart_service()
     end
 
     it "should call '/sbin/start service_name' if restart_service is called for a stopped service" do
+      @provider.upstart_service_running = false
       allow(@current_resource).to receive(:running).and_return(false)
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(shell_out_success)
       @provider.restart_service()
@@ -309,7 +316,7 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call the reload command if one is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
-      allow(@new_resource).to receive(:reload_command).and_return("/sbin/rsyslog reloadyousillysally")
+      @new_resource.reload_command("/sbin/rsyslog reloadyousillysally")
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog reloadyousillysally")
       @provider.reload_service()
     end
@@ -321,22 +328,24 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should call the stop command if one is specified" do
-      allow(@current_resource).to receive(:running).and_return(true)
-      allow(@new_resource).to receive(:stop_command).and_return("/sbin/rsyslog stopyousillysally")
+      @provider.upstart_service_running = true
+      @new_resource.stop_command("/sbin/rsyslog stopyousillysally")
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally")
       @provider.stop_service()
     end
 
     it "should call '/sbin/stop service_name' if no stop command is specified" do
-      allow(@current_resource).to receive(:running).and_return(true)
+      @provider.upstart_service_running = true
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/stop #{@new_resource.service_name}").and_return(shell_out_success)
       @provider.stop_service()
     end
 
     it "should not call '/sbin/stop service_name' if it is already stopped" do
+      @provider.upstart_service_running = false
       allow(@current_resource).to receive(:running).and_return(false)
       expect(@provider).not_to receive(:shell_out_with_systems_locale!).with("/sbin/stop #{@new_resource.service_name}")
       @provider.stop_service()
+      expect(@upstart_service_running).to be_falsey
     end
   end
 end

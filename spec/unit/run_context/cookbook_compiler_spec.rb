@@ -158,7 +158,47 @@ describe Chef::RunContext::CookbookCompiler do
   end
 
   describe "loading recipes" do
-    # Tests for this behavior are in RunContext's tests
+    # Additional tests for this behavior are in RunContext's tests
+
+    describe "event dispatch" do
+      let(:recipe) { "dependency1::default" }
+      let(:recipe_path) do
+        File.expand_path("../../../data/run_context/cookbooks/dependency1/recipes/default.rb", __FILE__)
+      end
+      before do
+        node.run_list(recipe)
+      end
+      subject { compiler.compile_recipes }
+
+      it "dispatches normally" do
+        allow(run_context).to receive(:load_recipe)
+        expect(events).to receive(:recipe_load_start).with(1)
+        expect(events).to receive(:recipe_file_loaded).with(recipe_path, "dependency1::default")
+        expect(events).to receive(:recipe_load_complete).with(no_args)
+        subject
+      end
+
+      it "dispatches when a recipe is not found" do
+        exc = Chef::Exceptions::RecipeNotFound.new
+        allow(run_context).to receive(:load_recipe).and_raise(exc)
+        expect(events).to receive(:recipe_load_start).with(1)
+        expect(events).to_not receive(:recipe_file_loaded)
+        expect(events).to receive(:recipe_not_found).with(exc)
+        expect(events).to_not receive(:recipe_load_complete)
+        expect { subject }.to raise_error(exc)
+      end
+
+      it "dispatches when a recipe has an error" do
+        exc = ArgumentError.new
+        allow(run_context).to receive(:load_recipe).and_raise(exc)
+        expect(events).to receive(:recipe_load_start).with(1)
+        expect(events).to_not receive(:recipe_file_loaded)
+        expect(events).to receive(:recipe_file_load_failed).with(recipe_path, exc, "dependency1::default")
+        expect(events).to_not receive(:recipe_load_complete)
+        expect { subject }.to raise_error(exc)
+      end
+    end
+
   end
 
   describe "listing cookbook order" do

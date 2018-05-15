@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,8 +32,6 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-
-    attr_accessor :chef_server_rest
 
     # Create a new Chef::Role object.
     def initialize(chef_server_rest: nil)
@@ -166,12 +164,6 @@ class Chef
       override_attributes(o.override_attributes)
       env_run_lists(o.env_run_lists) unless o.env_run_lists.nil?
       self
-    end
-
-    # Create a Chef::Role from JSON
-    def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Role#from_hash")
-      from_hash(o)
     end
 
     def self.from_hash(o)

@@ -32,21 +32,21 @@ class Chef
         include Chef::Mixin::HomebrewUser
 
         def load_current_resource
-          self.current_resource = Chef::Resource::Package.new(new_resource.name)
+          self.current_resource = Chef::Resource::HomebrewPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
           current_resource.version(current_installed_version)
-          Chef::Log.debug("#{new_resource} current version is #{current_resource.version}") if current_resource.version
+          logger.trace("#{new_resource} current version is #{current_resource.version}") if current_resource.version
 
           @candidate_version = candidate_version
 
-          Chef::Log.debug("#{new_resource} candidate version is #{@candidate_version}") if @candidate_version
+          logger.trace("#{new_resource} candidate version is #{@candidate_version}") if @candidate_version
 
           current_resource
         end
 
         def install_package(name, version)
           unless current_resource.version == version
-            brew("install", new_resource.options, name)
+            brew("install", options, name)
           end
         end
 
@@ -56,24 +56,25 @@ class Chef
           if current_version.nil? || current_version.empty?
             install_package(name, version)
           elsif current_version != version
-            brew("upgrade", new_resource.options, name)
+            brew("upgrade", options, name)
           end
         end
 
         def remove_package(name, version)
           if current_resource.version
-            brew("uninstall", new_resource.options, name)
+            brew("uninstall", options, name)
           end
         end
 
         # Homebrew doesn't really have a notion of purging, do a "force remove"
         def purge_package(name, version)
-          new_resource.options((new_resource.options || "") << " --force").strip
-          remove_package(name, version)
+          if current_resource.version
+            brew("uninstall", "--force", options, name)
+          end
         end
 
         def brew(*args)
-          get_response_from_command("brew #{args.join(' ')}")
+          get_response_from_command("brew", *args)
         end
 
         # We implement a querying method that returns the JSON-as-Hash
@@ -121,13 +122,13 @@ class Chef
 
         private
 
-        def get_response_from_command(command)
+        def get_response_from_command(*command)
           homebrew_uid = find_homebrew_uid(new_resource.respond_to?(:homebrew_user) && new_resource.homebrew_user)
           homebrew_user = Etc.getpwuid(homebrew_uid)
 
-          Chef::Log.debug "Executing '#{command}' as user '#{homebrew_user.name}'"
+          logger.trace "Executing '#{command.join(' ')}' as user '#{homebrew_user.name}'"
           # FIXME: this 1800 second default timeout should be deprecated
-          output = shell_out_with_timeout!(command, :timeout => 1800, :user => homebrew_uid, :environment => { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
+          output = shell_out_compact_timeout!(*command, timeout: 1800, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp
         end
 

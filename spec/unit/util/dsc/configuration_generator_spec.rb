@@ -25,7 +25,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
     Chef::Util::DSC::ConfigurationGenerator.new(node, "tmp")
   end
 
-  describe '#validate_configuration_name!' do
+  describe "#validate_configuration_name!" do
     it "should not raise an error if a name contains all upper case letters" do
       conf_man.send(:validate_configuration_name!, "HELLO")
     end
@@ -40,9 +40,9 @@ describe Chef::Util::DSC::ConfigurationGenerator do
 
     %w{! @ # $ % ^ & * & * ( ) - = + \{ \} . ? < > \\ /}.each do |sym|
       it "raises an Argument error if it configuration name contains #{sym}" do
-        expect {
+        expect do
           conf_man.send(:validate_configuration_name!, "Hello#{sym}")
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
     end
   end
@@ -57,15 +57,15 @@ describe Chef::Util::DSC::ConfigurationGenerator do
       end
 
       it "should raise an ArgumentError if you try to override outputpath" do
-        expect {
+        expect do
           conf_man.send(:get_merged_configuration_flags!, { "outputpath" => "a" }, "hello")
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
 
       it "should be case insensitive for switches that are not allowed" do
-        expect {
+        expect do
           conf_man.send(:get_merged_configuration_flags!, { "OutputPath" => "a" }, "hello")
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
 
       it "should be case insensitive to switches that are allowed" do
@@ -83,15 +83,15 @@ describe Chef::Util::DSC::ConfigurationGenerator do
       end
 
       it "should raise an ArgumentError if you try to override outputpath" do
-        expect {
+        expect do
           conf_man.send(:get_merged_configuration_flags!, { :outputpath => "a" }, "hello")
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
 
       it "should be case insensitive for switches that are not allowed" do
-        expect {
+        expect do
           conf_man.send(:get_merged_configuration_flags!, { :OutputPath => "a" }, "hello")
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
 
       it "should be case insensitive to switches that are allowed" do
@@ -121,7 +121,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
     #
   end
 
-  describe '#write_document_generation_script' do
+  describe "#write_document_generation_script" do
     let(:file_like_object) { double("file like object") }
 
     it "should write the input to a file" do

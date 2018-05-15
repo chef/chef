@@ -44,15 +44,15 @@ begin
       out << cbgb(cbgb["corporations"], cbgb["Org"]["Corporate-Contributors"]["governers"]) + "\n\n"
       out << "### " + cbgb["Org"]["Lieutenants"]["title"] + "\n\n"
       out << cbgb(cbgb["people"], cbgb["Org"]["Lieutenants"]["governers"]) + "\n\n"
-      File.open(CBGB_TARGET, "w") { |fn|
+      File.open(CBGB_TARGET, "w") do |fn|
         fn.write out
-      }
+      end
     end
   end
 
   def components(list, cmp)
     out = ""
-    cmp.each do |k, v|
+    cmp.each_value do |v|
       out << "\n#### #{v['title'].gsub('#', '\\#')}\n"
       out << cbgb(list, v["cbgb"])
     end

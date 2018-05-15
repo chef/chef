@@ -23,7 +23,7 @@ describe Chef::Knife::NodeEdit do
 
   # helper to convert the view from Chef objects into Ruby objects representing JSON
   def deserialized_json_view
-    actual = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json_pretty(@knife.node_editor.send(:view)))
+    Chef::JSONCompat.from_json(Chef::JSONCompat.to_json_pretty(@knife.node_editor.send(:view)))
   end
 
   before(:each) do
@@ -45,6 +45,8 @@ describe Chef::Knife::NodeEdit do
 
   describe "after loading the node" do
     before do
+      @knife.config[:all_attributes] = false
+
       allow(@knife).to receive(:node).and_return(@node)
       @node.automatic_attrs = { :go => :away }
       @node.default_attrs = { :hide => :me }

@@ -24,21 +24,32 @@ class Chef
       banner "knife cookbook site show COOKBOOK [VERSION] (options)"
       category "cookbook site"
 
+      option :supermarket_site,
+        :short => "-m SUPERMARKET_SITE",
+        :long => "--supermarket-site SUPERMARKET_SITE",
+        :description => "Supermarket Site",
+        :default => "https://supermarket.chef.io",
+        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+
       def run
         output(format_for_display(get_cookbook_data))
+      end
+
+      def supermarket_uri
+        "#{config[:supermarket_site]}/api/v1"
       end
 
       def get_cookbook_data
         case @name_args.length
         when 1
-          noauth_rest.get("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}")
+          noauth_rest.get("#{supermarket_uri}/cookbooks/#{@name_args[0]}")
         when 2
-          noauth_rest.get("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}/versions/#{name_args[1].tr('.', '_')}")
+          noauth_rest.get("#{supermarket_uri}/cookbooks/#{@name_args[0]}/versions/#{name_args[1].tr('.', '_')}")
         end
       end
 
       def get_cookbook_list(items = 10, start = 0, cookbook_collection = {})
-        cookbooks_url = "https://supermarket.chef.io/api/v1/cookbooks?items=#{items}&start=#{start}"
+        cookbooks_url = "#{supermarket_uri}/cookbooks?items=#{items}&start=#{start}"
         cr = noauth_rest.get(cookbooks_url)
         cr["items"].each do |cookbook|
           cookbook_collection[cookbook["cookbook_name"]] = cookbook

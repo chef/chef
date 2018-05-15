@@ -53,13 +53,13 @@ describe Chef::Provider::Mount::Mount do
       expect(@provider.current_resource.device).to eq("/dev/sdz1")
     end
 
-    it "should accecpt device_type :uuid", :not_supported_on_solaris do
+    it "should accept device_type :uuid", :not_supported_on_solaris do
       @status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
       expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(@status)
-      @provider.load_current_resource()
+      @provider.load_current_resource
       @provider.mountable?
     end
 
@@ -82,7 +82,7 @@ describe Chef::Provider::Mount::Mount do
 
     it "should raise an error if the mount device does not exist" do
       allow(::File).to receive(:exists?).with("/dev/sdz1").and_return false
-      expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "should not call mountable? with load_current_resource - CHEF-1565" do
@@ -99,25 +99,25 @@ describe Chef::Provider::Mount::Mount do
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
       expect(::File).to receive(:exists?).with("").and_return(false)
-      expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "should raise an error if the mount point does not exist" do
       allow(::File).to receive(:exists?).with("/tmp/foo").and_return false
-      expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    %w{tmpfs fuse cgroup}.each do |fstype|
+    %w{tmpfs fuse cgroup vboxsf zfs}.each do |fstype|
       it "does not expect the device to exist for #{fstype}" do
         @new_resource.fstype(fstype)
         @new_resource.device("whatever")
-        expect { @provider.load_current_resource();@provider.mountable? }.not_to raise_error
+        expect { @provider.load_current_resource(); @provider.mountable? }.not_to raise_error
       end
     end
 
     it "does not expect the device to exist if it's none" do
       @new_resource.device("none")
-      expect { @provider.load_current_resource();@provider.mountable? }.not_to raise_error
+      expect { @provider.load_current_resource(); @provider.mountable? }.not_to raise_error
     end
 
     it "should set mounted true if the mount point is found in the mounts list" do
@@ -374,6 +374,28 @@ describe Chef::Provider::Mount::Mount do
       end
     end
 
+    describe "default_mount_options" do
+      it "should return the correct default mount options for Linux" do
+        @provider.node.override[:os] = "linux"
+        expect(@provider.default_mount_options).to eq("defaults")
+      end
+
+      it "should return the correct default mount options for AIX" do
+        @provider.node.override[:os] = "aix"
+        expect(@provider.default_mount_options).to eq("rw")
+      end
+
+      it "should return the correct default mount options for Darwin" do
+        @provider.node.override[:os] = "darwin"
+        expect(@provider.default_mount_options).to eq("rw")
+      end
+
+      it "should return the correct default mount options for FreeBSD" do
+        @provider.node.override[:os] = "freebsd"
+        expect(@provider.default_mount_options).to eq("rw")
+      end
+    end
+
     describe "when enabling the fs" do
       it "should enable if enabled isn't true" do
         @current_resource.enabled(false)
@@ -468,6 +490,36 @@ describe Chef::Provider::Mount::Mount do
         expect(::File).not_to receive(:open).and_yield(@fstab)
 
         @provider.disable_fs
+      end
+    end
+
+    # the fstab might contain the mount with the device as a device but the resource has a label.
+    # we should not create two mount lines, but update the existing one
+    # not supported on solaris because it can't cope with a UUID device type
+    context "when the device is described differently", :not_supported_on_solaris do
+      it "should update the existing line" do
+        @current_resource.enabled(true)
+        status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
+        expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
+
+        filesystems = [%q{/dev/sdy1 /tmp/foo  ext3  defaults  1 2},
+                      %q{/dev/sdz1 /tmp/foo  ext3  defaults  1 2}].join("\n")
+        fstab = StringIO.new filesystems
+
+        fstab_write = StringIO.new
+
+        allow(::File).to receive(:readlines).with("/etc/fstab").and_return(fstab.readlines)
+        allow(::File).to receive(:open).with("/etc/fstab", "w").and_yield(fstab_write)
+        allow(::File).to receive(:open).with("/etc/fstab", "a").and_yield(fstab_write)
+
+        @new_resource.device_type :uuid
+        @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
+        @new_resource.dump 1
+
+        @provider.enable_fs
+        expect(fstab_write.string).to match(%r{/dev/sdy1\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
+        expect(fstab_write.string).to match(%r{UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
+        expect(fstab_write.string).not_to match(%r{/dev/sdz1\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
       end
     end
   end

@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +21,17 @@ require "chef/node/immutable_collections"
 
 describe Chef::Node::ImmutableMash do
   before do
-    @data_in = { :top => { :second_level => "some value" },
+    @data_in = { "top" => { "second_level" => "some value" },
                  "top_level_2" => %w{array of values},
-                 :top_level_3 => [{ :hash_array => 1, :hash_array_b => 2 }],
-                 :top_level_4 => { :level2 => { :key => "value" } },
+                 "top_level_3" => [{ "hash_array" => 1, "hash_array_b" => 2 }],
+                 "top_level_4" => { "level2" => { "key" => "value" } },
     }
     @immutable_mash = Chef::Node::ImmutableMash.new(@data_in)
+  end
+
+  it "does not have any unaudited methods" do
+    unaudited_methods = Hash.instance_methods - Object.instance_methods - Chef::Node::Mixin::ImmutablizeHash::DISALLOWED_MUTATOR_METHODS - Chef::Node::Mixin::ImmutablizeHash::ALLOWED_METHODS
+    expect(unaudited_methods).to be_empty
   end
 
   it "element references like regular hash" do
@@ -54,6 +59,14 @@ describe Chef::Node::ImmutableMash do
     expect(@immutable_mash[:top_level_4][:level2]).to be_a(Chef::Node::ImmutableMash)
   end
 
+  # we only ever absorb VividMashes from other precedence levels, which already have
+  # been coerced to only have string keys, so we do not need to do that work twice (performance).
+  it "does not call convert_value like Mash/VividMash" do
+    @mash = Chef::Node::ImmutableMash.new({ test: "foo", "test2" => "bar" })
+    expect(@mash[:test]).to eql("foo")
+    expect(@mash["test2"]).to eql("bar")
+  end
+
   describe "to_hash" do
     before do
       @copy = @immutable_mash.to_hash
@@ -78,7 +91,58 @@ describe Chef::Node::ImmutableMash do
     it "should allow mutation" do
       expect { @copy["m"] = "m" }.not_to raise_error
     end
+  end
 
+  describe "dup" do
+    before do
+      @copy = @immutable_mash.dup
+    end
+
+    it "converts an immutable mash to a new mutable hash" do
+      expect(@copy).to be_instance_of(Mash)
+    end
+
+    it "converts an immutable nested mash to a new mutable hash" do
+      expect(@copy["top_level_4"]["level2"]).to be_instance_of(Mash)
+    end
+
+    it "converts an immutable nested array to a new mutable array" do
+      expect(@copy["top_level_2"]).to be_instance_of(Array)
+    end
+
+    it "should create a mash with the same content" do
+      expect(@copy).to eq(@immutable_mash)
+    end
+
+    it "should allow mutation" do
+      expect { @copy["m"] = "m" }.not_to raise_error
+    end
+  end
+
+  describe "to_h" do
+    before do
+      @copy = @immutable_mash.to_h
+    end
+
+    it "converts an immutable mash to a new mutable hash" do
+      expect(@copy).to be_instance_of(Hash)
+    end
+
+    it "converts an immutable nested mash to a new mutable hash" do
+      expect(@copy["top_level_4"]["level2"]).to be_instance_of(Hash)
+    end
+
+    it "converts an immutable nested array to a new mutable array" do
+      expect(@copy["top_level_2"]).to be_instance_of(Array)
+    end
+
+    it "should create a mash with the same content" do
+      expect(@copy).to eq(@immutable_mash)
+    end
+
+    it "should allow mutation" do
+      expect { @copy["m"] = "m" }.not_to raise_error
+    end
   end
 
   [
@@ -95,6 +159,10 @@ describe Chef::Node::ImmutableMash do
     :replace,
     :select!,
     :shift,
+    :write,
+    :write!,
+    :unlink,
+    :unlink!,
   ].each do |mutator|
     it "doesn't allow mutation via `#{mutator}'" do
       expect { @immutable_mash.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
@@ -113,7 +181,7 @@ describe Chef::Node::ImmutableArray do
 
   before do
     @immutable_array = Chef::Node::ImmutableArray.new(%w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
-    immutable_mash = Chef::Node::ImmutableMash.new({ :m => "m" })
+    immutable_mash = Chef::Node::ImmutableMash.new({ "m" => "m" })
     @immutable_nested_array = Chef::Node::ImmutableArray.new(["level1", @immutable_array, immutable_mash])
   end
 
@@ -158,6 +226,11 @@ describe Chef::Node::ImmutableArray do
     end
   end
 
+  it "does not have any unaudited methods" do
+    unaudited_methods = Array.instance_methods - Object.instance_methods - Chef::Node::Mixin::ImmutablizeArray::DISALLOWED_MUTATOR_METHODS - Chef::Node::Mixin::ImmutablizeArray::ALLOWED_METHODS
+    expect(unaudited_methods).to be_empty
+  end
+
   it "can be duped even if some elements can't" do
     @immutable_array.dup
   end
@@ -194,4 +267,61 @@ describe Chef::Node::ImmutableArray do
     end
   end
 
+  describe "dup" do
+    before do
+      @copy = @immutable_nested_array.dup
+    end
+
+    it "converts an immutable array to a new mutable array" do
+      expect(@copy).to be_instance_of(Array)
+    end
+
+    it "converts an immutable nested array to a new mutable array" do
+      expect(@copy[1]).to be_instance_of(Array)
+    end
+
+    it "converts an immutable nested mash to a new mutable hash" do
+      expect(@copy[2]).to be_instance_of(Mash)
+    end
+
+    it "should create an array with the same content" do
+      expect(@copy).to eq(@immutable_nested_array)
+    end
+
+    it "should allow mutation" do
+      expect { @copy << "m" }.not_to raise_error
+    end
+  end
+
+  describe "to_array" do
+    before do
+      @copy = @immutable_nested_array.to_array
+    end
+
+    it "converts an immutable array to a new mutable array" do
+      expect(@copy).to be_instance_of(Array)
+    end
+
+    it "converts an immutable nested array to a new mutable array" do
+      expect(@copy[1]).to be_instance_of(Array)
+    end
+
+    it "converts an immutable nested mash to a new mutable hash" do
+      expect(@copy[2]).to be_instance_of(Hash)
+    end
+
+    it "should create an array with the same content" do
+      expect(@copy).to eq(@immutable_nested_array)
+    end
+
+    it "should allow mutation" do
+      expect { @copy << "m" }.not_to raise_error
+    end
+  end
+
+  describe "#[]" do
+    it "works with array slices" do
+      expect(@immutable_array[1, 2]).to eql(%w{bar baz})
+    end
+  end
 end

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 
 require "chef/knife"
 require "chef/knife/core/node_presenter"
+require "addressable/uri"
 
 class Chef
   class Knife
@@ -35,12 +36,6 @@ class Chef
       include Knife::Core::NodeFormattingOptions
 
       banner "knife search INDEX QUERY (options)"
-
-      option :sort,
-        :short => "-o SORT",
-        :long => "--sort SORT",
-        :description => "The order to sort the results in",
-        :default => nil
 
       option :start,
         :short => "-b ROW",
@@ -78,33 +73,34 @@ class Chef
 
       def run
         read_cli_args
-        fuzzify_query
 
         if @type == "node"
           ui.use_presenter Knife::Core::NodePresenter
         end
 
         q = Chef::Search::Query.new
-        escaped_query = URI.escape(@query,
-                           Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
 
         result_items = []
         result_count = 0
 
         search_args = Hash.new
-        search_args[:sort] = config[:sort] if config[:sort]
+        search_args[:fuzz] = true
         search_args[:start] = config[:start] if config[:start]
         search_args[:rows] = config[:rows] if config[:rows]
         if config[:filter_result]
           search_args[:filter_result] = create_result_filter(config[:filter_result])
         elsif (not ui.config[:attribute].nil?) && (not ui.config[:attribute].empty?)
           search_args[:filter_result] = create_result_filter_from_attributes(ui.config[:attribute])
+        elsif config[:id_only]
+          search_args[:filter_result] = create_result_filter_from_attributes([])
         end
 
         begin
-          q.search(@type, escaped_query, search_args) do |item|
+          q.search(@type, @query, search_args) do |item|
             formatted_item = Hash.new
-            if item.is_a?(Hash)
+            if config[:id_only]
+              formatted_item = format_for_display({ "id" => item["__display_name"] })
+            elsif item.is_a?(Hash)
               # doing a little magic here to set the correct name
               formatted_item[item["__display_name"]] = item.reject { |k| k == "__display_name" }
             else
@@ -116,7 +112,7 @@ class Chef
         rescue Net::HTTPServerException => e
           msg = Chef::JSONCompat.from_json(e.response.body)["error"].first
           ui.error("knife search failed: #{msg}")
-          exit 1
+          exit 99
         end
 
         if ui.interchange?
@@ -131,6 +127,9 @@ class Chef
             end
           end
         end
+
+        # return a "failure" code to the shell so that knife search can be used in pipes similar to grep
+        exit 1 if result_count == 0
       end
 
       def read_cli_args
@@ -158,12 +157,6 @@ class Chef
         end
       end
 
-      def fuzzify_query
-        if @query !~ /:/
-          @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}* OR policy_name:*#{@query}* OR policy_group:*#{@query}*"
-        end
-      end
-
       # This method turns a set of key value pairs in a string into the appropriate data structure that the
       # chef-server search api is expecting.
       # expected input is in the form of:
@@ -183,7 +176,7 @@ class Chef
           return_id, attr_path = f.split("=")
           final_filter[return_id.to_sym] = attr_path.split(".")
         end
-        return final_filter
+        final_filter
       end
 
       def create_result_filter_from_attributes(filter_array)
@@ -193,7 +186,7 @@ class Chef
         end
         # adding magic filter so we can actually pull the name as before
         final_filter["__display_name"] = [ "name" ]
-        return final_filter
+        final_filter
       end
 
     end

@@ -10,14 +10,16 @@ end
 driver:
   name: ec2
   tags:
-    X-Project: chef-ci-acceptance
+    X-Dept: Eng
+    X-Contact: product-team
+    X-Application: chef-ci-acceptance
   aws_ssh_key_id: <%= ENV['AWS_SSH_KEY_ID'] || ENV['USER'] || ENV['USERNAME'] %>
   # test-specific stuff
   region: us-west-2
-  availability_zone: a
   subnet_id: subnet-19ac017c
   security_group_ids: ["sg-e401eb83", "sg-96274af3"]
   instance_type: m3.large
+  retryable_tries: 120
 #  associate_public_ip: true  # Don't enable public IP, as subnet specified is behind VPN
 
 # busser installation relies on this
@@ -59,17 +61,6 @@ platforms:
         architecture: x86_64
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
-        image-type: machine
-    transport:
-      username: admin
-  - name: debian-7
-    driver:
-      image_search:
-        name: debian-wheezy-*
-        owner-id: "379101102735"
-        architecture: x86_64
-        virtualization-type: hvm
-        block-device-mapping.volume-type: standard
         image-type: machine
     transport:
       username: admin
@@ -213,18 +204,7 @@ platforms:
         image-type: machine
       user_data: |
         <powershell>
-        $logfile="C:\\Program Files\\Amazon\\Ec2ConfigService\\Logs\\kitchen-ec2.log"
-        #PS Remoting and & winrm.cmd basic config
-        Enable-PSRemoting -Force -SkipNetworkProfileCheck
-        & winrm.cmd set winrm/config '@{MaxTimeoutms="1800000"}' >> $logfile
-        & winrm.cmd set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}' >> $logfile
-        & winrm.cmd set winrm/config/winrs '@{MaxShellsPerUser="50"}' >> $logfile
-        #Server settings - support username/password login
-        & winrm.cmd set winrm/config/service/auth '@{Basic="true"}' >> $logfile
-        & winrm.cmd set winrm/config/service '@{AllowUnencrypted="true"}' >> $logfile
-        & winrm.cmd set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}' >> $logfile
-        #Firewall Config
-        & netsh advfirewall firewall set rule name="Windows Remote Management (HTTP-In)" profile=public protocol=tcp localport=5985 remoteip=localsubnet new remoteip=any  >> $logfile
+        & netsh advfirewall firewall set rule name="Windows Remote Management (HTTP-In)" profile=public protocol=tcp localport=5985 remoteip=localsubnet new remoteip=any
         #Set script execution to unrestricted
         & Set-ExecutionPolicy Unrestricted -Force
         </powershell>

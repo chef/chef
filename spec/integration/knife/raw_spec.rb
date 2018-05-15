@@ -49,7 +49,9 @@ describe "knife raw", :workstation do
 
   },
   "normal": {
+    "tags": [
 
+    ]
   },
   "default": {
 

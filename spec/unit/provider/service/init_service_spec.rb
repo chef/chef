@@ -83,7 +83,7 @@ PS
 
   describe "when a status command has been specified" do
     before do
-      allow(@new_resource).to receive(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
+      @new_resource.status_command("/etc/init.d/chefhasmonkeypants status")
     end
 
     it "should run the services status command if one has been specified" do
@@ -95,7 +95,7 @@ PS
 
   describe "when an init command has been specified" do
     before do
-      allow(@new_resource).to receive(:init_command).and_return("/opt/chef-server/service/erchef")
+      @new_resource.init_command("/opt/chef-server/service/erchef")
       @provider = Chef::Provider::Service::Init.new(@new_resource, @run_context)
     end
 

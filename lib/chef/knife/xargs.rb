@@ -9,7 +9,7 @@ class Chef
 
       deps do
         require "chef/chef_fs/file_system"
-        require "chef/chef_fs/file_system/not_found_error"
+        require "chef/chef_fs/file_system/exceptions"
       end
 
       # TODO modify to remote-only / local-only pattern (more like delete)
@@ -181,7 +181,7 @@ class Chef
 
       def destroy_tempfiles(tempfiles)
         # Unlink the files now that we're done with them
-        tempfiles.keys.each { |tempfile| tempfile.close! }
+        tempfiles.each_key { |tempfile| tempfile.close! }
       end
 
       def xargs_files(command, tempfiles)

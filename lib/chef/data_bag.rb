@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,12 +33,14 @@ class Chef
     include Chef::Mixin::ParamsValidate
 
     VALID_NAME = /^[\.\-[:alnum:]_]+$/
-
-    attr_accessor :chef_server_rest
+    RESERVED_NAMES = /^(node|role|environment|client)$/
 
     def self.validate_name!(name)
       unless name =~ VALID_NAME
         raise Exceptions::InvalidDataBagName, "DataBags must have a name matching #{VALID_NAME.inspect}, you gave #{name.inspect}"
+      end
+      if name =~ RESERVED_NAMES
+        raise Exceptions::InvalidDataBagName, "DataBags may not have a name matching #{RESERVED_NAMES.inspect}, you gave #{name.inspect}"
       end
     end
 
@@ -78,12 +80,6 @@ class Chef
       Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
-    # Create a Chef::Role from JSON
-    def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::DataBag#from_hash")
-      from_hash(o)
-    end
-
     def self.from_hash(o)
       bag = new
       bag.name(o["name"])
@@ -91,7 +87,7 @@ class Chef
     end
 
     def self.list(inflate = false)
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         paths = Array(Chef::Config[:data_bag_path])
         names = []
         paths.each do |path|
@@ -118,7 +114,7 @@ class Chef
 
     # Load a Data Bag by name via either the RESTful API or local data_bag_path if run in solo mode
     def self.load(name)
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         paths = Array(Chef::Config[:data_bag_path])
         data_bag = {}
         paths.each do |path|
@@ -137,7 +133,7 @@ class Chef
             end
           end
         end
-        return data_bag
+        data_bag
       else
         Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data/#{name}")
       end

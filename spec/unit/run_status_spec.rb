@@ -100,7 +100,7 @@ describe Chef::RunStatus do
 
       describe "and some have been updated" do
         before do
-          @all_resources.first.updated = true
+          @all_resources.first.updated_by_last_action true
         end
 
         it "lists the updated resources" do

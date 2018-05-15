@@ -63,10 +63,10 @@ class Chef
       # @return [Chef::Node] the loaded node.
       def load_node
         events.node_load_start(node_name, config)
-        Chef::Log.debug("Building node object for #{node_name}")
+        Chef::Log.trace("Building node object for #{node_name}")
 
         @node =
-          if Chef::Config[:solo]
+          if Chef::Config[:solo_legacy_mode]
             Chef::Node.build(node_name)
           else
             Chef::Node.find_or_create(node_name)

@@ -101,29 +101,38 @@ class Chef
             fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
             name = node["name"] || node.name
 
-            hours, minutes, = time_difference_in_hms(node["ohai_time"])
-            hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
-            minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
             run_list = "#{node['run_list']}" if config[:run_list]
-            if hours > 24
-              color = :red
-              text = hours_text
-            elsif hours >= 1
-              color = :yellow
-              text = hours_text
+            line_parts = Array.new
+
+            if node["ohai_time"]
+              hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
+              hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
+              minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
+              seconds_text = "#{seconds} second#{seconds == 1 ? ' ' : 's'}"
+              if hours > 24
+                color = :red
+                text = hours_text
+              elsif hours >= 1
+                color = :yellow
+                text = hours_text
+              elsif minutes >= 1
+                color = :green
+                text = minutes_text
+              else
+                color = :green
+                text = seconds_text
+              end
+              line_parts << @ui.color(text, color) + " ago" << name
             else
-              color = :green
-              text = minutes_text
+              line_parts << "Node #{name} has not yet converged"
             end
 
-            line_parts = Array.new
-            line_parts << @ui.color(text, color) + " ago" << name
             line_parts << fqdn if fqdn
             line_parts << ip if ip
             line_parts << run_list if run_list
 
             if node["platform"]
-              platform = node["platform"]
+              platform = node["platform"].dup
               if node["platform_version"]
                 platform << " #{node['platform_version']}"
               end
@@ -148,7 +157,7 @@ class Chef
           difference = difference % 3600
           minutes = (difference / 60).to_i
           seconds = (difference % 60)
-          return [hours, minutes, seconds]
+          [hours, minutes, seconds]
         end
 
       end

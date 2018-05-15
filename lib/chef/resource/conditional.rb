@@ -103,7 +103,15 @@ class Chef
       end
 
       def evaluate_block
-        @block.call
+        @block.call.tap do |rv|
+          if rv.is_a?(String) && !rv.empty?
+            # This is probably a mistake:
+            #   not_if { "command" }
+            sanitized_rv = @parent_resource.sensitive ? "a string" : rv.inspect
+            Chef::Log.warn("#{@positivity} block for #{@parent_resource} returned #{sanitized_rv}, did you mean to run a command?" +
+              (@parent_resource.sensitive ? "" : " If so use '#{@positivity} #{sanitized_rv}' in your code."))
+          end
+        end
       end
 
       def short_description

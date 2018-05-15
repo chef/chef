@@ -35,7 +35,7 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            name =~ /\.json$/ && !is_dir
+            !is_dir
           end
 
           def children

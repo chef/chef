@@ -28,11 +28,13 @@ class Chef
 
           def initialize(resource, installer_type, uninstall_entries)
             @new_resource = resource
+            @logger = new_resource.logger
             @installer_type = installer_type
             @uninstall_entries = uninstall_entries
           end
 
           attr_reader :new_resource
+          attr_reader :logger
           attr_reader :installer_type
           attr_reader :uninstall_entries
 
@@ -43,7 +45,7 @@ class Chef
 
           # Returns a version if the package is installed or nil if it is not.
           def installed_version
-            Chef::Log.debug("#{new_resource} checking package version")
+            logger.trace("#{new_resource} checking package version")
             current_installed_version
           end
 
@@ -52,7 +54,7 @@ class Chef
           end
 
           def install_package
-            Chef::Log.debug("#{new_resource} installing #{new_resource.installer_type} package '#{new_resource.source}'")
+            logger.trace("#{new_resource} installing #{new_resource.installer_type} package '#{new_resource.source}'")
             shell_out!(
               [
                 "start",
@@ -69,32 +71,30 @@ class Chef
           def remove_package
             uninstall_version = new_resource.version || current_installed_version
             uninstall_entries.select { |entry| [uninstall_version].flatten.include?(entry.display_version) }
-              .map { |version| version.uninstall_string }.uniq.each do |uninstall_string|
-                Chef::Log.debug("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
-                shell_out!(uninstall_command(uninstall_string), { returns: new_resource.returns })
-              end
+                             .map(&:uninstall_string).uniq.each do |uninstall_string|
+              logger.trace("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
+              shell_out!(uninstall_command(uninstall_string), timeout: new_resource.timeout, returns: new_resource.returns)
+            end
           end
 
           private
 
           def uninstall_command(uninstall_string)
-            uninstall_string.delete!('"')
+            uninstall_string = "\"#{uninstall_string}\"" if ::File.exist?(uninstall_string)
             uninstall_string = [
-              %q{/d"},
-              ::File.dirname(uninstall_string),
-              %q{" },
-              ::File.basename(uninstall_string),
+              uninstall_string,
               expand_options(new_resource.options),
               " ",
               unattended_flags,
             ].join
-            %Q{start "" /wait #{uninstall_string} & exit %%%%ERRORLEVEL%%%%}
+            %{start "" /wait #{uninstall_string} & exit %%%%ERRORLEVEL%%%%}
           end
 
           def current_installed_version
-            @current_installed_version ||= uninstall_entries.count == 0 ? nil : begin
-              uninstall_entries.map { |entry| entry.display_version }.uniq
-            end
+            @current_installed_version ||=
+              if uninstall_entries.count != 0
+                uninstall_entries.map(&:display_version).uniq
+              end
           end
 
           # http://unattended.sourceforge.net/installers.php

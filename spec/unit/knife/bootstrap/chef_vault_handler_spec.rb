@@ -29,10 +29,10 @@ describe Chef::Knife::Bootstrap::ChefVaultHandler do
 
   let(:client) { Chef::ApiClient.new }
 
-  let(:chef_vault_handler) {
+  let(:chef_vault_handler) do
     chef_vault_handler = Chef::Knife::Bootstrap::ChefVaultHandler.new(knife_config: knife_config, ui: ui)
     chef_vault_handler
-  }
+  end
 
   context "when there's no vault option" do
     it "should report its not doing anything" do

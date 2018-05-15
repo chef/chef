@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,84 @@
 # limitations under the License.
 
 require "mixlib/shellout"
+require "chef/mixin/path_sanity"
 
 class Chef
   module Mixin
     module ShellOut
+      include Chef::Mixin::PathSanity
+
+      # PREFERRED APIS:
+      #
+      # shell_out_compact and shell_out_compact! flatten their array arguments and remove nils and pass
+      # the resultant array to shell_out.  this actually eliminates spaces-in-args bugs because this:
+      #
+      # shell_out!("command #{arg}")
+      #
+      # becomes two arguments if arg has spaces and requires quotations:
+      #
+      # shell_out!("command '#{arg}'")
+      #
+      # using shell_out_compact! this becomes:
+      #
+      # shell_out_compact!("command", arg)
+      #
+      # and spaces in the arg just works and it does not become two arguments (and the shell quoting around
+      # the argument must actually be removed).
+      #
+      # there's also an implicit join between all the array elements, and nested arrays are flattened which
+      # means that odd where-do-i-put-the-spaces options handling just works, and instead of this:
+      #
+      #    opts = ""                     # needs to be empty string for when foo and bar are both missing
+      #    opts << " -foo" if needs_foo? # needs the leading space on both of these
+      #    opts << " -bar" if needs_bar?
+      #    shell_out!("cmd#{opts}")      # have to think way too hard about why there's no space here
+      #
+      # becomes:
+      #
+      #    opts = []
+      #    opts << "-foo" if needs_foo?
+      #    opts << "-bar" if needs_bar?
+      #    shell_out_compact!("cmd", opts)
+      #
+      # and opts can be an empty array or nil and it'll work out fine.
+      #
+      # generally its best to use shell_out_compact! in code and setup expectations on shell_out! in tests
+      #
+
+      def shell_out_compact(*args, **options)
+        if options.empty?
+          shell_out(*clean_array(*args))
+        else
+          shell_out(*clean_array(*args), **options)
+        end
+      end
+
+      def shell_out_compact!(*args, **options)
+        if options.empty?
+          shell_out!(*clean_array(*args))
+        else
+          shell_out!(*clean_array(*args), **options)
+        end
+      end
+
+      # helper sugar for resources that support passing timeouts to shell_out
+
+      def shell_out_compact_timeout(*args, **options)
+        raise "object is not a resource that supports timeouts" unless respond_to?(:new_resource) && new_resource.respond_to?(:timeout)
+        options_dup = options.dup
+        options_dup[:timeout] = new_resource.timeout if new_resource.timeout
+        options_dup[:timeout] = 900 unless options_dup.key?(:timeout)
+        shell_out_compact(*args, **options_dup)
+      end
+
+      def shell_out_compact_timeout!(*args, **options)
+        raise "object is not a resource that supports timeouts" unless respond_to?(:new_resource) && new_resource.respond_to?(:timeout)
+        options_dup = options.dup
+        options_dup[:timeout] = new_resource.timeout if new_resource.timeout
+        options_dup[:timeout] = 900 unless options_dup.key?(:timeout)
+        shell_out_compact!(*args, **options_dup)
+      end
 
       # shell_out! runs a command on the system and will raise an error if the command fails, which is what you want
       # for debugging, shell_out and shell_out! both will display command output to the tty when the log level is debug
@@ -35,6 +109,7 @@ class Chef
           "LC_ALL" => Chef::Config[:internal_locale],
           "LANGUAGE" => Chef::Config[:internal_locale],
           "LANG" => Chef::Config[:internal_locale],
+          env_path => sanitized_path,
         }.update(options[env_key] || {})
         shell_out_command(*args, **options)
       end
@@ -56,39 +131,45 @@ class Chef
         cmd
       end
 
-      DEPRECATED_OPTIONS =
-        [ [:command_log_level,   :log_level],
-          [:command_log_prepend, :log_tag] ]
+      # Helper for subclasses to convert an array of string args into a string.  It
+      # will compact nil or empty strings in the array and will join the array elements
+      # with spaces, without introducing any double spaces for nil/empty elements.
+      #
+      # @param args [String] variable number of string arguments
+      # @return [String] nicely concatenated string or empty string
+      def a_to_s(*args)
+        # can't quite deprecate this yet
+        #Chef.deprecated(:package_misc, "a_to_s is deprecated use shell_out_compact or shell_out_compact_timeout instead")
+        args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s).join(" ")
+      end
 
-      # CHEF-3090: Deprecate command_log_level and command_log_prepend
-      # Patterned after https://github.com/opscode/chef/commit/e1509990b559984b43e428d4d801c394e970f432
-      def run_command_compatible_options(command_args)
-        return command_args unless command_args.last.is_a?(Hash)
-
-        my_command_args = command_args.dup
-        my_options = my_command_args.last
-
-        DEPRECATED_OPTIONS.each do |old_option, new_option|
-          # Edge case: someone specifies :command_log_level and 'command_log_level' in the option hash
-          next unless value = my_options.delete(old_option) || my_options.delete(old_option.to_s)
-          deprecate_option old_option, new_option
-          my_options[new_option] = value
-        end
-
-        return my_command_args
+      # Helper for subclasses to reject nil out of an array.  It allows
+      # using the array form of shell_out (which avoids the need to surround arguments with
+      # quote marks to deal with shells).
+      #
+      # Usage:
+      #   shell_out!(*clean_array("useradd", universal_options, useradd_options, new_resource.username))
+      #
+      # universal_options and useradd_options can be nil, empty array, empty string, strings or arrays
+      # and the result makes sense.
+      #
+      # keeping this separate from shell_out!() makes it a bit easier to write expectations against the
+      # shell_out args and be able to omit nils and such in the tests (and to test that the nils are
+      # being rejected correctly).
+      #
+      # @param args [String] variable number of string arguments
+      # @return [Array] array of strings with nil and null string rejection
+      def clean_array(*args)
+        args.flatten.compact.map(&:to_s)
       end
 
       private
 
       def shell_out_command(*command_args)
-        cmd = Mixlib::ShellOut.new(*run_command_compatible_options(command_args))
+        cmd = Mixlib::ShellOut.new(*command_args)
         cmd.live_stream ||= io_for_live_stream
         cmd.run_command
         cmd
-      end
-
-      def deprecate_option(old_option, new_option)
-        Chef.log_deprecation "DEPRECATION: Chef::Mixin::ShellOut option :#{old_option} is deprecated. Use :#{new_option}"
       end
 
       def io_for_live_stream
@@ -96,6 +177,14 @@ class Chef
           STDOUT
         else
           nil
+        end
+      end
+
+      def env_path
+        if Chef::Platform.windows?
+          "Path"
+        else
+          "PATH"
         end
       end
     end

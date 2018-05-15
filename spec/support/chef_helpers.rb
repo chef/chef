@@ -53,13 +53,11 @@ end
 # This is a temporary fix to get tests passing on systems that have no `diff`
 # until we can replace shelling out to `diff` with ruby diff-lcs
 def has_diff?
-  begin
-    diff_cmd = Mixlib::ShellOut.new("diff -v")
-    diff_cmd.run_command
-    true
-  rescue Errno::ENOENT
-    false
-  end
+  diff_cmd = Mixlib::ShellOut.new("diff -v")
+  diff_cmd.run_command
+  true
+rescue Errno::ENOENT
+  false
 end
 
 # This is a helper to determine if the ruby in the PATH contains
@@ -82,6 +80,28 @@ end
 # tests.
 def canonicalize_path(path)
   windows? ? path.tr("/", '\\') : path
+end
+
+# Makes a temp directory with a canonical path on any platform.
+# Only really needed to work around an issue on Windows where
+# Ruby's temp library generates paths with short names.
+def make_canonical_temp_directory
+  temp_directory = Dir.mktmpdir
+  if windows?
+    # On Windows, temporary file / directory path names may have shortened
+    # subdirectory names due to reliance on the TMP and TEMP environment variables
+    # in some Windows APIs and duplicated logic in Ruby's temp file implementation.
+    # To work around this in the unit test context, we obtain the long (canonical)
+    # path name via a Windows system call so that this path name can be used
+    # in expectations that assume the ability to canonically name paths in comparisons.
+    # Note that this was not an issue prior to Ruby 2.2 -- with Ruby 2.2,
+    # some Chef code started to use long file names, while Ruby's temp file implementation
+    # continued to return the shortened names -- this would cause these particular tests to
+    # fail if the username happened to be longer than 8 characters.
+    Chef::ReservedNames::Win32::File.get_long_path_name(temp_directory)
+  else
+    temp_directory
+  end
 end
 
 # Check if a cmd exists on the PATH

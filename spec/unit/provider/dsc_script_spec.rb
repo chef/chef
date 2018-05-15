@@ -23,11 +23,11 @@ require "spec_helper"
 
 describe Chef::Provider::DscScript do
   context "when DSC is available" do
-    let (:node) {
+    let (:node) do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = "4.0"
       node
-    }
+    end
     let (:events) { Chef::EventDispatch::Dispatcher.new }
     let (:run_context) { Chef::RunContext.new(node, {}, events) }
     let (:resource) { Chef::Resource::DscScript.new("script", run_context) }
@@ -35,7 +35,7 @@ describe Chef::Provider::DscScript do
       Chef::Provider::DscScript.new(resource, run_context)
     end
 
-    describe '#load_current_resource' do
+    describe "#load_current_resource" do
       it "describes the resource as converged if there were 0 DSC resources" do
         allow(provider).to receive(:run_configuration).with(:test).and_return([])
         provider.load_current_resource
@@ -75,7 +75,7 @@ describe Chef::Provider::DscScript do
       end
     end
 
-    describe '#generate_configuration_document' do
+    describe "#generate_configuration_document" do
       # I think integration tests should cover these cases
 
       it "uses configuration_document_from_script_path when a dsc script file is given" do
@@ -123,7 +123,7 @@ describe Chef::Provider::DscScript do
       end
     end
 
-    describe '#generate_description' do
+    describe "#generate_description" do
       it "removes the resource name from the beginning of any log line from the LCM" do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new("resourcename", true, ["resourcename doing something", "lastline"])
         provider.instance_variable_set("@dsc_resources_info", [dsc_resource_info])
@@ -156,16 +156,16 @@ describe Chef::Provider::DscScript do
         it "raises an exception for powershell version '#{version}'" do
           node.automatic[:languages][:powershell][:version] = version
 
-          expect {
+          expect do
             provider.run_action(:run)
-          }.to raise_error(Chef::Exceptions::ProviderNotFound)
+          end.to raise_error(Chef::Exceptions::ProviderNotFound)
         end
       end
 
       it "raises an exception if Powershell is not present" do
-        expect {
+        expect do
           provider.run_action(:run)
-        }.to raise_error(Chef::Exceptions::ProviderNotFound)
+        end.to raise_error(Chef::Exceptions::ProviderNotFound)
       end
 
     end

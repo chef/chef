@@ -37,6 +37,8 @@ knife user reregister for Open Source 11 Server is being deprecated.
 Open Source 11 Server user commands now live under the knife osc_user namespace.
 For backwards compatibility, we will forward this request to knife osc_user reregister.
 If you are using an Open Source 11 Server, please use that command to avoid this warning.
+NOTE: Backwards compatibility for Open Source 11 Server in these commands will be removed
+in Chef 15 which will be released April 2019.
 EOF
       end
 
@@ -73,7 +75,7 @@ EOF
           run_osc_11_user_reregister
         else # EC / CS 12 case
           user.reregister
-          Chef::Log.debug("Updated user data: #{user.inspect}")
+          Chef::Log.trace("Updated user data: #{user.inspect}")
           key = user.private_key
           if config[:file]
             File.open(config[:file], "w") do |f|

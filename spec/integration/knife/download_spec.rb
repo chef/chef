@@ -76,7 +76,7 @@ EOM
           file "data_bags/x/y.json", {}
           file "environments/_default.json", { "description" => "The default Chef environment" }
           file "environments/x.json", {}
-          file "nodes/x.json", {}
+          file "nodes/x.json", { "normal" => { "tags" => [] } }
           file "roles/x.json", {}
           file "users/admin.json", { "admin" => true, "public_key" => ChefZero::PUBLIC_KEY }
           file "users/x.json", { "public_key" => ChefZero::PUBLIC_KEY }
@@ -532,6 +532,25 @@ EOM
       end
     end
 
+    when_the_chef_server "has a role" do
+      before do
+        role "x", {}
+      end
+      when_the_repository "has the role in ruby" do
+        before do
+          file "roles/x.rb", <<EOM
+name "x"
+description "x"
+EOM
+        end
+
+        it "knife download refuses to change the role" do
+          knife("download /roles/x.json").should_succeed "", :stderr => "WARNING: /roles/x.rb cannot be updated (can't safely update ruby files).\n"
+          knife("diff --name-status /roles/x.json").should_succeed "M\t/roles/x.rb\n"
+        end
+      end
+    end
+
     when_the_chef_server "has an environment" do
       before do
         environment "x", {}
@@ -626,7 +645,7 @@ EOM
           file "data_bags/x/y.json", {}
           file "environments/_default.json", { "description" => "The default Chef environment" }
           file "environments/x.json", {}
-          file "nodes/x.json", {}
+          file "nodes/x.json", { "normal" => { "tags" => [] } }
           file "roles/x.json", {}
           file "users/admin.json", { "admin" => true, "public_key" => ChefZero::PUBLIC_KEY }
           file "users/x.json", { "public_key" => ChefZero::PUBLIC_KEY }
@@ -1252,7 +1271,7 @@ EOM
             file "groups/x.json", {}
             file "invitations.json", [ "foo" ]
             file "members.json", [ "bar" ]
-            file "nodes/x.json", {}
+            file "nodes/x.json", { "normal" => { "tags" => [] } }
             file "org.json", { "full_name" => "Something" }
             file "policies/x-1.0.0.json", {}
             file "policies/blah-1.0.0.json", {}
@@ -1276,7 +1295,7 @@ EOM
             file "environments/x.json", { "description" => "foo" }
             file "groups/x.json", { "description" => "foo" }
             file "groups/x.json", { "groups" => [ "admin" ] }
-            file "nodes/x.json", { "run_list" => [ "blah" ] }
+            file "nodes/x.json", { "normal" => { "tags" => [] }, "run_list" => [ "blah" ] }
             file "org.json", { "full_name" => "Something Else " }
             file "policies/x-1.0.0.json", { "run_list" => [ "blah" ] }
             file "policy_groups/x.json", {

@@ -180,7 +180,7 @@ class Chef
         new_user = chef_root_rest_v0.post("users", payload)
       end
 
-      Chef::UserV1.from_hash(self.to_hash.merge(new_user))
+      Chef::UserV1.from_hash(to_hash.merge(new_user))
     end
 
     def update(new_key = false)
@@ -213,25 +213,23 @@ class Chef
         end
         updated_user = chef_root_rest_v0.put("users/#{username}", payload)
       end
-      Chef::UserV1.from_hash(self.to_hash.merge(updated_user))
+      Chef::UserV1.from_hash(to_hash.merge(updated_user))
     end
 
     def save(new_key = false)
-      begin
-        create
-      rescue Net::HTTPServerException => e
-        if e.response.code == "409"
-          update(new_key)
-        else
-          raise e
-        end
+      create
+    rescue Net::HTTPServerException => e
+      if e.response.code == "409"
+        update(new_key)
+      else
+        raise e
       end
     end
 
     # Note: remove after API v0 no longer supported by client (and knife command).
     def reregister
       begin
-        payload = self.to_hash.merge({ "private_key" => true })
+        payload = to_hash.merge({ "private_key" => true })
         reregistered_self = chef_root_rest_v0.put("users/#{username}", payload)
         private_key(reregistered_self["private_key"])
       # only V0 supported for reregister
@@ -274,11 +272,6 @@ class Chef
 
     def self.from_json(json)
       Chef::UserV1.from_hash(Chef::JSONCompat.from_json(json))
-    end
-
-    def self.json_create(json)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::UserV1#from_json or Chef::UserV1#load.")
-      Chef::UserV1.from_json(json)
     end
 
     def self.list(inflate = false)

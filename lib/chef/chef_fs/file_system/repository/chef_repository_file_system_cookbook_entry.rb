@@ -37,6 +37,10 @@ class Chef
           attr_reader :recursive
           attr_reader :file_path
 
+          alias_method :display_path, :path
+          alias_method :display_name, :name
+          alias_method :bare_name, :name
+
           def initialize(name, parent, file_path = nil, ruby_only = false, recursive = false)
             @parent = parent
             @name = name
@@ -48,14 +52,12 @@ class Chef
           end
 
           def children
-            begin
-              entries = Dir.entries(file_path).sort.
-                        map { |child_name| make_child_entry(child_name) }.
-                        select { |child| child && can_have_child?(child.name, child.dir?) }
-              entries.select { |entry| !(entry.dir? && entry.children.size == 0 ) }
-            rescue Errno::ENOENT
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-            end
+            entries = Dir.entries(file_path).sort.
+                      map { |child_name| make_child_entry(child_name) }.
+                      select { |child| child && can_have_child?(child.name, child.dir?) }
+            entries.select { |entry| !(entry.dir? && entry.children.size == 0 ) }
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
 
           def can_have_child?(name, is_dir)
@@ -116,6 +118,7 @@ class Chef
           end
 
           def delete(recurse)
+            FileSystemCache.instance.delete!(file_path)
             begin
               if dir?
                 if !recurse
@@ -135,11 +138,9 @@ class Chef
           end
 
           def read
-            begin
-              File.open(file_path, "rb") { |f| f.read }
-            rescue Errno::ENOENT
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-            end
+            File.open(file_path, "rb") { |f| f.read }
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
 
           def write(content)

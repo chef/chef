@@ -40,7 +40,7 @@ class Chef
     def initialize(cookbooks, opts = {})
       @opts = opts
       @cookbooks = Array(cookbooks)
-      @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url])
+      @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions)
       @concurrency = opts[:concurrency] || 10
       @policy_mode = opts[:policy_mode] || false
     end
@@ -55,7 +55,7 @@ class Chef
         checksum_files.merge!(cb.checksums)
       end
 
-      checksums = checksum_files.inject({}) { |memo, elt| memo[elt.first] = nil ; memo }
+      checksums = checksum_files.inject({}) { |memo, elt| memo[elt.first] = nil; memo }
       new_sandbox = rest.post("sandboxes", { :checksums => checksums })
 
       Chef::Log.info("Uploading files")
@@ -71,14 +71,14 @@ class Chef
           Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
           queue << uploader_function_for(checksum_files[checksum], checksum, info["url"], checksums_to_upload)
         else
-          Chef::Log.debug("#{checksum_files[checksum]} has not changed")
+          Chef::Log.trace("#{checksum_files[checksum]} has not changed")
         end
       end
 
       queue.process(@concurrency)
 
       sandbox_url = new_sandbox["uri"]
-      Chef::Log.debug("Committing sandbox")
+      Chef::Log.trace("Committing sandbox")
       # Retry if S3 is claims a checksum doesn't exist (the eventual
       # in eventual consistency)
       retries = 0
@@ -145,7 +145,6 @@ class Chef
         Chef::Log.info("Validating templates")
         exit(1) unless syntax_checker.validate_templates
         Chef::Log.info("Syntax OK")
-        true
       end
     end
 

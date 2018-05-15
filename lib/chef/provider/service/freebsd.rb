@@ -18,7 +18,6 @@
 
 require "chef/resource/service"
 require "chef/provider/service/init"
-require "chef/mixin/command"
 
 class Chef
   class Provider
@@ -48,7 +47,7 @@ class Chef
 
           return current_resource unless init_command
 
-          Chef::Log.debug("#{current_resource} found at #{init_command}")
+          logger.trace("#{current_resource} found at #{init_command}")
 
           @status_load_success = true
           determine_current_status! # see Chef::Provider::Service::Simple
@@ -74,7 +73,7 @@ class Chef
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { service_enable_variable_name != nil }
+            a.assertion { !service_enable_variable_name.nil? }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
@@ -146,7 +145,7 @@ class Chef
                 end
                 # some scripts support multiple instances through symlinks such as openvpn.
                 # We should get the service name from rcvar.
-                Chef::Log.debug("name=\"service\" not found at #{init_command}. falling back to rcvar")
+                logger.trace("name=\"service\" not found at #{init_command}. falling back to rcvar")
                 shell_out!("#{init_command} rcvar").stdout[/(\w+_enable)=/, 1]
               else
                 # for why-run mode when the rcd_script is not there yet
@@ -172,7 +171,7 @@ class Chef
           end
 
           if current_resource.enabled.nil?
-            Chef::Log.debug("#{new_resource.name} enable/disable state unknown")
+            logger.trace("#{new_resource.name} enable/disable state unknown")
             current_resource.enabled false
           end
         end

@@ -110,23 +110,37 @@ describe Chef::Provider::Package::Windows::Exe do
   end
 
   describe "remove_package" do
-    context "no version given and one package installed" do
-      it "removes installed package" do
-        expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \/d\"uninst_dir\" uninst_file \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+    before do
+      allow(::File).to receive(:exist?).and_return(false)
+    end
+
+    context "no version given and one package installed with unquoted uninstall string" do
+      it "removes installed package and quotes uninstall string" do
+        allow(::File).to receive(:exist?).with("uninst_dir/uninst_file").and_return(true)
+        expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"uninst_dir\/uninst_file\" \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
         provider.remove_package
       end
     end
 
-    context "several packages installed" do
+    context "When timeout value is passed" do
+      it "removes installed package and quotes uninstall string" do
+        new_resource.timeout = 300
+        allow(::File).to receive(:exist?).with("uninst_dir/uninst_file").and_return(true)
+        expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"uninst_dir\/uninst_file\" \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, :timeout => 300, :returns => [0])
+        provider.remove_package
+      end
+    end
+
+    context "several packages installed with quoted uninstall strings" do
       let(:uninstall_hash) do
         [
           {
           "DisplayVersion" => "v1",
-          "UninstallString" => File.join("uninst_dir1", "uninst_file1"),
+          "UninstallString" => "\"#{File.join("uninst_dir1", "uninst_file1")}\"",
           },
           {
           "DisplayVersion" => "v2",
-          "UninstallString" => File.join("uninst_dir2", "uninst_file2"),
+          "UninstallString" => "\"#{File.join("uninst_dir2", "uninst_file2")}\"",
           },
         ]
       end
@@ -134,15 +148,15 @@ describe Chef::Provider::Package::Windows::Exe do
       context "version given and installed" do
         it "removes given version" do
           new_resource.version("v2")
-          expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \/d\"uninst_dir2\" uninst_file2 \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"uninst_dir2\/uninst_file2\" \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
           provider.remove_package
         end
       end
 
       context "no version given" do
         it "removes both versions" do
-          expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \/d\"uninst_dir1\" uninst_file1 \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
-          expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \/d\"uninst_dir2\" uninst_file2 \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"uninst_dir1\/uninst_file1\" \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"uninst_dir2\/uninst_file2\" \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
           provider.remove_package
         end
       end

@@ -57,8 +57,8 @@ class Chef
       "#{@op} #{@raw_version}"
     end
 
-    def eql?(o)
-      o.class == self.class && @op == o.op && @version == o.version
+    def eql?(other)
+      other.class == self.class && @op == other.op && @version == other.version
     end
     alias_method :==, :eql?
 

@@ -17,7 +17,6 @@
 #
 
 require "chef/provider"
-require "chef/resource/launchd"
 require "chef/resource/file"
 require "chef/resource/cookbook_file"
 require "chef/resource/macosx_service"
@@ -30,7 +29,7 @@ class Chef
       extend Forwardable
       provides :launchd, os: "darwin"
 
-      def_delegators :@new_resource, *[
+      def_delegators :new_resource, *[
         :backup,
         :cookbook,
         :group,
@@ -85,7 +84,12 @@ class Chef
         manage_service(:disable)
       end
 
+      def action_restart
+        manage_service(:restart)
+      end
+
       def manage_plist(action)
+        return unless manage_agent?(action)
         if source
           res = cookbook_file_resource
         else
@@ -97,9 +101,28 @@ class Chef
       end
 
       def manage_service(action)
+        return unless manage_agent?(action)
         res = service_resource
         res.run_action(action)
         new_resource.updated_by_last_action(true) if res.updated?
+      end
+
+      def manage_agent?(action)
+        # Gets UID of console_user and converts to string.
+        console_user = Etc.getpwuid(::File.stat("/dev/console").uid).name
+        root = console_user == "root"
+        agent = type == "agent"
+        invalid_action = [:delete, :disable, :enable, :restart].include?(action)
+        lltstype = ""
+        if new_resource.limit_load_to_session_type
+          lltstype = new_resource.limit_load_to_session_type
+        end
+        invalid_type = lltstype != "LoginWindow"
+        if root && agent && invalid_action && invalid_type
+          logger.trace("#{label}: Aqua LaunchAgents shouldn't be loaded as root")
+          return false
+        end
+        true
       end
 
       def service_resource
@@ -115,7 +138,7 @@ class Chef
         res = Chef::Resource::File.new(@path, run_context)
         res.name(@path) if @path
         res.backup(backup) if backup
-        res.content(content) if content
+        res.content(content) if content?
         res.group(group) if group
         res.mode(mode) if mode
         res.owner(owner) if owner
@@ -150,7 +173,7 @@ class Chef
       end
 
       def content
-        plist_hash = new_resource.hash || gen_hash
+        plist_hash = new_resource.plist_hash || gen_hash
         Plist::Emit.dump(plist_hash) unless plist_hash.nil?
       end
 

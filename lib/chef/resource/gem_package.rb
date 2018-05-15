@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,10 +23,29 @@ class Chef
     class GemPackage < Chef::Resource::Package
       resource_name :gem_package
 
+      description "Use the gem_package resource to manage gem packages that are only"\
+                  " included in recipes. When a package is installed from a local file,"\
+                  " it must be added to the node using the remote_file or cookbook_file"\
+                  " resources."
+
+      # the source can either be a path to a package source like:
+      #   source /var/tmp/mygem-1.2.3.4.gem
+      # or it can be a url rubygems source like:
+      #   https://www.rubygems.org
+      # the default has to be nil in order for the magical wiring up of the name property to
+      # the source pathname to work correctly.
+      #
+      # we don't do coercions here because its all a bit too complicated
+      #
+      # FIXME? the array form of installing paths most likely does not work?
+      #
       property :source, [ String, Array ]
-      property :clear_sources, [ true, false ], default: false, desired_state: false
+      property :clear_sources, [ TrueClass, FalseClass ], default: false, desired_state: false
       # Sets a custom gem_binary to run for gem commands.
       property :gem_binary, String, desired_state: false
+
+      # set to false to avoid including Chef::Config[:rubygems_url] in the sources
+      property :include_default_source, [ TrueClass, FalseClass ], default: true
 
       ##
       # Options for the gem install, either a Hash or a String. When a hash is
@@ -34,7 +53,7 @@ class Chef
       # gem will be installed via the gems API. When a String is given, the gem
       # will be installed by shelling out to the gem command. Using a Hash of
       # options with an explicit gem_binary will result in undefined behavior.
-      property :options, [ String, Hash, nil ], desired_state: false
+      property :options, [ String, Hash, Array, nil ], desired_state: false
 
     end
   end

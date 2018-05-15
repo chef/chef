@@ -19,11 +19,12 @@
 #
 
 require "chef/exceptions"
-require "chef/dsl/platform_introspection"
 require "chef/dsl/data_query"
 require "chef/dsl/registry_helper"
 require "chef/dsl/reboot_pending"
 require "chef/dsl/resources"
+require "chef/dsl/declare_resource"
+require "chef/json_compat"
 require "chef/mixin/convert_to_class_name"
 require "chef/guard_interpreter/resource_guard_interpreter"
 require "chef/resource/conditional"
@@ -42,8 +43,7 @@ require "set"
 require "chef/mixin/deprecation"
 require "chef/mixin/properties"
 require "chef/mixin/provides"
-require "chef/mixin/shell_out"
-require "chef/mixin/powershell_out"
+require "chef/dsl/universal"
 
 class Chef
   class Resource
@@ -52,15 +52,13 @@ class Chef
     # Generic User DSL (not resource-specific)
     #
 
+    include Chef::DSL::DeclareResource
     include Chef::DSL::DataQuery
-    include Chef::DSL::PlatformIntrospection
     include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
     extend Chef::Mixin::Provides
 
-    # This lets user code do things like `not_if { shell_out!("command") }`
-    include Chef::Mixin::ShellOut
-    include Chef::Mixin::PowershellOut
+    include Chef::DSL::Universal
 
     # Bring in `property` and `property_type`
     include Chef::Mixin::Properties
@@ -88,7 +86,7 @@ class Chef
     # @param name [Object] The name to set, typically a String or Array
     # @return [String] The name of this Resource.
     #
-    property :name, String, coerce: proc { |v| v.is_a?(Array) ? v.join(", ") : v.to_s }, desired_state: false
+    property :name, String, coerce: proc { |v| v.is_a?(Array) ? v.join(", ") : v.to_s }, desired_state: false, required: true
 
     #
     # The node the current Chef run is using.
@@ -99,26 +97,6 @@ class Chef
     #
     def node
       run_context && run_context.node
-    end
-
-    #
-    # Find existing resources by searching the list of existing resources.  Possible
-    # forms are:
-    #
-    #   find(:file => "foobar")
-    #   find(:file => [ "foobar", "baz" ])
-    #   find("file[foobar]", "file[baz]")
-    #   find("file[foobar,baz]")
-    #
-    # Calls `run_context.resource_collection.find(*args)`
-    #
-    # @return the matching resource, or an Array of matching resources.
-    #
-    # @raise ArgumentError if you feed it bad lookup information
-    # @raise RuntimeError if it can't find the resources you are looking for.
-    #
-    def resources(*args)
-      run_context.resource_collection.find(*args)
     end
 
     #
@@ -135,7 +113,13 @@ class Chef
     def initialize(name, run_context = nil)
       name(name) unless name.nil?
       @run_context = run_context
-      @noop = nil
+
+      @logger = if run_context
+                  run_context.logger.with_child({ name: name, resource: resource_name })
+                else
+                  Chef::Log.with_child({ name: name, resource: resource_name })
+                end
+
       @before = nil
       @params = Hash.new
       @provider = nil
@@ -143,13 +127,10 @@ class Chef
       @action = self.class.default_action
       @updated = false
       @updated_by_last_action = false
-      @supports = {}
-      @ignore_failure = false
-      @retries = 0
-      @retry_delay = 2
       @not_if = []
       @only_if = []
       @source_line = nil
+      @deprecated = false
       # We would like to raise an error when the user gives us a guard
       # interpreter and a ruby_block to the guard. In order to achieve this
       # we need to understand when the user overrides the default guard
@@ -158,7 +139,6 @@ class Chef
       @guard_interpreter = nil
       @default_guard_interpreter = :default
       @elapsed_time = 0
-      @sensitive = false
     end
 
     #
@@ -184,6 +164,25 @@ class Chef
 
     # Alias for normal assigment syntax.
     alias_method :action=, :action
+
+    #
+    # Force a delayed notification into this resource's run_context.
+    #
+    # This should most likely be paired with action :nothing
+    #
+    # @param arg [Array[Symbol], Symbol] A list of actions (e.g. `:create`)
+    #
+    def delayed_action(arg)
+      arg = Array(arg).map(&:to_sym)
+      arg.map do |action|
+        validate(
+          { action: action },
+          { action: { kind_of: Symbol, equal_to: allowed_actions } }
+        )
+        # the resource effectively sends a delayed notification to itself
+        run_context.add_delayed_action(Notification.new(self, action, self))
+      end
+    end
 
     #
     # Sets up a notification that will run a particular action on another resource
@@ -265,6 +264,18 @@ class Chef
     end
 
     #
+    # Token class to hold an unresolved subscribes call with an associated
+    # run context.
+    #
+    # @api private
+    # @see Resource#subscribes
+    class UnresolvedSubscribes < self
+      # The full key ise given as the name in {Resource#subscribes}
+      alias_method :to_s, :name
+      alias_method :declared_key, :name
+    end
+
+    #
     # Subscribes to updates from other resources, causing a particular action to
     # run on *this* resource when the other resource is updated.
     #
@@ -331,7 +342,7 @@ class Chef
       resources = [resources].flatten
       resources.each do |resource|
         if resource.is_a?(String)
-          resource = Chef::Resource.new(resource, run_context)
+          resource = UnresolvedSubscribes.new(resource, run_context)
         end
         if resource.run_context.nil?
           resource.run_context = run_context
@@ -411,10 +422,7 @@ class Chef
     # @param arg [Integer] The number of retries.
     # @return [Integer] The number of retries.
     #
-    def retries(arg = nil)
-      set_or_return(:retries, arg, kind_of: Integer)
-    end
-    attr_writer :retries
+    property :retries, Integer, default: 0, desired_state: false
 
     #
     # The number of seconds to wait between retries.  Default: 2.
@@ -422,10 +430,7 @@ class Chef
     # @param arg [Integer] The number of seconds to wait between retries.
     # @return [Integer] The number of seconds to wait between retries.
     #
-    def retry_delay(arg = nil)
-      set_or_return(:retry_delay, arg, kind_of: Integer)
-    end
-    attr_writer :retry_delay
+    property :retry_delay, Integer, default: 2, desired_state: false
 
     #
     # Whether to treat this resource's data as sensitive.  If set, no resource
@@ -434,15 +439,7 @@ class Chef
     # @param arg [Boolean] Whether this resource is sensitive or not.
     # @return [Boolean] Whether this resource is sensitive or not.
     #
-    def sensitive(arg = nil)
-      set_or_return(:sensitive, arg, :kind_of => [ TrueClass, FalseClass ])
-    end
-    attr_writer :sensitive
-
-    # ??? TODO unreferenced.  Delete?
-    attr_reader :not_if_args
-    # ??? TODO unreferenced.  Delete?
-    attr_reader :only_if_args
+    property :sensitive, [ TrueClass, FalseClass ], default: false, desired_state: false
 
     #
     # The time it took (in seconds) to run the most recently-run action.  Not
@@ -490,20 +487,11 @@ class Chef
       state_properties = self.class.state_properties
       state_properties.each do |property|
         if property.identity? || property.is_set?(self)
-          state[property.name] = send(property.name)
+          state[property.name] = property.sensitive? ? "*sensitive value suppressed*" : send(property.name)
         end
       end
       state
     end
-
-    #
-    # Since there are collisions with LWRP parameters named 'state' this
-    # method is not used by the resource_reporter and is most likely unused.
-    # It certainly cannot be relied upon and cannot be fixed.
-    #
-    # @deprecated
-    #
-    alias_method :state, :state_for_resource_reporter
 
     #
     # The value of the identity of this resource.
@@ -527,23 +515,16 @@ class Chef
     #
     # Whether to ignore failures.  If set to `true`, and this resource when an
     # action is run, the resource will be marked as failed but no exception will
-    # be thrown (and no error will be output).  Defaults to `false`.
+    # be thrown (and no error will be output).  Defaults to `false`. If set to
+    # `:quiet` or `'quiet'`, the normal error trace will be suppressed.
     #
     # TODO ignore_failure and retries seem to be mutually exclusive; I doubt
     # that was intended.
     #
-    # @param arg [Boolean] Whether to ignore failures.
+    # @param arg [Boolean, String, Symbol] Whether to ignore failures.
     # @return Whether this resource will ignore failures.
     #
-    def ignore_failure(arg = nil)
-      set_or_return(:ignore_failure, arg, kind_of: [ TrueClass, FalseClass ])
-    end
-    attr_writer :ignore_failure
-
-    #
-    # Equivalent to #ignore_failure.
-    #
-    alias :epic_fail :ignore_failure
+    property :ignore_failure, [ true, false, :quiet, "quiet" ], default: false, desired_state: false
 
     #
     # Make this resource into an exact (shallow) copy of the other resource.
@@ -553,7 +534,7 @@ class Chef
     def load_from(resource)
       resource.instance_variables.each do |iv|
         unless iv == :@source_line || iv == :@action || iv == :@not_if || iv == :@only_if
-          self.instance_variable_set(iv, resource.instance_variable_get(iv))
+          instance_variable_set(iv, resource.instance_variable_get(iv))
         end
       end
     end
@@ -577,9 +558,9 @@ class Chef
       resolve_notification_references
       validate_action(action)
 
-      if Chef::Config[:verbose_logging] || Chef::Log.level == :debug
+      if Chef::Config[:verbose_logging] || logger.level == :debug
         # This can be noisy
-        Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
+        logger.info("Processing #{self} action #{action} (#{defined_at})")
       end
 
       # ensure that we don't leave @updated_by_last_action set to true
@@ -594,14 +575,14 @@ class Chef
       begin
         return if should_skip?(action)
         provider_for_action(action).run_action
-      rescue Exception => e
+      rescue StandardError => e
         if ignore_failure
-          Chef::Log.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
+          logger.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
           events.resource_failed(self, action, e)
         elsif remaining_retries > 0
           events.resource_failed_retriable(self, action, remaining_retries, e)
           remaining_retries -= 1
-          Chef::Log.info("Retrying execution of #{self}, #{remaining_retries} attempt(s) left")
+          logger.info("Retrying execution of #{self}, #{remaining_retries} attempt#{"s" if remaining_retries > 1} left")
           sleep retry_delay
           retry
         else
@@ -641,19 +622,36 @@ class Chef
 
     def to_text
       return "suppressed sensitive resource output" if sensitive
-      ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
       text = "# Declared in #{@source_line}\n\n"
       text << "#{resource_name}(\"#{name}\") do\n"
-      ivars.each do |ivar|
-        if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
-          value_string = value.respond_to?(:to_text) ? value.to_text : value.inspect
-          text << "  #{ivar.to_s.sub(/^@/, '')} #{value_string}\n"
+
+      all_props = {}
+      self.class.state_properties.map do |p|
+        begin
+          all_props[p.name.to_s] = p.sensitive? ? '"*sensitive value suppressed*"' : value_to_text(p.get(self))
+        rescue Chef::Exceptions::ValidationFailed
+          # This space left intentionally blank, the property was probably required or had an invalid default.
         end
       end
+
+      ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
+      ivars.each do |ivar|
+        iv = ivar.to_s.sub(/^@/, "")
+        if all_props.keys.include?(iv)
+          text << "  #{iv} #{all_props[iv]}\n"
+        elsif (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
+          text << "  #{iv} #{value_to_text(value)}\n"
+        end
+      end
+
       [@not_if, @only_if].flatten.each do |conditional|
         text << "  #{conditional.to_text}\n"
       end
       text << "end\n"
+    end
+
+    def value_to_text(value)
+      value.respond_to?(:to_text) ? value.to_text : value.inspect
     end
 
     def inspect
@@ -699,12 +697,20 @@ class Chef
       result
     end
 
-    def self.json_create(o)
-      resource = self.new(o["instance_vars"]["@name"])
+    def self.from_hash(o)
+      resource = new(o["instance_vars"]["@name"])
       o["instance_vars"].each do |k, v|
         resource.instance_variable_set("@#{k}".to_sym, v)
       end
       resource
+    end
+
+    def self.json_create(o)
+      from_hash(o)
+    end
+
+    def self.from_json(j)
+      from_hash(Chef::JSONCompat.parse(j))
     end
 
     #
@@ -736,8 +742,7 @@ class Chef
               else
                 arg
               end
-      set_or_return(:provider, klass, kind_of: [ Class ]) ||
-        self.class.action_class
+      set_or_return(:provider, klass, kind_of: [ Class ])
     end
 
     def provider=(arg)
@@ -842,7 +847,7 @@ class Chef
     # @return [Array<Symbol>] The list of actions this Resource is allowed to
     #   have.
     #
-    attr_accessor :allowed_actions
+    attr_writer :allowed_actions
     def allowed_actions(value = NOT_PASSED)
       if value != NOT_PASSED
         self.allowed_actions = value
@@ -894,19 +899,6 @@ class Chef
     end
 
     #
-    # Set whether this class was updated during an action.
-    #
-    # @deprecated Multiple actions are supported by resources.  Please call {}#updated_by_last_action} instead.
-    #
-    def updated=(true_or_false)
-      Chef::Log.warn("Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
-      Chef::Log.warn("Called from:")
-      caller[0..3].each { |line| Chef::Log.warn(line) }
-      updated_by_last_action(true_or_false)
-      @updated = true_or_false
-    end
-
-    #
     # The display name of this resource type, for printing purposes.
     #
     # Will be used to print out the resource in messages, e.g. resource_name[name]
@@ -918,49 +910,11 @@ class Chef
     end
 
     #
-    # Sets a list of capabilities of the real resource.  For example, `:remount`
-    # (for filesystems) and `:restart` (for services).
-    #
-    # TODO Calling resource.supports({}) will not set this to empty; it will do
-    # a get instead.  That's wrong.
-    #
-    # @param args Hash{Symbol=>Boolean} If non-empty, sets the capabilities of
-    #   this resource. Default: {}
-    # @return Hash{Symbol=>Boolean} An array of things this resource supports.
-    #
-    def supports(args = {})
-      if args.any?
-        @supports = args
-      else
-        @supports
-      end
-    end
-
-    def supports=(args)
-      supports(args)
-    end
-
-    #
     # A hook called after a resource is created.  Meant to be overriden by
     # subclasses.
     #
     def after_created
       nil
-    end
-
-    #
-    # The DSL name of this resource (e.g. `package` or `yum_package`)
-    #
-    # @return [String] The DSL name of this resource.
-    #
-    # @deprecated Use resource_name instead.
-    #
-    def self.dsl_name
-      Chef.log_deprecation "Resource.dsl_name is deprecated and will be removed in Chef 13.  Use resource_name instead."
-      if name
-        name = self.name.split("::")[-1]
-        convert_to_snake_case(name)
-      end
     end
 
     #
@@ -1012,31 +966,8 @@ class Chef
     # A::B::BlahDBlah -> blah_d_blah
     #
     def self.use_automatic_resource_name
-      automatic_name = convert_to_snake_case(self.name.split("::")[-1])
+      automatic_name = convert_to_snake_case(name.split("::")[-1])
       resource_name automatic_name
-    end
-
-    #
-    # The module where Chef should look for providers for this resource.
-    # The provider for `MyResource` will be looked up using
-    # `provider_base::MyResource`.  Defaults to `Chef::Provider`.
-    #
-    # @param arg [Module] The module containing providers for this resource
-    # @return [Module] The module containing providers for this resource
-    #
-    # @example
-    #   class MyResource < Chef::Resource
-    #     provider_base Chef::Provider::Deploy
-    #     # ...other stuff
-    #   end
-    #
-    # @deprecated Use `provides` on the provider, or `provider` on the resource, instead.
-    #
-    def self.provider_base(arg = nil)
-      if arg
-        Chef.log_deprecation("Resource.provider_base is deprecated and will be removed in Chef 13. Use provides on the provider, or provider on the resource, instead.")
-      end
-      @provider_base ||= arg || Chef::Provider
     end
 
     #
@@ -1169,61 +1100,73 @@ class Chef
     end
 
     #
-    # The action class is an automatic `Provider` created to handle
-    # actions declared by `action :x do ... end`.
+    # The action class is a `Chef::Provider` which is created at Resource
+    # class evaluation time when the Custom Resource is being constructed.
     #
-    # This class will be returned by `resource.provider` if `resource.provider`
-    # is not set. `provider_for_action` will also use this instead of calling
-    # out to `Chef::ProviderResolver`.
-    #
-    # If the user has not declared actions on this class or its superclasses
-    # using `action :x do ... end`, then there is no need for this class and
-    # `action_class` will be `nil`.
+    # This happens the first time the ruby parser hits an `action` or an
+    # `action_class` method, the presence of either indiates that this is
+    # going to be a Chef-12.5 custom resource.  If we never see one of these
+    # directives then we are constructing an old-style Resource+Provider or
+    # LWRP or whatevs.
     #
     # If a block is passed, the action_class is always created and the block is
     # run inside it.
     #
-    # @api private
-    #
     def self.action_class(&block)
-      return @action_class if @action_class && !block
-      # If the superclass needed one, then we need one as well.
-      if block || (superclass.respond_to?(:action_class) && superclass.action_class)
-        @action_class = declare_action_class(&block)
-      end
+      @action_class ||= declare_action_class
+      @action_class.class_eval(&block) if block
       @action_class
+    end
+
+    # Returns true or false based on if the resource is a custom resource.  The
+    # top-level Chef::Resource is not a chef resource.  This value is inherited.
+    #
+    # @return [Boolean] if the resource is a custom_resource
+    def self.custom_resource?
+      false
+    end
+
+    # This sets the resource to being a custom resource, and does so in a way
+    # that automatically inherits to all subclasses via defining a method on
+    # the class (class variables and class instance variables don't have the
+    # correct semantics here, this is a poor man's activesupport class_attribute)
+    #
+    # @api private
+    def self.is_custom_resource!
+      define_singleton_method :custom_resource? do
+        true
+      end
     end
 
     #
     # Ensure the action class actually gets created. This is called
     # when the user does `action :x do ... end`.
     #
-    # If a block is passed, it is run inside the action_class.
-    #
     # @api private
-    def self.declare_action_class(&block)
-      @action_class ||= begin
-                          if superclass.respond_to?(:action_class)
-                            base_provider = superclass.action_class
-                          end
-                          base_provider ||= Chef::Provider
+    def self.declare_action_class
+      @action_class ||=
+        begin
+          is_custom_resource!
+          base_provider =
+            if superclass.custom_resource?
+              superclass.action_class
+            else
+              ActionClass
+            end
 
-                          resource_class = self
-                          Class.new(base_provider) do
-                            include ActionClass
-                            self.resource_class = resource_class
-                          end
-                        end
-      @action_class.class_eval(&block) if block
-      @action_class
+          resource_class = self
+          Class.new(base_provider) do
+            self.resource_class = resource_class
+          end
+        end
     end
 
     #
     # Internal Resource Interface (for Chef)
     #
 
-    FORBIDDEN_IVARS = [:@run_context, :@not_if, :@only_if, :@enclosing_provider]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
+    FORBIDDEN_IVARS = [:@run_context, :@logger, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message, :@deprecated]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@logger, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message, :@deprecated]
 
     include Chef::Mixin::ConvertToClassName
     extend Chef::Mixin::ConvertToClassName
@@ -1236,6 +1179,10 @@ class Chef
     # where the context for the current Chef run is stored, including the node
     # and the resource collection.
     attr_accessor :run_context
+
+    # @return [Mixlib::Log::Child] The logger for this resources. This is a child
+    # of the run context's logger, if one exists.
+    attr_reader :logger
 
     # @return [String] The cookbook this resource was declared in.
     attr_accessor :cookbook_name
@@ -1269,15 +1216,15 @@ class Chef
     # resolve_resource_reference on each in turn, causing them to
     # resolve lazy/forward references.
     def resolve_notification_references
-      run_context.before_notifications(self).each { |n|
+      run_context.before_notifications(self).each do |n|
         n.resolve_resource_reference(run_context.resource_collection)
-      }
-      run_context.immediate_notifications(self).each { |n|
+      end
+      run_context.immediate_notifications(self).each do |n|
         n.resolve_resource_reference(run_context.resource_collection)
-      }
-      run_context.delayed_notifications(self).each {|n|
+      end
+      run_context.delayed_notifications(self).each do |n|
         n.resolve_resource_reference(run_context.resource_collection)
-      }
+      end
     end
 
     # Helper for #notifies
@@ -1422,6 +1369,35 @@ class Chef
       end
     end
 
+    def self.description(description = "NOT_PASSED")
+      if description != "NOT_PASSED"
+        @description = description
+      end
+      @description
+    end
+
+    def self.introduced(introduced = "NOT_PASSED")
+      if introduced != "NOT_PASSED"
+        @introduced = introduced
+      end
+      @introduced
+    end
+
+    def self.examples(examples = "NOT_PASSED")
+      if examples != "NOT_PASSED"
+        @examples = examples
+      end
+      @examples
+    end
+
+    def self.deprecated(deprecated = "NOT_PASSED")
+      if deprecated != "NOT_PASSED"
+        @deprecated = true
+        @deprecated_message = deprecated
+      end
+      @deprecated
+    end
+
     #
     # The cookbook in which this Resource was defined (if any).
     #
@@ -1446,24 +1422,6 @@ class Chef
       provider = provider_class.new(self, run_context)
       provider.action = action
       provider
-    end
-
-    # ??? TODO Seems unused.  Delete?
-    def noop(tf = nil)
-      if !tf.nil?
-        raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
-        @noop = tf
-      end
-      @noop
-    end
-
-    # TODO Seems unused.  Delete?
-    def is(*args)
-      if args.size == 1
-        args.first
-      else
-        return *args
-      end
     end
 
     #
@@ -1501,7 +1459,7 @@ class Chef
           false
         else
           events.resource_skipped(self, action, conditional)
-          Chef::Log.debug("Skipping #{self} due to #{conditional.description}")
+          logger.debug("Skipping #{self} due to #{conditional.description}")
           true
         end
       end
@@ -1524,6 +1482,13 @@ class Chef
     #
     # Returns the class with the given resource_name.
     #
+    # NOTE: Chef::Resource.resource_matching_short_name(:package) returns
+    # Chef::Resource::Package, while on rhel the API call
+    # Chef::Resource.resource_for_node(:package, node) will return
+    # Chef::Resource::YumPackage -- which is probably what you really
+    # want.  This API should most likely be removed or changed to call
+    # resource_for_node.
+    #
     # ==== Parameters
     # short_name<Symbol>:: short_name of the resource (ie :directory)
     #
@@ -1535,36 +1500,16 @@ class Chef
     end
 
     # @api private
-    def self.register_deprecated_lwrp_class(resource_class, class_name)
-      if Chef::Resource.const_defined?(class_name, false)
-        Chef::Log.warn "#{class_name} already exists!  Deprecation class overwrites #{resource_class}"
-        Chef::Resource.send(:remove_const, class_name)
-      end
-
-      if !Chef::Config[:treat_deprecation_warnings_as_errors]
-        Chef::Resource.const_set(class_name, resource_class)
-        deprecated_constants[class_name.to_sym] = resource_class
-      end
-    end
-
-    def self.deprecated_constants
-      @deprecated_constants ||= {}
-    end
-
-    # @api private
     def lookup_provider_constant(name, action = :nothing)
-      begin
-        self.class.provider_base.const_get(convert_to_class_name(name.to_s))
-      rescue NameError => e
-        if e.to_s =~ /#{Regexp.escape(self.class.provider_base.to_s)}/
-          raise ArgumentError, "No provider found to match '#{name}'"
-        else
-          raise e
-        end
-      end
+      # XXX: "name" is probably a poor choice of name here, ideally this would be nil, but we need to
+      # fix resources so that nil or empty names work (also solving the apt_update "doesn't matter one bit"
+      # problem).  WARNING: this string is not a public API and should not be referenced (e.g. in provides blocks)
+      # and may change at any time.  If you've found this comment you're also probably very lost and should maybe
+      # consider using `declare_resource :whatever` instead of trying to set `provider :whatever` on a resource, or in some
+      # other way reconsider what you're trying to do, since you're likely trying to force a bad design that we
+      # can't/won't support.
+      self.class.resource_for_node(name, node).new("name", run_context).provider_for_action(action).class
     end
-
-    private
 
     def self.remove_canonical_dsl
       if @resource_name

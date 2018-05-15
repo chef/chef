@@ -16,11 +16,12 @@
 # limitations under the License.
 #
 
+require "spec_helper"
 require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
-include_flag = !(%w{ubuntu centos aix}.include?(ohai[:platform]))
+include_flag = !(%w{amazon debian aix}.include?(ohai[:platform_family]) || (ohai[:platform_family] == "rhel" && ohai[:platform_version].to_i < 7))
 
 describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => include_flag do
   # This test does not work in travis because there is no eth0
@@ -51,11 +52,17 @@ describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => in
     end
   end
 
+  def fetch_first_interface_name
+    shell_out("ip link list |grep UP|grep -vi loop|head -1|cut -d':' -f 2").stdout.strip
+  end
+
   # **Caution: any updates to core interfaces can be risky.
   def en0_interface_for_test
     case ohai[:platform]
     when "aix"
       "en0"
+    when "ubuntu"
+      fetch_first_interface_name
     else
       "eth0"
     end

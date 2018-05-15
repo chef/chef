@@ -1,6 +1,6 @@
 #
 # Author:: Nathan Williams (<nath.e.will@gmail.com>)
-# Copyright:: Copyright 2016, Nathan Williams
+# Copyright:: Copyright 2016-2018, Nathan Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,23 +22,37 @@ require "iniparse"
 class Chef
   class Resource
     class SystemdUnit < Chef::Resource
-      resource_name :systemd_unit
+      resource_name(:systemd_unit) { true }
+
+      description "Use the systemd_unit resource to create, manage, and run systemd units."
+      introduced "12.11"
 
       default_action :nothing
       allowed_actions :create, :delete,
-                      :enable, :disable,
+                      :preset, :revert,
+                      :enable, :disable, :reenable,
                       :mask, :unmask,
                       :start, :stop,
-                      :restart, :reload
+                      :restart, :reload,
+                      :try_restart, :reload_or_restart,
+                      :reload_or_try_restart
 
+      # Internal provider-managed properties
       property :enabled, [TrueClass, FalseClass]
       property :active, [TrueClass, FalseClass]
       property :masked, [TrueClass, FalseClass]
       property :static, [TrueClass, FalseClass]
+
+      # User-provided properties
       property :user, String, desired_state: false
       property :content, [String, Hash]
       property :triggers_reload, [TrueClass, FalseClass],
                                  default: true, desired_state: false
+      property :verify, [TrueClass, FalseClass],
+                        default: true, desired_state: false
+      property :unit_name, String, desired_state: false,
+                                   identity: true,
+                                   name_property: true
 
       def to_ini
         case content

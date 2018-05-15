@@ -35,50 +35,38 @@ class Chef::Util::Windows::NetGroup
   end
 
   def local_get_members
-    begin
-      Chef::ReservedNames::Win32::NetUser.net_local_group_get_members(nil, groupname)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::NetUser.net_local_group_get_members(nil, groupname)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def local_add
-    begin
-      Chef::ReservedNames::Win32::NetUser.net_local_group_add(nil, groupname)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::NetUser.net_local_group_add(nil, groupname)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def local_set_members(members)
-    begin
-      Chef::ReservedNames::Win32::NetUser.net_local_group_set_members(nil, groupname, members)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::NetUser.net_local_group_set_members(nil, groupname, members)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def local_add_members(members)
-    begin
-      Chef::ReservedNames::Win32::NetUser.net_local_group_add_members(nil, groupname, members)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::NetUser.net_local_group_add_members(nil, groupname, members)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def local_delete_members(members)
-    begin
-      Chef::ReservedNames::Win32::NetUser.net_local_group_del_members(nil, groupname, members)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::NetUser.net_local_group_del_members(nil, groupname, members)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def local_delete
-    begin
-      Chef::ReservedNames::Win32::NetUser.net_local_group_del(nil, groupname)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::NetUser.net_local_group_del(nil, groupname)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 end

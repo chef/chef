@@ -5,7 +5,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2009-2016, 2010-2016 Chef Software, Inc.
+# Copyright:: Copyright 2009-2016, 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,6 +49,7 @@ class Chef
       ENCODING_GZIP_DEFLATE = "gzip;q=1.0,deflate;q=0.6,identity;q=0.3".freeze
 
       GET     = "get".freeze
+      PATCH   = "patch".freeze
       PUT     = "put".freeze
       POST    = "post".freeze
       DELETE  = "delete".freeze
@@ -70,7 +71,7 @@ class Chef
         @user_agent ||= DEFAULT_UA
       end
 
-      attr_reader :method, :url, :headers, :http_client, :http_request
+      attr_reader :method, :url, :headers, :http_request
 
       def initialize(method, url, req_body, base_headers = {})
         @method, @url = method, url
@@ -126,9 +127,9 @@ class Chef
         # http://redmine.ruby-lang.org/issues/show/2708
         # http://redmine.ruby-lang.org/issues/show/2758
         if e.to_s =~ /#{Regexp.escape(%q{undefined method `closed?' for nil:NilClass})}/
-          Chef::Log.debug("Rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
-          Chef::Log.debug("#{e.class.name}: #{e}")
-          Chef::Log.debug(e.backtrace.join("\n"))
+          Chef::Log.trace("Rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
+          Chef::Log.trace("#{e.class.name}: #{e}")
+          Chef::Log.trace(e.backtrace.join("\n"))
           raise Errno::ECONNREFUSED, "Connection refused attempting to contact #{url.scheme}://#{host}:#{port}"
         else
           raise
@@ -161,6 +162,8 @@ class Chef
                           Net::HTTP::Post.new(req_path, headers)
                         when PUT
                           Net::HTTP::Put.new(req_path, headers)
+                        when PATCH
+                          Net::HTTP::Patch.new(req_path, headers)
                         when DELETE
                           Net::HTTP::Delete.new(req_path, headers)
                         when HEAD

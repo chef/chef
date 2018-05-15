@@ -182,18 +182,18 @@ class Chef
         MAXDWORD = 0xffffffff
 
         # LOGON32 constants for LogonUser
-        LOGON32_LOGON_INTERACTIVE = 2;
-        LOGON32_LOGON_NETWORK = 3;
-        LOGON32_LOGON_BATCH = 4;
-        LOGON32_LOGON_SERVICE = 5;
-        LOGON32_LOGON_UNLOCK = 7;
-        LOGON32_LOGON_NETWORK_CLEARTEXT = 8;
-        LOGON32_LOGON_NEW_CREDENTIALS = 9;
+        LOGON32_LOGON_INTERACTIVE = 2
+        LOGON32_LOGON_NETWORK = 3
+        LOGON32_LOGON_BATCH = 4
+        LOGON32_LOGON_SERVICE = 5
+        LOGON32_LOGON_UNLOCK = 7
+        LOGON32_LOGON_NETWORK_CLEARTEXT = 8
+        LOGON32_LOGON_NEW_CREDENTIALS = 9
 
-        LOGON32_PROVIDER_DEFAULT = 0;
-        LOGON32_PROVIDER_WINNT35 = 1;
-        LOGON32_PROVIDER_WINNT40 = 2;
-        LOGON32_PROVIDER_WINNT50 = 3;
+        LOGON32_PROVIDER_DEFAULT = 0
+        LOGON32_PROVIDER_WINNT35 = 1
+        LOGON32_PROVIDER_WINNT40 = 2
+        LOGON32_PROVIDER_WINNT50 = 3
 
         # LSA access policy
         POLICY_VIEW_LOCAL_INFORMATION = 0x00000001
@@ -302,6 +302,17 @@ class Chef
              :SecurityImpersonation,
              :SecurityDelegation,
         ]
+
+        # https://msdn.microsoft.com/en-us/library/windows/desktop/bb530718%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+        ELEVATION_TYPE = enum :ELEVATION_TYPE, [
+            :TokenElevationTypeDefault, 1,
+            :TokenElevationTypeFull,
+            :TokenElevationTypeLimited
+        ]
+
+        class TOKEN_ELEVATION_TYPE < FFI::Struct
+          layout :ElevationType, :ELEVATION_TYPE
+        end
 
         # SECURITY_DESCRIPTOR is an opaque structure whose contents can vary.  Pass the
         # pointer around and free it with LocalFree.
@@ -453,6 +464,8 @@ class Chef
         safe_attach_function :SetSecurityDescriptorSacl, [ :pointer, :BOOL, :pointer, :BOOL ], :BOOL
         safe_attach_function :GetTokenInformation, [ :HANDLE, :TOKEN_INFORMATION_CLASS, :pointer, :DWORD, :PDWORD ], :BOOL
         safe_attach_function :LogonUserW, [:LPTSTR, :LPTSTR, :LPTSTR, :DWORD, :DWORD, :PHANDLE], :BOOL
+        safe_attach_function :ImpersonateLoggedOnUser, [:HANDLE], :BOOL
+        safe_attach_function :RevertToSelf, [], :BOOL
 
       end
     end

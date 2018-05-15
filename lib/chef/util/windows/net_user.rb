@@ -78,11 +78,9 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   end
 
   def set_info(args)
-    begin
-      rc = NetUser.net_user_set_info_l3(nil, @username, transform_usri3(args))
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    rc = NetUser.net_user_set_info_l3(nil, @username, transform_usri3(args))
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   public
@@ -95,13 +93,11 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   LOGON32_LOGON_NETWORK = Security::LOGON32_LOGON_NETWORK
   #XXX for an extra painful alternative, see: http://support.microsoft.com/kb/180548
   def validate_credentials(passwd)
-    begin
-      token = Security.logon_user(@username, nil, passwd,
-                 LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
-      return true
-    rescue Chef::Exceptions::Win32APIError
-      return false
-    end
+    token = Security.logon_user(@username, nil, passwd,
+               LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
+    true
+  rescue Chef::Exceptions::Win32APIError
+    false
   end
 
   def get_info
@@ -116,7 +112,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   def add(args)
     transformed_args = transform_usri3(args)
     NetUser.net_user_add_l3(nil, transformed_args)
-    NetUser.net_local_group_add_member(nil, "Users", args[:name])
+    NetUser.net_local_group_add_member(nil, Chef::ReservedNames::Win32::Security::SID.BuiltinUsers.account_simple_name, args[:name])
   end
 
   # FIXME: yard with @yield
@@ -137,11 +133,9 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   end
 
   def delete
-    begin
-      NetUser.net_user_del(nil, @username)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    NetUser.net_user_del(nil, @username)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def disable_account

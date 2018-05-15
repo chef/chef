@@ -30,6 +30,9 @@ require "chef/platform/provider_priority_map"
 require "chef/platform/resource_priority_map"
 require "chef/platform/provider_handler_map"
 require "chef/platform/resource_handler_map"
+require "chef/deprecated"
+require "chef/event_dispatch/dsl"
+require "chef/deprecated"
 
 class Chef
   class << self
@@ -197,25 +200,34 @@ class Chef
     #
     # Emit a deprecation message.
     #
-    # @param message The message to send.
+    # @param [Symbol] type The message to send. This should refer to a class
+    #   defined in Chef::Deprecated
+    # @param message  An explicit message to display, rather than the generic one
+    #   associated with the deprecation.
     # @param location The location. Defaults to the caller who called you (since
     #   generally the person who triggered the check is the one that needs to be
     #   fixed).
     #
     # @example
-    #     Chef.deprecation("Deprecated!")
+    #     Chef.deprecated(:my_deprecation, message: "This is deprecated!")
     #
     # @api private this will likely be removed in favor of an as-yet unwritten
     #      `Chef.log`
-    def log_deprecation(message, location = nil)
+    def deprecated(type, message, location = nil)
       location ||= Chef::Log.caller_location
+      deprecation = Chef::Deprecated.create(type, message, location)
       # `run_context.events` is the primary deprecation target if we're in a
       # run. If we are not yet in a run, print to `Chef::Log`.
       if run_context && run_context.events
-        run_context.events.deprecation(message, location)
+        run_context.events.deprecation(deprecation, location)
       else
-        Chef::Log.deprecation(message, location)
+        Chef::Log.deprecation(deprecation, location)
       end
+    end
+
+    def log_deprecation(message, location = nil)
+      location ||= Chef::Log.caller_location
+      Chef.deprecated(:generic, message, location)
     end
   end
 

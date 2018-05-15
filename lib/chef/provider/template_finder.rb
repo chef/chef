@@ -40,7 +40,7 @@ class Chef
         cookbook.preferred_filename_on_disk_location(@node, :templates, template_name)
       end
 
-    protected
+      protected
 
       def template_source_name(name, options)
         if options[:source]

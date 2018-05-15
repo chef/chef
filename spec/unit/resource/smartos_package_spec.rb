@@ -30,4 +30,9 @@ describe Chef::Resource::SmartosPackage, "initialize" do
     platform_family: "smartos"
   )
 
+  let(:resource) { Chef::Resource::SmartosPackage.new("foo") }
+
+  it "sets the package_name to the name provided" do
+    expect(resource.package_name).to eql("foo")
+  end
 end

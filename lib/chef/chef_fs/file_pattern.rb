@@ -84,7 +84,7 @@ class Chef
         # Otherwise, it's possible we could match: the path matches to this point, and the pattern is longer than the path.
         # TODO There is one edge case where the double star comes after some characters like abc**def--we could check whether the next
         # bit of path starts with abc in that case.
-        return true
+        true
       end
 
       # Returns the immediate child of a path that would be matched
@@ -114,7 +114,7 @@ class Chef
         path = path[1, path.length - 1] if Chef::ChefFS::PathUtils.is_absolute?(path)
         dirs_in_path = Chef::ChefFS::PathUtils.split(path).length
         return nil if exact_parts.length <= dirs_in_path
-        return exact_parts[dirs_in_path]
+        exact_parts[dirs_in_path]
       end
 
       # If this pattern represents an exact path, returns the exact path.
@@ -160,7 +160,7 @@ class Chef
         pattern
       end
 
-    private
+      private
 
       def regexp
         calculate

@@ -2,7 +2,7 @@
 # Author:: Tyler Ball (<tball@chef.io>)
 # Author:: Claire McQuin (<claire@chef.io>)
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,13 +28,14 @@ describe Chef::Audit::AuditReporter do
   let(:run_id) { 0 }
   let(:start_time) { Time.new(2014, 12, 3, 9, 31, 05, "-08:00") }
   let(:end_time) { Time.new(2014, 12, 3, 9, 36, 14, "-08:00") }
-  let(:run_status) { instance_double(Chef::RunStatus, :node => node, :run_id => run_id,
-                                                      :start_time => start_time, :end_time => end_time) }
+  let(:run_status) do
+    instance_double(Chef::RunStatus, :node => node, :run_id => run_id,
+                                     :start_time => start_time, :end_time => end_time) end
 
   describe "#audit_phase_start" do
 
-    it "notifies audit phase start to debug log" do
-      expect(Chef::Log).to receive(:debug).with(/Audit Reporter starting/)
+    it "notifies audit phase start to trace log" do
+      expect(Chef::Log).to receive(:trace).with(/Audit Reporter starting/)
       reporter.audit_phase_start(run_status)
     end
 
@@ -85,9 +86,10 @@ describe Chef::Audit::AuditReporter do
 
       context "when audit phase failed" do
 
-        let(:audit_error) { double("AuditError", :class => "Chef::Exceptions::AuditError",
-                                                 :message => "Audit phase failed with error message: derpderpderp",
-                                                 :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) }
+        let(:audit_error) do
+          double("AuditError", :class => "Chef::Exceptions::AuditError",
+                               :message => "Audit phase failed with error message: derpderpderp",
+                               :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) end
 
         before do
           reporter.instance_variable_set(:@audit_phase_error, audit_error)
@@ -124,8 +126,8 @@ EOM
           let(:response) { double("response", :code => code) }
 
           before do
-            expect(Chef::Log).to receive(:debug).with(/Sending audit report/)
-            expect(Chef::Log).to receive(:debug).with(/Audit Report/)
+            expect(Chef::Log).to receive(:trace).with(/Sending audit report/)
+            expect(Chef::Log).to receive(:trace).with(/Audit Report/)
             allow(error).to receive(:response).and_return(response)
             expect(error).to receive(:respond_to?).with(:response).and_return(true)
           end
@@ -135,7 +137,7 @@ EOM
             let(:code) { "404" }
 
             it "logs that the server doesn't support audit reporting" do
-              expect(Chef::Log).to receive(:debug).with(/Server doesn't support audit reporting/)
+              expect(Chef::Log).to receive(:trace).with(/Server doesn't support audit reporting/)
               reporter.run_completed(node)
             end
           end
@@ -201,12 +203,12 @@ EOM
     context "when auditing is not enabled" do
 
       before do
-        allow(Chef::Log).to receive(:debug)
+        allow(Chef::Log).to receive(:trace)
       end
 
       it "doesn't send reports" do
         expect(reporter).to receive(:auditing_enabled?).and_return(false)
-        expect(Chef::Log).to receive(:debug).with("Audit Reports are disabled. Skipping sending reports.")
+        expect(Chef::Log).to receive(:trace).with("Audit Reports are disabled. Skipping sending reports.")
         reporter.run_completed(node)
       end
 
@@ -215,13 +217,13 @@ EOM
     context "when the run fails before audits" do
 
       before do
-        allow(Chef::Log).to receive(:debug)
+        allow(Chef::Log).to receive(:trace)
       end
 
       it "doesn't send reports" do
         expect(reporter).to receive(:auditing_enabled?).and_return(true)
         expect(reporter).to receive(:run_status).and_return(nil)
-        expect(Chef::Log).to receive(:debug).with("Run failed before audit mode was initialized, not sending audit report to server")
+        expect(Chef::Log).to receive(:trace).with("Run failed before audit mode was initialized, not sending audit report to server")
         reporter.run_completed(node)
       end
 
@@ -233,13 +235,15 @@ EOM
     let(:audit_data) { Chef::Audit::AuditData.new(node.name, run_id) }
     let(:run_data) { audit_data.to_hash }
 
-    let(:audit_error) { double("AuditError", :class => "Chef::Exceptions::AuditError",
-                                             :message => "Audit phase failed with error message: derpderpderp",
-                                             :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) }
+    let(:audit_error) do
+      double("AuditError", :class => "Chef::Exceptions::AuditError",
+                           :message => "Audit phase failed with error message: derpderpderp",
+                           :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) end
 
-    let(:run_error) { double("RunError", :class => "Chef::Exceptions::RunError",
-                                         :message => "This error shouldn't be reported.",
-                                         :backtrace => ["fix it", "fix it", "fix it"]) }
+    let(:run_error) do
+      double("RunError", :class => "Chef::Exceptions::RunError",
+                         :message => "This error shouldn't be reported.",
+                         :backtrace => ["fix it", "fix it", "fix it"]) end
 
     before do
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
@@ -276,23 +280,27 @@ EOM
 
   shared_context "audit data" do
 
-    let(:control_group_foo) { instance_double(Chef::Audit::ControlGroupData,
-      :metadata => double("foo metadata")) }
-    let(:control_group_bar) { instance_double(Chef::Audit::ControlGroupData,
-      :metadata => double("bar metadata")) }
+    let(:control_group_foo) do
+      instance_double(Chef::Audit::ControlGroupData,
+      :metadata => double("foo metadata")) end
+    let(:control_group_bar) do
+      instance_double(Chef::Audit::ControlGroupData,
+      :metadata => double("bar metadata")) end
 
-    let(:ordered_control_groups) {
+    let(:ordered_control_groups) do
       {
         "foo" => control_group_foo,
         "bar" => control_group_bar,
       }
-    }
+    end
 
-    let(:audit_data) { instance_double(Chef::Audit::AuditData,
-      :add_control_group => true) }
+    let(:audit_data) do
+      instance_double(Chef::Audit::AuditData,
+      :add_control_group => true) end
 
-    let(:run_context) { instance_double(Chef::RunContext,
-      :audits => ordered_control_groups) }
+    let(:run_context) do
+      instance_double(Chef::RunContext,
+      :audits => ordered_control_groups) end
 
     before do
       allow(reporter).to receive(:ordered_control_groups).and_return(ordered_control_groups)
@@ -305,13 +313,13 @@ EOM
   describe "#audit_phase_complete" do
     include_context "audit data"
 
-    it "notifies audit phase finished to debug log" do
-      expect(Chef::Log).to receive(:debug).with(/Audit Reporter completed/)
+    it "notifies audit phase finished to trace log" do
+      expect(Chef::Log).to receive(:trace).with(/Audit Reporter completed/)
       reporter.audit_phase_complete("Output from audit mode")
     end
 
     it "collects audit data" do
-      ordered_control_groups.each do |_name, group|
+      ordered_control_groups.each_value do |group|
         expect(audit_data).to receive(:add_control_group).with(group)
       end
       reporter.audit_phase_complete("Output from audit mode")
@@ -323,13 +331,13 @@ EOM
 
     let(:error) { double("Exception") }
 
-    it "notifies audit phase failed to debug log" do
-      expect(Chef::Log).to receive(:debug).with(/Audit Reporter failed/)
+    it "notifies audit phase failed to trace log" do
+      expect(Chef::Log).to receive(:trace).with(/Audit Reporter failed/)
       reporter.audit_phase_failed(error, "Output from audit mode")
     end
 
     it "collects audit data" do
-      ordered_control_groups.each do |_name, group|
+      ordered_control_groups.each_value do |group|
         expect(audit_data).to receive(:add_control_group).with(group)
       end
       reporter.audit_phase_failed(error, "Output from audit mode")
@@ -340,8 +348,9 @@ EOM
     include_context "audit data"
 
     let(:name) { "bat" }
-    let(:control_group) { instance_double(Chef::Audit::ControlGroupData,
-      :metadata => double("metadata")) }
+    let(:control_group) do
+      instance_double(Chef::Audit::ControlGroupData,
+      :metadata => double("metadata")) end
 
     before do
       allow(Chef::Audit::ControlGroupData).to receive(:new).

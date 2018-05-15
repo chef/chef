@@ -3,7 +3,7 @@
 # Author:: Prajakta Purohit (prajakta@chef.io>)
 # Auther:: Tyler Cloke (<tyler@opscode.com>)
 #
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,11 +26,11 @@ require "chef/event_dispatch/base"
 class Chef
   class ResourceReporter < EventDispatch::Base
 
-    class ResourceReport < Struct.new(:new_resource,
-                                      :current_resource,
-                                      :action,
-                                      :exception,
-                                      :elapsed_time)
+    ResourceReport = Struct.new(:new_resource,
+                                :current_resource,
+                                :action,
+                                :exception,
+                                :elapsed_time) do
 
       def self.new_with_current_state(new_resource, action, current_resource)
         report = new
@@ -87,14 +87,13 @@ class Chef
       end
 
       def success?
-        !self.exception
+        !exception
       end
     end # End class ResouceReport
 
     attr_reader :updated_resources
     attr_reader :status
     attr_reader :exception
-    attr_reader :run_id
     attr_reader :error_descriptions
 
     PROTOCOL_VERSION = "0.1.0"
@@ -154,7 +153,7 @@ class Chef
           Chef::Log.info(message + reason + reporting_status)
         else
           reporting_status = "Disabling reporting for run."
-          Chef::Log.debug(message + reason + reporting_status)
+          Chef::Log.trace(message + reason + reporting_status)
         end
       end
 
@@ -198,6 +197,17 @@ class Chef
     def resource_completed(new_resource)
       if @pending_update && !nested_resource?(new_resource)
         @pending_update.finish
+
+        # Verify if the resource has sensitive data
+        # and create a new blank resource with only
+        # the name so we can report it back without
+        # sensitive data
+        if @pending_update.new_resource.sensitive
+          klass = @pending_update.new_resource.class
+          resource_name = @pending_update.new_resource.name
+          @pending_update.new_resource = klass.new(resource_name)
+        end
+
         @updated_resources << @pending_update
         @pending_update = nil
       end
@@ -227,9 +237,9 @@ class Chef
         run_data = prepare_run_data
         resource_history_url = "reports/nodes/#{node_name}/runs/#{run_id}"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
-        Chef::Log.debug run_data.inspect
+        Chef::Log.trace run_data.inspect
         compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
-        Chef::Log.debug("Sending compressed run data...")
+        Chef::Log.trace("Sending compressed run data...")
         # Since we're posting compressed data we can not directly call post which expects JSON
         begin
           @rest_client.raw_request(:POST, resource_history_url, headers({ "Content-Encoding" => "gzip" }), compressed_data)
@@ -242,7 +252,7 @@ class Chef
           end
         end
       else
-        Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
+        Chef::Log.trace("Server doesn't support resource history, skipping resource report.")
       end
     end
 

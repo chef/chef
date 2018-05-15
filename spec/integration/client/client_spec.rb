@@ -19,11 +19,11 @@ describe "chef-client" do
     #
     # just a normal file
     # (expected_content should be uncompressed)
-    @api.get("/recipes.tgz", 200) {
+    @api.get("/recipes.tgz", 200) do
       File.open(recipes_filename, "rb") do |f|
         f.read
       end
-    }
+    end
   end
 
   def stop_tiny_server
@@ -46,6 +46,7 @@ describe "chef-client" do
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
   let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
+  let(:chef_solo) { "ruby '#{chef_dir}/chef-solo' --legacy-mode --minimal-ohai" }
 
   let(:critical_env_vars) { %w{_ORIGINAL_GEM_PATH GEM_PATH GEM_HOME GEM_ROOT BUNDLE_BIN_PATH BUNDLE_GEMFILE RUBYLIB RUBYOPT RUBY_ENGINE RUBY_ROOT RUBY_VERSION PATH}.map { |o| "#{o}=#{ENV[o]}" } .join(" ") }
 
@@ -293,19 +294,19 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z -l info", :cwd => chef_dir)
       expect(result.stdout).not_to include("Overridden Run List")
       expect(result.stdout).to include("Run List is [recipe[x::default]]")
-      #puts result.stdout
       result.error!
     end
 
-    it "should complete with success when using --profile-ruby and output a profile file" do
+    it "should complete with success when using --profile-ruby and output a profile file", :not_supported_on_aix do
       file "config/client.rb", <<EOM
 local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
       result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z --profile-ruby", :cwd => chef_dir)
+      result.error!
       expect(File.exist?(path_to("config/local-mode-cache/cache/graph_profile.out"))).to be true
     end
 
@@ -315,6 +316,7 @@ local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
       result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", :cwd => chef_dir)
+      result.error!
       expect(File.exist?(path_to("config/local-mode-cache/cache/graph_profile.out"))).to be false
     end
   end
@@ -376,6 +378,8 @@ EOM
     end
 
     it "the cheffish DSL tries to load but fails (because chef-provisioning is not there)" do
+      # we'd need to have a custom bundle to fix this that omitted chef-provisioning, but that would dig our crazy even deeper, so lets not
+      skip "but if chef-provisioning is in our bundle or in our gemset then this test, very annoyingly, always fails"
       command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
       expect(command.exitstatus).to eql(1)
       expect(command.stdout).to match(/cannot load such file -- chef\/provisioning/)
@@ -385,18 +389,8 @@ EOM
   when_the_repository "has a cookbook that generates deprecation warnings" do
     before do
       file "cookbooks/x/recipes/default.rb", <<-EOM
-        class ::MyResource < Chef::Resource
-          use_automatic_resource_name
-          property :x, default: []
-          property :y, default: {}
-        end
-
-        my_resource 'blah' do
-          1.upto(10) do
-            x nil
-          end
-          x nil
-        end
+        Chef.deprecated(:internal_api, "Test deprecation")
+        Chef.deprecated(:internal_api, "Test deprecation")
       EOM
     end
 
@@ -429,7 +423,7 @@ EOM
       expect(run_complete).to be >= 0
 
       # Make sure there is exactly one result for each, and that it occurs *after* the complete message.
-      expect(match_indices(/An attempt was made to change x from \[\] to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./, result.stdout)).to match([ be > run_complete ])
+      expect(match_indices(/Test deprecation/, result.stdout)).to match([ be > run_complete ])
     end
   end
 
@@ -452,7 +446,7 @@ control_group "control group without top level control" do
 end
       RECIPE
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed' -l info", :cwd => chef_dir)
       expect(result.error?).to be_falsey
       expect(result.stdout).to include("Successfully executed all `control_group` blocks and contained examples")
     end
@@ -472,13 +466,76 @@ end
     end
   end
 
+  when_the_repository "has a cookbook that deploys a file" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<-RECIPE
+cookbook_file #{path_to('tempfile.txt').inspect} do
+  source "my_file"
+end
+      RECIPE
+
+      file "cookbooks/x/files/my_file", <<-FILE
+this is my file
+      FILE
+    end
+
+    [true, false].each do |lazy|
+      context "with no_lazy_load set to #{lazy}" do
+        it "should create the file" do
+          file "config/client.rb", <<EOM
+no_lazy_load #{lazy}
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+          result = shell_out("#{chef_client} -l debug -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+          result.error!
+
+          expect(IO.read(path_to("tempfile.txt")).strip).to eq("this is my file")
+        end
+      end
+    end
+  end
+
+  when_the_repository "has a cookbook with an ohai plugin" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<-RECIPE
+file #{path_to('tempfile.txt').inspect} do
+  content node["english"]["version"]
+end
+      RECIPE
+
+      file "cookbooks/x/ohai/english.rb", <<-OHAI
+        Ohai.plugin(:English) do
+          provides 'english'
+
+          collect_data do
+            english Mash.new
+            english[:version] = "2014"
+          end
+        end
+      OHAI
+
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+    end
+
+    it "should run the ohai plugin" do
+      result = shell_out("#{chef_client} -l debug -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      result.error!
+
+      expect(IO.read(path_to("tempfile.txt"))).to eq("2014")
+    end
+  end
+
   # Fails on appveyor, but works locally on windows and on windows hosts in Ci.
   context "when using recipe-url", :skip_appveyor do
-    before(:all) do
+    before(:each) do
       start_tiny_server
     end
 
-    after(:all) do
+    after(:each) do
       stop_tiny_server
     end
 
@@ -495,6 +552,180 @@ EOM
     it "should fail when passed --recipe-url and not passed -z" do
       result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
       expect(result.exitstatus).not_to eq(0)
+    end
+
+    it "should fail when passed --recipe-url with a file that doesn't exist" do
+      broken_path = File.join(CHEF_SPEC_DATA, "recipes_dont_exist.tgz")
+      result = shell_out("#{chef_client} --recipe-url=#{broken_path}", :cwd => tmp_dir)
+      expect(result.exitstatus).not_to eq(0)
+    end
+  end
+
+  when_the_repository "has a cookbook with broken metadata.rb, but has metadata.json" do
+    before do
+      file "cookbooks/x/recipes/default.rb", ""
+      file "cookbooks/x/metadata.rb", <<EOM
+name 'x'
+version '0.0.1'
+raise "TEH SADNESS"
+EOM
+      file "cookbooks/x/metadata.json", <<EOM
+{
+  "name": "x",
+  "version": "0.0.1"
+}
+EOM
+
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+    end
+
+    it "the chef client run should succeed" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+    end
+
+    it "a chef-solo run should succeed" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+    end
+  end
+
+  when_the_repository "has a cookbook that logs at the info level" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<EOM
+      log "info level" do
+        level :info
+      end
+EOM
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+    end
+
+    it "a chef client run should not log to info by default" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+
+    it "a chef client run to a pipe should not log to info by default" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork | tee #{path_to('chefrun.out')}", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+
+    it "a chef solo run should not log to info by default" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+
+    it "a chef solo run to a pipe should not log to info by default" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork | tee #{path_to('chefrun.out')}", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+  end
+
+  when_the_repository "has a cookbook that knows if we're running forked" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<~EOM
+        puts Chef::Config[:client_fork] ? "WITHFORK" : "NOFORK"
+EOM
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+    end
+
+    it "chef-client runs by default with no supervisor" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
+    end
+
+    it "chef-solo runs by default with no supervisor" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
+    end
+
+    it "chef-client --no-fork does not fork" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
+    end
+
+    it "chef-solo --no-fork does not fork" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
+    end
+
+    it "chef-client with --fork uses a supervisor" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("WITHFORK")
+    end
+
+    it "chef-solo with --fork uses a supervisor" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("WITHFORK")
+    end
+  end
+
+  when_the_repository "has a cookbook that knows if we're running forked, and configures forking in config.rb" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<~EOM
+        puts Chef::Config[:client_fork] ? "WITHFORK" : "NOFORK"
+EOM
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+client_fork true
+EOM
+    end
+
+    it "chef-client uses a supervisor" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("WITHFORK")
+    end
+
+    it "chef-solo uses a supervisor" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("WITHFORK")
+    end
+  end
+
+  when_the_repository "has a cookbook that knows if we're running forked, and configures no-forking in config.rb" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<~EOM
+        puts Chef::Config[:client_fork] ? "WITHFORK" : "NOFORK"
+EOM
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+client_fork false
+EOM
+    end
+
+    it "chef-client uses a supervisor" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
+    end
+
+    it "chef-solo uses a supervisor" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
     end
   end
 end

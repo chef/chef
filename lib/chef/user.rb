@@ -26,13 +26,13 @@ require "chef/server_api"
 # TODO
 # DEPRECATION NOTE
 # This class will be replaced by Chef::UserV1 in Chef 13. It is the code to support the User object
-# corrosponding to the Open Source Chef Server 11 and only still exists to support
+# corresponding to the Open Source Chef Server 11 and only still exists to support
 # users still on OSC 11.
 #
 # Chef::UserV1 now supports Chef Server 12 and will be moved to this namespace in Chef 13.
 #
 # New development should occur in Chef::UserV1.
-# This file and corrosponding osc_user knife files
+# This file and corresponding osc_user knife files
 # should be removed once client support for Open Source Chef Server 11 expires.
 class Chef
   class User
@@ -97,10 +97,10 @@ class Chef
     end
 
     def create
-      payload = { :name => self.name, :admin => self.admin, :password => self.password }
+      payload = { :name => name, :admin => admin, :password => password }
       payload[:public_key] = public_key if public_key
       new_user = chef_rest_v0.post("users", payload)
-      Chef::User.from_hash(self.to_hash.merge(new_user))
+      Chef::User.from_hash(to_hash.merge(new_user))
     end
 
     def update(new_key = false)
@@ -108,18 +108,16 @@ class Chef
       payload[:private_key] = new_key if new_key
       payload[:password] = password if password
       updated_user = chef_rest_v0.put("users/#{name}", payload)
-      Chef::User.from_hash(self.to_hash.merge(updated_user))
+      Chef::User.from_hash(to_hash.merge(updated_user))
     end
 
     def save(new_key = false)
-      begin
-        create
-      rescue Net::HTTPServerException => e
-        if e.response.code == "409"
-          update(new_key)
-        else
-          raise e
-        end
+      create
+    rescue Net::HTTPServerException => e
+      if e.response.code == "409"
+        update(new_key)
+      else
+        raise e
       end
     end
 
@@ -152,11 +150,6 @@ class Chef
 
     def self.from_json(json)
       Chef::User.from_hash(Chef::JSONCompat.from_json(json))
-    end
-
-    def self.json_create(json)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::User#from_json or Chef::User#load.")
-      Chef::User.from_json(json)
     end
 
     def self.list(inflate = false)

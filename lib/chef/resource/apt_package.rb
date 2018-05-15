@@ -17,15 +17,22 @@
 #
 
 require "chef/resource/package"
-require "chef/provider/package/apt"
 
 class Chef
   class Resource
     class AptPackage < Chef::Resource::Package
       resource_name :apt_package
-      provides :package, os: "linux", platform_family: [ "debian" ]
+      provides :package, platform_family: "debian"
 
-      property :default_release, String, desired_state: false
+      description "Use the apt_package resource to manage packages on Debian and Ubuntu platforms."
+
+      property :default_release, String,
+               description: "The default release. For example: stable.",
+               desired_state: false
+
+      property :overwrite_config_files, [TrueClass, FalseClass],
+               description: "Overwrite existing config files with those in the package if prompted by apt.",
+               default: false
 
     end
   end

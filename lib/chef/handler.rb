@@ -19,14 +19,12 @@ require "chef/client"
 require "forwardable"
 
 class Chef
-  # == Chef::Handler
   # The base class for an Exception or Notification Handler. Create your own
   # handler by subclassing Chef::Handler. When a Chef run fails with an
   # uncaught Exception, Chef will set the +run_status+ on your handler and call
   # +report+
   #
-  # ===Example:
-  #
+  # @example
   #   require 'net/smtp'
   #
   #   module MyOrg
@@ -57,9 +55,39 @@ class Chef
   #
   class Handler
 
+    def self.handler_for(*args)
+      if args.include?(:start)
+        Chef::Config[:start_handlers] ||= []
+        Chef::Config[:start_handlers] |= [self]
+      end
+      if args.include?(:report)
+        Chef::Config[:report_handlers] ||= []
+        Chef::Config[:report_handlers] |= [self]
+      end
+      if args.include?(:exception)
+        Chef::Config[:exception_handlers] ||= []
+        Chef::Config[:exception_handlers] |= [self]
+      end
+    end
+
     # The list of currently configured start handlers
     def self.start_handlers
       Array(Chef::Config[:start_handlers])
+    end
+
+    def self.resolve_handler_instance(handler)
+      if handler.is_a?(Class)
+        if handler.respond_to?(:instance)
+          # support retrieving a Singleton reporting object
+          handler.instance
+        else
+          # just a class with no way to insert data
+          handler.new
+        end
+      else
+        # the Chef::Config array contains an instance, not a class
+        handler
+      end
     end
 
     # Run the start handlers. This will usually be called by a notification
@@ -67,6 +95,7 @@ class Chef
     def self.run_start_handlers(run_status)
       Chef::Log.info("Running start handlers")
       start_handlers.each do |handler|
+        handler = resolve_handler_instance(handler)
         handler.run_report_safely(run_status)
       end
       Chef::Log.info("Start handlers complete.")
@@ -90,6 +119,7 @@ class Chef
       events.handlers_start(report_handlers.size)
       Chef::Log.info("Running report handlers")
       report_handlers.each do |handler|
+        handler = resolve_handler_instance(handler)
         handler.run_report_safely(run_status)
         events.handler_executed(handler)
       end
@@ -115,6 +145,7 @@ class Chef
       events.handlers_start(exception_handlers.size)
       Chef::Log.error("Running exception handlers")
       exception_handlers.each do |handler|
+        handler = resolve_handler_instance(handler)
         handler.run_report_safely(run_status)
         events.handler_executed(handler)
       end

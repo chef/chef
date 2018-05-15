@@ -25,75 +25,71 @@ require "uuidtools"
 class Chef
   class Provider
     class OsxProfile < Chef::Provider
-      include Chef::Mixin::Command
-      provides :osx_profile, os: "darwin"
-      provides :osx_config_profile, os: "darwin"
-
-      def whyrun_supported?
-        true
-      end
+      provides :osx_profile
+      provides :osx_config_profile
 
       def load_current_resource
-        @current_resource = Chef::Resource::OsxProfile.new(@new_resource.name)
-        @current_resource.profile_name(@new_resource.profile_name)
+        @current_resource = Chef::Resource::OsxProfile.new(new_resource.name)
+        current_resource.profile_name(new_resource.profile_name)
 
         all_profiles = get_installed_profiles
-        @new_resource.profile(
-          @new_resource.profile ||
-          @new_resource.profile_name
+        new_resource.profile(
+          new_resource.profile ||
+          new_resource.profile_name
         )
 
-        @new_profile_hash = get_profile_hash(@new_resource.profile)
-        @new_profile_hash["PayloadUUID"] =
-          config_uuid(@new_profile_hash) if @new_profile_hash
+        @new_profile_hash = get_profile_hash(new_resource.profile)
+        if @new_profile_hash
+          @new_profile_hash["PayloadUUID"] =
+            config_uuid(@new_profile_hash)
+        end
 
         if @new_profile_hash
           @new_profile_identifier = @new_profile_hash["PayloadIdentifier"]
         else
-          @new_profile_identifier = @new_resource.identifier ||
-            @new_resource.profile_name
+          @new_profile_identifier = new_resource.identifier ||
+            new_resource.profile_name
         end
 
-        if all_profiles.empty?
-          current_profile = nil
-        else
+        current_profile = nil
+        if all_profiles && all_profiles.key?("_computerlevel")
           current_profile = all_profiles["_computerlevel"].find do |item|
             item["ProfileIdentifier"] == @new_profile_identifier
           end
         end
-        @current_resource.profile(current_profile)
+        current_resource.profile(current_profile)
       end
 
       def define_resource_requirements
         requirements.assert(:remove) do |a|
           if @new_profile_identifier
-            a.assertion {
+            a.assertion do
               !@new_profile_identifier.nil? &&
                 !@new_profile_identifier.end_with?(".mobileconfig") &&
-                /^\w+(?:\.\w+)+$/.match(@new_profile_identifier)
-            }
+                /^\w+(?:(\.| )\w+)+$/.match(@new_profile_identifier)
+            end
             a.failure_message RuntimeError, "when removing using the identifier attribute, it must match the profile identifier"
           else
-            new_profile_name = @new_resource.profile_name
-            a.assertion {
+            new_profile_name = new_resource.profile_name
+            a.assertion do
               !new_profile_name.end_with?(".mobileconfig") &&
-                /^\w+(?:\.\w+)+$/.match(new_profile_name)
-            }
+                /^\w+(?:(\.| )\w+)+$/.match(new_profile_name)
+            end
             a.failure_message RuntimeError, "When removing by resource name, it must match the profile identifier "
           end
         end
 
         requirements.assert(:install) do |a|
           if @new_profile_hash.is_a?(Hash)
-            a.assertion {
+            a.assertion do
               @new_profile_hash.include?("PayloadIdentifier")
-            }
+            end
             a.failure_message RuntimeError, "The specified profile does not seem to be valid"
           end
           if @new_profile_hash.is_a?(String)
-            a.assertion {
+            a.assertion do
               @new_profile_hash.end_with?(".mobileconfig")
-            }
+            end
             a.failure_message RuntimeError, "#{new_profile_hash}' is not a valid profile"
           end
         end
@@ -127,21 +123,21 @@ class Chef
             raise Chef::Exceptions::FileNotFound, error_string
           end
           cookbook_profile = cache_cookbook_profile(new_profile)
-          return read_plist(cookbook_profile)
+          read_plist(cookbook_profile)
         else
-          return nil
+          nil
         end
       end
 
       def cookbook_file_available?(cookbook_file)
         run_context.has_cookbook_file_in_cookbook?(
-          @new_resource.cookbook_name, cookbook_file
+          new_resource.cookbook_name, cookbook_file
         )
       end
 
       def get_cache_dir
         cache_dir = Chef::FileCache.create_cache_path(
-          "profiles/#{@new_resource.cookbook_name}"
+          "profiles/#{new_resource.cookbook_name}"
         )
       end
 
@@ -149,7 +145,7 @@ class Chef
         Chef::FileCache.create_cache_path(
           ::File.join(
             "profiles",
-            @new_resource.cookbook_name,
+            new_resource.cookbook_name,
             ::File.dirname(cookbook_file)
           )
         )
@@ -160,7 +156,7 @@ class Chef
           ),
           run_context
         )
-        remote_file.cookbook_name = @new_resource.cookbook_name
+        remote_file.cookbook_name = new_resource.cookbook_name
         remote_file.source(cookbook_file)
         remote_file.backup(false)
         remote_file.run_action(:create)
@@ -169,9 +165,9 @@ class Chef
 
       def get_profile_hash(new_profile)
         if new_profile.is_a?(Hash)
-          return new_profile
+          new_profile
         elsif new_profile.is_a?(String)
-          return load_profile_hash(new_profile)
+          load_profile_hash(new_profile)
         end
       end
 
@@ -184,8 +180,8 @@ class Chef
       end
 
       def write_profile_to_disk
-        @new_resource.path(Chef::FileCache.create_cache_path("profiles"))
-        tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
+        new_resource.path(Chef::FileCache.create_cache_path("profiles"))
+        tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
         tempfile.write(@new_profile_hash.to_plist)
         tempfile.close
         tempfile.path
@@ -193,14 +189,14 @@ class Chef
 
       def install_profile(profile_path)
         cmd = "profiles -I -F '#{profile_path}'"
-        Chef::Log.debug("cmd: #{cmd}")
+        logger.trace("cmd: #{cmd}")
         shellout_results = shell_out(cmd)
         shellout_results.exitstatus
       end
 
       def remove_profile
         cmd = "profiles -R -p '#{@new_profile_identifier}'"
-        Chef::Log.debug("cmd: #{cmd}")
+        logger.trace("cmd: #{cmd}")
         shellout_results = shell_out(cmd)
         shellout_results.exitstatus
       end
@@ -218,7 +214,7 @@ class Chef
         tempfile = generate_tempfile
         write_installed_profiles(tempfile)
         installed_profiles = read_plist(tempfile)
-        Chef::Log.debug("Saved profiles to run_state")
+        logger.trace("Saved profiles to run_state")
         # Clean up the temp file as we do not need it anymore
         ::File.unlink(tempfile)
         installed_profiles
@@ -239,13 +235,13 @@ class Chef
 
       def profile_installed?
         # Profile Identifier and UUID must match a currently installed profile
-        if @current_resource.profile.nil? || @current_resource.profile.empty?
+        if current_resource.profile.nil? || current_resource.profile.empty?
           false
         else
-          if @new_resource.action.include?(:remove)
+          if new_resource.action.include?(:remove)
             true
           else
-            @current_resource.profile["ProfileUUID"] ==
+            current_resource.profile["ProfileUUID"] ==
               @new_profile_hash["PayloadUUID"]
           end
         end

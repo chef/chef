@@ -23,16 +23,16 @@ require "support/lib/library_load_order"
 
 describe Chef::RunContext do
   let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")) }
-  let(:cookbook_collection) {
+  let(:cookbook_collection) do
     cl = Chef::CookbookLoader.new(chef_repo_path)
     cl.load_cookbooks
     Chef::CookbookCollection.new(cl)
-  }
-  let(:node) {
+  end
+  let(:node) do
     node = Chef::Node.new
     node.run_list << "test" << "test::one" << "test::two"
     node
-  }
+  end
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, cookbook_collection, events) }
 
@@ -151,13 +151,13 @@ describe Chef::RunContext do
 
   describe "querying the contents of cookbooks" do
     let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")) }
-    let(:node) {
+    let(:node) do
       node = Chef::Node.new
-      node.set[:platform] = "ubuntu"
-      node.set[:platform_version] = "13.04"
+      node.normal[:platform] = "ubuntu"
+      node.normal[:platform_version] = "13.04"
       node.name("testing")
       node
-    }
+    end
 
     it "queries whether a given cookbook has a specific template" do
       expect(run_context).to have_template_in_cookbook("openldap", "test.erb")
@@ -212,11 +212,11 @@ describe Chef::RunContext do
 
     shared_context "notifying resource is a subclass of Chef::Resource" do
       let(:declared_type) { :alpaca }
-      let(:notifying_resource) {
+      let(:notifying_resource) do
         r = Class.new(Chef::Resource).new("guinea pig")
         r.declared_type = declared_type
         r
-      }
+      end
 
       it "should be keyed off the resource declared key" do
         run_context.send(setter, notification)

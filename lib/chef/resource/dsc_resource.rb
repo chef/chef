@@ -20,7 +20,14 @@ require "chef/dsl/powershell"
 class Chef
   class Resource
     class DscResource < Chef::Resource
-      provides :dsc_resource, os: "windows"
+      resource_name :dsc_resource
+      provides :dsc_resource
+
+      description "The dsc_resource resource allows any DSC resource to be used in a"\
+                  " Chef recipe, as well as any custom resources that have been added"\
+                  " to your Windows PowerShell environment. Microsoft frequently adds"\
+                  " new resources to the DSC resource collection."
+      introduced "12.2"
 
       # This class will check if the object responds to
       # to_text. If it does, it will call that as opposed
@@ -29,7 +36,7 @@ class Chef
       # to dump the actual ivars
       class ToTextHash < Hash
         def to_text
-          descriptions = self.map do |(property, obj)|
+          descriptions = map do |(property, obj)|
             obj_text = if obj.respond_to?(:to_text)
                          obj.to_text
                        else
@@ -49,7 +56,6 @@ class Chef
         super
         @properties = ToTextHash.new
         @resource = nil
-        @reboot_action = :nothing
       end
 
       def resource(value = nil)
@@ -67,6 +73,8 @@ class Chef
           @module_name
         end
       end
+
+      property :module_version, String
 
       def property(property_name, value = nil)
         if not property_name.is_a?(Symbol)
@@ -91,21 +99,9 @@ class Chef
       # If the set method of the DSC resource indicate that a reboot
       # is necessary, reboot_action provides the mechanism for a reboot to
       # be requested.
-      def reboot_action(value = nil)
-        if value
-          @reboot_action = value
-        else
-          @reboot_action
-        end
-      end
+      property :reboot_action, Symbol, default: :nothing, equal_to: [:nothing, :reboot_now, :request_reboot]
 
-      def timeout(arg = nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => [ Integer ]
-        )
-      end
+      property :timeout, Integer
 
       private
 

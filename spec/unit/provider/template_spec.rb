@@ -26,13 +26,14 @@ require "support/shared/unit/provider/file"
 describe Chef::Provider::Template do
   let(:node) { double("Chef::Node") }
   let(:events) { double("Chef::Events").as_null_object } # mock all the methods
-  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
-  let(:enclosing_directory) {
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+  let(:run_context) { double("Chef::RunContext", :node => node, :events => events, :logger => logger) }
+  let(:enclosing_directory) do
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-  }
-  let(:resource_path) {
+  end
+  let(:resource_path) do
     canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-  }
+  end
 
   # Subject
 
@@ -58,15 +59,12 @@ describe Chef::Provider::Template do
 
   context "when creating the template" do
 
-    let(:node) { double("Chef::Node") }
-    let(:events) { double("Chef::Events").as_null_object } # mock all the methods
-    let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
-    let(:enclosing_directory) {
+    let(:enclosing_directory) do
       canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-    }
-    let(:resource_path) {
+    end
+    let(:resource_path) do
       canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-    }
+    end
 
     # Subject
 

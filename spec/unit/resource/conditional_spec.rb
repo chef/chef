@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ describe Chef::Resource::Conditional do
     allow_any_instance_of(Mixlib::ShellOut).to receive(:run_command).and_return(nil)
     @status = OpenStruct.new(:success? => true)
     allow_any_instance_of(Mixlib::ShellOut).to receive(:status).and_return(@status)
-    @parent_resource = Chef::Resource.new(nil, Chef::Node.new)
+    @parent_resource = Chef::Resource.new("", Chef::Node.new)
   end
 
   it "raises an exception when neither a block or command is given" do
@@ -92,14 +92,14 @@ describe Chef::Resource::Conditional do
     describe "after running a command which timed out" do
       before do
         @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "false")
-        allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
+        allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out_with_systems_locale).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
       it "indicates that resource convergence should not continue" do
         expect(@conditional.continue?).to be_falsey
       end
 
-      it "should log a warning" do
+      it "logs a warning" do
         expect(Chef::Log).to receive(:warn).with("Command 'false' timed out")
         @conditional.continue?
       end
@@ -122,6 +122,29 @@ describe Chef::Resource::Conditional do
 
       it "indicates that resource convergence should not continue" do
         expect(@conditional.continue?).to be_falsey
+      end
+    end
+
+    describe "after running a block that returns a string value" do
+      before do
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource) { "some command" }
+      end
+
+      it "logs a warning" do
+        expect(Chef::Log).to receive(:warn).with("only_if block for [] returned \"some command\", did you mean to run a command? If so use 'only_if \"some command\"' in your code.")
+        @conditional.evaluate
+      end
+    end
+
+    describe "after running a block that returns a string value on a sensitive resource" do
+      before do
+        @parent_resource.sensitive(true)
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource) { "some command" }
+      end
+
+      it "logs a warning" do
+        expect(Chef::Log).to receive(:warn).with("only_if block for [] returned a string, did you mean to run a command?")
+        @conditional.evaluate
       end
     end
   end
@@ -172,14 +195,14 @@ describe Chef::Resource::Conditional do
     describe "after running a command which timed out" do
       before do
         @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "false")
-        allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
+        allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out_with_systems_locale).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
       it "indicates that resource convergence should continue" do
         expect(@conditional.continue?).to be_truthy
       end
 
-      it "should log a warning" do
+      it "logs a warning" do
         expect(Chef::Log).to receive(:warn).with("Command 'false' timed out")
         @conditional.continue?
       end
@@ -202,6 +225,29 @@ describe Chef::Resource::Conditional do
 
       it "indicates that resource convergence should continue" do
         expect(@conditional.continue?).to be_truthy
+      end
+    end
+
+    describe "after running a block that returns a string value" do
+      before do
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource) { "some command" }
+      end
+
+      it "logs a warning" do
+        expect(Chef::Log).to receive(:warn).with("not_if block for [] returned \"some command\", did you mean to run a command? If so use 'not_if \"some command\"' in your code.")
+        @conditional.evaluate
+      end
+    end
+
+    describe "after running a block that returns a string value on a sensitive resource" do
+      before do
+        @parent_resource.sensitive(true)
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource) { "some command" }
+      end
+
+      it "logs a warning" do
+        expect(Chef::Log).to receive(:warn).with("not_if block for [] returned a string, did you mean to run a command?")
+        @conditional.evaluate
       end
     end
   end

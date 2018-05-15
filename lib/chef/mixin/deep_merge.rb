@@ -64,7 +64,7 @@ class Chef
         when Hash
           if dest.kind_of?(Hash)
             source.each do |src_key, src_value|
-              if dest[src_key]
+              if dest.key?(src_key)
                 dest[src_key] = deep_merge!(src_value, dest[src_key])
               else # dest[src_key] doesn't exist so we take whatever source has
                 dest[src_key] = src_value
@@ -75,7 +75,7 @@ class Chef
           end
         when Array
           if dest.kind_of?(Array)
-            dest = dest | source
+            dest |= source
           else
             dest = source
           end

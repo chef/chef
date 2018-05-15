@@ -2,7 +2,7 @@
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Copyright:: Copyright 2009-2016, Daniel DeLeo
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@ module Shell
       @session_type
     end
 
-    attr_accessor :node, :compile, :recipe, :run_context
+    attr_accessor :node, :compile, :recipe, :json_configuration
     attr_reader :node_attributes, :client
     def initialize
       @node_built = false
@@ -73,6 +73,7 @@ module Shell
       run_context.resource_collection
     end
 
+    attr_writer :run_context
     def run_context
       @run_context ||= rebuild_context
     end
@@ -126,8 +127,8 @@ module Shell
     end
 
     def shorten_node_inspect
-      def @node.inspect
-        "<Chef::Node:0x#{self.object_id.to_s(16)} @name=\"#{self.name}\">"
+      def @node.inspect # rubocop:disable Lint/NestedMethodDefinition
+        "<Chef::Node:0x#{object_id.to_s(16)} @name=\"#{name}\">"
       end
     end
 
@@ -150,8 +151,8 @@ module Shell
     private
 
     def rebuild_node
-      Chef::Config[:solo] = true
-      @client = Chef::Client.new(nil, Chef::Config[:shell_config])
+      Chef::Config[:solo_legacy_mode] = true
+      @client = Chef::Client.new(json_configuration, Chef::Config[:shell_config])
       @client.run_ohai
       @client.load_node
       @client.build_node
@@ -159,9 +160,9 @@ module Shell
 
   end
 
-  class SoloSession < ShellSession
+  class SoloLegacySession < ShellSession
 
-    session_type :solo
+    session_type :solo_legacy_mode
 
     def definitions
       @run_context.definitions
@@ -182,8 +183,8 @@ module Shell
 
     def rebuild_node
       # Tell the client we're chef solo so it won't try to contact the server
-      Chef::Config[:solo] = true
-      @client = Chef::Client.new(nil, Chef::Config[:shell_config])
+      Chef::Config[:solo_legacy_mode] = true
+      @client = Chef::Client.new(json_configuration, Chef::Config[:shell_config])
       @client.run_ohai
       @client.load_node
       @client.build_node
@@ -191,9 +192,13 @@ module Shell
 
   end
 
-  class ClientSession < SoloSession
+  class ClientSession < ShellSession
 
     session_type :client
+
+    def definitions
+      @run_context.definitions
+    end
 
     def save_node
       @client.save_node
@@ -213,13 +218,19 @@ module Shell
 
     def rebuild_node
       # Make sure the client knows this is not chef solo
-      Chef::Config[:solo] = false
-      @client = Chef::Client.new(nil, Chef::Config[:shell_config])
+      Chef::Config[:solo_legacy_mode] = false
+      @client = Chef::Client.new(json_configuration, Chef::Config[:shell_config])
       @client.run_ohai
       @client.register
       @client.load_node
       @client.build_node
     end
+
+  end
+
+  class SoloSession < ClientSession
+
+    session_type :solo
 
   end
 
@@ -241,7 +252,7 @@ module Shell
     # DoppelGanger implementation of build_node. preserves as many of the node's
     # attributes, and does not save updates to the server
     def build_node
-      Chef::Log.debug("Building node object for #{@node_name}")
+      Chef::Log.trace("Building node object for #{@node_name}")
       @node = Chef::Node.find_or_create(node_name)
       ohai_data = @ohai.data.merge(@node.automatic_attrs)
       @node.consume_external_attrs(ohai_data, nil)

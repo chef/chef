@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@chef.io>)$
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.$
+# Copyright:: Copyright 2010-2018, Chef Software Inc.$
 # Copyright:: Copyright 2010-2016, Matthew Kent
 # License:: Apache License, Version 2.0
 #
@@ -73,7 +73,7 @@ describe Chef::Knife::CookbookTest do
           @loader[cookbook.name] = cookbook
         end
         allow(@knife).to receive(:cookbook_loader).and_return(@loader)
-        @loader.each do |key, cookbook|
+        @loader.each_value do |cookbook|
           expect(@knife).to receive(:test_cookbook).with(cookbook.name)
         end
         @knife.run

@@ -159,7 +159,7 @@ describe Chef::Provider::RemoteFile::Content do
 
   describe "when there is an array of sources and the first fails" do
 
-    # https://github.com/opscode/chef/pull/1358#issuecomment-40853299
+    # https://github.com/chef/chef/pull/1358#issuecomment-40853299
     def create_exception(exception_class)
       if [ Net::HTTPServerException, Net::HTTPFatalError ].include? exception_class
         exception_class.new("message", { "something" => 1 })
@@ -180,6 +180,7 @@ describe Chef::Provider::RemoteFile::Content do
       Net::HTTPServerException,
       Net::HTTPFatalError,
       Net::FTPError,
+      Errno::ETIMEDOUT,
     ].each do |exception|
       describe "with an exception of #{exception}" do
         before do

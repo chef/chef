@@ -33,9 +33,9 @@ describe Chef::Knife::ConfigureClient do
     it "should print usage and exit when a directory is not provided" do
       expect(@knife).to receive(:show_usage)
       expect(@knife.ui).to receive(:fatal).with(/must provide the directory/)
-      expect {
+      expect do
         @knife.run
-      }.to raise_error SystemExit
+      end.to raise_error SystemExit
     end
 
     describe "when specifing a directory" do
@@ -58,8 +58,6 @@ describe Chef::Knife::ConfigureClient do
       it "should write out the config file" do
         allow(FileUtils).to receive(:mkdir_p)
         @knife.run
-        expect(@client_file.string).to match /log_level\s+\:info/
-        expect(@client_file.string).to match /log_location\s+STDOUT/
         expect(@client_file.string).to match /chef_server_url\s+'https\:\/\/chef\.example\.com'/
         expect(@client_file.string).to match /validation_client_name\s+'chef-validator'/
       end

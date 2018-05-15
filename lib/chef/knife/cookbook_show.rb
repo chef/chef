@@ -51,6 +51,10 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
+        cookbook_name, cookbook_version, segment, filename = @name_args
+
+        cookbook = Chef::CookbookVersion.load(cookbook_name, cookbook_version) unless cookbook_version.nil?
+
         case @name_args.length
         when 4 # We are showing a specific file
           node = Hash.new
@@ -59,15 +63,11 @@ class Chef
           node[:platform_version] = config[:platform_version] if config.has_key?(:platform_version)
 
           class << node
-            def attribute?(name)
+            def attribute?(name) # rubocop:disable Lint/NestedMethodDefinition
               has_key?(name)
             end
           end
 
-          cookbook_name, segment, filename = @name_args[0], @name_args[2], @name_args[3]
-          cookbook_version = @name_args[1] == "latest" ? "_latest" : @name_args[1]
-
-          cookbook = rest.get("cookbooks/#{cookbook_name}/#{cookbook_version}")
           manifest_entry = cookbook.preferred_manifest_record(node, segment, filename)
           temp_file = rest.streaming_request(manifest_entry[:url])
 
@@ -76,14 +76,14 @@ class Chef
           pretty_print(temp_file.read)
 
         when 3 # We are showing a specific part of the cookbook
-          cookbook_version = @name_args[1] == "latest" ? "_latest" : @name_args[1]
-          result = rest.get("cookbooks/#{@name_args[0]}/#{cookbook_version}")
-          output(result.manifest[@name_args[2]])
-        when 2 # We are showing the whole cookbook data
-          cookbook_version = @name_args[1] == "latest" ? "_latest" : @name_args[1]
-          output(rest.get("cookbooks/#{@name_args[0]}/#{cookbook_version}"))
+          if segment == "metadata"
+            output(cookbook.metadata)
+          else
+            output(cookbook.files_for(segment))
+          end
+        when 2 # We are showing the whole cookbook
+          output(cookbook.display)
         when 1 # We are showing the cookbook versions (all of them)
-          cookbook_name = @name_args[0]
           env           = config[:environment]
           api_endpoint  = env ? "environments/#{env}/cookbooks/#{cookbook_name}" : "cookbooks/#{cookbook_name}"
           output(format_cookbook_list_for_display(rest.get(api_endpoint)))

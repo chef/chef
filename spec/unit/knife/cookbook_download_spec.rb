@@ -47,44 +47,62 @@ describe Chef::Knife::CookbookDownload do
         @rest_mock = double("rest")
         allow(@knife).to receive(:rest).and_return(@rest_mock)
 
-        @manifest_data = {
-          :recipes => [
-            { "path" => "recipes/foo.rb",
-              "url" => "http://example.org/files/foo.rb" },
-            { "path" => "recipes/bar.rb",
-              "url" => "http://example.org/files/bar.rb" },
-          ],
-          :templates => [
-            { "path" => "templates/default/foo.erb",
-              "url" => "http://example.org/files/foo.erb" },
-            { "path" => "templates/default/bar.erb",
-              "url" => "http://example.org/files/bar.erb" },
-          ],
-          :attributes => [
-            { "path" => "attributes/default.rb",
-              "url" => "http://example.org/files/default.rb" },
-          ],
-        }
-
-        @cookbook_mock = double("cookbook")
-        allow(@cookbook_mock).to receive(:version).and_return("1.0.0")
-        allow(@cookbook_mock).to receive(:manifest).and_return(@manifest_data)
         expect(Chef::CookbookVersion).to receive(:load).with("foobar", "1.0.0").
-          and_return(@cookbook_mock)
+          and_return(cookbook)
       end
 
-      it "should determine which version if one was not explicitly specified" do
-        allow(@cookbook_mock).to receive(:manifest).and_return({})
-        expect(@knife).to receive(:determine_version).and_return("1.0.0")
-        expect(File).to receive(:exists?).with("/var/tmp/chef/foobar-1.0.0").and_return(false)
-        allow(Chef::CookbookVersion).to receive(:COOKBOOK_SEGEMENTS).and_return([])
-        @knife.run
+      let(:manifest_data) do
+        {
+          :all_files => [
+            {
+              "path" => "recipes/foo.rb",
+              "name" => "recipes/foo.rb",
+              "url" => "http://example.org/files/foo.rb",
+            },
+            {
+              "path" => "recipes/bar.rb",
+              "name" => "recipes/bar.rb",
+              "url" => "http://example.org/files/bar.rb",
+            },
+            {
+              "path" => "templates/default/foo.erb",
+              "name" => "templates/foo.erb",
+              "url" => "http://example.org/files/foo.erb",
+            },
+            {
+              "path" => "templates/default/bar.erb",
+              "name" => "templates/bar.erb",
+              "url" => "http://example.org/files/bar.erb",
+            },
+            {
+              "path" => "attributes/default.rb",
+              "name" => "attributes/default.rb",
+              "url" => "http://example.org/files/default.rb",
+            },
+          ],
+        }
+      end
+
+      let (:cookbook) do
+        cb = Chef::CookbookVersion.new("foobar")
+        cb.version = "1.0.0"
+        cb.manifest = manifest_data
+        cb
+      end
+
+      describe "and no version" do
+        let (:manifest_data) { { all_files: [] } }
+        it "should determine which version to download" do
+          expect(@knife).to receive(:determine_version).and_return("1.0.0")
+          expect(File).to receive(:exists?).with("/var/tmp/chef/foobar-1.0.0").and_return(false)
+          @knife.run
+        end
       end
 
       describe "and a version" do
         before(:each) do
           @knife.name_args << "1.0.0"
-          @files = @manifest_data.values.map { |v| v.map { |i| i["path"] } }.flatten.uniq
+          @files = manifest_data.values.map { |v| v.map { |i| i["path"] } }.flatten.uniq
           @files_mocks = {}
           @files.map { |f| File.basename(f) }.flatten.uniq.each do |f|
             @files_mocks[f] = double("#{f}_mock")

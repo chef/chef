@@ -22,6 +22,14 @@ describe "knife common options", :workstation do
   include IntegrationSupport
   include KnifeSupport
 
+  before do
+    # Allow this for testing the various port binding stuffs. Remove when
+    # we kill off --listen.
+    Chef::Config.treat_deprecation_warnings_as_errors(false)
+  end
+
+  let(:local_listen_warning) { /\Awarn:.*local.*listen.*$/i }
+
   when_the_repository "has a node" do
     before { file "nodes/x.json", {} }
 
@@ -30,15 +38,20 @@ describe "knife common options", :workstation do
         Chef::Config.chef_zero.enabled = true
       end
 
-      it "knife raw /nodes/x should retrieve the node" do
+      it "knife raw /nodes/x should retrieve the node in socketless mode" do
+        Chef::Config.treat_deprecation_warnings_as_errors(true)
         knife("raw /nodes/x").should_succeed( /"name": "x"/ )
+      end
+
+      it "knife raw /nodes/x should retrieve the node" do
+        knife("raw --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
       end
 
       context "And chef_zero.port is 9999" do
         before(:each) { Chef::Config.chef_zero.port = 9999 }
 
         it "knife raw /nodes/x should retrieve the node" do
-          knife("raw /nodes/x").should_succeed( /"name": "x"/ )
+          knife("raw --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
           expect(Chef::Config.chef_server_url).to eq("chefzero://localhost:9999")
         end
       end
@@ -48,7 +61,7 @@ describe "knife common options", :workstation do
         before(:each) { Chef::Config.chef_zero.host = "0.0.0.0" }
 
         it "knife raw /nodes/x should retrieve the role" do
-          knife("raw /nodes/x").should_succeed( /"name": "x"/ )
+          knife("raw --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
         end
       end
 
@@ -86,21 +99,26 @@ EOM
         end
 
         it "knife raw /nodes/x should retrieve the node" do
-          knife("raw /nodes/x").should_succeed( /"name": "x"/ )
+          knife("raw --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
         end
       end
     end
 
-    it "knife raw -z /nodes/x retrieves the node" do
+    it "knife raw -z /nodes/x retrieves the node in socketless mode" do
+      Chef::Config.treat_deprecation_warnings_as_errors(true)
       knife("raw -z /nodes/x").should_succeed( /"name": "x"/ )
     end
 
+    it "knife raw -z /nodes/x retrieves the node" do
+      knife("raw -z --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
+    end
+
     it "knife raw --local-mode /nodes/x retrieves the node" do
-      knife("raw --local-mode /nodes/x").should_succeed( /"name": "x"/ )
+      knife("raw --local-mode --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
     end
 
     it "knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node" do
-      knife("raw -z --chef-zero-port=9999 /nodes/x").should_succeed( /"name": "x"/ )
+      knife("raw -z --chef-zero-port=9999 --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
       expect(Chef::Config.chef_server_url).to eq("chefzero://localhost:9999")
     end
 
@@ -118,7 +136,7 @@ EOM
       end
 
       it "knife raw -z /nodes/x retrieves the node" do
-        knife("raw -z /nodes/x").should_succeed( /"name": "x"/ )
+        knife("raw -z --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
         expect(URI(Chef::Config.chef_server_url).port).to be > 8889
       end
     end
@@ -137,18 +155,18 @@ EOM
       end
 
       it "knife raw -z --chef-zero-port=9999-20000 /nodes/x" do
-        knife("raw -z --chef-zero-port=9999-20000 /nodes/x").should_succeed( /"name": "x"/ )
+        knife("raw -z --chef-zero-port=9999-20000 --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
         expect(URI(Chef::Config.chef_server_url).port).to be > 9999
       end
 
       it "knife raw -z --chef-zero-port=9999-9999,19423" do
-        knife("raw -z --chef-zero-port=9999-9999,19423 /nodes/x").should_succeed( /"name": "x"/ )
+        knife("raw -z --chef-zero-port=9999-9999,19423 --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
         expect(URI(Chef::Config.chef_server_url).port).to be == 19423
       end
     end
 
     it "knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node" do
-      knife("raw -z --chef-zero-port=9999 /nodes/x").should_succeed( /"name": "x"/ )
+      knife("raw -z --chef-zero-port=9999 --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
       expect(Chef::Config.chef_server_url).to eq("chefzero://localhost:9999")
     end
   end

@@ -257,10 +257,11 @@ PS_SAMPLE
       end
 
       context "when the enable variable partial matches (left) some other service and we are disabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{thing_#{new_resource.service_name}_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -268,10 +269,11 @@ PS_SAMPLE
       end
 
       context "when the enable variable partial matches (right) some other service and we are disabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{#{new_resource.service_name}_thing_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -279,10 +281,11 @@ PS_SAMPLE
       end
 
       context "when the enable variable partial matches (left) some other disabled service and we are enabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{thing_#{new_resource.service_name}_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
@@ -290,10 +293,11 @@ PS_SAMPLE
       end
 
       context "when the enable variable partial matches (right) some other disabled service and we are enabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{#{new_resource.service_name}_thing_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true

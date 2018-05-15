@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software, Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,8 +38,6 @@ class Chef
 
     VALID_ID = /^[\.\-[:alnum:]_]+$/
 
-    attr_accessor :chef_server_rest
-
     def self.validate_id!(id_str)
       if id_str.nil? || ( id_str !~ VALID_ID )
         raise Exceptions::InvalidDataBagItemID, "Data Bag items must have an id matching #{VALID_ID.inspect}, you gave: #{id_str.inspect}"
@@ -66,15 +64,12 @@ class Chef
       Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
-    def raw_data
-      @raw_data
-    end
-
     def validate_id!(id_str)
       self.class.validate_id!(id_str)
     end
 
     def raw_data=(new_data)
+      new_data = Mash.new(new_data)
       unless new_data.respond_to?(:[]) && new_data.respond_to?(:keys)
         raise Exceptions::ValidationFailed, "Data Bag Items must contain a Hash or Mash!"
       end
@@ -107,9 +102,9 @@ class Chef
     end
 
     def to_hash
-      result = self.raw_data.dup
+      result = raw_data.dup
       result["chef_type"] = "data_bag_item"
-      result["data_bag"] = self.data_bag.to_s
+      result["data_bag"] = data_bag.to_s
       result
     end
 
@@ -132,22 +127,16 @@ class Chef
       item = new
       item.data_bag(h.delete("data_bag")) if h.key?("data_bag")
       if h.key?("raw_data")
-        item.raw_data = Mash.new(h["raw_data"])
+        item.raw_data = h["raw_data"]
       else
         item.raw_data = h
       end
       item
     end
 
-    # Create a Chef::DataBagItem from JSON
-    def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::DataBagItem#from_hash")
-      from_hash(o)
-    end
-
     # Load a Data Bag Item by name via either the RESTful API or local data_bag_path if run in solo mode
     def self.load(data_bag, name)
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         bag = Chef::DataBag.load(data_bag)
         raise Exceptions::InvalidDataBagItemID, "Item #{name} not found in data bag #{data_bag}. Other items found: #{bag.keys.join(", ")}" unless bag.include?(name)
         item = bag[name]
@@ -207,7 +196,7 @@ class Chef
     end
 
     def pretty_print(pretty_printer)
-      pretty_printer.pp({ "data_bag_item('#{data_bag}', '#{id}')" => self.to_hash })
+      pretty_printer.pp({ "data_bag_item('#{data_bag}', '#{id}')" => to_hash })
     end
 
     def id

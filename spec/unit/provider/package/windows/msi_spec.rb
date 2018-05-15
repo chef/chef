@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -121,7 +121,7 @@ describe Chef::Provider::Package::Windows::MSI do
       end
 
       it "removes installed package" do
-        expect(provider).to receive(:shell_out!).with(/MsiExec.exe \/X{guid} \/Q/, kind_of(Hash))
+        expect(provider).to receive(:shell_out!).with(/msiexec \/x {guid} \/q/, kind_of(Hash))
         provider.remove_package
       end
 
@@ -140,8 +140,8 @@ describe Chef::Provider::Package::Windows::MSI do
         end
 
         it "removes both installed package" do
-          expect(provider).to receive(:shell_out!).with(/MsiExec.exe \/X{guid} \/Q/, kind_of(Hash))
-          expect(provider).to receive(:shell_out!).with(/MsiExec.exe \/X{guid2} \/Q/, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(/msiexec \/x {guid} \/q/, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(/msiexec \/x {guid2} \/q/, kind_of(Hash))
           provider.remove_package
         end
       end
@@ -150,7 +150,16 @@ describe Chef::Provider::Package::Windows::MSI do
         before { new_resource.options("/Q") }
 
         it "does not duplicate quiet switch" do
-          expect(provider).to receive(:shell_out!).with(/MsiExec.exe \/X{guid} \/Q/, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(/msiexec \/x {guid} \/Q/, kind_of(Hash))
+          provider.remove_package
+        end
+      end
+
+      context "custom options includes /qn" do
+        before { new_resource.options("/qn") }
+
+        it "does not duplicate quiet switch" do
+          expect(provider).to receive(:shell_out!).with(/msiexec \/x {guid} \/qn/, kind_of(Hash))
           provider.remove_package
         end
       end

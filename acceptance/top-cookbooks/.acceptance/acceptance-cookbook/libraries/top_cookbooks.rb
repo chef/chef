@@ -3,22 +3,20 @@ class TopCookbooks < Chef::Resource
 
   property :command, String, name_property: true
 
+  # Disabling all windows tests until winrm issue is properly settled.
+  #
   action :run do
-    cookbook_kitchen "#{command} docker" do
-    end
+  
+    # FIXME: waiting for https://github.com/learn-chef/learn-chef-acceptance/pull/23
+    # cookbook_kitchen "#{command} learn-the-basics-ubuntu" do
+    #   repository "learn-chef/learn-chef-acceptance"
+    #   cookbook_relative_dir "cookbooks/learn-the-basics-ubuntu"
+    # end
 
-    cookbook_kitchen "#{command} git" do
-    end
-
-    cookbook_kitchen "#{command} learn-the-basics-ubuntu" do
-      repository "learn-chef/learn-chef-acceptance"
-      cookbook_relative_dir "cookbooks/learn-the-basics-ubuntu"
-    end
-
-    cookbook_kitchen "#{command} learn-the-basics-windows" do
-      repository "learn-chef/learn-chef-acceptance"
-      cookbook_relative_dir "cookbooks/learn-the-basics-windows"
-    end
+    # cookbook_kitchen "#{command} learn-the-basics-windows" do
+    #   repository "learn-chef/learn-chef-acceptance"
+    #   cookbook_relative_dir "cookbooks/learn-the-basics-windows"
+    # end
 
     cookbook_kitchen "#{command} powershell" do
     end
@@ -33,8 +31,6 @@ class TopCookbooks < Chef::Resource
       repository "adamedx/winbox"
     end
 
-    # Temporarily disabling windows and chocolatey to eliminate 
-    # transient errors on the builders
     # cookbook_kitchen "#{command} windows" do
     # end
 

@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,19 +41,19 @@ describe Chef::Mixin::PathSanity do
     it "adds all useful PATHs even if environment is an empty hash" do
       env = {}
       @sanity.enforce_path_sanity(env)
-      expect(env["PATH"]).to eq("#{@ruby_bindir}:#{@gem_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+      expect(env["PATH"]).to eq("#{@gem_bindir}:#{@ruby_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
     end
 
     it "adds all useful PATHs that are not yet in PATH to PATH" do
       env = { "PATH" => "" }
       @sanity.enforce_path_sanity(env)
-      expect(env["PATH"]).to eq("#{@ruby_bindir}:#{@gem_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+      expect(env["PATH"]).to eq("#{@gem_bindir}:#{@ruby_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
     end
 
     it "does not re-add paths that already exist in PATH" do
       env = { "PATH" => "/usr/bin:/sbin:/bin" }
       @sanity.enforce_path_sanity(env)
-      expect(env["PATH"]).to eq("/usr/bin:/sbin:/bin:#{@ruby_bindir}:#{@gem_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin")
+      expect(env["PATH"]).to eq("#{@gem_bindir}:#{@ruby_bindir}:/usr/bin:/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin")
     end
 
     it "creates path with utf-8 encoding" do
@@ -65,7 +65,7 @@ describe Chef::Mixin::PathSanity do
     it "adds the current executing Ruby's bindir and Gem bindir to the PATH" do
       env = { "PATH" => "" }
       @sanity.enforce_path_sanity(env)
-      expect(env["PATH"]).to eq("#{@ruby_bindir}:#{@gem_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+      expect(env["PATH"]).to eq("#{@gem_bindir}:#{@ruby_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
     end
 
     it "does not create entries for Ruby/Gem bindirs if they exist in SANE_PATH or PATH" do
@@ -75,7 +75,7 @@ describe Chef::Mixin::PathSanity do
       allow(RbConfig::CONFIG).to receive(:[]).with("bindir").and_return(ruby_bindir)
       env = { "PATH" => gem_bindir }
       @sanity.enforce_path_sanity(env)
-      expect(env["PATH"]).to eq("/yo/gabba/gabba:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+      expect(env["PATH"]).to eq("/usr/bin:/yo/gabba/gabba:/usr/local/sbin:/usr/local/bin:/usr/sbin:/sbin:/bin")
     end
 
     it "builds a valid windows path" do
@@ -86,7 +86,7 @@ describe Chef::Mixin::PathSanity do
       allow(ChefConfig).to receive(:windows?).and_return(true)
       env = { "PATH" => 'C:\Windows\system32;C:\mr\softie' }
       @sanity.enforce_path_sanity(env)
-      expect(env["PATH"]).to eq("C:\\Windows\\system32;C:\\mr\\softie;#{ruby_bindir};#{gem_bindir}")
+      expect(env["PATH"]).to eq("#{gem_bindir};#{ruby_bindir};C:\\Windows\\system32;C:\\mr\\softie")
     end
   end
 end

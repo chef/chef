@@ -48,10 +48,11 @@ class Chef
 
       def restore_security_context(file_path, recursive = false)
         if restorecon_path
-          restorecon_command = recursive ? "#{restorecon_path} -R -r" : "#{restorecon_path} -R"
-          restorecon_command += " \"#{file_path}\""
-          Chef::Log.debug("Restoring selinux security content with #{restorecon_command}")
-          shell_out!(restorecon_command)
+          restorecon_flags = [ "-R" ]
+          restorecon_flags << "-r" if recursive
+          restorecon_flags << file_path
+          Chef::Log.trace("Restoring selinux security content with #{restorecon_path}")
+          shell_out_compact!(restorecon_path, restorecon_flags)
         else
           Chef::Log.warn "Can not find 'restorecon' on the system. Skipping selinux security context restore."
         end
@@ -78,12 +79,12 @@ class Chef
           when 0
             return true
           else
-            raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
+            raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
           end
         else
           # We assume selinux is not enabled if selinux utils are not
           # installed.
-          return false
+          false
         end
       end
 

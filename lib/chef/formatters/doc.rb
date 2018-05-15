@@ -32,9 +32,9 @@ class Chef
 
       def pretty_elapsed_time
         time = elapsed_time
-        if time < 60 then
+        if time < 60
           message = Time.at(time).utc.strftime("%S seconds")
-        elsif time < 3600 then
+        elsif time < 3600
           message = Time.at(time).utc.strftime("%M minutes %S seconds")
         else
           message = Time.at(time).utc.strftime("%H hours %M minutes %S seconds")
@@ -61,9 +61,10 @@ class Chef
         if !deprecations.empty?
           puts_line ""
           puts_line "Deprecated features used!"
-          deprecations.each do |message, locations|
+          deprecations.each do |message, details|
+            locations = details[:locations]
             if locations.size == 1
-              puts_line "  #{message} at #{locations.size} location:"
+              puts_line "  #{message} at 1 location:"
             else
               puts_line "  #{message} at #{locations.size} locations:"
             end
@@ -73,6 +74,9 @@ class Chef
                 puts_line "#{prefix}#{line}"
                 prefix = "      "
               end
+            end
+            unless details[:url].nil?
+              puts_line "   See #{details[:url]} for further details."
             end
           end
           puts_line ""
@@ -416,8 +420,13 @@ class Chef
         end
 
         # Save deprecations to the screen until the end
-        deprecations[message] ||= Set.new
-        deprecations[message] << location
+        if is_structured_deprecation?(message)
+          url = message.url
+          message = message.message
+        end
+
+        deprecations[message] ||= { url: url, locations: Set.new }
+        deprecations[message][:locations] << location
       end
 
       def indent

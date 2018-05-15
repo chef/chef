@@ -66,7 +66,7 @@ class Chef
       # upgrade/migration of older Chef Servers, so they should be considered
       # frozen in time.
 
-      CHEF_11_OSS_STATIC_OBJECTS = %w{cookbooks cookbook_artifacts data_bags environments roles}.freeze
+      CHEF_11_OSS_STATIC_OBJECTS = %w{cookbooks data_bags environments roles}.freeze
       CHEF_11_OSS_DYNAMIC_OBJECTS = %w{clients nodes users}.freeze
       RBAC_OBJECT_NAMES = %w{acls containers groups }.freeze
       CHEF_12_OBJECTS = %w{ cookbook_artifacts policies policy_groups client_keys }.freeze
@@ -242,7 +242,7 @@ class Chef
 
       # Print the given server path, relative to the current directory
       def format_path(entry)
-        server_path = entry.path
+        server_path = entry.respond_to?(:display_path) ? entry.display_path : entry.path
         if base_path && server_path[0, base_path.length] == base_path
           if server_path == base_path
             return "."

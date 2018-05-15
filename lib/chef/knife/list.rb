@@ -44,7 +44,6 @@ class Chef
         patterns = name_args.length == 0 ? [""] : name_args
 
         # Get the top-level matches
-        args = pattern_args_from(patterns)
         all_results = parallelize(pattern_args_from(patterns)) do |pattern|
           pattern_results = Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern).to_a
 
@@ -70,7 +69,7 @@ class Chef
 
         # Flatten out directory results if necessary
         if config[:flat]
-          dir_results.each do |result, children|
+          dir_results.each do |result, children| # rubocop:disable Performance/HashEachMethods
             results += children
           end
           dir_results = []
@@ -95,10 +94,10 @@ class Chef
             printed_something = true
           end
           output "#{format_path(result)}:"
-          print_results(children.map { |result| maybe_add_slash(result.name, result.dir?) }.sort, "")
+          print_results(children.map { |result| maybe_add_slash(result.display_name, result.dir?) }.sort, "")
         end
 
-        exit self.exit_code if self.exit_code
+        exit exit_code if exit_code
       end
 
       def add_dir_result(result)

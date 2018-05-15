@@ -43,6 +43,20 @@ describe Chef::HTTP do
 
   end
 
+  describe "#intialize" do
+    it "accepts a keepalive option and passes it to the http_client" do
+      http = Chef::HTTP.new(uri, keepalives: true)
+      expect(Chef::HTTP::BasicClient).to receive(:new).with(uri, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: true).and_call_original
+      expect(http.http_client).to be_a_kind_of(Chef::HTTP::BasicClient)
+    end
+
+    it "the default is not to use keepalives" do
+      http = Chef::HTTP.new(uri)
+      expect(Chef::HTTP::BasicClient).to receive(:new).with(uri, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: false).and_call_original
+      expect(http.http_client).to be_a_kind_of(Chef::HTTP::BasicClient)
+    end
+  end
+
   describe "create_url" do
 
     it "should return a correctly formatted url 1/3 CHEF-5261" do
@@ -60,7 +74,7 @@ describe Chef::HTTP do
       expect(http.create_url("///api/endpoint?url=http://foo.bar")).to eql(URI.parse("http://www.getchef.com/organization/org/api/endpoint?url=http://foo.bar"))
     end
 
-    # As per: https://github.com/opscode/chef/issues/2500
+    # As per: https://github.com/chef/chef/issues/2500
     it "should treat scheme part of the URI in a case-insensitive manner" do
       http = Chef::HTTP.allocate # Calling Chef::HTTP::new sets @url, don't want that.
       expect { http.create_url("HTTP://www1.chef.io/") }.not_to raise_error
@@ -79,6 +93,15 @@ describe Chef::HTTP do
       expect { http.send(:stream_to_tempfile, uri, resp) }.to raise_error("TestError")
     end
 
+    it "accepts a tempfile" do
+      resp = Net::HTTPOK.new("1.1", 200, "OK")
+      http = Chef::HTTP.new(uri)
+      tempfile = Tempfile.open("tempy-mctempfile")
+      expect(Tempfile).not_to receive(:open)
+      expect(resp).to receive(:read_body).and_yield("conty-mccontent")
+      http.send(:stream_to_tempfile, uri, resp, tempfile)
+      expect(IO.read(tempfile.path)).to eql("conty-mccontent")
+    end
   end
 
   describe "head" do

@@ -2,7 +2,7 @@
 require "spec_helper"
 
 gem_path = "/opt/chef/embedded/bin/gem"
-white_list = %w{chef-config json rake}
+white_list = %w{addressable chef-config json minitest rake}
 
 describe "gem list" do
   it "should not have non-whitelisted duplicate gems" do

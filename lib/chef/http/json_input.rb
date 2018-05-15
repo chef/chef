@@ -33,7 +33,7 @@ class Chef
 
       def handle_request(method, url, headers = {}, data = false)
         if data && should_encode_as_json?(headers)
-          headers.delete_if { |key, _value| key.casecmp("content-type").zero? }
+          headers.delete_if { |key, _value| key.casecmp("content-type") == 0 }
           headers["Content-Type"] = "application/json"
           json_opts = {}
           json_opts[:validate_utf8] = opts[:validate_utf8] if opts.has_key?(:validate_utf8)
@@ -64,7 +64,7 @@ class Chef
         # ruby/Net::HTTP don't enforce capitalized headers (it normalizes them
         # for you before sending the request), so we have to account for all
         # the variations we might find
-        requested_content_type = headers.find { |k, v| k.casecmp("content-type").zero? }
+        requested_content_type = headers.find { |k, v| k.casecmp("content-type") == 0 }
         requested_content_type.nil? || requested_content_type.last.include?("json")
       end
 

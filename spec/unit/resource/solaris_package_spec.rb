@@ -32,11 +32,9 @@ describe Chef::Resource::SolarisPackage, "initialize" do
     )
   end
 
-  before(:each) do
-    @resource = Chef::Resource::SolarisPackage.new("foo")
-  end
+  let(:resource) { Chef::Resource::SolarisPackage.new("foo") }
 
-  it "should set the package_name to the name provided" do
-    expect(@resource.package_name).to eql("foo")
+  it "sets the package_name to the name provided" do
+    expect(resource.package_name).to eql("foo")
   end
 end

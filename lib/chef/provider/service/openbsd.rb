@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require "chef/mixin/command"
 require "chef/mixin/shell_out"
 require "chef/provider/service/init"
 require "chef/resource/service"
@@ -49,7 +48,7 @@ class Chef
           @current_resource = Chef::Resource::Service.new(new_resource.name)
           current_resource.service_name(new_resource.service_name)
 
-          Chef::Log.debug("#{current_resource} found at #{init_command}")
+          logger.trace("#{current_resource} found at #{init_command}")
 
           determine_current_status!
           determine_enabled_status!
@@ -72,7 +71,7 @@ class Chef
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { init_command && builtin_service_enable_variable_name != nil }
+            a.assertion { init_command && !builtin_service_enable_variable_name.nil? }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end

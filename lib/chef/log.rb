@@ -58,7 +58,7 @@ class Chef
       end
       if Chef::Config[:treat_deprecation_warnings_as_errors]
         error(msg, &block)
-        raise Chef::Exceptions::DeprecatedFeatureError.new(msg)
+        raise Chef::Exceptions::DeprecatedFeatureError.new(msg.inspect)
       else
         warn(msg, &block)
       end

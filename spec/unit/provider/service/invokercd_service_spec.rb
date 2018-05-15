@@ -83,7 +83,7 @@ PS
 
   describe "when a status command has been specified" do
     before do
-      allow(@new_resource).to receive(:status_command).and_return("/usr/sbin/invoke-rc.d chefhasmonkeypants status")
+      @new_resource.status_command("/usr/sbin/invoke-rc.d chefhasmonkeypants status")
     end
 
     it "should run the services status command if one has been specified" do

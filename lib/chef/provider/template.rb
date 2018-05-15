@@ -19,17 +19,11 @@
 
 require "chef/provider/template_finder"
 require "chef/provider/file"
-require "chef/deprecation/provider/template"
-require "chef/deprecation/warnings"
 
 class Chef
   class Provider
     class Template < Chef::Provider::File
       provides :template
-
-      extend Chef::Deprecation::Warnings
-      include Chef::Deprecation::Provider::Template
-      add_deprecation_warnings_for(Chef::Deprecation::Provider::Template.instance_methods)
 
       def initialize(new_resource, run_context)
         @content_class = Chef::Provider::Template::Content
@@ -37,7 +31,7 @@ class Chef
       end
 
       def load_current_resource
-        @current_resource = Chef::Resource::Template.new(@new_resource.name)
+        @current_resource = Chef::Resource::Template.new(new_resource.name)
         super
       end
 
@@ -55,8 +49,8 @@ class Chef
       private
 
       def managing_content?
-        return true if @new_resource.checksum
-        return true if !@new_resource.source.nil? && @action != :create_if_missing
+        return true if new_resource.checksum
+        return true if !new_resource.source.nil? && @action != :create_if_missing
         false
       end
 

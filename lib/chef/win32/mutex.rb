@@ -55,7 +55,7 @@ class Chef
           when WAIT_ABANDONED
             # Previous owner of the mutex died before it can release the
             # mutex. Log a warning and continue.
-            Chef::Log.debug "Existing owner of the mutex exited prematurely."
+            Chef::Log.trace "Existing owner of the mutex exited prematurely."
             break
           when WAIT_OBJECT_0
             # Mutex is successfully acquired.

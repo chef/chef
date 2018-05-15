@@ -100,7 +100,7 @@ class Chef
             new_target_acl << children_ace
           end
         end
-        return actual_acl == new_target_acl
+        actual_acl == new_target_acl
       end
 
       def existing_descriptor
@@ -128,7 +128,7 @@ class Chef
       end
 
       def should_update_dacl?
-        return true unless ::File.exists?(file)
+        return true unless ::File.exists?(file) || ::File.symlink?(file)
         dacl = target_dacl
         existing_dacl = existing_descriptor.dacl
         inherits = target_inherits
@@ -161,7 +161,7 @@ class Chef
       end
 
       def should_update_group?
-        return true unless ::File.exists?(file)
+        return true unless ::File.exists?(file) || ::File.symlink?(file)
         (group = target_group) && (group != existing_descriptor.group)
       end
 
@@ -180,7 +180,7 @@ class Chef
       end
 
       def should_update_owner?
-        return true unless ::File.exists?(file)
+        return true unless ::File.exists?(file) || ::File.symlink?(file)
         (owner = target_owner) && (owner != existing_descriptor.owner)
       end
 

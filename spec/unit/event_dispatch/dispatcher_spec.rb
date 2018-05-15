@@ -52,8 +52,8 @@ describe Chef::EventDispatch::Dispatcher do
       dispatcher.synchronized_cookbook("apache2", cookbook_version)
 
       exception = StandardError.new("foo")
-      expect(event_sink).to receive(:recipe_file_load_failed).with("/path/to/file.rb", exception)
-      dispatcher.recipe_file_load_failed("/path/to/file.rb", exception)
+      expect(event_sink).to receive(:recipe_file_load_failed).with("/path/to/file.rb", exception, "myrecipe")
+      dispatcher.recipe_file_load_failed("/path/to/file.rb", exception, "myrecipe")
     end
 
     context "when an event sink has fewer arguments for an event" do

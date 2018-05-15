@@ -16,7 +16,7 @@ class Chef
         end
 
         def preserve_key?(key)
-          return key == "name"
+          key == "name"
         end
 
         # Verify that the JSON hash for this type has a key that matches its name.

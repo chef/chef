@@ -72,49 +72,47 @@ class Chef
       end
 
       def get_dependencies(entry)
-        begin
-          if entry.parent && entry.parent.path == "/cookbooks"
-            return entry.chef_object.metadata.dependencies.keys.map { |cookbook| "/cookbooks/#{cookbook}" }
+        if entry.parent && entry.parent.path == "/cookbooks"
+          entry.chef_object.metadata.dependencies.keys.map { |cookbook| "/cookbooks/#{cookbook}" }
 
-          elsif entry.parent && entry.parent.path == "/nodes"
-            node = Chef::JSONCompat.parse(entry.read)
-            result = []
-            if node["chef_environment"] && node["chef_environment"] != "_default"
-              result << "/environments/#{node['chef_environment']}.json"
-            end
-            if node["run_list"]
-              result += dependencies_from_runlist(node["run_list"])
-            end
-            result
+        elsif entry.parent && entry.parent.path == "/nodes"
+          node = Chef::JSONCompat.parse(entry.read)
+          result = []
+          if node["chef_environment"] && node["chef_environment"] != "_default"
+            result << "/environments/#{node['chef_environment']}.json"
+          end
+          if node["run_list"]
+            result += dependencies_from_runlist(node["run_list"])
+          end
+          result
 
-          elsif entry.parent && entry.parent.path == "/roles"
-            role = Chef::JSONCompat.parse(entry.read)
-            result = []
-            if role["run_list"]
-              dependencies_from_runlist(role["run_list"]).each do |dependency|
+        elsif entry.parent && entry.parent.path == "/roles"
+          role = Chef::JSONCompat.parse(entry.read)
+          result = []
+          if role["run_list"]
+            dependencies_from_runlist(role["run_list"]).each do |dependency|
+              result << dependency if !result.include?(dependency)
+            end
+          end
+          if role["env_run_lists"]
+            role["env_run_lists"].each_pair do |env, run_list|
+              dependencies_from_runlist(run_list).each do |dependency|
                 result << dependency if !result.include?(dependency)
               end
             end
-            if role["env_run_lists"]
-              role["env_run_lists"].each_pair do |env, run_list|
-                dependencies_from_runlist(run_list).each do |dependency|
-                  result << dependency if !result.include?(dependency)
-                end
-              end
-            end
-            result
-
-          elsif !entry.exists?
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(entry)
-
-          else
-            []
           end
-        rescue Chef::ChefFS::FileSystem::NotFoundError => e
-          ui.error "#{format_path(e.entry)}: No such file or directory"
-          self.exit_code = 2
+          result
+
+        elsif !entry.exists?
+          raise Chef::ChefFS::FileSystem::NotFoundError.new(entry)
+
+        else
           []
         end
+      rescue Chef::ChefFS::FileSystem::NotFoundError => e
+        ui.error "#{format_path(e.entry)}: No such file or directory"
+        self.exit_code = 2
+        []
       end
 
       def dependencies_from_runlist(run_list)

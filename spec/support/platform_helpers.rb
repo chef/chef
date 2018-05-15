@@ -1,9 +1,12 @@
 require "fcntl"
 require "chef/mixin/shell_out"
+require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
+require "chef/mixin/powershell_out"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
+  extend Chef::Mixin::PowershellOut
 end
 
 # magic stolen from bundler/spec/support/less_than_proc.rb
@@ -48,23 +51,31 @@ def windows_domain_joined?
   computer_system["partofdomain"]
 end
 
-def windows_win2k3?
-  return false unless windows?
-  wmi = WmiLite::Wmi.new
-  host = wmi.first_of("Win32_OperatingSystem")
-  (host["version"] && host["version"].start_with?("5.2"))
-end
-
 def windows_2008r2_or_later?
   return false unless windows?
-  wmi = WmiLite::Wmi.new
-  host = wmi.first_of("Win32_OperatingSystem")
-  version = host["version"]
-  return false unless version
-  components = version.split(".").map do |component|
+  return false unless host_version
+  components = host_version.split(".").map do |component|
     component.to_i
   end
   components.length >= 2 && components[0] >= 6 && components[1] >= 1
+end
+
+def windows_2012r2?
+  return false unless windows?
+  (host_version && host_version.start_with?("6.3"))
+end
+
+def windows_gte_10?
+  return false unless windows?
+  Gem::Requirement.new(">= 10").satisfied_by?(Gem::Version.new(host_version))
+end
+
+def host_version
+  @host_version ||= begin
+    wmi = WmiLite::Wmi.new
+    host = wmi.first_of("Win32_OperatingSystem")
+    host["version"]
+  end
 end
 
 def windows_powershell_dsc?
@@ -82,6 +93,12 @@ end
 def windows_nano_server?
   require "chef/platform/query_helpers"
   Chef::Platform.windows_nano_server?
+end
+
+def windows_user_right?(right)
+  return false unless windows?
+  require "chef/win32/security"
+  Chef::ReservedNames::Win32::Security.get_account_right(ENV["USERNAME"]).include?(right)
 end
 
 def mac_osx_106?
@@ -126,6 +143,10 @@ def unix?
   !windows?
 end
 
+def linux?
+  !!(RUBY_PLATFORM =~ /linux/)
+end
+
 def os_x?
   !!(RUBY_PLATFORM =~ /darwin/)
 end
@@ -136,6 +157,26 @@ end
 
 def freebsd?
   !!(RUBY_PLATFORM =~ /freebsd/)
+end
+
+def intel_64bit?
+  !!(ohai[:kernel][:machine] == "x86_64")
+end
+
+def rhel?
+  !!(ohai[:platform_family] == "rhel")
+end
+
+def rhel5?
+  rhel? && !!(ohai[:platform_version].to_i == 5)
+end
+
+def rhel6?
+  rhel? && !!(ohai[:platform_version].to_i == 6)
+end
+
+def rhel7?
+  rhel? && !!(ohai[:platform_version].to_i == 7)
 end
 
 def debian_family?
@@ -169,7 +210,7 @@ def selinux_enabled?
     when 0
       return true
     else
-      raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
+      raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
     end
   else
     # We assume selinux is not enabled if selinux utils are not
@@ -203,12 +244,20 @@ def fips?
   ENV["CHEF_FIPS"] == "1"
 end
 
-class GCEDetector
-  extend Ohai::Mixin::GCEMetadata
+class HttpHelper
+  extend Ohai::Mixin::HttpHelper
+  def self.logger
+    Chef::Log
+  end
 end
 
 def gce?
-  GCEDetector.can_metadata_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR, 80)
+  HttpHelper.can_socket_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR, 80)
 rescue SocketError
   false
+end
+
+def choco_installed?
+  result = ShellHelpers.powershell_out("choco --version")
+  result.stderr.empty? ? true : false
 end

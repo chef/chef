@@ -86,6 +86,13 @@ class Chef
 
       class CookbookFrozenError < AlreadyExistsError; end
 
+      class RubyFileError < OperationNotAllowedError
+        def reason
+          result = super
+          result + " (can't safely update ruby files)"
+        end
+      end
+
       class DefaultEnvironmentCannotBeModifiedError < OperationNotAllowedError
         def reason
           result = super

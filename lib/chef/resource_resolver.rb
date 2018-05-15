@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,11 +54,6 @@ class Chef
     # @api private
     attr_reader :resource_name
     # @api private
-    def resource
-      Chef.log_deprecation("Chef::ResourceResolver.resource deprecated.  Use resource_name instead.")
-      resource_name
-    end
-    # @api private
     attr_reader :action
     # @api private
     attr_reader :canonical
@@ -82,14 +77,14 @@ class Chef
     # @api private use Chef::ResourceResolver.resolve instead.
     def resolve
       # log this so we know what resources will work for the generic resource on the node (early cut)
-      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
+      Chef::Log.trace "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
 
       handler = prioritized_handlers.first
 
       if handler
-        Chef::Log.debug "Resource for #{resource_name} is #{handler}"
+        Chef::Log.trace "Resource for #{resource_name} is #{handler}"
       else
-        Chef::Log.debug "Dynamic resource resolver FAILED to resolve a resource for #{resource_name}"
+        Chef::Log.trace "Dynamic resource resolver FAILED to resolve a resource for #{resource_name}"
       end
 
       handler
@@ -97,7 +92,7 @@ class Chef
 
     # @api private
     def list
-      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
+      Chef::Log.trace "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
       prioritized_handlers
     end
 
@@ -161,25 +156,5 @@ class Chef
     def overrode_provides?(handler)
       handler.method(:provides?).owner != Chef::Resource.method(:provides?).owner
     end
-
-    module Deprecated
-      # return a deterministically sorted list of Chef::Resource subclasses
-      def resources
-        Chef::Resource.sorted_descendants
-      end
-
-      def enabled_handlers
-        handlers = super
-        if handlers.empty?
-          handlers = resources.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource_name) }
-          handlers.each do |handler|
-            Chef.log_deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
-            Chef.log_deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
-          end
-        end
-        handlers
-      end
-    end
-    prepend Deprecated
   end
 end

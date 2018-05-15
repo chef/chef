@@ -44,6 +44,11 @@ MOUNT
 #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
 /tmp/foo:/dev/sdz1:jfs2::bootfs:10485760:rw:yes:no
 ENABLED
+
+    @test_wrong_output = <<-WRONG
+#MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
+/tmp/foo::/dev/sdz1:jfs2:bootfs:10485760:rw:yes:no
+WRONG
   end
 
   before(:each) do
@@ -102,6 +107,25 @@ ENABLED
 
       expect(@provider.current_resource.mounted).to be_falsey
     end
+
+    context "mount_options_unchanged?" do
+      it "should return true if mounted device is the same" do
+        stub_mounted_enabled(@provider, @mounted_output, @enabled_output)
+        @provider.load_current_resource
+
+        allow(@provider.current_resource).to receive(:fstype).and_return("jfs2")
+        expect(@provider.send :mount_options_unchanged?).to be true
+      end
+
+      it "should return false if mounted device has changed" do
+        stub_mounted_enabled(@provider, @mounted_output, @enabled_output)
+        @provider.load_current_resource
+
+        allow(@provider.current_resource).to receive(:fstype).and_return("XXXX")
+        expect(@provider.send :mount_options_unchanged?).to be false
+      end
+    end
+
   end
 
   # tests for #enabled?
@@ -188,12 +212,20 @@ ENABLED
 
     it "should not enable mount if it is mounted and already enabled and mount options are unchanged" do
       stub_mounted_enabled(@provider, @mounted_output, @enabled_output)
-      @new_resource.options "rw"
 
       expect(@provider).not_to receive(:enable_fs)
 
       @provider.run_action(:enable)
     end
+
+    it "should return false if enabled_output is given in wrong syntax" do
+      stub_mounted_enabled(@provider, @mounted_output, @test_wrong_output)
+
+      expect(@provider).to receive(:enable_fs)
+
+      @provider.run_action(:enable)
+    end
+
   end
 
   describe "disable_fs" do

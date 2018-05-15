@@ -31,6 +31,13 @@ class Chef
             super
           end
 
+          def bare_name
+            if name == "organization" && parent.kind_of?(AclDir)
+              "organization.json"
+            else
+              name
+            end
+          end
         end
       end
     end

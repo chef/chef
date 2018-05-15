@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,14 +76,8 @@ shared_examples_for "an execute resource" do
     expect(@resource.group).to eql(1)
   end
 
-  it "should accept an array for the execution path in Chef-12 and log deprecation message", chef: "< 13" do
-    expect(Chef::Log).to receive(:warn).at_least(:once)
-    @resource.path ["woot"]
-    expect(@resource.path).to eql(["woot"])
-  end
-
-  it "should raise an exception in chef-13", chef: ">= 13" do
-    expect(@resource.path [ "woot" ]).to raise_error
+  it "the old path property (that never worked) is not supported in chef >= 13" do
+    expect { @resource.path [ "woot" ] }.to raise_error
   end
 
   it "should accept an integer for the return code" do
@@ -106,6 +100,16 @@ shared_examples_for "an execute resource" do
     expect(@resource.user).to eql(1)
   end
 
+  it "should accept a string for the domain" do
+    @resource.domain "mothership"
+    expect(@resource.domain).to eql("mothership")
+  end
+
+  it "should accept a string for the password" do
+    @resource.password "we.funk!"
+    expect(@resource.password).to eql("we.funk!")
+  end
+
   it "should accept a string for creates" do
     @resource.creates "something"
     expect(@resource.creates).to eql("something")
@@ -114,6 +118,37 @@ shared_examples_for "an execute resource" do
   it "should accept a boolean for live streaming" do
     @resource.live_stream true
     expect(@resource.live_stream).to be true
+  end
+
+  describe "the resource's sensitive attribute" do
+    it "should be false by default" do
+      expect(@resource.sensitive).to eq(false)
+    end
+
+    it "should be true if set to true" do
+      expect(@resource.sensitive).to eq(false)
+      @resource.sensitive true
+      expect(@resource.sensitive).to eq(true)
+    end
+
+    it "should be true if the password is non-nil" do
+      @resource.password("we.funk!")
+      expect(@resource.sensitive).to eq(true)
+    end
+
+    it "should be true if the password is non-nil but the value is explicitly set to false" do
+      @resource.password("we.funk!")
+      @resource.sensitive false
+      expect(@resource.sensitive).to eq(false)
+    end
+
+    # added this test to ensure setting of password property after or before sensitive does not matter
+    it "should be false if the sensitive is set before password property" do
+      @resource.sensitive false
+      @resource.password("we.funk!")
+      expect(@resource.sensitive).to eq(false)
+    end
+
   end
 
   describe "when it has cwd, environment, group, path, return value, and a user" do

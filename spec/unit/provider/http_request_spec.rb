@@ -73,7 +73,7 @@ describe Chef::Provider::HttpRequest do
       end
 
       it "should inflate a message block at runtime" do
-        allow(@new_resource).to receive(:message).and_return(lambda { "return" })
+        @new_resource.message(lambda { "return" })
         expect(@http).to receive(:put).with("http://www.opscode.com/", "return", {})
         @provider.run_action(:put)
         expect(@new_resource).to be_updated

@@ -37,10 +37,22 @@ class Chef
         :long => "--force",
         :description => "Force download deprecated version"
 
+      option :supermarket_site,
+        :short => "-m SUPERMARKET_SITE",
+        :long => "--supermarket-site SUPERMARKET_SITE",
+        :description => "Supermarket Site",
+        :default => "https://supermarket.chef.io",
+        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+
       def run
         if current_cookbook_deprecated?
           message = "DEPRECATION: This cookbook has been deprecated. "
-          message << "It has been replaced by #{replacement_cookbook}."
+          replacement = replacement_cookbook
+          if !replacement.to_s.strip.empty?
+            message << "It has been replaced by #{replacement}."
+          else
+            message << "No replacement has been defined."
+          end
           ui.warn message
 
           unless config[:force]
@@ -59,7 +71,7 @@ class Chef
       private
 
       def cookbooks_api_url
-        "https://supermarket.chef.io/api/v1/cookbooks"
+        "#{config[:supermarket_site]}/api/v1/cookbooks"
       end
 
       def current_cookbook_data
@@ -98,7 +110,7 @@ class Chef
       end
 
       def replacement_cookbook
-        File.basename(current_cookbook_data["replacement"])
+        File.basename(current_cookbook_data["replacement"] || "")
       end
 
       def specific_cookbook_version_url

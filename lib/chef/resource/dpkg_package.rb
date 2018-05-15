@@ -22,7 +22,11 @@ class Chef
   class Resource
     class DpkgPackage < Chef::Resource::Package
       resource_name :dpkg_package
-      provides :dpkg_package, os: "linux"
+      provides :dpkg_package
+
+      description "Use the dpkg_package resource to manage packages for the dpkg platform."\
+                  " When a package is installed from a local file, it must be added to the"\
+                  " node using the remote_file or cookbook_file resources."
 
       property :source, [ String, Array, nil ]
     end

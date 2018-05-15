@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) 2016-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,22 +16,17 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require "chef/provider"
+require "chef/provider/noop"
 require "chef/dsl/declare_resource"
 
 class Chef
   class Provider
     class AptUpdate < Chef::Provider
-      use_inline_resources
-
-      provides :apt_update, os: "linux"
+      provides :apt_update, platform_family: "debian"
 
       APT_CONF_DIR = "/etc/apt/apt.conf.d"
       STAMP_DIR = "/var/lib/apt/periodic"
-
-      def whyrun_supported?
-        true
-      end
 
       def load_current_resource
       end
@@ -68,7 +63,7 @@ class Chef
         end
 
         declare_resource(:file, "#{APT_CONF_DIR}/15update-stamp") do
-          content "APT::Update::Post-Invoke-Success {\"touch #{STAMP_DIR}/update-success-stamp 2>/dev/null || true\";};"
+          content "APT::Update::Post-Invoke-Success {\"touch #{STAMP_DIR}/update-success-stamp 2>/dev/null || true\";};\n"
           action :create_if_missing
         end
 
@@ -78,3 +73,5 @@ class Chef
     end
   end
 end
+
+Chef::Provider::Noop.provides :apt_update

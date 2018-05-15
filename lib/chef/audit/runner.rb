@@ -1,6 +1,6 @@
 #
 # Author:: Claire McQuin (<claire@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -163,9 +163,9 @@ class Chef
       # or use example group filters.
       def register_control_groups
         add_example_group_methods
-        run_context.audits.each do |name, group|
+        run_context.audits.each do |name, group| # rubocop:disable Performance/HashEachMethods
           ctl_grp = RSpec::Core::ExampleGroup.__control_group__(*group.args, &group.block)
-          RSpec.world.register(ctl_grp)
+          RSpec.world.record(ctl_grp)
         end
       end
 

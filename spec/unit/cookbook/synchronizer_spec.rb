@@ -50,7 +50,7 @@ describe Chef::CookbookCacheCleaner do
     end
 
     it "does not remove anything on chef-solo" do
-      Chef::Config[:solo] = true
+      Chef::Config[:solo_legacy_mode] = true
       allow(cleaner.cache).to receive(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
       expect(cleaner.cache).not_to receive(:delete)
       cleaner.cleanup_file_cache
@@ -62,6 +62,7 @@ describe Chef::CookbookSynchronizer do
   let(:cookbook_a_default_recipe) do
     {
       "path" => "recipes/default.rb",
+      "name" => "recipes/default.rb",
       "url"  => "http://chef.example.com/abc123",
       "checksum" => "abc123",
     }
@@ -70,6 +71,7 @@ describe Chef::CookbookSynchronizer do
   let(:cookbook_a_default_attrs) do
     {
       "path" => "attributes/default.rb",
+      "name" => "attributes/default.rb",
       "url"  => "http://chef.example.com/abc456",
       "checksum" => "abc456",
     }
@@ -78,6 +80,7 @@ describe Chef::CookbookSynchronizer do
   let(:cookbook_a_template) do
     {
       "path" => "templates/default/apache2.conf.erb",
+      "name" => "templates/apache2.conf.erb",
       "url" => "http://chef.example.com/ffffff",
       "checksum" => "abc125",
     }
@@ -86,18 +89,14 @@ describe Chef::CookbookSynchronizer do
   let(:cookbook_a_file) do
     {
       "path" => "files/default/megaman.conf",
+      "name" => "files/megaman.conf",
       "url" => "http://chef.example.com/megaman.conf",
       "checksum" => "abc124",
     }
   end
 
   let(:cookbook_a_manifest) do
-    segments = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
-    cookbook_a_manifest = segments.inject({}) { |h, segment| h[segment.to_s] = []; h }
-    cookbook_a_manifest["recipes"] = [ cookbook_a_default_recipe ]
-    cookbook_a_manifest["attributes"] = [ cookbook_a_default_attrs ]
-    cookbook_a_manifest["templates"] = [ cookbook_a_template ]
-    cookbook_a_manifest["files"] = [ cookbook_a_file ]
+    cookbook_a_manifest = { all_files: [ cookbook_a_default_recipe, cookbook_a_default_attrs, cookbook_a_template, cookbook_a_file ] }
     cookbook_a_manifest
   end
 
@@ -117,8 +116,12 @@ describe Chef::CookbookSynchronizer do
 
   let(:no_lazy_load) { true }
 
+  let(:skip_cookbook_sync) { false }
+
   let(:synchronizer) do
     Chef::Config[:no_lazy_load] = no_lazy_load
+    Chef::Config[:file_cache_path] = "/file-cache"
+    Chef::Config[:skip_cookbook_sync] = skip_cookbook_sync
     Chef::CookbookSynchronizer.new(cookbook_manifest, events)
   end
 
@@ -293,7 +296,7 @@ describe Chef::CookbookSynchronizer do
     # Current file has fff000, want abc123
     expect(Chef::CookbookVersion).to receive(:checksum_cookbook_file).
       with("/file-cache/cookbooks/cookbook_a/recipes/default.rb").
-      and_return("fff000")
+      and_return("fff000").at_least(:once)
 
     # Fetch and copy default.rb attribute file
     expect(server_api).to receive(:streaming_request).
@@ -309,7 +312,7 @@ describe Chef::CookbookSynchronizer do
     # Current file has fff000, want abc456
     expect(Chef::CookbookVersion).to receive(:checksum_cookbook_file).
       with("/file-cache/cookbooks/cookbook_a/attributes/default.rb").
-      and_return("fff000")
+      and_return("fff000").at_least(:once)
   end
 
   def setup_no_lazy_files_and_templates_chksum_mismatch_expectations
@@ -366,12 +369,12 @@ describe Chef::CookbookSynchronizer do
     # Current file has abc123, want abc123
     expect(Chef::CookbookVersion).to receive(:checksum_cookbook_file).
       with("/file-cache/cookbooks/cookbook_a/recipes/default.rb").
-      and_return("abc123")
+      and_return("abc123").at_least(:once)
 
     # Current file has abc456, want abc456
     expect(Chef::CookbookVersion).to receive(:checksum_cookbook_file).
       with("/file-cache/cookbooks/cookbook_a/attributes/default.rb").
-      and_return("abc456")
+      and_return("abc456").at_least(:once)
 
     # :load called twice
     expect(file_cache).to receive(:load).
@@ -412,6 +415,13 @@ describe Chef::CookbookSynchronizer do
       with("cookbooks/cookbook_a/templates/default/apache2.conf.erb", false).
       twice.
       and_return("/file-cache/cookbooks/cookbook_a/templates/default/apache2.conf.erb")
+  end
+
+  describe "#server_api" do
+    it "sets keepalive to true" do
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], keepalives: true)
+      synchronizer.server_api
+    end
   end
 
   describe "when syncing cookbooks with the server" do
@@ -514,6 +524,33 @@ describe Chef::CookbookSynchronizer do
           expect(server_api).not_to receive(:streaming_request)
           synchronizer.sync_cookbooks
         end
+      end
+    end
+
+    context "when Chef::Config[:skip_cookbook_sync] is true" do
+      let(:skip_cookbook_sync) { true }
+
+      it "loads the cookbook files and warns the user that this isn't supported" do
+        expect(file_cache).to receive(:load).
+          with("cookbooks/cookbook_a/recipes/default.rb", false).
+          once.
+          and_return("/file-cache/cookbooks/cookbook_a/recipes/default.rb")
+        expect(file_cache).to receive(:load).
+          with("cookbooks/cookbook_a/attributes/default.rb", false).
+          once.
+          and_return("/file-cache/cookbooks/cookbook_a/attributes/default.rb")
+        expect(file_cache).to receive(:load).
+          with("cookbooks/cookbook_a/templates/default/apache2.conf.erb", false).
+          once.
+          and_return("/file-cache/cookbooks/cookbook_a/templates/default/apache2.conf.erb")
+        expect(file_cache).to receive(:load).
+          with("cookbooks/cookbook_a/files/default/megaman.conf", false).
+          once.
+          and_return("/file-cache/cookbooks/cookbook_a/files/default/megaman.conf")
+        expect(Chef::Log).to receive(:warn).
+          with("skipping cookbook synchronization! DO NOT LEAVE THIS ENABLED IN PRODUCTION!!!").
+          once
+        synchronizer.sync_cookbooks
       end
     end
   end

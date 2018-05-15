@@ -30,7 +30,7 @@ class Chef
         include Chef::Mixin::Checksum
 
         provides :package, os: "windows"
-        provides :windows_package, os: "windows"
+        provides :windows_package
 
         require "chef/provider/package/windows/registry_uninstall_entry.rb"
 
@@ -45,7 +45,7 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::WindowsPackage.new(new_resource.name)
           if downloadable_file_missing?
-            Chef::Log.debug("We do not know the version of #{new_resource.source} because the file is not downloaded")
+            logger.trace("We do not know the version of #{new_resource.source} because the file is not downloaded")
             current_resource.version(:unknown.to_s)
           else
             current_resource.version(package_provider.installed_version)
@@ -59,11 +59,11 @@ class Chef
           @package_provider ||= begin
             case installer_type
             when :msi
-              Chef::Log.debug("#{new_resource} is MSI")
+              logger.trace("#{new_resource} is MSI")
               require "chef/provider/package/windows/msi"
               Chef::Provider::Package::Windows::MSI.new(resource_for_provider, uninstall_registry_entries)
             else
-              Chef::Log.debug("#{new_resource} is EXE with type '#{installer_type}'")
+              logger.trace("#{new_resource} is EXE with type '#{installer_type}'")
               require "chef/provider/package/windows/exe"
               Chef::Provider::Package::Windows::Exe.new(resource_for_provider, installer_type, uninstall_registry_entries)
             end
@@ -104,8 +104,8 @@ class Chef
                     return :nsis
                   end
 
-                  if io.tell() < filesize
-                    io.seek(io.tell() - overlap)
+                  if io.tell < filesize
+                    io.seek(io.tell - overlap)
                   end
                 end
 
@@ -165,7 +165,11 @@ class Chef
         #
         # @return [Boolean] true if new_version is equal to or included in current_version
         def target_version_already_installed?(current_version, new_version)
-          Chef::Log.debug("Checking if #{new_resource} version '#{new_version}' is already installed. #{current_version} is currently installed")
+          version_equals?(current_version, new_version)
+        end
+
+        def version_equals?(current_version, new_version)
+          logger.trace("Checking if #{new_resource} version '#{new_version}' is already installed. #{current_version} is currently installed")
           if current_version.is_a?(Array)
             current_version.include?(new_version)
           else
@@ -178,6 +182,17 @@ class Chef
         end
 
         private
+
+        def version_compare(v1, v2)
+          if v1 == "latest" || v2 == "latest"
+            return 0
+          end
+
+          gem_v1 = Gem::Version.new(v1)
+          gem_v2 = Gem::Version.new(v2)
+
+          gem_v1 <=> gem_v2
+        end
 
         def uninstall_registry_entries
           @uninstall_registry_entries ||= Chef::Provider::Package::Windows::RegistryUninstallEntry.find_entries(new_resource.package_name)
@@ -195,12 +210,13 @@ class Chef
         end
 
         def downloadable_file_missing?
-          !new_resource.source.nil? && uri_scheme?(new_resource.source) && !::File.exists?(source_location)
+          !new_resource.source.nil? && uri_scheme?(new_resource.source) && !::File.exist?(source_location)
         end
 
         def resource_for_provider
           @resource_for_provider = Chef::Resource::WindowsPackage.new(new_resource.name).tap do |r|
             r.source(Chef::Util::PathHelper.validate_path(source_location)) unless source_location.nil?
+            r.cookbook_name = new_resource.cookbook_name
             r.version(new_resource.version)
             r.timeout(new_resource.timeout)
             r.returns(new_resource.returns)
@@ -210,12 +226,13 @@ class Chef
 
         def download_source_file
           source_resource.run_action(:create)
-          Chef::Log.debug("#{new_resource} fetched source file to #{source_resource.path}")
+          logger.trace("#{new_resource} fetched source file to #{source_resource.path}")
         end
 
         def source_resource
           @source_resource ||= Chef::Resource::RemoteFile.new(default_download_cache_path, run_context).tap do |r|
             r.source(new_resource.source)
+            r.cookbook_name = new_resource.cookbook_name
             r.checksum(new_resource.checksum)
             r.backup(false)
 
@@ -248,7 +265,7 @@ class Chef
         def validate_content!
           if new_resource.checksum
             source_checksum = checksum(source_location)
-            if new_resource.checksum != source_checksum
+            if new_resource.checksum.downcase != source_checksum
               raise Chef::Exceptions::ChecksumMismatch.new(short_cksum(new_resource.checksum), short_cksum(source_checksum))
             end
           end
@@ -260,7 +277,7 @@ class Chef
           if source_location.nil?
             inferred_registry_type == :msi
           else
-            ::File.extname(source_location).casecmp(".msi").zero?
+            ::File.extname(source_location).casecmp(".msi") == 0
           end
         end
       end

@@ -19,16 +19,23 @@
 require "spec_helper"
 
 describe Chef::Provider::Cron do
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+
+  before do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    allow(@run_context).to receive(:logger).and_return(logger)
+
+    @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
+    @new_resource.user "root"
+    @new_resource.minute "30"
+    @new_resource.command "/bin/true"
+    @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
+  end
+
   describe "when with special time string" do
     before do
-      @node = Chef::Node.new
-      @events = Chef::EventDispatch::Dispatcher.new
-      @run_context = Chef::RunContext.new(@node, {}, @events)
-
-      @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
-      @new_resource.user "root"
-      @new_resource.minute "30"
-      @new_resource.command "/bin/true"
       @new_resource.time :reboot
       @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
     end
@@ -113,7 +120,7 @@ CRONTAB
       end
 
       it "should report the match" do
-        expect(Chef::Log).to receive(:debug).with("Found cron '#{@new_resource.name}'")
+        expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
       end
 
@@ -141,18 +148,6 @@ CRONTAB
     end
   end
 
-  before do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-
-    @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
-    @new_resource.user "root"
-    @new_resource.minute "30"
-    @new_resource.command "/bin/true"
-    @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
-  end
-
   describe "when examining the current system state" do
     context "with no crontab for the user" do
       before :each do
@@ -166,7 +161,7 @@ CRONTAB
       end
 
       it "should report an empty crontab" do
-        expect(Chef::Log).to receive(:debug).with("Cron empty for '#{@new_resource.user}'")
+        expect(logger).to receive(:trace).with("Cron empty for '#{@new_resource.user}'")
         @provider.load_current_resource
       end
     end
@@ -190,7 +185,7 @@ CRONTAB
       end
 
       it "should report no entry found" do
-        expect(Chef::Log).to receive(:debug).with("Cron '#{@new_resource.name}' not found")
+        expect(logger).to receive(:trace).with("Cron '#{@new_resource.name}' not found")
         @provider.load_current_resource
       end
 
@@ -199,9 +194,9 @@ CRONTAB
 # Chef Name: foo[bar] (baz)
 21 */4 * * * some_prog 1234567
 CRONTAB
-        expect {
+        expect do
           @provider.load_current_resource
-        }.not_to raise_error
+        end.not_to raise_error
       end
     end
 
@@ -296,7 +291,7 @@ CRONTAB
       end
 
       it "should report the match" do
-        expect(Chef::Log).to receive(:debug).with("Found cron '#{@new_resource.name}'")
+        expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
       end
     end
@@ -332,7 +327,7 @@ CRONTAB
       end
 
       it "should report the match" do
-        expect(Chef::Log).to receive(:debug).with("Found cron '#{@new_resource.name}'")
+        expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
       end
     end
@@ -462,10 +457,10 @@ CRONTAB
         @new_resource.environment "TEST" => "LOL"
         expect(@provider).to receive(:write_crontab).with(<<-ENDCRON)
 # Chef Name: cronhole some stuff
-MAILTO=foo@example.com
-PATH=/usr/bin:/my/custom/path
-SHELL=/bin/foosh
-HOME=/home/foo
+MAILTO="foo@example.com"
+PATH="/usr/bin:/my/custom/path"
+SHELL="/bin/foosh"
+HOME="/home/foo"
 TEST=LOL
 30 * * * * /bin/true
         ENDCRON
@@ -478,7 +473,7 @@ TEST=LOL
       end
 
       it "should log the action" do
-        expect(Chef::Log).to receive(:info).with("cron[cronhole some stuff] added crontab entry")
+        expect(logger).to receive(:info).with("cron[cronhole some stuff] added crontab entry")
         @provider.run_action(:create)
       end
     end
@@ -524,10 +519,10 @@ TEST=LOL
 
 # Another comment
 # Chef Name: cronhole some stuff
-MAILTO=foo@example.com
-PATH=/usr/bin:/my/custom/path
-SHELL=/bin/foosh
-HOME=/home/foo
+MAILTO="foo@example.com"
+PATH="/usr/bin:/my/custom/path"
+SHELL="/bin/foosh"
+HOME="/home/foo"
 TEST=LOL
 30 * * * * /bin/true
         ENDCRON
@@ -540,7 +535,7 @@ TEST=LOL
       end
 
       it "should log the action" do
-        expect(Chef::Log).to receive(:info).with("cron[cronhole some stuff] added crontab entry")
+        expect(logger).to receive(:info).with("cron[cronhole some stuff] added crontab entry")
         @provider.run_action(:create)
       end
     end
@@ -585,10 +580,10 @@ TEST=LOL
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
-MAILTO=foo@example.com
-PATH=/usr/bin:/my/custom/path
-SHELL=/bin/foosh
-HOME=/home/foo
+MAILTO="foo@example.com"
+PATH="/usr/bin:/my/custom/path"
+SHELL="/bin/foosh"
+HOME="/home/foo"
 TEST=LOL
 30 * * * * /bin/true
 # Chef Name: something else
@@ -605,7 +600,7 @@ TEST=LOL
       end
 
       it "should log the action" do
-        expect(Chef::Log).to receive(:info).with("cron[cronhole some stuff] updated crontab entry")
+        expect(logger).to receive(:info).with("cron[cronhole some stuff] updated crontab entry")
         @provider.run_action(:create)
       end
     end
@@ -679,10 +674,10 @@ HOME=/home/foo
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
-MAILTO=foo@example.com
-PATH=/usr/bin:/my/custom/path
-SHELL=/bin/foosh
-HOME=/home/foo
+MAILTO="foo@example.com"
+PATH="/usr/bin:/my/custom/path"
+SHELL="/bin/foosh"
+HOME="/home/foo"
 30 * * * * /bin/true
 
 # Chef Name: something else
@@ -719,8 +714,8 @@ CRONTAB
       end
 
       it "should log nothing changed" do
-        expect(Chef::Log).to receive(:debug).with("Found cron '#{@new_resource.name}'")
-        expect(Chef::Log).to receive(:debug).with("Skipping existing cron entry '#{@new_resource.name}'")
+        expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
+        expect(logger).to receive(:trace).with("Skipping existing cron entry '#{@new_resource.name}'")
         @provider.run_action(:create)
       end
     end
@@ -739,7 +734,7 @@ CRONTAB
 
       it "should do nothing" do
         expect(@provider).not_to receive(:write_crontab)
-        expect(Chef::Log).not_to receive(:info)
+        expect(logger).not_to receive(:info)
         @provider.run_action(:delete)
       end
 
@@ -806,7 +801,7 @@ FOO=test
       end
 
       it "should log the action" do
-        expect(Chef::Log).to receive(:info).with("#{@new_resource} deleted crontab entry")
+        expect(logger).to receive(:info).with("#{@new_resource} deleted crontab entry")
         @provider.run_action(:delete)
       end
     end
@@ -880,8 +875,7 @@ MAILTO=foo@example.com
 
   describe "read_crontab" do
     before :each do
-      @status = double("Status", :exitstatus => 0)
-      @stdout = StringIO.new(<<-CRONTAB)
+      @stdout = <<-CRONTAB
 0 2 * * * /some/other/command
 
 # Chef Name: something else
@@ -889,11 +883,12 @@ MAILTO=foo@example.com
 
 # Another comment
       CRONTAB
-      allow(@provider).to receive(:popen4).and_yield(1234, StringIO.new, @stdout, StringIO.new).and_return(@status)
+      @status = double("Status", exitstatus: 0, stdout: @stdout)
+      allow(@provider).to receive(:shell_out!).and_return(@status)
     end
 
     it "should call crontab -l with the user" do
-      expect(@provider).to receive(:popen4).with("crontab -l -u #{@new_resource.user}").and_return(@status)
+      expect(@provider).to receive(:shell_out!).with("crontab -l -u #{@new_resource.user}", returns: [0, 1]).and_return(@status)
       @provider.send(:read_crontab)
     end
 
@@ -910,60 +905,36 @@ MAILTO=foo@example.com
     end
 
     it "should return nil if the user has no crontab" do
-      status = double("Status", :exitstatus => 1)
-      allow(@provider).to receive(:popen4).and_return(status)
+      @status = double("Status", exitstatus: 1, stdout: "")
+      allow(@provider).to receive(:shell_out!).and_return(@status)
       expect(@provider.send(:read_crontab)).to eq(nil)
     end
 
     it "should raise an exception if another error occurs" do
-      status = double("Status", :exitstatus => 2)
-      allow(@provider).to receive(:popen4).and_return(status)
-      expect do
-        @provider.send(:read_crontab)
-      end.to raise_error(Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: 2")
+      @status = double("Status", exitstatus: 2)
+      allow(@provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      expect { @provider.send(:read_crontab) }.to raise_error(Chef::Exceptions::Cron)
     end
   end
 
   describe "write_crontab" do
     before :each do
-      @status = double("Status", :exitstatus => 0)
-      @stdin = StringIO.new
-      allow(@provider).to receive(:popen4).and_yield(1234, @stdin, StringIO.new, StringIO.new).and_return(@status)
+      @status = double("Status", exitstatus: 0)
+      allow(@provider).to receive(:shell_out!).and_return(@status)
     end
 
     it "should call crontab for the user" do
-      expect(@provider).to receive(:popen4).with("crontab -u #{@new_resource.user} -", :waitlast => true).and_return(@status)
+      expect(@provider).to receive(:shell_out!).with("crontab -u #{@new_resource.user} -", input: "Foo").and_return(@status)
       @provider.send(:write_crontab, "Foo")
     end
 
-    it "should write the given string to the crontab command" do
-      @provider.send(:write_crontab, "Foo\n# wibble\n wah!!")
-      expect(@stdin.string).to eq("Foo\n# wibble\n wah!!")
-    end
-
     it "should raise an exception if the command returns non-zero" do
-      allow(@status).to receive(:exitstatus).and_return(1)
+      @status = double("Status", exitstatus: 1)
+      allow(@provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       expect do
         @provider.send(:write_crontab, "Foo")
-      end.to raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
+      end.to raise_error(Chef::Exceptions::Cron)
     end
-
-    it "should raise an exception if the command die's and parent tries to write" do
-      class WriteErrPipe
-        def write(str)
-          raise Errno::EPIPE, "Test"
-        end
-      end
-      allow(@status).to receive(:exitstatus).and_return(1)
-      allow(@provider).to receive(:popen4).and_yield(1234, WriteErrPipe.new, StringIO.new, StringIO.new).and_return(@status)
-
-      expect(Chef::Log).to receive(:debug).with("Broken pipe - Test")
-
-      expect do
-        @provider.send(:write_crontab, "Foo")
-      end.to raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
-    end
-
   end
 
   describe "weekday_in_crontab" do

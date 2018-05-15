@@ -22,15 +22,15 @@ describe Chef::Resource::DscScript do
   let(:dsc_test_resource_name) { "DSCTest" }
 
   context "when Powershell supports Dsc" do
-    let(:dsc_test_run_context) {
+    let(:dsc_test_run_context) do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = "4.0"
       empty_events = Chef::EventDispatch::Dispatcher.new
       Chef::RunContext.new(node, {}, empty_events)
-    }
-    let(:dsc_test_resource) {
+    end
+    let(:dsc_test_resource) do
       Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
-    }
+    end
     let(:configuration_code) { 'echo "This is supposed to create a configuration document."' }
     let(:configuration_path) { "c:/myconfigs/formatc.ps1" }
     let(:configuration_name) { "formatme" }

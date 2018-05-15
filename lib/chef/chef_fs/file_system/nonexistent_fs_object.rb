@@ -23,10 +23,6 @@ class Chef
   module ChefFS
     module FileSystem
       class NonexistentFSObject < BaseFSObject
-        def initialize(name, parent)
-          super
-        end
-
         def exists?
           false
         end

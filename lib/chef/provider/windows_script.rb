@@ -33,8 +33,11 @@ class Chef
         super( new_resource, run_context )
         @script_extension = script_extension
 
-        target_architecture = new_resource.architecture.nil? ?
-          node_windows_architecture(run_context.node) : new_resource.architecture
+        target_architecture = if new_resource.architecture.nil?
+                                node_windows_architecture(run_context.node)
+                              else
+                                new_resource.architecture
+                              end
 
         @is_wow64 = wow64_architecture_override_required?(run_context.node, target_architecture)
 

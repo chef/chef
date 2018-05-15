@@ -18,31 +18,24 @@
 
 require "chef/resource"
 
-# In using this resource via notifications, it's important to *only* use
-# immediate notifications. Delayed notifications produce unintuitive and
-# probably undesired results.
 class Chef
   class Resource
     class Reboot < Chef::Resource
+      resource_name :reboot
+
+      description "Use the reboot resource to reboot a node, a necessary step with some"\
+                  " installations on certain platforms. This resource is supported for use on"\
+                  " the Microsoft Windows, macOS, and Linux platforms.\n"\
+                  "In using this resource via notifications, it's important to *only* use"\
+                  " immediate notifications. Delayed notifications produce unintuitive and"\
+                  " probably undesired results."
+      introduced "12.0"
+
       allowed_actions :request_reboot, :reboot_now, :cancel
+      default_action :nothing # make sure people are quite clear what they want
 
-      def initialize(name, run_context = nil)
-        super
-        @provider = Chef::Provider::Reboot
-
-        @reason = "Reboot by Chef"
-        @delay_mins = 0
-
-        # no default action.
-      end
-
-      def reason(arg = nil)
-        set_or_return(:reason, arg, :kind_of => String)
-      end
-
-      def delay_mins(arg = nil)
-        set_or_return(:delay_mins, arg, :kind_of => Fixnum)
-      end
+      property :reason, String, default: "Reboot by Chef"
+      property :delay_mins, Integer, default: 0
     end
   end
 end

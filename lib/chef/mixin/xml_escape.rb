@@ -103,11 +103,9 @@ class Chef
           (0xE000..0xFFFD), (0x10000..0x10FFFF)]
 
         def xml_escape(unescaped_str)
-          begin
-            unescaped_str.unpack("U*").map { |char| xml_escape_char!(char) }.join
-          rescue
-            unescaped_str.unpack("C*").map { |char| xml_escape_char!(char) }.join
-          end
+          unescaped_str.unpack("U*").map { |char| xml_escape_char!(char) }.join
+        rescue
+          unescaped_str.unpack("C*").map { |char| xml_escape_char!(char) }.join
         end
 
         private

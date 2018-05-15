@@ -7,7 +7,7 @@ file tells you who needs to review your patch - you need a simple majority of ma
 for the relevant subsystems to provide a :+1: on your pull request. Additionally, you need
 to not receive a veto from a Lieutenant or the Project Lead.
 
-Check out [How Chef is Maintained](https://github.com/opscode/chef-rfc/blob/master/rfc030-maintenance-policy.md#how-the-project-is-maintained) for details on the process, how to become
+Check out [How Chef is Maintained](https://github.com/chef/chef-rfc/blob/master/rfc030-maintenance-policy.md#how-the-project-is-maintained) for details on the process, how to become
 a maintainer, lieutenant, or the project lead.
 
 # Project Lead
@@ -18,9 +18,7 @@ a maintainer, lieutenant, or the project lead.
 
 ## Chef Core
 
-Handles the core parts of the Chef DSL, base resource and provider
-infrastructure, the Chef applications and [omnibus-chef](https://github.com/chef/omnibus-chef). Includes anything not covered by
-another component.
+Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, chefstyle, and sundry others.
 
 To mention the team, use @chef/client-core
 
@@ -30,59 +28,26 @@ To mention the team, use @chef/client-core
 
 ### Maintainers
 
+* [Adam Leff](https://github.com/adamleff)
 * [Bryan McLellan](https://github.com/btm)
 * [Noah Kantrowitz](https://github.com/coderanger)
 * [Daniel DeLeo](https://github.com/danielsdeleo)
 * [AJ Christensen](https://github.com/fujin)
 * [Phil Dibowitz](https://github.com/jaymzh)
 * [Jay Mundrawala](https://github.com/jaym)
+* [John Keiser](https://github.com/jkeiser)
 * [Jon Cowie](https://github.com/jonlives)
+* [Joshua Timberman](https://github.com/jtimberman)
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Claire McQuin](https://github.com/mcquin)
-* [Steven Murawski](https://github.com/smurawski)
-* [Tyler Ball](https://github.com/tyler-ball)
-* [Ranjib Dey](https://github.com/ranjib)
 * [Matt Wrock](https://github.com/mwrock)
-
-## Ohai
-
-To mention the team, use @chef/ohai
-
-### Lieutenant
-
-* [Claire McQuin](https://github.com/mcquin)
-
-### Maintainers
-
-* [Bryan McLellan](https://github.com/btm)
-* [Tim Smith](https://github.com/tas50)
-
-## Dev Tools
-
-ChefDK, Chef Zero, Knife, Chef Apply and Chef Shell.
-To mention the team, use @chef/client-dev-tools
-
-### Maintainers
-
-* [Daniel DeLeo](https://github.com/danielsdeleo)
-* [Joshua Timberman](https://github.com/jtimberman)
-* [Lamont Granquist](https://github.com/lamont-granquist)
-* [Steven Danna](https://github.com/stevendanna)
-
-## Test Tools
-
-ChefSpec
-To mention the team, use @chef/client-test-tools
-
-### Lieutenant
-
-* [Seth Vargo](https://github.com/sethvargo)
-
-### Maintainers
-
-* [Joshua Timberman](https://github.com/jtimberman)
-* [Lamont Granquist](https://github.com/lamont-granquist)
 * [Ranjib Dey](https://github.com/ranjib)
+* [Steven Murawski](https://github.com/smurawski)
+* [Steven Danna](https://github.com/stevendanna)
+* [Tim Smith](https://github.com/tas50)
+* [Tom Duffield](https://github.com/tduffield)
+* [Tyler Ball](https://github.com/tyler-ball)
+* [Josh Hudson](https://github.com/itmustbejj)
 
 ## Chef Provisioning
 
@@ -97,9 +62,9 @@ To mention the team, use @chef/provisioning
 ### Maintainers
 
 * [John Keiser](https://github.com/jkeiser)
-* [Stuart Preston](https://github.com/stuartpreston)
 * [JJ Asghar](https://github.com/jjasghar)
-* [João Cravo](https://github.com/joaogbcravo)
+* [Stuart Preston](https://github.com/stuartpreston)
+* [Harley Alaniz](https://github.com/thehar)
 
 ## Platform Specific Components
 
@@ -129,6 +94,7 @@ To mention the team, use @chef/client-ubuntu
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Tim Smith](https://github.com/tas50)
 * [Thom May](https://github.com/thommay)
 
 ## Windows
@@ -178,6 +144,7 @@ To mention the team, use @chef/client-os-x
 ### Maintainers
 
 * [Tyler Ball](https://github.com/tyler-ball)
+* [mikedodge04](https://github.com/mikedodge04)
 
 ## Debian
 
@@ -190,30 +157,7 @@ To mention the team, use @chef/client-debian
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
-
-## Cisco NX-OS
-
-To mention the team, use @chef/client-nxos
-
-### Lieutenant
-
-* [Carl Perry](https://github.com/edolnx)
-
-### Maintainers
-
-* [Carl Perry](https://github.com/edolnx)
-
-## Cisco IOS XR
-
-To mention the team, use @chef/client-iosxr
-
-### Lieutenant
-
-* [Carl Perry](https://github.com/edolnx)
-
-### Maintainers
-
-* [Carl Perry](https://github.com/edolnx)
+* [Tim Smith](https://github.com/tas50)
 
 ## Fedora
 
@@ -230,6 +174,7 @@ To mention the team, use @chef/client-opensuse
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Tim Smith](https://github.com/tas50)
 
 ## SUSE Enterprise Linux Server
 
@@ -250,7 +195,7 @@ To mention the team, use @chef/client-freebsd
 ### Maintainers
 
 * [Cory Stephenson](https://github.com/Aevin1387)
-* [David Aronsohn](https://github.com/tbunnyman)
+* [David Aronsohn](https://github.com/OnlyHaveCans)
 * [Bryant Lippert](https://github.com/AgentMeerkat)
 
 ## OpenBSD

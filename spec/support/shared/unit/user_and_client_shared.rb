@@ -55,13 +55,13 @@ shared_examples_for "user or client create" do
     end
 
     context "when chef_key is returned by the server" do
-      let(:chef_key) {
+      let(:chef_key) do
         {
           "chef_key" => {
             "public_key" => "some_public_key",
           },
         }
-      }
+      end
 
       it "puts the public key into the objectr returned by create" do
         expect(rest_v1).to receive(:post).with(url, payload).and_return(payload.merge(chef_key))
@@ -70,14 +70,14 @@ shared_examples_for "user or client create" do
       end
 
       context "when private_key is returned in chef_key" do
-        let(:chef_key) {
+        let(:chef_key) do
           {
             "chef_key" => {
               "public_key" => "some_public_key",
               "private_key" => "some_private_key",
             },
           }
-        }
+        end
 
         it "puts the private key into the object returned by create" do
           expect(rest_v1).to receive(:post).with(url, payload).and_return(payload.merge(chef_key))

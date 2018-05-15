@@ -27,23 +27,18 @@ class Chef
     class CookbookFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
+      resource_name :cookbook_file
+
+      description "Use the cookbook_file resource to transfer files from a sub-directory of COOKBOOK_NAME/files/ to a specified path located on a host that is running the chef-client. The file is selected according to file specificity, which allows different source files to be used based on the hostname, host platform (operating system, distro, or as appropriate), or platform version. Files that are located in the COOKBOOK_NAME/files/default sub-directory may be used on any platform.\n\nDuring a chef-client run, the checksum for each local file is calculated and then compared against the checksum for the same file as it currently exists in the cookbook on the Chef server. A file is not transferred when the checksums match. Only files that require an update are transferred from the Chef server to a node."
+
+      property :source, [ String, Array ],
+                description: "The name of the file in COOKBOOK_NAME/files/default or the path to a file located in COOKBOOK_NAME/files. The path must include the file name and its extension. This can be used to distribute specific files depending upon the platform used.",
+                default: lazy { ::File.basename(name) }
+
+      property :cookbook, String,
+                description: "The cookbook in which a file is located (if it is not located in the current cookbook)."
+
       default_action :create
-
-      def initialize(name, run_context = nil)
-        super
-        @provider = Chef::Provider::CookbookFile
-        @source = ::File.basename(name)
-        @cookbook = nil
-      end
-
-      def source(source_filename = nil)
-        set_or_return(:source, source_filename, :kind_of => [ String, Array ])
-      end
-
-      def cookbook(cookbook_name = nil)
-        set_or_return(:cookbook, cookbook_name, :kind_of => String)
-      end
-
     end
   end
 end

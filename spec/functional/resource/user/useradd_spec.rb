@@ -21,19 +21,26 @@ require "spec_helper"
 require "functional/resource/base"
 require "chef/mixin/shell_out"
 
-def user_provider_for_platform
-  case ohai[:platform]
+def resource_for_platform(username, run_context)
+  Chef::Resource.resource_for_node(:user, node).new(username, run_context)
+end
+
+# ideally we could somehow pass an array of [ ...::Aix, ...::Linux ] to the
+# filter, but we have to pick the right one for the O/S.
+def user_provider_filter
+  case ohai[:os]
   when "aix"
     Chef::Provider::User::Aix
-  else
-    Chef::Provider::User::Useradd
+  when "linux"
+    Chef::Provider::User::Linux
   end
 end
 
-metadata = { :unix_only => true,
-             :requires_root => true,
-             :not_supported_on_mac_osx => true,
-             :provider => { :user => user_provider_for_platform },
+metadata = {
+  :unix_only => true,
+  :requires_root => true,
+  :not_supported_on_mac_osx => true,
+  :provider => { :user => user_provider_filter },
 }
 
 describe Chef::Provider::User::Useradd, metadata do
@@ -81,12 +88,13 @@ describe Chef::Provider::User::Useradd, metadata do
   end
 
   def try_cleanup
-    ["/home/cheftestfoo", "/home/cheftestbar"].each do |f|
+    ["/home/cheftestfoo", "/home/cheftestbar", "/home/cf-test"].each do |f|
       FileUtils.rm_rf(f) if File.exists? f
     end
 
     ["cf-test"].each do |u|
-      r = Chef::Resource::User.new("DELETE USER", run_context)
+      r = resource_for_platform("DELETE USER", run_context)
+      r.manage_home true
       r.username("cf-test")
       r.run_action(:remove)
     end
@@ -111,7 +119,7 @@ describe Chef::Provider::User::Useradd, metadata do
         break if status.exitstatus != 8
 
         sleep 1
-        max_retries = max_retries - 1
+        max_retries -= 1
       rescue UserNotFound
         break
       end
@@ -134,10 +142,7 @@ describe Chef::Provider::User::Useradd, metadata do
     Chef::RunContext.new(node, {}, events)
   end
 
-  let(:username) do
-    "cf-test"
-  end
-
+  let(:username) { "cf-test" }
   let(:uid) { nil }
   let(:home) { nil }
   let(:manage_home) { false }
@@ -146,7 +151,7 @@ describe Chef::Provider::User::Useradd, metadata do
   let(:comment) { nil }
 
   let(:user_resource) do
-    r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
+    r = resource_for_platform("TEST USER RESOURCE", run_context)
     r.username(username)
     r.uid(uid)
     r.home(home)
@@ -242,15 +247,8 @@ describe Chef::Provider::User::Useradd, metadata do
           expect(pw_entry.home).to eq(home)
         end
 
-        if %w{rhel fedora wrlinux}.include?(OHAI_SYSTEM["platform_family"])
-          # Inconsistent behavior. See: CHEF-2205
-          it "creates the home dir when not explicitly asked to on RHEL (XXX)" do
-            expect(File).to exist(home)
-          end
-        else
-          it "does not create the home dir without `manage_home'" do
-            expect(File).not_to exist(home)
-          end
+        it "does not create the home dir without `manage_home'" do
+          expect(File).not_to exist(home)
         end
 
         context "and manage_home is enabled" do
@@ -258,6 +256,14 @@ describe Chef::Provider::User::Useradd, metadata do
 
           it "ensures the user's home directory exists" do
             expect(File).to exist(home)
+          end
+        end
+
+        context "and manage_home is the default" do
+          let(:manage_home) { nil }
+
+          it "does not create the home dir without `manage_home'" do
+            expect(File).not_to exist(home)
           end
         end
       end
@@ -310,8 +316,8 @@ describe Chef::Provider::User::Useradd, metadata do
       let(:existing_comment) { nil }
 
       let(:existing_user) do
-        r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
-        # username is identity attr, must match.
+        r = resource_for_platform("TEST USER RESOURCE", run_context)
+          # username is identity attr, must match.
         r.username(username)
         r.uid(existing_uid)
         r.home(existing_home)
@@ -631,11 +637,22 @@ describe Chef::Provider::User::Useradd, metadata do
       context "and has no password" do
 
         # TODO: platform_family should be setup in spec_helper w/ tags
-        if %w{suse opensuse}.include?(OHAI_SYSTEM["platform_family"])
-          # suse gets this right:
+        if %w{opensuse}.include?(OHAI_SYSTEM["platform_family"]) ||
+            (%w{suse}.include?(OHAI_SYSTEM["platform_family"]) &&
+            OHAI_SYSTEM["platform_version"].to_f < 12.0)
+          # suse 11.x gets this right:
           it "errors out trying to unlock the user" do
             expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)
             expect(@error.message).to include("Cannot unlock the password")
+          end
+        elsif %w{rhel}.include?(OHAI_SYSTEM["platform_family"]) &&
+            (Chef::VersionConstraint.new("~> 6.8").include?(OHAI_SYSTEM["platform_version"].to_f) || Chef::VersionConstraint.new("~> 7.3").include?(OHAI_SYSTEM["platform_version"].to_f))
+          # RHEL 6.8 and 7.3 ship with a fixed `usermod` command
+          # Reference: https://access.redhat.com/errata/RHBA-2016:0864
+          # Reference: https://access.redhat.com/errata/RHBA-2016:2322
+          it "errors out trying to unlock the user" do
+            expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)
+            expect(@error.message).to include("You should set a password")
           end
         else
 

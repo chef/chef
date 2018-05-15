@@ -74,16 +74,15 @@ class Chef
 
       def node_supports_windows_architecture?(node, desired_architecture)
         assert_valid_windows_architecture!(desired_architecture)
-        return (node_windows_architecture(node) == :x86_64 ||
-                desired_architecture == :i386) ? true : false
+        ( node_windows_architecture(node) == :x86_64 ) || ( desired_architecture == :i386 )
       end
 
       def valid_windows_architecture?(architecture)
-        return (architecture == :x86_64) || (architecture == :i386)
+        ( architecture == :x86_64 ) || ( architecture == :i386 )
       end
 
       def assert_valid_windows_architecture!(architecture)
-        if ! valid_windows_architecture?(architecture)
+        if !valid_windows_architecture?(architecture)
           raise Chef::Exceptions::Win32ArchitectureIncorrect,
           "The specified architecture was not valid. It must be one of :i386 or :x86_64"
         end

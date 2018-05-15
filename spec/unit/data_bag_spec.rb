@@ -143,13 +143,13 @@ describe Chef::DataBag do
 
     shared_examples_for "data bag in solo mode" do |data_bag_path|
       before do
-        Chef::Config[:solo] = true
+        Chef::Config[:solo_legacy_mode] = true
         Chef::Config[:data_bag_path] = data_bag_path
         @paths = Array(data_bag_path)
       end
 
       after do
-        Chef::Config[:solo] = false
+        Chef::Config[:solo_legacy_mode] = false
       end
 
       it "should get the data bag from the data_bag_path" do
@@ -241,9 +241,9 @@ describe Chef::DataBag do
       it "should raise an error if the configured data_bag_path is invalid" do
         file_dir_stub(@paths.first, false)
 
-        expect {
+        expect do
           Chef::DataBag.load("foo")
-        }.to raise_error Chef::Exceptions::InvalidDataBagPath, "Data bag path '/var/chef/data_bags' is invalid"
+        end.to raise_error Chef::Exceptions::InvalidDataBagPath, "Data bag path '/var/chef/data_bags' is invalid"
       end
 
     end

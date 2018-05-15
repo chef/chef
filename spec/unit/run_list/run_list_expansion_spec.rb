@@ -104,8 +104,8 @@ describe Chef::RunList::RunListExpansion do
     end
 
     it "produces json tree upon tracing expansion" do
-      jsonRunList = @expansion.to_json
-      expect(jsonRunList).to eq(@json)
+      json_run_list = @expansion.to_json
+      expect(json_run_list).to eq(@json)
     end
 
     it "has the ordered list of recipes" do

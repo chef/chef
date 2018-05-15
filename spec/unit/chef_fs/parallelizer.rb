@@ -35,9 +35,9 @@ describe Chef::ChefFS::Parallelizer do
 
     context "With :ordered => false (unordered output)" do
       it "An empty input produces an empty output" do
-        parallelize([], :ordered => false) do
+        expect(parallelize([], :ordered => false) do
           sleep 10
-        end.to_a == []
+        end.to_a).to eql([])
         expect(elapsed_time).to be < 0.1
       end
 
@@ -107,9 +107,9 @@ describe Chef::ChefFS::Parallelizer do
 
     context "With :ordered => true (ordered output)" do
       it "An empty input produces an empty output" do
-        parallelize([]) do
+        expect(parallelize([]) do
           sleep 10
-        end.to_a == []
+        end.to_a).to eql([])
         expect(elapsed_time).to be < 0.1
       end
 
@@ -211,9 +211,7 @@ describe Chef::ChefFS::Parallelizer do
             occupying_job_finished[0] = true
           end.wait
         end
-        until started
-          sleep(0.01)
-        end
+        sleep(0.01) until started
       end
 
       after :each do

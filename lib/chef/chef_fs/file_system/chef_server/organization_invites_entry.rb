@@ -27,6 +27,10 @@ class Chef
             File.join(parent.api_path, "association_requests")
           end
 
+          def display_path
+            "/invitations.json"
+          end
+
           def exists?
             parent.exists?
           end

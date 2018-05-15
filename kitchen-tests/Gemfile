@@ -1,10 +1,12 @@
 source "https://rubygems.org"
 
-group :end_to_end do
-  gem "berkshelf"
-  gem "test-kitchen", "~> 1.4"
-  gem "kitchen-appbundle-updater"
-  gem "kitchen-vagrant", "~> 0.17"
-  gem "kitchen-ec2", github: "test-kitchen/kitchen-ec2"
-  gem "vagrant-wrapper"
-end
+gem "rake" # required to build some native extensions
+gem "chef", path: ".."
+# remove this ohai pin once we ship the 14 gem
+gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
+gem "berkshelf", git: "https://github.com/berkshelf/berkshelf.git", branch: "master"
+gem "kitchen-appbundle-updater", git: "https://github.com/chef/kitchen-appbundle-updater", branch: "master"
+gem "kitchen-dokken", "< 2.0" # 2.x fails atm: https://travis-ci.org/chef/chef/jobs/199125787
+gem "kitchen-inspec", git: "https://github.com/chef/kitchen-inspec.git", branch: "master"
+gem "kitchen-vagrant", git: "https://github.com/test-kitchen/kitchen-vagrant.git", branch: "master"
+gem "test-kitchen", git: "https://github.com/test-kitchen/test-kitchen.git", branch: "master"

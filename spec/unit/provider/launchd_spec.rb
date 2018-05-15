@@ -40,7 +40,7 @@ describe Chef::Provider::Launchd do
 \t<string>/Library/scripts/call_mom.sh</string>
 \t<key>StartCalendarInterval</key>
 \t<dict>
-\t\t<key>Hourly</key>
+\t\t<key>Hour</key>
 \t\t<integer>10</integer>
 \t\t<key>Weekday</key>
 \t\t<integer>7</integer>
@@ -50,12 +50,42 @@ describe Chef::Provider::Launchd do
 </dict>
 </plist>
 XML
+    let(:test_plist_multiple_intervals) { String.new <<-XML }
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+\t<key>Label</key>
+\t<string>call.mom.weekly</string>
+\t<key>Program</key>
+\t<string>/Library/scripts/call_mom.sh</string>
+\t<key>StartCalendarInterval</key>
+\t<array>
+\t\t<dict>
+\t\t\t<key>Hour</key>
+\t\t\t<integer>11</integer>
+\t\t\t<key>Weekday</key>
+\t\t\t<integer>1</integer>
+\t\t</dict>
+\t\t<dict>
+\t\t\t<key>Hour</key>
+\t\t\t<integer>12</integer>
+\t\t\t<key>Weekday</key>
+\t\t\t<integer>2</integer>
+\t\t</dict>
+\t</array>
+\t<key>TimeOut</key>
+\t<integer>300</integer>
+</dict>
+</plist>
+XML
 
-    let(:test_hash) do {
+    let(:test_hash) do
+      {
       "Label" => "call.mom.weekly",
       "Program" => "/Library/scripts/call_mom.sh",
       "StartCalendarInterval" => {
-        "Hourly" => 10,
+        "Hour" => 10,
         "Weekday" => 7,
       },
       "TimeOut" => 300,
@@ -99,15 +129,64 @@ XML
         it "should produce the test_plist from properties" do
           new_resource.program "/Library/scripts/call_mom.sh"
           new_resource.time_out 300
-          new_resource.start_calendar_interval "Hourly" => 10, "Weekday" => 7
+          new_resource.start_calendar_interval "Hour" => 10, "Weekday" => 7
           expect(provider.content?).to be_truthy
           expect(provider.content).to eql(test_plist)
         end
       end
 
+      describe "start_calendar_interval is passed" do
+        it "should allow array of Hashes" do
+          allowed = (1..2).collect do |num|
+            {
+              "Hour"    => 10 + num,
+              "Weekday" => num,
+            }
+          end
+          new_resource.program "/Library/scripts/call_mom.sh"
+          new_resource.time_out 300
+          new_resource.start_calendar_interval allowed
+          expect(provider.content?).to be_truthy
+          expect(provider.content).to eql(test_plist_multiple_intervals)
+        end
+
+        it "should allow all StartCalendarInterval keys" do
+          allowed = {
+            "Minute"  => 1,
+            "Hour"    => 1,
+            "Day"     => 1,
+            "Weekday" => 1,
+            "Month"   => 1,
+          }
+          new_resource.program "/Library/scripts/call_mom.sh"
+          new_resource.time_out 300
+          new_resource.start_calendar_interval allowed
+          expect(provider.content?).to be_truthy
+          %w{Minute Hour Day Weekday Month}.each do |key|
+            expect(provider.content).to include("<key>#{key}</key>")
+          end
+        end
+
+        it "should not allow invalid ShowCalendarInterval keys" do
+          new_resource.program "/Library/scripts/call_mom.sh"
+          new_resource.time_out 300
+          expect do
+            new_resource.start_calendar_interval "Hourly" => 1
+          end.to raise_error(/Hourly are invalid/)
+        end
+
+        it "should not allow non-integer values" do
+          new_resource.program "/Library/scripts/call_mom.sh"
+          new_resource.time_out 300
+          expect do
+            new_resource.start_calendar_interval "Weekday" => "1-2"
+          end.to raise_error(/Invalid value.*\(1-2\)/)
+        end
+      end
+
       describe "hash is passed" do
-        it "should produce the test_plist from the hash" do
-          new_resource.hash test_hash
+        it "should produce the test_plist content from the plist_hash property" do
+          new_resource.plist_hash test_hash
           expect(provider.content?).to be_truthy
           expect(provider.content).to eql(test_plist)
         end

@@ -23,15 +23,13 @@ require "chef/provider/ruby_block"
 class Chef
   class Resource
     class RubyBlock < Chef::Resource
+      description "Use the ruby_block resource to execute Ruby code during a chef-client run."\
+                  " Ruby code in the ruby_block resource is evaluated with other resources during"\
+                  " convergence, whereas Ruby code outside of a ruby_block resource is evaluated"\
+                  " before other resources, as the recipe is compiled."
+
       default_action :run
       allowed_actions :create, :run
-
-      identity_attr :block_name
-
-      def initialize(name, run_context = nil)
-        super
-        @block_name = name
-      end
 
       def block(&block)
         if block_given? && block
@@ -41,13 +39,7 @@ class Chef
         end
       end
 
-      def block_name(arg = nil)
-        set_or_return(
-          :block_name,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :block_name, String, name_property: true, identity: true
     end
   end
 end

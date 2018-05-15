@@ -27,19 +27,19 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
   let(:qualified_username) { "#{ENV['COMPUTERNAME']}\\#{username}" }
   let(:password) { "1a2b3c4X!&narf" }
 
-  let(:user_resource) {
-    r = Chef::Resource::User.new(username, run_context)
+  let(:user_resource) do
+    r = Chef::Resource::User::WindowsUser.new(username, run_context)
     r.username(username)
     r.password(password)
     r.comment("temp spec user")
     r
-  }
+  end
 
-  let(:global_service_file_path) {
+  let(:global_service_file_path) do
     "#{ENV['WINDIR']}\\temp\\#{File.basename(test_service[:service_file_path])}"
-  }
+  end
 
-  let(:service_params) {
+  let(:service_params) do
 
     id = "#{$$}_#{rand(1000)}"
 
@@ -51,19 +51,19 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
       service_description: "Test service for running the windows_service functional spec.",
       service_file_path: global_service_file_path,
       } )
-  }
+  end
 
-  let(:manager) {
+  let(:manager) do
     Chef::Application::WindowsServiceManager.new(service_params)
-  }
+  end
 
-  let(:service_resource) {
+  let(:service_resource) do
     r = Chef::Resource::WindowsService.new(service_params[:service_name], run_context)
     [:run_as_user, :run_as_password].each { |prop| r.send(prop, service_params[prop]) }
     r
-  }
+  end
 
-  before {
+  before do
     user_resource.run_action(:create)
 
     # the service executable has to be outside the current user's home
@@ -81,13 +81,13 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
     file.run_action(:create)
 
     manager.run(%w{--action install})
-  }
+  end
 
-  after {
+  after do
     user_resource.run_action(:remove)
     manager.run(%w{--action uninstall})
     File.delete(global_service_file_path)
-  }
+  end
 
   describe "logon as a service" do
     it "successfully runs a service as another user" do

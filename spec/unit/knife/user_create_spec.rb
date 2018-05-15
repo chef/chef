@@ -24,13 +24,13 @@ Chef::Knife::UserCreate.load_deps
 describe Chef::Knife::UserCreate do
   let(:knife) { Chef::Knife::UserCreate.new }
 
-  let(:stderr) {
+  let(:stderr) do
     StringIO.new
-  }
+  end
 
-  let(:stdout) {
+  let(:stdout) do
     StringIO.new
-  }
+  end
 
   before(:each) do
     allow(knife.ui).to receive(:stdout).and_return(stdout)

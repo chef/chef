@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software, Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,17 +36,17 @@ class Chef
           end
         end
         @versions[name] = version if version
-        self << name unless self.include?(name)
+        self << name unless include?(name)
       end
 
       def with_versions
-        self.map { |recipe_name| { :name => recipe_name, :version => @versions[recipe_name] } }
+        map { |recipe_name| { :name => recipe_name, :version => @versions[recipe_name] } }
       end
 
       # Return an Array of Hashes, each of the form:
       #  {:name => RECIPE_NAME, :version_constraint => Chef::VersionConstraint }
       def with_version_constraints
-        self.map do |recipe_name|
+        map do |recipe_name|
           constraint = Chef::VersionConstraint.new(@versions[recipe_name])
           { :name => recipe_name, :version_constraint => constraint }
         end
@@ -55,7 +55,7 @@ class Chef
       # Return an Array of Strings, each of the form:
       #  "NAME@VERSION"
       def with_version_constraints_strings
-        self.map do |recipe_name|
+        map do |recipe_name|
           if @versions[recipe_name]
             "#{recipe_name}@#{@versions[recipe_name]}"
           else
@@ -69,7 +69,7 @@ class Chef
       #
       # @return [Array] Array of strings with fully-qualified recipe names
       def with_fully_qualified_names_and_version_constraints
-        self.map do |recipe_name|
+        map do |recipe_name|
           qualified_recipe = if recipe_name.include?("::")
                                recipe_name
                              else
@@ -83,17 +83,19 @@ class Chef
         end
       end
 
-      # Get an array of strings of both fully-qualified and unexpanded recipe names
-      # in response to chef/chef#3767
-      # Chef-13 will revert to the behaviour of just including the fully-qualified name
+      # For "foo::default" also include "foo", for "foo" also include "foo::default", for
+      # "foo::bar" just return "foo::bar".  This makes it easier for people to search on
+      # default recipe names.
       #
       # @return [Array] Array of strings with fully-qualified and unexpanded recipe names
       def with_duplicate_names
-        self.map do |recipe_name|
-          if recipe_name.include?("::")
+        map do |recipe_name|
+          if recipe_name.end_with?("::default")
+            [ recipe_name.sub(/::default$/, ""), recipe_name ]
+          elsif recipe_name.include?("::")
             recipe_name
           else
-            [recipe_name, "#{recipe_name}::default"]
+            [ recipe_name, "#{recipe_name}::default" ]
           end
         end.flatten
       end

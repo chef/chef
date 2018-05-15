@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,9 +38,20 @@ describe Chef::Client do
     end
 
     it "runs ohai with only the minimum required plugins" do
-      expected_filter = %w{fqdn machinename hostname platform platform_version os os_version}
+      expected_filter = %w{fqdn machinename hostname platform platform_version ohai_time os os_version}
       expect(ohai_system).to receive(:all_plugins).with(expected_filter)
       client.run_ohai
+    end
+  end
+
+  context "when Ohai tells us to fail" do
+    it "fails" do
+      ohai_system = Ohai::System.new
+      module Ohai::Exceptions
+        class CriticalPluginFailure < Error; end
+      end
+      expect(ohai_system).to receive(:all_plugins) { raise Ohai::Exceptions::CriticalPluginFailure }
+      expect { client.run_ohai }.to raise_error(SystemExit)
     end
   end
 
@@ -71,48 +82,40 @@ describe Chef::Client do
 
   describe "configuring output formatters" do
     context "when no formatter has been configured" do
-      context "and STDOUT is a TTY" do
-        before do
-          allow(STDOUT).to receive(:tty?).and_return(true)
-        end
-
-        it "configures the :doc formatter" do
-          expect(client.formatters_for_run).to eq([[:doc]])
-        end
-
-        context "and force_logger is set" do
-          before do
-            Chef::Config[:force_logger] = true
-          end
-
-          it "configures the :null formatter" do
-            expect(Chef::Config[:force_logger]).to be_truthy
-            expect(client.formatters_for_run).to eq([[:null]])
-          end
-
-        end
-
+      it "configures the :doc formatter" do
+        expect(client.formatters_for_run).to eq([[:doc]])
       end
 
-      context "and STDOUT is not a TTY" do
+      context "and force_logger is set" do
         before do
-          allow(STDOUT).to receive(:tty?).and_return(false)
+          Chef::Config[:force_logger] = true
         end
 
         it "configures the :null formatter" do
           expect(client.formatters_for_run).to eq([[:null]])
         end
+      end
 
-        context "and force_formatter is set" do
-          before do
-            Chef::Config[:force_formatter] = true
-          end
-          it "it configures the :doc formatter" do
-            expect(client.formatters_for_run).to eq([[:doc]])
-          end
+      context "and force_formatter is set" do
+        before do
+          Chef::Config[:force_formatter] = true
+        end
+
+        it "configures the :doc formatter" do
+          expect(client.formatters_for_run).to eq([[:doc]])
         end
       end
 
+      context "both are set" do
+        before do
+          Chef::Config[:force_formatter] = true
+          Chef::Config[:force_logger] = true
+        end
+
+        it "configures the :doc formatter" do
+          expect(client.formatters_for_run).to eq([[:doc]])
+        end
+      end
     end
 
     context "when a formatter is configured" do
@@ -188,7 +191,7 @@ describe Chef::Client do
             # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
             #
             expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-            expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
+            expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
             expect(http_cookbook_sync).to receive(:post).
               with("environments/_default/cookbook_versions", { :run_list => ["override_recipe"] }).
               and_return({})
@@ -222,7 +225,7 @@ describe Chef::Client do
           # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
           #
           expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-          expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
+          expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
           expect(http_cookbook_sync).to receive(:post).
             with("environments/_default/cookbook_versions", { :run_list => ["new_run_list_recipe"] }).
             and_return({})
@@ -402,6 +405,55 @@ describe Chef::Client do
     end
   end
 
+  describe "load_required_recipe" do
+    let(:rest)        { double("Chef::ServerAPI (required recipe)") }
+    let(:run_context) { double("Chef::RunContext") }
+    let(:recipe)      { double("Chef::Recipe (required recipe)") }
+    let(:required_recipe) do
+      <<EOM
+fake_recipe_variable = "for reals"
+EOM
+    end
+
+    context "when required_recipe is configured" do
+
+      before(:each) do
+        expect(rest).to receive(:get).with("required_recipe").and_return(required_recipe)
+        expect(Chef::Recipe).to receive(:new).with(nil, nil, run_context).and_return(recipe)
+        expect(recipe).to receive(:from_file)
+      end
+
+      it "fetches the recipe and adds it to the run context" do
+        client.load_required_recipe(rest, run_context)
+      end
+
+      context "when the required_recipe has bad contents" do
+        let(:required_recipe) do
+          <<EOM
+this is not a recipe
+EOM
+        end
+        it "should not raise an error" do
+          expect { client.load_required_recipe(rest, run_context) }.not_to raise_error()
+        end
+      end
+    end
+
+    context "when required_recipe returns 404" do
+      let(:http_response) { Net::HTTPNotFound.new("1.1", "404", "Not Found") }
+      let(:http_exception) { Net::HTTPServerException.new('404 "Not Found"', http_response) }
+
+      before(:each) do
+        expect(rest).to receive(:get).with("required_recipe").and_raise(http_exception)
+      end
+
+      it "should log and continue on" do
+        expect(logger).to receive(:trace)
+        client.load_required_recipe(rest, run_context)
+      end
+    end
+  end
+
   describe "windows_admin_check" do
     context "platform is not windows" do
       before do
@@ -430,7 +482,7 @@ describe Chef::Client do
         end
 
         it "should not log a warning message" do
-          expect(Chef::Log).not_to receive(:warn)
+          expect(logger).not_to receive(:warn)
           client.do_windows_admin_check
         end
 
@@ -447,7 +499,7 @@ describe Chef::Client do
         end
 
         it "should log a warning message" do
-          expect(Chef::Log).to receive(:warn)
+          expect(logger).to receive(:warn)
           client.do_windows_admin_check
         end
 
@@ -462,7 +514,7 @@ describe Chef::Client do
 
   describe "assert_cookbook_path_not_empty" do
     before do
-      Chef::Config[:solo] = true
+      Chef::Config[:solo_legacy_mode] = true
       Chef::Config[:cookbook_path] = ["/path/to/invalid/cookbook_path"]
     end
 
@@ -508,7 +560,6 @@ describe Chef::Client do
         expect { client.node_name }.to raise_error(Chef::Exceptions::CannotDetermineNodeName)
       end
     end
-
   end
 
   describe "always attempt to run handlers" do

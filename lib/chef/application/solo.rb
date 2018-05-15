@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,16 +18,17 @@
 
 require "chef"
 require "chef/application"
+require "chef/application/client"
 require "chef/client"
 require "chef/config"
 require "chef/daemon"
 require "chef/log"
-require "chef/rest"
 require "chef/config_fetcher"
 require "fileutils"
 require "chef/mixin/shell_out"
 require "pathname"
 require "chef-config/mixin/dot_d"
+require "mixlib/archive"
 
 class Chef::Application::Solo < Chef::Application
   include Chef::Mixin::ShellOut
@@ -38,6 +39,14 @@ class Chef::Application::Solo < Chef::Application
     :long  => "--config CONFIG",
     :default => Chef::Config.platform_specific_path("/etc/chef/solo.rb"),
     :description => "The configuration file to use"
+
+  option :config_option,
+    :long         => "--config-option OPTION=VALUE",
+    :description  => "Override a single configuration option",
+    :proc         => lambda { |option, existing|
+      (existing ||= []) << option
+      existing
+    }
 
   option :formatter,
     :short        => "-F FORMATTER",
@@ -72,7 +81,7 @@ class Chef::Application::Solo < Chef::Application
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
-    :description  => "Set the log level (debug, info, warn, error, fatal)",
+    :description  => "Set the log level (trace, debug, info, warn, error, fatal)",
     :proc         => lambda { |l| l.to_sym }
 
   option :log_location,
@@ -156,18 +165,17 @@ class Chef::Application::Solo < Chef::Application
     :short        => "-o RunlistItem,RunlistItem...",
     :long         => "--override-runlist RunlistItem,RunlistItem...",
     :description  => "Replace current run list with specified items",
-    :proc         => lambda {|items|
+    :proc         => lambda { |items|
       items = items.split(",")
-      items.compact.map {|item|
+      items.compact.map do |item|
         Chef::RunList::RunListItem.new(item)
-      }
+      end
     }
 
   option :client_fork,
     :short        => "-f",
     :long         => "--[no-]fork",
-    :description  => "Fork client",
-    :boolean      => true
+    :description  => "Fork client"
 
   option :why_run,
     :short        => "-W",
@@ -200,10 +208,24 @@ class Chef::Application::Solo < Chef::Application
     :description    => "DANGEROUS: does what it says, only useful with --recipe-url",
     :boolean        => true
 
+  option :solo_legacy_mode,
+    :long           => "--legacy-mode",
+    :description    => "Run chef-solo in legacy mode",
+    :boolean        => true
+
   attr_reader :chef_client_json
 
-  def initialize
-    super
+  # Get this party started
+  def run
+    setup_signal_handlers
+    reconfigure
+    for_ezra if Chef::Config[:ez]
+    if !Chef::Config[:solo_legacy_mode]
+      Chef::Application::Client.new.run
+    else
+      setup_application
+      run_application
+    end
   end
 
   def reconfigure
@@ -215,28 +237,49 @@ class Chef::Application::Solo < Chef::Application
 
     Chef::Config[:solo] = true
 
+    if !Chef::Config[:solo_legacy_mode]
+      # Because we re-parse ARGV when we move to chef-client, we need to tidy up some options first.
+      ARGV.delete("--ez")
+
+      # For back compat reasons, we need to ensure that we try and use the cache_path as a repo first
+      Chef::Log.trace "Current chef_repo_path is #{Chef::Config.chef_repo_path}"
+
+      if !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+        Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Chef::Config[:cache_path])
+      end
+
+      Chef::Config[:local_mode] = true
+      Chef::Config[:listen] = false
+    else
+      configure_legacy_mode!
+    end
+  end
+
+  def configure_legacy_mode!
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
     end
 
-    Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
+    # supervisor processes are enabled by default for interval-running processes but not for one-shot runs
+    if Chef::Config[:client_fork].nil?
+      Chef::Config[:client_fork] = !!Chef::Config[:interval]
+    end
 
-    Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
+    Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
 
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
 
       if Chef::Config[:delete_entire_chef_repo]
-        Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
+        Chef::Log.trace "Cleanup path #{recipes_path} before extract recipes into it"
         FileUtils.rm_rf(recipes_path, :secure => true)
       end
-      Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
+      Chef::Log.trace "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p(recipes_path)
       tarball_path = File.join(recipes_path, "recipes.tgz")
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      result = shell_out!("tar zxvf #{tarball_path} -C #{recipes_path}")
-      Chef::Log.debug "#{result.stdout}"
+      Mixlib::Archive.new(tarball_path).extract(Chef::Config.chef_repo_path, perms: false, ignore: /^\.$/)
     end
 
     # json_attribs shuld be fetched after recipe_url tarball is unpacked.
@@ -255,7 +298,6 @@ class Chef::Application::Solo < Chef::Application
   end
 
   def run_application
-    for_ezra if Chef::Config[:ez]
     if !Chef::Config[:client_fork] || Chef::Config[:once]
       # Run immediately without interval sleep or splay
       begin
@@ -263,7 +305,7 @@ class Chef::Application::Solo < Chef::Application
       rescue SystemExit
         raise
       rescue Exception => e
-        Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+        Chef::Application.fatal!("#{e.class}: #{e.message}", e)
       end
     else
       interval_run_chef_client
@@ -294,7 +336,7 @@ EOH
         sleep_sec += rand(Chef::Config[:splay]) if Chef::Config[:splay]
         sleep_sec += Chef::Config[:interval] if Chef::Config[:interval]
         if sleep_sec != 0
-          Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
+          Chef::Log.trace("Sleeping for #{sleep_sec} seconds")
           sleep(sleep_sec)
         end
 
@@ -307,17 +349,17 @@ EOH
       rescue Exception => e
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
-          Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
+          Chef::Log.trace("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
           retry
         else
-          Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+          Chef::Application.fatal!("#{e.class}: #{e.message}", e)
         end
       end
     end
   end
 
   def fetch_recipe_tarball(url, path)
-    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
+    Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
     File.open(path, "wb") do |f|
       open(url) do |r|
         f.write(r.read)

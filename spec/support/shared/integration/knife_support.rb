@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,10 +20,11 @@ require "chef/knife"
 require "chef/application/knife"
 require "logger"
 require "chef/log"
+require "chef/chef_fs/file_system_cache"
 
 module KnifeSupport
   DEBUG = ENV["DEBUG"]
-  def knife(*args)
+  def knife(*args, input: nil)
     # Allow knife('role from file roles/blah.json') rather than requiring the
     # arguments to be split like knife('role', 'from', 'file', 'roles/blah.json')
     # If any argument will have actual spaces in it, the long form is required.
@@ -37,7 +38,7 @@ module KnifeSupport
     Chef::Config[:concurrency] = 1
 
     # Work on machines where we can't access /var
-    checksums_cache_dir = Dir.mktmpdir("checksums") do |checksums_cache_dir|
+    Dir.mktmpdir("checksums") do |checksums_cache_dir|
       Chef::Config[:cache_options] = {
         :path => checksums_cache_dir,
         :skip_expires => true,
@@ -47,6 +48,13 @@ module KnifeSupport
       # ourselves, thank you very much
       stdout = StringIO.new
       stderr = StringIO.new
+
+      stdin = if input
+                StringIO.new(input)
+              else
+                STDIN
+              end
+
       old_loggers = Chef::Log.loggers
       old_log_level = Chef::Log.level
       begin
@@ -56,18 +64,29 @@ module KnifeSupport
         subcommand_class.load_deps
         instance = subcommand_class.new(args)
 
+        # Load configs
+        instance.merge_configs
+
         # Capture stdout/stderr
-        instance.ui = Chef::Knife::UI.new(stdout, stderr, STDIN, {})
+        instance.ui = Chef::Knife::UI.new(stdout, stderr, stdin, instance.config.merge(disable_editing: true))
 
         # Don't print stuff
         Chef::Config[:verbosity] = ( DEBUG ? 2 : 0 )
         instance.config[:config_file] = File.join(CHEF_SPEC_DATA, "null_config.rb")
+
+        # Ensure the ChefFS cache is empty
+        Chef::ChefFS::FileSystemCache.instance.reset!
 
         # Configure chef with a (mostly) blank knife.rb
         # We set a global and then mutate it in our stub knife.rb so we can be
         # extra sure that we're not loading someone's real knife.rb and then
         # running test scenarios against a real chef server. If things don't
         # smell right, abort.
+
+        # To ensure that we don't pick up a user's credentials file we lie through our teeth about
+        # it's existence.
+        allow(File).to receive(:file?).and_call_original
+        allow(File).to receive(:file?).with(File.expand_path("~/.chef/credentials")).and_return(false)
 
         $__KNIFE_INTEGRATION_FAILSAFE_CHECK = "ole"
         instance.configure_chef
@@ -99,8 +118,6 @@ module KnifeSupport
       KnifeResult.new(stdout.string, stderr.string, exit_code)
     end
   end
-
-  private
 
   class KnifeResult
 

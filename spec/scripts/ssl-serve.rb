@@ -42,6 +42,6 @@ webrick_opts = DEFAULT_OPTIONS.merge(server_opts)
 pp :webrick_opts => webrick_opts
 
 server = WEBrick::HTTPServer.new(webrick_opts)
-trap "INT" do server.shutdown end
+trap("INT") { server.shutdown }
 
 server.start

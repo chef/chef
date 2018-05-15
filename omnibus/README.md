@@ -75,7 +75,7 @@ changing the list found in the `.kitchen.yml` `platforms` YAML stanza.
 
 This build environment is designed to get you up-and-running quickly. However,
 there is nothing that restricts you to building on other platforms. Simply use
-the [omnibus cookbook](https://github.com/opscode-cookbooks/omnibus) to setup
+the [omnibus cookbook](https://github.com/chef-cookbooks/omnibus) to setup
 your desired platform and execute the build steps listed above.
 
 The default build environment requires Test Kitchen and VirtualBox for local

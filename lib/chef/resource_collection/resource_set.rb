@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,10 @@ class Chef
 
       # Matches a single resource lookup specification,
       # e.g., "service[nginx]"
-      SINGLE_RESOURCE_MATCH = /^(.+)\[(.+)\]$/
+      SINGLE_RESOURCE_MATCH = /^(.+)\[(.*)\]$/
+
+      # Matches e.g. "apt_update" with no name
+      NAMELESS_RESOURCE_MATCH = /^([^\[\]\s]+)$/
 
       def initialize
         @resources_by_key = Hash.new
@@ -118,7 +121,7 @@ class Chef
         case query_object
           when Chef::Resource
             true
-          when SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH
+          when SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH, NAMELESS_RESOURCE_MATCH
             true
           when Hash
             true
@@ -130,6 +133,14 @@ class Chef
                   "The object `#{query_object.inspect}' is not valid for resource collection lookup. " +
               "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
         end
+      end
+
+      def self.from_hash(o)
+        collection = new()
+        rl = o["instance_vars"]["@resources_by_key"]
+        resources = rl.merge(rl) { |k, r| Chef::Resource.from_hash(r) }
+        collection.instance_variable_set(:@resources_by_key, resources)
+        collection
       end
 
       private
@@ -146,27 +157,43 @@ class Chef
             results << lookup(create_key(resource_type, instance_name))
           end
         end
-        return results
+        results
       end
 
       def find_resource_by_string(arg)
-        results = Array.new
-        case arg
-          when MULTIPLE_RESOURCE_MATCH
-            resource_type = $1
-            arg =~ /^.+\[(.+)\]$/
-            resource_list = $1
-            resource_list.split(",").each do |instance_name|
-              results << lookup(create_key(resource_type, instance_name))
-            end
-          when SINGLE_RESOURCE_MATCH
+        begin
+          if arg =~ SINGLE_RESOURCE_MATCH
             resource_type = $1
             name = $2
-            results << lookup(create_key(resource_type, name))
+            return [ lookup(create_key(resource_type, name)) ]
+          end
+        rescue Chef::Exceptions::ResourceNotFound => e
+          if arg =~ MULTIPLE_RESOURCE_MATCH
+            begin
+              results = Array.new
+              resource_type = $1
+              arg =~ /^.+\[(.+)\]$/
+              resource_list = $1
+              resource_list.split(",").each do |instance_name|
+                results << lookup(create_key(resource_type, instance_name))
+              end
+              Chef.deprecated(:multiresource_match, "The resource_collection multi-resource syntax is deprecated")
+              return results
+            rescue  Chef::Exceptions::ResourceNotFound
+              raise e
+            end
           else
-            raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
+            raise e
+          end
         end
-        return results
+
+        if arg =~ NAMELESS_RESOURCE_MATCH
+          resource_type = $1
+          name = ""
+          return [ lookup(create_key(resource_type, name)) ]
+        end
+
+        raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
       end
     end
   end

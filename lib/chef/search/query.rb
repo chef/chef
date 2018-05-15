@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,43 +21,21 @@ require "chef/exceptions"
 require "chef/server_api"
 
 require "uri"
+require "addressable/uri"
 
 class Chef
   class Search
     class Query
 
-      attr_accessor :rest
       attr_reader :config
 
-      def initialize(url = nil, config:Chef::Config)
+      def initialize(url = nil, config: Chef::Config)
         @config = config
         @url = url
       end
 
       def rest
         @rest ||= Chef::ServerAPI.new(@url || @config[:chef_server_url])
-      end
-
-      # Backwards compatability for cookbooks.
-      # This can be removed in Chef > 12.
-      def partial_search(type, query = "*:*", *args, &block)
-        Chef::Log.warn(<<-WARNDEP)
-DEPRECATED: The 'partial_search' API is deprecated and will be removed in
-future releases. Please use 'search' with a :filter_result argument to get
-partial search data.
-WARNDEP
-
-        if !args.empty? && args.first.is_a?(Hash)
-          # partial_search uses :keys instead of :filter_result for
-          # result filtering.
-          args_h = args.first.dup
-          args_h[:filter_result] = args_h[:keys]
-          args_h.delete(:keys)
-
-          search(type, query, args_h, &block)
-        else
-          search(type, query, *args, &block)
-        end
       end
 
       #
@@ -84,6 +62,19 @@ WARNDEP
         validate_type(type)
 
         args_h = hashify_args(*args)
+        if args_h[:fuzz]
+          if type == :node
+            query = fuzzify_node_query(query)
+          end
+          # FIXME: can i haz proper ruby-2.x named parameters someday plz?
+          args_h = args_h.reject { |k, v| k == :fuzz }
+        end
+
+        # Set default rows parameter to 1000. This is the default in
+        # Chef Server, but we set it explicitly here so that we can
+        # confidently advance our start parameter.
+        args_h[:rows] ||= 1000
+
         response = call_rest_service(type, query: query, **args_h)
 
         if block
@@ -100,7 +91,7 @@ WARNDEP
           # args_h[:rows] to avoid asking the search backend for
           # overlapping pages (which could result in duplicates).
           #
-          next_start = response["start"] + (args_h[:rows] || response["rows"].length)
+          next_start = response["start"] + args_h[:rows]
           unless next_start >= response["total"]
             args_h[:start] = next_start
             search(type, query, args_h, &block)
@@ -112,6 +103,14 @@ WARNDEP
       end
 
       private
+
+      def fuzzify_node_query(query)
+        if query !~ /:/
+          "tags:*#{query}* OR roles:*#{query}* OR fqdn:*#{query}* OR addresses:*#{query}* OR policy_name:*#{query}* OR policy_group:*#{query}*"
+        else
+          query
+        end
+      end
 
       def validate_type(t)
         unless t.kind_of?(String) || t.kind_of?(Symbol)
@@ -127,27 +126,30 @@ WARNDEP
         return args.first if args.first.is_a?(Hash)
 
         args_h = Hash.new
-        args_h[:sort] = args[0] if args[0]
-        args_h[:start] = args[1] if args[1]
-        args_h[:rows] = args[2]
-        args_h[:filter_result] = args[3]
+        # If we have 4 arguments, the first is the now-removed sort option, so
+        # just ignore it.
+        args.pop(0) if args.length == 4
+        args_h[:start] = args[0] if args[0]
+        args_h[:rows] = args[1]
+        args_h[:filter_result] = args[2]
         args_h
       end
 
-      def escape(s)
-        s && URI.escape(s.to_s)
+      QUERY_PARAM_VALUE = Addressable::URI::CharacterClasses::QUERY + "\\&\\;"
+
+      def escape_value(s)
+        s && Addressable::URI.encode_component(s.to_s, QUERY_PARAM_VALUE)
       end
 
-      def create_query_string(type, query, rows, start, sort)
-        qstr = "search/#{type}?q=#{escape(query)}"
-        qstr += "&sort=#{escape(sort)}" if sort
-        qstr += "&start=#{escape(start)}" if start
-        qstr += "&rows=#{escape(rows)}" if rows
+      def create_query_string(type, query, rows, start)
+        qstr = "search/#{type}?q=#{escape_value(query)}"
+        qstr += "&start=#{escape_value(start)}" if start
+        qstr += "&rows=#{escape_value(rows)}" if rows
         qstr
       end
 
-      def call_rest_service(type, query:"*:*", rows:nil, start:0, sort:"X_CHEF_id_CHEF_X asc", filter_result:nil)
-        query_string = create_query_string(type, query, rows, start, sort)
+      def call_rest_service(type, query: "*:*", rows: nil, start: 0, filter_result: nil)
+        query_string = create_query_string(type, query, rows, start)
 
         if filter_result
           response = rest.post(query_string, filter_result)

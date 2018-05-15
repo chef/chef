@@ -21,54 +21,23 @@ require "chef/resource"
 class Chef
   class Resource
     class OsxProfile < Chef::Resource
-      provides :osx_profile, os: "darwin"
-      provides :osx_config_profile, os: "darwin"
+      resource_name :osx_profile
+      provides :osx_profile
+      provides :osx_config_profile
 
-      identity_attr :profile_name
+      description "Use the osx_profile resource to manage configuration profiles (.mobileconfig files)"\
+                  " on the macOS platform. The osx_profile resource installs profiles by using"\
+                  " the uuidgen library to generate a unique ProfileUUID, and then using the"\
+                  " profiles command to install the profile on the system."
+      introduced "12.7"
 
       default_action :install
       allowed_actions :install, :remove
 
-      def initialize(name, run_context = nil)
-        super
-        @profile_name = name
-        @profile = nil
-        @identifier = nil
-        @path = nil
-      end
-
-      def profile_name(arg = nil)
-        set_or_return(
-          :profile_name,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def profile(arg = nil)
-        set_or_return(
-          :profile,
-          arg,
-          :kind_of => [ String, Hash ]
-        )
-      end
-
-      def identifier(arg = nil)
-        set_or_return(
-          :identifier,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def path(arg = nil)
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
+      property :profile_name, String, name_property: true, identity: true
+      property :profile, [ String, Hash ]
+      property :identifier, String
+      property :path, String
     end
   end
 end

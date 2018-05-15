@@ -32,20 +32,29 @@ class Chef
       resource_name :freebsd_package
       provides :package, platform: "freebsd"
 
+      description "Use the freebsd_package resource to manage packages for the FreeBSD platform."
+
+      # make sure we assign the appropriate underlying providers based on what
+      # package managers exist on this FreeBSD system or the source of the package
+      #
+      # @return [void]
       def after_created
         assign_provider
       end
 
+      # Is the system at least version 1000017 or is the make variable WITH_PKGNG set
+      #
+      # @return [Boolean] do we support pkgng
       def supports_pkgng?
-        ships_with_pkgng? || !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
+        ships_with_pkgng? || !!shell_out_compact!("make", "-V", "WITH_PKGNG", :env => nil).stdout.match(/yes/i)
       end
 
       private
 
+      # It was not until __FreeBSD_version 1000017 that pkgng became
+      # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
       def ships_with_pkgng?
-        # It was not until __FreeBSD_version 1000017 that pkgng became
-        # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
-        node.automatic[:os_version].to_i >= 1000017
+        node[:os_version].to_i >= 1000017
       end
 
       def assign_provider

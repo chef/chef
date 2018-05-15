@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,6 @@ require "forwardable"
 
 class Chef
 
-  # == Chef::RunContext
   # Value object that loads and tracks the context of a Chef run
   class RunContext
     #
@@ -85,6 +84,17 @@ class Chef
     attr_reader :parent_run_context
 
     #
+    # The root run context.
+    #
+    # @return [Chef::RunContext] The root run context.
+    #
+    def root_run_context
+      rc = self
+      rc = rc.parent_run_context until rc.parent_run_context.nil?
+      rc
+    end
+
+    #
     # The collection of resources intended to be converged (and able to be
     # notified).
     #
@@ -98,6 +108,11 @@ class Chef
     # The list of control groups to execute during the audit phase
     #
     attr_reader :audits
+
+    #
+    # Pointer back to the Chef::Runner that created this
+    #
+    attr_accessor :runner
 
     #
     # Notification handling
@@ -138,6 +153,13 @@ class Chef
     #
     attr_reader :delayed_actions
 
+    #
+    # A child of the root Chef::Log logging object.
+    #
+    # @return Mixlib::Log::Child A child logger
+    #
+    attr_reader :logger
+
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
@@ -147,10 +169,11 @@ class Chef
     # @param events [EventDispatch::Dispatcher] The event dispatcher for this
     #   run.
     #
-    def initialize(node, cookbook_collection, events)
+    def initialize(node, cookbook_collection, events, logger = nil)
       @node = node
       @cookbook_collection = cookbook_collection
       @events = events
+      @logger = logger || Chef::Log.with_child
 
       node.run_context = self
       node.set_cookbook_attribute
@@ -191,43 +214,37 @@ class Chef
     #
     # Adds an before notification to the +before_notification_collection+.
     #
-    # @param [Chef::Resource::Notification] The notification to add.
+    # @param [Chef::Resource::Notification] notification The notification to add.
     #
     def notifies_before(notification)
-      nr = notification.notifying_resource
-      if nr.instance_of?(Chef::Resource)
-        before_notification_collection[nr.name] << notification
-      else
-        before_notification_collection[nr.declared_key] << notification
-      end
+      # Note for the future, notification.notifying_resource may be an instance
+      # of Chef::Resource::UnresolvedSubscribes when calling {Resource#subscribes}
+      # with a string value.
+      before_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
     #
     # Adds an immediate notification to the +immediate_notification_collection+.
     #
-    # @param [Chef::Resource::Notification] The notification to add.
+    # @param [Chef::Resource::Notification] notification The notification to add.
     #
     def notifies_immediately(notification)
-      nr = notification.notifying_resource
-      if nr.instance_of?(Chef::Resource)
-        immediate_notification_collection[nr.name] << notification
-      else
-        immediate_notification_collection[nr.declared_key] << notification
-      end
+      # Note for the future, notification.notifying_resource may be an instance
+      # of Chef::Resource::UnresolvedSubscribes when calling {Resource#subscribes}
+      # with a string value.
+      immediate_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
     #
     # Adds a delayed notification to the +delayed_notification_collection+.
     #
-    # @param [Chef::Resource::Notification] The notification to add.
+    # @param [Chef::Resource::Notification] notification The notification to add.
     #
     def notifies_delayed(notification)
-      nr = notification.notifying_resource
-      if nr.instance_of?(Chef::Resource)
-        delayed_notification_collection[nr.name] << notification
-      else
-        delayed_notification_collection[nr.declared_key] << notification
-      end
+      # Note for the future, notification.notifying_resource may be an instance
+      # of Chef::Resource::UnresolvedSubscribes when calling {Resource#subscribes}
+      # with a string value.
+      delayed_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
     #
@@ -235,7 +252,7 @@ class Chef
     #
     def add_delayed_action(notification)
       if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
-        Chef::Log.info( "#{notification.notifying_resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
+        logger.info( "#{notification.notifying_resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
                        " (delayed), as it's already been queued")
       else
         delayed_actions << notification
@@ -245,50 +262,29 @@ class Chef
     #
     # Get the list of before notifications sent by the given resource.
     #
-    # TODO seriously, this is actually wrong.  resource.name is not unique,
-    # you need the type as well.
-    #
     # @return [Array[Notification]]
     #
     def before_notifications(resource)
-      if resource.instance_of?(Chef::Resource)
-        return before_notification_collection[resource.name]
-      else
-        return before_notification_collection[resource.declared_key]
-      end
+      before_notification_collection[resource.declared_key]
     end
 
     #
     # Get the list of immediate notifications sent by the given resource.
     #
-    # TODO seriously, this is actually wrong.  resource.name is not unique,
-    # you need the type as well.
-    #
     # @return [Array[Notification]]
     #
     def immediate_notifications(resource)
-      if resource.instance_of?(Chef::Resource)
-        return immediate_notification_collection[resource.name]
-      else
-        return immediate_notification_collection[resource.declared_key]
-      end
+      immediate_notification_collection[resource.declared_key]
     end
 
     #
     # Get the list of delayed (end of run) notifications sent by the given
     # resource.
     #
-    # TODO seriously, this is actually wrong.  resource.name is not unique,
-    # you need the type as well.
-    #
     # @return [Array[Notification]]
     #
     def delayed_notifications(resource)
-      if resource.instance_of?(Chef::Resource)
-        return delayed_notification_collection[resource.name]
-      else
-        return delayed_notification_collection[resource.declared_key]
-      end
+      delayed_notification_collection[resource.declared_key]
     end
 
     #
@@ -321,21 +317,21 @@ class Chef
     #      I don't see anything different beyond accepting and returning an
     #      array of recipes.
     #
-    # @param recipe_names [Array[String]] The recipe name (e.g 'my_cookbook' or
+    # @param recipe_name [Array[String]] The recipe name (e.g 'my_cookbook' or
     #   'my_cookbook::my_resource').
-    # @param current_cookbook The cookbook we are currently running in.
+    # @param current_cookbook [String] The cookbook we are currently running in.
     #
     # @return A truthy value if the load occurred; `false` if already loaded.
     #
     # @see DSL::IncludeRecipe#load_recipe
     #
     def load_recipe(recipe_name, current_cookbook: nil)
-      Chef::Log.debug("Loading recipe #{recipe_name} via include_recipe")
+      logger.trace("Loading recipe #{recipe_name} via include_recipe")
 
       cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name, current_cookbook: current_cookbook)
 
       if unreachable_cookbook?(cookbook_name) # CHEF-4367
-        Chef::Log.warn(<<-ERROR_MESSAGE)
+        logger.warn(<<-ERROR_MESSAGE)
 MissingCookbookDependency:
 Recipe `#{recipe_name}` is not in the run_list, and cookbook '#{cookbook_name}'
 is not a dependency of any cookbook in the run_list.  To load this recipe,
@@ -345,7 +341,7 @@ ERROR_MESSAGE
       end
 
       if loaded_fully_qualified_recipe?(cookbook_name, recipe_short_name)
-        Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
+        logger.trace("I am not loading #{recipe_name}, because I have already seen it.")
         false
       else
         loaded_recipe(cookbook_name, recipe_short_name)
@@ -369,7 +365,7 @@ ERROR_MESSAGE
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe file #{recipe_file}"
       end
 
-      Chef::Log.debug("Loading recipe file #{recipe_file}")
+      logger.trace("Loading recipe file #{recipe_file}")
       recipe = Chef::Recipe.new("@recipe_files", recipe_file, self)
       recipe.from_file(recipe_file)
       recipe
@@ -563,15 +559,22 @@ ERROR_MESSAGE
     # 5. raise an exception on any second call.
     # 6. ?
     def request_reboot(reboot_info)
-      Chef::Log.info "Changing reboot status from #{self.reboot_info.inspect} to #{reboot_info.inspect}"
+      logger.info "Changing reboot status from #{self.reboot_info.inspect} to #{reboot_info.inspect}"
       @reboot_info = reboot_info
     end
 
+    #
+    # Cancels a pending reboot
+    #
     def cancel_reboot
-      Chef::Log.info "Changing reboot status from #{reboot_info.inspect} to {}"
+      logger.info "Changing reboot status from #{reboot_info.inspect} to {}"
       @reboot_info = {}
     end
 
+    #
+    # Checks to see if a reboot has been requested
+    # @return [Boolean]
+    #
     def reboot_requested?
       reboot_info.size > 0
     end
@@ -591,27 +594,6 @@ ERROR_MESSAGE
     attr_reader :cookbook_compiler
     attr_reader :loaded_attributes_hash
     attr_reader :loaded_recipes_hash
-
-    module Deprecated
-      ###
-      # These need to be settable so deploy can run a resource_collection
-      # independent of any cookbooks via +recipe_eval+
-      def audits=(value)
-        Chef.log_deprecation("Setting run_context.audits will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
-        @audits = value
-      end
-
-      def immediate_notification_collection=(value)
-        Chef.log_deprecation("Setting run_context.immediate_notification_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
-        @immediate_notification_collection = value
-      end
-
-      def delayed_notification_collection=(value)
-        Chef.log_deprecation("Setting run_context.delayed_notification_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
-        @delayed_notification_collection = value
-      end
-    end
-    prepend Deprecated
 
     #
     # A child run context.  Delegates all root context calls to its parent.
@@ -639,6 +621,7 @@ ERROR_MESSAGE
         loaded_recipe?
         loaded_recipes
         loaded_recipes_hash
+        logger
         node
         open_stream
         reboot_info
@@ -680,14 +663,19 @@ ERROR_MESSAGE
         notifies_immediately
         notifies_delayed
         parent_run_context
+        root_run_context
         resource_collection
         resource_collection=
+        runner
+        runner=
       }.map { |x| x.to_sym }
 
       # Verify that we didn't miss any methods
-      missing_methods = superclass.instance_methods(false) - instance_methods(false) - CHILD_STATE
-      if !missing_methods.empty?
-        raise "ERROR: not all methods of RunContext accounted for in ChildRunContext! All methods must be marked as child methods with CHILD_STATE or delegated to the parent_run_context. Missing #{missing_methods.join(", ")}."
+      unless @__skip_method_checking # hook specifically for compat_resource
+        missing_methods = superclass.instance_methods(false) - instance_methods(false) - CHILD_STATE
+        if !missing_methods.empty?
+          raise "ERROR: not all methods of RunContext accounted for in ChildRunContext! All methods must be marked as child methods with CHILD_STATE or delegated to the parent_run_context. Missing #{missing_methods.join(", ")}."
+        end
       end
     end
   end

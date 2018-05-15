@@ -19,41 +19,37 @@
 require "spec_helper"
 
 describe Chef::Resource::OsxProfile do
-  let(:resource) { Chef::Resource::OsxProfile.new(
+  let(:resource) do
+    Chef::Resource::OsxProfile.new(
     "Test Profile Resource",
     run_context)
-  }
-
-  it "should create a new Chef::Resource::OsxProfile" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::OsxProfile)
   end
 
-  it "should have a resource name of profile" do
+  it "has a resource name of profile" do
     expect(resource.resource_name).to eql(:osx_profile)
   end
 
-  it "should have a default action of install" do
+  it "has a default action of install" do
     expect(resource.action).to eql([:install])
   end
 
-  it "should accept install and remove as actions" do
+  it "accepts install and remove as actions" do
     expect { resource.action :install }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
   end
 
-  it "should allow you to set the profile attribute" do
+  it "allows you to set the profile attribute" do
     resource.profile "com.testprofile.screensaver"
     expect(resource.profile).to eql("com.testprofile.screensaver")
   end
 
-  it "should allow you to set the profile attribute to a string" do
+  it "allows you to set the profile attribute to a string" do
     resource.profile "com.testprofile.screensaver"
     expect(resource.profile).to be_a(String)
     expect(resource.profile).to eql("com.testprofile.screensaver")
   end
 
-  it "should allow you to set the profile attribute to a hash" do
+  it "allows you to set the profile attribute to a hash" do
     test_profile = { "profile" => false }
     resource.profile test_profile
     expect(resource.profile).to be_a(Hash)

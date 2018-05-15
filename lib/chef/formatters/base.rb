@@ -137,7 +137,7 @@ class Chef
 
       def resource_failed(resource, action, exception)
         description = ErrorMapper.resource_failed(resource, action, exception)
-        display_error(description)
+        display_error(description) unless resource.ignore_failure && resource.ignore_failure.to_s == "quiet"
       end
 
       # Generic callback for any attribute/library/lwrp/recipe file in a
@@ -203,17 +203,27 @@ class Chef
       end
 
       # Delegates to #file_loaded
-      def recipe_file_loaded(path)
+      def recipe_file_loaded(path, recipe)
         file_loaded(path)
       end
 
       # Delegates to #file_load_failed
-      def recipe_file_load_failed(path, exception)
+      def recipe_file_load_failed(path, exception, recipe)
         file_load_failed(path, exception)
       end
 
       def deprecation(message, location = caller(2..2)[0])
-        Chef::Log.deprecation("#{message} at #{location}")
+        out = if is_structured_deprecation?(message)
+                message.inspect
+              else
+                "#{message} at #{location}"
+              end
+
+        Chef::Log.deprecation(out)
+      end
+
+      def is_structured_deprecation?(deprecation)
+        deprecation.kind_of?(Chef::Deprecated::Base)
       end
 
       def is_formatter?

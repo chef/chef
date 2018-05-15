@@ -43,7 +43,7 @@ class Chef
           :mode,
           arg,
           :callbacks => {
-            "not in valid numeric range" => lambda { |m|
+            "not in valid numeric range" => lambda do |m|
               if m.kind_of?(String)
                 m =~ /^0/ || m = "0#{m}"
               end
@@ -54,22 +54,19 @@ class Chef
               else
                 Integer(m) <= 07777 && Integer(m) >= 0
               end
-            },
+            end,
           }
         )
       end
 
-      #==WindowsMacros
       # Defines methods for adding attributes to a chef resource to describe
       # Windows file security metadata.
       #
       # This module is meant to be used to extend a class (instead of
       # `include`-ing). A class is automatically extended with this module when
       # it includes WindowsSecurableAttributes.
-      # --
-      # TODO should this be separated into different files?
+      # @todo should this be separated into different files?
       module WindowsMacros
-        # === rights_attribute
         # "meta-method" for dynamically creating rights attributes on resources.
         #
         # Multiple rights attributes can be declared. This enables resources to
@@ -110,7 +107,7 @@ class Chef
           # equivalent to something like:
           # def rights(permissions=nil, principals=nil, args_hash=nil)
           define_method(name) do |permissions = nil, principals = nil, args_hash = nil|
-            rights = self.instance_variable_get("@#{name}".to_sym)
+            rights = instance_variable_get("@#{name}".to_sym)
             unless permissions.nil?
               input = {
                 :permissions => permissions,
@@ -162,7 +159,6 @@ class Chef
         end
       end
 
-      #==WindowsSecurableAttributes
       # Defines #inherits to describe Windows file security ACLs on the
       # including class
       module WindowsSecurableAttributes

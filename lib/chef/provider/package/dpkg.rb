@@ -23,11 +23,11 @@ class Chef
   class Provider
     class Package
       class Dpkg < Chef::Provider::Package
-        DPKG_REMOVED = /^Status: deinstall ok config-files/
+        DPKG_REMOVED   = /^Status: deinstall ok config-files/
         DPKG_INSTALLED = /^Status: install ok installed/
-        DPKG_VERSION = /^Version: (.+)$/
+        DPKG_VERSION   = /^Version: (.+)$/
 
-        provides :dpkg_package, os: "linux"
+        provides :dpkg_package
 
         use_multipackage_api
         use_package_name_for_source
@@ -73,18 +73,18 @@ class Chef
 
         def install_package(name, version)
           sources = name.map { |n| name_sources[n] }
-          Chef::Log.info("#{new_resource} installing package(s): #{name.join(' ')}")
-          run_noninteractive("dpkg -i", new_resource.options, *sources)
+          logger.info("#{new_resource} installing package(s): #{name.join(' ')}")
+          run_noninteractive("dpkg", "-i", *options, *sources)
         end
 
         def remove_package(name, version)
-          Chef::Log.info("#{new_resource} removing package(s): #{name.join(' ')}")
-          run_noninteractive("dpkg -r", new_resource.options, *name)
+          logger.info("#{new_resource} removing package(s): #{name.join(' ')}")
+          run_noninteractive("dpkg", "-r", *options, *name)
         end
 
         def purge_package(name, version)
-          Chef::Log.info("#{new_resource} purging packages(s): #{name.join(' ')}")
-          run_noninteractive("dpkg -P", new_resource.options, *name)
+          logger.info("#{new_resource} purging packages(s): #{name.join(' ')}")
+          run_noninteractive("dpkg", "-P", *options, *name)
         end
 
         def upgrade_package(name, version)
@@ -92,24 +92,39 @@ class Chef
         end
 
         def preseed_package(preseed_file)
-          Chef::Log.info("#{new_resource} pre-seeding package installation instructions")
+          logger.info("#{new_resource} pre-seeding package installation instructions")
           run_noninteractive("debconf-set-selections", *preseed_file)
         end
 
         def reconfig_package(name, version)
-          Chef::Log.info("#{new_resource} reconfiguring")
+          logger.info("#{new_resource} reconfiguring")
           run_noninteractive("dpkg-reconfigure", *name)
         end
 
         # Override the superclass check.  Multiple sources are required here.
-        def check_resource_semantics!
-        end
+        def check_resource_semantics!; end
 
         private
 
+        # compare 2 versions to each other to see which is newer.
+        # this differs from the standard package method because we
+        # need to be able to parse debian version strings which contain
+        # tildes which Gem cannot properly parse
+        #
+        # @return [Integer] 1 if v1 > v2. 0 if they're equal. -1 if v1 < v2
+        def version_compare(v1, v2)
+          if !shell_out_compact_timeout("dpkg", "--compare-versions", v1.to_s, "gt", v2.to_s).error?
+            1
+          elsif !shell_out_compact_timeout("dpkg", "--compare-versions", v1.to_s, "eq", v2.to_s).error?
+            0
+          else
+            -1
+          end
+        end
+
         def read_current_version_of_package(package_name)
-          Chef::Log.debug("#{new_resource} checking install state of #{package_name}")
-          status = shell_out_with_timeout!("dpkg -s #{package_name}", returns: [0, 1])
+          logger.trace("#{new_resource} checking install state of #{package_name}")
+          status = shell_out_compact_timeout!("dpkg", "-s", package_name, returns: [0, 1])
           package_installed = false
           status.stdout.each_line do |line|
             case line
@@ -120,12 +135,12 @@ class Chef
               package_installed = true
             when DPKG_VERSION
               if package_installed
-                Chef::Log.debug("#{new_resource} current version is #{$1}")
+                logger.trace("#{new_resource} current version is #{$1}")
                 return $1
               end
             end
           end
-          return nil
+          nil
         end
 
         def get_current_version_from(array)
@@ -137,7 +152,7 @@ class Chef
         # Runs command via shell_out_with_timeout with magic environment to disable
         # interactive prompts.
         def run_noninteractive(*command)
-          shell_out_with_timeout!(a_to_s(*command), :env => { "DEBIAN_FRONTEND" => "noninteractive" })
+          shell_out_compact_timeout!(*command, env: { "DEBIAN_FRONTEND" => "noninteractive" })
         end
 
         # Returns true if all sources exist.  Returns false if any do not, or if no
@@ -176,8 +191,8 @@ class Chef
           @name_pkginfo ||=
             begin
               pkginfos = resolved_source_array.map do |src|
-                Chef::Log.debug("#{new_resource} checking #{src} dpkg status")
-                status = shell_out_with_timeout!("dpkg-deb -W #{src}")
+                logger.trace("#{new_resource} checking #{src} dpkg status")
+                status = shell_out_compact_timeout!("dpkg-deb", "-W", src)
                 status.stdout
               end
               Hash[*package_name_array.zip(pkginfos).flatten]

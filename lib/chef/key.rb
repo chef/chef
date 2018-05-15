@@ -155,7 +155,7 @@ class Chef
       result = chef_rest.post("#{api_base}/#{@actor}/keys", payload)
       # append the private key to the current key if the server returned one,
       # since the POST endpoint just returns uri and private_key if needed.
-      new_key = self.to_hash
+      new_key = to_hash
       new_key["private_key"] = result["private_key"] if result["private_key"]
       Chef::Key.from_hash(new_key)
     end
@@ -178,9 +178,9 @@ class Chef
       new_key = chef_rest.put("#{api_base}/#{@actor}/keys/#{put_name}", to_hash)
       # if the server returned a public_key, remove the create_key field, as we now have a key
       if new_key["public_key"]
-        self.delete_create_key
+        delete_create_key
       end
-      Chef::Key.from_hash(self.to_hash.merge(new_key))
+      Chef::Key.from_hash(to_hash.merge(new_key))
     end
 
     def save
@@ -201,72 +201,66 @@ class Chef
       chef_rest.delete("#{api_base}/#{@actor}/keys/#{@name}")
     end
 
-    # Class methods
-    def self.from_hash(key_hash)
-      if key_hash.has_key?("user")
-        key = Chef::Key.new(key_hash["user"], "user")
-      elsif key_hash.has_key?("client")
-        key = Chef::Key.new(key_hash["client"], "client")
-      else
-        raise Chef::Exceptions::MissingKeyAttribute, "The hash passed to from_hash does not contain the key 'user' or 'client'. Please pass a hash that defines one of those keys."
-      end
-      key.name key_hash["name"] if key_hash.key?("name")
-      key.public_key key_hash["public_key"] if key_hash.key?("public_key")
-      key.private_key key_hash["private_key"] if key_hash.key?("private_key")
-      key.create_key key_hash["create_key"] if key_hash.key?("create_key")
-      key.expiration_date key_hash["expiration_date"] if key_hash.key?("expiration_date")
-      key
-    end
-
-    def self.from_json(json)
-      Chef::Key.from_hash(Chef::JSONCompat.from_json(json))
-    end
-
-    def self.json_create(json)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Key#from_json or one of the load_by methods.")
-      Chef::Key.from_json(json)
-    end
-
-    def self.list_by_user(actor, inflate = false)
-      keys = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys")
-      self.list(keys, actor, :load_by_user, inflate)
-    end
-
-    def self.list_by_client(actor, inflate = false)
-      keys = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("clients/#{actor}/keys")
-      self.list(keys, actor, :load_by_client, inflate)
-    end
-
-    def self.load_by_user(actor, key_name)
-      response = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys/#{key_name}")
-      Chef::Key.from_hash(response.merge({ "user" => actor }))
-    end
-
-    def self.load_by_client(actor, key_name)
-      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("clients/#{actor}/keys/#{key_name}")
-      Chef::Key.from_hash(response.merge({ "client" => actor }))
-    end
-
-    def self.generate_fingerprint(public_key)
-      openssl_key_object = OpenSSL::PKey::RSA.new(public_key)
-      data_string = OpenSSL::ASN1::Sequence([
-                                              OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.n),
-                                              OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.e),
-                                            ])
-      OpenSSL::Digest::SHA1.hexdigest(data_string.to_der).scan(/../).join(":")
-    end
-
-    private
-
-    def self.list(keys, actor, load_method_symbol, inflate)
-      if inflate
-        keys.inject({}) do |key_map, result|
-          name = result["name"]
-          key_map[name] = Chef::Key.send(load_method_symbol, actor, name)
-          key_map
+    class << self
+      def from_hash(key_hash)
+        if key_hash.has_key?("user")
+          key = Chef::Key.new(key_hash["user"], "user")
+        elsif key_hash.has_key?("client")
+          key = Chef::Key.new(key_hash["client"], "client")
+        else
+          raise Chef::Exceptions::MissingKeyAttribute, "The hash passed to from_hash does not contain the key 'user' or 'client'. Please pass a hash that defines one of those keys."
         end
-      else
-        keys
+        key.name key_hash["name"] if key_hash.key?("name")
+        key.public_key key_hash["public_key"] if key_hash.key?("public_key")
+        key.private_key key_hash["private_key"] if key_hash.key?("private_key")
+        key.create_key key_hash["create_key"] if key_hash.key?("create_key")
+        key.expiration_date key_hash["expiration_date"] if key_hash.key?("expiration_date")
+        key
+      end
+
+      def from_json(json)
+        Chef::Key.from_hash(Chef::JSONCompat.from_json(json))
+      end
+
+      def list_by_user(actor, inflate = false)
+        keys = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys")
+        list(keys, actor, :load_by_user, inflate)
+      end
+
+      def list_by_client(actor, inflate = false)
+        keys = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("clients/#{actor}/keys")
+        list(keys, actor, :load_by_client, inflate)
+      end
+
+      def load_by_user(actor, key_name)
+        response = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys/#{key_name}")
+        Chef::Key.from_hash(response.merge({ "user" => actor }))
+      end
+
+      def load_by_client(actor, key_name)
+        response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("clients/#{actor}/keys/#{key_name}")
+        Chef::Key.from_hash(response.merge({ "client" => actor }))
+      end
+
+      def generate_fingerprint(public_key)
+        openssl_key_object = OpenSSL::PKey::RSA.new(public_key)
+        data_string = OpenSSL::ASN1::Sequence([
+          OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.n),
+          OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.e),
+        ])
+        OpenSSL::Digest::SHA1.hexdigest(data_string.to_der).scan(/../).join(":")
+      end
+
+      def list(keys, actor, load_method_symbol, inflate)
+        if inflate
+          keys.inject({}) do |key_map, result|
+            name = result["name"]
+            key_map[name] = Chef::Key.send(load_method_symbol, actor, name)
+            key_map
+          end
+        else
+          keys
+        end
       end
     end
   end

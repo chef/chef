@@ -74,7 +74,7 @@ class Chef
       # Helper to build a powershell command around the script to run.
       #
       # @param script [String] script to run
-      # @retrurn [String] powershell command to execute
+      # @return [String] powershell command to execute
       def build_powershell_command(script)
         flags = [
           # Hides the copyright banner at startup.
@@ -91,7 +91,7 @@ class Chef
           "-InputFormat None",
         ]
 
-        "powershell.exe #{flags.join(' ')} -Command \"#{script}\""
+        "powershell.exe #{flags.join(' ')} -Command \"#{script.gsub('"', '\"')}\""
       end
     end
   end

@@ -184,9 +184,7 @@ class Chef
                 sleep(0.01)
               end
 
-              until @unconsumed_output.empty?
-                yield @unconsumed_output.pop
-              end
+              yield @unconsumed_output.pop until @unconsumed_output.empty?
 
               # If no one is working on our tasks and we're allowed to
               # work on them in the main thread, process an input to
@@ -227,9 +225,7 @@ class Chef
 
         def stop
           @unconsumed_input.clear
-          while @in_process.size > 0
-            sleep(0.05)
-          end
+          sleep(0.05) while @in_process.size > 0
           @unconsumed_output.clear
         end
 

@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -133,7 +133,7 @@ class Chef
         511 => "Network Authentication Required",
       }
 
-      STATUS_MESSAGE.values.each { |v| v.freeze }
+      STATUS_MESSAGE.each_value { |v| v.freeze }
       STATUS_MESSAGE.freeze
 
       def initialize(base_url)
@@ -170,6 +170,7 @@ class Chef
           "QUERY_STRING"    => url.query,
           "SERVER_PORT"     => url.port,
           "HTTP_HOST"       => "localhost:#{url.port}",
+          "HTTP_X_OPS_SERVER_API_VERSION" => headers["X-Ops-Server-API-Version"],
           "rack.url_scheme" => "chefzero",
           "rack.input"      => StringIO.new(body_str),
         }
@@ -197,9 +198,9 @@ class Chef
       private
 
       def headers_extracted_from_options
-        options.reject { |name, _| KNOWN_OPTIONS.include?(name) }.map { |name, value|
+        options.reject { |name, _| KNOWN_OPTIONS.include?(name) }.map do |name, value|
           [name.to_s.split("_").map { |segment| segment.capitalize }.join("-"), value]
-        }
+        end
       end
 
     end

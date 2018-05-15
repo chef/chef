@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,16 +74,10 @@ describe Chef::Recipe do
         expect { recipe.not_home("not_home_resource") }.to raise_error(NameError)
       end
 
-      it "should require a name argument" do
-        expect {
-          recipe.cat
-        }.to raise_error(ArgumentError)
-      end
-
       it "should allow regular errors (not NameErrors) to pass unchanged" do
-        expect {
+        expect do
           recipe.cat("felix") { raise ArgumentError, "You Suck" }
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
 
       it "should add our zen_master to the collection" do
@@ -147,16 +141,16 @@ describe Chef::Recipe do
             Object.send(:remove_const, :TottenhamHotspur)
           end
 
-          it "selects the first one alphabetically" do
+          it "selects the last-writer wins" do
             Sounders.provides :football, platform: "nbc_sports"
             TottenhamHotspur.provides :football, platform: "nbc_sports"
 
             res1 = recipe.football "club world cup"
             expect(res1.name).to eql("club world cup")
-            expect(res1).to be_a_kind_of(Sounders)
+            expect(res1).to be_a_kind_of(TottenhamHotspur)
           end
 
-          it "selects the first one alphabetically even if the declaration order is reversed" do
+          it "selects the last-writer wins even if the declaration order is reversed" do
             TottenhamHotspur.provides :football2, platform: "nbc_sports"
             Sounders.provides :football2, platform: "nbc_sports"
 
@@ -193,87 +187,36 @@ describe Chef::Recipe do
       end
     end
 
-    describe "when cloning resources" do
-      def expect_warning
-        expect(Chef::Log).to receive(:warn).with(/3694/)
-        expect(Chef::Log).to receive(:warn).with(/Previous/)
-        expect(Chef::Log).to receive(:warn).with(/Current/)
+    describe "when resource cloning is disabled" do
+      def not_expect_warning
+        expect(Chef::Log).not_to receive(:warn).with(/3694/)
+        expect(Chef::Log).not_to receive(:warn).with(/Previous/)
+        expect(Chef::Log).not_to receive(:warn).with(/Current/)
+      end
+
+      before do
+        Chef::Config[:resource_cloning] = false
       end
 
       it "should emit a 3694 warning when attributes change" do
         recipe.zen_master "klopp" do
           something "bvb"
         end
-        expect_warning
+        not_expect_warning
         recipe.zen_master "klopp" do
           something "vbv"
         end
       end
 
-      it "should emit a 3694 warning when attributes change" do
+      it "should not copy attributes from a prior resource" do
         recipe.zen_master "klopp" do
           something "bvb"
         end
-        expect_warning
-        recipe.zen_master "klopp" do
-          something "bvb"
-          peace true
-        end
-      end
-
-      it "should emit a 3694 warning when attributes change" do
-        recipe.zen_master "klopp" do
-          something "bvb"
-          peace true
-        end
-        expect_warning
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-      end
-
-      it "should emit a 3694 warning for non-trivial attributes (unfortunately)" do
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-        expect_warning
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-      end
-
-      it "should not emit a 3694 warning for completely trivial resource cloning" do
+        not_expect_warning
         recipe.zen_master "klopp"
-        expect(Chef::Log).to_not receive(:warn)
-        recipe.zen_master "klopp"
+        expect(run_context.resource_collection.first.something).to eql("bvb")
+        expect(run_context.resource_collection[1].something).to be nil
       end
-
-      it "should not emit a 3694 warning when attributes do not change and the first action is :nothing" do
-        recipe.zen_master "klopp" do
-          action :nothing
-        end
-        expect(Chef::Log).to_not receive(:warn)
-        recipe.zen_master "klopp" do
-          action :score
-        end
-      end
-
-      it "should not emit a 3694 warning when attributes do not change and the second action is :nothing" do
-        recipe.zen_master "klopp" do
-          action :score
-        end
-        expect(Chef::Log).to_not receive(:warn)
-        recipe.zen_master "klopp" do
-          action :nothing
-        end
-      end
-
-      it "validating resources via build_resource" do
-        expect {recipe.build_resource(:remote_file, "klopp") do
-          source Chef::DelayedEvaluator.new { "http://chef.io" }
-        end}.to_not raise_error
-      end
-
     end
 
     describe "creating resources via declare_resource" do
@@ -302,13 +245,6 @@ describe Chef::Recipe do
         zm_resource
         recipe.declare_resource(:zen_master, "klopp")
         expect(run_context.resource_collection.count).to eql(2)
-      end
-
-      it "does not insert two resources if create_if_missing is used" do
-        zm_resource
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        recipe.declare_resource(:zen_master, "klopp", create_if_missing: true)
-        expect(run_context.resource_collection.count).to eql(1)
       end
 
       context "injecting a different run_context" do
@@ -365,7 +301,7 @@ describe Chef::Recipe do
       it "gives a sane error message when using method_missing" do
         expect do
           recipe.no_such_resource("foo")
-        end.to raise_error(NoMethodError, %q{No resource or method named `no_such_resource' for `Chef::Recipe "test"'})
+        end.to raise_error(NoMethodError, /undefined method `no_such_resource' for cookbook: hjk, recipe: test :Chef::Recipe/)
       end
 
       it "gives a sane error message when using method_missing 'bare'" do
@@ -374,7 +310,7 @@ describe Chef::Recipe do
             # Giving an argument will change this from NameError to NoMethodError
             no_such_resource
           end
-        end.to raise_error(NameError, %q{No resource, method, or local variable named `no_such_resource' for `Chef::Recipe "test"'})
+        end.to raise_error(NameError, /undefined local variable or method `no_such_resource' for cookbook: hjk, recipe: test :Chef::Recipe/)
       end
 
       it "gives a sane error message when using build_resource" do
@@ -396,53 +332,6 @@ describe Chef::Recipe do
           end
         end.to raise_error(NoMethodError, "undefined method `this_method_doesnt_exist' for Chef::Resource::ZenMaster")
 
-      end
-
-    end
-
-    describe "resource cloning" do
-
-      let(:second_recipe) do
-        Chef::Recipe.new("second_cb", "second_recipe", run_context)
-      end
-
-      let(:original_resource) do
-        recipe.zen_master("klopp") do
-          something "bvb09"
-          action :score
-        end
-      end
-
-      let(:duplicated_resource) do
-        original_resource
-        second_recipe.zen_master("klopp") do
-          # attrs should be cloned
-        end
-      end
-
-      it "copies attributes from the first resource" do
-        expect(duplicated_resource.something).to eq("bvb09")
-      end
-
-      it "does not copy the action from the first resource" do
-        expect(original_resource.action).to eq([:score])
-        expect(duplicated_resource.action).to eq([:nothing])
-      end
-
-      it "does not copy the source location of the first resource" do
-        # sanity check source location:
-        expect(original_resource.source_line).to include(__FILE__)
-        expect(duplicated_resource.source_line).to include(__FILE__)
-        # actual test:
-        expect(original_resource.source_line).not_to eq(duplicated_resource.source_line)
-      end
-
-      it "sets the cookbook name on the cloned resource to that resource's cookbook" do
-        expect(duplicated_resource.cookbook_name).to eq("second_cb")
-      end
-
-      it "sets the recipe name on the cloned resource to that resoure's recipe" do
-        expect(duplicated_resource.recipe_name).to eq("second_recipe")
       end
 
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,27 +28,24 @@ describe "LWRP" do
   include Chef::Mixin::ConvertToClassName
 
   before do
-    @original_VERBOSE = $VERBOSE
+    @original_verbose = $VERBOSE
     $VERBOSE = nil
     Chef::Resource::LWRPBase.class_eval { @loaded_lwrps = {} }
   end
 
   after do
-    $VERBOSE = @original_VERBOSE
+    $VERBOSE = @original_verbose
   end
 
   def get_lwrp(name)
     Chef::ResourceResolver.resolve(name)
   end
 
-  def get_lwrp_provider(name)
-    old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
-    Chef::Config[:treat_deprecation_warnings_as_errors] = false
-    begin
-      Chef::Provider.const_get(convert_to_class_name(name.to_s))
-    ensure
-      Chef::Config[:treat_deprecation_warnings_as_errors] = old_treat_deprecation_warnings_as_errors
-    end
+  def get_dynamic_lwrp_provider(name)
+    # need a node to do dynamic lookup, so also need a run_context and a resource instance
+    node = Chef::Node.new
+    run_context = Chef::RunContext.new(node, {}, nil)
+    Chef::Resource.new("name", run_context).lookup_provider_constant(name)
   end
 
   describe "when overriding an existing class" do
@@ -60,7 +57,7 @@ describe "LWRP" do
       Object.const_set("LwrpFoo", Class.new)
       file = File.expand_path( "lwrp/resources/foo.rb", CHEF_SPEC_DATA)
       expect(Chef::Log).not_to receive(:info).with(/Skipping/)
-      expect(Chef::Log).not_to receive(:debug).with(/anymore/)
+      expect(Chef::Log).not_to receive(:trace).with(/anymore/)
       Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       Object.send(:remove_const, "LwrpFoo")
     end
@@ -69,7 +66,7 @@ describe "LWRP" do
       Object.const_set("LwrpBuckPasser", Class.new)
       file = File.expand_path( "lwrp/providers/buck_passer.rb", CHEF_SPEC_DATA)
       expect(Chef::Log).not_to receive(:info).with(/Skipping/)
-      expect(Chef::Log).not_to receive(:debug).with(/anymore/)
+      expect(Chef::Log).not_to receive(:trace).with(/anymore/)
       Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
       Object.send(:remove_const, "LwrpBuckPasser")
     end
@@ -84,7 +81,7 @@ describe "LWRP" do
       end
 
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
-        expect(Chef::Log).to receive(:debug).with(/Skipping/)
+        expect(Chef::Log).to receive(:trace).with(/Skipping/)
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
@@ -95,7 +92,7 @@ describe "LWRP" do
       end
 
       Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
-        expect(Chef::Log).to receive(:debug).with(/Skipping/)
+        expect(Chef::Log).to receive(:trace).with(/Skipping/)
         Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
@@ -232,9 +229,9 @@ describe "LWRP" do
       end
 
       it "allows to user to user the resource_name" do
-        expect {
+        expect do
           klass.resource_name(:foo)
-        }.to_not raise_error
+        end.to_not raise_error
       end
 
       it "returns the set value for the resource" do
@@ -324,14 +321,7 @@ describe "LWRP" do
           end
         end
 
-        def raise_if_deprecated!
-          if Chef::VERSION.split(".").first.to_i > 12
-            raise "This test should be removed and the associated code should be removed!"
-          end
-        end
-
         it "amends actions when they are already defined" do
-          raise_if_deprecated!
           expect(child.actions).to eq([:nothing, :eat, :sleep, :drink])
         end
       end
@@ -393,7 +383,7 @@ describe "LWRP" do
 
     let(:runner) { Chef::Runner.new(run_context) }
 
-    let(:lwrp_cookbok_name) { "lwrp" }
+    let(:lwrp_cookbook_name) { "lwrp" }
 
     before do
       Chef::Provider::LWRPBase.class_eval { @loaded_lwrps = {} }
@@ -401,20 +391,19 @@ describe "LWRP" do
 
     before(:each) do
       Dir[File.expand_path(File.expand_path("../../data/lwrp/resources/*", __FILE__))].each do |file|
-        Chef::Resource::LWRPBase.build_from_file(lwrp_cookbok_name, file, run_context)
+        Chef::Resource::LWRPBase.build_from_file(lwrp_cookbook_name, file, run_context)
       end
 
       Dir[File.expand_path(File.expand_path("../../data/lwrp/providers/*", __FILE__))].each do |file|
-        Chef::Provider::LWRPBase.build_from_file(lwrp_cookbok_name, file, run_context)
+        Chef::Provider::LWRPBase.build_from_file(lwrp_cookbook_name, file, run_context)
       end
     end
 
     it "should properly handle a new_resource reference" do
       resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       resource.monkey("bob")
-      resource.provider(get_lwrp_provider(:lwrp_monkey_name_printer))
-
-      provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
+      resource.provider(get_dynamic_lwrp_provider(:lwrp_monkey_name_printer))
+      provider = resource.provider_for_action(:twiddle_thumbs)
       provider.action_twiddle_thumbs
     end
 
@@ -428,14 +417,13 @@ describe "LWRP" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = @old_treat_deprecation_warnings_as_errors
       end
 
-      it "should load the provider into a properly-named class" do
-        expect(Chef::Provider.const_get("LwrpBuckPasser")).to be_kind_of(Class)
-        expect(Chef::Provider::LwrpBuckPasser <= Chef::Provider::LWRPBase).to be_truthy
+      it "should not load the provider into a const" do
+        expect(defined?(Chef::Provider::LwrpBuckPasser)).to be_nil
       end
 
       it "should create a method for each action" do
-        expect(get_lwrp_provider(:lwrp_buck_passer).instance_methods).to include(:action_pass_buck)
-        expect(get_lwrp_provider(:lwrp_thumb_twiddler).instance_methods).to include(:action_twiddle_thumbs)
+        expect(get_dynamic_lwrp_provider(:lwrp_buck_passer).instance_methods).to include(:action_pass_buck)
+        expect(get_dynamic_lwrp_provider(:lwrp_thumb_twiddler).instance_methods).to include(:action_twiddle_thumbs)
       end
 
       it "sets itself as a provider for a resource of the same name" do
@@ -443,30 +431,30 @@ describe "LWRP" do
         # we bypass the per-file loading to get the file to load each time,
         # which creates the LWRP class repeatedly. New things get prepended to
         # the list of providers.
-        expect(found_providers.first).to eq(get_lwrp_provider(:lwrp_buck_passer))
+        expect(found_providers.first).to eq(get_dynamic_lwrp_provider(:lwrp_buck_passer))
       end
 
       context "with a cookbook with an underscore in the name" do
 
-        let(:lwrp_cookbok_name) { "l_w_r_p" }
+        let(:lwrp_cookbook_name) { "l_w_r_p" }
 
         it "sets itself as a provider for a resource of the same name" do
           found_providers = Chef::Platform::ProviderHandlerMap.instance.list(node, :l_w_r_p_buck_passer)
           expect(found_providers.size).to eq(1)
-          expect(found_providers.last).to eq(get_lwrp_provider(:l_w_r_p_buck_passer))
+          expect(found_providers.last).to eq(get_dynamic_lwrp_provider(:l_w_r_p_buck_passer))
         end
       end
 
       context "with a cookbook with a hypen in the name" do
 
-        let(:lwrp_cookbok_name) { "l-w-r-p" }
+        let(:lwrp_cookbook_name) { "l-w-r-p" }
 
         it "sets itself as a provider for a resource of the same name" do
           incorrect_providers = Chef::Platform::ProviderHandlerMap.instance.list(node, :'l-w-r-p_buck_passer')
           expect(incorrect_providers).to eq([])
 
           found_providers = Chef::Platform::ProviderHandlerMap.instance.list(node, :l_w_r_p_buck_passer)
-          expect(found_providers.first).to eq(get_lwrp_provider(:l_w_r_p_buck_passer))
+          expect(found_providers.first).to eq(get_dynamic_lwrp_provider(:l_w_r_p_buck_passer))
         end
       end
     end
@@ -474,7 +462,7 @@ describe "LWRP" do
     it "should insert resources embedded in the provider into the middle of the resource collection" do
       injector = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       injector.action(:pass_buck)
-      injector.provider(get_lwrp_provider(:lwrp_buck_passer))
+      injector.provider(get_dynamic_lwrp_provider(:lwrp_buck_passer))
       dummy = Chef::Resource::ZenMaster.new("keanu reeves", run_context)
       dummy.provider(Chef::Provider::Easy)
       run_context.resource_collection.insert(injector)
@@ -491,11 +479,11 @@ describe "LWRP" do
     it "should insert embedded resources from multiple providers, including from the last position, properly into the resource collection" do
       injector = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       injector.action(:pass_buck)
-      injector.provider(get_lwrp_provider(:lwrp_buck_passer))
+      injector.provider(get_dynamic_lwrp_provider(:lwrp_buck_passer))
 
       injector2 = get_lwrp(:lwrp_bar).new("tank", run_context)
       injector2.action(:pass_buck)
-      injector2.provider(get_lwrp_provider(:lwrp_buck_passer_2))
+      injector2.provider(get_dynamic_lwrp_provider(:lwrp_buck_passer_2))
 
       dummy = Chef::Resource::ZenMaster.new("keanu reeves", run_context)
       dummy.provider(Chef::Provider::Easy)
@@ -518,9 +506,9 @@ describe "LWRP" do
     it "should properly handle a new_resource reference" do
       resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       resource.monkey("bob")
-      resource.provider(get_lwrp_provider(:lwrp_monkey_name_printer))
+      resource.provider(get_dynamic_lwrp_provider(:lwrp_monkey_name_printer))
 
-      provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
+      provider = resource.provider_for_action(:twiddle_thumbs)
       provider.action_twiddle_thumbs
 
       expect(provider.monkey_name).to eq("my monkey's name is 'bob'")
@@ -529,9 +517,9 @@ describe "LWRP" do
     it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
       resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       resource.monkey("bob")
-      resource.provider(get_lwrp_provider(:lwrp_embedded_resource_accesses_providers_scope))
+      resource.provider(get_dynamic_lwrp_provider(:lwrp_embedded_resource_accesses_providers_scope))
 
-      provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
+      provider = resource.provider_for_action(:twiddle_thumbs)
       #provider = @runner.build_provider(resource)
       provider.action_twiddle_thumbs
 
@@ -549,7 +537,7 @@ describe "LWRP" do
         @resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
         @resource.allowed_actions << :test
         @resource.action(:test)
-        @resource.provider(get_lwrp_provider(:lwrp_inline_compiler))
+        @resource.provider(get_dynamic_lwrp_provider(:lwrp_inline_compiler))
       end
 
       it "does not add interior resources to the exterior resource collection" do
@@ -582,55 +570,30 @@ describe "LWRP" do
   end
 
   context "resource class created" do
-    before(:context) do
-      @tmpdir = Dir.mktmpdir("lwrp_test")
+    let(:test_lwrp_class) { @test_lwrp_class }
+    before(:each) do
+      @tmpparent = Dir.mktmpdir("lwrp_test")
+      @tmpdir = File.join(@tmpparent, "lwrp")
+      Dir.mkdir(@tmpdir)
       resource_path = File.join(@tmpdir, "once.rb")
       IO.write(resource_path, "default_action :create")
-
-      @old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      Chef::Resource::LWRPBase.build_from_file("lwrp", resource_path, nil)
+      @test_lwrp_class = Chef::Resource::LWRPBase.build_from_file("lwrp", resource_path, nil)
     end
 
-    after(:context) do
+    after(:each) do
       FileUtils.remove_entry @tmpdir
-      Chef::Config[:treat_deprecation_warnings_as_errors] = @old_treat_deprecation_warnings_as_errors
     end
 
-    it "should load the resource into a properly-named class" do
-      expect(Chef::Resource::LwrpOnce).to be_kind_of(Class)
-      expect(Chef::Resource::LwrpOnce <= Chef::Resource::LWRPBase).to be_truthy
+    it "should not load the resource into a const" do
+      expect(defined?(Chef::Resource::LwrpOnce)).to be_nil
     end
 
-    it "get_lwrp(:lwrp_once).new is a Chef::Resource::LwrpOnce" do
+    it "get_lwrp(:lwrp_once).new is an instance of the LWRP class" do
       lwrp = get_lwrp(:lwrp_once).new("hi")
-      expect(lwrp.kind_of?(Chef::Resource::LwrpOnce)).to be_truthy
-      expect(lwrp.is_a?(Chef::Resource::LwrpOnce)).to be_truthy
+      expect(lwrp.kind_of?(test_lwrp_class)).to be_truthy
+      expect(lwrp.is_a?(test_lwrp_class)).to be_truthy
       expect(get_lwrp(:lwrp_once) === lwrp).to be_truthy
-      expect(Chef::Resource::LwrpOnce === lwrp).to be_truthy
-    end
-
-    it "Chef::Resource::LwrpOnce.new is a get_lwrp(:lwrp_once)" do
-      lwrp = Chef::Resource::LwrpOnce.new("hi")
-      expect(lwrp.kind_of?(get_lwrp(:lwrp_once))).to be_truthy
-      expect(lwrp.is_a?(get_lwrp(:lwrp_once))).to be_truthy
-      expect(get_lwrp(:lwrp_once) === lwrp).to be_truthy
-      expect(Chef::Resource::LwrpOnce === lwrp).to be_truthy
-    end
-
-    it "works even if LwrpOnce exists in the top level" do
-      module ::LwrpOnce
-      end
-      expect(Chef::Resource::LwrpOnce).not_to eq(::LwrpOnce)
-    end
-
-    it "allows monkey patching of the lwrp through Chef::Resource" do
-      monkey = Module.new do
-        def issue_3607
-        end
-      end
-      Chef::Resource::LwrpOnce.send(:include, monkey)
-      expect { get_lwrp(:lwrp_once).new("blah").issue_3607 }.not_to raise_error
+      expect(test_lwrp_class === lwrp).to be_truthy
     end
 
     context "with a subclass of get_lwrp(:lwrp_once)" do
@@ -645,12 +608,12 @@ describe "LWRP" do
         expect(subclass === lwrp).to be_truthy
         expect(lwrp.class === subclass)
       end
-      it "subclass.new is a Chef::Resource::LwrpOnce" do
+      it "subclass.new is an instance of the LWRP class" do
         lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(Chef::Resource::LwrpOnce)).to be_truthy
-        expect(lwrp.is_a?(Chef::Resource::LwrpOnce)).to be_truthy
-        expect(Chef::Resource::LwrpOnce === lwrp).to be_truthy
-        expect(lwrp.class === Chef::Resource::LwrpOnce)
+        expect(lwrp.kind_of?(test_lwrp_class)).to be_truthy
+        expect(lwrp.is_a?(test_lwrp_class)).to be_truthy
+        expect(test_lwrp_class === lwrp).to be_truthy
+        expect(lwrp.class === test_lwrp_class)
       end
       it "subclass.new is a get_lwrp(:lwrp_once)" do
         lwrp = subclass.new("hi")
@@ -658,55 +621,6 @@ describe "LWRP" do
         expect(lwrp.is_a?(get_lwrp(:lwrp_once))).to be_truthy
         expect(get_lwrp(:lwrp_once) === lwrp).to be_truthy
         expect(lwrp.class === get_lwrp(:lwrp_once))
-      end
-      it "Chef::Resource::LwrpOnce.new is *not* a subclass" do
-        lwrp = Chef::Resource::LwrpOnce.new("hi")
-        expect(lwrp.kind_of?(subclass)).to be_falsey
-        expect(lwrp.is_a?(subclass)).to be_falsey
-        expect(subclass === lwrp.class).to be_falsey
-        expect(subclass === Chef::Resource::LwrpOnce).to be_falsey
-      end
-      it "get_lwrp(:lwrp_once).new is *not* a subclass" do
-        lwrp = get_lwrp(:lwrp_once).new("hi")
-        expect(lwrp.kind_of?(subclass)).to be_falsey
-        expect(lwrp.is_a?(subclass)).to be_falsey
-        expect(subclass === lwrp.class).to be_falsey
-        expect(subclass === get_lwrp(:lwrp_once)).to be_falsey
-      end
-    end
-
-    context "with a subclass of Chef::Resource::LwrpOnce" do
-      let(:subclass) do
-        Class.new(Chef::Resource::LwrpOnce)
-      end
-
-      it "subclass.new is a subclass" do
-        lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(subclass)).to be_truthy
-        expect(lwrp.is_a?(subclass)).to be_truthy
-        expect(subclass === lwrp).to be_truthy
-        expect(lwrp.class === subclass)
-      end
-      it "subclass.new is a Chef::Resource::LwrpOnce" do
-        lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(Chef::Resource::LwrpOnce)).to be_truthy
-        expect(lwrp.is_a?(Chef::Resource::LwrpOnce)).to be_truthy
-        expect(Chef::Resource::LwrpOnce === lwrp).to be_truthy
-        expect(lwrp.class === Chef::Resource::LwrpOnce)
-      end
-      it "subclass.new is a get_lwrp(:lwrp_once)" do
-        lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(get_lwrp(:lwrp_once))).to be_truthy
-        expect(lwrp.is_a?(get_lwrp(:lwrp_once))).to be_truthy
-        expect(get_lwrp(:lwrp_once) === lwrp).to be_truthy
-        expect(lwrp.class === get_lwrp(:lwrp_once))
-      end
-      it "Chef::Resource::LwrpOnce.new is *not* a subclass" do
-        lwrp = Chef::Resource::LwrpOnce.new("hi")
-        expect(lwrp.kind_of?(subclass)).to be_falsey
-        expect(lwrp.is_a?(subclass)).to be_falsey
-        expect(subclass === lwrp.class).to be_falsey
-        expect(subclass === Chef::Resource::LwrpOnce).to be_falsey
       end
       it "get_lwrp(:lwrp_once).new is *not* a subclass" do
         lwrp = get_lwrp(:lwrp_once).new("hi")
@@ -732,8 +646,6 @@ describe "LWRP" do
     end
 
     class MyAwesomeProvider < Chef::Provider::LWRPBase
-      use_inline_resources
-
       provides :my_awesome_resource
 
       action :create do
@@ -741,7 +653,7 @@ describe "LWRP" do
       end
     end
 
-    let(:recipe) {
+    let(:recipe) do
       cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
       cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
       cookbook_loader.load_cookbooks
@@ -750,7 +662,7 @@ describe "LWRP" do
       events = Chef::EventDispatch::Dispatcher.new
       run_context = Chef::RunContext.new(node, cookbook_collection, events)
       Chef::Recipe.new("hjk", "test", run_context)
-    }
+    end
 
     it "lets you extend the recipe DSL" do
       expect(Chef::Recipe).to receive(:include).with(MyAwesomeDSLExensionClass)

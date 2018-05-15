@@ -123,7 +123,7 @@ describe Chef::Provider::Service do
 
     it "should raise an exception if reload isn't supported" do
       @new_resource.supports(:reload => false)
-      allow(@new_resource).to receive(:reload_command).and_return(false)
+      @new_resource.reload_command(false)
       expect { @provider.run_action(:reload) }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end
 

@@ -399,10 +399,10 @@ shared_examples_for "a configured file resource" do
     content
   end
 
-  context "when the target file is a symlink", :not_supported_on_win2k3 do
-    let(:symlink_target) {
+  context "when the target file is a symlink" do
+    let(:symlink_target) do
       File.join(CHEF_SPEC_DATA, "file-test-target")
-    }
+    end
 
     describe "when configured not to manage symlink's target" do
       before(:each) do
@@ -820,9 +820,9 @@ shared_examples_for "a configured file resource" do
     end
 
     describe "when path is specified with windows separator", :windows_only do
-      let(:path) {
+      let(:path) do
         File.join(test_file_dir, make_tmpname(file_base)).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
-      }
+      end
 
       before do
         @notified_resource = Chef::Resource.new("punk", resource.run_context)
@@ -1035,6 +1035,7 @@ shared_context Chef::Resource::File do
   end
 
   before do
+    FileUtils.rm_rf(test_file_dir)
     FileUtils.mkdir_p(test_file_dir)
   end
 

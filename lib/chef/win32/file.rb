@@ -22,6 +22,7 @@ require "chef/win32/api/file"
 require "chef/win32/api/security"
 require "chef/win32/error"
 require "chef/win32/unicode"
+require "chef/win32/version"
 
 class Chef
   module ReservedNames::Win32
@@ -39,7 +40,7 @@ class Chef
       # returns nil as per MRI.
       #
       def self.link(old_name, new_name)
-        raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name)
+        raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name) || ::File.symlink?(old_name)
         # TODO do a check for CreateHardLinkW and
         # raise NotImplemented exception on older Windows
         old_name = encode_path(old_name)
@@ -56,10 +57,11 @@ class Chef
       # returns nil as per MRI.
       #
       def self.symlink(old_name, new_name)
-        # raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name)
+        # raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name) || ::File.symlink?(old_name)
         # TODO do a check for CreateSymbolicLinkW and
         # raise NotImplemented exception on older Windows
         flags = ::File.directory?(old_name) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0
+        flags |= SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE if Chef::ReservedNames::Win32::Version.new.win_10_creators_or_higher?
         old_name = encode_path(old_name)
         new_name = encode_path(new_name)
         unless CreateSymbolicLinkW(new_name, old_name, flags)
@@ -75,7 +77,7 @@ class Chef
       def self.symlink?(file_name)
         is_symlink = false
         path = encode_path(file_name)
-        if ::File.exists?(file_name)
+        if ::File.exists?(file_name) || ::File.symlink?(file_name)
           if (GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0
             file_search_handle(file_name) do |handle, find_data|
               if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
@@ -93,7 +95,7 @@ class Chef
       # will raise a NotImplementedError, as per MRI.
       #
       def self.readlink(link_name)
-        raise Errno::ENOENT, link_name unless ::File.exists?(link_name)
+        raise Errno::ENOENT, link_name unless ::File.exists?(link_name) || ::File.symlink?(link_name)
         symlink_file_handle(link_name) do |handle|
           # Go to DeviceIoControl to get the symlink information
           # http://msdn.microsoft.com/en-us/library/windows/desktop/aa364571(v=vs.85).aspx
@@ -155,13 +157,11 @@ class Chef
       end
 
       def self.verify_links_supported!
-        begin
-          CreateSymbolicLinkW(nil)
-        rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
-          raise e
-        rescue Exception
+        CreateSymbolicLinkW(nil)
+      rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
+        raise e
+      rescue Exception
           # things are ok.
-        end
       end
 
       def self.file_access_check(path, desired_access)

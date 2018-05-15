@@ -15,14 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "chef/provider/registry_key"
+
 require "chef/resource"
 require "chef/digester"
 
 class Chef
   class Resource
     class RegistryKey < Chef::Resource
-      identity_attr :key
+      resource_name :registry_key
+      provides(:registry_key) { true }
+
+      description "Use the registry_key resource to create and delete registry keys in Microsoft Windows."
+      introduced "11.0"
+
       state_attrs :values
 
       default_action :create
@@ -61,19 +66,10 @@ class Chef
 
       def initialize(name, run_context = nil)
         super
-        @architecture = :machine
-        @recursive = false
-        @key = name
         @values, @unscrubbed_values = [], []
       end
 
-      def key(arg = nil)
-        set_or_return(
-          :key,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :key, String, name_property: true, identity: true
 
       def values(arg = nil)
         if not arg.nil?
@@ -87,35 +83,22 @@ class Chef
 
           @values.each do |v|
             raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.has_key?(:name)
-            raise ArgumentError, "Missing type key in RegistryKey values hash" unless v.has_key?(:type)
-            raise ArgumentError, "Missing data key in RegistryKey values hash" unless v.has_key?(:data)
             v.each_key do |key|
               raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name, :type, :data].include?(key)
             end
             raise ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
-            raise ArgumentError, "Type of type => #{v[:type]} should be symbol" unless v[:type].is_a?(Symbol)
+            if v[:type]
+              raise ArgumentError, "Type of type => #{v[:type]} should be symbol" unless v[:type].is_a?(Symbol)
+            end
           end
           @unscrubbed_values = @values
-        elsif self.instance_variable_defined?(:@values)
+        elsif instance_variable_defined?(:@values)
           scrub_values(@values)
         end
       end
 
-      def recursive(arg = nil)
-        set_or_return(
-          :recursive,
-          arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def architecture(arg = nil)
-        set_or_return(
-          :architecture,
-          arg,
-          :kind_of => Symbol
-        )
-      end
+      property :recursive, [TrueClass, FalseClass], default: false
+      property :architecture, Symbol, default: :machine, equal_to: [:machine, :x86_64, :i386]
 
       private
 

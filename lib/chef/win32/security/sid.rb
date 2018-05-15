@@ -50,7 +50,7 @@ class Chef
         end
 
         def ==(other)
-          other != nil && Chef::ReservedNames::Win32::Security.equal_sid(self, other)
+          !other.nil? && Chef::ReservedNames::Win32::Security.equal_sid(self, other)
         end
 
         attr_reader :pointer
@@ -59,9 +59,14 @@ class Chef
           Chef::ReservedNames::Win32::Security.lookup_account_sid(self)
         end
 
+        def account_simple_name
+          domain, name, use = account
+          name
+        end
+
         def account_name
           domain, name, use = account
-          (domain != nil && domain.length > 0) ? "#{domain}\\#{name}" : name
+          (!domain.nil? && domain.length > 0) ? "#{domain}\\#{name}" : name
         end
 
         def size
@@ -243,8 +248,7 @@ class Chef
 
         # See https://technet.microsoft.com/en-us/library/cc961992.aspx
         # In practice, this is SID.Administrators if the current_user is an admin (even if not
-        # running elevated), and is current_user otherwise. On win2k3, it technically can be
-        # current_user in all cases if a certain group policy is set.
+        # running elevated), and is current_user otherwise.
         def self.default_security_object_owner
           token = Chef::ReservedNames::Win32::Security.open_current_process_token
           Chef::ReservedNames::Win32::Security.get_token_information_owner(token)
@@ -279,7 +283,7 @@ class Chef
               status = NetUserEnum(servername, level, filter, bufptr, prefmaxlen, entriesread, totalentries, resume_handle)
 
               if status == NERR_Success || status == ERROR_MORE_DATA
-                entriesread.read_long.times.collect do |i|
+                Array.new(entriesread.read_long) do |i|
                   user_info = USER_INFO_3.new(bufptr.read_pointer + i * USER_INFO_3.size)
                   # Check if the account is the Administrator account
                   # RID for the Administrator account is always 500 and it's privilage is set to USER_PRIV_ADMIN

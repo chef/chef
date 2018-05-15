@@ -70,7 +70,7 @@ class Chef
       when Integer
         stat.uid
       else
-        Chef::Log.error("The `owner` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.owner.inspect})")
+        Chef::Log.error("The `owner` parameter of the #{@new_resource} resource is set to an invalid value (#{new_resource.owner.inspect})")
         raise ArgumentError, "cannot resolve #{new_resource.owner.inspect} to uid, owner must be a string or integer"
       end
     end
@@ -97,7 +97,7 @@ class Chef
       when Integer
         stat.gid
       else
-        Chef::Log.error("The `group` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.owner.inspect})")
+        Chef::Log.error("The `group` parameter of the #{@new_resource} resource is set to an invalid value (#{new_resource.owner.inspect})")
         raise ArgumentError, "cannot resolve #{new_resource.group.inspect} to gid, group must be a string or integer"
       end
     end
@@ -121,8 +121,8 @@ class Chef
       when String, Integer, nil
         "0#{(stat.mode & 07777).to_s(8)}"
       else
-        Chef::Log.error("The `mode` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.mode.inspect})")
-        raise ArgumentError, "Invalid value #{new_resource.mode.inspect} for `mode` on resource #@new_resource"
+        Chef::Log.error("The `mode` parameter of the #{@new_resource} resource is set to an invalid value (#{new_resource.mode.inspect})")
+        raise ArgumentError, "Invalid value #{new_resource.mode.inspect} for `mode` on resource #{@new_resource}"
       end
     end
 

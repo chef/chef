@@ -70,7 +70,7 @@ class Chef
 
     # Gets or sets the client name.
     #
-    # @params [Optional String] The name must be alpha-numeric plus - and _.
+    # @param arg [Optional String] The name must be alpha-numeric plus - and _.
     # @return [String] The current value of the name.
     def name(arg = nil)
       set_or_return(
@@ -82,7 +82,7 @@ class Chef
 
     # Gets or sets whether this client is an admin.
     #
-    # @params [Optional True/False] Should be true or false - default is false.
+    # @param arg [Optional True/False] Should be true or false - default is false.
     # @return [True/False] The current value
     def admin(arg = nil)
       set_or_return(
@@ -94,7 +94,7 @@ class Chef
 
     # Gets or sets the public key.
     #
-    # @params [Optional String] The string representation of the public key.
+    # @param arg [Optional String] The string representation of the public key.
     # @return [String] The current value.
     def public_key(arg = nil)
       set_or_return(
@@ -106,7 +106,7 @@ class Chef
 
     # Gets or sets whether this client is a validator.
     #
-    # @params [Boolean] whether or not the client is a validator.  If
+    # @param arg [Boolean] whether or not the client is a validator.  If
     #   `nil`, retrieves the already-set value.
     # @return [Boolean] The current value
     def validator(arg = nil)
@@ -120,7 +120,7 @@ class Chef
     # Private key. The server will return it as a string.
     # Set to true under API V0 to have the server regenerate the default key.
     #
-    # @params [Optional String] The string representation of the private key.
+    # @param arg [Optional String] The string representation of the private key.
     # @return [String] The current value.
     def private_key(arg = nil)
       set_or_return(
@@ -132,7 +132,7 @@ class Chef
 
     # Used to ask server to generate key pair under api V1
     #
-    # @params [Optional True/False] Should be true or false - default is false.
+    # @param arg [Optional True/False] Should be true or false - default is false.
     # @return [True/False] The current value
     def create_key(arg = nil)
       set_or_return(
@@ -190,7 +190,7 @@ class Chef
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:client) do |n|
-          n = self.from_hash(n) if n.instance_of?(Hash)
+          n = from_hash(n) if n.instance_of?(Hash)
           response[n.name] = n
         end
         response
@@ -200,6 +200,7 @@ class Chef
     end
 
     # Load a client by name via the API
+    # @param name [String] the client name
     def self.load(name)
       response = http_api.get("clients/#{name}")
       Chef::ApiClientV1.from_hash(response)
@@ -212,15 +213,13 @@ class Chef
 
     # Save this client via the REST API, returns a hash including the private key
     def save
-      begin
-        update
-      rescue Net::HTTPServerException => e
-        # If that fails, go ahead and try and update it
-        if e.response.code == "404"
-          create
-        else
-          raise e
-        end
+      update
+    rescue Net::HTTPServerException => e
+      # If that fails, go ahead and try and update it
+      if e.response.code == "404"
+        create
+      else
+        raise e
       end
     end
 
@@ -313,7 +312,7 @@ class Chef
 
         new_client = chef_rest_v0.post("clients", payload)
       end
-      Chef::ApiClientV1.from_hash(self.to_hash.merge(new_client))
+      Chef::ApiClientV1.from_hash(to_hash.merge(new_client))
     end
 
     # As a string

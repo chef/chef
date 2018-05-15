@@ -65,14 +65,15 @@ end
 
 describe TinyServer::Manager do
   it "runs the server" do
-    @server = TinyServer::Manager.new
-    @server.start
+    server = TinyServer::Manager.new
+    server.start
+    begin
+      TinyServer::API.instance.get("/index", 200, "[\"hello\"]")
 
-    TinyServer::API.instance.get("/index", 200, "[\"hello\"]")
-
-    rest = Chef::HTTP.new("http://localhost:9000")
-    expect(rest.get("index")).to eq("[\"hello\"]")
-
-    @server.stop
+      rest = Chef::HTTP.new("http://localhost:9000")
+      expect(rest.get("index")).to eq("[\"hello\"]")
+    ensure
+      server.stop
+    end
   end
 end

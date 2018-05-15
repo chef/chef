@@ -118,7 +118,7 @@ class Chef
 
       def initialize(control_data = {})
         control_data.each do |k, v|
-          self.instance_variable_set("@#{k}", v)
+          instance_variable_set("@#{k}", v)
         end
       end
 

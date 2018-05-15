@@ -19,14 +19,13 @@ describe "LWRPs with inline resources" do
   let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
 
   context "with a use_inline_resources provider with 'def action_a' instead of action :a" do
-    class LwrpInlineResourcesTest < Chef::Resource::LWRPBase
+    class LwrpInlineResourcesTest < Chef::Resource
       resource_name :lwrp_inline_resources_test
-      actions :a, :nothing
+      allowed_actions :a, :nothing
       default_action :a
       property :ran_a
       class Provider < Chef::Provider::LWRPBase
         provides :lwrp_inline_resources_test
-        use_inline_resources
         def action_a
           r = new_resource
           ruby_block "run a" do
@@ -38,18 +37,18 @@ describe "LWRPs with inline resources" do
 
     it "this is totally a bug, but for backcompat purposes, it adds the resources to the main resource collection and does not get marked updated" do
       r = nil
-      expect_recipe {
+      expect_recipe do
         r = lwrp_inline_resources_test "hi"
-      }.to have_updated("ruby_block[run a]", :run)
+      end.to have_updated("ruby_block[run a]", :run)
       expect(r.ran_a).to eq "ran a"
     end
   end
 
   context "with an inline resource with a property that shadows the enclosing provider's property" do
-    class LwrpShadowedPropertyTest < Chef::Resource::LWRPBase
+    class LwrpShadowedPropertyTest < Chef::Resource
       PATH = ::File.join(Dir.tmpdir, "shadow-property.txt")
       use_automatic_resource_name
-      actions :fiddle
+      allowed_actions :fiddle
       property :content
       action :fiddle do
         file PATH do
@@ -64,25 +63,23 @@ describe "LWRPs with inline resources" do
     # https://github.com/chef/chef/issues/4334
     it "does not warn spuriously" do
       expect(Chef::Log).to_not receive(:warn).with(/is declared in both/)
-      expect_recipe {
+      expect_recipe do
         lwrp_shadowed_property_test "fnord" do
           action :fiddle
         end
-      }
+      end
     end
   end
 
   context "with an inline_resources provider with two actions, one calling the other" do
-    class LwrpInlineResourcesTest2 < Chef::Resource::LWRPBase
+    class LwrpInlineResourcesTest2 < Chef::Resource
       resource_name :lwrp_inline_resources_test2
-      actions :a, :b, :nothing
+      allowed_actions :a, :b, :nothing
       default_action :b
       property :ran_a
       property :ran_b
       class Provider < Chef::Provider::LWRPBase
         provides :lwrp_inline_resources_test2
-        use_inline_resources
-
         action :a do
           r = new_resource
           ruby_block "run a" do
@@ -104,11 +101,11 @@ describe "LWRPs with inline resources" do
 
     it "resources declared in b are executed immediately inline" do
       r = nil
-      expect_recipe {
+      expect_recipe do
         r = lwrp_inline_resources_test2 "hi" do
           action :b
         end
-      }.to have_updated("lwrp_inline_resources_test2[hi]", :b).
+      end.to have_updated("lwrp_inline_resources_test2[hi]", :b).
         and have_updated("ruby_block[run a]", :run).
         and have_updated("ruby_block[run b]", :run)
       expect(r.ran_b).to eq "ran b: ran_a value was \"ran a\""
@@ -133,8 +130,7 @@ describe "LWRPs with inline resources" do
           default_action :create
         EOM
         file "providers/my_machine.rb", <<-EOM
-          use_inline_resources
-          action :create do
+            action :create do
             x_do_nothing 'a'
             x_do_nothing 'b'
           end

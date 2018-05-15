@@ -1,6 +1,5 @@
 require "chef/mixin/shell_out"
 require "chef/mixin/checksum"
-require "chef/mixin/command"
 require "chef/mixin/convert_to_class_name"
 require "chef/mixin/create_path"
 require "chef/mixin/deep_merge"

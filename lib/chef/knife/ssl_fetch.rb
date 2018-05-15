@@ -41,7 +41,7 @@ class Chef
 
       def uri
         @uri ||= begin
-          Chef::Log.debug("Checking SSL cert on #{given_uri}")
+          Chef::Log.trace("Checking SSL cert on #{given_uri}")
           URI.parse(given_uri)
         end
       end
@@ -89,8 +89,11 @@ class Chef
 
       def cn_of(certificate)
         subject = certificate.subject
-        cn_field_tuple = subject.to_a.find { |field| field[0] == "CN" }
-        cn_field_tuple[1]
+        if cn_field_tuple = subject.to_a.find { |field| field[0] == "CN" }
+          cn_field_tuple[1]
+        else
+          nil
+        end
       end
 
       # Convert the CN of a certificate into something that will work well as a
@@ -117,9 +120,10 @@ class Chef
       def write_cert(cert)
         FileUtils.mkdir_p(trusted_certs_dir)
         cn = cn_of(cert)
-        filename = File.join(trusted_certs_dir, "#{normalize_cn(cn)}.crt")
-        ui.msg("Adding certificate for #{cn} in #{filename}")
-        File.open(filename, File::CREAT | File::TRUNC | File::RDWR, 0644) do |f|
+        filename = cn.nil? ? "#{host}_#{Time.new.to_i}" : normalize_cn(cn)
+        full_path = File.join(trusted_certs_dir, "#{filename}.crt")
+        ui.msg("Adding certificate for #{filename} in #{full_path}")
+        File.open(full_path, File::CREAT | File::TRUNC | File::RDWR, 0644) do |f|
           f.print(cert.to_s)
         end
       end

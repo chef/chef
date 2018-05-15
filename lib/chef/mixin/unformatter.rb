@@ -22,9 +22,9 @@ class Chef
 
       def write(message)
         data = message.match(/(\[.+?\] )?([\w]+):(.*)$/)
-        self.send(data[2].downcase.chomp.to_sym, data[3].strip)
+        send(data[2].downcase.chomp.to_sym, data[3].strip)
       rescue NoMethodError
-        self.send(:info, message)
+        send(:info, message)
       end
 
     end

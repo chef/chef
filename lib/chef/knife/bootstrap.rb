@@ -67,6 +67,11 @@ class Chef
         :description => "The ssh gateway",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
 
+      option :ssh_gateway_identity,
+        :long => "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
+        :description => "The SSH identity file used for gateway authentication",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway_identity] = key }
+
       option :forward_agent,
         :short => "-A",
         :long => "--forward-agent",
@@ -101,20 +106,18 @@ class Chef
         :description => "The proxy server for the node being bootstrapped",
         :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
 
+      option :bootstrap_proxy_user,
+        :long => "--bootstrap-proxy-user PROXY_USER",
+        :description => "The proxy authentication username for the node being bootstrapped"
+
+      option :bootstrap_proxy_pass,
+        :long => "--bootstrap-proxy-pass PROXY_PASS",
+        :description => "The proxy authentication password for the node being bootstrapped"
+
       option :bootstrap_no_proxy,
         :long => "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]",
         :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
         :proc => Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
-
-      # DEPR: Remove this option in Chef 13
-      option :distro,
-        :short => "-d DISTRO",
-        :long => "--distro DISTRO",
-        :description => "Bootstrap a distro using a template. [DEPRECATED] Use -t / --bootstrap-template option instead.",
-        :proc        => Proc.new { |v|
-          Chef::Log.warn("[DEPRECATED] -d / --distro option is deprecated. Use -t / --bootstrap-template option instead.")
-          v
-        }
 
       option :bootstrap_template,
         :short => "-t TEMPLATE",
@@ -135,15 +138,6 @@ class Chef
         :long => "--use-sudo-password",
         :description => "Execute the bootstrap via sudo with password",
         :boolean => false
-
-      # DEPR: Remove this option in Chef 13
-      option :template_file,
-        :long => "--template-file TEMPLATE",
-        :description => "Full path to location of template to use. [DEPRECATED] Use -t / --bootstrap-template option instead.",
-        :proc        => Proc.new { |v|
-          Chef::Log.warn("[DEPRECATED] --template-file option is deprecated. Use -t / --bootstrap-template option instead.")
-          v
-        }
 
       option :run_list,
         :short => "-r RUN_LIST",
@@ -206,6 +200,11 @@ class Chef
         :description => "Custom command to install chef-client",
         :proc        => Proc.new { |ic| Chef::Config[:knife][:bootstrap_install_command] = ic }
 
+      option :bootstrap_preinstall_command,
+             :long        => "--bootstrap-preinstall-command COMMANDS",
+             :description => "Custom commands to run before installing chef-client",
+             :proc        => Proc.new { |preic| Chef::Config[:knife][:bootstrap_preinstall_command] = preic }
+
       option :bootstrap_wget_options,
         :long        => "--bootstrap-wget-options OPTIONS",
         :description => "Add options to wget when installing chef-client",
@@ -224,6 +223,7 @@ class Chef
           unless valid_values.include?(v)
             raise "Invalid value '#{v}' for --node-ssl-verify-mode. Valid values are: #{valid_values.join(", ")}"
           end
+          v
         }
 
       option :node_verify_api_cert,
@@ -293,10 +293,9 @@ class Chef
       end
 
       def bootstrap_template
-        # The order here is important. We want to check if we have the new Chef 12 option is set first.
-        # Knife cloud plugins unfortunately all set a default option for the :distro so it should be at
-        # the end.
-        config[:bootstrap_template] || config[:template_file] || config[:distro] || default_bootstrap_template
+        # Allow passing a bootstrap template or use the default
+        # @return [String] The CLI specific bootstrap template or the default
+        config[:bootstrap_template] || default_bootstrap_template
       end
 
       def find_template
@@ -304,7 +303,7 @@ class Chef
 
         # Use the template directly if it's a path to an actual file
         if File.exists?(template)
-          Chef::Log.debug("Using the specified bootstrap template: #{File.dirname(template)}")
+          Chef::Log.trace("Using the specified bootstrap template: #{File.dirname(template)}")
           return template
         end
 
@@ -317,7 +316,7 @@ class Chef
         bootstrap_files.flatten!
 
         template_file = Array(bootstrap_files).find do |bootstrap_template|
-          Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
+          Chef::Log.trace("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
           File.exists?(bootstrap_template)
         end
 
@@ -326,7 +325,7 @@ class Chef
           raise Errno::ENOENT
         end
 
-        Chef::Log.debug("Found bootstrap template in #{File.dirname(template_file)}")
+        Chef::Log.trace("Found bootstrap template in #{File.dirname(template_file)}")
 
         template_file
       end
@@ -429,11 +428,12 @@ class Chef
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = config[:ssh_port]
         ssh.config[:ssh_gateway] = config[:ssh_gateway]
+        ssh.config[:ssh_gateway_identity] = config[:ssh_gateway_identity]
         ssh.config[:forward_agent] = config[:forward_agent]
         ssh.config[:ssh_identity_file] = config[:ssh_identity_file] || config[:identity_file]
         ssh.config[:manual] = true
         ssh.config[:host_key_verify] = config[:host_key_verify]
-        ssh.config[:on_error] = :raise
+        ssh.config[:on_error] = true
         ssh
       end
 

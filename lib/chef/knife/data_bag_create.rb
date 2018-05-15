@@ -49,13 +49,15 @@ class Chef
           exit(1)
         end
 
-        # create the data bag
+        # Verify if the data bag exists
         begin
+          rest.get("data/#{@data_bag_name}")
+          ui.info("Data bag #{@data_bag_name} already exists")
+        rescue Net::HTTPServerException => e
+          raise unless e.to_s =~ /^404/
+          # if it doesn't exists, try to create it
           rest.post("data", { "name" => @data_bag_name })
           ui.info("Created data_bag[#{@data_bag_name}]")
-        rescue Net::HTTPServerException => e
-          raise unless e.to_s =~ /^409/
-          ui.info("Data bag #{@data_bag_name} already exists")
         end
 
         # if an item is specified, create it, as well

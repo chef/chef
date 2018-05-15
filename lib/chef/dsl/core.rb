@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, 2009-2015 Chef Software, Inc.
+# Copyright:: Copyright 2008-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,27 +18,35 @@
 #
 
 require "chef/dsl/declare_resource"
+require "chef/dsl/universal"
 require "chef/mixin/notifying_block"
-require "chef/mixin/powershell_out"
-require "chef/mixin/shell_out"
+require "chef/mixin/lazy_module_include"
 
 class Chef
   module DSL
-    # This is the "Core DSL" with various bits of Sugar that are mixed into core providers as well
-    # as user LWRPs.  This module deliberately does not mixin the Resources or Defintions DSL bits
-    # so that cookbooks are not injeting random things into the namespace of core providers.
+    # Part of a family of DSL mixins.
     #
-    # - If you are writing cookbooks:  you have come to the wrong place, please inject things into
-    #   Chef::DSL::Recipe instead.
+    # Chef::DSL::Recipe mixes into Recipes and LWRP Providers.
+    #   - this does not target core chef resources and providers.
+    #   - this is restricted to recipe/resource/provider context where a resource collection exists.
+    #   - cookbook authors should typically include modules into here.
     #
-    # - If you are writing core chef:  you have come to the right place, please drop your DSL modules
-    #   into here.
+    # Chef::DSL::Core mixes into Recipes, LWRP Providers and Core Providers
+    #   - this adds cores providers on top of the Recipe DSL.
+    #   - this is restricted to recipe/resource/provider context where a resource collection exists.
+    #   - core chef authors should typically include modules into here.
+    #
+    # Chef::DSL::Universal mixes into Recipes, LWRP Resources+Providers, Core Resources+Providers, and Attributes files.
+    #   - this adds resources and attributes files.
+    #   - do not add helpers which manipulate the resource collection.
+    #   - this is for general-purpose stuff that is useful nearly everywhere.
+    #   - it also pollutes the namespace of nearly every context, watch out.
     #
     module Core
+      include Chef::DSL::Universal
       include Chef::DSL::DeclareResource
       include Chef::Mixin::NotifyingBlock
-      include Chef::Mixin::PowershellOut
-      include Chef::Mixin::ShellOut
+      extend Chef::Mixin::LazyModuleInclude
     end
   end
 end

@@ -30,6 +30,15 @@ class Chef
             "#{super}/_acl"
           end
 
+          def display_path
+            pth = if parent.name == "acls"
+                    "/acls/#{name}"
+                  else
+                    "/acls/#{parent.name}/#{name}"
+                  end
+            File.extname(pth).empty? ? pth + ".json" : pth
+          end
+
           def delete(recurse)
             raise Chef::ChefFS::FileSystem::OperationNotAllowedError.new(:delete, self, nil, "ACLs cannot be deleted")
           end

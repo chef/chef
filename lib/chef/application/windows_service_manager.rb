@@ -126,10 +126,12 @@ class Chef
               :password           => @password,
               :dependencies       => @dependencies
             )
-            ::Win32::Service.configure(
-              :service_name     => @service_name,
-              :delayed_start    => @delayed_start
-            ) unless @delayed_start.nil?
+            unless @delayed_start.nil?
+              ::Win32::Service.configure(
+                :service_name     => @service_name,
+                :delayed_start    => @delayed_start
+              )
+            end
             puts "Service '#{@service_name}' has successfully been installed."
           end
         when "status"
@@ -166,7 +168,7 @@ class Chef
       PAUSED = "paused"
 
       def service_exists?
-        return ::Win32::Service.exists?(@service_name)
+        ::Win32::Service.exists?(@service_name)
       end
 
       def take_action(action = nil, desired_state = nil)

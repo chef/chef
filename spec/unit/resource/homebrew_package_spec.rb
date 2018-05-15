@@ -30,6 +30,10 @@ describe Chef::Resource::HomebrewPackage, "initialize" do
 
   let(:resource) { Chef::Resource::HomebrewPackage.new("emacs") }
 
+  it "is a subclass of Chef::Resource::Package" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Package)
+  end
+
   shared_examples "home_brew user set and returned" do
     it "returns the configured homebrew_user" do
       resource.homebrew_user user

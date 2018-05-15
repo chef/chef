@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,9 +42,12 @@ class Chef
     end
 
     class Application < RuntimeError; end
+    class SigInt < RuntimeError; end
+    class SigTerm < RuntimeError; end
     class Cron < RuntimeError; end
-    class Env < RuntimeError; end
+    class WindowsEnv < RuntimeError; end
     class Exec < RuntimeError; end
+    class Execute < RuntimeError; end
     class ErlCall < RuntimeError; end
     class FileNotFound < RuntimeError; end
     class Package < RuntimeError; end
@@ -66,6 +69,10 @@ class Chef
     class Group < RuntimeError; end
     class Link < RuntimeError; end
     class Mount < RuntimeError; end
+    class Reboot < Exception; end # rubocop:disable Lint/InheritException
+    class RebootPending < Exception; end # rubocop:disable Lint/InheritException
+    class RebootFailed < Mixlib::ShellOut::ShellCommandFailed; end
+    class ClientUpgraded < Exception; end # rubocop:disable Lint/InheritException
     class PrivateKeyMissing < RuntimeError; end
     class CannotWritePrivateKey < RuntimeError; end
     class RoleNotFound < RuntimeError; end
@@ -93,7 +100,12 @@ class Chef
     # for back compat, need to raise an error that inherits from ArgumentError
     class CookbookNotFoundInRepo < ArgumentError; end
     class RecipeNotFound < ArgumentError; end
+    # AttributeNotFound really means the attribute file could not be found
     class AttributeNotFound < RuntimeError; end
+    # NoSuchAttribute is raised on access by node.read!("foo", "bar") when node["foo"]["bar"] does not exist.
+    class NoSuchAttribute < RuntimeError; end
+    # AttributeTypeMismatch is raised by node.write!("foo", "bar", "baz") when e.g. node["foo"] = "bar" (overwriting String with Hash)
+    class AttributeTypeMismatch < RuntimeError; end
     class MissingCookbookDependency < StandardError; end # CHEF-5120
     class InvalidCommandOption < RuntimeError; end
     class CommandTimeout < RuntimeError; end
@@ -140,7 +152,7 @@ class Chef
 
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
     # when older versions of Windows don't support newer Win32 API functions.
-    class Win32APIFunctionNotImplemented < NotImplementedError; end
+    class Win32APIFunctionNotImplemented < NotImplementedError; end # rubocop:disable Lint/InheritException
     # Attempting to run windows code on a not-windows node
     class Win32NotWindows < RuntimeError; end
     class WindowsNotAdmin < RuntimeError; end
@@ -166,7 +178,7 @@ class Chef
 
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
-    class CookbookVersionConflict < ArgumentError ; end
+    class CookbookVersionConflict < ArgumentError; end
 
     # does not follow X.Y.Z format. ArgumentError?
     class InvalidPlatformVersion < ArgumentError; end
@@ -177,7 +189,7 @@ class Chef
     class InvalidVersionConstraint < ArgumentError; end
 
     # Version constraints are not allowed in chef-solo
-    class IllegalVersionConstraint < NotImplementedError; end
+    class IllegalVersionConstraint < NotImplementedError; end # rubocop:disable Lint/InheritException
 
     class MetadataNotValid < StandardError; end
     class MetadataNotFound < StandardError
@@ -227,6 +239,10 @@ class Chef
     class Win32RegBadValueSize < ArgumentError; end
     class Win32RegTypesMismatch < ArgumentError; end
 
+    # incorrect input for registry_key create action throws following error
+    class RegKeyValuesTypeMissing < ArgumentError; end
+    class RegKeyValuesDataMissing < ArgumentError; end
+
     class InvalidEnvironmentPath < ArgumentError; end
     class EnvironmentNotFound < RuntimeError; end
 
@@ -239,7 +255,7 @@ class Chef
 
     class ChildConvergeError < RuntimeError; end
 
-    class DeprecatedFeatureError < RuntimeError;
+    class DeprecatedFeatureError < RuntimeError
       def initalize(message)
         super("#{message} (raising error due to treat_deprecation_warnings_as_errors being set)")
       end
@@ -292,7 +308,7 @@ class Chef
 
       def raise!
         unless empty?
-          raise self.for_raise
+          raise for_raise
         end
       end
 
@@ -426,18 +442,20 @@ This error is most often caused by network issues (proxies, etc) outside of chef
       end
     end
 
-    class AuditControlGroupDuplicate < RuntimeError
+    class AuditError < RuntimeError; end
+
+    class AuditControlGroupDuplicate < AuditError
       def initialize(name)
         super "Control group with name '#{name}' has already been defined"
       end
     end
-    class AuditNameMissing < RuntimeError; end
-    class NoAuditsProvided < RuntimeError
+    class AuditNameMissing < AuditError; end
+    class NoAuditsProvided < AuditError
       def initialize
         super "You must provide a block with controls"
       end
     end
-    class AuditsFailed < RuntimeError
+    class AuditsFailed < AuditError
       def initialize(num_failed, num_total)
         super "Audit phase found failures - #{num_failed}/#{num_total} controls failed"
       end
@@ -497,8 +515,11 @@ This error is most often caused by network issues (proxies, etc) outside of chef
             "Resource #{r['Name']} is a binary resource"
           end
         end
-        super "Found multiple matching resources. #{matches_info.join("\n")}"
+        super "Found multiple resources matching #{matches_info[0]["Module"]["Name"]}:\n#{(matches_info.map { |f| f["Module"]["Version"] }).uniq.join("\n")}"
       end
     end
+
+    # exception specific to invalid usage of 'dsc_resource' resource
+    class DSCModuleNameMissing < ArgumentError; end
   end
 end

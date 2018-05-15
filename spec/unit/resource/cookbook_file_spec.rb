@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software, Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 #p License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,51 +20,45 @@
 require "spec_helper"
 
 describe Chef::Resource::CookbookFile do
-  before do
-    @cookbook_file = Chef::Resource::CookbookFile.new("sourcecode_tarball.tgz")
+  let(:resource) { Chef::Resource::CookbookFile.new("/foo/bar/sourcecode_tarball.tgz") }
+
+  it "uses the basepath of the resourc ename for the source property" do
+    expect(resource.source).to eq("sourcecode_tarball.tgz")
   end
 
-  it "uses the name parameter for the source parameter" do
-    expect(@cookbook_file.name).to eq("sourcecode_tarball.tgz")
+  it "source property accepts Strings" do
+    resource.name("config_file.conf")
+    expect(resource.source).to eq("config_file.conf")
   end
 
-  it "has a source parameter" do
-    @cookbook_file.name("config_file.conf")
-    expect(@cookbook_file.name).to eq("config_file.conf")
+  it "cookbook property defaults to nil (current cookbook will be used)" do
+    expect(resource.cookbook).to be_nil
   end
 
-  it "defaults to a nil cookbook parameter (current cookbook will be used)" do
-    expect(@cookbook_file.cookbook).to be_nil
-  end
-
-  it "has a cookbook parameter" do
-    @cookbook_file.cookbook("munin")
-    expect(@cookbook_file.cookbook).to eq("munin")
-  end
-
-  it "sets the provider to Chef::Provider::CookbookFile" do
-    expect(@cookbook_file.provider).to eq(Chef::Provider::CookbookFile)
+  it "has a cookbook property that accepts Strings" do
+    resource.cookbook("munin")
+    expect(resource.cookbook).to eq("munin")
   end
 
   describe "when it has a backup number, group, mode, owner, source, checksum, and cookbook on nix or path, rights, deny_rights, checksum on windows" do
     before do
       if Chef::Platform.windows?
-        @cookbook_file.path("C:/temp/origin/file.txt")
-        @cookbook_file.rights(:read, "Everyone")
-        @cookbook_file.deny_rights(:full_control, "Clumsy_Sam")
+        resource.path("C:/temp/origin/file.txt")
+        resource.rights(:read, "Everyone")
+        resource.deny_rights(:full_control, "Clumsy_Sam")
       else
-        @cookbook_file.path("/tmp/origin/file.txt")
-        @cookbook_file.group("wheel")
-        @cookbook_file.mode("0664")
-        @cookbook_file.owner("root")
-        @cookbook_file.source("/tmp/foo.txt")
-        @cookbook_file.cookbook("/tmp/cookbooks/cooked.rb")
+        resource.path("/tmp/origin/file.txt")
+        resource.group("wheel")
+        resource.mode("0664")
+        resource.owner("root")
+        resource.source("/tmp/foo.txt")
+        resource.cookbook("/tmp/cookbooks/cooked.rb")
       end
-      @cookbook_file.checksum("1" * 64)
+      resource.checksum("1" * 64)
     end
 
     it "describes the state" do
-      state = @cookbook_file.state
+      state = resource.state_for_resource_reporter
       if Chef::Platform.windows?
         puts state
         expect(state[:rights]).to eq([{ :permissions => :read, :principals => "Everyone" }])
@@ -79,9 +73,9 @@ describe Chef::Resource::CookbookFile do
 
     it "returns the path as its identity" do
       if Chef::Platform.windows?
-        expect(@cookbook_file.identity).to eq("C:/temp/origin/file.txt")
+        expect(resource.identity).to eq("C:/temp/origin/file.txt")
       else
-        expect(@cookbook_file.identity).to eq("/tmp/origin/file.txt")
+        expect(resource.identity).to eq("/tmp/origin/file.txt")
       end
     end
   end

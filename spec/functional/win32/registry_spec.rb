@@ -26,6 +26,7 @@ describe "Chef::Win32::Registry", :windows_only do
     #Create a registry item
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch"
+    ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\B®anch"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch\\Flower"
     ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root', Win32::Registry::KEY_ALL_ACCESS) do |reg|
       reg["RootType1", Win32::Registry::REG_SZ] = "fibrous"

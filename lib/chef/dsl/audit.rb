@@ -38,8 +38,8 @@ class Chef
         cookbook_name = self.cookbook_name
         metadata = {
             cookbook_name: cookbook_name,
-            cookbook_version: self.run_context.cookbook_collection[cookbook_name].version,
-            recipe_name: self.recipe_name,
+            cookbook_version: run_context.cookbook_collection[cookbook_name].version,
+            recipe_name: recipe_name,
             line_number: block.source_location[1],
         }
 

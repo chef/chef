@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,8 +28,7 @@ describe Chef::Cookbook::Metadata do
     before do
       @fields = [ :name, :description, :long_description, :maintainer,
                   :maintainer_email, :license, :platforms, :dependencies,
-                  :recommendations, :suggestions, :conflicting, :providing,
-                  :replacing, :attributes, :groupings, :recipes, :version,
+                  :providing, :attributes, :recipes, :version,
                   :source_url, :issues_url, :privacy, :ohai_versions, :chef_versions,
                   :gems ]
     end
@@ -99,11 +98,11 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "has an empty maintainer field" do
-      expect(metadata.maintainer).to eq(nil)
+      expect(metadata.maintainer).to eq("")
     end
 
     it "has an empty maintainer_email field" do
-      expect(metadata.maintainer).to eq(nil)
+      expect(metadata.maintainer_email).to eq("")
     end
 
     it "has an empty platforms list" do
@@ -114,28 +113,8 @@ describe Chef::Cookbook::Metadata do
       expect(metadata.dependencies).to eq(Mash.new)
     end
 
-    it "has an empty recommends list" do
-      expect(metadata.recommendations).to eq(Mash.new)
-    end
-
-    it "has an empty suggestions list" do
-      expect(metadata.suggestions).to eq(Mash.new)
-    end
-
-    it "has an empty conflicts list" do
-      expect(metadata.conflicting).to eq(Mash.new)
-    end
-
-    it "has an empty replaces list" do
-      expect(metadata.replacing).to eq(Mash.new)
-    end
-
     it "has an empty attributes list" do
       expect(metadata.attributes).to eq(Mash.new)
-    end
-
-    it "has an empty groupings list" do
-      expect(metadata.groupings).to eq(Mash.new)
     end
 
     it "has an empty recipes list" do
@@ -206,7 +185,7 @@ describe Chef::Cookbook::Metadata do
       :issues_url => "http://example.com/issues",
       :privacy => true,
     }
-    params.sort { |a, b| a.to_s <=> b.to_s }.each do |field, field_value|
+    params.sort_by(&:to_s).each do |field, field_value|
       describe field do
         it "should be set-able via #{field}" do
           expect(metadata.send(field, field_value)).to eql(field_value)
@@ -234,13 +213,9 @@ describe Chef::Cookbook::Metadata do
 
     dep_types = {
       :depends     => [ :dependencies, "foo::bar", "> 0.2" ],
-      :recommends  => [ :recommendations, "foo::bar", ">= 0.2" ],
-      :suggests    => [ :suggestions, "foo::bar", "> 0.2" ],
-      :conflicts   => [ :conflicting, "foo::bar", "~> 0.2" ],
       :provides    => [ :providing, "foo::bar", "<= 0.2" ],
-      :replaces    => [ :replacing, "foo::bar", "= 0.2.1" ],
     }
-    dep_types.sort { |a, b| a.to_s <=> b.to_s }.each do |dep, dep_args|
+    dep_types.sort_by(&:to_s).each do |dep, dep_args|
       check_with = dep_args.shift
       describe dep do
         it "should be set-able via #{dep}" do
@@ -255,13 +230,9 @@ describe Chef::Cookbook::Metadata do
 
     dep_types = {
       :depends     => [ :dependencies, "foo::bar", ">0.2", "> 0.2" ],
-      :recommends  => [ :recommendations, "foo::bar", ">=0.2", ">= 0.2" ],
-      :suggests    => [ :suggestions, "foo::bar", ">0.2", "> 0.2" ],
-      :conflicts   => [ :conflicting, "foo::bar", "~>0.2", "~> 0.2" ],
       :provides    => [ :providing, "foo::bar", "<=0.2", "<= 0.2" ],
-      :replaces    => [ :replacing, "foo::bar", "=0.2.1", "= 0.2.1" ],
     }
-    dep_types.sort { |a, b| a.to_s <=> b.to_s }.each do |dep, dep_args|
+    dep_types.sort_by(&:to_s).each do |dep, dep_args|
       check_with = dep_args.shift
       normalized_version = dep_args.pop
       describe dep do
@@ -278,11 +249,7 @@ describe Chef::Cookbook::Metadata do
     describe "in the obsoleted format" do
       dep_types = {
         :depends     => [ "foo::bar", "> 0.2", "< 1.0" ],
-        :recommends  => [ "foo::bar", ">= 0.2", "< 1.0" ],
-        :suggests    => [ "foo::bar", "> 0.2", "< 1.0" ],
-        :conflicts   => [ "foo::bar", "> 0.2", "< 1.0" ],
         :provides    => [ "foo::bar", "> 0.2", "< 1.0" ],
-        :replaces    => [ "foo::bar", "> 0.2.1", "< 1.0" ],
       }
 
       dep_types.each do |dep, dep_args|
@@ -295,11 +262,7 @@ describe Chef::Cookbook::Metadata do
     describe "with obsolete operators" do
       dep_types = {
         :depends     => [ "foo::bar", ">> 0.2"],
-        :recommends  => [ "foo::bar", ">> 0.2"],
-        :suggests    => [ "foo::bar", ">> 0.2"],
-        :conflicts   => [ "foo::bar", ">> 0.2"],
         :provides    => [ "foo::bar", ">> 0.2"],
-        :replaces    => [ "foo::bar", ">> 0.2.1"],
       }
 
       dep_types.each do |dep, dep_args|
@@ -452,33 +415,6 @@ describe Chef::Cookbook::Metadata do
     end
   end
 
-  describe "attribute groupings" do
-    it "should allow you set a grouping" do
-      group = {
-        "title" => "MySQL Tuning",
-        "description" => "Setting from the my.cnf file that allow you to tune your mysql server",
-      }
-      expect(metadata.grouping("/db/mysql/databases/tuning", group)).to eq(group)
-    end
-    it "should not accept anything but a string for display_name" do
-      expect {
-        metadata.grouping("db/mysql/databases", :title => "foo")
-      }.not_to raise_error
-      expect {
-        metadata.grouping("db/mysql/databases", :title => Hash.new)
-      }.to raise_error(ArgumentError)
-    end
-
-    it "should not accept anything but a string for the description" do
-      expect {
-        metadata.grouping("db/mysql/databases", :description => "foo")
-      }.not_to raise_error
-      expect {
-        metadata.grouping("db/mysql/databases", :description => Hash.new)
-      }.to raise_error(ArgumentError)
-    end
-  end
-
   describe "cookbook attributes" do
     it "should allow you set an attributes metadata" do
       attrs = {
@@ -498,63 +434,63 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should not accept anything but a string for display_name" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :display_name => "foo")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :display_name => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but a string for the description" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :description => "foo")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :description => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but a string for the source_url" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :source_url => "foo")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :source_url => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but a string for the issues_url" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :issues_url => "foo")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :issues_url => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but true or false for the privacy flag" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :privacy => true)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :privacy => false)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :privacy => "true")
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but an array of strings for choice" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :choice => %w{dedicated shared})
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :choice => [10, "shared"])
-      }.to raise_error(ArgumentError)
-      expect {
+      end.to raise_error(ArgumentError)
+      expect do
         metadata.attribute("db/mysql/databases", :choice => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should set choice to empty array by default" do
@@ -563,15 +499,15 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should let calculated be true or false" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :calculated => true)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :calculated => false)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :calculated => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should set calculated to false by default" do
@@ -580,55 +516,55 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "accepts String for the attribute type" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :type => "string")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "accepts Array for the attribute type" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :type => "array")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :type => Array.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "accepts symbol for the attribute type" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :type => "symbol")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "should let type be hash (backwards compatibility only)" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :type => "hash")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "should let required be required, recommended or optional" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :required => "required")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :required => "recommended")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :required => "optional")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "should convert required true to required" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :required => true)
-      }.not_to raise_error
+      end.not_to raise_error
       #attrib = metadata.attributes["db/mysql/databases"][:required].should == "required"
     end
 
     it "should convert required false to optional" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :required => false)
-      }.not_to raise_error
+      end.not_to raise_error
       #attrib = metadata.attributes["db/mysql/databases"][:required].should == "optional"
     end
 
@@ -638,12 +574,12 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should make sure recipes is an array" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :recipes => [])
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :required => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should set recipes to an empty array by default" do
@@ -652,24 +588,24 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should allow the default value to be a string, array, hash, boolean or numeric" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :default => [])
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :default => {})
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :default => "alice in chains")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :default => 1337)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :default => true)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :required => :not_gonna_do_it)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should limit the types allowed in the choice array" do
@@ -678,94 +614,97 @@ describe Chef::Cookbook::Metadata do
         :choice => %w{test1 test2},
         :default => "test1",
       }
-      expect {
+      expect do
         metadata.attribute("test_cookbook/test", options)
-      }.not_to raise_error
+      end.not_to raise_error
 
       options = {
         :type => "boolean",
         :choice => [ true, false ],
         :default => true,
       }
-      expect {
+      expect do
         metadata.attribute("test_cookbook/test", options)
-      }.not_to raise_error
+      end.not_to raise_error
 
       options = {
         :type => "numeric",
         :choice => [ 1337, 420 ],
         :default => 1337,
       }
-      expect {
+      expect do
         metadata.attribute("test_cookbook/test", options)
-      }.not_to raise_error
+      end.not_to raise_error
 
       options = {
         :type => "numeric",
         :choice => [ true, "false" ],
         :default => false,
       }
-      expect {
+      expect do
         metadata.attribute("test_cookbook/test", options)
-      }.to raise_error(Chef::Exceptions::ValidationFailed)
+      end.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "should error if default used with calculated" do
-      expect {
+      expect do
         attrs = {
           :calculated => true,
           :default => [ "I thought you said calculated" ],
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.to raise_error(ArgumentError)
-      expect {
+      end.to raise_error(ArgumentError)
+      expect do
         attrs = {
           :calculated => true,
           :default => "I thought you said calculated",
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should allow a default that is a choice" do
-      expect {
+      expect do
         attrs = {
           :choice => %w{a b c},
           :default => "b",
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         attrs = {
           :choice => %w{a b c d e},
           :default => %w{b d},
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "should error if default is not a choice" do
-      expect {
+      expect do
         attrs = {
           :choice => %w{a b c},
           :default => "d",
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.to raise_error(ArgumentError)
-      expect {
+      end.to raise_error(ArgumentError)
+      expect do
         attrs = {
           :choice => %w{a b c d e},
           :default => %w{b z},
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
   end
 
   describe "recipes" do
     let(:cookbook) do
       c = Chef::CookbookVersion.new("test_cookbook")
-      c.recipe_files = [ "default.rb", "enlighten.rb" ]
+      c.manifest = { all_files: [
+        { name: "recipes/default.rb", path: "recipes/default.rb", checksum: "my_only_friend" },
+        { name: "recipes/enlighten.rb", path: "recipes/enlighten.rb", checksum: "my_only_friend" },
+      ] }
       c
     end
 
@@ -801,11 +740,7 @@ describe Chef::Cookbook::Metadata do
       metadata.depends "bobo", "= 1.0"
       metadata.depends "bubu", "=1.0"
       metadata.depends "bobotclown", "= 1.1"
-      metadata.recommends "snark", "< 3.0"
-      metadata.suggests "kindness", "> 2.0"
-      metadata.conflicts "hatred"
       metadata.provides "foo(:bar, :baz)"
-      metadata.replaces "snarkitron"
       metadata.recipe "test_cookbook::enlighten", "is your buddy"
       metadata.attribute "bizspark/has_login",
         :display_name => "You have nothing"
@@ -840,11 +775,7 @@ describe Chef::Cookbook::Metadata do
         license
         platforms
         dependencies
-        suggestions
-        recommendations
-        conflicting
         providing
-        replacing
         attributes
         recipes
         version
@@ -885,11 +816,7 @@ describe Chef::Cookbook::Metadata do
         license
         platforms
         dependencies
-        suggestions
-        recommendations
-        conflicting
         providing
-        replacing
         attributes
         recipes
         version
@@ -911,42 +838,55 @@ describe Chef::Cookbook::Metadata do
         @hash = metadata.to_hash
       end
 
-      [:dependencies,
-       :recommendations,
-       :suggestions,
-       :conflicting,
-       :replacing].each do |to_check|
-        it "should transform deprecated greater than syntax for :#{to_check}" do
-          @hash[to_check.to_s]["foo::bar"] = ">> 0.2"
-          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq("> 0.2")
-        end
+      it "should transform deprecated greater than syntax for :dependencies" do
+        @hash[:dependencies.to_s]["foo::bar"] = ">> 0.2"
+        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+        expect(deserial.send(:dependencies)["foo::bar"]).to eq("> 0.2")
+      end
 
-        it "should transform deprecated less than syntax for :#{to_check}" do
-          @hash[to_check.to_s]["foo::bar"] = "<< 0.2"
-          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq("< 0.2")
-        end
+      it "should transform deprecated less than syntax for :dependencies" do
+        @hash[:dependencies.to_s]["foo::bar"] = "<< 0.2"
+        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+        expect(deserial.send(:dependencies)["foo::bar"]).to eq("< 0.2")
+      end
 
-        it "should ignore multiple dependency constraints for :#{to_check}" do
-          @hash[to_check.to_s]["foo::bar"] = [ ">= 1.0", "<= 5.2" ]
-          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq([])
-        end
+      it "should ignore multiple dependency constraints for :dependencies" do
+        @hash[:dependencies.to_s]["foo::bar"] = [ ">= 1.0", "<= 5.2" ]
+        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+        expect(deserial.send(:dependencies)["foo::bar"]).to eq([])
+      end
 
-        it "should accept an empty array of dependency constraints for :#{to_check}" do
-          @hash[to_check.to_s]["foo::bar"] = []
-          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq([])
-        end
+      it "should accept an empty array of dependency constraints for :dependencies" do
+        @hash[:dependencies.to_s]["foo::bar"] = []
+        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+        expect(deserial.send(:dependencies)["foo::bar"]).to eq([])
+      end
 
-        it "should accept single-element arrays of dependency constraints for :#{to_check}" do
-          @hash[to_check.to_s]["foo::bar"] = [ ">= 2.0" ]
-          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq(">= 2.0")
+      it "should accept single-element arrays of dependency constraints for :dependencies" do
+        @hash[:dependencies.to_s]["foo::bar"] = [ ">= 2.0" ]
+        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+        expect(deserial.send(:dependencies)["foo::bar"]).to eq(">= 2.0")
+      end
+    end
+
+    describe "from_file" do
+      it "ignores unknown metadata fields in metadata.rb files" do
+        expect(Chef::Log).to receive(:trace).with(/ignoring method some_spiffy_new_metadata_field/)
+        Tempfile.open("metadata.rb") do |f|
+          f.write <<-EOF
+            some_spiffy_new_metadata_field "stuff its set to"
+          EOF
+          f.close
+          metadata.from_file(f.path)
         end
       end
     end
 
+    describe "from_json" do
+      it "ignores unknown metadata fields in metdata.json files" do
+        json = %q{{ "some_spiffy_new_metadata_field": "stuff its set to" }}
+        metadata.from_json(json)
+      end
+    end
   end
 end

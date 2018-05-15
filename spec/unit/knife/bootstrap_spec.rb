@@ -48,6 +48,35 @@ describe Chef::Knife::Bootstrap do
     expect(File.basename(knife.bootstrap_template)).to eq("chef-full")
   end
 
+  context "when using the chef-full default template" do
+    let(:rendered_template) do
+      knife.merge_configs
+      knife.render_template
+    end
+
+    it "should render client.rb" do
+      expect(rendered_template).to match("cat > /etc/chef/client.rb <<'EOP'")
+      expect(rendered_template).to match("chef_server_url  \"https://localhost:443\"")
+      expect(rendered_template).to match("validation_client_name \"chef-validator\"")
+      expect(rendered_template).to match("log_location   STDOUT")
+    end
+
+    it "should render first-boot.json" do
+      expect(rendered_template).to match("cat > /etc/chef/first-boot.json <<'EOP'")
+      expect(rendered_template).to match('{"run_list":\[\]}')
+    end
+
+    context "and encrypted_data_bag_secret was provided" do
+      it "should render encrypted_data_bag_secret file" do
+        expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)
+        expect(knife).to receive(:read_secret).and_return("secrets")
+        expect(rendered_template).to match("cat > /etc/chef/encrypted_data_bag_secret <<'EOP'")
+        expect(rendered_template).to match('{"run_list":\[\]}')
+        expect(rendered_template).to match(%r{secrets})
+      end
+    end
+  end
+
   context "with --bootstrap-vault-item" do
     let(:bootstrap_cli_options) { [ "--bootstrap-vault-item", "vault1:item1", "--bootstrap-vault-item", "vault1:item2", "--bootstrap-vault-item", "vault2:item1" ] }
     it "sets the knife config cli option correctly" do
@@ -55,24 +84,20 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
-  context "with :distro and :bootstrap_template cli options" do
-    let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--distro", "other-template" ] }
-
-    it "should select bootstrap template" do
-      expect(File.basename(knife.bootstrap_template)).to eq("my-template")
+  context "with --bootstrap-preinstall-command" do
+    command = "while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do\n   echo 'waiting for dpkg lock';\n   sleep 1;\n  done;"
+    let(:bootstrap_cli_options) { [ "--bootstrap-preinstall-command", command ] }
+    let(:rendered_template) do
+      knife.merge_configs
+      knife.render_template
     end
-  end
-
-  context "with :distro and :template_file cli options" do
-    let(:bootstrap_cli_options) { [ "--distro", "my-template", "--template-file", "other-template" ] }
-
-    it "should select bootstrap template" do
-      expect(File.basename(knife.bootstrap_template)).to eq("other-template")
+    it "configures the preinstall command in the bootstrap template correctly" do
+      expect(rendered_template).to match(%r{command})
     end
   end
 
   context "with :bootstrap_template and :template_file cli options" do
-    let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--template-file", "other-template" ] }
+    let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "other-template" ] }
 
     it "should select bootstrap template" do
       expect(File.basename(knife.bootstrap_template)).to eq("my-template")
@@ -93,7 +118,7 @@ describe Chef::Knife::Bootstrap do
         let(:bootstrap_template) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb")) }
 
         it "loads the given file as the template" do
-          expect(Chef::Log).to receive(:debug)
+          expect(Chef::Log).to receive(:trace)
           expect(knife.find_template).to eq(File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb")))
         end
       end
@@ -206,7 +231,7 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
-  ["-d", "--distro", "-t", "--bootstrap-template", "--template-file"].each do |t|
+  ["-t", "--bootstrap-template"].each do |t|
     context "when #{t} option is given in the command line" do
       it "sets the knife :bootstrap_template config" do
         knife.parse_options([t, "blahblah"])
@@ -236,11 +261,11 @@ describe Chef::Knife::Bootstrap do
     end
 
     context "with bootstrap_attribute options" do
-      let(:jsonfile) {
+      let(:jsonfile) do
         file = Tempfile.new (["node", ".json"])
         File.open(file.path, "w") { |f| f.puts '{"foo":{"bar":"baz"}}' }
         file
-      }
+      end
 
       it "should have foo => {bar => baz} in the first_boot from cli" do
         knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
@@ -478,14 +503,20 @@ describe Chef::Knife::Bootstrap do
     end
 
     context "when client_d_dir is set" do
-      let(:client_d_dir) { Chef::Util::PathHelper.cleanpath(
-        File.join(File.dirname(__FILE__), "../../data/client.d_00")) }
+      let(:client_d_dir) do
+        Chef::Util::PathHelper.cleanpath(
+        File.join(File.dirname(__FILE__), "../../data/client.d_00")) end
 
       it "creates /etc/chef/client.d" do
         expect(rendered_template).to match("mkdir -p /etc/chef/client\.d")
       end
 
       context "a flat directory structure" do
+        it "escapes single-quotes" do
+          expect(rendered_template).to match("cat > /etc/chef/client.d/02-strings.rb <<'EOP'")
+          expect(rendered_template).to match("something '\\\\''/foo/bar'\\\\''")
+        end
+
         it "creates a file 00-foo.rb" do
           expect(rendered_template).to match("cat > /etc/chef/client.d/00-foo.rb <<'EOP'")
           expect(rendered_template).to match("d6f9b976-289c-4149-baf7-81e6ffecf228")
@@ -497,8 +528,9 @@ describe Chef::Knife::Bootstrap do
       end
 
       context "a nested directory structure" do
-        let(:client_d_dir) { Chef::Util::PathHelper.cleanpath(
-          File.join(File.dirname(__FILE__), "../../data/client.d_01")) }
+        let(:client_d_dir) do
+          Chef::Util::PathHelper.cleanpath(
+          File.join(File.dirname(__FILE__), "../../data/client.d_01")) end
         it "creates a file foo/bar.rb" do
           expect(rendered_template).to match("cat > /etc/chef/client.d/foo/bar.rb <<'EOP'")
           expect(rendered_template).to match("1 / 0")
@@ -553,6 +585,10 @@ describe Chef::Knife::Bootstrap do
       it "passes them into the bootstrap context" do
         expect(knife.bootstrap_context.first_boot).to have_key(:policy_name)
         expect(knife.bootstrap_context.first_boot).to have_key(:policy_group)
+      end
+
+      it "ensures that run_list is not set in the bootstrap context" do
+        expect(knife.bootstrap_context.first_boot).to_not have_key(:run_list)
       end
 
     end
@@ -647,6 +683,7 @@ describe Chef::Knife::Bootstrap do
         Chef::Config[:knife][:forward_agent] = true
         Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/you.rsa"
         Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
+        Chef::Config[:knife][:ssh_gateway_identity] = "~/.ssh/gateway.rsa"
         Chef::Config[:knife][:host_key_verify] = true
         allow(knife).to receive(:render_template).and_return("")
         knife.config = {}
@@ -672,6 +709,10 @@ describe Chef::Knife::Bootstrap do
 
       it "configures the ssh gateway" do
         expect(knife_ssh.config[:ssh_gateway]).to eq("towel.blinkenlights.nl")
+      end
+
+      it "configures the ssh gateway identity" do
+        expect(knife_ssh.config[:ssh_gateway_identity]).to eq("~/.ssh/gateway.rsa")
       end
 
       it "configures the host key verify mode" do

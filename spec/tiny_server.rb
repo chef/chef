@@ -20,97 +20,82 @@ require "rubygems"
 require "webrick"
 require "webrick/https"
 require "rack"
-#require 'thin'
+require "thread"
 require "singleton"
 require "open-uri"
 require "chef/config"
 
 module TinyServer
 
-  class Server < Rack::Server
-
-    attr_writer :app
-
-    def self.setup(options = nil, &block)
-      tiny_app = new(options)
-      app_code = Rack::Builder.new(&block).to_app
-      tiny_app.app = app_code
-      tiny_app
-    end
-
-    def shutdown
-      server.shutdown
-    end
-  end
-
   class Manager
 
     # 5 == debug, 3 == warning
     LOGGER = WEBrick::Log.new(STDOUT, 3)
     DEFAULT_OPTIONS = {
-      :server => "webrick",
-      :Port => 9000,
-      :Host => "localhost",
-      :environment => :none,
-      :Logger => LOGGER,
-      :AccessLog => [] # Remove this option to enable the access log when debugging.
+      Port: 9000,
+      Host: "localhost",
+      Logger: LOGGER,
+      # SSLEnable: options[:ssl],
+      # SSLCertName: [ [ 'CN', WEBrick::Utils::getservername ] ],
+      AccessLog: [], # Remove this option to enable the access log when debugging.
     }
 
-    def initialize(options = nil)
-      @options = options ? DEFAULT_OPTIONS.merge(options) : DEFAULT_OPTIONS
+    def initialize(**options)
+      @options = DEFAULT_OPTIONS.merge(options)
       @creator = caller.first
     end
 
-    def start
+    attr_reader :options
+    attr_reader :creator
+    attr_reader :server
+
+    def start(timeout = 5)
+      raise "Server already started!" if server
+
+      # Create the server (but don't start yet)
+      start_queue = Queue.new
+      @server = create_server(StartCallback: proc { start_queue << true })
+
       @server_thread = Thread.new do
-        @server = Server.setup(@options) do
-          run API.instance
-        end
-        @old_handler = trap(:INT, "EXIT")
-        @server.start
+        # Ensure any exceptions will cause the main rspec thread to fail too
+        Thread.current.abort_on_exception = true
+        server.start
       end
-      block_until_started
-      trap(:INT, @old_handler)
-    end
 
-    def url
-      "http://localhost:#{@options[:Port]}"
-    end
-
-    def block_until_started
-      200.times do
-        if started? && !@server.nil?
-          return true
-        end
+      # Wait for the StartCallback to tell us we've started
+      Timeout.timeout(timeout) do
+        start_queue.pop
       end
-      raise "ivar weirdness" if started? && @server.nil?
-      raise "TinyServer failed to boot :/"
     end
 
-    def started?
-      open(url)
-      true
-    rescue OpenURI::HTTPError
-      true
-    rescue Errno::ECONNREFUSED, EOFError, Errno::ECONNRESET => e
-      sleep 0.1
-      true
-      # If the host has ":::1 localhost" in its hosts file and if IPv6
-      # is not enabled we can get NetworkUnreachable exception...
-    rescue Errno::ENETUNREACH, Net::ReadTimeout, IO::EAGAINWaitReadable,
-        Errno::EHOSTUNREACH => e
-      sleep 0.1
-      false
+    def stop(timeout = 5)
+      if server
+        server.shutdown
+        @server = nil
+      end
+
+      if server_thread
+        begin
+          # Wait for a normal shutdown
+          server_thread.join(timeout)
+        rescue
+          # If it wouldn't shut down normally, kill it.
+          server_thread.kill
+          server_thread.join(timeout)
+        end
+        @server_thread = nil
+      end
     end
 
-    def stop
-      # yes, this is terrible.
-      @server.shutdown
-      @server_thread.kill
-      @server_thread.join
-      @server_thread = nil
-    end
+    private
 
+    attr_reader :server_thread
+
+    def create_server(**extra_options)
+      server = WEBrick::HTTPServer.new(**options, **extra_options)
+      server.mount("/", Rack::Handler::WEBrick, API.instance)
+      server
+    end
   end
 
   class API

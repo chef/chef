@@ -8,6 +8,37 @@ describe "notifications" do
   let(:chef_dir) { File.expand_path("../../../../bin", __FILE__) }
   let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
 
+  when_the_repository "notifies a nameless resource" do
+    before do
+      directory "cookbooks/x" do
+        file "recipes/default.rb", <<-EOM
+          apt_update do
+            action :nothing
+          end
+          log "foo" do
+            notifies :nothing, 'apt_update', :delayed
+          end
+          log "bar" do
+            notifies :nothing, 'apt_update[]', :delayed
+          end
+        EOM
+      end
+    end
+
+    it "should complete with success" do
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+log_level :warn
+EOM
+
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      # our delayed notification should run at the end of the parent run_context after the baz resource
+      expect(result.stdout).to match(/\* apt_update\[\] action nothing \(skipped due to action :nothing\)\s+\* log\[foo\] action write\s+\* log\[bar\] action write\s+\* apt_update\[\] action nothing \(skipped due to action :nothing\)/)
+      result.error!
+    end
+  end
+
   when_the_repository "notifies delayed one" do
     before do
       directory "cookbooks/x" do
@@ -330,5 +361,34 @@ EOM
       expect(result.stdout).not_to match(/CHEF-3694/)
       result.error!
     end
+  end
+
+  when_the_repository "has resources that have arrays as the name" do
+    before do
+      directory "cookbooks/x" do
+        file "recipes/default.rb", <<-EOM
+          log [ "a", "b" ] do
+            action :nothing
+          end
+
+          log "doit" do
+            notifies :write, "log[a, b]"
+          end
+        EOM
+      end
+    end
+
+    it "notifying the resource should work" do
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+log_level :warn
+EOM
+
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      expect(result.stdout).to match /\* log\[a, b\] action write/
+      result.error!
+    end
+
   end
 end

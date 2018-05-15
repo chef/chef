@@ -74,7 +74,7 @@ class Chef
           found = rs.find_all do |r|
             name_matches = r["Name"].casecmp(name) == 0
             if name_matches
-              module_name == nil || (r["Module"] && r["Module"]["Name"].casecmp(module_name) == 0)
+              module_name.nil? || (r["Module"] && r["Module"]["Name"].casecmp(module_name) == 0)
             else
               false
             end

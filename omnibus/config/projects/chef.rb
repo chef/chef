@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2016, Chef Software, Inc.
+# Copyright 2012-2017, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,25 +39,52 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-# Global FIPS override flag.
-if windows? || rhel?
-  override :fips, enabled: true
-end
+override :chef, version: "local_source"
 
 # Load dynamically updated overrides
 overrides_path = File.expand_path("../../../../omnibus_overrides.rb", current_file)
 instance_eval(IO.read(overrides_path), overrides_path)
 
-override :"ruby-windows-devkit", version: "4.5.2-20111229-1559" if windows? && windows_arch_i386?
-
 dependency "preparation"
 
-# All actual dependencies are in chef-complete, so that the addition
-# or removal of a dependency doesn't dirty the entire project file
-dependency "chef-complete"
+# InSpec 2 depends on unf_ext, which doesn't currently build on solaris on aix. There exists a fork
+# of unf_ext which fixes this, so let's use that in Chef for now.
+# FIXME: must remove this ASAP.
+dependency "unf_ext"
+
+dependency "chef"
+
+#
+# addons which require omnibus software defns (not direct deps of chef itself - RFC-063)
+#
+dependency "nokogiri" # (nokogiri cannot go in the Gemfile, see wall of text in the software defn)
+
+# FIXME?: might make sense to move dependencies below into the omnibus-software chef
+#  definition or into a chef-complete definition added to omnibus-software.
+dependency "gem-permissions"
+dependency "shebang-cleanup"
+dependency "version-manifest"
+dependency "openssl-customization"
+
+# devkit needs to come dead last these days so we do not use it to compile any gems
+if windows?
+  override :"ruby-windows-devkit", version: "4.5.2-20111229-1559" if windows_arch_i386?
+  dependency "ruby-windows-devkit"
+  dependency "ruby-windows-devkit-bash"
+end
 
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
+
+  unless rhel? && platform_version.satisfies?("< 6")
+    compression_level 1
+    compression_type :xz
+  end
+end
+
+package :deb do
+  compression_level 1
+  compression_type :xz
 end
 
 proj_to_work_around_cleanroom = self
@@ -74,7 +101,11 @@ package :msi do
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
-  signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
+  signing_identity "E05FF095D07F233B78EB322132BFF0F035E11B5B", machine_store: true
   parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
              ProjectLocationDir: project_location_dir
+end
+
+package :appx do
+  signing_identity "E05FF095D07F233B78EB322132BFF0F035E11B5B", machine_store: true
 end

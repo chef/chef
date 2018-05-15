@@ -85,7 +85,7 @@ describe "Chef class" do
     end
   end
 
-  context '#event_handler' do
+  context "#event_handler" do
     it "adds a new handler" do
       x = 1
       Chef.event_handler do

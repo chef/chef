@@ -24,16 +24,16 @@ require "support/lib/library_load_order"
 describe Chef::RunContext::ChildRunContext do
   context "with a run context with stuff in it" do
     let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")) }
-    let(:cookbook_collection) {
+    let(:cookbook_collection) do
       cl = Chef::CookbookLoader.new(chef_repo_path)
       cl.load_cookbooks
       Chef::CookbookCollection.new(cl)
-    }
-    let(:node) {
+    end
+    let(:node) do
       node = Chef::Node.new
       node.run_list << "test" << "test::one" << "test::two"
       node
-    }
+    end
     let(:events) { Chef::EventDispatch::Dispatcher.new }
     let(:run_context) { Chef::RunContext.new(node, cookbook_collection, events) }
 

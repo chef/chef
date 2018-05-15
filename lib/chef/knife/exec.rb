@@ -68,15 +68,15 @@ class Chef::Knife::Exec < Chef::Knife
 
     # Failing that, try searching the script path. If we can't find
     # anything, fail gracefully.
-    Chef::Log.debug("Searching script_path: #{config[:script_path].inspect}")
+    Chef::Log.trace("Searching script_path: #{config[:script_path].inspect}")
 
     config[:script_path].each do |path|
       path = File.expand_path(path)
       test = File.join(path, x)
-      Chef::Log.debug("Testing: #{test}")
+      Chef::Log.trace("Testing: #{test}")
       if File.exists?(test)
         script = test
-        Chef::Log.debug("Found: #{test}")
+        Chef::Log.trace("Found: #{test}")
         return script
       end
     end

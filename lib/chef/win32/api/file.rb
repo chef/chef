@@ -67,6 +67,7 @@ class Chef
         MAX_PATH = 260
 
         SYMBOLIC_LINK_FLAG_DIRECTORY = 0x1
+        SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE = 0x2
 
         FILE_NAME_NORMALIZED = 0x0
         FILE_NAME_OPENED = 0x8
@@ -537,24 +538,22 @@ BOOL WINAPI VerQueryValue(
         # ensures the handle is closed on exit of the block
         # FIXME: yard with @yield
         def file_search_handle(path)
-          begin
             # Workaround for CHEF-4419:
             # Make sure paths starting with "/" has a drive letter
             # assigned from the current working diretory.
             # Note: With CHEF-4427 this issue will be fixed with a
             # broader fix to map all the paths starting with "/" to
             # SYSTEM_DRIVE on windows.
-            path = ::File.expand_path(path) if path.start_with? "/"
-            path = canonical_encode_path(path)
-            find_data = WIN32_FIND_DATA.new
-            handle = FindFirstFileW(path, find_data)
-            if handle == INVALID_HANDLE_VALUE
-              Chef::ReservedNames::Win32::Error.raise!
-            end
-            yield(handle, find_data)
-          ensure
-            FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
+          path = ::File.expand_path(path) if path.start_with? "/"
+          path = canonical_encode_path(path)
+          find_data = WIN32_FIND_DATA.new
+          handle = FindFirstFileW(path, find_data)
+          if handle == INVALID_HANDLE_VALUE
+            Chef::ReservedNames::Win32::Error.raise!
           end
+          yield(handle, find_data)
+        ensure
+          FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
         end
 
         # retrieves a file handle and passes it
@@ -562,34 +561,30 @@ BOOL WINAPI VerQueryValue(
         # ensures the handle is closed on exit of the block
         # FIXME: yard with @yield
         def file_handle(path)
-          begin
-            path = canonical_encode_path(path)
-            handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
-                                  nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
+          path = canonical_encode_path(path)
+          handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
+                                nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
 
-            if handle == INVALID_HANDLE_VALUE
-              Chef::ReservedNames::Win32::Error.raise!
-            end
-            yield(handle)
-          ensure
-            CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
+          if handle == INVALID_HANDLE_VALUE
+            Chef::ReservedNames::Win32::Error.raise!
           end
+          yield(handle)
+        ensure
+          CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
         end
 
         # FIXME: yard with @yield
         def symlink_file_handle(path)
-          begin
-            path = encode_path(path)
-            handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,
-                                  nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
+          path = encode_path(path)
+          handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,
+                                nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
 
-            if handle == INVALID_HANDLE_VALUE
-              Chef::ReservedNames::Win32::Error.raise!
-            end
-            yield(handle)
-          ensure
-            CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
+          if handle == INVALID_HANDLE_VALUE
+            Chef::ReservedNames::Win32::Error.raise!
           end
+          yield(handle)
+        ensure
+          CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
         end
 
         def retrieve_file_info(file_name)

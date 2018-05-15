@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,6 +76,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
   context "#create_child" do
     it "creates a new TestFile" do
       expect(TestFile).to receive(:new).with("test_child", test_directory).and_return(file_double)
+      allow(file_double).to receive(:file_path).and_return("#{test_directory}/test_child")
       expect(file_double).to receive(:write).with("test")
       test_directory.create_child("test_child", "test")
     end
@@ -151,7 +152,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
     end
 
     after do
-      FileUtils.rmdir(tmp_dir)
+      FileUtils.rm_rf(tmp_dir)
     end
   end
 

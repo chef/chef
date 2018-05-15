@@ -49,10 +49,6 @@ describe Chef::CookbookSiteStreamingUploader do
       cookbook = @loader[:openldap]
       files_count = Dir.glob(File.join(@cookbook_repo, cookbook.name.to_s, "**", "*"), File::FNM_DOTMATCH).count { |file| File.file?(file) }
 
-      # The fixture cookbook contains a spec/spec_helper.rb file, which is not
-      # a part of any cookbook segment, so it is not uploaded.
-      files_count -= 1
-
       expect(Tempfile).to receive(:new).with("chef-#{cookbook.name}-build").and_return(FakeTempfile.new("chef-#{cookbook.name}-build"))
       expect(FileUtils).to receive(:mkdir_p).exactly(files_count + 1).times
       expect(FileUtils).to receive(:cp).exactly(files_count).times

@@ -30,19 +30,19 @@ class Chef
         def create(file)
           # this is very simple, but it ensures that ownership and file modes take
           # good defaults, in particular mode needs to obey umask on create
-          Chef::Log.debug("Touching #{file} to create it")
+          Chef::Log.trace("Touching #{file} to create it")
           FileUtils.touch(file)
         end
 
         def deploy(src, dst)
           # we are only responsible for content so restore the dst files perms
-          Chef::Log.debug("Reading modes from #{dst} file")
+          Chef::Log.trace("Reading modes from #{dst} file")
           stat = ::File.stat(dst)
           mode = stat.mode & 07777
           uid  = stat.uid
           gid  = stat.gid
 
-          Chef::Log.debug("Applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{src}")
+          Chef::Log.trace("Applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{src}")
 
           # i own the inode, so should be able to at least chmod it
           ::File.chmod(mode, src)
@@ -67,7 +67,7 @@ class Chef
             Chef::Log.warn("Could not set gid = #{gid} on #{src}, file modes not preserved")
           end
 
-          Chef::Log.debug("Moving temporary file #{src} into place at #{dst}")
+          Chef::Log.trace("Moving temporary file #{src} into place at #{dst}")
           FileUtils.mv(src, dst)
         end
       end

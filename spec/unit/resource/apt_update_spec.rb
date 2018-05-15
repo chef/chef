@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: 2016-2017, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,20 +19,35 @@
 require "spec_helper"
 
 describe Chef::Resource::AptUpdate do
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::AptUpdate.new("update", run_context) }
 
-  let(:resource) { Chef::Resource::AptUpdate.new("update") }
-
-  it "should create a new Chef::Resource::AptUpdate" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::AptUpdate)
-  end
-
-  it "the default frequency should be 1 day" do
+  it "default frequency is set to be 1 day" do
     expect(resource.frequency).to eql(86_400)
   end
 
-  it "the frequency should accept integers" do
+  it "frequency accepts integers" do
     resource.frequency(400)
     expect(resource.frequency).to eql(400)
+  end
+
+  it "resolves to a Noop class when on non-linux OS" do
+    node.automatic[:os] = "windows"
+    node.automatic[:platform_family] = "windows"
+    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
+  end
+
+  it "resolves to a Noop class when on non-debian linux" do
+    node.automatic[:os] = "linux"
+    node.automatic[:platform_family] = "gentoo"
+    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
+  end
+
+  it "resolves to a AptUpdate class when on a debian platform_family" do
+    node.automatic[:os] = "linux"
+    node.automatic[:platform_family] = "debian"
+    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptUpdate)
   end
 end

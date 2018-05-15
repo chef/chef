@@ -29,10 +29,6 @@ describe Chef::Resource::WindowsService, "initialize" do
 
   let(:resource) { Chef::Resource::WindowsService.new("BITS") }
 
-  it "returns a Chef::Resource::WindowsService" do
-    expect(resource).to be_a_kind_of(Chef::Resource::WindowsService)
-  end
-
   it "sets the resource_name to :windows_service" do
     expect(resource.resource_name).to eql(:windows_service)
   end
@@ -45,5 +41,30 @@ describe Chef::Resource::WindowsService, "initialize" do
   it "allows the action to be 'configure_startup'" do
     resource.action :configure_startup
     expect(resource.action).to eq([:configure_startup])
+  end
+
+  # Attributes that are Strings
+  %i{description service_name binary_path_name load_order_group dependencies
+     run_as_user run_as_password display_name}.each do |prop|
+    it "support setting #{prop}" do
+      resource.send("#{prop}=", "some value")
+      expect(resource.send(prop)).to eq("some value")
+    end
+  end
+
+  # Attributes that are Integers
+  %i{desired_access error_control service_type}.each do |prop|
+    it "support setting #{prop}" do
+      resource.send("#{prop}=", 1)
+      expect(resource.send(prop)).to eq(1)
+    end
+  end
+
+  # Attributes that are Booleans
+  %i{delayed_start}.each do |prop|
+    it "support setting #{prop}" do
+      resource.send("#{prop}=", true)
+      expect(resource.send(prop)).to eq(true)
+    end
   end
 end

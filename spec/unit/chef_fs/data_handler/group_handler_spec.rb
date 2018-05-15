@@ -29,7 +29,7 @@ class TestEntry < Mash
 end
 
 describe Chef::ChefFS::DataHandler::GroupDataHandler do
-  describe '#normalize_for_post' do
+  describe "#normalize_for_post" do
     let(:entry) do
       TestEntry.new("workers.json", "hive")
     end

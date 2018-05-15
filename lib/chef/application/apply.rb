@@ -70,7 +70,7 @@ class Chef::Application::Apply < Chef::Application
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
-    :description  => "Set the log level (debug, info, warn, error, fatal)",
+    :description  => "Set the log level (trace, debug, info, warn, error, fatal)",
     :proc         => lambda { |l| l.to_sym }
 
   option :help,
@@ -137,11 +137,11 @@ class Chef::Application::Apply < Chef::Application
 
   def read_recipe_file(file_name)
     if file_name.nil?
-      Chef::Application.fatal!("No recipe file was provided", 1)
+      Chef::Application.fatal!("No recipe file was provided", Chef::Exceptions::RecipeNotFound.new)
     else
       recipe_path = File.expand_path(file_name)
       unless File.exist?(recipe_path)
-        Chef::Application.fatal!("No file exists at #{recipe_path}", 1)
+        Chef::Application.fatal!("No file exists at #{recipe_path}", Chef::Exceptions::RecipeNotFound.new)
       end
       recipe_fh = open(recipe_path)
       recipe_text = recipe_fh.read
@@ -150,7 +150,7 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def get_recipe_and_run_context
-    Chef::Config[:solo] = true
+    Chef::Config[:solo_legacy_mode] = true
     @chef_client = Chef::Client.new(@json_attribs)
     @chef_client.run_ohai
     @chef_client.load_node
@@ -183,7 +183,7 @@ class Chef::Application::Apply < Chef::Application
     else
       if !ARGV[0]
         puts opt_parser
-        Chef::Application.exit! "No recipe file provided", 1
+        Chef::Application.exit! "No recipe file provided", Chef::Exceptions::RecipeNotFound.new
       end
       @recipe_filename = ARGV[0]
       @recipe_text, @recipe_fh = read_recipe_file @recipe_filename
@@ -200,16 +200,14 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def run_application
-    begin
-      parse_options
-      run_chef_recipe
-      Chef::Application.exit! "Exiting", 0
-    rescue SystemExit
-      raise
-    rescue Exception => e
-      Chef::Application.debug_stacktrace(e)
-      Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
-    end
+    parse_options
+    run_chef_recipe
+    Chef::Application.exit! "Exiting", 0
+  rescue SystemExit
+    raise
+  rescue Exception => e
+    Chef::Application.debug_stacktrace(e)
+    Chef::Application.fatal!("#{e.class}: #{e.message}", e)
   end
 
     # Get this party started

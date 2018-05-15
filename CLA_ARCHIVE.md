@@ -1,9 +1,14 @@
 
-Corporate CLAs
+# Corporate CLAs
 
-The list of Corporate CLAs allowed to contribute to Opscode projects. Only contributions from approved employees of these companies are acceptable.
+An archive of the signers of Corporate Contributor License Agreements (CCLA).
+Approved employees of these companies were permitted to contribute to Chef
+projects.
 
-Employees get approved by being listed on the schedule A of the Corporate CLA.
+## From the Paper CLA Era (Prior to 2014-06-12)
+
+Prior to June 2014, employees were approved by being listed on the schedule A of
+the Corporate CLA.
 
 | **Number:** | **Company:**                           | **Date:** |
 |:------------|:---------------------------------------|:----------|
@@ -299,17 +304,364 @@ Employees get approved by being listed on the schedule A of the Corporate CLA.
 |  290        |  Linaro Limited                        |  4/4/14   |
 |  291        |  Spanlink Communications               |  4/17/14  |
 |  292        |  "WESEEK, Inc"                         |  4/29/14  |
-|  293        |  "Iniqa UK, Ltd"                       |  6/4/14   | 
-|  294        |  Jemstep                               |  6/13/1   |
+|  293        |  "Iniqa UK, Ltd"                       |  6/4/14   |
+|  294        |  Jemstep                               |  6/13/14  |
 
+## From the Supermarket CCLA Era (from 2014-06-12 to 2016-10-03)
 
+Many organizations signed the CCLA again in Supermarket.
 
+| Company:                                     | Date:      |
+|:---------------------------------------------|:-----------|
+| PayPal, Inc.                                 | 2014-06-12 |
+| FullStack                                    | 2014-06-17 |
+| OnBeep, Inc.                                 | 2014-06-17 |
+| Orion Labs, Inc.                             | 2014-06-17 |
+| Ngineered                                    | 2014-06-17 |
+| Brightcove, Inc                              | 2014-06-19 |
+| Belly, Inc.                                  | 2014-06-19 |
+| OneHealth Solutions, Inc.                    | 2014-06-19 |
+| EverTrue, Inc.                               | 2014-06-23 |
+| Central Desktop                              | 2014-06-23 |
+| HiganWorks LLC                               | 2014-06-26 |
+| adesso mobile solutions GmbH                 | 2014-06-27 |
+| Express42                                    | 2014-06-29 |
+| Onddo Labs                                   | 2014-07-01 |
+| Codaptive (Pty) Ltd                          | 2014-07-01 |
+| Sean Porter Consulting                       | 2014-07-02 |
+| Klarna AB                                    | 2014-07-03 |
+| a Committee of Lunatics, LLC                 | 2014-07-03 |
+| Moriz GmbH                                   | 2014-07-08 |
+| TCN Inc                                      | 2014-07-09 |
+| JetThoughts LLC                              | 2014-07-09 |
+| Clodo                                        | 2014-07-10 |
+| Openhood "Halter & Tron" S.E.N.C.            | 2014-07-10 |
+| grincom                                      | 2014-07-10 |
+| Facebook                                     | 2014-07-11 |
+| Bluedog Operations                           | 2014-07-11 |
+| Spanlink Communications                      | 2014-07-11 |
+| Heartland Payment Systems                    | 2014-07-13 |
+| Ooyala                                       | 2014-07-14 |
+| Deveo                                        | 2014-07-14 |
+| Schuberg Philis B.V.                         | 2014-07-14 |
+| Engine Yard, Inc.                            | 2014-07-14 |
+| FancyGuy Technologies                        | 2014-07-15 |
+| Mojo Lingo LLC                               | 2014-07-15 |
+| Bally Technologies                           | 2014-07-16 |
+| Rackspace                                    | 2014-07-16 |
+| Jemstep Inc.                                 | 2014-07-16 |
+| Heavy Water                                  | 2014-07-16 |
+| Rstudio, Inc.                                | 2014-07-17 |
+| BlackBerry Ltd.                              | 2014-07-17 |
+| ffuenf                                       | 2014-07-19 |
+| Grantbow Consulting                          | 2014-07-22 |
+| O'Reilly Media                               | 2014-07-23 |
+| Revinate, Inc.                               | 2014-07-24 |
+| PHutchins                                    | 2014-07-24 |
+| AdREM Systems                                | 2014-07-24 |
+| Deutsche Telekom HBS                         | 2014-07-24 |
+| Ticketmaster                                 | 2014-07-26 |
+| chewbacco                                    | 2014-07-28 |
+| Ontario Systems                              | 2014-07-28 |
+| CoreMedia AG                                 | 2014-07-29 |
+| Democracy Works, Inc.                        | 2014-07-29 |
+| EITA                                         | 2014-07-29 |
+| GitLab B.V.                                  | 2014-07-30 |
+| Bloomberg LP                                 | 2014-07-30 |
+| MTA SZTAKI                                   | 2014-07-31 |
+| Travis Warlick LLC                           | 2014-07-31 |
+| Cerner Corporation                           | 2014-07-31 |
+| Texas A&M University                         | 2014-08-01 |
+| Granicus, Inc.                               | 2014-08-01 |
+| Splunk Inc.                                  | 2014-08-05 |
+| ThirdWave Insights LLC                       | 2014-08-05 |
+| OurTownRentals.com                           | 2014-08-05 |
+| Intoximeters, Inc                            | 2014-08-05 |
+| Seges                                        | 2014-08-07 |
+| Pixl8 Interactive Ltd                        | 2014-08-08 |
+| Gazelle                                      | 2014-08-08 |
+| Takipi                                       | 2014-08-12 |
+| De Marque                                    | 2014-08-14 |
+| Web Man d.o.o.                               | 2014-08-17 |
+| Picabit                                      | 2014-08-26 |
+| Widgit Software                              | 2014-08-26 |
+| Bitcellar, Inc.                              | 2014-08-27 |
+| Yelp Inc                                     | 2014-08-27 |
+| TORCH GmbH                                   | 2014-08-28 |
+| McKesson                                     | 2014-08-28 |
+| pronetics                                    | 2014-09-01 |
+| Numergy                                      | 2014-09-03 |
+| EveryPay AS                                  | 2014-09-09 |
+| Appriss, Inc.                                | 2014-09-09 |
+| Claude Tech                                  | 2014-09-10 |
+| Omise.co                                     | 2014-09-11 |
+| Criteo S.A.                                  | 2014-09-11 |
+| TelVue Corporation                           | 2014-09-11 |
+| Expedia                                      | 2014-09-15 |
+| EBSCO                                        | 2014-09-22 |
+| SAP                                          | 2014-09-26 |
+| inGenerator Ltd                              | 2014-09-29 |
+| WWWH LLC                                     | 2014-09-30 |
+| RapidWorkspace                               | 2014-10-04 |
+| Monomono                                     | 2014-10-08 |
+| Nordstrom                                    | 2014-10-10 |
+| InfoLens, Inc.                               | 2014-10-13 |
+| Webhippie                                    | 2014-10-13 |
+| IBM                                          | 2014-10-13 |
+| Xhost Australia                              | 2014-10-14 |
+| Simulmedia, Inc                              | 2014-10-14 |
+| Mypaulie                                     | 2014-10-15 |
+| SUSE LINUX Products GmbH                     | 2014-10-15 |
+| Yahoo                                        | 2014-10-17 |
+| Juniper Networks, Inc.                       | 2014-10-19 |
+| Bulletproof Networks                         | 2014-10-20 |
+| fd                                           | 2014-10-20 |
+| Norman Joyner                                | 2014-10-21 |
+| TJSoftworks                                  | 2014-10-21 |
+| Sneacho                                      | 2014-10-22 |
+| Ecodev                                       | 2014-10-30 |
+| Stack-up                                     | 2014-11-02 |
+| Scalingo                                     | 2014-11-03 |
+| Covario                                      | 2014-11-12 |
+| Xpanxion                                     | 2014-11-12 |
+| Schrodinger, Inc.                            | 2014-11-14 |
+| SK Planet                                    | 2014-11-18 |
+| jubianchi                                    | 2014-11-18 |
+| Médiamétrie                                  | 2014-11-19 |
+| Terra Firma Engineering, LLC                 | 2014-11-19 |
+| Pantheon                                     | 2014-11-20 |
+| Clogeny Technologies                         | 2014-11-21 |
+| DigiTar Inc.                                 | 2014-11-22 |
+| Second Mind                                  | 2014-11-25 |
+| Localytics                                   | 2014-11-25 |
+| Anerhan                                      | 2014-12-05 |
+| Treasure Data, Inc.                          | 2014-12-06 |
+| Yakara Ltd                                   | 2014-12-09 |
+| CirrusMio                                    | 2014-12-10 |
+| phutchins.com                                | 2014-12-12 |
+| removeme                                     | 2014-12-15 |
+| Sumo Logic                                   | 2014-12-18 |
+| Conjur Inc                                   | 2014-12-31 |
+| PMSIpilot                                    | 2015-01-05 |
+| INSANEWORKS,LLC                              | 2015-01-06 |
+| Mad13 Entertainment                          | 2015-01-06 |
+| Tautt                                        | 2015-01-10 |
+| AddThis                                      | 2015-01-12 |
+| DreamBox Learning, Inc.                      | 2015-01-14 |
+| Intel                                        | 2015-01-15 |
+| OptiShot Golf                                | 2015-01-16 |
+| RightScale                                   | 2015-01-16 |
+| Yahoo Japan                                  | 2015-01-19 |
+| My company                                   | 2015-01-19 |
+| OSC Technologies, LLC                        | 2015-01-21 |
+| Aniessh Sethh                                | 2015-01-28 |
+| Motorcycle Industry Council                  | 2015-01-30 |
+| Icinga                                       | 2015-02-02 |
+| pseudomuto                                   | 2015-02-03 |
+| CloudOps Inc.                                | 2015-02-07 |
+| Magemaven                                    | 2015-02-09 |
+| eVision Industry Software                    | 2015-02-09 |
+| AIRFRANCE / KLM                              | 2015-02-12 |
+| Elyxor, Inc                                  | 2015-02-17 |
+| Coderico                                     | 2015-02-19 |
+| PagerDuty                                    | 2015-02-23 |
+| Stratalux                                    | 2015-02-25 |
+| Barricade Security Systems, Ltd.             | 2015-02-25 |
+| TpT                                          | 2015-02-27 |
+| RevelOps Inc                                 | 2015-03-04 |
+| Standard Edge                                | 2015-03-04 |
+| Qwinix Technologies                          | 2015-03-05 |
+| CREATIONLINE,INC.                            | 2015-03-09 |
+| Google, Inc.                                 | 2015-03-09 |
+| yetu AG                                      | 2015-03-10 |
+| Target                                       | 2015-03-11 |
+| Cisco Systems                                | 2015-03-16 |
+| sshilarnav                                   | 2015-03-16 |
+| Vista Higher Learning, Inc.                  | 2015-03-19 |
+| Dynamic Network Services Inc.                | 2015-03-19 |
+| Cars.com                                     | 2015-03-20 |
+| left-left-lemma Oy                           | 2015-03-22 |
+| Carbonite                                    | 2015-03-23 |
+| Sum Labs, Inc                                | 2015-03-24 |
+| Batch.com                                    | 2015-03-24 |
+| Mindera                                      | 2015-03-30 |
+| ClouDesire                                   | 2015-03-31 |
+| Mudbug Media                                 | 2015-04-02 |
+| Oregon State University Open Source Lab      | 2015-04-03 |
+| SPINEN                                       | 2015-04-08 |
+| Needle, Inc.                                 | 2015-04-10 |
+| Calastone Ltd                                | 2015-04-15 |
+| Pixid Design                                 | 2015-04-17 |
+| Devloft Solutions, Inc.                      | 2015-04-27 |
+| Mingalar SAS                                 | 2015-04-28 |
+| Latta Partners                               | 2015-04-30 |
+| HPE                                          | 2015-05-01 |
+| acquantia.me                                 | 2015-05-01 |
+| ViaSat, Inc.                                 | 2015-05-04 |
+| Light Side                                   | 2015-05-05 |
+| Ingenium Group, LTD                          | 2015-05-11 |
+| Linux-Help.org                               | 2015-05-13 |
+| Alert Logic, Inc.                            | 2015-05-22 |
+| Resivaa Technologies Pvt LTD                 | 2015-05-22 |
+| Gap Inc                                      | 2015-05-22 |
+| PayByPhone Technologies                      | 2015-05-25 |
+| University of Derby                          | 2015-05-27 |
+| Blue Spurs                                   | 2015-06-02 |
+| Citrix Systems, Inc.                         | 2015-06-02 |
+| hevnly                                       | 2015-06-10 |
+| Cvent                                        | 2015-06-10 |
+| Jonathan Serafini                            | 2015-06-16 |
+| ExecOnline                                   | 2015-06-18 |
+| NCR                                          | 2015-06-18 |
+| ServeBox SAS                                 | 2015-06-19 |
+| neowiz games                                 | 2015-06-22 |
+| newsdict                                     | 2015-06-25 |
+| Loom Technology                              | 2015-06-30 |
+| Spanning Cloud Apps                          | 2015-06-30 |
+| DualSpark                                    | 2015-07-01 |
+| MariaDB USA                                  | 2015-07-07 |
+| Shopify Inc                                  | 2015-07-08 |
+| Yola                                         | 2015-07-09 |
+| Divergent Logic                              | 2015-07-11 |
+| Roboheart, Inc.                              | 2015-07-14 |
+| Scoutapp                                     | 2015-07-20 |
+| Continuous S.A.                              | 2015-07-20 |
+| Room 118 Solutions, Inc.                     | 2015-07-21 |
+| Devialab                                     | 2015-07-28 |
+| Asana                                        | 2015-07-29 |
+| CSAA IG                                      | 2015-08-05 |
+| Ed Powell                                    | 2015-08-06 |
+| Expedia Affiliate Network                    | 2015-08-07 |
+| Tacit Knowledge                              | 2015-08-11 |
+| Layer7 Cache                                 | 2015-08-13 |
+| The Buckle, Inc                              | 2015-08-13 |
+| Serveraptor                                  | 2015-08-27 |
+| Imagination Technologies Ltd.                | 2015-08-27 |
+| Ecosia GmbH                                  | 2015-08-28 |
+| Aeode                                        | 2015-08-31 |
+| Forever Oceans Corporation                   | 2015-09-01 |
+| Flugel.it                                    | 2015-09-04 |
+| TechM                                        | 2015-09-08 |
+| Diego                                        | 2015-09-08 |
+| Tarak Blah                                   | 2015-09-10 |
+| CustomInk                                    | 2015-09-15 |
+| LightSpeed Retail                            | 2015-09-20 |
+| Humance AG                                   | 2015-09-21 |
+| Crossroads Foundation Limited                | 2015-09-29 |
+| Cyber Dev Team                               | 2015-10-02 |
+| FCL                                          | 2015-10-02 |
+| Marchex, Inc.                                | 2015-10-06 |
+| S4M                                          | 2015-10-07 |
+| PhishMe                                      | 2015-10-13 |
+| Travis CI GmbH                               | 2015-10-17 |
+| mikeroySoft                                  | 2015-10-23 |
+| NDP, LLC                                     | 2015-10-30 |
+| None                                         | 2015-11-02 |
+| Lodestone Technologies, LLC                  | 2015-11-04 |
+| LimePoint Pty Ltd                            | 2015-11-05 |
+| echohack                                     | 2015-11-12 |
+| AIB                                          | 2015-11-16 |
+| NativeX Holdings LLC                         | 2015-11-17 |
+| Cloudrifles                                  | 2015-11-20 |
+| Secureworks                                  | 2015-11-20 |
+| Taufek                                       | 2015-11-22 |
+| BuyerQuest, Inc.                             | 2015-11-25 |
+| The Weather Companies                        | 2015-12-03 |
+| Monsenso                                     | 2015-12-07 |
+| Formatron                                    | 2015-12-10 |
+| Fidelity Investments                         | 2015-12-10 |
+| DataCite                                     | 2015-12-14 |
+| Parallels                                    | 2015-12-17 |
+| Wavefront, Inc.                              | 2015-12-30 |
+| Trust1Team                                   | 2016-01-01 |
+| Nulogy Corporation                           | 2016-01-07 |
+| Salmon                                       | 2016-01-08 |
+| Flexiant                                     | 2016-01-12 |
+| COSProfessionals, LLC                        | 2016-01-14 |
+| Bellacross Technologies, LLC                 | 2016-01-18 |
+| Relenz                                       | 2016-01-18 |
+| REĀN Cloud Solutions LLC                     | 2016-01-18 |
+| LyraPhase                                    | 2016-01-18 |
+| Tikal Knowledge, SAP                         | 2016-01-19 |
+| CloudPassage                                 | 2016-01-20 |
+| Topota                                       | 2016-01-21 |
+| Sebastian Trebitz - ICT Consultancy Services | 2016-01-21 |
+| AOL                                          | 2016-01-22 |
+| Dennis Vink                                  | 2016-01-22 |
+| Datadog Inc.                                 | 2016-01-26 |
+| Jason Barnett                                | 2016-02-02 |
+| Built by Robots                              | 2016-02-02 |
+| 7digital                                     | 2016-02-05 |
+| NewVoiceMedia Ltd                            | 2016-02-05 |
+| dkd Internet Service GmbH                    | 2016-02-08 |
+| Dylan Ledbetter                              | 2016-02-09 |
+| Mikroways                                    | 2016-02-13 |
+| Grassmuck.co                                 | 2016-02-13 |
+| Postmodern Solutions                         | 2016-02-14 |
+| Rally Health                                 | 2016-02-19 |
+| PolicyStat LLC                               | 2016-02-19 |
+| Pivotal Labs                                 | 2016-02-22 |
+| Code.org                                     | 2016-02-23 |
+| Underground Media Group                      | 2016-02-23 |
+| Rakuten Inc.                                 | 2016-02-26 |
+| ENC4U                                        | 2016-03-01 |
+| Mediarithmics                                | 2016-03-07 |
+| Planalytics                                  | 2016-03-11 |
+| IT Projections Limited                       | 2016-03-14 |
+| ShoreTel Inc.                                | 2016-03-17 |
+| Apparently                                   | 2016-03-18 |
+| TraSec GmbH                                  | 2016-03-21 |
+| B1 Systems GmbH                              | 2016-03-22 |
+| Beyah Solutions, LLC                         | 2016-03-24 |
+| Inetsys SL                                   | 2016-03-30 |
+| Instabug                                     | 2016-04-07 |
+| Anaplan                                      | 2016-04-25 |
+| ForeFlight LLC                               | 2016-04-25 |
+| Hydra Technologies, Inc                      | 2016-04-28 |
+| Gengo                                        | 2016-05-11 |
+| Crifkin Amalgamated LLC                      | 2016-05-11 |
+| Crifkin Amalgamated LLC                      | 2016-05-11 |
+| Vision Critical                              | 2016-05-16 |
+| iJet Technologies                            | 2016-05-17 |
+| SendGrid, Inc.                               | 2016-05-18 |
+| Mulesoft                                     | 2016-05-29 |
+| Shopify                                      | 2016-06-13 |
+| The Regents of the University of Colorado    | 2016-06-28 |
+| Tampere University of Technology             | 2016-07-01 |
+| Altiscale                                    | 2016-07-01 |
+| Atlas Digital                                | 2016-07-05 |
+| Fastly                                       | 2016-07-12 |
+| cloud.ee OÜ                                  | 2016-07-26 |
+| Hostelworld                                  | 2016-07-28 |
+| Wazuh                                        | 2016-07-28 |
+| Arista Networks                              | 2016-08-10 |
+| Totem Power, Inc.                            | 2016-08-13 |
+| Piratenpartei Deutschland                    | 2016-08-20 |
+| Testfabrik AG                                | 2016-09-01 |
+| B7Interactive, LLC                           | 2016-09-06 |
+| PolyHat                                      | 2016-09-07 |
+| Aaron's, Inc.                                | 2016-09-07 |
+| SWB company                                  | 2016-09-09 |
+| Nclouds Inc.                                 | 2016-09-12 |
+| DataMetis                                    | 2016-09-12 |
+| nclouds                                      | 2016-09-13 |
+| Personnal                                    | 2016-09-15 |
+| Soltius NZ                                   | 2016-09-16 |
+| Primar Group                                 | 2016-09-26 |
+| Gannett                                      | 2016-09-26 |
+| etracker GmbH                                | 2016-09-27 |
+| Freelance                                    | 2016-09-28 |
 
-Allowed Contributors
+# Allowed Contributors 2009 - 2016-10-93
 
-The list of allowed contributors to Opscode projects. Persons listed as associated with a company may also be individual contributors as well.
+The list of allowed contributors from 2009 through 3 October, 2016 prior to Chef
+projects [moving to a Developer Certificate of Origin
+process](https://blog.chef.io/2016/09/19/introducing-developer-certificate-of-origin/).
+See [CONTRIBUTING](https://github.com/chef/chef/blob/master/CONTRIBUTING.md) for
+how to contribute to Chef today.
 
-To get on the list, check out our instructions on how to contribute.
+Persons listed as associated with a company may also be individual contributors
+as well.
 
 1.  Adam Jacob 	 Opscode 	
 1.  Andy Delcambre 	 Engineyard 	1/7/09
@@ -2508,3 +2860,2340 @@ To get on the list, check out our instructions on how to contribute.
 1.  Stafford Brunk		6/25/14 	
 1.  Sumit Gupta		6/26/14 	 	
 1.  Jan Mara		6/27/14
+1. Christopher Webber Chef Software, Inc. 2008-03-05
+1. Douglas Knight  2010-09-09
+1. Alma Chao Facebook 2012-05-08
+1. Pim Berger Schuberg Philis B.V. 2012-08-02
+1. Melanie Howe Ontario Systems 2013-01-23
+1. Michael Curry IBM 2013-05-14
+1. Sean Knapp Ooyala, Inc 2013-10-09
+1. Franklin Webber  2014-06-12
+1. Sean OMeara  2014-06-12
+1. Mike Splain  2014-06-12
+1. Joshua Timberman  2014-06-12
+1. Mike Splain PayPal, Inc. 2014-06-12
+1. Franklin Webber  2014-06-12
+1. Christopher Webber  2014-06-13
+1. Nathen  Harvey  2014-06-13
+1. Julian Dunn  2014-06-13
+1. Seth Vargo  2014-06-13
+1. James Scott  2014-06-13
+1. James Scott  2014-06-13
+1. Steven Danna  2014-06-13
+1. Paul Mooring  2014-06-13
+1. Tristan O'Neil  2014-06-13
+1. Brian Cobb  2014-06-13
+1. Soo Choi  2014-06-13
+1. Soo Choi  2014-06-13
+1. Josh Brand  2014-06-13
+1. Mike Biang  2014-06-13
+1. Larry Eichenbaum  2014-06-13
+1. Josh Black  2014-06-16
+1. Peter Fern  2014-06-16
+1. Brian Flad  2014-06-17
+1. James Walker  2014-06-17
+1. Karl Shrubb  2014-06-17
+1. Jonathan Asghar  2014-06-17
+1. Brett Chalupa FullStack 2014-06-17
+1. Greg Albrecht OnBeep, Inc. 2014-06-17
+1. Richard Harvey Ngineered 2014-06-17
+1. Brett Chalupa  2014-06-17
+1. Mike Fiedler  2014-06-17
+1. Jonathan Asghar  2014-06-17
+1. Yves Laroche  2014-06-17
+1. Greg Albrecht  2014-06-17
+1. Darron Froese  2014-06-17
+1. Darron Froese  2014-06-17
+1. Jorge Espada  2014-06-17
+1. Richard Harvey  2014-06-17
+1. Jorge Espada  2014-06-17
+1. Jonathan Hartman  2014-06-17
+1. Allan Espinosa  2014-06-18
+1. Troy Ready  2014-06-18
+1. Jeremy Olliver  2014-06-18
+1. Arjuna Christensen  2014-06-18
+1. Jameson Lee  2014-06-18
+1. Jameson Lee  2014-06-18
+1. Gavin Reynolds  2014-06-18
+1. Fletcher Nichol  2014-06-18
+1. Pete Cheslock  2014-06-18
+1. Pete Cheslock  2014-06-18
+1. Michael Ivey  2014-06-18
+1. Matt Ray  2014-06-18
+1. Seth Chisamore  2014-06-18
+1. Alex Vinyar  2014-06-18
+1. Christian Vozar  2014-06-19
+1. Christian Vozar Belly, Inc. 2014-06-19
+1. David Radcliffe  2014-06-19
+1. Sander van Zoest OneHealth Solutions, Inc. 2014-06-19
+1. Brint O'Hearn  2014-06-19
+1. Sander van Zoest  2014-06-19
+1. Jay Perry Brightcove 2014-06-19
+1. Jon Cowie  2014-06-19
+1. Jake Champlin  2014-06-19
+1. Karl Shrubb  2014-06-19
+1. Panagiotis Papadomitsos  2014-06-20
+1. Curtis Stewart  2014-06-20
+1. Chaz Ruhl  2014-06-21
+1. Chaz Ruhl  2014-06-21
+1. Jesse Nelson  2014-06-22
+1. Kristian Vlaardingerbroek  2014-06-22
+1. Daniel Searles  2014-06-23
+1. Serdar Sutay  2014-06-23
+1. Jeff Byrnes  2014-06-23
+1. Eric Herot  2014-06-23
+1. William Young  2014-06-23
+1. William Young  2014-06-23
+1. Cassiano Leal  2014-06-23
+1. Joseph Nuspl  2014-06-23
+1. Joseph Nuspl  2014-06-23
+1. Daniel Searles  2014-06-23
+1. Ryan Hass  2014-06-23
+1. Eric Herot EverTrue, Inc. 2014-06-23
+1. Craig Lewis Central Desktop 2014-06-23
+1. James Le Cuirot  2014-06-24
+1. Ian Meyer  2014-06-24
+1. Paul MacDougall  2014-06-24
+1. Jeff Blaine  2014-06-24
+1. John Martin  2014-06-24
+1. Matt Mencel  2014-06-24
+1. Mike Thibodeau  2014-06-24
+1. Phong Ha  2014-06-24
+1. Michael de Man  2014-06-24
+1. Larry Zarou  2014-06-24
+1. John Martin  2014-06-24
+1. Kishore Kumar  2014-06-24
+1. James Rosser  2014-06-24
+1. Mathieu Sauve-Frankel  2014-06-24
+1. Mathieu Sauve-Frankel  2014-06-24
+1. Scott Likens  2014-06-24
+1. Scott Likens  2014-06-24
+1. Tensibai Zahoying  2014-06-24
+1. Tensibai Zahoying  2014-06-24
+1. Brian Clark  2014-06-24
+1. Jordan Evans  2014-06-25
+1. Brian Scott  2014-06-25
+1. Stafford Brunk  2014-06-25
+1. Hugo Lopes Tavares  2014-06-25
+1. Ivan Larionov  2014-06-25
+1. Harlan Barnes  2014-06-26
+1. Jan Klare  2014-06-26
+1. Yukihiko Sawanobori HiganWorks LLC 2014-06-26
+1. Jessica Mink  2014-06-26
+1. Thomas Robison  2014-06-26
+1. Andreas Thielen adesso mobile solutions GmbH 2014-06-27
+1. Alban  Diguer  2014-06-27
+1. Andreas Thielen  2014-06-27
+1. Hugo Trippaers  2014-06-27
+1. Torben Knerr  2014-06-27
+1. Kirill Shirinkin  2014-06-28
+1. Hendrik Schaeidt  2014-06-28
+1. Nikita Borzykh Express 42 2014-06-29
+1. Alex Zepeda  2014-06-29
+1. Mohit Sethi  2014-06-30
+1. Florian Holzhauer  2014-06-30
+1. Jesse Hu  2014-06-30
+1. Richard Banks  2014-07-01
+1. Richard Banks Codaptive (Pty) Ltd 2014-07-01
+1. Teemu Matilainen  2014-07-01
+1. Steffen Gebert  2014-07-01
+1. Xabier de Zuazo Onddo Labs 2014-07-01
+1. Vijay Bheemineni  2014-07-01
+1. Richard Banks  2014-07-01
+1. Sean Porter  2014-07-02
+1. Michael Heijmans  2014-07-02
+1. Patrick Collins  2014-07-02
+1. Sean Porter Sean Porter Consulting 2014-07-02
+1. BK Box  2014-07-02
+1. Sean Walberg  2014-07-02
+1. Erkan Yilmaz  2014-07-02
+1. Jesse Davis  2014-07-02
+1. Florin Stan  2014-07-03
+1. Olle Lundberg Klarna 2014-07-03
+1. Tim Dysinger  2014-07-03
+1. Elan Ruusamäe  2014-07-03
+1. Tristan Keen  2014-07-03
+1. Olle Lundberg  2014-07-03
+1. Simeon Willbanks  2014-07-03
+1. Ryan Cragun  2014-07-03
+1. Ranjib Dey  2014-07-03
+1. Brian Dwyer  2014-07-03
+1. Christopher Read  2014-07-03
+1. Jerry Jackson a Committee of Lunatics, LLC 2014-07-03
+1. David Petzel  2014-07-04
+1. Per Hasselström  2014-07-04
+1. Timothy Smith  2014-07-06
+1. Evan Sosenko  2014-07-06
+1. Mike Morris  2014-07-07
+1. Paul Welch  2014-07-07
+1. Andrei Neculau  2014-07-07
+1. Scott Ford  2014-07-07
+1. Tyler Fitch  2014-07-07
+1. Zachary Stevens  2014-07-07
+1. Nacer Laradji  2014-07-07
+1. Jeffrey Carapetyan  2014-07-07
+1. Joshua Zitting  2014-07-07
+1. Jonathan Serafini  2014-07-07
+1. Mark Ayers  2014-07-08
+1. Justin Campbell  2014-07-08
+1. Roland Moriz Moriz GmbH 2014-07-08
+1. Mischa Taylor  2014-07-08
+1. Hannes Van De Vreken  2014-07-08
+1. Roland Moriz  2014-07-08
+1. Daniel  Webb  2014-07-08
+1. Luke Bradbury  2014-07-08
+1. Eric Wolfe  2014-07-08
+1. Peter Jönsson  2014-07-08
+1. Paul Czarkowski  2014-07-08
+1. Tucker DeWitt  2014-07-09
+1. Marcin Sawicki  2014-07-09
+1. Stanislav Bogatyrev  2014-07-09
+1. Chris Aumann  2014-07-09
+1. Ramya Kailas  2014-07-09
+1. Peter Fox  2014-07-09
+1. Giovanni Toraldo  2014-07-09
+1. Elijah Buck  2014-07-09
+1. Dinu Arateanu  2014-07-09
+1. Christian Höltje  2014-07-09
+1. Roman Chukh  2014-07-09
+1. Jared Everett  2014-07-09
+1. George Miranda  2014-07-09
+1. Michael Nikitochkin  2014-07-09
+1. Lloyd Chan  2014-07-09
+1. Florin Stan TCN Inc 2014-07-09
+1. Michael Nikitochkin JetThoughts LLC 2014-07-09
+1. John Alberts  2014-07-10
+1. Jonathan Tron  2014-07-10
+1. Ron Cuirle  2014-07-10
+1. Christopher Grinnan grincom 2014-07-10
+1. Christopher Grinnan  2014-07-10
+1. Greg Hellings  2014-07-10
+1. Jonathan Tron Openhood "Halter & Tron" S.E.N.C. 2014-07-10
+1. Egor Medvedev  2014-07-10
+1. Ishtiaq Ahmed  2014-07-10
+1. Egor Medvedev Clodo 2014-07-10
+1. Leo Gallucci  2014-07-11
+1. Tobias Johnson  2014-07-11
+1. Andrey Linko  2014-07-11
+1. Michael Bumann  2014-07-11
+1. Sam Kottler  2014-07-11
+1. Joseph Stump  2014-07-11
+1. Fernando Honig  2014-07-11
+1. Emmanuel Sciara  2014-07-11
+1. Federico Gimenez Nieto  2014-07-11
+1. Ryan Trauntvein  2014-07-11
+1. Melinda Moran  2014-07-11
+1. Wayne Huang  2014-07-11
+1. Daniel Sweeting  2014-07-11
+1. Federico Gimenez  2014-07-11
+1. Aneel Nazareth  2014-07-11
+1. Wilson Felipe Pereira  2014-07-11
+1. Christoph Krämer  2014-07-11
+1. Matt Wormley  2014-07-11
+1. John Bellone  2014-07-11
+1. Stephen Figgins  2014-07-11
+1. Kent Spillner  2014-07-11
+1. Aaron Baer  2014-07-11
+1. Cameron Johnston  2014-07-11
+1. Clayton Barber  2014-07-11
+1. David Schlenk Spanlink Communications 2014-07-11
+1. John Bellone Bloomberg Finance L.P. 2014-07-11
+1. John Bellone Bluedog Operations 2014-07-11
+1. Drew Rothstein  2014-07-11
+1. Nick Downs  2014-07-11
+1. Phil Kates  2014-07-12
+1. Marc Climent  2014-07-12
+1. Gregor Zurowski  2014-07-12
+1. Masatoshi Iwasaki  2014-07-12
+1. Kristian Van Der Vliet  2014-07-12
+1. Martin Walton  2014-07-12
+1. Christophe Arguel  2014-07-12
+1. Michael de Bruin  2014-07-12
+1. Tomohito Kanno  2014-07-12
+1. Christopher Laco  2014-07-12
+1. Angelo Olivera  2014-07-12
+1. Joel Moss  2014-07-12
+1. Nolan Davidson  2014-07-12
+1. Ian Delahorne  2014-07-12
+1. Joseph Holsten  2014-07-12
+1. Vsevolod Polyakov  2014-07-12
+1. Anthony Scalisi  2014-07-12
+1. Alexander Simonov  2014-07-12
+1. Jean-Francois Theroux  2014-07-12
+1. Andrea Granata  2014-07-12
+1. Jordan Wesolowski  2014-07-12
+1. Andy Thompson  2014-07-12
+1. Philip Hutchins  2014-07-12
+1. Phil Cohen  2014-07-12
+1. jason walker  2014-07-12
+1. Drew Sonne  2014-07-12
+1. Ben Tisdall  2014-07-13
+1. Venkat Naidu  2014-07-13
+1. Kyle Boorky  2014-07-13
+1. 莫 測  2014-07-13
+1. Martin Smith  2014-07-13
+1. Maciej Nowak  2014-07-13
+1. Sean Fleming  2014-07-13
+1. Kristofer  Sommestad  2014-07-13
+1. Josh Blancett  2014-07-13
+1. fang duan  2014-07-13
+1. Oleksandr Slynko  2014-07-13
+1. Jose Luis Salas  2014-07-13
+1. Barrie Bremner  2014-07-13
+1. Jonty Wareing  2014-07-13
+1. Venkat Naidu Heartland Payment Systems 2014-07-13
+1. Steve Carman  2014-07-14
+1. Matt Whiteley Engine Yard, Inc. 2014-07-14
+1. Ilan Rabinovitch  2014-07-14
+1. Marcus Morris  2014-07-14
+1. Ilmari Kontulainen Deveo 2014-07-14
+1. Jason Vanderhoof  2014-07-14
+1. Gert Kremer  2014-07-14
+1. Jake Plimack  2014-07-14
+1. Vincent Kenney  2014-07-14
+1. Sam Dunne  2014-07-14
+1. Alexander Meng  2014-07-14
+1. James Herdman  2014-07-14
+1. Ahmed Ibrahim  2014-07-14
+1. Thomas Meeus  2014-07-14
+1. NagaLakshmi N  2014-07-14
+1. Bao Nguyen Ooyala 2014-07-14
+1. Adrian Moisey  2014-07-14
+1. Reid Beels  2014-07-14
+1. Satoshi Tanaka  2014-07-14
+1. Rodolfo Castellanos  2014-07-15
+1. Ben Klang Mojo Lingo LLC 2014-07-15
+1. Matt Wrock  2014-07-15
+1. Steve Buzonas FancyGuy Technologies 2014-07-15
+1. Ralf Haferkamp  2014-07-15
+1. James Pic  2014-07-15
+1. Ben Longden  2014-07-15
+1. Chris Fortier  2014-07-15
+1. Steve Buzonas  2014-07-15
+1. Robby Dyer  2014-07-15
+1. Greg Fitzgerald  2014-07-15
+1. Brian Dupras  2014-07-15
+1. Christian Fischer  2014-07-15
+1. Nathan Huff  2014-07-15
+1. Ben Langfeld  2014-07-15
+1. Brian Stajkowski  2014-07-15
+1. Sean Escriva Heavy Water Operations 2014-07-16
+1. Brian Stajkowski Bally Technologies 2014-07-16
+1. Darren Birkett Rackspace 2014-07-16
+1. Blake Irvin  2014-07-16
+1. Aaron Kalin  2014-07-16
+1. Olivier Brisse  2014-07-16
+1. Sean Escriva Caleb Hailey 2014-07-16
+1. Justin Shepherd Rackspace 2014-07-16
+1. Andrew Goktepe  2014-07-16
+1. Oleg Rekutin  2014-07-16
+1. Vic Iglesias  2014-07-16
+1. Adam Leff  2014-07-16
+1. Brett Cavé Jemstep Inc. 2014-07-16
+1. Max Lincoln  2014-07-17
+1. Anthony Goddard  2014-07-17
+1. Kane Rogers  2014-07-17
+1. Matthieu Ouellette-Vachon  2014-07-17
+1. Andrew Brown BlackBerry Ltd. 2014-07-17
+1. Alastair Firth  2014-07-17
+1. James Cuzella  2014-07-17
+1. Kenneth Vestergaard  2014-07-17
+1. Fred Clausen  2014-07-17
+1. Sameer Arora  2014-07-17
+1. Haggai Zagury  2014-07-17
+1. John Barney  2014-07-17
+1. Chad Barraford  2014-07-17
+1. David Barbarisi  2014-07-17
+1. Bill Findley  2014-07-17
+1. Chad Barraford RStudio, Inc. 2014-07-17
+1. Dustin Collins  2014-07-18
+1. Bernie Durfee  2014-07-18
+1. Cam Cope  2014-07-18
+1. Jean Rouge  2014-07-18
+1. Guilhem Lettron  2014-07-18
+1. Achim Rosenhagen ffuenf 2014-07-19
+1. Jeremy Murray  2014-07-19
+1. Achim Rosenhagen  2014-07-19
+1. Yusuke  Murata  2014-07-20
+1. Jose Luis Ferrer Riera  2014-07-20
+1. Pavel Yudin  2014-07-20
+1. Bryan Stenson  2014-07-21
+1. Lyndon Washington  2014-07-21
+1. Alexandre Garnier  2014-07-21
+1. Sten Spans  2014-07-21
+1. Tim Rha  2014-07-21
+1. Grant Heffernan  2014-07-21
+1. Derek Groh  2014-07-21
+1. Justin Reagor  2014-07-21
+1. Nathaniel Eliot  2014-07-21
+1. Grant Bowman  2014-07-22
+1. Justin Schuhmann  2014-07-22
+1. David Kinzer  2014-07-22
+1. Grant Bowman Grantbow Consulting 2014-07-22
+1. Anshul Sharma  2014-07-22
+1. Matthew Riddle  2014-07-22
+1. Amruta Krishna Ravavarapu  2014-07-22
+1. Thomas Berger  2014-07-23
+1. Graham Weldon  2014-07-23
+1. Olivier Dolbeau  2014-07-23
+1. Ryan Uber  2014-07-23
+1. Peter Burkholder  2014-07-23
+1. Rune Madsen  2014-07-23
+1. Nick Gerakines  2014-07-23
+1. Isaac Mungai  2014-07-23
+1. Gabor Nagy  2014-07-23
+1. Matt Clifton  2014-07-23
+1. Rune Madsen O'Reilly Media 2014-07-23
+1. Patrick Birt AdRem Systems Corporation 2014-07-24
+1. Jeroen Jacobs  2014-07-24
+1. Ram Akuka  2014-07-24
+1. Jason Rust  2014-07-24
+1. Philip Hutchins PHutchins 2014-07-24
+1. Wayne Huang Revinate, Inc. 2014-07-24
+1. Ram Akuka Deutsche Telekom HBS 2014-07-24
+1. Steven Murawski  2014-07-25
+1. Alex Brehm  2014-07-25
+1. Shawn Edwards Bloomberg LP 2014-07-25
+1. Eugene Alekseev  2014-07-25
+1. Nicolas DUPEUX  2014-07-25
+1. Heath Snow  2014-07-25
+1. Alex Brehm  2014-07-25
+1. Scott Lavender  2014-07-25
+1. Paul McCallick  2014-07-25
+1. Dimitri Aivaliotis  2014-07-26
+1. Kraig Amador  2014-07-26
+1. Kraig Amador Ticketmaster 2014-07-26
+1. James FitzGibbon  2014-07-27
+1. Andrew DuFour  2014-07-27
+1. Adrian Petrescu  2014-07-28
+1. Tyler Bird Engine Yard 2014-07-28
+1. Thomas Petchel  2014-07-28
+1. Tyler Bird  2014-07-28
+1. Dmitry Tsoy  2014-07-28
+1. Mikhail Zholobov  2014-07-28
+1. Dmitry Tsoy chewbacco 2014-07-28
+1. Braulio Bhavamitra  2014-07-29
+1. Daniel Spilker CoreMedia AG 2014-07-29
+1. Eric Helgeson  2014-07-29
+1. Wes Morgan Democracy Works, Inc. 2014-07-29
+1. Bráulio Bhavamitra EITA 2014-07-29
+1. Alexey Mochkin  2014-07-29
+1. Jesse Adams  2014-07-29
+1. Djuri Baars  2014-07-29
+1. Wes Morgan  2014-07-29
+1. Alex Shkurko  2014-07-30
+1. Sytse Sijbrandij GitLab B.V. 2014-07-30
+1. James Hebden  2014-07-30
+1. Yukio Goto  2014-07-30
+1. Matt Thomson  2014-07-30
+1. Andy Fraley  2014-07-30
+1. Nathan Williams  2014-07-30
+1. Michael Fischer  2014-07-30
+1. Sean Clemmer  2014-07-30
+1. Brian Celenza  2014-07-31
+1. Sándor Ács MTA SZTAKI 2014-07-31
+1. Joe Rocklin  2014-07-31
+1. Arthur Huggard Cerner Corporation 2014-07-31
+1. Victor Lowther  2014-07-31
+1. Yoway Buorn  2014-07-31
+1. Travis Warlick  2014-07-31
+1. Nathan Cerny  2014-07-31
+1. Travis Warlick Travis Warlick LLC 2014-07-31
+1. Andrew Bennett  2014-07-31
+1. Matt Kasa  2014-08-01
+1. Mark Luntzel  2014-08-01
+1. Matt Kasa Granicus, Inc. 2014-08-01
+1. Derek Groh Texas A&M University 2014-08-01
+1. Raul Rangel  2014-08-01
+1. Sean Fisk  2014-08-01
+1. Nick Shemonsky  2014-08-01
+1. Jeremiah Snapp  2014-08-01
+1. Aaron Lane  2014-08-02
+1. Pieter Lazzaro  2014-08-03
+1. Aubrey Holland  2014-08-03
+1. Daniel O'Connor  2014-08-03
+1. Boris Komraz  2014-08-04
+1. H. "Waldo" Grunenwald  2014-08-04
+1. Peter Donald  2014-08-04
+1. Panagiotis Papadomitsos Splunk Inc. 2014-08-05
+1. Evan Sosenko OurTownRentals.com 2014-08-05
+1. Andrew Williams Intoximeters, Inc 2014-08-05
+1. Hart Hoover  2014-08-05
+1. Mike Tyler  2014-08-05
+1. Jennifer Davis  2014-08-05
+1. Andrew Williams  2014-08-05
+1. Christine Draper ThirdWave Insights LLC 2014-08-05
+1. Sam Marx  2014-08-05
+1. Jay Mundrawala  2014-08-06
+1. Daryl Robbins  2014-08-06
+1. Pierre Rambaud  2014-08-06
+1. Maciej Majewski  2014-08-06
+1. Patrick Wright  2014-08-06
+1. Bill Warner  2014-08-06
+1. John Ewart  2014-08-07
+1. Gabriel Mazetto  2014-08-07
+1. Ladislav Gazo Seges 2014-08-07
+1. Ricardo Signes  2014-08-07
+1. Christoph Mertz  2014-08-07
+1. Davide Cavarretta  2014-08-07
+1. Dominic Watson  2014-08-08
+1. Bradley Wangia  2014-08-08
+1. Dominic Watson Pixl8 Interactive Ltd 2014-08-08
+1. Russell Parks  2014-08-08
+1. Jason Vanderhoof Gazelle 2014-08-08
+1. Kazuki Saito  2014-08-09
+1. David Severski  2014-08-09
+1. Robert Northard  2014-08-09
+1. Virender Khatri  2014-08-09
+1. Aaron Wagoner  2014-08-10
+1. Eisuke Kuwahata  2014-08-11
+1. Oh Young Jooung  2014-08-11
+1. Alan Willis  2014-08-11
+1. Baptiste Courtois  2014-08-11
+1. Matthew Thode Rackspace Hosting, Inc. 2014-08-11
+1. Egor Medvedev  2014-08-11
+1. Matthew Thode  2014-08-11
+1. Joshua Kwan  2014-08-11
+1. lance lance.zhou  2014-08-11
+1. Paul Thomas  2014-08-11
+1. Mike Dillion  2014-08-12
+1. Ringo De Smet  2014-08-12
+1. Grzegorz Kołodziejczyk  2014-08-12
+1. Paul Turner  2014-08-12
+1. Chen Harel Takipi 2014-08-12
+1. Chen Harel  2014-08-12
+1. Thom May  2014-08-13
+1. Rick Saenz  2014-08-13
+1. Brendan O'Donnell  2014-08-13
+1. Jamie Winsor  2014-08-13
+1. Greg Palmier  2014-08-13
+1. Patrick Moore  2014-08-13
+1. Roman Kulayev  2014-08-13
+1. Brian DeFeyter  2014-08-13
+1. Brandon Burton  2014-08-14
+1. Jon San Miguel  2014-08-14
+1. Chase Bolt  2014-08-14
+1. Jean Mertz  2014-08-14
+1. David O Neill  2014-08-14
+1. Joel Smith  2014-08-14
+1. Capen Brinkley  2014-08-14
+1. Kevin Lamontagne De Marque 2014-08-14
+1. Andre Elizondo  2014-08-15
+1. Mathias Lafeldt  2014-08-15
+1. Miguel Ferreira  2014-08-15
+1. Michael Mior  2014-08-15
+1. Stan Chan  2014-08-15
+1. Koji Tanaka  2014-08-16
+1. Lennart Brinkmann  2014-08-16
+1. Mario Baricevic Web Man d.o.o. 2014-08-17
+1. Tom Robison  2014-08-17
+1. Mario Baricevic  2014-08-17
+1. Barthelemy Vessemont  2014-08-18
+1. Heavy Water Operations Heavy Water Operations, LLC. 2014-08-18
+1. Heavy Water Operations  2014-08-18
+1. Dave Eddy  2014-08-18
+1. Malte Swart  2014-08-18
+1. Giorgos Saslis  2014-08-18
+1. Brian Bianco  2014-08-19
+1. Thomas Massmann  2014-08-19
+1. Thomas Massmann  2014-08-19
+1. Noah Kantrowitz  2014-08-19
+1. Darshana Runwal Cerner Corporation 2014-08-19
+1. Stephen Sugden  2014-08-20
+1. Ben Snape  2014-08-20
+1. John Coleman  2014-08-21
+1. Miles Miller  2014-08-21
+1. Martin Forssen  2014-08-21
+1. Serhii Balbieko  2014-08-21
+1. Matt Barlow Rackspace 2014-08-22
+1. Dmitry Ryobryshkin  2014-08-22
+1. Peter Abbott  2014-08-24
+1. Cory Stephenson  2014-08-24
+1. Christopher Jerdonek  2014-08-25
+1. Nicolas Blanc  2014-08-26
+1. Jonathan Mickle  2014-08-26
+1. Simon Detheridge Widgit Software 2014-08-26
+1. Dieter Blomme  2014-08-26
+1. Seth Thomas  2014-08-26
+1. david karapetyan  2014-08-26
+1. Pete Crossley  2014-08-26
+1. Justin Locsei  2014-08-26
+1. Moshe Zvi  2014-08-26
+1. Ben Hartshorne  2014-08-26
+1. Dieter Blomme Picabit 2014-08-26
+1. Fabio Napoleoni  2014-08-27
+1. Charles Guenther Yelp Inc 2014-08-27
+1. Brian Cottingham  2014-08-27
+1. Sho Sawada Bitcellar, Inc. 2014-08-27
+1. Steve Jansen  2014-08-27
+1. Maurice Kherlakian  2014-08-27
+1. Peter Halliday  2014-08-27
+1. Amruta Krishna Ravavarapu  2014-08-27
+1. Craig Lewis  2014-08-27
+1. Rory Savage  2014-08-28
+1. Dave Molinari McKesson 2014-08-28
+1. Dave Molinari  2014-08-28
+1. Lennart Koopmann TORCH GmbH 2014-08-28
+1. Romain Cambien  2014-08-29
+1. Quentin Madec  2014-08-29
+1. Mevan Samaratunga  2014-08-29
+1. Sebastián Otaegui  2014-08-30
+1. Jose Ortiz  2014-08-31
+1. Doc Walker  2014-08-31
+1. Mitja Kleider  2014-08-31
+1. D flatterlight  2014-08-31
+1. Scott Bonds  2014-09-01
+1. Eugenio Marzo pronetics 2014-09-01
+1. Eugenio Marzo  2014-09-01
+1. David Aronsohn  2014-09-02
+1. Suleyman Kutlu  2014-09-02
+1. Petar Koraca  2014-09-02
+1. Mark deVilliers  2014-09-03
+1. Patrick Debus-Pesquet Numergy 2014-09-03
+1. David Workman  2014-09-03
+1. Tom Alexandrowicz  2014-09-03
+1. Scott Severtson  2014-09-03
+1. Brian Begy  2014-09-04
+1. Jay Zhu  2014-09-04
+1. David Chauviere  2014-09-04
+1. Jason Kulatunga  2014-09-04
+1. Yvo Vandoorn  2014-09-05
+1. Ben Scott  2014-09-05
+1. Christoph Maser  2014-09-05
+1. Lucas Mariani  2014-09-07
+1. Stanisław Tuszyński  2014-09-08
+1. Brandon Raabe  2014-09-08
+1. Chris Richard  2014-09-09
+1. Nick Dobson  2014-09-09
+1. Nick Dobson  2014-09-09
+1. Kieren Hynd  2014-09-09
+1. Christopher McClimans  2014-09-09
+1. Scott Marshall  2014-09-09
+1. Tim George EveryPay AS 2014-09-09
+1. Eric Pullen Appriss, Inc. 2014-09-09
+1. Jeffrey Baird  2014-09-10
+1. Guillaume Turri  2014-09-10
+1. Daniel Perez  2014-09-10
+1. Nathaniel Hoag  2014-09-10
+1. Daniel Perez Claude Tech 2014-09-10
+1. Brandon Robinson  2014-09-10
+1. Tom Scott TelVue Corporation 2014-09-11
+1. Frederico Araujo Omise.co 2014-09-11
+1. Frederico Araujo  2014-09-11
+1. Mars Ma  2014-09-11
+1. Nabeel Shahzad  2014-09-11
+1. Tom Scott  2014-09-11
+1. Romain Niccoli Criteo S.A. 2014-09-11
+1. Paul Ruiz  2014-09-11
+1. Alexander Myasnikov  2014-09-12
+1. Mark Luntzel  2014-09-12
+1. Taylor Ludwig  2014-09-13
+1. Todd Pigram  2014-09-13
+1. Nickolas Montgomery  2014-09-13
+1. Eric Shamow  2014-09-13
+1. Aaron Wartner  2014-09-14
+1. Tomokazu Takada  2014-09-14
+1. Karl Shrubb Expedia, Inc. 2014-09-15
+1. Felix Wong  2014-09-15
+1. Robert Berger  2014-09-16
+1. George Secillano  2014-09-16
+1. Johannes Plunien  2014-09-16
+1. Drew Oliner  2014-09-16
+1. Eric Heydrick  2014-09-17
+1. Jared Szechy  2014-09-17
+1. Petr Michalec  2014-09-17
+1. Benjamin Marsteau  2014-09-17
+1. James Bence  2014-09-17
+1. Stephan Linz  2014-09-19
+1. Endre Hirling  2014-09-19
+1. Paul Krohn  2014-09-19
+1. shaun mouton  2014-09-22
+1. Mike Tavares EBSCO 2014-09-22
+1. Raul Naveiras  2014-09-22
+1. Neven Burica  2014-09-22
+1. Antonio Peña  2014-09-22
+1. Olivier Bazoud  2014-09-23
+1. G Arends  2014-09-23
+1. Eric Saxby  2014-09-23
+1. Greg Osuri  2014-09-23
+1. Andrew Gale  2014-09-23
+1. William Watson  2014-09-24
+1. Jeremy Shipman  2014-09-24
+1. Pavel Danelian  2014-09-25
+1. Ryan Bowlby  2014-09-25
+1. Rob Chekaluk  2014-09-25
+1. Jonas Kongslund  2014-09-25
+1. Baptiste Courtois Criteo 2014-09-25
+1. George Secillano SAP 2014-09-26
+1. Greg Poirier  2014-09-26
+1. Muthukumar Jayaraman  2014-09-26
+1. Garett Shulman  2014-09-26
+1. George Secillano  2014-09-26
+1. Jonas Kongslund  2014-09-27
+1. James Hu  2014-09-27
+1. Shobhit Srivastava  2014-09-28
+1. Alex Glover  2014-09-29
+1. Trevor North  2014-09-29
+1. Christopher Gunther  2014-09-29
+1. Matias De Carli  2014-09-29
+1. Andrew Coulton inGenerator Ltd 2014-09-29
+1. Paul Dunnavant  2014-09-29
+1. Deni Chekirda  2014-09-30
+1. Justin Mazzi WWWH LLC 2014-09-30
+1. Karol Szuster  2014-09-30
+1. Ho-Sheng Hsiao  2014-09-30
+1. Dennis Hoer  2014-09-30
+1. Denis Chekirda  2014-09-30
+1. Christian Kaspar  2014-10-01
+1. Léo Unbekandt  2014-10-01
+1. Mal Graty  2014-10-01
+1. Simas Čepaitis  2014-10-02
+1. Daniel Hagerty  2014-10-02
+1. Michael Burns  2014-10-02
+1. Nellie Shamrell-Harrington  2014-10-03
+1. Ryan Larson  2014-10-03
+1. Greg Palmier RapidWorkspace 2014-10-04
+1. Alex Pop  2014-10-04
+1. Justin Witrick  2014-10-06
+1. Oleg Levy  2014-10-06
+1. Krzysztof Szarek  2014-10-06
+1. Peter Niederlag  2014-10-06
+1. Justin Witrick Rackspace 2014-10-06
+1. Joe Bergantine  2014-10-07
+1. Nicolas DUPEUX  2014-10-07
+1. Aurélien Léger  2014-10-07
+1. Benjamin Carpenter  2014-10-08
+1. Jun Nishikawa Monomono 2014-10-08
+1. Shinya Furuwata  2014-10-08
+1. Roger North-Row  2014-10-08
+1. Chris Fordham  2014-10-08
+1. Jonathan Hall  2014-10-09
+1. Nawaid Shamim  2014-10-09
+1. Richard Manyanza  2014-10-09
+1. Bernhard Weisshuhn  2014-10-09
+1. Doug Ireton Nordstrom, Inc. 2014-10-10
+1. Nowell Strite  2014-10-10
+1. Mathew Kamkar  2014-10-10
+1. Ryan Hass  2014-10-10
+1. Lemuel Formacil  2014-10-10
+1. Christopher Luciano  2014-10-12
+1. Takahiro Horikawa InfoLens, Inc. 2014-10-13
+1. John Brodie  2014-10-13
+1. Fernando Monserrat  2014-10-13
+1. Takahiro Horikawa  2014-10-13
+1. Thomas Boerger Webhippie 2014-10-13
+1. Takahiro Horikawa InfoLens, Inc. 2014-10-13
+1. Thomas Boerger  2014-10-13
+1. Tsukasa Sato  2014-10-13
+1. Isa Farnik  2014-10-14
+1. Fahd Sultan  2014-10-14
+1. Chris Fordham Xhost Australia 2014-10-14
+1. Fahd Sultan Simulmedia, Inc 2014-10-14
+1. Chris Fordham  2014-10-14
+1. Shinya Furuwata  2014-10-15
+1. Paul Dunnavant Mypaulie 2014-10-15
+1. Ciaran Farrell SUSE LINUX Products GmbH 2014-10-15
+1. Nicolas Szalay  2014-10-15
+1. masaki yamada  2014-10-15
+1. Shinya Furuwata None 2014-10-15
+1. Peter West  2014-10-15
+1. Shinya Furuwata  2014-10-15
+1. Maciej Pasternacki  2014-10-16
+1. Krzysztof Wilczynski  2014-10-16
+1. Shinya Furuwata  2014-10-16
+1. Anne Moroney  2014-10-16
+1. Marc Paradise  2014-10-16
+1. Colby Olson  2014-10-16
+1. Shawn Weitzel  2014-10-16
+1. Don  Becker  2014-10-17
+1. Jordan  Dea-Mattson Yahoo 2014-10-17
+1. Michael Schmidt  2014-10-17
+1. Matt Greensmith  2014-10-17
+1. John Schwinghammer  2014-10-17
+1. Jeff Goldschrafe  2014-10-18
+1. John Deatherage Juniper Networks, Inc. 2014-10-19
+1. Miguel Landaeta  2014-10-19
+1. John Deatherage  2014-10-19
+1. Kevin Lee  2014-10-20
+1. Jonathan Whitaker  2014-10-20
+1. Brian Stajkowski Bulletproof Networks 2014-10-20
+1. Brian Stajkowski  2014-10-20
+1. a a fd 2014-10-20
+1. a a  2014-10-20
+1. Mandeep Bal  2014-10-21
+1. Mandeep Bal  2014-10-21
+1. Norman Joyner Norman Joyner 2014-10-21
+1. Norman Joyner  2014-10-21
+1. Don L.  2014-10-21
+1. Jesus Gutierrez  2014-10-21
+1. Jesus Gutierrez  2014-10-21
+1. Misha Soliterman  2014-10-21
+1. Terry Fundak TJSoftworks 2014-10-21
+1. Terry Fundak  2014-10-21
+1. Prakash Palanisamy  2014-10-22
+1. Gavin Sandie Sneacho 2014-10-22
+1. Kevin Burnett  2014-10-22
+1. Ben Wright  2014-10-22
+1. Jan Mara  2014-10-22
+1. Sean Clemmer  2014-10-22
+1. Eugene Narciso  2014-10-23
+1. TADOKORO Saneyuki  2014-10-23
+1. Arne Sund  2014-10-24
+1. Dennis Konert  2014-10-24
+1. Alexander Merkulov  2014-10-24
+1. Mikael Henriksson  2014-10-24
+1. Clark Everetts  2014-10-25
+1. Christopher Coffey  2014-10-26
+1. Zhang zlcolin  2014-10-26
+1. Dan Fruehauf  2014-10-26
+1. cybermerc industries  2014-10-26
+1. Christoph Hartmann  2014-10-26
+1. Anuj Biyani  2014-10-28
+1. Chris Lundquist  2014-10-28
+1. Alex Falkowski  2014-10-28
+1. Lopaka Delp  2014-10-28
+1. Fabian Ruff  2014-10-29
+1. Javier Rodríguez  2014-10-29
+1. Justin Kolberg  2014-10-29
+1. Sean Cribbs  2014-10-29
+1. JD Isaacks  2014-10-29
+1. Dennis Klein  2014-10-29
+1. Tyler Cloke  2014-10-29
+1. Sylvain Tissot Ecodev 2014-10-30
+1. Jason  Perry Brightcove, Inc 2014-10-30
+1. Deepak Sihag  2014-10-30
+1. Eric Feldhusen  2014-10-30
+1. Dustin Van Buskirk  2014-10-30
+1. Cloudrifles Chotiwattanapol  2014-10-30
+1. Deepak Sihag NA 2014-10-30
+1. Vincent Van Driessche  2014-10-31
+1. Nicholas Thompson  2014-10-31
+1. Steven De Coeyer  2014-11-02
+1. Steven De Coeyer Stack-up 2014-11-02
+1. Leo Unbekandt Scalingo 2014-11-03
+1. Amir Kadivar  2014-11-03
+1. Peter Kringle  2014-11-03
+1. Jeremiah Dabney  2014-11-04
+1. Dave Parfitt  2014-11-04
+1. Gary McLean Hall  2014-11-04
+1. Mark Anderson  2014-11-05
+1. Andreas Rayo Kniep  2014-11-05
+1. Christian Rodriguez  2014-11-05
+1. Noam Ben Ari  2014-11-05
+1. Mark Pimentel  2014-11-05
+1. Damian Gerow  2014-11-06
+1. Carlos Diaz  2014-11-10
+1. Michael Burns  2014-11-11
+1. Prajakta Purohit  2014-11-11
+1. Lance Andersen  2014-11-11
+1. Brent Walker  2014-11-11
+1. Vasiliy Tolstov  2014-11-11
+1. Ravi Bhure  2014-11-12
+1. Rahul Janghel Xpanxion 2014-11-12
+1. Carlos Diaz Covario 2014-11-12
+1. Norberto Lopes  2014-11-12
+1. Hiroki Mizuma  2014-11-12
+1. Jun Heider  2014-11-12
+1. Rahul Janghel  2014-11-12
+1. Biju Nair  2014-11-13
+1. Paolo Sechi  2014-11-13
+1. Daniel Barker  2014-11-13
+1. John Dewey  2014-11-13
+1. Joshua Kwan Schrodinger, Inc. 2014-11-14
+1. Krzysztof Krzyżaniak  2014-11-14
+1. Eric Swenson  2014-11-14
+1. Pradeep Mishra  2014-11-15
+1. Aditya Bhardwaj  2014-11-15
+1. Sam Martin  2014-11-15
+1. Ranjib Dey  2014-11-15
+1. Steve Clark  2014-11-16
+1. Alexander De Leon  2014-11-16
+1. Edmund Dipple  2014-11-17
+1. Emanuel Evans  2014-11-17
+1. Thomas Guinther  2014-11-17
+1. Sean Nolen  2014-11-17
+1. Sarah Kowalik  2014-11-17
+1. Kei Hirata  2014-11-17
+1. Yulian Kuncheff  2014-11-18
+1. Jihyung Song SK Planet 2014-11-18
+1. Lucy Wyman  2014-11-18
+1. Jason Potkanski  2014-11-18
+1. Julien Bianchi  2014-11-18
+1. Jihyung Song  2014-11-18
+1. Jeremy Miller Heartland Payment Systems 2014-11-18
+1. Julien Bianchi jubianchi.fr 2014-11-18
+1. Eric Citaire  2014-11-19
+1. Joseph Ryan  2014-11-19
+1. Eric Citaire Médiamétrie 2014-11-19
+1. Lane Maxwell Terra Firma Engineering, LLC 2014-11-19
+1. David Strauss Pantheon Systems, Inc. 2014-11-20
+1. David Strauss  2014-11-20
+1. Brian Felton  2014-11-21
+1. Chirag Jog Clogeny Technologies 2014-11-21
+1. Daniel Dreier  2014-11-21
+1. Andres Franco  2014-11-21
+1. Jason Williams DigiTar Inc. 2014-11-22
+1. Jason Williams  2014-11-22
+1. adam enger  2014-11-23
+1. william pink  2014-11-24
+1. Anduin Withers  2014-11-24
+1. Maciej Strzelecki  2014-11-24
+1. Geoffrey Tran  2014-11-24
+1. Michael Gilliland  2014-11-24
+1. Jacob McCann  2014-11-24
+1. Grant Ridder  2014-11-25
+1. Eric Greer Second Mind 2014-11-25
+1. Eric Greer  2014-11-25
+1. Mohit Dilawari Localytics 2014-11-25
+1. Pablo Gutiérrez del Castillo  2014-11-25
+1. Tarak Blah  2014-11-25
+1. Tigran Kavanosyan  2014-11-25
+1. Willington Vega  2014-11-26
+1. Timur Batyrshin  2014-11-26
+1. Moshe Katz  2014-11-26
+1. shuo zhang  2014-11-27
+1. l r  2014-11-29
+1. Luca Rovinetti  2014-11-29
+1. Yuu Yamashita  2014-11-29
+1. Scott Kinney  2014-12-02
+1. Benjamin Pillet  2014-12-02
+1. Peter Adkins  2014-12-03
+1. Roy Ratcliffe  2014-12-03
+1. Nitzan Raz  2014-12-04
+1. Lee Skillen  2014-12-04
+1. Dmitriy Bielorusov  2014-12-05
+1. Dmitriy Bielorusov Anerhan 2014-12-05
+1. Jamie Alessio  2014-12-06
+1. Kazuki Ota Treasure Data, Inc. 2014-12-06
+1. Sander van Zoest  2014-12-07
+1. Nikolay Murga  2014-12-08
+1. Jason Schadel  2014-12-08
+1. Brian Cajes  2014-12-08
+1. James Lovelace Yakara Ltd 2014-12-09
+1. Anjaneya Raju  2014-12-09
+1. sofer Athlan-Guyot  2014-12-09
+1. Cesare Bellini Yakara Ltd 2014-12-09
+1. R Southard CirrusMio 2014-12-10
+1. Christopher Coffey  2014-12-11
+1. Blair Hamilton  2014-12-12
+1. Steve Nolen  2014-12-13
+1. Szabolcs Zajdo  2014-12-13
+1. Martha Greenberg  2014-12-14
+1. denny dennyzhang  2014-12-14
+1. Connor Beckett  2014-12-15
+1. Grégoire Seux Criteo 2014-12-15
+1. Manea Eugen  2014-12-15
+1. Andrew Fleener  2014-12-16
+1. Nico Kadel-Garcia  2014-12-16
+1. Dmitri Toubelis  2014-12-16
+1. Michael Lewis  2014-12-17
+1. Yoway Buorn Sumo Logic 2014-12-18
+1. Roberto Moutinho  2014-12-19
+1. John Collier  2014-12-23
+1. Tom Parker  2014-12-25
+1. Sergiu Ionescu  2014-12-27
+1. Jaroslav Gorjatsev  2014-12-28
+1. Tatyana Arenburg  2014-12-29
+1. Dustin Collins Conjur 2014-12-31
+1. Dustin Collins  2014-12-31
+1. Trevor Bramwell  2014-12-31
+1. Nathaniel Michael  2015-01-02
+1. Andrew Christianson  2015-01-02
+1. Evangelos Pappas  2015-01-02
+1. Michael Mittelstadt  2015-01-02
+1. Lance Albertson  2015-01-04
+1. Jesse Hauf  2015-01-05
+1. PORTE Loïc PMSIpilot 2015-01-05
+1. Timothy Quinn Mad13 Entertainment 2015-01-06
+1. Rasmus Praestholm  2015-01-06
+1. Kota Shiratsuka INSANEWORKS,LLC 2015-01-06
+1. Edmund Haselwanter  2015-01-06
+1. Timothy Quinn  2015-01-06
+1. Alfonso Bocanegra de Luis  2015-01-07
+1. Yusuke Tanaka  2015-01-08
+1. Naotoshi Seo  2015-01-09
+1. Shinichi Morita  2015-01-09
+1. Adam Renberg  2015-01-09
+1. Diego Plentz  2015-01-10
+1. Diego Plentz Tautt 2015-01-10
+1. Jeffrey Hutchison  2015-01-11
+1. Jason Brody-Stewart-Stroeh  2015-01-11
+1. Chris Burroughs AddThis 2015-01-12
+1. Gerald Hevener  2015-01-14
+1. Chris Pernicano  2015-01-14
+1. Ben Vidulich  2015-01-14
+1. Brandon O'Connor  2015-01-14
+1. Brandon O'Connor DreamBox Learning, Inc. 2015-01-14
+1. Uchit Vyas  2015-01-15
+1. David O Neill Intel 2015-01-15
+1. Tim Nicholas  2015-01-15
+1. IT Adminstrator OptiShot Golf 2015-01-16
+1. Richard Henning  2015-01-16
+1. Thomas Orozco  2015-01-16
+1. IT Adminstrator  2015-01-16
+1. Tim Miller RightScale 2015-01-16
+1. Kai Sasaki  2015-01-18
+1. Richard Nixon  2015-01-18
+1. Nick Silkey  2015-01-19
+1. Daniel Givens  2015-01-19
+1. Kai Sasaki Yahoo Japan 2015-01-19
+1. Ovais Tariq  2015-01-19
+1. Ivan Suftin  2015-01-19
+1. Zachary Pallin  2015-01-19
+1. Matt Vollrath  2015-01-20
+1. I-Ming Chen  2015-01-20
+1. denny dennyzhang001  2015-01-21
+1. Barry Allard  2015-01-21
+1. William Albenzi  2015-01-21
+1. denny dennyzhang OSC Technologies, LLC 2015-01-21
+1. Ning Hin Lincoln Lee  2015-01-22
+1. Phil Schuler  2015-01-23
+1. Bill Moritz  2015-01-23
+1. Van Thoai Nguyen  2015-01-23
+1. Weihang Jian  2015-01-23
+1. Florian Breisch  2015-01-24
+1. Romain Vrignaud  2015-01-24
+1. Michael Proctor-Smith  2015-01-25
+1. Yi Ming Yin  2015-01-26
+1. Aniessh Sethh Aniessh Sethh 2015-01-28
+1. Mark jonson  2015-01-28
+1. Aniessh Sethh  2015-01-28
+1. Jonathan Bogaty  2015-01-30
+1. Neven Burica Motorcycle Industry Council 2015-01-30
+1. Andrew Kerr  2015-01-31
+1. Dan Herman  2015-01-31
+1. Aaron Lane  2015-02-02
+1. Helgi Thorbjoernsson Engine Yard, Inc. 2015-02-02
+1. Icinga Team Icinga 2015-02-02
+1. Icinga Team  2015-02-02
+1. William Salt  2015-02-02
+1. Stuart Preston  2015-02-02
+1. David Muto  2015-02-02
+1. Evan Gilman  2015-02-03
+1. Chris Kacerguis  2015-02-03
+1. David Muto pseudomuto 2015-02-03
+1. Joris van Lieshout  2015-02-04
+1. Matt Whiteley  2015-02-04
+1. Antoni Baranski  2015-02-04
+1. Igor Shpakov  2015-02-04
+1. Michael Glenney  2015-02-05
+1. Claudiu SONEL  2015-02-05
+1. Pierre-Luc Dion CloudOps Inc. 2015-02-07
+1. Sam Martin N/A 2015-02-07
+1. Ricardo Lupo  2015-02-07
+1. Pierre-Luc Dion  2015-02-07
+1. Christopher Lambacher  2015-02-08
+1. Sergey Storchay Magemaven 2015-02-09
+1. Erik van Brakel eVision Industry Software 2015-02-09
+1. Sergey Storchay PE 2015-02-09
+1. Sergey Storchay  2015-02-09
+1. Richard Grasshoff  2015-02-10
+1. Claudio Sanchez Tejeda  2015-02-10
+1. Cyril Scetbon  2015-02-11
+1. takaaki furukawa  2015-02-11
+1. Martijn van der Kleijn AIRFRANCE / KLM 2015-02-12
+1. Stefan Staudenmeyer  2015-02-12
+1. Seb Patane  2015-02-13
+1. Andy Glick  2015-02-13
+1. Dale Hui  2015-02-13
+1. Surya Avirneni  2015-02-14
+1. Zi Kang Gan  2015-02-17
+1. Pete Buletza Elyxor, Inc 2015-02-17
+1. Cedric Lamalle  2015-02-17
+1. Adolfo Pérez Álvarez  2015-02-17
+1. Scott Smith  2015-02-17
+1. Matt Williams  2015-02-18
+1. Nickolay Kovalev  2015-02-19
+1. Nickolay Kovalev  2015-02-19
+1. FedeX FedeX  2015-02-19
+1. Nickolay Kovalev Coderico 2015-02-19
+1. Nickolay Kovalev Coderico 2015-02-19
+1. kay tani-olu  2015-02-20
+1. Hemal Varambhia  2015-02-20
+1. Christopher Auston  2015-02-20
+1. Anthony Miller  2015-02-20
+1. Denis Barishev  2015-02-20
+1. kourosh parsa  2015-02-20
+1. Tatsuya Suzuki  2015-02-21
+1. Federico Castagnini  2015-02-21
+1. Jacob Minshall  2015-02-22
+1. Ranjib Dey PagerDuty 2015-02-23
+1. Drew Rapenchuk AdREM Systems 2015-02-24
+1. Drew Rapenchuk  2015-02-24
+1. Mike Juarez  2015-02-24
+1. Gavin Sandie  2015-02-24
+1. Ross Duggan Barricade Security Systems, Ltd. 2015-02-25
+1. Jeremy Przygode Stratalux, Inc. 2015-02-25
+1. Jeremy Przygode  2015-02-25
+1. Matt Eldridge  2015-02-25
+1. Alexander Dupuy  2015-02-26
+1. Zia Rahman  2015-02-26
+1. Sky  Eyes  2015-02-27
+1. Julian Tabel  2015-02-27
+1. Vandad Chaharlengi  2015-02-27
+1. Sky Eyes TpT 2015-02-27
+1. Nellie Shamrell-Harrington Chef 2015-02-27
+1. Drew Blessing  2015-02-28
+1. Sunggun Yu  2015-02-28
+1. Christopher Zeeb  2015-03-01
+1. Michael Belt  2015-03-03
+1. Matthew Clifton Standard Edge 2015-03-04
+1. Rilindo Foster  2015-03-04
+1. Rudger Gravestein  2015-03-04
+1. Joe Heung  2015-03-04
+1. Ray Rodriguez  2015-03-04
+1. Surya Avirneni  2015-03-04
+1. Chris Gianelloni  2015-03-04
+1. Kyleen MacGugan  2015-03-04
+1. Joe Heung RevelOps Inc 2015-03-04
+1. Jean-Francois Bibeau  2015-03-05
+1. sai kiran skmothe Qwinix Technologies 2015-03-05
+1. Dennis Pattmann  2015-03-05
+1. Brian Smith  2015-03-05
+1. Josh Bradley  2015-03-05
+1. Ganesh Ramnarine  2015-03-05
+1. Martín Buceta  2015-03-06
+1. Nick Willever  2015-03-06
+1. Henrique Zambon  2015-03-06
+1. Bradley Steinfeld  2015-03-06
+1. Zhong YU Wu  2015-03-06
+1. Leons Petrazickis  2015-03-06
+1. Nilesh Londhe  2015-03-07
+1. Brian Goad  2015-03-07
+1. David Brown  2015-03-08
+1. Pavlo Dotsulenko  2015-03-08
+1. Max Sills Google, Inc. 2015-03-09
+1. Eiki Kanai  2015-03-09
+1. Maurizio PIllitu  2015-03-09
+1. Isao SHIMIZU  2015-03-09
+1. Holger Just  2015-03-09
+1. Daniel Paulus  2015-03-09
+1. Jason Musits  2015-03-09
+1. Nicholas Slowes  2015-03-09
+1. Kirt Fitzpatrick  2015-03-09
+1. Ann Brady  2015-03-09
+1. Daisuke HIGUCHI CREATIONLINE,INC. 2015-03-09
+1. Josh Dolitsky  2015-03-10
+1. HIROSE Masaaki  2015-03-10
+1. Blake Irvin yetu AG 2015-03-10
+1. Alex Derzhi  2015-03-10
+1. Simon Kaluza  2015-03-10
+1. General Counsel Dynamic Network Services Inc. 2015-03-11
+1. Pawan Verma Target Corporation 2015-03-11
+1. Sean Chon  2015-03-12
+1. Kirt Fitzpatrick  2015-03-12
+1. Michael Hedgpeth  2015-03-12
+1. Kim Dowling  2015-03-12
+1. Steve Lowe  2015-03-12
+1. Wenjun Huang  2015-03-13
+1. Benjamin Staffin  2015-03-13
+1. Jonathan Chapman  2015-03-13
+1. Jerrel Blankenship  2015-03-13
+1. William Drew  2015-03-13
+1. Andy Smith  2015-03-14
+1. Dave Parfitt  2015-03-15
+1. Shashi Shilarnav  2015-03-16
+1. Jose Palafox Cisco 2015-03-16
+1. Rob Pierucci  2015-03-16
+1. Shashi Shilarnav sshilarnav 2015-03-16
+1. Enrico Stahn  2015-03-17
+1. Benoit Plessis  2015-03-18
+1. sai kiran Mothe Qwinix Technologies 2015-03-18
+1. Tim Sogard  2015-03-18
+1. Rocky Olsen  2015-03-19
+1. Gene Wood  2015-03-19
+1. Kevin Van Wilder  2015-03-19
+1. Ryan Lee  2015-03-19
+1. Federico Castagnini Self 2015-03-19
+1. Adam Alboyadjian Vista Higher Learning, Inc. 2015-03-19
+1. Kaustubh Deorukhkar  2015-03-20
+1. Stephen Wright  2015-03-20
+1. Stephen Wright Cars.com 2015-03-20
+1. Ross McKinley  2015-03-20
+1. Alain Al  2015-03-21
+1. Zackery Nunez  2015-03-21
+1. Dominique Poulain left-left-lemma Oy 2015-03-22
+1. Megan Oliver Carbonite 2015-03-23
+1. Gary Waters  2015-03-23
+1. Mike Tougeron  2015-03-24
+1. Allan Beaufour Sum Labs, Inc 2015-03-24
+1. Thomas Hughes  2015-03-24
+1. Lloyd Dewolf  2015-03-24
+1. Jean-Baptiste Dalido Batch.com 2015-03-24
+1. Jean-Baptiste Dalido  2015-03-24
+1. Guillaume Plessis  2015-03-24
+1. Ilan Rabinovitch  2015-03-25
+1. Slava Kardakov  2015-03-26
+1. Bailey Belvis  2015-03-26
+1. Slava Roussakov  2015-03-26
+1. Jacob Ingram  2015-03-26
+1. Lingfu Zhang  2015-03-27
+1. William Jimenez  2015-03-27
+1. Anju Tiwari  2015-03-27
+1. Yusuke Goto  2015-03-28
+1. Maksim Chizhov  2015-03-28
+1. Miguel Fonseca Mindera 2015-03-30
+1. Dmytro Ilchenko  2015-03-30
+1. Dmytro Ilchenko  2015-03-30
+1. Miguel Fonseca  2015-03-30
+1. Szymon Szypulski  2015-03-30
+1. Aaron Walker  2015-03-31
+1. Shai Rosenfeld  2015-03-31
+1. Pedro Carriço  2015-03-31
+1. Pedro Carriço  2015-03-31
+1. Manuel Mazzuola  2015-03-31
+1. Matt Stanford  2015-03-31
+1. Igor Kanyuka  2015-03-31
+1. Rebekah Cha  2015-03-31
+1. Manuel Mazzuola ClouDesire SRL 2015-03-31
+1. vipul sharma self 2015-04-01
+1. Gerrit Tamboer  2015-04-01
+1. Rebekah Cha  2015-04-01
+1. Ian Kronquist  2015-04-02
+1. Tony ptQa  2015-04-02
+1. Topher Cullen  2015-04-02
+1. Michael Misshore  2015-04-02
+1. Yanick Duchesne  2015-04-02
+1. Volodymyr Babchynskyy  2015-04-02
+1. Michael Misshore Mudbug Media 2015-04-02
+1. Chris Chambers  2015-04-02
+1. William Fisher  2015-04-03
+1. Daniel Steen  2015-04-03
+1. Lance Albertson Oregon State University Open Source Lab 2015-04-03
+1. Chris Hammer  2015-04-04
+1. Brian Hays  2015-04-04
+1. Yoshiyuki Kinjo  2015-04-05
+1. Samuel Cassiba  2015-04-05
+1. Luke Reimer  2015-04-06
+1. Jeffrey Borcean  2015-04-06
+1. Kirill Kouznetsov  2015-04-06
+1. Timothy Heckman  2015-04-07
+1. Kristian Järvenpää  2015-04-07
+1. Christopher Potts  2015-04-07
+1. Jimmy Puckett SPINEN 2015-04-08
+1. Hrusikesh Panda  2015-04-08
+1. Francis Nicholas  2015-04-08
+1. Jimmy Puckett  2015-04-08
+1. Jerrel Blankenship  2015-04-08
+1. Florent Vilmart  2015-04-08
+1. Damian Pantano  2015-04-08
+1. Anthony Burns  2015-04-09
+1. Yves Blusseau  2015-04-10
+1. David Thornton Needle, Inc.  2015-04-10
+1. Vincent Theron  2015-04-10
+1. David Thornton  2015-04-10
+1. Tony Pitale  2015-04-11
+1. Claudiu Vădean  2015-04-11
+1. David Joos  2015-04-11
+1. WonGoo Lee  2015-04-12
+1. Jeff LaPlante  2015-04-12
+1. Sonny Garcia  2015-04-13
+1. John Mickey  2015-04-13
+1. Anthony Acquanita  2015-04-13
+1. Matt Jones  2015-04-13
+1. Simonas Kareiva  2015-04-14
+1. Shane Auckland  2015-04-15
+1. Jolyon Griffiths Calastone Ltd 2015-04-15
+1. Derek Rosenzweig  2015-04-15
+1. Andy Theuninck  2015-04-15
+1. Artur Melo  2015-04-15
+1. Kieren Evans  2015-04-15
+1. Rodrigo Avila  2015-04-16
+1. Brendan Germain  2015-04-16
+1. YOSUKE INOUE  2015-04-17
+1. Peter Gallagher  2015-04-17
+1. Andrew Bennett Pixid Design 2015-04-17
+1. Travis Davis  2015-04-17
+1. Richard Abdill  2015-04-21
+1. Tom Dooner  2015-04-22
+1. Thomas Geirhovd  2015-04-23
+1. Chris Van Heuveln  2015-04-23
+1. Daniel Bjorge  2015-04-23
+1. Trevor Hess  2015-04-23
+1. Charles Wimmer  2015-04-23
+1. Naoya Yoshizawa  2015-04-24
+1. Roman Vakulchik  2015-04-24
+1. Kavita Sachdeva  2015-04-24
+1. Tomasz Sętkowski  2015-04-24
+1. Trent Petersen  2015-04-24
+1. Alex Naumchenko Devloft Solutions Inc. 2015-04-27
+1. Alex Naumchenko  2015-04-27
+1. Johnathan Kupferer  2015-04-27
+1. Julien Pervillé Mingalar SAS 2015-04-28
+1. Craig keyrage  2015-04-28
+1. Remi Hakim  2015-04-28
+1. Rachel Adler  2015-04-28
+1. Joel Handwell  2015-04-28
+1. Barthelemy Vessemont  2015-04-28
+1. Andrey Rotchev  2015-04-29
+1. James Denman  2015-04-29
+1. Robert Castelle  2015-04-29
+1. James Denman Latta Partners 2015-04-30
+1. John Smyth  2015-04-30
+1. Rex Cerbas  2015-04-30
+1. Greg Karékinian  2015-04-30
+1. James Denman  2015-04-30
+1. Richard Guin  2015-04-30
+1. James Denman  2015-04-30
+1. Scott Saad  2015-04-30
+1. Giovanni Toraldo ClouDesire 2015-04-30
+1. John Frykland  2015-05-01
+1. Seth Chisamore CHEF 2015-05-01
+1. Kristin Triolo Hewlett-Packard 2015-05-01
+1. Eiki Kanai  2015-05-01
+1. Pascale-Andrée Audet  2015-05-01
+1. Anthony Acquanita acquantia.me 2015-05-01
+1. Dhawal Patel Nordstrom 2015-05-01
+1. Dian Hansen Hewlett-Packard 2015-05-01
+1. Radu Munteanu  2015-05-03
+1. Stephan Kemper ViaSat, Inc. 2015-05-04
+1. Alex Dunn  2015-05-04
+1. Jonathan Lassoff  2015-05-04
+1. Nikolay Kuzin Light Side 2015-05-05
+1. Michael Burns  2015-05-05
+1. Michael Burns  2015-05-05
+1. Nikolay Kuzin  2015-05-05
+1. Cheng-Dae Choe  2015-05-07
+1. Eric Rutherford  2015-05-07
+1. Daniel Condomitti  2015-05-07
+1. John Lemp  2015-05-07
+1. Joshua Glass Chef 2015-05-08
+1. Marcus Nilsson  2015-05-08
+1. Stefan Novak  2015-05-08
+1. James Johnson  2015-05-09
+1. Philipp Hellmich  2015-05-10
+1. Phillip Roberts  2015-05-11
+1. Fraser Scott  2015-05-11
+1. Phillip Roberts Ingenium Group, LTD 2015-05-11
+1. Simao Mata  2015-05-12
+1. Derek Belrose  2015-05-12
+1. Tobin Quadros  2015-05-12
+1. Tobin Quadros  2015-05-12
+1. Daniel Ben-Zvi  2015-05-12
+1. Kavita Sachdeva self 2015-05-12
+1. Jo Rhett  2015-05-12
+1. Gabriel Rosendorf  2015-05-12
+1. Biswajit Das  2015-05-12
+1. Eric Renfro Linux-Help.org 2015-05-13
+1. Eric Renfro  2015-05-13
+1. Mark Keisler  2015-05-13
+1. joe miller  2015-05-13
+1. Dan Baggott  2015-05-14
+1. John Maguire  2015-05-14
+1. Alaa Qutaish  2015-05-14
+1. Taylor Price  2015-05-14
+1. Justin Seubert  2015-05-18
+1. Jeremy Fleischman  2015-05-18
+1. Vianney Foucault  2015-05-19
+1. Leonardo Lima  2015-05-20
+1. Richard Barkley  2015-05-20
+1. ChangZhuo Chen  2015-05-21
+1. Yoshi Spendiff  2015-05-21
+1. Davida Marion  2015-05-21
+1. Vladimir Skubriev  2015-05-21
+1. Kouhei Sutou  2015-05-21
+1. Eric Reeves Alert Logic, Inc. 2015-05-22
+1. Jeff Arcuri Gap Inc 2015-05-22
+1. Vianney Foucault  2015-05-22
+1. spencer owen  2015-05-22
+1. Rushin Panchal Resivaa Technologies Pvt LTD 2015-05-22
+1. John Norden Alert Logic 2015-05-23
+1. Franklin Hanson  2015-05-23
+1. Chris Marchesi PayByPhone Technologies 2015-05-25
+1. Michael Michael  2015-05-26
+1. Brad Ison  2015-05-26
+1. Richard Lock University of Derby 2015-05-27
+1. Richard Lock  2015-05-27
+1. take ookubo  2015-05-27
+1. David Macpherson  2015-05-28
+1. Dave Parfitt  2015-05-28
+1. Greg Durham Chef 2015-05-28
+1. Karen Bruner  2015-05-29
+1. Scott McGillivray  2015-05-29
+1. Mikhail Priver  2015-05-29
+1. Tim Terhorst  2015-05-31
+1. Olivier Lemasle  2015-05-31
+1. Edward Bartholomew  2015-05-31
+1. Larry Wright  2015-06-01
+1. Jacob Bell  2015-06-01
+1. Yeung Siu Citrix Systems, Inc. 2015-06-02
+1. Eric Tucker Blue Spurs 2015-06-02
+1. Aiman Alsari  2015-06-03
+1. Eduardas Jarusevicius  2015-06-03
+1. PaiCheng Tao  2015-06-03
+1. Martin Chlumsky  2015-06-04
+1. Jonathan Amiez  2015-06-04
+1. Zach Malone  2015-06-05
+1. Ishu Gupta  2015-06-05
+1. Christopher Dickey  2015-06-05
+1. pingdecopong pingdecopong  2015-06-05
+1. Michael O'Connor  2015-06-07
+1. Anirban Saha  2015-06-07
+1. Brent Montague  2015-06-08
+1. Jacob Royal  2015-06-08
+1. Craig Bookwalter  2015-06-08
+1. Anton Koldaev  2015-06-08
+1. Miroslav Svoboda  2015-06-08
+1. Adam Paxton  2015-06-08
+1. Kaushik Chandrashekar  2015-06-09
+1. Dan Varga  2015-06-09
+1. Matt Wormley Myself 2015-06-09
+1. Chris Knight hevnly 2015-06-10
+1. Ramez Mourad Cvent 2015-06-10
+1. Chris Knight  2015-06-10
+1. Etienne Lafarge  2015-06-10
+1. Chris Knight  2015-06-10
+1. Nick Hudacin  2015-06-10
+1. Ganesh Nalawade  2015-06-11
+1. Simar Kalra  2015-06-11
+1. Benjamin Pellittieri  2015-06-12
+1. Patrick Connolly  2015-06-12
+1. Torsten Schmits  2015-06-12
+1. Lance Powell  2015-06-13
+1. Antonio Terceiro  2015-06-14
+1. Uldis Sturms  2015-06-14
+1. John Kerry  2015-06-14
+1. Paul Brown  2015-06-15
+1. Matt Kantor  2015-06-15
+1. Benjie Godfrey  2015-06-15
+1. Adam Kerr  2015-06-16
+1. Jonathan Serafini Jonathan Serafini 2015-06-16
+1. Michael Villis  2015-06-16
+1. Adam Linkous  2015-06-17
+1. Michael Wheeler  2015-06-17
+1. David Bernick  2015-06-18
+1. Ilya Katz  2015-06-18
+1. Matthew Johnson  2015-06-18
+1. Ilya Katz ExecOnline 2015-06-18
+1. Maximilian Fischer  2015-06-18
+1. Michael Hedgpeth NCR 2015-06-18
+1. Jean-Francois Mathiot ServeBox SAS 2015-06-19
+1. Abhijit Hiremagalur   2015-06-19
+1. Sebastian Boehm  2015-06-22
+1. dongha kim neowiz games 2015-06-22
+1. Christopher Chow  2015-06-22
+1. Matthew Campbell  2015-06-22
+1. Adam DePue  2015-06-23
+1. Nick Ramirez  2015-06-23
+1. Mark Cornick  2015-06-23
+1. Ryan Lewon  2015-06-23
+1. Daniel Piessens  2015-06-24
+1. Bernhard Ott  2015-06-24
+1. Maxime FOUILLEUL  2015-06-24
+1. Wesley Schwengle  2015-06-24
+1. Jeff Wood  2015-06-24
+1. yusuke abe newsdict 2015-06-25
+1. Igor Kurochkin Express42 2015-06-25
+1. Emmanuel Iturbide  2015-06-25
+1. Kevin Kennedy  2015-06-25
+1. Igor Kurochkin  2015-06-25
+1. yusuke abe  2015-06-25
+1. Emmanuel Iturbide SAP 2015-06-25
+1. Jean Baptiste Favre  2015-06-26
+1. Peer Allan  2015-06-26
+1. Mat Davies  2015-06-26
+1. Kevin Dickerson  2015-06-30
+1. Kevin Dickerson Loom Technology 2015-06-30
+1. Nirmal Jonnalagedda Spanning Cloud Apps 2015-06-30
+1. jay hendren  2015-06-30
+1. Nirmal Jonnalagedda  2015-06-30
+1. Matt Darby  2015-06-30
+1. John Ramos DualSpark 2015-07-01
+1. Andy Paroff  2015-07-02
+1. Pavlos Ratis  2015-07-02
+1. Quentin de Metz  2015-07-02
+1. Nobuhiro Nikushi  2015-07-03
+1. Andrei Ivanov  2015-07-03
+1. Pavel Bobov  2015-07-05
+1. Michael Klishin  2015-07-06
+1. Roger Levy MariaDB USA 2015-07-07
+1. Antoni Baranski  2015-07-08
+1. Dale Neufeld Shopify Inc 2015-07-08
+1. Sarath kumar  2015-07-08
+1. Russell Whitaker  2015-07-08
+1. Marek Dwulit  2015-07-09
+1. Michael Thomas  2015-07-09
+1. Christopher Bourez  2015-07-09
+1. David Bresson  2015-07-09
+1. Stefano Rivera Yola 2015-07-09
+1. Wolf Noble  2015-07-10
+1. Hector Castro  2015-07-10
+1. Robert Rehberg  2015-07-10
+1. Chitrang Jain  2015-07-10
+1. Aeri Iamsirithaworn  2015-07-10
+1. Ceaser Larry Divergent Logic 2015-07-11
+1. Ceaser Larry  2015-07-11
+1. Pieter Vogelaar  2015-07-12
+1. Eric Internicola  2015-07-12
+1. DalHo Park  2015-07-12
+1. Jacob Rosenberg  2015-07-12
+1. Kamesh Sampath  2015-07-13
+1. Lachlan Munro  2015-07-13
+1. James Hu Roboheart, Inc. 2015-07-14
+1. Andreas Lappe  2015-07-14
+1. Nuo Yan  2015-07-14
+1. Ben Barnett  2015-07-14
+1. Marek Dwulit  2015-07-15
+1. Jeff Dawes  2015-07-15
+1. Sriram Rajan  2015-07-15
+1. Josh Schneider  2015-07-15
+1. Katherine Rossiter  2015-07-16
+1. Dan Stark  2015-07-17
+1. Ben Dang  2015-07-18
+1. Michal Knapik  2015-07-18
+1. Anthony Moore  2015-07-19
+1. Patrick Freeman  2015-07-19
+1. Jimmy McCrory  2015-07-19
+1. Derek Haynes Scoutapp 2015-07-20
+1. Oswald De Riemaecker Continuous S.A. 2015-07-20
+1. Nuno Pereira  2015-07-20
+1. Martin Samuel  2015-07-20
+1. Jorge Quilcate  2015-07-20
+1. Shahul Hameed  Khajamohideen  2015-07-20
+1. Jim Ryan Room 118 Solutions, Inc. 2015-07-21
+1. Jim Ryan  2015-07-21
+1. Adam Balali  2015-07-23
+1. Francesco Stradiotti  2015-07-23
+1. Eddy Boscolo  2015-07-24
+1. Mohit Gupta  2015-07-24
+1. Justin Ryan  2015-07-24
+1. Patrick Schnetger  2015-07-27
+1. Benoît Créau  2015-07-27
+1. Marshall Levin  2015-07-27
+1. Alexander De Leon Devialab 2015-07-28
+1. Charles Lynch  2015-07-28
+1. Alexander De Leon  2015-07-28
+1. Heather Mickman Target Corporation 2015-07-29
+1. Marco Gallotta Asana 2015-07-29
+1. Washington Botelho  2015-07-29
+1. Salim Alam Chef Inc. 2015-07-29
+1. Alvaro Morales  2015-07-29
+1. J.R. Mash  2015-07-30
+1. Jason Barnett  2015-07-30
+1. Michael Kelley  2015-07-30
+1. Jacob Dearing  2015-08-01
+1. Lennart Weijl  2015-08-01
+1. Giovanni Del Valle  2015-08-01
+1. Tommy Odom  2015-08-02
+1. Dale Cook  2015-08-04
+1. Zack Zondlo  2015-08-04
+1. Vincent VAN HOLLEBEKE  2015-08-04
+1. Vincent Stammegna CSAA IG 2015-08-05
+1. Vincent Stammegna  2015-08-05
+1. Ed Powell Digital River 2015-08-06
+1. matthew patton  2015-08-06
+1. Ed Powell  2015-08-06
+1. Ed Powell Ed Powell 2015-08-06
+1. Sean Hardy Expedia Affiliate Network 2015-08-07
+1. Amulya Sharma  2015-08-09
+1. Luc Francesca  2015-08-09
+1. ABE Satoru  2015-08-10
+1. Francois-Joseph GRIMAULT  2015-08-10
+1. Renan Vicente Gomes da Silva  2015-08-11
+1. Alex Dunn Tacit Knowledge 2015-08-11
+1. Steven Swor  2015-08-11
+1. Ron Russell  2015-08-12
+1. Alain Chiasson  2015-08-12
+1. Gabor Szelcsanyi Layer7 Cache 2015-08-13
+1. Felipe Bessa Coelho  2015-08-13
+1. Kurt Langrud The Buckle, Inc 2015-08-13
+1. Gabor Szelcsanyi  2015-08-13
+1. Leandro Di Tommaso  2015-08-13
+1. Sergey Tuchkin  2015-08-17
+1. David Giesberg  2015-08-17
+1. Francis Nicholas Expedia 2015-08-18
+1. Rafael Fonseca  2015-08-18
+1. Scott Gorsuch  2015-08-18
+1. Dmitry Grigorenko  2015-08-18
+1. Federico Castagnini  2015-08-19
+1. Peter Mooshammer  2015-08-19
+1. Ian Duffy  2015-08-19
+1. David Echols  2015-08-19
+1. James Augustine  2015-08-20
+1. Juan Manuel Rodulfo Salcedo  2015-08-20
+1. Sarah Michaelson  2015-08-20
+1. St. Isidore Seville  2015-08-21
+1. Matthieu Roisil  2015-08-21
+1. Benjamin Jansen  2015-08-21
+1. Chris Jones  2015-08-22
+1. Tarun Jangra  2015-08-22
+1. Thibaut Notteboom  2015-08-24
+1. Alain Dejoux  2015-08-24
+1. Carl Perry  2015-08-24
+1. Andrés F Vargas  2015-08-24
+1. Mark Matten  2015-08-24
+1. Mihai Petracovici  2015-08-25
+1. Simon Thompson Imagination Technologies Ltd. 2015-08-27
+1. Mateusz Kwiatkowski Serveraptor 2015-08-27
+1. Jeff Zohrab  2015-08-28
+1. Gregory McCue Ecosia GmbH 2015-08-28
+1. Jeff Zohrab  2015-08-31
+1. Alex Howells Aeode 2015-08-31
+1. Alex Howells  2015-08-31
+1. Mathew Goldsborough Forever Oceans Corporation 2015-09-01
+1. Mathew Goldsborough  2015-09-01
+1. james dupont  2015-09-03
+1. Damian Pantano  2015-09-03
+1. Anton Yushkov Flugel.it 2015-09-04
+1. Marky Jackson  2015-09-04
+1. Shawn Neal  2015-09-05
+1. Leo Popov  2015-09-07
+1. Diego Felix de Almeida  2015-09-08
+1. Diego Felix de Almeida Diego 2015-09-08
+1. Ruchi Goyal  2015-09-08
+1. Vassilis Rizopoulos  2015-09-08
+1. Sarath kumar TechM 2015-09-08
+1. Sergey Permyakov  2015-09-09
+1. Tarak Blah Tarak Blah 2015-09-10
+1. Thorsten Kahler  2015-09-10
+1. Jonathan Hutchins  2015-09-10
+1. Stanislav Voroniy  2015-09-10
+1. Justin Early  2015-09-11
+1. Justin Early Alert Logic 2015-09-11
+1. Daniel Wendorf  2015-09-13
+1. Tony Flint  2015-09-14
+1. Salvatore Poliandro  2015-09-15
+1. Mikhail Zholobov  2015-09-15
+1. Vandad Chaharlengi CustomInk 2015-09-15
+1. Jason Boeshart  2015-09-15
+1. Morgan Nelson  2015-09-17
+1. David Chaiken  2015-09-18
+1. Roger Delph  2015-09-19
+1. Florent Flament  2015-09-20
+1. Elad Dolev  2015-09-20
+1. Nate Schmoll  2015-09-20
+1. Matt Jones  2015-09-21
+1. Soeren Unruh Humance AG 2015-09-21
+1. Mikko Caldara  2015-09-21
+1. Nathan Sullivan  2015-09-21
+1. Joshua Hudson  2015-09-21
+1. Kevin MA  2015-09-22
+1. MA Goacid  2015-09-22
+1. Karsten Richter  2015-09-22
+1. Jose Olcese  2015-09-22
+1. Greg Swallow  2015-09-23
+1. Paul McCarthy  2015-09-23
+1. Jordan Tardif  2015-09-23
+1. Mikhail Bautin  2015-09-24
+1. Andrew Mulholland  2015-09-24
+1. Michael Pereira  2015-09-25
+1. J. Lieberthal  2015-09-26
+1. Jonathan Serafini  2015-09-26
+1. Edmund Rhudy  2015-09-26
+1. Adam Edwards  2015-09-26
+1. Makoto Terada  2015-09-26
+1. Glen Mailer  2015-09-28
+1. Francisco Alcantara  2015-09-28
+1. Joshua Burt  2015-09-28
+1. Thomas Pike Crossroads Foundation Limited 2015-09-29
+1. Robert Kidd  2015-09-29
+1. Thomas Pike  2015-09-29
+1. Hugo Sato  2015-09-29
+1. Michael Nairn  2015-09-30
+1. Greg Albrecht Orion Labs, Inc. 2015-09-30
+1. david raistrick  2015-09-30
+1. Brett Gailey  2015-10-01
+1. David Kinzer  2015-10-02
+1. Ketan Padegaonkar  2015-10-02
+1. Derek Ditch Cyber Dev Team 2015-10-02
+1. Derek Ditch  2015-10-02
+1. Thiago Dias de Francisco  2015-10-02
+1. Andrew Jones  2015-10-02
+1. Thiago Francisco FCL 2015-10-02
+1. Paul Welch  2015-10-05
+1. Andrey Scopenco  2015-10-05
+1. Adam Wilbraham  2015-10-06
+1. Patrick Wright Chef 2015-10-06
+1. Tony Flint Marchex, Inc. 2015-10-06
+1. Samuel Bernard S4M 2015-10-07
+1. Jeff Harvey-Smith  2015-10-07
+1. Bill St. Clair  2015-10-07
+1. G.J. Moed  2015-10-07
+1. Patrick McMorran  2015-10-07
+1. Jeremy Maziarz  2015-10-08
+1. Pete Navarra  2015-10-09
+1. Peter Abbott Myself 2015-10-10
+1. Henry Finucane  2015-10-11
+1. Michael Leyshon  2015-10-12
+1. Cameron Walker  2015-10-12
+1. Tyler Ball  2015-10-12
+1. Jos Backus  2015-10-13
+1. Nolan Davidson PhishMe 2015-10-13
+1. Joshua Timberman  2015-10-13
+1. Anthony Robinson  2015-10-13
+1. Ronald Chmara  2015-10-14
+1. Mike Morraye  2015-10-14
+1. Yossi Gottlieb  2015-10-14
+1. Wade Peacock  2015-10-15
+1. Dayne Broderson  2015-10-16
+1. Kyle Burckhard  2015-10-16
+1. Eugene Bolshakov  2015-10-16
+1. Arnoud Vermeer  2015-10-16
+1. Vito Laurenza  2015-10-16
+1. Dan Buch  2015-10-17
+1. Clinton Wolfe  2015-10-17
+1. Dan Buch Travis CI GmbH 2015-10-17
+1. Mike Simons Hewlett Packard Enterprise 2015-10-19
+1. Andy Cui  2015-10-19
+1. Ryan Frantz  2015-10-19
+1. Rocky Olsen  2015-10-20
+1. Ken Gotoh  2015-10-21
+1. Erik Rogneby  2015-10-21
+1. Michael Roy  2015-10-23
+1. Jason Harley  2015-10-23
+1. Ryan Gerstenkorn  2015-10-23
+1. Michael Roy mikeroySoft 2015-10-23
+1. Jude Job  2015-10-23
+1. Olivier Dolbeau  2015-10-26
+1. Dmitry Batiievskyi  2015-10-26
+1. Eric Guinois  2015-10-27
+1. Jason McIntosh  2015-10-27
+1. Jon A  2015-10-27
+1. Rami Abdulhussein  2015-10-27
+1. Hleb Valoshka  2015-10-27
+1. Michael Miko  2015-10-28
+1. James Flemer NDP, LLC 2015-10-28
+1. Jaycee Bernardino  2015-10-28
+1. James Flemer  2015-10-28
+1. jez wain  2015-10-28
+1. Priyal Jain  2015-10-28
+1. Alex Vinyar chef 2015-10-29
+1. Vipin V Gopal  2015-10-29
+1. Bryant Lippert  2015-10-29
+1. John Mickey  2015-10-30
+1. John Manero  2015-10-30
+1. Arnold Visser None 2015-11-02
+1. Arnold Visser  2015-11-02
+1. Jens Segers  2015-11-03
+1. David Tagarro  2015-11-03
+1. Emmanuel Guérin  2015-11-03
+1. alex vinyar chef 2015-11-04
+1. Adam Sulik  2015-11-04
+1. Saibal Dey  2015-11-04
+1. Rui Covelo  2015-11-04
+1. Robert Perry Lodestone Technologies, LLC 2015-11-04
+1. Kyle West  2015-11-04
+1. Taliesin Sisson  2015-11-05
+1. Goran Stankovski LimePoint Pty Ltd 2015-11-05
+1. Bryan Crossland  2015-11-07
+1. Phil Ruffwind  2015-11-08
+1. Sam Rudge  2015-11-08
+1. Evan Tschuy  2015-11-11
+1. Timothy Schroeder  2015-11-11
+1. Louis GOUNOT  2015-11-11
+1. James Pruetting  2015-11-11
+1. David Echols  2015-11-12
+1. Tom Wilson  2015-11-12
+1. echohack . echohack 2015-11-12
+1. Chris Jones Bloomberg 2015-11-14
+1. Roger Micone  2015-11-14
+1. Sasha Gerrand  2015-11-15
+1. Chris Marchesi  2015-11-15
+1. Heinz Gies  2015-11-16
+1. Sam Dunne AIB 2015-11-16
+1. Mario Harvey  2015-11-16
+1. Michael Miko  2015-11-17
+1. Corey Hemminger NativeX Holdings LLC 2015-11-17
+1. Gary Bright  2015-11-17
+1. Michael Miko  2015-11-17
+1. Chris Campbell  2015-11-17
+1. Corey Hemminger  2015-11-17
+1. Derek Bromenshenkel  2015-11-17
+1. Phil Smith  2015-11-17
+1. William Rowe  2015-11-17
+1. Simon Gate  2015-11-18
+1. David Meekin  2015-11-18
+1. Justin Seubert  2015-11-19
+1. Robert Moody  2015-11-19
+1. cristiano balducci  2015-11-19
+1. Piyatad Chotiwattanapol Cloudrifles 2015-11-20
+1. Alain De Carolis  2015-11-20
+1. Luke Young  2015-11-20
+1. Piyatad Chotiwattanapol  2015-11-20
+1. Piyatad Chotiwattanapol  2015-11-20
+1. Cloudrifles Chotiwattanapol  2015-11-20
+1. Rocky Olsen Dell SecureWorks 2015-11-20
+1. Taufek Johar  2015-11-22
+1. Taufek Johar Taufek 2015-11-22
+1. Justin Ellison  2015-11-23
+1. Edward Bosher  2015-11-24
+1. Jose Ventura  2015-11-24
+1. Jennifer Brown  2015-11-24
+1. William Drew  2015-11-25
+1. Danny Roberts  2015-11-25
+1. Guillaume Jacquet  2015-11-25
+1. Justin Spies BuyerQuest, Inc. 2015-11-25
+1. Justin Spies  2015-11-25
+1. John Dewey Cisco Systems 2015-11-28
+1. Kamil Forys  2015-11-30
+1. Federico Bucchi  2015-11-30
+1. Yuu Yamashita  2015-12-01
+1. Jesse Lee  2015-12-01
+1. Steve Marshall  2015-12-02
+1. Artem Sidorenko  2015-12-02
+1. Gregory Symons  2015-12-02
+1. Nerijus Bendziunas  2015-12-03
+1. Jason Summerour The Weather Companies 2015-12-03
+1. Robert Tarrall  2015-12-04
+1. Chad Brown  2015-12-04
+1. Richard Morrisey  2015-12-04
+1. Mat Schaffer  2015-12-05
+1. Jeff Powell  2015-12-07
+1. Eiki Kanai  2015-12-07
+1. Alexei Smirnov  2015-12-07
+1. Simon Bang Terkildsen Monsenso 2015-12-07
+1. Simon Terkildsen Monsenso 2015-12-07
+1. Simon Terkildsen  2015-12-07
+1. Ryan Chipman  2015-12-08
+1. Julian Tabel  2015-12-08
+1. Tim B  2015-12-08
+1. James Legg  2015-12-09
+1. Stephan Linz  2015-12-10
+1. Peter Halliday Formatron 2015-12-10
+1. Peter Halliday  2015-12-10
+1. Paul Bernard Fidelity Investments 2015-12-10
+1. Xavier Krantz  2015-12-10
+1. Adam Phillabaum  2015-12-11
+1. Fabricio Correa Duarte  2015-12-12
+1. Wojciech Sciesinski  2015-12-14
+1. Martin Fenner DataCite 2015-12-14
+1. Michal Taborsky  2015-12-14
+1. sadfsafsda thomas  2015-12-15
+1. Justin Nauman  2015-12-15
+1. Stephan Renatus  2015-12-16
+1. Sean Walberg  2015-12-17
+1. didier Belot  2015-12-17
+1. Mikhail Zholobov Parallels 2015-12-17
+1. Andrei Skopenko Parallels 2015-12-17
+1. Ioannis Christodoulou  2015-12-17
+1. Mikhail Zholobov  2015-12-17
+1. Phil Grayson  2015-12-18
+1. Robert Ulejczyk  2015-12-18
+1. Benoît Créau  2015-12-18
+1. Emir Ibrahimbegovic  2015-12-19
+1. Robert Vežnaver  2015-12-20
+1. Cash Weaver  2015-12-21
+1. Stefan Hojer  2015-12-21
+1. Robert Kidd  2015-12-22
+1. Ryan Hitchcock  2015-12-22
+1. Thomas Cate  2015-12-22
+1. Bakh Inamov  2015-12-24
+1. Ian Henry  2015-12-24
+1. Karl Norby  2015-12-30
+1. Kevin Park Wavefront, Inc. 2015-12-30
+1. Matteo Giaccone  2015-12-30
+1. Scott Weldon  2015-12-30
+1. Steven Smith  2015-12-31
+1. Charlie Andrews  2016-01-01
+1. Michallis Pashidis Trust1Team 2016-01-01
+1. Greg Nilchee  2016-01-04
+1. Jose Mora  2016-01-04
+1. Durant Damien  2016-01-05
+1. Wojciech Guszpit  2016-01-05
+1. Matthieu Mota  2016-01-05
+1. Jeffrey Hulten  2016-01-05
+1. Viktor LOOSZ  2016-01-06
+1. Ben Dang Yahoo 2016-01-07
+1. Ian Penney Nulogy Corporation 2016-01-07
+1. Joe Armstrong  2016-01-07
+1. Andrei Krasnitski  2016-01-08
+1. Levi Smith  2016-01-08
+1. James Reichley  2016-01-08
+1. Aiman Alsari Salmon 2016-01-08
+1. Brian Menges  2016-01-08
+1. Jun Sakata  2016-01-08
+1. Robert Szebtmihalyi  2016-01-08
+1. Sebastian Cruz  2016-01-09
+1. Brian Walker  2016-01-10
+1. Mercado pmercado  2016-01-10
+1. Gaurish Sharma  2016-01-10
+1. Julien Berard  2016-01-11
+1. John Bartko  2016-01-11
+1. Javi Perez-Griffo  2016-01-12
+1. Alex Bligh Flexiant Ltd 2016-01-12
+1. Mercado pmercado Flexiant 2016-01-12
+1. Alexey Melezhik  2016-01-12
+1. Joe McIlvain  2016-01-13
+1. Ross Kusler  2016-01-13
+1. Jeffrey James  2016-01-14
+1. Daniel Rich  2016-01-14
+1. Jeffrey James COSProfessionals, LLC 2016-01-14
+1. Kevin Bonner  2016-01-15
+1. Andrew Burns  2016-01-15
+1. René Martín Rodríguez  2016-01-16
+1. Philip Watts  2016-01-18
+1. Philip Watts REĀN Cloud Solutions LLC 2016-01-18
+1. Fabricio Correa Duarte Bellacross Technologies, LLC 2016-01-18
+1. Thomas Vincent  2016-01-18
+1. Thomas Vincent Relenz 2016-01-18
+1. Shaun Martin  2016-01-18
+1. James Cuzella LyraPhase 2016-01-18
+1. James Cuzella ReturnPath 2016-01-18
+1. Riley Spicer  2016-01-19
+1. Haggai Zagury Tikal Knowledge, SAP 2016-01-19
+1. Enrico Stahn  2016-01-19
+1. Ash Wilson CloudPassage 2016-01-20
+1. Ben Bradshaw  2016-01-20
+1. Nayan Hajratwala  2016-01-20
+1. Sebastian Trebitz  2016-01-21
+1. James Quinn  2016-01-21
+1. Jose Luis Salas Topota 2016-01-21
+1. joe miller Pantheon 2016-01-21
+1. Sebastian Trebitz Sebastian Trebitz - ICT Consultancy Services 2016-01-21
+1. Jade Chu AOL 2016-01-22
+1. Dennis Vink  2016-01-22
+1. Christopher Nielsen  2016-01-22
+1. Dennis Vink Dennis Vink 2016-01-22
+1. Hiroki Ohtsuka  2016-01-23
+1. Eric Robitaille  2016-01-23
+1. Jason Capriotti  2016-01-25
+1. Artur Sitarski  2016-01-26
+1. Darron Froese Datadog Inc. 2016-01-26
+1. Steven Haddox  2016-01-26
+1. Vipin Thomas  2016-01-27
+1. Alexander Wagner  2016-01-27
+1. Andrew Miller  2016-01-28
+1. Drew Rapenchuk  2016-01-29
+1. Drew Rapenchuk Bloomberg LP 2016-01-29
+1. Sean Rettig  2016-01-29
+1. Sumit Murari  2016-02-01
+1. Jason Barnett NA 2016-02-02
+1. Dave Rodecap  2016-02-02
+1. James Pruetting Built by Robots 2016-02-02
+1. Daniel Reznicek  2016-02-02
+1. Yusuke Hagihara  2016-02-02
+1. Joey Bates  2016-02-03
+1. Chris Hayes  2016-02-03
+1. Jarrett Hawrylak  2016-02-03
+1. Demitri Swan  2016-02-04
+1. Keith Swett  2016-02-04
+1. Felix Yan  2016-02-04
+1. RJ Martins  2016-02-04
+1. Ashley Unitt NewVoiceMedia Ltd 2016-02-05
+1. Craig Menning  2016-02-05
+1. John Nye 7digital 2016-02-05
+1. Geoffrey Rucker  2016-02-06
+1. Abdelkrim Dib  2016-02-06
+1. Christoffer Reijer  2016-02-07
+1. Michael Skrynski dkd Internet Service GmbH 2016-02-08
+1. David Newman  2016-02-08
+1. John Northrup  2016-02-08
+1. Dylan Ledbetter Dylan Ledbetter 2016-02-09
+1. Richard Lee  2016-02-09
+1. Maksim Horbul  2016-02-09
+1. David Marshall  2016-02-09
+1. Dylan Ledbetter  2016-02-09
+1. Luuk van den Broek  2016-02-10
+1. Luuk van den Broek  2016-02-10
+1. Sergey Bahchissaraitsev  2016-02-11
+1. Brad Parks  2016-02-11
+1. Aoi Kadoya  2016-02-12
+1. Bryan Gay  2016-02-12
+1. Christopher Soyars  2016-02-12
+1. Leandro Di Tommaso Mikroways 2016-02-13
+1. Ricky Grassmuck  2016-02-13
+1. Ricky Grassmuck Grassmuck.co 2016-02-13
+1. Chris Allen  2016-02-14
+1. Chris Allen Postmodern Solutions 2016-02-14
+1. Luis Sagastume  2016-02-14
+1. Andrii Melnyk  2016-02-16
+1. Brad Parks  2016-02-16
+1. Dang Nguyen  2016-02-16
+1. Christian Willman  2016-02-16
+1. Joshua Smith  2016-02-17
+1. Owen Tuz  2016-02-18
+1. A Moto Ohno!  2016-02-19
+1. A Moto Ohno! Rally Health 2016-02-19
+1. Wes Winham PolicyStat LLC 2016-02-19
+1. Nic Waller  2016-02-19
+1. Robert Scott-Buccluech  2016-02-19
+1. Satish Puranam  2016-02-21
+1. Ron Herardian  2016-02-21
+1. Joel Freedman Pivotal Labs 2016-02-22
+1. Gary Bright  2016-02-23
+1. Paul Mitchell  2016-02-23
+1. Will Jordan Code.org 2016-02-23
+1. James Coppens Underground Media Group 2016-02-23
+1. Thomas Robinson-Gore  2016-02-24
+1. Bradley Corner  2016-02-25
+1. Christophe Courtaut  2016-02-26
+1. Rex Cerbas  2016-02-26
+1. Juan Castillo Cano  2016-02-26
+1. Jared Kauppila  2016-02-29
+1. William Burton  2016-03-01
+1. William Burton ENC4U 2016-03-01
+1. Josh Beauregard  2016-03-01
+1. Michael D'Auria  2016-03-01
+1. Elijah Wright  2016-03-01
+1. Anna Tikhonova  2016-03-02
+1. James Bunch  2016-03-05
+1. Harish Hareendra Babu  2016-03-07
+1. mohanbabu balasubramaniam  2016-03-07
+1. David Duponchel Mediarithmics 2016-03-07
+1. Shane Ramey  2016-03-07
+1. Zach Morgan Secureworks 2016-03-08
+1. Victoria Jeffrey  2016-03-09
+1. Jesse Cotton  2016-03-09
+1. Christopher Gerber  2016-03-10
+1. Pradeep Chhetri  2016-03-10
+1. Dylan-Daniel Page  2016-03-10
+1. Dmytro Slupytskyi  2016-03-10
+1. Michael Weinberg Heavy Water Operations 2016-03-10
+1. Steve Carman Planalytics 2016-03-11
+1. Steve Carman  2016-03-11
+1. Jonathan Serafini LightSpeed Retail 2016-03-13
+1. Andrew Cornies  2016-03-13
+1. Joshua Burt  2016-03-13
+1. Dmytro Slupytskyi  2016-03-14
+1. Julian Tabel  2016-03-14
+1. Sergio Rua IT Projections Limited 2016-03-14
+1. Sergio Rua  2016-03-14
+1. Phil Spencer n/a 2016-03-15
+1. Ben Abrams  2016-03-15
+1. Dylan Canfield  2016-03-15
+1. Nick Pjetrovic  2016-03-15
+1. Phil Spencer  2016-03-15
+1. Matt Kulka  2016-03-15
+1. Ben Kochie  2016-03-16
+1. Aaron Lippold  2016-03-16
+1. Andy Brezinsky ShoreTel Inc. 2016-03-17
+1. Michael Miko Apparently 2016-03-18
+1. Marat Vyshegorodtsev  2016-03-18
+1. Harald Krämer  2016-03-18
+1. Marat Vyshegorodtsev  2016-03-19
+1. Julian Tabel  2016-03-21
+1. Christian Tramnitz TraSec GmbH 2016-03-21
+1. Eike Waldt B1 Systems GmbH 2016-03-22
+1. Thorsten Klein  2016-03-22
+1. Andrew Stoltz  2016-03-22
+1. Justin Schuhmann  2016-03-22
+1. Duc Ha  2016-03-22
+1. Jonathan Sokolowski  2016-03-22
+1. Sean Coyne  2016-03-23
+1. Antonio Beyah Beyah Solutions, LLC 2016-03-24
+1. Graeme Fawcett  2016-03-24
+1. Trey Tomlinson  2016-03-24
+1. Onno van der Straaten  2016-03-25
+1. Joshua Bussdieker  2016-03-26
+1. Jean-Pierre Matsumoto  2016-03-29
+1. Nicholas Waller  2016-03-29
+1. Denny Pruitt  2016-03-29
+1. Darryl Bresland  2016-03-30
+1. Claus Beerta  2016-03-30
+1. Vincenzo Rivello  2016-03-30
+1. Pablo Banderas Inetsys SL 2016-03-30
+1. Brandon Sharitt  2016-03-31
+1. Eric Hartmann  2016-03-31
+1. Steve Collins  2016-03-31
+1. Greg Ziskind  2016-03-31
+1. Cristiano Balducci  2016-03-31
+1. Travis Thompson  2016-03-31
+1. Martin Arndt  2016-03-31
+1. Matthew Endsley  2016-04-01
+1. Federico Gimenez  2016-04-01
+1. Alex Pop  2016-04-01
+1. Michael Fyffe  2016-04-01
+1. Austin Heiman  2016-04-01
+1. Tamas Szasz  2016-04-03
+1. Jason Morgan  2016-04-04
+1. Chris Trott  2016-04-05
+1. Riley Shott  2016-04-06
+1. Robert Ottaway  2016-04-06
+1. Danny Webb  2016-04-06
+1. Alexander Zubkov  2016-04-07
+1. Maxwillian Miorim  2016-04-07
+1. Alert Logic Inc.  2016-04-07
+1. Mohammad AbuShady  2016-04-07
+1. Mohammad AbuShady Instabug 2016-04-07
+1. Ash Wilson  2016-04-07
+1. Joe Sørensen  2016-04-07
+1. Benny Chandra  2016-04-10
+1. Brett Langdon  2016-04-10
+1. Andrew Turner  2016-04-10
+1. Stéphane Crivisier  2016-04-11
+1. Adam Westhusing  2016-04-12
+1. MARK AMERY  2016-04-12
+1. Eric Olsen  2016-04-12
+1. Cameron Straka  2016-04-13
+1. Shuji Yamada  2016-04-14
+1. Anirudh Gupta HPE 2016-04-14
+1. Jack Naglieri  2016-04-16
+1. Fabien Delpierre  2016-04-17
+1. Florian Philippon S4M 2016-04-18
+1. Michael Reeves  2016-04-18
+1. Florian Philippon  2016-04-18
+1. Logan McDonald  2016-04-18
+1. Ferenc Kovács  2016-04-19
+1. William Ruddock  2016-04-20
+1. Anirudh Gupta  2016-04-21
+1. Justin Dossey  2016-04-21
+1. Daniel Jimenez ForeFlight LLC 2016-04-25
+1. 3rd Felipe De Siqueira  2016-04-25
+1. 3rd Felipe De Siqueira Anaplan 2016-04-25
+1. Wilfried JEANNIARD  2016-04-26
+1. Jeremiah Njoroge  2016-04-26
+1. Tristan Morgan  2016-04-26
+1. Hervé Commowick  2016-04-26
+1. David Sieciński  2016-04-26
+1. David Felix  2016-04-27
+1. Travis Johnson  2016-04-27
+1. Christopher Campo  2016-04-27
+1. Frédéric Nowak Hydra Technologies, Inc 2016-04-28
+1. Alan Thatcher  2016-04-28
+1. Frédéric Nowak  2016-04-28
+1. Frédéric Nowak  2016-04-28
+1. Bastian Roden  2016-04-28
+1. Seth Larson  2016-04-29
+1. John Snow  2016-04-29
+1. Tyler Vann-Campbell  2016-05-01
+1. Carl Johnston  2016-05-02
+1. Ben Weissmann  2016-05-02
+1. Ankit Shah  2016-05-03
+1. Grant Shively  2016-05-03
+1. Apollo Catlin  2016-05-04
+1. Chad Williamson  2016-05-04
+1. Daniel Barrell  2016-05-05
+1. Marcos Wright-Kuhns  2016-05-06
+1. Chris Sullivan  2016-05-08
+1. Ameir Abdeldayem  2016-05-08
+1. Chris Sullivan  2016-05-09
+1. Andrew Marwood  2016-05-09
+1. Tejay Cardon  2016-05-10
+1. Bryan Stone  2016-05-10
+1. Rhea Ghosh  2016-05-10
+1. Craig McEldowney Crifkin Amalgamated LLC 2016-05-11
+1. Yuki Sonoda Gengo 2016-05-11
+1. Ted Wang  2016-05-11
+1. Craig McEldowney  2016-05-11
+1. Taylor Benson  2016-05-11
+1. Uwe Stuehler  2016-05-12
+1. Joe Miller  2016-05-12
+1. Franklin Webber  2016-05-13
+1. Steohen Purr  2016-05-13
+1. Jirka Fajfr  2016-05-16
+1. Ming Xie  2016-05-16
+1. Riley Shott Vision Critical 2016-05-16
+1. Julia Tkachova  2016-05-17
+1. Prashant Sharma  2016-05-17
+1. Samuel Darwin  2016-05-17
+1. Prajakta Purohit Chef 2016-05-17
+1. Jessica Rosch iJet Technologies 2016-05-17
+1. Michael Tognetti SendGrid, Inc. 2016-05-18
+1. Christoph Blecker  2016-05-18
+1. Stephen Breyer-Menke  2016-05-18
+1. Reed McCartney  2016-05-20
+1. Shane da Silva  2016-05-21
+1. Administrator System  2016-05-21
+1. Harley Alaniz  2016-05-22
+1. Christopher Rigor  2016-05-24
+1. Donald Guy  2016-05-25
+1. Ajay Chand  2016-05-25
+1. Timothy Cyrus  2016-05-26
+1. JD Goins  2016-05-26
+1. Jameson Goins  2016-05-26
+1. Lajos Veres  2016-05-26
+1. Justyn Shull  2016-05-27
+1. MIURA Toru  2016-05-28
+1. Adib Saad  2016-05-28
+1. Uri Sarid Mulesoft 2016-05-29
+1. Milad Rastian  2016-05-31
+1. Denys Slipetskyy  2016-05-31
+1. Trevor Lauder  2016-06-01
+1. Ryan Punt  2016-06-01
+1. Evan Machnic  2016-06-02
+1. Leonid Ishimnikov  2016-06-03
+1. Andrew Cooper  2016-06-03
+1. Jose Ruiz  2016-06-03
+1. Chris Morris  2016-06-04
+1. Michael Vershinin  2016-06-04
+1. Michael Vershinin SAP 2016-06-04
+1. Winston Durand  2016-06-05
+1. Bob Bob  2016-06-05
+1. Mathieu Allaire  2016-06-05
+1. pankaj khali  2016-06-06
+1. Natacha Springer  2016-06-07
+1. David Aronsohn  2016-06-07
+1. Jason Clark  2016-06-08
+1. Alexander Harder  2016-06-08
+1. Timothy Bassett  2016-06-08
+1. Annie Hedgpeth  2016-06-08
+1. Emil Sit  2016-06-08
+1. Alex Romanov  2016-06-09
+1. Sebastian Geidies  2016-06-09
+1. Todd Bushnell  2016-06-09
+1. Nate Flood  2016-06-10
+1. Eugene Slesarchuk  2016-06-10
+1. Arnaldo Garat  2016-06-10
+1. Matthew Walter  2016-06-12
+1. Vlad Gorodetsky  2016-06-13
+1. Ash Alam  2016-06-13
+1. Vlad Gorodetsky Shopify 2016-06-13
+1. Joseph Sokol-Margolis  2016-06-15
+1. Jerry Aldrich Chef Software 2016-06-15
+1. Jerry Aldrich  2016-06-15
+1. Austin Vecchio  2016-06-17
+1. Stephen Sadowski  2016-06-17
+1. Cobus Bernard  2016-06-20
+1. Rex Cerbas Rakuten Inc. 2016-06-21
+1. Andy Allan  2016-06-21
+1. Michael Gutteridge  2016-06-22
+1. Michael Smith  2016-06-22
+1. Michael Smith None 2016-06-22
+1. Yuki Sonoda Gengo 2016-06-24
+1. Jonathon Marshall  2016-06-24
+1. Mike Sgarbossa  2016-06-25
+1. Ryan Conrad  2016-06-25
+1. Mark Bell  2016-06-28
+1. Brynmor Rees The Regents of the University of Colorado 2016-06-28
+1. Hugo Cisneiros  2016-06-28
+1. Azat Khadiev  2016-06-29
+1. Rob Reynolds  2016-06-29
+1. Abhishek Kumar  2016-06-30
+1. Travis Thompson Altiscale 2016-07-01
+1. Jussi-Pekka Pispa Tampere University of Technology 2016-07-01
+1. Henry Muru Paenga  2016-07-01
+1. Alexander Dvorkovyy  2016-07-02
+1. Pavel Jeloudovski  2016-07-03
+1. Kyle Sexton  2016-07-05
+1. Timothy  Kachler Atlas Digital 2016-07-05
+1. Patrick Münch  2016-07-05
+1. Stanley Hu  2016-07-06
+1. Juan Cruz  2016-07-06
+1. Jon Sime  2016-07-06
+1. Erin Kolp  2016-07-07
+1. Radoslaw Jaros  2016-07-07
+1. Genadii Kruglenko  2016-07-08
+1. Joseph Yaworski  2016-07-08
+1. Randy Rue  2016-07-08
+1. Jennifer Taylor  2016-07-09
+1. max maxn  2016-07-09
+1. Hank Ehly  2016-07-10
+1. Jason McNew  2016-07-11
+1. Luuk van den Broek  2016-07-11
+1. Asher Yanich  2016-07-12
+1. Asher Yanich Fastly 2016-07-12
+1. Elkin Sierra  2016-07-12
+1. Scott Nelson Windels  2016-07-13
+1. Anton Markelov  2016-07-14
+1. chris evett  2016-07-16
+1. Kierran McPherson  2016-07-16
+1. sathish mr  2016-07-18
+1. Ryan LeViseur  2016-07-19
+1. Andrew M. Kirschke  2016-07-19
+1. Alexis Sellier  2016-07-21
+1. Alex Trull  2016-07-21
+1. Alex Trull  2016-07-22
+1. Michael Weinberg  2016-07-25
+1. Mathias Söderberg  2016-07-25
+1. Ofir Petrushka  2016-07-25
+1. Kevin Reedy  2016-07-26
+1. Rein Remmel cloud.ee OÜ 2016-07-26
+1. Jakub Jarosz  2016-07-26
+1. James Krewson DreamBox Learning, Inc. 2016-07-27
+1. Rein Remmel  2016-07-27
+1. Matthew Odille  2016-07-28
+1. Marcin Skurski  2016-07-28
+1. Marcin Skurski Hostelworld 2016-07-28
+1. Jose Luis Wazuh 2016-07-28
+1. Oleksii Talamanov  2016-07-29
+1. Robert Ressl  2016-07-31
+1. David Aronsohn  2016-08-02
+1. David Aronsohn  2016-08-02
+1. Robert Jerzak  2016-08-02
+1. Paulo Tada  2016-08-02
+1. Martin Matatko  2016-08-03
+1. Hugh Brown  2016-08-03
+1. Achim Heger  2016-08-03
+1. David McGrath  2016-08-05
+1. Darwin Wu  2016-08-08
+1. Gabor Boros  2016-08-08
+1. David Pell  2016-08-08
+1. Jere Julian Arista Networks 2016-08-10
+1. Michael Schlies  2016-08-10
+1. Libert Schmidt  2016-08-12
+1. Rob Marano Totem Power, Inc. 2016-08-13
+1. Rob Marano  2016-08-13
+1. Anna Tikhonova  2016-08-15
+1. Erik Gomez  2016-08-15
+1. Evan Borgstrom  2016-08-15
+1. Don Don  2016-08-16
+1. Petre Ghita  2016-08-16
+1. Jeff Mathe  2016-08-16
+1. Josh McCleery  2016-08-16
+1. Catalin Balan  2016-08-17
+1. Sebastian Boschert  2016-08-17
+1. Gemini Agaloos  2016-08-18
+1. Georgi Lambov  2016-08-19
+1. Baurzhan Konurbayev  2016-08-19
+1. Thomas Berger Piratenpartei Deutschland 2016-08-20
+1. Pavel Forkert  2016-08-20
+1. Bipin Bachhao  2016-08-20
+1. Janith Perera  2016-08-23
+1. Artur Smolarek  2016-08-23
+1. Joshua Wester  2016-08-24
+1. Austin Simmons  2016-08-25
+1. Nick Shemonsky  2016-08-25
+1. Michał Sochoń  2016-08-25
+1. Sathyajith Bhat  2016-08-26
+1. Wesley Staples  2016-08-26
+1. Mikhail kvokka  2016-08-27
+1. Thajudheen Rajak  2016-08-28
+1. Paul Maddocks  2016-08-28
+1. Wisen Tanasa  2016-08-28
+1. John Kerry  2016-08-29
+1. Cem Guresci  2016-08-29
+1. Juan Martinez  2016-08-30
+1. Mohammad Sedighi  2016-08-30
+1. Thiago Vinhas  2016-08-30
+1. John Dewey  2016-08-30
+1. John Harrison  2016-09-01
+1. Jose Asuncion  2016-09-01
+1. Valentin Dallmeier Testfabrik AG 2016-09-01
+1. Greg Hellings B7Interactive, LLC 2016-09-06
+1. Brian Bohanon Aaron's, Inc. 2016-09-07
+1. Jeremy Miller  2016-09-07
+1. Martin Mosegaard Amdisen  2016-09-07
+1. Jeremy Miller PolyHat 2016-09-07
+1. Joseph Block  2016-09-08
+1. Stefan Wessels Beljaars Schuberg Philis 2016-09-09
+1. Ben Dang  2016-09-09
+1. Stefan Wessels Beljaars  2016-09-12
+1. Steve Johnson  2016-09-12
+1. Sudhanshu Thakur  2016-09-12
+1. Ananda Babu  2016-09-12
+1. enrico b  2016-09-12
+1. enrico b  2016-09-12
+1. Sudhanshu Thakur DataMetis 2016-09-12
+1. Ananda Babu Nclouds Inc. 2016-09-12
+1. Jeff Taylor  2016-09-13
+1. JT Giri nclouds 2016-09-13
+1. Jacob Wilkins  2016-09-13
+1. Marques Johansson  2016-09-14
+1. Stefan Wessels Beljaars SWB company 2016-09-14
+1. Jordi Molina  2016-09-14
+1. Michal Gebauer  2016-09-14
+1. Joris van Lieshout  2016-09-14
+1. Jean-Bernard Damiano Personnal 2016-09-15
+1. Jean-Bernard Damiano  2016-09-15
+1. Andrei Nakagawa Soltius NZ 2016-09-16
+1. Jake Gage  2016-09-18
+1. Karol Drazek  2016-09-19
+1. Jye Lee  2016-09-19
+1. Margaret Walker Chef Software, Inc 2016-09-20
+1. Brian Bohanon  2016-09-20
+1. Margaret Walker  2016-09-20
+1. Roberto Mardeni  2016-09-21
+1. Oleksii Vlasov  2016-09-21
+1. Takuya Seki  2016-09-21
+1. Brittany Smith  2016-09-24
+1. Darren Campbell Primar Group 2016-09-26
+1. Kevin Reedy  2016-09-26
+1. Brian Lieberman  2016-09-26
+1. Brian Lieberman Gannett 2016-09-26
+1. Olaf Brandt etracker GmbH 2016-09-27
+1. Chris Gerke  2016-09-28
+1. Alex Pop  2016-09-28
+1. Jean-Pierre Matsumoto Freelance 2016-09-28
+1. Marc Arndt  2016-10-03
+1. Nenad P  2016-10-03
+1. Andrew Heller  2016-10-03

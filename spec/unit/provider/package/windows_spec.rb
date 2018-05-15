@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,9 +26,9 @@ describe Chef::Provider::Package::Windows, :windows_only do
     allow(Chef::FileCache).to receive(:create_cache_path).with("package/").and_return(cache_path)
   end
 
-  let(:node) { double("Chef::Node") }
-  let(:events) { double("Chef::Events").as_null_object } # mock all the methods
-  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource_source) { "calculator.msi" }
   let(:resource_name) { "calculator" }
   let(:installer_type) { nil }
@@ -224,7 +224,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
         end
       end
 
-      context "eninstall entries is empty" do
+      context "uninstall entries is empty" do
         before { allow(Chef::Provider::Package::Windows::RegistryUninstallEntry).to receive(:find_entries).and_return([]) }
 
         it "returns nil" do
@@ -312,6 +312,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       let(:resource_source) { "https://foo.bar/calculator.exe" }
 
       it "downloads the http resource" do
+        allow(File).to receive(:exist?).with('c:\cache\calculator.exe').and_return(false)
         expect(provider).to receive(:download_source_file)
         provider.run_action(:install)
       end
@@ -392,6 +393,51 @@ describe Chef::Provider::Package::Windows, :windows_only do
           provider.run_action(:install)
         end
       end
+    end
+  end
+
+  shared_context "valid checksum" do
+    context "checksum is valid" do
+      before do
+        allow(provider).to receive(:checksum).and_return("jiie00u3bbs92vsbhvgvklb2lasgh20ah")
+      end
+
+      it "does not raise the checksum mismatch exception" do
+        expect { provider.send(:validate_content!) }.to_not raise_error
+      end
+    end
+  end
+
+  shared_context "invalid checksum" do
+    context "checksum is invalid" do
+      before do
+        allow(provider).to receive(:checksum).and_return("kiie30u3bbs92vsbhvgvklb2lasgh20ah")
+      end
+
+      it "raises the checksum mismatch exception" do
+        expect { provider.send(:validate_content!) }.to raise_error(
+          Chef::Exceptions::ChecksumMismatch)
+      end
+    end
+  end
+
+  describe "validate_content!" do
+    before(:each) do
+      new_resource.checksum("jiie00u3bbs92vsbhvgvklb2lasgh20ah")
+    end
+
+    context "checksum is in lowercase" do
+      include_context "valid checksum"
+      include_context "invalid checksum"
+    end
+
+    context "checksum is in uppercase" do
+      before do
+        new_resource.checksum = new_resource.checksum.upcase
+      end
+
+      include_context "valid checksum"
+      include_context "invalid checksum"
     end
   end
 end

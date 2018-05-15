@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,10 +34,6 @@ shared_examples_for "a script resource" do
     expect(script_resource.command).to be nil
   end
 
-  it "should set command to the name on the resource", chef: "< 13" do
-    expect(script_resource.command).to eql script_resource.name
-  end
-
   it "should accept a string for the code" do
     script_resource.code "hey jude"
     expect(script_resource.code).to eql("hey jude")
@@ -52,23 +48,19 @@ shared_examples_for "a script resource" do
     expect { script_resource.command("foo") }.to raise_error(Chef::Exceptions::Script)
   end
 
-  it "should not raise an exception if users set command on the resource", chef: "< 13" do
-    expect { script_resource.command("foo") }.not_to raise_error
-  end
-
   describe "when executing guards" do
-    let(:resource) {
+    let(:resource) do
       resource = script_resource
       resource.run_context = run_context
       resource.code "echo hi"
       resource
-    }
-    let(:node) {
+    end
+    let(:node) do
       node = Chef::Node.new
       node.automatic[:platform] = "debian"
       node.automatic[:platform_version] = "6.0"
       node
-    }
+    end
     let(:events) { Chef::EventDispatch::Dispatcher.new }
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
 

@@ -39,14 +39,15 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
 
     let(:default_secret) { "abc123SECRET" }
     let(:item_name) { "item_name" }
-    let(:raw_data) {{
+    let(:raw_data) do
+      {
         "id" => item_name,
         "greeting" => "hello",
         "nested" => {
             "a1" => [1, 2, 3],
             "a2" => { "b1" => true },
         },
-    }}
+    } end
 
     let(:version) { 1 }
     let(:encoded_data) do

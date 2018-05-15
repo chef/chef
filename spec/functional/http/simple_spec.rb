@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,13 @@ describe Chef::HTTP::Simple do
   let(:http_client_disable_gzip) { described_class.new(source, { :disable_gzip => true } ) }
 
   before(:all) do
-    start_tiny_server
+    start_tiny_server(RequestTimeout: 1)
+  end
+
+  before(:each) do
+    Chef::Config[:rest_timeout] = 2
+    Chef::Config[:http_retry_delay] = 0
+    Chef::Config[:http_retry_count] = 0
   end
 
   after(:all) do
@@ -46,10 +52,10 @@ describe Chef::HTTP::Simple do
   end
 
   shared_examples_for "validates content length and throws an exception" do
-    it "successfully downloads a streaming request" do
+    it "a streaming request throws a content length exception" do
       expect { http_client.streaming_request(source) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
     end
-    it "successfully does a non-streaming GET request" do
+    it "a non-streaming GET request throws a content length exception" do
       expect { http_client.get(source) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
     end
   end
@@ -81,11 +87,11 @@ describe Chef::HTTP::Simple do
 
   it_behaves_like "downloading all the things"
 
-  context "when Chef::Log.level = :debug" do
+  context "when Chef::Log.level = :trace" do
     before do
-      Chef::Log.level = :debug
+      Chef::Log.level = :trace
       @debug_log = ""
-      allow(Chef::Log).to receive(:debug) { |str| @debug_log << str }
+      allow(Chef::Log).to receive(:trace) { |str| @debug_log << str }
     end
 
     let(:source) { "http://localhost:9000" }

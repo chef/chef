@@ -459,11 +459,11 @@ shared_examples_for Chef::Provider::File do
     context "do_validate_content" do
       before { setup_normal_file }
 
-      let(:tempfile) {
+      let(:tempfile) do
         t = double("Tempfile", :path => "/tmp/foo-bar-baz", :closed? => true)
         allow(content).to receive(:tempfile).and_return(t)
         t
-      }
+      end
 
       context "with user-supplied verifications" do
         it "calls #verify on each verification with tempfile path" do
@@ -476,7 +476,15 @@ shared_examples_for Chef::Provider::File do
           allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
           provider.new_resource.verify windows? ? "REM" : "true"
           provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
-          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed)
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, "Proposed content for #{provider.new_resource.path} failed verification #{windows? ? "cmd.exe /c exit 1" : "false"}")
+        end
+
+        it "does not show verification for sensitive resources" do
+          allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
+          provider.new_resource.verify windows? ? "REM" : "true"
+          provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
+          provider.new_resource.sensitive true
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, "Proposed content for #{provider.new_resource.path} failed verification [sensitive]")
         end
       end
     end
@@ -683,6 +691,16 @@ shared_examples_for Chef::Provider::File do
       end
     end
 
+    context "in why run mode" do
+      before { Chef::Config[:why_run] = true }
+      after { Chef::Config[:why_run] = false }
+
+      it "does not modify new_resource" do
+        setup_missing_file
+        expect(provider).not_to receive(:load_resource_attributes_from_file).with(provider.new_resource)
+        provider.run_action(:create)
+      end
+    end
   end
 
   context "action delete" do

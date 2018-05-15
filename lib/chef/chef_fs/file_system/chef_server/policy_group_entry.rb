@@ -93,7 +93,7 @@ class Chef
               end
 
               begin
-                existing_group = Chef::JSONCompat.parse(self.read)
+                existing_group = Chef::JSONCompat.parse(read)
               rescue NotFoundError
                 # It's OK if the group doesn't already exist, just means no existing policies
               end

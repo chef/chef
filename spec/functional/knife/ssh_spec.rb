@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,13 +21,13 @@ require "tiny_server"
 
 describe Chef::Knife::Ssh do
 
-  before(:all) do
+  before(:each) do
     Chef::Knife::Ssh.load_deps
     @server = TinyServer::Manager.new
     @server.start
   end
 
-  after(:all) do
+  after(:each) do
     @server.stop
   end
 
@@ -181,11 +181,11 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_attribute" do
         @knife.run
-        expect(@knife.get_ssh_attribute(Chef::Node.new)).to eq("ec2.public_hostname")
+        expect(@knife.get_ssh_attribute({ "target" => "ec2.public_hostname" })).to eq("ec2.public_hostname")
       end
     end
 
-    context "when knife[:ssh_attribute] is not provided]" do
+    context "when knife[:ssh_attribute] is not provided" do
       before do
         setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_attribute] = nil
@@ -193,28 +193,75 @@ describe Chef::Knife::Ssh do
 
       it "uses the default" do
         @knife.run
-        expect(@knife.get_ssh_attribute(Chef::Node.new)).to eq("fqdn")
+        expect(@knife.get_ssh_attribute({ "fqdn" => "fqdn" })).to eq("fqdn")
       end
     end
 
-    context "when -a ec2.public_ipv4 is provided" do
+    context "when -a ec2.public_public_hostname is provided" do
       before do
-        setup_knife(["-a ec2.public_hostname", "*:*", "uptime"])
+        setup_knife(["-a", "ec2.public_hostname", "*:*", "uptime"])
         Chef::Config[:knife][:ssh_attribute] = nil
       end
 
       it "should use the value on the command line" do
         @knife.run
-        expect(@knife.config[:attribute]).to eq("ec2.public_hostname")
+        expect(@knife.config[:ssh_attribute]).to eq("ec2.public_hostname")
       end
 
       it "should override what is set in knife.rb" do
         # This is the setting imported from knife.rb
         Chef::Config[:knife][:ssh_attribute] = "fqdn"
         # Then we run knife with the -a flag, which sets the above variable
-        setup_knife(["-a ec2.public_hostname", "*:*", "uptime"])
+        setup_knife(["-a", "ec2.public_hostname", "*:*", "uptime"])
         @knife.run
-        expect(@knife.config[:attribute]).to eq("ec2.public_hostname")
+        expect(@knife.config[:ssh_attribute]).to eq("ec2.public_hostname")
+      end
+    end
+  end
+
+  describe "prefix" do
+    context "when knife[:prefix_attribute] is set" do
+      before do
+        setup_knife(["*:*", "uptime"])
+        Chef::Config[:knife][:prefix_attribute] = "name"
+      end
+
+      it "uses the prefix_attribute" do
+        @knife.run
+        expect(@knife.get_prefix_attribute({ "prefix" => "name" })).to eq("name")
+      end
+    end
+
+    context "when knife[:prefix_attribute] is not provided" do
+      before do
+        setup_knife(["*:*", "uptime"])
+        Chef::Config[:knife][:prefix_attribute] = nil
+      end
+
+      it "falls back to nil" do
+        @knife.run
+        expect(@knife.get_prefix_attribute({})).to eq(nil)
+      end
+    end
+
+    context "when --prefix-attribute ec2.public_public_hostname is provided" do
+      before do
+        setup_knife(["--prefix-attribute", "ec2.public_hostname", "*:*", "uptime"])
+        Chef::Config[:knife][:prefix_attribute] = nil
+      end
+
+      it "should use the value on the command line" do
+        @knife.run
+        expect(@knife.config[:prefix_attribute]).to eq("ec2.public_hostname")
+      end
+
+      it "should override what is set in knife.rb" do
+        # This is the setting imported from knife.rb
+        Chef::Config[:knife][:prefix_attribute] = "fqdn"
+        # Then we run knife with the -b flag, which sets the above variable
+        setup_knife(["--prefix-attribute", "ec2.public_hostname", "*:*", "uptime"])
+        @knife.run
+        expect(@knife.config[:prefix_attribute]).to eq("ec2.public_hostname")
       end
     end
   end
@@ -243,6 +290,34 @@ describe Chef::Knife::Ssh do
         expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", {})
         @knife.run
         expect(@knife.config[:ssh_gateway]).to eq("user@ec2.public_hostname")
+      end
+    end
+
+    context "when knife[:ssh_gateway_identity] is set" do
+      before do
+        setup_knife(["*:*", "uptime"])
+        Chef::Config[:knife][:ssh_gateway] = "user@ec2.public_hostname"
+        Chef::Config[:knife][:ssh_gateway_identity] = "~/.ssh/aws-gateway.rsa"
+      end
+
+      it "uses the ssh_gateway_identity file" do
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => File.expand_path("#{ENV['HOME']}/.ssh/aws-gateway.rsa").squeeze("/"), :keys_only => true })
+        @knife.run
+        expect(@knife.config[:ssh_gateway_identity]).to eq("~/.ssh/aws-gateway.rsa")
+      end
+    end
+
+    context "when -ssh-gateway-identity is provided and knife[:ssh_gateway] is set" do
+      before do
+        setup_knife(["--ssh-gateway-identity", "~/.ssh/aws-gateway.rsa", "*:*", "uptime"])
+        Chef::Config[:knife][:ssh_gateway] = "user@ec2.public_hostname"
+        Chef::Config[:knife][:ssh_gateway_identity] = nil
+      end
+
+      it "uses the ssh_gateway_identity file" do
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => File.expand_path("#{ENV['HOME']}/.ssh/aws-gateway.rsa").squeeze("/"), :keys_only => true })
+        @knife.run
+        expect(@knife.config[:ssh_gateway_identity]).to eq("~/.ssh/aws-gateway.rsa")
       end
     end
 
@@ -276,9 +351,9 @@ describe Chef::Knife::Ssh do
     Chef::Config[:client_key] = nil
     Chef::Config[:chef_server_url] = "http://localhost:9000"
 
-    @api.get("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0", 200) {
-      %({"total":1, "start":0, "rows":[{"name":"i-xxxxxxxx", "json_class":"Chef::Node", "automatic":{"fqdn":"the.fqdn", "ec2":{"public_hostname":"the_public_hostname"}},"recipes":[]}]})
-    }
+    @api.post("/search/node?q=*:*&start=0&rows=1000", 200) do
+      %({"total":1, "start":0, "rows":[{"data": {"fqdn":"the.fqdn", "target": "the_public_hostname"}}]})
+    end
   end
 
 end

@@ -148,6 +148,16 @@ describe Chef::Provider::Directory do
         directory.run_action(:create)
         expect(new_resource).not_to be_updated
       end
+
+      context "in why run mode" do
+        before { Chef::Config[:why_run] = true }
+        after { Chef::Config[:why_run] = false }
+
+        it "does not modify new_resource" do
+          expect(directory).not_to receive(:load_resource_attributes_from_file).with(new_resource)
+          directory.run_action(:create)
+        end
+      end
     end
 
     describe "when the directory does not exist" do
@@ -227,7 +237,7 @@ describe Chef::Provider::Directory do
     end
   end
 
-  describe "#run_action(:create)" do
+  describe "#run_action(:delete)" do
     describe "when the directory exists" do
       it "deletes the directory" do
         directory.run_action(:delete)
@@ -237,6 +247,16 @@ describe Chef::Provider::Directory do
       it "sets the new resource as updated" do
         directory.run_action(:delete)
         expect(new_resource).to be_updated
+      end
+
+      it "does not use rm_rf which silently consumes errors" do
+        expect(FileUtils).not_to receive(:rm_rf)
+        expect(FileUtils).to receive(:rm_r)
+        # set recursive or FileUtils isn't used at all.
+        new_resource.recursive(true)
+        directory.run_action(:delete)
+        # reset back...
+        new_resource.recursive(false)
       end
     end
 

@@ -28,14 +28,12 @@ class Chef
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
+      description "Use the remote_file resource to transfer a file from a remote location"\
+                  " using file specificity. This resource is similar to the file resource."
+
       def initialize(name, run_context = nil)
         super
         @source = []
-        @use_etag = true
-        @use_last_modified = true
-        @ftp_active_mode = false
-        @headers = {}
-        @provider = Chef::Provider::RemoteFile
       end
 
       # source can take any of the following as arguments
@@ -72,13 +70,7 @@ class Chef
         end
       end
 
-      def checksum(args = nil)
-        set_or_return(
-          :checksum,
-          args,
-          :kind_of => String
-        )
-      end
+      property :checksum, String
 
       # Disable or enable ETag and Last Modified conditional GET. Equivalent to
       #   use_etag(true_or_false)
@@ -88,47 +80,78 @@ class Chef
         use_last_modified(true_or_false)
       end
 
-      def use_etag(args = nil)
-        set_or_return(
-          :use_etag,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :use_etag, [ TrueClass, FalseClass ], default: true
 
       alias :use_etags :use_etag
 
-      def use_last_modified(args = nil)
-        set_or_return(
-          :use_last_modified,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
+      property :use_last_modified, [ TrueClass, FalseClass ], default: true
+
+      property :ftp_active_mode, [ TrueClass, FalseClass ], default: false
+
+      property :headers, Hash, default: lazy { Hash.new }
+
+      property :show_progress, [ TrueClass, FalseClass ], default: false
+
+      property :remote_user, String
+
+      property :remote_domain, String
+
+      property :remote_password, String, sensitive: true
+
+      property :authentication, equal_to: [:remote, :local], default: :remote
+
+      def after_created
+        validate_identity_platform(remote_user, remote_password, remote_domain)
+        identity = qualify_user(remote_user, remote_password, remote_domain)
+        remote_domain(identity[:domain])
+        remote_user(identity[:user])
       end
 
-      def ftp_active_mode(args = nil)
-        set_or_return(
-          :ftp_active_mode,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
+      def validate_identity_platform(specified_user, password = nil, specified_domain = nil)
+        if node[:platform_family] == "windows"
+          if specified_user && password.nil?
+            raise ArgumentError, "A value for `remote_password` must be specified when a value for `user` is specified on the Windows platform"
+          end
+        end
       end
 
-      def headers(args = nil)
-        set_or_return(
-          :headers,
-          args,
-          :kind_of => Hash
-        )
-      end
+      def qualify_user(specified_user, password = nil, specified_domain = nil)
+        domain = specified_domain
+        user = specified_user
 
-      def show_progress(args = nil)
-        set_or_return(
-          :show_progress,
-          args,
-          :default => false,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
+        if specified_user.nil? && ! specified_domain.nil?
+          raise ArgumentError, "The domain `#{specified_domain}` was specified, but no user name was given"
+        end
+
+        # if domain is provided in both username and domain
+        if specified_user && ((specified_user.include? '\\') || (specified_user.include? "@")) && specified_domain
+          raise ArgumentError, "The domain is provided twice. Username: `#{specified_user}`, Domain: `#{specified_domain}`. Please specify domain only once."
+        end
+
+        if ! specified_user.nil? && specified_domain.nil?
+          # Splitting username of format: Domain\Username
+          domain_and_user = user.split('\\')
+
+          if domain_and_user.length == 2
+            domain = domain_and_user[0]
+            user = domain_and_user[1]
+          elsif domain_and_user.length == 1
+            # Splitting username of format: Username@Domain
+            domain_and_user = user.split("@")
+            if domain_and_user.length == 2
+              domain = domain_and_user[1]
+              user = domain_and_user[0]
+            elsif domain_and_user.length != 1
+              raise ArgumentError, "The specified user name `#{user}` is not a syntactically valid user name"
+            end
+          end
+        end
+
+        if ( password || domain ) && user.nil?
+          raise ArgumentError, "A value for `password` or `domain` was specified without specification of a value for `user`"
+        end
+
+        { domain: domain, user: user }
       end
 
       private

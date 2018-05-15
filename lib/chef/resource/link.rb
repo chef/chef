@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,10 +24,20 @@ class Chef
   class Resource
     class Link < Chef::Resource
       include Chef::Mixin::Securable
+      resource_name :link
+      provides :link
 
-      identity_attr :target_file
+      description "Use the link resource to create symbolic or hard links.\n\n"\
+                  "A symbolic link—sometimes referred to as a soft link—is a directory entry"\
+                  " that associates a file name with a string that contains an absolute or"\
+                  " relative path to a file on any file system. In other words, “a file that"\
+                  " contains a path that points to another file.” A symbolic link creates a new"\
+                  " file with a new inode that points to the inode location of the original file.\n\n"\
+                  "A hard link is a directory entry that associates a file with another file in the"\
+                  " same file system. In other words, “multiple directory entries to the same file.”"\
+                  " A hard link creates a new file that points to the same inode as the original file."
 
-      state_attrs :to, :owner, :group
+      state_attrs :owner # required since it's not a property below
 
       default_action :create
       allowed_actions :create, :delete
@@ -35,51 +45,27 @@ class Chef
       def initialize(name, run_context = nil)
         verify_links_supported!
         super
-        @to = nil
-        @link_type = :symbolic
-        @target_file = name
       end
 
-      def to(arg = nil)
-        set_or_return(
-          :to,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :target_file, String,
+               description: "The name of the link. Default value: the name of the resource block See “Syntax” section above for more information.",
+               name_property: true, identity: true
 
-      def target_file(arg = nil)
-        set_or_return(
-          :target_file,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :to, String,
+               description: "The actual file to which the link is to be created."
 
-      def link_type(arg = nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
-        set_or_return(
-          :link_type,
-          real_arg,
-          :equal_to => [ :symbolic, :hard ]
-        )
-      end
+      property :link_type, [String, Symbol],
+               description: "The type of link: :symbolic or :hard.",
+               coerce: proc { |arg| arg.kind_of?(String) ? arg.to_sym : arg },
+               equal_to: [ :symbolic, :hard ], default: :symbolic
 
-      def group(arg = nil)
-        set_or_return(
-          :group,
-          arg,
-          :regex => Chef::Config[:group_valid_regex]
-        )
-      end
+      property :group, [String, Integer],
+               description: "A string or ID that identifies the group associated with a symbolic link.",
+               regex: [Chef::Config[:group_valid_regex]]
 
-      def owner(arg = nil)
-        set_or_return(
-          :owner,
-          arg,
-          :regex => Chef::Config[:user_valid_regex]
-        )
-      end
+      property :owner, [String, Integer],
+               description: "The owner associated with a symbolic link.",
+               regex: [Chef::Config[:user_valid_regex]]
 
       # make link quack like a file (XXX: not for public consumption)
       def path

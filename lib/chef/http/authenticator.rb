@@ -30,6 +30,8 @@ class Chef
       attr_reader :raw_key
       attr_reader :attr_names
       attr_reader :auth_credentials
+      attr_reader :version_class
+      attr_reader :api_version
 
       attr_accessor :sign_request
 
@@ -39,15 +41,12 @@ class Chef
         @signing_key_filename = opts[:signing_key_filename]
         @key = load_signing_key(opts[:signing_key_filename], opts[:raw_key])
         @auth_credentials = AuthCredentials.new(opts[:client_name], @key)
-        if opts[:api_version]
-          @api_version = opts[:api_version]
-        else
-          @api_version = DEFAULT_SERVER_API_VERSION
-        end
+        @version_class = opts[:version_class]
+        @api_version = opts[:api_version]
       end
 
       def handle_request(method, url, headers = {}, data = false)
-        headers["X-Ops-Server-API-Version"] = @api_version
+        headers["X-Ops-Server-API-Version"] = request_version
         headers.merge!(authentication_headers(method, url, data, headers)) if sign_requests?
         [method, url, headers, data]
       end
@@ -62,6 +61,16 @@ class Chef
 
       def handle_stream_complete(http_response, rest_request, return_value)
         [http_response, rest_request, return_value]
+      end
+
+      def request_version
+        if version_class
+          version_class.best_request_version
+        elsif api_version
+          api_version
+        else
+          DEFAULT_SERVER_API_VERSION
+        end
       end
 
       def sign_requests?

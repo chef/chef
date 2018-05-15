@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,8 +27,12 @@ class Chef
       include Chef::Mixin::Uris
 
       resource_name :windows_package
-      provides :windows_package, os: "windows"
+      provides(:windows_package) { true }
       provides :package, os: "windows"
+
+      description "Use the windows_package resource to manage Microsoft Installer Package"\
+                  " (MSI) packages for the Microsoft Windows platform."
+      introduced "11.12"
 
       allowed_actions :install, :remove
 
@@ -36,6 +40,9 @@ class Chef
         super
         @source ||= source(@package_name) if @package_name.downcase.end_with?(".msi")
       end
+
+      # windows can't take array options yet
+      property :options, String
 
       # Unique to this resource
       property :installer_type, Symbol

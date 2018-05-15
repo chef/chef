@@ -51,6 +51,27 @@ class Chef
       new(**options)
     end
 
+    # This is to support #deprecated_property_alias, by emitting an alias and a
+    # deprecatation warning when called.
+    #
+    # @param from [String] Name of the deprecated property
+    # @param to [String] Name of the correct property
+    # @param message [String] Deprecation message to show to the cookbook author
+    # @param declared_in [Class] Class this property comes from
+    #
+    def self.emit_deprecated_alias(from, to, message, declared_in)
+      declared_in.class_eval <<-EOM, __FILE__, __LINE__ + 1
+        def #{from}(value=NOT_PASSED)
+          Chef.deprecated(:property, "#{message}")
+          #{to}(value)
+        end
+        def #{from}=(value)
+          Chef.deprecated(:property, "#{message}")
+          #{to} = value
+        end
+      EOM
+    end
+
     #
     # Create a new property.
     #
@@ -60,10 +81,12 @@ class Chef
     #   options).
     #   @option options [Symbol] :name The name of this property.
     #   @option options [Class] :declared_in The class this property comes from.
+    #   @option options [String] :description A description of the property.
     #   @option options [Symbol] :instance_variable_name The instance variable
     #     tied to this property. Must include a leading `@`. Defaults to `@<name>`.
     #     `nil` means the property is opaque and not tied to a specific instance
     #     variable.
+    #   @option options [String] :introduced The release that introduced this property
     #   @option options [Boolean] :desired_state `true` if this property is part of desired
     #     state. Defaults to `true`.
     #   @option options [Boolean] :identity `true` if this property is part of object
@@ -74,7 +97,7 @@ class Chef
     #     return `true` if the property is set *or* if `name` is set.
     #   @option options [Boolean] :nillable `true` opt-in to Chef-13 style behavior where
     #     attempting to set a nil value will really set a nil value instead of issuing
-    #     a warning and operating like a getter
+    #     a warning and operating like a getter [DEPRECATED]
     #   @option options [Object] :default The value this property
     #     will return if the user does not set one. If this is `lazy`, it will
     #     be run in the context of the instance (and able to access other
@@ -88,6 +111,8 @@ class Chef
     #   @option options [Boolean] :required `true` if this property
     #     must be present; `false` otherwise. This is checked after the resource
     #     is fully initialized.
+    #   @option options [String] :deprecated If set, this property is deprecated and
+    #     will create a deprecation warning.
     #
     def initialize(**options)
       options = options.inject({}) { |memo, (key, value)| memo[key.to_sym] = value; memo }
@@ -99,24 +124,29 @@ class Chef
       if options.has_key?(:name_attribute)
         # If we have both name_attribute and name_property and they differ, raise an error
         if options.has_key?(:name_property)
-          raise ArgumentError, "Cannot specify both name_property and name_attribute together on property #{self}."
+          raise ArgumentError, "name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property #{self}"
         end
         # replace name_property with name_attribute in place
         options = Hash[options.map { |k, v| k == :name_attribute ? [ :name_property, v ] : [ k, v ] }]
         @options = options
       end
 
-      # Only pick the first of :default, :name_property and :name_attribute if
-      # more than one is specified.
-      if options.has_key?(:default) && options[:name_property]
-        if options[:default].nil? || options.keys.index(:name_property) < options.keys.index(:default)
-          options.delete(:default)
-          preferred_default = :name_property
-        else
-          options.delete(:name_property)
-          preferred_default = :default
+      if options.has_key?(:default) && options.has_key?(:name_property)
+        raise ArgumentError, "A property cannot be both a name_property/name_attribute and have a default value. Use one or the other on property #{self}"
+      end
+
+      # Recursively freeze the default if it isn't a lazy value.
+      unless default.is_a?(DelayedEvaluator)
+        visitor = lambda do |obj|
+          case obj
+          when Hash
+            obj.each_value { |value| visitor.call(value) }
+          when Array
+            obj.each { |value| visitor.call(value) }
+          end
+          obj.freeze
         end
-        Chef.log_deprecation("Cannot specify both default and name_property together on property #{self}. Only one (#{preferred_default}) will be obeyed. In Chef 13, this will become an error. Please remove one or the other from the property.")
+        visitor.call(default)
       end
 
       # Validate the default early, so the user gets a good error message, and
@@ -150,6 +180,24 @@ class Chef
     #
     def declared_in
       options[:declared_in]
+    end
+
+    #
+    # A description of this property.
+    #
+    # @return [String]
+    #
+    def description
+      options[:description]
+    end
+
+    #
+    # When this property was introduced
+    #
+    # @return [String]
+    #
+    def introduced
+      options[:introduced]
     end
 
     #
@@ -230,14 +278,25 @@ class Chef
     end
 
     #
+    # Whether this property is sensitive or not.
+    #
+    # Defaults to false.
+    #
+    # @return [Boolean]
+    #
+    def sensitive?
+      options.fetch(:sensitive, false)
+    end
+
+    #
     # Validation options.  (See Chef::Mixin::ParamsValidate#validate.)
     #
     # @return [Hash<Symbol,Object>]
     #
     def validation_options
-      @validation_options ||= options.reject { |k, v|
-        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable].include?(k)
-      }
+      @validation_options ||= options.reject do |k, v|
+        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable, :sensitive, :description, :introduced, :deprecated].include?(k)
+      end
     end
 
     #
@@ -262,32 +321,8 @@ class Chef
     #
     def call(resource, value = NOT_PASSED)
       if value == NOT_PASSED
-        return get(resource)
-      end
-
-      if value.nil? && !nillable?
-        # In Chef 12, value(nil) does a *get* instead of a set, so we
-        # warn if the value would have been changed. In Chef 13, it will be
-        # equivalent to value = nil.
-        result = get(resource, nil_set: true)
-
-        # Warn about this becoming a set in Chef 13.
-        begin
-          input_to_stored_value(resource, value)
-          # If nil is valid, and it would change the value, warn that this will change to a set.
-          if !result.nil?
-            Chef.log_deprecation("An attempt was made to change #{name} from #{result.inspect} to nil by calling #{name}(nil). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil.")
-          end
-        rescue Chef::Exceptions::DeprecatedFeatureError
-          raise
-        rescue
-          # If nil is invalid, warn that this will become an error.
-          Chef.log_deprecation("nil is an invalid value for #{self}. In Chef 13, this warning will change to an error. Error: #{$!}")
-        end
-
-        result
+        get(resource)
       else
-        # Anything else, such as myprop(value) is a set
         set(resource, value)
       end
     end
@@ -316,37 +351,13 @@ class Chef
     #
     def get(resource, nil_set: false)
       # If it's set, return it (and evaluate any lazy values)
+      value = nil
+
       if is_set?(resource)
         value = get_value(resource)
         value = stored_value_to_output(resource, value)
-
       else
         # We are getting the default value.
-
-        # If the user does something like this:
-        #
-        # ```
-        # class MyResource < Chef::Resource
-        #   property :content
-        #   action :create do
-        #     file '/x.txt' do
-        #       content content
-        #     end
-        #   end
-        # end
-        # ```
-        #
-        # It won't do what they expect. This checks whether you try to *read*
-        # `content` while we are compiling the resource.
-        if !nil_set &&
-            resource.respond_to?(:resource_initializing) &&
-            resource.resource_initializing &&
-            resource.respond_to?(:enclosing_provider) &&
-            resource.enclosing_provider &&
-            resource.enclosing_provider.new_resource &&
-            resource.enclosing_provider.new_resource.respond_to?(name)
-          Chef::Log.warn("#{Chef::Log.caller_location}: property #{name} is declared in both #{resource} and #{resource.enclosing_provider}. Use new_resource.#{name} instead. At #{Chef::Log.caller_location}")
-        end
 
         if has_default?
           # If we were able to cache the stored_default, grab it.
@@ -356,7 +367,7 @@ class Chef
             # Otherwise, we have to validate it now.
             value = input_to_stored_value(resource, default, is_default: true)
           end
-          value = stored_value_to_output(resource, value, is_default: true)
+          value = stored_value_to_output(resource, value)
 
           # If the value is mutable (non-frozen), we set it on the instance
           # so that people can mutate it.  (All constant default values are
@@ -364,12 +375,13 @@ class Chef
           if !value.frozen? && !value.nil?
             set_value(resource, value)
           end
-
-          value
-
-        elsif required?
-          raise Chef::Exceptions::ValidationFailed, "#{name} is required"
         end
+      end
+
+      if value.nil? && required?
+        raise Chef::Exceptions::ValidationFailed, "#{name} is a required property"
+      else
+        value
       end
     end
 
@@ -389,7 +401,17 @@ class Chef
     #   this property.
     #
     def set(resource, value)
-      set_value(resource, input_to_stored_value(resource, value))
+      value = set_value(resource, input_to_stored_value(resource, value))
+
+      if options.has_key?(:deprecated)
+        Chef.deprecated(:property, options[:deprecated])
+      end
+
+      if value.nil? && required?
+        raise Chef::Exceptions::ValidationFailed, "#{name} is a required property"
+      else
+        value
+      end
     end
 
     #
@@ -442,8 +464,8 @@ class Chef
     #
     def coerce(resource, value)
       if options.has_key?(:coerce)
-        # If we have no default value, `nil` is never coerced or validated
-        unless !has_default? && value.nil?
+        # nil is never coerced
+        unless value.nil?
           value = exec_in_resource(resource, options[:coerce], value)
         end
       end
@@ -457,15 +479,15 @@ class Chef
     # options.
     #
     # @param resource [Chef::Resource] The resource we're validating against
-    #   (to provide context for the validate).
+    #   (to provide context for the validation).
     # @param value The value to validate.
     #
     # @raise Chef::Exceptions::ValidationFailed If the value is invalid for
     #   this property.
     #
     def validate(resource, value)
-      # If we have no default value, `nil` is never coerced or validated
-      unless value.nil? && !has_default?
+      # nils are not validated unless we have an explicit default value
+      if !value.nil? || has_default?
         if resource
           resource.validate({ name => value }, { name => validation_options })
         else
@@ -507,31 +529,29 @@ class Chef
       # be using the existing getter/setter to manipulate it instead.
       return if !instance_variable_name
 
+      # Properties may override existing properties up the inheritance heirarchy, but
+      # properties must not override inherited methods like Object#hash.  When the Resource is
+      # placed into the resource collection the ruby Hash object will call the
+      # Object#hash method on the resource, and overriding that with a property will cause
+      # very confusing results.
+      if property_redefines_method?
+        resource_name = declared_in.respond_to?(:resource_name) ? declared_in.resource_name : declared_in
+        raise ArgumentError, "Property `#{name}` of resource `#{resource_name}` overwrites an existing method. A different name should be used for this property."
+      end
+
       # We prefer this form because the property name won't show up in the
       # stack trace if you use `define_method`.
       declared_in.class_eval <<-EOM, __FILE__, __LINE__ + 1
         def #{name}(value=NOT_PASSED)
-          raise "Property #{name} of \#{self} cannot be passed a block! If you meant to create a resource named #{name} instead, you'll need to first rename the property." if block_given?
+          raise "Property `#{name}` of `\#{self}` was incorrectly passed a block. Possible property-resource collision. To call a resource named `#{name}` either rename the property or else use `declare_resource(:#{name}, ...)`" if block_given?
           self.class.properties[#{name.inspect}].call(self, value)
         end
         def #{name}=(value)
-          raise "Property #{name} of \#{self} cannot be passed a block! If you meant to create a resource named #{name} instead, you'll need to first rename the property." if block_given?
+          raise "Property `#{name}` of `\#{self}` was incorrectly passed a block. Possible property-resource collision. To call a resource named `#{name}` either rename the property or else use `declare_resource(:#{name}, ...)`" if block_given?
           self.class.properties[#{name.inspect}].set(self, value)
         end
       EOM
-    rescue SyntaxError
-      # If the name is not a valid ruby name, we use define_method.
-      declared_in.define_method(name) do |value = NOT_PASSED, &block|
-        raise "Property #{name} of #{self} cannot be passed a block! If you meant to create a resource named #{name} instead, you'll need to first rename the property." if block
-        self.class.properties[name].call(self, value)
-      end
-      declared_in.define_method("#{name}=") do |value, &block|
-        raise "Property #{name} of #{self} cannot be passed a block! If you meant to create a resource named #{name} instead, you'll need to first rename the property." if block
-        self.class.properties[name].set(self, value)
-      end
     end
-
-    protected
 
     #
     # The options this Property will use for get/set behavior and validation.
@@ -580,9 +600,12 @@ class Chef
     # @api private
     def explicitly_accepts_nil?(resource)
       options.has_key?(:coerce) ||
-        (options.has_key?(:is) && resource.send(:_pv_is, { name => nil }, name, options[:is], raise_error: false))
+        (options.has_key?(:is) && Chef::Mixin::ParamsValidate.send(:_pv_is, { name => nil }, name, options[:is]))
+    rescue Chef::Exceptions::ValidationFailed, Chef::Exceptions::CannotValidateStaticallyError
+      false
     end
 
+    # @api private
     def get_value(resource)
       if instance_variable_name
         resource.instance_variable_get(instance_variable_name)
@@ -591,6 +614,7 @@ class Chef
       end
     end
 
+    # @api private
     def set_value(resource, value)
       if instance_variable_name
         resource.instance_variable_set(instance_variable_name, value)
@@ -599,6 +623,7 @@ class Chef
       end
     end
 
+    # @api private
     def value_is_set?(resource)
       if instance_variable_name
         resource.instance_variable_defined?(instance_variable_name)
@@ -607,6 +632,7 @@ class Chef
       end
     end
 
+    # @api private
     def reset_value(resource)
       if instance_variable_name
         if value_is_set?(resource)
@@ -615,6 +641,27 @@ class Chef
       else
         raise ArgumentError, "Property #{name} has no instance variable defined and cannot be reset"
       end
+    end
+
+    private
+
+    def property_redefines_method?
+      # We only emit deprecations if this property already exists as an instance method.
+      # Weeding out class methods avoids unnecessary deprecations such Chef::Resource
+      # defining a `name` property when there's an already-existing `name` method
+      # for a Module.
+      return false unless declared_in.instance_methods.include?(name)
+
+      # Only emit deprecations for some well-known classes. This will still
+      # allow more advanced users to subclass their own custom resources and
+      # override their own properties.
+      return false unless [ Object, BasicObject, Kernel, Chef::Resource ].include?(declared_in.instance_method(name).owner)
+
+      # Allow top-level Chef::Resource proprties, such as `name`, to be overridden.
+      # As of this writing, `name` is the only Chef::Resource property created with the
+      # `property` definition, but this will allow for future properties to be extended
+      # as needed.
+      !Chef::Resource.properties.keys.include?(name)
     end
 
     def exec_in_resource(resource, proc, *args)
@@ -631,51 +678,30 @@ class Chef
     end
 
     def input_to_stored_value(resource, value, is_default: false)
+      if value.nil? && !is_default && !explicitly_accepts_nil?(resource)
+        value = default
+      end
       unless value.is_a?(DelayedEvaluator)
-        value = coerce_and_validate(resource, value, is_default: is_default)
+        value = coerce_and_validate(resource, value)
       end
       value
     end
 
-    def stored_value_to_output(resource, value, is_default: false)
+    def stored_value_to_output(resource, value)
       # Crack open lazy values before giving the result to the user
       if value.is_a?(DelayedEvaluator)
         value = exec_in_resource(resource, value)
-        value = coerce_and_validate(resource, value, is_default: is_default)
+        value = coerce_and_validate(resource, value)
       end
       value
     end
 
-    # Coerces and validates the value. If the value is a default, it will warn
-    # the user that invalid defaults are bad mmkay, and return it as if it were
-    # valid.
-    def coerce_and_validate(resource, value, is_default: false)
+    # Coerces and validates the value.
+    def coerce_and_validate(resource, value)
       result = coerce(resource, value)
-      begin
-        # If the input is from a default, we need to emit an invalid default warning on validate.
-        validate(resource, result)
-      rescue Chef::Exceptions::CannotValidateStaticallyError
-        # This one gets re-raised
-        raise
-      rescue
-        # Anything else is just an invalid default: in those cases, we just
-        # warn and return the (possibly coerced) value to the user.
-        if is_default
-          if value.nil?
-            Chef.log_deprecation("Default value nil is invalid for property #{self}. Possible fixes: 1. Remove 'default: nil' if nil means 'undefined'. 2. Set a valid default value if there is a reasonable one. 3. Allow nil as a valid value of your property (for example, 'property #{name.inspect}, [ String, nil ], default: nil'). Error: #{$!}")
-          else
-            Chef.log_deprecation("Default value #{value.inspect} is invalid for property #{self}. In Chef 13 this will become an error: #{$!}.")
-          end
-        else
-          raise
-        end
-      end
+      validate(resource, result)
 
       result
-    end
-
-    def nillable?
-      !!options[:nillable]
     end
   end
 end

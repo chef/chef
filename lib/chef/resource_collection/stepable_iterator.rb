@@ -100,9 +100,7 @@ class Chef
       end
 
       def iterate
-        while @position < size && !paused?
-          step
-        end
+        step while @position < size && !paused?
         collection
       end
 

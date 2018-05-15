@@ -96,13 +96,13 @@ class Chef
           all_nodes << node
         end
 
-        output(all_nodes.sort { |n1, n2|
+        output(all_nodes.sort do |n1, n2|
           if config[:sort_reverse] || Chef::Config[:knife][:sort_status_reverse]
             (n2["ohai_time"] || 0) <=> (n1["ohai_time"] || 0)
           else
             (n1["ohai_time"] || 0) <=> (n2["ohai_time"] || 0)
           end
-        })
+        end)
       end
 
     end

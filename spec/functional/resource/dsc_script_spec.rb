@@ -65,28 +65,27 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   end
 
   def delete_user(target_user)
-    begin
-      shell_out!("net user #{target_user} /delete")
-    rescue Mixlib::ShellOut::ShellCommandFailed
-    end
+    shell_out!("net user #{target_user} /delete")
+  rescue Mixlib::ShellOut::ShellCommandFailed
   end
 
   let(:dsc_env_variable) { "chefenvtest" }
   let(:dsc_env_value1) { "value1" }
   let(:env_value2) { "value2" }
-  let(:dsc_test_run_context) {
+  let(:dsc_test_run_context) do
     node = Chef::Node.new
+    node.automatic["os"] = "windows"
     node.automatic["platform"] = "windows"
     node.automatic["platform_version"] = "6.1"
     node.automatic["kernel"][:machine] = :x86_64 # Only 64-bit architecture is supported
     node.automatic[:languages][:powershell][:version] = "4.0"
     empty_events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, empty_events)
-  }
+  end
   let(:dsc_test_resource_name) { "DSCTest" }
-  let(:dsc_test_resource_base) {
+  let(:dsc_test_resource_base) do
     Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
-  }
+  end
   let(:test_registry_key) { 'HKEY_LOCAL_MACHINE\Software\Chef\Spec\Functional\Resource\dsc_script_spec' }
   let(:test_registry_value) { "Registration" }
   let(:test_registry_data1) { "LL927" }
@@ -94,7 +93,8 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   let(:reg_key_name_param_name) { "testregkeyname" }
   let(:reg_key_value_param_name) { "testregvaluename" }
   let(:registry_embedded_parameters) { "$#{reg_key_name_param_name} = '#{test_registry_key}';$#{reg_key_value_param_name} = '#{test_registry_value}'" }
-  let(:dsc_reg_code) { <<-EOH
+  let(:dsc_reg_code) do
+    <<-EOH
   #{registry_embedded_parameters}
   Registry "ChefRegKey"
   {
@@ -104,14 +104,15 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
      Ensure = 'Present'
   }
 EOH
-  }
+  end
 
   let(:dsc_code) { dsc_reg_code }
-  let(:dsc_reg_script) { <<-EOH
+  let(:dsc_reg_script) do
+    <<-EOH
   param($testregkeyname, $testregvaluename)
   #{dsc_reg_code}
 EOH
-  }
+  end
 
   let(:dsc_user_prefix) { "dsc" }
   let(:dsc_user_suffix) { "chefx" }
@@ -128,7 +129,8 @@ EOH
   let(:dsc_user_param_code) { "\"$(#{dsc_user_prefix_param_code})_usr_$(#{dsc_user_suffix_param_code})\"" }
 
   let(:config_flags) { nil }
-  let(:config_params) { <<-EOH
+  let(:config_params) do
+    <<-EOH
 
     [CmdletBinding()]
     param
@@ -137,14 +139,15 @@ EOH
     $#{dsc_user_suffix_param_name}
     )
 EOH
-  }
+  end
 
   let(:config_param_section) { "" }
   let(:dsc_user_code) { "'#{dsc_user}'" }
   let(:dsc_user_prefix_code) { dsc_user_prefix }
   let(:dsc_user_suffix_code) { dsc_user_suffix }
   let(:dsc_script_environment_attribute) { nil }
-  let(:dsc_user_resources_code) { <<-EOH
+  let(:dsc_user_resources_code) do
+    <<-EOH
   #{config_param_section}
 node localhost
 {
@@ -164,9 +167,9 @@ User dsctestusercreate
 }
 }
 EOH
-  }
+  end
 
-  let(:dsc_user_config_data) {
+  let(:dsc_user_config_data) do
     <<-EOH
 @{
     AllNodes = @(
@@ -178,13 +181,14 @@ EOH
 }
 
 EOH
-  }
+  end
 
   let(:dsc_environment_env_var_name) { "dsc_test_cwd" }
   let(:dsc_environment_no_fail_not_etc_directory) { "#{ENV['systemroot']}\\system32" }
   let(:dsc_environment_fail_etc_directory) { "#{ENV['systemroot']}\\system32\\drivers\\etc" }
   let(:exception_message_signature) { "LL927-LL928" }
-  let(:dsc_environment_config) {<<-EOH
+  let(:dsc_environment_config) do
+    <<-EOH
 if (($pwd.path -eq '#{dsc_environment_fail_etc_directory}') -and (test-path('#{dsc_environment_fail_etc_directory}')))
 {
     throw 'Signature #{exception_message_signature}: Purposefully failing because cwd == #{dsc_environment_fail_etc_directory}'
@@ -196,21 +200,21 @@ environment "whatsmydir"
     Ensure = 'Present'
 }
 EOH
-  }
+  end
 
-  let(:dsc_config_name) {
+  let(:dsc_config_name) do
     dsc_test_resource_base.name
-  }
-  let(:dsc_resource_from_code) {
+  end
+  let(:dsc_resource_from_code) do
     dsc_test_resource_base.code(dsc_code)
     dsc_test_resource_base
-  }
+  end
   let(:config_name_value) { dsc_test_resource_base.name }
 
-  let(:dsc_resource_from_path) {
+  let(:dsc_resource_from_path) do
     dsc_test_resource_base.command(create_config_script_from_code(dsc_code, config_name_value))
     dsc_test_resource_base
-  }
+  end
 
   before(:each) do
     test_key_resource = Chef::Resource::RegistryKey.new(test_registry_key, dsc_test_run_context)
@@ -469,6 +473,7 @@ EOF
     end
 
     it "allows the use of ps_credential" do
+      skip("Skipped until we can adjust the test cert to meet the WMF 5 cert requirements.")
       expect(user_exists?(dsc_user)).to eq(false)
       powershell_script_resource.run_action(:run)
       expect(File).to exist(configuration_data_path)

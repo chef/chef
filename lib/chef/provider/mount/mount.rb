@@ -47,7 +47,7 @@ class Chef
           elsif @new_resource.mount_point != "none" && !::File.exists?(@new_resource.mount_point)
             raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
           end
-          return true
+          true
         end
 
         def enabled?
@@ -57,17 +57,18 @@ class Chef
             case line
             when /^[#\s]/
               next
-            when /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
+            when /^(#{device_fstab_regex})\s+#{Regexp.escape(@new_resource.mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
               enabled = true
-              @current_resource.fstype($1)
-              @current_resource.options($2)
-              @current_resource.dump($3.to_i)
-              @current_resource.pass($4.to_i)
-              Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/fstab")
+              @current_resource.device($1)
+              @current_resource.fstype($2)
+              @current_resource.options($3)
+              @current_resource.dump($4.to_i)
+              @current_resource.pass($5.to_i)
+              logger.trace("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/fstab")
               next
             when /^[\/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+/
               enabled = false
-              Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/fstab")
+              logger.trace("Found conflicting mount point #{@new_resource.mount_point} in /etc/fstab")
             end
           end
           @current_resource.enabled(enabled)
@@ -89,10 +90,10 @@ class Chef
             case line
             when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(real_mount_point)}\s/
               mounted = true
-              Chef::Log.debug("Special device #{device_logstring} mounted as #{real_mount_point}")
+              logger.trace("Special device #{device_logstring} mounted as #{real_mount_point}")
             when /^([\/\w])+\son\s#{Regexp.escape(real_mount_point)}\s+/
               mounted = false
-              Chef::Log.debug("Special device #{$~[1]} mounted as #{real_mount_point}")
+              logger.trace("Special device #{$~[1]} mounted as #{real_mount_point}")
             end
           end
           @current_resource.mounted(mounted)
@@ -113,42 +114,47 @@ class Chef
                        end
             command << " #{@new_resource.mount_point}"
             shell_out!(command)
-            Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
+            logger.trace("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
-            Chef::Log.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
+            logger.trace("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
           end
         end
 
         def umount_fs
           if @current_resource.mounted
             shell_out!("umount #{@new_resource.mount_point}")
-            Chef::Log.debug("#{@new_resource} is no longer mounted at #{@new_resource.mount_point}")
+            logger.trace("#{@new_resource} is no longer mounted at #{@new_resource.mount_point}")
           else
-            Chef::Log.debug("#{@new_resource} is not mounted at #{@new_resource.mount_point}")
+            logger.trace("#{@new_resource} is not mounted at #{@new_resource.mount_point}")
           end
         end
 
         def remount_command
-          return "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.mount_point}"
+          "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.mount_point}"
         end
 
         def remount_fs
           if @current_resource.mounted && @new_resource.supports[:remount]
             shell_out!(remount_command)
             @new_resource.updated_by_last_action(true)
-            Chef::Log.debug("#{@new_resource} is remounted at #{@new_resource.mount_point}")
+            logger.trace("#{@new_resource} is remounted at #{@new_resource.mount_point}")
           elsif @current_resource.mounted
             umount_fs
             sleep 1
             mount_fs
           else
-            Chef::Log.debug("#{@new_resource} is not mounted at #{@new_resource.mount_point} - nothing to do")
+            logger.trace("#{@new_resource} is not mounted at #{@new_resource.mount_point} - nothing to do")
           end
         end
 
+        # Return appropriate default mount options according to the given os.
+        def default_mount_options
+          node[:os] == "linux" ? "defaults" : "rw"
+        end
+
         def enable_fs
-          if @current_resource.enabled && mount_options_unchanged?
-            Chef::Log.debug("#{@new_resource} is already enabled - nothing to do")
+          if @current_resource.enabled && mount_options_unchanged? && device_unchanged?
+            logger.trace("#{@new_resource} is already enabled - nothing to do")
             return nil
           end
 
@@ -158,8 +164,8 @@ class Chef
             disable_fs
           end
           ::File.open("/etc/fstab", "a") do |fstab|
-            fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "defaults" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
-            Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
+            fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? default_mount_options : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
+            logger.trace("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
         end
 
@@ -171,7 +177,7 @@ class Chef
             ::File.readlines("/etc/fstab").reverse_each do |line|
               if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s/
                 found = true
-                Chef::Log.debug("#{@new_resource} is removed from fstab")
+                logger.trace("#{@new_resource} is removed from fstab")
                 next
               else
                 contents << line
@@ -182,7 +188,7 @@ class Chef
               contents.reverse_each { |line| fstab.puts line }
             end
           else
-            Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
+            logger.trace("#{@new_resource} is not enabled - nothing to do")
           end
         end
 
@@ -193,7 +199,7 @@ class Chef
         def device_should_exist?
           ( @new_resource.device != "none" ) &&
             ( not network_device? ) &&
-            ( not %w{ cgroup tmpfs fuse vboxsf }.include? @new_resource.fstype )
+            ( not %w{ cgroup tmpfs fuse vboxsf zfs }.include? @new_resource.fstype )
         end
 
         private
@@ -210,7 +216,7 @@ class Chef
         end
 
         def device_real
-          if @real_device == nil
+          if @real_device.nil?
             if @new_resource.device_type == :device
               @real_device = @new_resource.device
             else
@@ -253,7 +259,7 @@ class Chef
           if @new_resource.device_type == :device
             device_mount_regex
           else
-            device_fstab
+            Regexp.union(device_fstab, device_mount_regex)
           end
         end
 

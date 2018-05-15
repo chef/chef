@@ -74,8 +74,8 @@ class Chef
         end
 
         def mount_fs
-          actual_options = options || []
-          actual_options.delete("noauto")
+          actual_options = native_options(options)
+          actual_options.delete("-")
           command = "mount -F #{fstype}"
           command << " -o #{actual_options.join(',')}" unless actual_options.empty?
           command << " #{device} #{mount_point}"
@@ -88,8 +88,8 @@ class Chef
 
         def remount_fs
           # FIXME: Should remount always do the remount or only if the options change?
-          actual_options = options || []
-          actual_options.delete("noauto")
+          actual_options = native_options(options)
+          actual_options.delete("-")
           mount_options = actual_options.empty? ? "" : ",#{actual_options.join(',')}"
           shell_out!("mount -o remount#{mount_options} #{mount_point}")
         end
@@ -112,7 +112,7 @@ class Chef
           else
             # this is likely some kind of internal error, since we should only call disable_fs when there
             # the filesystem we want to disable is enabled.
-            Chef::Log.warn("#{new_resource} did not find the mountpoint to disable in the vfstab")
+            logger.warn("#{new_resource} did not find the mountpoint to disable in the vfstab")
           end
         end
 
@@ -121,8 +121,8 @@ class Chef
         end
 
         def mount_options_unchanged?
-          new_options = options_remove_noauto(options)
-          current_options = options_remove_noauto(current_resource.nil? ? nil : current_resource.options)
+          new_options = native_options(options)
+          current_options = native_options(current_resource.nil? ? nil : current_resource.options)
 
           current_resource.fsck_device == fsck_device &&
             current_resource.fstype == fstype &&
@@ -153,10 +153,10 @@ class Chef
           shell_out!("mount -v").stdout.each_line do |line|
             case line
             when /^#{device_regex}\s+on\s+#{Regexp.escape(mount_point)}\s+/
-              Chef::Log.debug("Special device #{device} is mounted as #{mount_point}")
+              logger.trace("Special device #{device} is mounted as #{mount_point}")
               mounted = true
             when /^([\/\w]+)\son\s#{Regexp.escape(mount_point)}\s+/
-              Chef::Log.debug("Special device #{Regexp.last_match[1]} is mounted as #{mount_point}")
+              logger.trace("Special device #{Regexp.last_match[1]} is mounted as #{mount_point}")
               mounted = false
             end
           end
@@ -168,7 +168,8 @@ class Chef
         def read_vfstab_status
           # Check to see if there is an entry in /etc/vfstab. Last entry for a volume wins.
           enabled = false
-          fstype = options = pass = nil
+          pass = false
+          fstype = options = nil
           ::File.foreach(VFSTAB) do |line|
             case line
             when /^[#\s]/
@@ -190,12 +191,12 @@ class Chef
                 end
               end
               pass = (Regexp.last_match[2] == "-") ? 0 : Regexp.last_match[2].to_i
-              Chef::Log.debug("Found mount #{device} to #{mount_point} in #{VFSTAB}")
+              logger.trace("Found mount #{device} to #{mount_point} in #{VFSTAB}")
               next
             when /^[-\/\w]+\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+/
               # if we find a mountpoint on top of our mountpoint, then we are not enabled
               enabled = false
-              Chef::Log.debug("Found conflicting mount point #{mount_point} in #{VFSTAB}")
+              logger.trace("Found conflicting mount point #{mount_point} in #{VFSTAB}")
             end
           end
           [enabled, fstype, options, pass]
@@ -220,11 +221,7 @@ class Chef
         end
 
         def vfstab_entry
-          actual_options = unless options.nil?
-                             tempops = options.dup
-                             tempops.delete("noauto")
-                             tempops
-                           end
+          actual_options = native_options(options)
           autostr = mount_at_boot? ? "yes" : "no"
           passstr = pass == 0 ? "-" : pass
           optstr = (actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(",")
@@ -237,7 +234,7 @@ class Chef
           ::File.readlines(VFSTAB).reverse_each do |line|
             if !found && line =~ /^#{device_regex}\s+\S+\s+#{Regexp.escape(mount_point)}/
               found = true
-              Chef::Log.debug("#{new_resource} is removed from vfstab")
+              logger.trace("#{new_resource} is removed from vfstab")
               next
             end
             contents << line
@@ -251,11 +248,15 @@ class Chef
           contents << vfstab_entry
         end
 
-        def options_remove_noauto(temp_options)
-          new_options = []
-          new_options += temp_options.nil? ? [] : temp_options
-          new_options.delete("noauto")
-          new_options
+        def native_options(temp_options)
+          if temp_options == %w{defaults}
+            ["-"]
+          else
+            new_options = []
+            new_options += temp_options.nil? ? [] : temp_options.dup
+            new_options.delete("noauto")
+            new_options
+          end
         end
 
         def device_regex

@@ -52,27 +52,27 @@ module ChefHTTPShared
 
     # just a normal file
     # (expected_content should be uncompressed)
-    @api.get("/nyan_cat.png", 200) {
+    @api.get("/nyan_cat.png", 200) do
       File.open(nyan_uncompressed_filename, "rb") do |f|
         f.read
       end
-    }
+    end
 
     # this ends in .gz, we do not uncompress it and drop it on the filesystem as a .gz file (the internet often lies)
     # (expected_content should be compressed)
-    @api.get("/nyan_cat.png.gz", 200, nil, { "Content-Type" => "application/gzip", "Content-Encoding" => "gzip" } ) {
+    @api.get("/nyan_cat.png.gz", 200, nil, { "Content-Type" => "application/gzip", "Content-Encoding" => "gzip" } ) do
       File.open(nyan_compressed_filename, "rb") do |f|
         f.read
       end
-    }
+    end
 
     # this is an uncompressed file that was compressed by some mod_gzip-ish webserver thingy, so we will expand it
     # (expected_content should be uncompressed)
-    @api.get("/nyan_cat_compressed.png", 200, nil, { "Content-Type" => "application/gzip", "Content-Encoding" => "gzip" } ) {
+    @api.get("/nyan_cat_compressed.png", 200, nil, { "Content-Type" => "application/gzip", "Content-Encoding" => "gzip" } ) do
       File.open(nyan_compressed_filename, "rb") do |f|
         f.read
       end
-    }
+    end
 
     #
     # endpoints that set Content-Length correctly
@@ -83,11 +83,11 @@ module ChefHTTPShared
       {
         "Content-Length" => nyan_uncompressed_size.to_s,
       }
-    ) {
+    ) do
       File.open(nyan_uncompressed_filename, "rb") do |f|
         f.read
       end
-    }
+    end
 
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_content_length_compressed.png", 200, nil,
@@ -96,11 +96,11 @@ module ChefHTTPShared
         "Content-Type"     => "application/gzip",
         "Content-Encoding" => "gzip",
       }
-    ) {
+    ) do
       File.open(nyan_compressed_filename, "rb") do |f|
         f.read
       end
-    }
+    end
 
     #
     # endpoints that simulate truncated downloads (bad content-length header)
@@ -111,11 +111,11 @@ module ChefHTTPShared
       {
         "Content-Length" => (nyan_uncompressed_size + 1).to_s,
       }
-    ) {
+    ) do
       File.open(nyan_uncompressed_filename, "rb") do |f|
         f.read
       end
-    }
+    end
 
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_truncated_compressed.png", 200, nil,
@@ -124,11 +124,11 @@ module ChefHTTPShared
         "Content-Type"     => "application/gzip",
         "Content-Encoding" => "gzip",
       }
-    ) {
+    ) do
       File.open(nyan_compressed_filename, "rb") do |f|
         f.read
       end
-    }
+    end
 
     #
     # in the presence of a transfer-encoding header, we must ignore the content-length (this bad content-length should work)
@@ -140,11 +140,11 @@ module ChefHTTPShared
         "Content-Length"    => (nyan_uncompressed_size + 1).to_s,
         "Transfer-Encoding" => "anything",
       }
-    ) {
+    ) do
       File.open(nyan_uncompressed_filename, "rb") do |f|
         f.read
       end
-    }
+    end
 
     #
     # 403 with a Content-Length

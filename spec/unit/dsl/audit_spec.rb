@@ -21,14 +21,14 @@ describe Chef::DSL::Audit do
   end
 
   it "raises an error when no audit name is given" do
-    expect { auditor.control_group do end }.to raise_error(Chef::Exceptions::AuditNameMissing)
+    expect { auditor.control_group {} }.to raise_error(Chef::Exceptions::AuditNameMissing)
   end
 
   context "audits already populated" do
     let(:audits) { { "unique" => {} } }
 
     it "raises an error if the audit name is a duplicate" do
-      expect { auditor.control_group "unique" do end }.to raise_error(Chef::Exceptions::AuditControlGroupDuplicate)
+      expect { auditor.control_group("unique") {} }.to raise_error(Chef::Exceptions::AuditControlGroupDuplicate)
     end
   end
 
@@ -36,7 +36,7 @@ describe Chef::DSL::Audit do
     let(:auditor) { BadAuditDSLTester.new }
 
     it "fails because it relies on the recipe DSL existing" do
-      expect { auditor.control_group "unique" do end }.to raise_error(NoMethodError, /undefined method `cookbook_name'/)
+      expect { auditor.control_group("unique") {} }.to raise_error(NoMethodError, /undefined method `cookbook_name'/)
     end
   end
 

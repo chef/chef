@@ -30,6 +30,8 @@ class Chef
       include Chef::ReservedNames::Win32::API::Macros
       include Chef::ReservedNames::Win32::API::System
 
+      attr_reader :major_version, :minor_version, :build_number
+
       # Ruby implementation of
       # http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
       # http://msdn.microsoft.com/en-us/library/ms724358(v=vs.85).aspx
@@ -74,15 +76,8 @@ class Chef
         @sp_minor_version = ver_info[:w_service_pack_minor]
 
         # Obtain sku information for the purpose of identifying
-        # datacenter, cluster, and core skus, the latter 2 only
-        # exist in releases after Windows Server 2003
-        if ! Chef::Platform.windows_server_2003?
-          @sku = get_product_info(@major_version, @minor_version, @sp_major_version, @sp_minor_version)
-        else
-          # The get_product_info API is not supported on Win2k3,
-          # use an alternative to identify datacenter skus
-          @sku = get_datacenter_product_info_windows_server_2003(ver_info)
-        end
+        # datacenter, cluster, and core skus
+        @sku = get_product_info(@major_version, @minor_version, @sp_major_version, @sp_minor_version)
       end
 
       marketing_names = Array.new
@@ -100,7 +95,7 @@ class Chef
 
       define_method(:marketing_name) do
         marketing_names.each do |mn|
-          break mn[0] if self.send(mn[1])
+          break mn[0] if send(mn[1])
         end
       end
 
@@ -112,6 +107,10 @@ class Chef
               (c.to_s =~ /#{m}/i )
           end
         end
+      end
+
+      def win_10_creators_or_higher?
+        windows_10? && build_number >= 15063
       end
 
       private
@@ -145,12 +144,6 @@ class Chef
         out = FFI::MemoryPointer.new(:uint32)
         GetProductInfo(major, minor, sp_major, sp_minor, out)
         out.get_uint(0)
-      end
-
-      def get_datacenter_product_info_windows_server_2003(ver_info)
-        # The intent is not to get the actual sku, just identify
-        # Windows Server 2003 datacenter
-        sku = (ver_info[:w_suite_mask] & VER_SUITE_DATACENTER) ? PRODUCT_DATACENTER_SERVER : 0
       end
 
     end

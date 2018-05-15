@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: 2016-2017, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,20 +19,65 @@
 require "spec_helper"
 
 describe Chef::Resource::AptRepository do
-
-  let(:resource) { Chef::Resource::AptRepository.new("multiverse") }
-
-  it "should create a new Chef::Resource::AptUpdate" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::AptRepository)
+  let(:node) { Chef::Node.new }
+  let(:run_context) do
+    node.automatic[:lsb][:codename] = "superduper"
+    empty_events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, empty_events)
   end
+  let(:resource) { Chef::Resource::AptRepository.new("multiverse", run_context) }
 
-  it "the default keyserver should be keyserver.ubuntu.com" do
+  it "keyserver defaults to keyserver.ubuntu.com" do
     expect(resource.keyserver).to eql("keyserver.ubuntu.com")
   end
 
-  it "the default distribution should be nillable" do
-    expect(resource.distribution(nil)).to eql(nil)
-    expect(resource.distribution).to eql(nil)
+  it "repo_name is the name property" do
+    expect(resource.repo_name).to eql("multiverse")
+  end
+
+  it "distribution defaults to the distro codename" do
+    expect(resource.distribution).to eql("superduper")
+  end
+
+  it "allows setting key to an Array of keys and does not coerce it" do
+    resource.key = %w{key1 key2}
+    expect(resource.key).to eql(%w{key1 key2})
+  end
+
+  it "allows setting key to nil and does not coerce it" do
+    resource.key = nil
+    expect(resource.key).to be_nil
+  end
+
+  it "allows setting key to false and does not coerce it" do
+    resource.key = false
+    expect(resource.key).to be false
+  end
+
+  it "allows setting key to a String and coerces it to an Array" do
+    resource.key = "key1"
+    expect(resource.key).to eql(["key1"])
+  end
+
+  it "fails if the user provides a repo_name with a forward slash" do
+    expect { resource.repo_name "foo/bar" }.to raise_error(ArgumentError)
+  end
+
+  it "resolves to a Noop class when on non-linux OS" do
+    node.automatic[:os] = "windows"
+    node.automatic[:platform_family] = "windows"
+    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
+  end
+
+  it "resolves to a Noop class when on non-debian linux" do
+    node.automatic[:os] = "linux"
+    node.automatic[:platform_family] = "gentoo"
+    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
+  end
+
+  it "resolves to a AptUpdate class when on a debian platform_family" do
+    node.automatic[:os] = "linux"
+    node.automatic[:platform_family] = "debian"
+    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptRepository)
   end
 end

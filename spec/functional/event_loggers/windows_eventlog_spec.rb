@@ -19,12 +19,12 @@
 require "spec_helper"
 require "securerandom"
 require "chef/event_loggers/windows_eventlog"
-if Chef::Platform.windows? && (not Chef::Platform.windows_server_2003?)
+if Chef::Platform.windows?
   require "win32/eventlog"
   include Win32
 end
 
-describe Chef::EventLoggers::WindowsEventLogger, :windows_only, :not_supported_on_win2k3 do
+describe Chef::EventLoggers::WindowsEventLogger, :windows_only do
   def rand
     random.rand(1 << 32).to_s
   end
@@ -48,25 +48,28 @@ describe Chef::EventLoggers::WindowsEventLogger, :windows_only, :not_supported_o
   it "writes run_start event with event_id 10000 and contains version" do
     logger.run_start(version)
 
-    expect(event_log.read(flags, offset).any? { |e| e.source == "Chef" && e.event_id == 10000 &&
-                                               e.string_inserts[0].include?(version)}).to be_truthy
+    expect(event_log.read(flags, offset).any? do |e|
+             e.source == "Chef" && e.event_id == 10000 &&
+                                               e.string_inserts[0].include?(version) end).to be_truthy
   end
 
   it "writes run_started event with event_id 10001 and contains the run_id" do
     logger.run_started(run_status)
 
-    expect(event_log.read(flags, offset).any? { |e| e.source == "Chef" && e.event_id == 10001 &&
-                                               e.string_inserts[0].include?(run_id)}).to be_truthy
+    expect(event_log.read(flags, offset).any? do |e|
+             e.source == "Chef" && e.event_id == 10001 &&
+                                               e.string_inserts[0].include?(run_id) end).to be_truthy
   end
 
   it "writes run_completed event with event_id 10002 and contains the run_id and elapsed time" do
     logger.run_started(run_status)
     logger.run_completed(node)
 
-    expect(event_log.read(flags, offset).any? { |e| e.source == "Chef" && e.event_id == 10002 &&
-                                                e.string_inserts[0].include?(run_id) &&
-                                                e.string_inserts[1].include?(elapsed_time.to_s)
-    }).to be_truthy
+    expect(event_log.read(flags, offset).any? do |e|
+      e.source == "Chef" && e.event_id == 10002 &&
+                                         e.string_inserts[0].include?(run_id) &&
+                                         e.string_inserts[1].include?(elapsed_time.to_s)
+    end).to be_truthy
   end
 
   it "writes run_failed event with event_id 10003 and contains the run_id, elapsed time, and exception info" do

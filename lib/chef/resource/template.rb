@@ -19,12 +19,23 @@
 #
 
 require "chef/resource/file"
-require "chef/provider/template"
 require "chef/mixin/securable"
 
 class Chef
   class Resource
+    # A cookbook template is an Embedded Ruby (ERB) template that is used to dynamically generate static text files.
+    # Templates may contain Ruby expressions and statements, and are a great way to manage configuration files. Use the
+    # template resource to add cookbook templates to recipes; place the corresponding Embedded Ruby (ERB) template file
+    # in a cookbook’s /templates directory.
+    #
+    # Use the template resource to manage the contents of a file using an Embedded Ruby (ERB) template by transferring
+    # files from a sub-directory of COOKBOOK_NAME/templates/ to a specified path located on a host that is running the
+    # chef-client. This resource includes actions and properties from the file resource. Template files managed by the
+    # template resource follow the same file specificity rules as the remote_file and file resources.
     class Template < Chef::Resource::File
+      resource_name :template
+      provides :template
+
       include Chef::Mixin::Securable
 
       attr_reader :inline_helper_blocks
@@ -33,9 +44,6 @@ class Chef
       def initialize(name, run_context = nil)
         super
         @source = "#{::File.basename(name)}.erb"
-        @cookbook = nil
-        @local = false
-        @variables = Hash.new
         @inline_helper_blocks = {}
         @inline_helper_modules = []
         @helper_modules = []
@@ -49,29 +57,9 @@ class Chef
         )
       end
 
-      def variables(args = nil)
-        set_or_return(
-          :variables,
-          args,
-          :kind_of => [ Hash ]
-        )
-      end
-
-      def cookbook(args = nil)
-        set_or_return(
-          :cookbook,
-          args,
-          :kind_of => [ String ]
-        )
-      end
-
-      def local(args = nil)
-        set_or_return(
-          :local,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :variables, Hash, default: lazy { Hash.new }
+      property :cookbook, String
+      property :local, [ TrueClass, FalseClass ], default: false
 
       # Declares a helper method to be defined in the template context when
       # rendering.

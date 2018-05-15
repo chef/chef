@@ -24,18 +24,6 @@ class Chef
         ChefConfig.windows?
       end
 
-      def windows_server_2003?
-        # WMI startup shouldn't be performed unless we're on Windows.
-        return false unless windows?
-        require "wmi-lite/wmi"
-
-        wmi = WmiLite::Wmi.new
-        host = wmi.first_of("Win32_OperatingSystem")
-        is_server_2003 = (host["version"] && host["version"].start_with?("5.2"))
-
-        is_server_2003
-      end
-
       def windows_nano_server?
         return false unless windows?
         require "win32/registry"
@@ -55,7 +43,7 @@ class Chef
           # If accessing the registry key failed, then we're probably not on
           # nano. Fail through.
         end
-        return nano == 1
+        nano == 1
       end
 
       def supports_msi?

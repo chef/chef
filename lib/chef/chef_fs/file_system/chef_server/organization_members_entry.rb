@@ -27,6 +27,10 @@ class Chef
             File.join(parent.api_path, "users")
           end
 
+          def display_path
+            "/members.json"
+          end
+
           def exists?
             parent.exists?
           end

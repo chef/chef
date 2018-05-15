@@ -1,6 +1,6 @@
 
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,22 +98,8 @@ describe Chef::Runner do
     run_context.resource_collection << first_resource
   end
 
-  context "when we fall through to old Chef::Platform resolution" do
-    let(:provider_resolver) { Chef::ProviderResolver.new(node, first_resource, nil) }
-    before do
-      # set up old Chef::Platform resolution instead of provider_resolver
-      Chef::Platform.set(
-        :resource => :cat,
-        :provider => Chef::Provider::SnakeOil
-      )
-      allow(Chef::ProviderResolver).to receive(:new).and_return(provider_resolver)
-      allow(provider_resolver).to receive(:maybe_dynamic_provider_resolution).with(first_resource, anything()).and_return(nil)
-    end
-
-    it "should use the platform provider if it has one" do
-      expect(Chef::Platform).to receive(:find_provider_for_node).with(node, first_resource).and_call_original
-      runner.converge
-    end
+  it "runner sets up a pointer back to itself in the run_context" do
+    expect(runner).to eql(run_context.runner)
   end
 
   context "when we are doing dynamic provider resolution" do
@@ -140,25 +126,26 @@ describe Chef::Runner do
 
     it "should raise exceptions as thrown by a provider" do
       provider = Chef::Provider::SnakeOil.new(run_context.resource_collection[0], run_context)
-      allow(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
-      allow(provider).to receive(:action_sell).once.and_raise(ArgumentError)
+      expect(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
+      expect(provider).to receive(:action_sell).once.and_raise(ArgumentError)
       expect { runner.converge }.to raise_error(ArgumentError)
     end
 
     it "should not raise exceptions thrown by providers if the resource has ignore_failure set to true" do
       allow(run_context.resource_collection[0]).to receive(:ignore_failure).and_return(true)
       provider = Chef::Provider::SnakeOil.new(run_context.resource_collection[0], run_context)
-      allow(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
-      allow(provider).to receive(:action_sell).once.and_raise(ArgumentError)
+      expect(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
+      expect(provider).to receive(:action_sell).once.and_raise(ArgumentError)
       expect { runner.converge }.not_to raise_error
     end
 
     it "should retry with the specified delay if retries are specified" do
-      first_resource.retries 3
+      num_retries = 3
+      allow(run_context.resource_collection[0]).to receive(:retries).and_return(num_retries)
       provider = Chef::Provider::SnakeOil.new(run_context.resource_collection[0], run_context)
-      allow(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
-      allow(provider).to receive(:action_sell).and_raise(ArgumentError)
-      expect(first_resource).to receive(:sleep).with(2).exactly(3).times
+      expect(Chef::Provider::SnakeOil).to receive(:new).exactly(num_retries + 1).times.and_return(provider)
+      expect(provider).to receive(:action_sell).exactly(num_retries + 1).times.and_raise(ArgumentError)
+      expect(run_context.resource_collection[0]).to receive(:sleep).with(2).exactly(num_retries).times
       expect { runner.converge }.to raise_error(ArgumentError)
     end
 
@@ -392,12 +379,12 @@ Multiple failures occurred:
     it "should resolve resource references in notifications when resources are defined lazily" do
       first_resource.action = :nothing
 
-      lazy_resources = lambda {
+      lazy_resources = lambda do
         last_resource = Chef::Resource::Cat.new("peanut", run_context)
         run_context.resource_collection << last_resource
         last_resource.notifies(:purr, first_resource.to_s, :delayed)
         last_resource.action = :purr
-      }
+      end
       second_resource = Chef::Resource::RubyBlock.new("myblock", run_context)
       run_context.resource_collection << second_resource
       second_resource.block { lazy_resources.call }

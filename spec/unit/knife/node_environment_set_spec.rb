@@ -52,29 +52,5 @@ describe Chef::Knife::NodeEnvironmentSet do
       @knife.run
     end
 
-    describe "with no environment" do
-      # Set up outputs for inspection later
-      before(:each) do
-        @stdout = StringIO.new
-        @stderr = StringIO.new
-
-        allow(@knife.ui).to receive(:stdout).and_return(@stdout)
-        allow(@knife.ui).to receive(:stderr).and_return(@stderr)
-      end
-
-      it "should exit" do
-        @knife.name_args = [ "adam" ]
-        expect { @knife.run }.to raise_error SystemExit
-      end
-
-      it "should show the user the usage and an error" do
-        @knife.name_args = [ "adam" ]
-
-        begin ; @knife.run ; rescue SystemExit ; end
-
-        expect(@stdout.string).to eq "USAGE: knife node environment set NODE ENVIRONMENT\n"
-        expect(@stderr.string).to eq "FATAL: You must specify a node name and an environment.\n"
-      end
-    end
   end
 end

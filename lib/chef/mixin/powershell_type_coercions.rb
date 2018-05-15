@@ -21,29 +21,29 @@ class Chef
   module Mixin
     module PowershellTypeCoercions
 
-      def type_coercions
-        @type_coercions ||= {
-          Fixnum => { :type => lambda { |x| x.to_s } },
-          Float => { :type => lambda { |x| x.to_s } },
-          FalseClass => { :type => lambda { |x| "$false" } },
-          TrueClass => { :type => lambda { |x| "$true" } },
-          Hash => { :type => Proc.new { |x| translate_hash(x) } },
-          Array => { :type => Proc.new { |x| translate_array(x) } },
-          Chef::Node::ImmutableMash => { :type => Proc.new { |x| translate_hash(x) } },
-          Chef::Node::ImmutableArray => { :type => Proc.new { |x| translate_array(x) } },
-        }
+      def type_coercion(value)
+        case value
+        when Integer, Float
+          value.to_s
+        when FalseClass
+          "$false"
+        when TrueClass
+          "$true"
+        when Hash, Chef::Node::ImmutableMash
+          translate_hash(value)
+        when Array, Chef::Node::ImmutableArray
+          translate_array(value)
+        end
+      end
+
+      def psobject_conversion(value)
+        if value.respond_to?(:to_psobject)
+          "(#{value.to_psobject})"
+        end
       end
 
       def translate_type(value)
-        translation = type_coercions[value.class]
-
-        if translation
-          translation[:type].call(value)
-        elsif value.respond_to? :to_psobject
-          "(#{value.to_psobject})"
-        else
-          safe_string(value.to_s)
-        end
+        type_coercion(value) || psobject_conversion(value) || safe_string(value.to_s)
       end
 
       private
@@ -63,7 +63,7 @@ class Chef
       end
 
       def unsafe?(s)
-        ["'", '#', "`", '"'].any? do |x|
+        ["'", "#", "`", '"'].any? do |x|
           s.include? x
         end
       end
