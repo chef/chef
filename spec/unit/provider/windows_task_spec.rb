@@ -35,6 +35,15 @@ describe Chef::Provider::WindowsTask, :windows_only do
     end
   end
 
+  describe "#set_command_and_arguments" do
+    it "sets the command arguments if command has arguments passed in it" do
+      new_resource.command = "chef-client -W"
+      provider.send(:set_command_and_arguments)
+      expect(new_resource.command).to eq("chef-client")
+      expect(new_resource.command_arguments).to eq("-W")
+    end
+  end
+
   describe "#set_start_day_and_time" do
     it "sets the curret date and time start_day and start_time if nothing is provided by user" do
       new_resource.start_day = nil

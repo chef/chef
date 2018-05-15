@@ -31,6 +31,90 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
   describe "action :create" do
     after { delete_task }
+    context "when command is with arguments" do
+      subject do
+        new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        # Make sure MM/DD/YYYY is accepted
+
+        new_resource.start_day "09/20/2017"
+        new_resource.frequency :hourly
+        new_resource
+      end
+
+      it "creates scheduled task and sets command arguments" do
+        subject.command "chef-client -W"
+        call_for_create_action
+        #loading current resource again to check new task is creted and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.parameters).to eq("-W")
+      end
+
+      it "does not converge the resource if it is already converged" do
+        subject.command "chef-client -W"
+        subject.run_action(:create)
+        subject.command "chef-client -W"
+        subject.run_action(:create)
+        expect(subject).not_to be_updated_by_last_action
+      end
+
+      it "creates scheduled task and sets command arguments" do
+        subject.command "chef-client -W -L 'C:\\chef\\chef-ad-join.log'"
+        call_for_create_action
+        #loading current resource again to check new task is creted and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.parameters).to eq("-W -L C:\\chef\\chef-ad-join.log")
+      end
+
+      it "does not converge the resource if it is already converged" do
+        subject.command "chef-client -W -L 'C:\\chef\\chef-ad-join.log'"
+        subject.run_action(:create)
+        subject.command "chef-client -W -L 'C:\\chef\\chef-ad-join.log'"
+        subject.run_action(:create)
+        expect(subject).not_to be_updated_by_last_action
+      end
+
+      it "creates scheduled task and sets command arguments" do
+        subject.command '"C:\\Program Files\\example\program.exe" -arg1 --arg2'
+        call_for_create_action
+        #loading current resource again to check new task is creted and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.application_name).to eq("C:\\Program Files\\example\\program.exe")
+        expect(current_resource.task.parameters).to eq("-arg1 --arg2")
+      end
+
+      it "does not converge the resource if it is already converged" do
+        subject.command '"C:\\Program Files\\example\program.exe" -arg1 --arg2'
+        subject.run_action(:create)
+        subject.command '"C:\\Program Files\\example\program.exe" -arg1 --arg2'
+        subject.run_action(:create)
+        expect(subject).not_to be_updated_by_last_action
+      end
+
+      it "creates scheduled task and sets command arguments" do
+        subject.command "ping http://www.google.com"
+        call_for_create_action
+        #loading current resource again to check new task is creted and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.application_name).to eq("ping")
+        expect(current_resource.task.parameters).to eq("http://www.google.com")
+      end
+
+      it "does not converge the resource if it is already converged" do
+        subject.command "ping http://www.google.com"
+        subject.run_action(:create)
+        subject.command "ping http://www.google.com"
+        subject.run_action(:create)
+        expect(subject).not_to be_updated_by_last_action
+      end
+    end
+
     context "when frequency_modifier are not passed" do
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)

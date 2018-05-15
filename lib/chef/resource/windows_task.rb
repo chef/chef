@@ -60,7 +60,7 @@ class Chef
       property :minutes_duration, [String, Integer]
       property :minutes_interval, [String, Integer]
 
-      attr_accessor :exists, :task
+      attr_accessor :exists, :task, :command_arguments
 
       SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', "SYSTEM", 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', "USERS"].freeze
       VALID_WEEK_DAYS = %w{ mon tue wed thu fri sat sun * }

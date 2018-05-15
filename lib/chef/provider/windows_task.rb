@@ -114,6 +114,9 @@ class Chef
         end
 
         def action_create
+          if new_resource.command && new_resource.command.split.size > 1
+            set_command_and_arguments
+          end
           if current_resource.exists
             logger.trace "#{new_resource} task exist."
             unless (task_needs_update?(current_resource.task)) || (new_resource.force)
@@ -136,6 +139,7 @@ class Chef
                 task.new_work_item(new_resource.task_name, trigger)
               end
               task.application_name = new_resource.command
+              task.parameters = new_resource.command_arguments if new_resource.command_arguments
               task.working_directory = new_resource.cwd if new_resource.cwd
               task.configure_settings(config_settings)
               task.configure_principals(principal_settings)
@@ -225,6 +229,13 @@ class Chef
 
         private
 
+        # seprated command arguments from :command property
+        def set_command_and_arguments
+          cmd, *args = Shellwords.split(new_resource.command)
+          new_resource.command = cmd
+          new_resource.command_arguments = args.join(" ")
+        end
+
         def set_start_day_and_time
           new_resource.start_day = Time.now.strftime("%m/%d/%Y") unless new_resource.start_day
           new_resource.start_time = Time.now.strftime("%H:%M") unless new_resource.start_time
@@ -234,6 +245,7 @@ class Chef
           converge_by("#{new_resource} task updated") do
             task.set_account_information(new_resource.user, new_resource.password)
             task.application_name = new_resource.command if new_resource.command
+            task.parameters = new_resource.command_arguments if new_resource.command_arguments
             task.working_directory = new_resource.cwd if new_resource.cwd
             task.trigger = trigger unless new_resource.frequency == :none
             task.configure_settings(config_settings)
@@ -315,6 +327,7 @@ class Chef
           if new_resource.frequency == :none
             flag = (task.account_information != new_resource.user ||
             task.application_name != new_resource.command ||
+            task.parameters != new_resource.command_arguments.to_s ||
             task.principals[:run_level] != run_level)
           else
             current_task_trigger = task.trigger(0)
@@ -334,6 +347,7 @@ class Chef
                   current_task_trigger[:minutes_interval].to_i != new_task_trigger[:minutes_interval].to_i ||
                   task.account_information != new_resource.user ||
                   task.application_name != new_resource.command ||
+                  task.parameters != new_resource.command_arguments.to_s ||
                   task.working_directory != new_resource.cwd.to_s ||
                   task.principals[:logon_type] != logon_type ||
                   task.principals[:run_level] != run_level
