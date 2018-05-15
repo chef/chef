@@ -304,6 +304,19 @@ describe Chef::Provider::Package::Powershell do
       expect(new_resource).to be_updated_by_last_action
     end
 
+    it "should install a package without the publisher check" do
+      provider.load_current_resource
+      new_resource.package_name(["xCertificate"])
+      new_resource.version(nil)
+      new_resource.skip_publisher_check(true)
+      allow(provider).to receive(:powershell_out).with("( Find-Package 'xCertificate' -Force -ForceBootstrap ).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("( Get-Package 'xCertificate' -Force -ForceBootstrap -SkipPublisherCheck ).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_out).with("( Install-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0 -SkipPublisherCheck ).Version", { :timeout => new_resource.timeout })
+      provider.run_action(:install)
+      expect(new_resource).to be_updated_by_last_action
+    end
+
     it "should install a single package when package name has space in between" do
       provider.load_current_resource
       new_resource.package_name(["7-Zip 16.02 (x64)"])

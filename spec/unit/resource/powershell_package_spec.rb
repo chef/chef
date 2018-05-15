@@ -72,4 +72,13 @@ describe Chef::Resource::PowershellPackage do
     resource.source("MyGallery")
     expect(resource.source).to eql("MyGallery")
   end
+
+  it "the skip_publisher_check default is false" do
+    expect(resource.skip_publisher_check).to eql(false)
+  end
+
+  it "the skip_publisher_check setter accepts booleans" do
+    resource.skip_publisher_check(true)
+    expect(resource.skip_publisher_check).to eql(true)
+  end
 end
