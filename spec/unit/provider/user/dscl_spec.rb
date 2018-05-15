@@ -283,15 +283,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       provider.dscl_set_home
     end
 
-    it "should raise an exception when the systems user template dir (skel) cannot be found" do
-      allow(::File).to receive(:exist?).and_return(false, false, false)
-      expect { provider.dscl_set_home }.to raise_error(Chef::Exceptions::User)
-    end
-
-    it "should run ditto to copy any missing files from skel to the new home dir" do
-      expect(::File).to receive(:exist?).with("/System/Library/User\ Template/English.lproj").and_return(true)
-      expect(FileUtils).to receive(:chown_R).with("toor", "", "/Users/toor")
-      expect(provider).to receive(:shell_out!).with("ditto", "/System/Library/User Template/English.lproj", "/Users/toor")
+    it "should run createhomedir to create the user's new home folder" do
+      expect(provider).to receive(:shell_out!).with("createhomedir", "-c", "-u", "toor")
       provider.ditto_home
     end
 
