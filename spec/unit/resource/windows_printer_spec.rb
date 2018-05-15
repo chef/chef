@@ -24,7 +24,7 @@ describe Chef::Resource::WindowsPrinter do
     expect(resource.resource_name).to eql(:windows_printer)
   end
 
-  it "sets the device_id as its name" do
+  it "the device_id property is the name_property" do
     expect(resource.device_id).to eql("some_printer")
   end
 
@@ -36,6 +36,14 @@ describe Chef::Resource::WindowsPrinter do
     expect { resource.action :create }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
     expect { resource.action :remove }.to raise_error(ArgumentError)
+  end
+
+  it "default property defaults to false" do
+    expect(resource.default).to eql(false)
+  end
+
+  it "shared property defaults to false" do
+    expect(resource.shared).to eql(false)
   end
 
   it "raises an error if ipv4_address isn't in X.X.X.X format" do

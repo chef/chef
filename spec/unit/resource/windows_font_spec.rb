@@ -24,7 +24,7 @@ describe Chef::Resource::WindowsFont do
     expect(resource.resource_name).to eql(:windows_font)
   end
 
-  it "sets the font_name as its name" do
+  it "the font_name property is the name_property" do
     expect(resource.font_name).to eql("some_font")
   end
 

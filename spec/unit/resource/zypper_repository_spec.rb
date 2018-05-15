@@ -36,16 +36,62 @@ describe Chef::Resource::ZypperRepository do
     expect { resource.repo_name "foo/bar" }.to raise_error(ArgumentError)
   end
 
-  it "has a default action of create" do
+  it "has a default action of :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "supports all valid actions" do
+  it "supports :create, :remove, :add, and :refresh actions" do
     expect { resource.action :add }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
     expect { resource.action :create }.not_to raise_error
     expect { resource.action :refresh }.not_to raise_error
     expect { resource.action :delete }.to raise_error(ArgumentError)
+  end
+
+  it "type property defaults to 'NONE'" do
+    expect(resource.type).to eql("NONE")
+  end
+
+  it "enabled property defaults to true" do
+    expect(resource.enabled).to eql(true)
+  end
+
+  it "autorefresh property defaults to true" do
+    expect(resource.autorefresh).to eql(true)
+  end
+
+  it "gpgcheck property defaults to true" do
+    expect(resource.gpgcheck).to eql(true)
+  end
+
+  it "keeppackages property defaults to false" do
+    expect(resource.keeppackages).to eql(false)
+  end
+
+  it "priority property defaults to 99" do
+    expect(resource.priority).to eql(99)
+  end
+
+  it "mode property defaults to '0644'" do
+    expect(resource.mode).to eql("0644")
+  end
+
+  it "refresh_cache property defaults to true" do
+    expect(resource.refresh_cache).to eql(true)
+  end
+
+  it "gpgautoimportkeys property defaults to true" do
+    expect(resource.gpgautoimportkeys).to eql(true)
+  end
+
+  it "accepts the legacy 'key' property" do
+    resource.key "foo"
+    expect(resource.gpgkey).to eql("foo")
+  end
+
+  it "accepts the legacy 'uri' property" do
+    resource.uri "foo"
+    expect(resource.baseurl).to eql("foo")
   end
 
   context "on linux", :linux_only do
