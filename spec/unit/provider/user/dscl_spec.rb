@@ -284,7 +284,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     it "should run createhomedir to create the user's new home folder" do
-      expect(provider).to receive(:shell_out!).with("createhomedir", "-c", "-u", "toor")
+      expect(provider).to receive(:shell_out!).with("/usr/sbin/createhomedir", "-c", "-u", "toor")
       provider.ditto_home
     end
 
