@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.13 -->
-## [v14.1.13](https://github.com/chef/chef/tree/v14.1.13) (2018-05-16)
+<!-- latest_release 14.1.14 -->
+## [v14.1.14](https://github.com/chef/chef/tree/v14.1.14) (2018-05-16)
 
 #### Merged Pull Requests
-- publish habitat packages [#7272](https://github.com/chef/chef/pull/7272) ([thommay](https://github.com/thommay))
+- improved regex accuracy lib/chef/resource/hostname.rb [#7262](https://github.com/chef/chef/pull/7262) ([bottkv488](https://github.com/bottkv488))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- improved regex accuracy lib/chef/resource/hostname.rb [#7262](https://github.com/chef/chef/pull/7262) ([bottkv488](https://github.com/bottkv488)) <!-- 14.1.14 -->
 - publish habitat packages [#7272](https://github.com/chef/chef/pull/7272) ([thommay](https://github.com/thommay)) <!-- 14.1.13 -->
 <!-- release_rollup -->
 
