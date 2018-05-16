@@ -657,9 +657,9 @@ class Chef
       # as needed.
       return if Chef::Resource.properties.keys.include?(name)
 
-      # Special case for `supports` as it was moved in Chef 13 and this is causing
+      # Special case for `supports` and `state` as they were moved in Chef 13 and this is causing
       # some user confusion in cookbooks that need to support both 12 and 13.
-      return if name.to_s == "supports"
+      return if %w{ supports state }.include? name.to_s
 
       # Emit the deprecation.
       resource_name = declared_in.respond_to?(:resource_name) ? declared_in.resource_name : declared_in
