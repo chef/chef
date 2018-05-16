@@ -28,8 +28,27 @@ describe Chef::Resource::WindowsFeature do
     expect(resource.action).to eql([:install])
   end
 
-  it "sets the feature_name property as its name" do
+  it "the feature_name property is the name_property" do
     expect(resource.feature_name).to eql("SNMP")
+  end
+
+  it "all property defaults to false" do
+    expect(resource.all).to eql(false)
+  end
+
+  it "management_tools property defaults to false" do
+    expect(resource.management_tools).to eql(false)
+  end
+
+  it "timeout property defaults to 600" do
+    expect(resource.timeout).to eql(600)
+  end
+
+  it "install_method accepts :windows_feature_dism, :windows_feature_powershell, and :windows_feature_servermanagercmd" do
+    expect { resource.install_method :windows_feature_dism }.not_to raise_error
+    expect { resource.install_method :windows_feature_powershell }.not_to raise_error
+    expect { resource.install_method :windows_feature_servermanagercmd }.not_to raise_error
+    expect { resource.install_method "windows_feature_servermanagercmd" }.to raise_error(ArgumentError)
   end
 
   it "supports :install, :remove, and :delete actions" do

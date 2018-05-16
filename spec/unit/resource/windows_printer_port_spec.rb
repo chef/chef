@@ -24,8 +24,26 @@ describe Chef::Resource::WindowsPrinterPort do
     expect(resource.resource_name).to eql(:windows_printer_port)
   end
 
-  it "sets the ipv4_address as its name" do
+  it "the ipv4_address property is the name_property" do
     expect(resource.ipv4_address).to eql("63.192.209.236")
+  end
+
+  it "port_number property defaults to 9100" do
+    expect(resource.port_number).to eql(9100)
+  end
+
+  it "snmp_enabled property defaults to false" do
+    expect(resource.snmp_enabled).to eql(false)
+  end
+
+  it "port_protocol property defaults to 1" do
+    expect(resource.port_protocol).to eql(1)
+  end
+
+  it "raises an error if port_protocol isn't in 1 or 2" do
+    expect { resource.port_protocol 1 }.not_to raise_error
+    expect { resource.port_protocol 2 }.not_to raise_error
+    expect { resource.port_protocol 3 }.to raise_error(ArgumentError)
   end
 
   it "sets the default action as :create" do

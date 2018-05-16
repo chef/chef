@@ -24,7 +24,7 @@ describe Chef::Resource::WindowsAdJoin do
     expect(resource.resource_name).to eql(:windows_ad_join)
   end
 
-  it "sets the domain_name as its name" do
+  it "the domain_name property is the name_property" do
     expect(resource.domain_name).to eql("example.com")
   end
 

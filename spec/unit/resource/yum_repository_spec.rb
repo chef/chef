@@ -36,6 +36,43 @@ describe Chef::Resource::YumRepository do
     expect { resource.repositoryid "foo/bar" }.to raise_error(ArgumentError)
   end
 
+  it "has a default action of :create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create, :remove, :add, :makecache, and :delete actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :add }.not_to raise_error
+    expect { resource.action :makecache }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :refresh }.to raise_error(ArgumentError)
+  end
+
+  it "clean_headers property defaults to false" do
+    expect(resource.clean_headers).to eql(false)
+  end
+
+  it "clean_metadata property defaults to true" do
+    expect(resource.clean_metadata).to eql(true)
+  end
+
+  it "description property defaults to 'Yum Repository'" do
+    expect(resource.description).to eql("Yum Repository")
+  end
+
+  it "enabled property defaults to true" do
+    expect(resource.enabled).to eql(true)
+  end
+
+  it "make_cache property defaults to true" do
+    expect(resource.make_cache).to eql(true)
+  end
+
+  it "mode property defaults to '0644'" do
+    expect(resource.mode).to eql("0644")
+  end
+
   it "the timeout property expects numeric Strings" do
     expect { resource.timeout "123" }.not_to raise_error(ArgumentError)
     expect { resource.timeout "123foo" }.to raise_error(ArgumentError)
@@ -84,6 +121,16 @@ describe Chef::Resource::YumRepository do
     expect { resource.mirrorlist_expire "100h" }.not_to raise_error(ArgumentError)
     expect { resource.mirrorlist_expire "100m" }.not_to raise_error(ArgumentError)
     expect { resource.mirrorlist_expire "never" }.to raise_error(ArgumentError)
+  end
+
+  it "accepts the legacy 'url' property" do
+    resource.url "foo"
+    expect(resource.baseurl).to eql("foo")
+  end
+
+  it "accepts the legacy 'keyurl' property" do
+    resource.keyurl "foo"
+    expect(resource.gpgkey).to eql("foo")
   end
 
   context "on linux", :linux_only do

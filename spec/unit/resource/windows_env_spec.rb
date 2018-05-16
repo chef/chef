@@ -28,10 +28,6 @@ describe Chef::Resource::WindowsEnv do
     expect(resource).to be_a_kind_of(Chef::Resource::WindowsEnv)
   end
 
-  it "has a name" do
-    expect(resource.name).to eql("FOO")
-  end
-
   it "has a default action of 'create'" do
     expect(resource.action).to eql([:create])
   end
@@ -46,7 +42,7 @@ describe Chef::Resource::WindowsEnv do
     end
   end
 
-  it "uses the object name as the key_name by default" do
+  it "the key_name property is the name_property" do
     expect(resource.key_name).to eql("FOO")
   end
 

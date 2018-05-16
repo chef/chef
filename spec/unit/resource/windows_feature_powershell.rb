@@ -28,7 +28,7 @@ describe Chef::Resource::WindowsFeaturePowershell do
     expect(resource.action).to eql([:install])
   end
 
-  it "sets the feature_name property as its name property" do
+  it "sets the feature_name property as its name_property" do
     expect(resource.feature_name).to eql(%w{SNMP DHCP})
   end
 

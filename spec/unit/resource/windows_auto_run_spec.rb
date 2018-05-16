@@ -28,7 +28,7 @@ describe Chef::Resource::WindowsAutorun do
     expect(resource.action).to eql([:create])
   end
 
-  it "sets the program_name property as its name" do
+  it "the program_name property is the name_property" do
     expect(resource.program_name).to eql("some_path")
   end
   it "supports :machine and :user in the root property" do
