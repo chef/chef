@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 12.22.4 -->
+## [v12.22.4](https://github.com/chef/chef/tree/v12.22.4) (2018-05-16)
+
+#### Merged Pull Requests
+- we removed the state default property in 13 [#7273](https://github.com/chef/chef/pull/7273) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=12.22.3 -->
+### Changes since 12.22.3 release
+
+#### Merged Pull Requests
+- we removed the state default property in 13 [#7273](https://github.com/chef/chef/pull/7273) ([thommay](https://github.com/thommay)) <!-- 12.22.4 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
