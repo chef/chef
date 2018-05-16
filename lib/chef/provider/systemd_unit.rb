@@ -219,7 +219,7 @@ class Chef
       end
 
       def daemon_reload
-        shell_out_with_systems_locale!("#{systemctl_path} daemon-reload")
+        shell_out_with_systems_locale!("#{systemctl_cmd} daemon-reload", systemctl_opts)
       end
 
       def systemctl_execute!(action, unit)
