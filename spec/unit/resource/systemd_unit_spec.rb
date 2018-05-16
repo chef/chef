@@ -35,29 +35,31 @@ describe Chef::Resource::SystemdUnit do
     }
   end
 
-  it "has a name property" do
-    expect(resource.name).to eql("sysstat-collect.timer")
+  it "the unit_name property is the name_property" do
+    expect(resource.unit_name).to eql("sysstat-collect.timer")
   end
 
-  it "has a default action of nothing" do
+  it "sets the default action as :nothing" do
     expect(resource.action).to eql([:nothing])
   end
 
-  it "supports appropriate unit actions" do
+  it "supports :create, :delete, :disable, :enable, :mask, :preset, :reenable, :reload, :reload_or_restart, :reload_or_try_restart, :restart, :revert, :start, :stop, :try_restart, :unmask actions" do
     expect { resource.action :create }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :preset }.not_to raise_error
-    expect { resource.action :revert }.not_to raise_error
-    expect { resource.action :enable }.not_to raise_error
     expect { resource.action :disable }.not_to raise_error
-    expect { resource.action :reenable }.not_to raise_error
+    expect { resource.action :enable }.not_to raise_error
     expect { resource.action :mask }.not_to raise_error
-    expect { resource.action :unmask }.not_to raise_error
+    expect { resource.action :preset }.not_to raise_error
+    expect { resource.action :reenable }.not_to raise_error
+    expect { resource.action :reload }.not_to raise_error
+    expect { resource.action :reload_or_restart }.not_to raise_error
+    expect { resource.action :reload_or_try_restart }.not_to raise_error
+    expect { resource.action :restart }.not_to raise_error
+    expect { resource.action :revert }.not_to raise_error
     expect { resource.action :start }.not_to raise_error
     expect { resource.action :stop }.not_to raise_error
-    expect { resource.action :restart }.not_to raise_error
-    expect { resource.action :reload }.not_to raise_error
-    expect { resource.action :wrong }.to raise_error(ArgumentError)
+    expect { resource.action :try_restart }.not_to raise_error
+    expect { resource.action :unmask }.not_to raise_error
   end
 
   it "accepts boolean state properties" do

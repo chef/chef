@@ -18,18 +18,24 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsFeature do
-  let(:resource) { Chef::Resource::WindowsFeature.new("SNMP") }
+  let(:resource) { Chef::Resource::WindowsFeature.new("fakey_fakerton") }
 
   it "sets resource name as :windows_feature" do
     expect(resource.resource_name).to eql(:windows_feature)
+  end
+
+  it "the feature_name property is the name_property" do
+    expect(resource.feature_name).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
   end
 
-  it "the feature_name property is the name_property" do
-    expect(resource.feature_name).to eql("SNMP")
+  it "supports :delete, :install, :remove actions" do
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   it "all property defaults to false" do
@@ -51,10 +57,4 @@ describe Chef::Resource::WindowsFeature do
     expect { resource.install_method "windows_feature_servermanagercmd" }.to raise_error(ArgumentError)
   end
 
-  it "supports :install, :remove, and :delete actions" do
-    expect { resource.action :install }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :update }.to raise_error(ArgumentError)
-  end
 end

@@ -19,14 +19,22 @@ require "spec_helper"
 
 describe Chef::Resource::OpensslDhparam do
 
-  let(:resource) { Chef::Resource::OpensslDhparam.new("dhparam") }
+  let(:resource) { Chef::Resource::OpensslDhparam.new("fakey_fakerton") }
 
   it "has a resource name of :openssl_dhparam" do
     expect(resource.resource_name).to eql(:openssl_dhparam)
   end
 
-  it "has a default action of create" do
+  it "the path property is the name_property" do
+    expect(resource.path).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create action" do
+    expect { resource.action :create }.not_to raise_error
   end
 
   it "has a default mode of '0640'" do
@@ -45,7 +53,4 @@ describe Chef::Resource::OpensslDhparam do
     expect { resource.key_length 1234 }.to raise_error(ArgumentError)
   end
 
-  it "the path property is the name property" do
-    expect(resource.path).to eql("dhparam")
-  end
 end

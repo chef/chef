@@ -25,12 +25,16 @@ describe Chef::Resource::RhsmErrataLevel do
     expect(resource.resource_name).to eql(:rhsm_errata_level)
   end
 
-  it "has a default action of install" do
+  it "the errata_level property is the name_property" do
+    expect(resource.errata_level).to eql("moderate")
+  end
+
+  it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
   end
 
-  it "the errata_level property is the name property" do
-    expect(resource.errata_level).to eql("moderate")
+  it "supports :install action" do
+    expect { resource.action :install }.not_to raise_error
   end
 
   it "coerces the errata_level to be lowercase" do

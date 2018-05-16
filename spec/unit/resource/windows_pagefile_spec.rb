@@ -28,6 +28,15 @@ describe Chef::Resource::WindowsPagefile do
     expect(resource.path).to eql("C:\\pagefile.sys")
   end
 
+  it "sets the default action as :set" do
+    expect(resource.action).to eql([:set])
+  end
+
+  it "supports :delete, :set actions" do
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :set }.not_to raise_error
+  end
+
   it "coerces forward slashes in the path property to back slashes" do
     resource.path "C:/pagefile.sys"
     expect(resource.path).to eql("C:\\pagefile.sys")
@@ -37,13 +46,4 @@ describe Chef::Resource::WindowsPagefile do
     expect(resource.automatic_managed).to eql(false)
   end
 
-  it "sets the default action as :set" do
-    expect(resource.action).to eql([:set])
-  end
-
-  it "supports :set and :delete actions" do
-    expect { resource.action :set }.not_to raise_error
-    expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :create }.to raise_error(ArgumentError)
-  end
 end

@@ -21,19 +21,22 @@ require "spec_helper"
 describe Chef::Resource::OsxProfile do
   let(:resource) do
     Chef::Resource::OsxProfile.new(
-    "Test Profile Resource",
-    run_context)
+    "fakey_fakerton")
   end
 
   it "has a resource name of profile" do
     expect(resource.resource_name).to eql(:osx_profile)
   end
 
-  it "has a default action of install" do
+  it "the profile_name property is the name_property" do
+    expect(resource.profile_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
   end
 
-  it "accepts install and remove as actions" do
+  it "supports :install, :remove actions" do
     expect { resource.action :install }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
   end

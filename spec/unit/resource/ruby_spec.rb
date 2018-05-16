@@ -25,6 +25,14 @@ describe Chef::Resource::Ruby do
     expect(resource.resource_name).to eql(:ruby)
   end
 
+  it "sets the default action as :run" do
+    expect(resource.action).to eql([:run])
+  end
+
+  it "supports :run action" do
+    expect { resource.action :run }.not_to raise_error
+  end
+
   it "has an interpreter of ruby" do
     expect(resource.interpreter).to eql("ruby")
   end

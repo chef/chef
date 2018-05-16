@@ -19,19 +19,24 @@ require "spec_helper"
 
 describe Chef::Resource::RhsmRepo do
 
-  let(:resource) { Chef::Resource::RhsmRepo.new("foo") }
+  let(:resource) { Chef::Resource::RhsmRepo.new("fakey_fakerton") }
   let(:provider) { resource.provider_for_action(:enable) }
 
   it "has a resource name of :rhsm_repo" do
     expect(resource.resource_name).to eql(:rhsm_repo)
   end
 
-  it "has a default action of enable" do
+  it "the repo_name property is the name_property" do
+    expect(resource.repo_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :enable" do
     expect(resource.action).to eql([:enable])
   end
 
-  it "the repo_name property is the name property" do
-    expect(resource.repo_name).to eql("foo")
+  it "supports :disable, :enable actions" do
+    expect { resource.action :disable }.not_to raise_error
+    expect { resource.action :enable }.not_to raise_error
   end
 
   describe "#repo_enabled?" do

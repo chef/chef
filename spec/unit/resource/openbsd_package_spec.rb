@@ -36,6 +36,20 @@ describe Chef::Resource::OpenbsdPackage do
       expect(resource.resource_name).to eql(:openbsd_package)
     end
 
+    it "sets the default action as :install" do
+      expect(resource.action).to eql([:install])
+    end
+
+    it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+      expect { resource.action :install }.not_to raise_error
+      expect { resource.action :lock }.not_to raise_error
+      expect { resource.action :purge }.not_to raise_error
+      expect { resource.action :reconfig }.not_to raise_error
+      expect { resource.action :remove }.not_to raise_error
+      expect { resource.action :unlock }.not_to raise_error
+      expect { resource.action :upgrade }.not_to raise_error
+    end
+
     it "does not set the provider" do
       expect(resource.provider).to be_nil
     end

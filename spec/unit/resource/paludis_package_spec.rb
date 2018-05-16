@@ -17,27 +17,20 @@
 
 require "spec_helper"
 
-describe Chef::Resource::BuildEssential do
-
-  let(:resource) { Chef::Resource::BuildEssential.new("foo") }
-
-  it "has a resource name of :build_essential" do
-    expect(resource.resource_name).to eql(:build_essential)
-  end
+describe Chef::Resource::PaludisPackage do
+  let(:resource) { Chef::Resource::PaludisPackage.new("fakey_fakerton") }
 
   it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
   end
 
-  it "supports :install action" do
+  it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
     expect { resource.action :install }.not_to raise_error
-  end
-
-  context "when not settting a resource name" do
-    let(:resource) { Chef::Resource::BuildEssential.new(nil) }
-
-    it "the name defaults to an empty string" do
-      expect(resource.name).to eql("")
-    end
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
   end
 end

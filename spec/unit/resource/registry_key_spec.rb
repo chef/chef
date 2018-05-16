@@ -25,8 +25,19 @@ describe Chef::Resource::RegistryKey, "initialize" do
     expect(resource.resource_name).to eql(:registry_key)
   end
 
-  it "sets the key property to the resource name" do
+  it "the key property is the name_property" do
     expect(resource.key).to eql('HKCU\Software\Raxicoricofallapatorius')
+  end
+
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create, :create_if_missing, :delete, :delete_key actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :create_if_missing }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :delete_key }.not_to raise_error
   end
 
   it "defaults recursive to false" do

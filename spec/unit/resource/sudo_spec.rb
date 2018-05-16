@@ -22,18 +22,25 @@ describe Chef::Resource::Sudo do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:resource) { Chef::Resource::Sudo.new("someone", run_context) }
+  let(:resource) { Chef::Resource::Sudo.new("fakey_fakerton", run_context) }
 
   it "has a resource name of :sudo" do
     expect(resource.resource_name).to eql(:sudo)
   end
 
-  it "has a default action of create" do
+  it "the filename property is the name_property" do
+    expect(resource.filename).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "the filename property is the name property" do
-    expect(resource.filename).to eql("someone")
+  it "supports :create, :delete, :install, :remove actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   it "coerces filename property values . & ~ to __" do

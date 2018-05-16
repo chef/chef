@@ -23,23 +23,27 @@ describe Chef::Resource::RubyBlock do
 
   let(:resource) { Chef::Resource::RubyBlock.new("fakey_fakerton") }
 
-  it "has a default action of 'run'" do
+  it "has a resource name of :ruby_block" do
+    expect(resource.resource_name).to eql(:ruby_block)
+  end
+
+  it "the block_name property is the name_property" do
+    expect(resource.block_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :run" do
     expect(resource.action).to eql([:run])
   end
 
-  it "has a resource name of :ruby_block" do
-    expect(resource.resource_name).to eql(:ruby_block)
+  it "supports :create, :run actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :run }.not_to raise_error
   end
 
   it "accepts a ruby block/proc/.. for the 'block' parameter" do
     expect(resource.block do
       "foo"
     end.call).to eql("foo")
-  end
-
-  it "allows the action to be 'create'" do
-    resource.action :create
-    expect(resource.action).to eq([:create])
   end
 
   describe "when it has been initialized with block code" do

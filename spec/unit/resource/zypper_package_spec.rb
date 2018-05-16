@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Author:: Tim Smith (<tsmith@chef.io>)
+# Copyright:: Copyright 2018 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,19 +19,21 @@
 require "spec_helper"
 require "support/shared/unit/resource/static_provider_resolution"
 
-describe Chef::Resource::GemPackage, "initialize" do
+describe Chef::Resource::ZypperPackage, "initialize" do
 
   static_provider_resolution(
-    resource: Chef::Resource::GemPackage,
-    provider: Chef::Provider::Package::Rubygems,
-    name: :gem_package,
-    action: :install
+    resource: Chef::Resource::ZypperPackage,
+    provider: Chef::Provider::Package::Zypper,
+    name: :zypper_package,
+    action: :install,
+    os: "linux",
+    platform_family: "suse"
   )
 
 end
 
-describe Chef::Resource::GemPackage, "gem_binary" do
-  let(:resource) { Chef::Resource::GemPackage.new("foo") }
+describe Chef::Resource::ZypperPackage, "defaults" do
+  let(:resource) { Chef::Resource::ZypperPackage.new("fakey_fakerton") }
 
   it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
@@ -45,10 +47,5 @@ describe Chef::Resource::GemPackage, "gem_binary" do
     expect { resource.action :remove }.not_to raise_error
     expect { resource.action :unlock }.not_to raise_error
     expect { resource.action :upgrade }.not_to raise_error
-  end
-
-  it "sets the gem_binary variable to whatever is passed in" do
-    resource.gem_binary("/opt/local/bin/gem")
-    expect(resource.gem_binary).to eql("/opt/local/bin/gem")
   end
 end

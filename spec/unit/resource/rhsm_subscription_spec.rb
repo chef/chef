@@ -18,19 +18,24 @@
 require "spec_helper"
 
 describe Chef::Resource::RhsmSubscription do
-  let(:resource) { Chef::Resource::RhsmSubscription.new("foo") }
+  let(:resource) { Chef::Resource::RhsmSubscription.new("fakey_fakerton") }
   let(:provider) { resource.provider_for_action(:attach) }
 
   it "has a resource name of :rhsm_subscription" do
     expect(resource.resource_name).to eql(:rhsm_subscription)
   end
 
-  it "has a default action of attach" do
+  it "the pool_id property is the name_property" do
+    expect(resource.pool_id).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :attach" do
     expect(resource.action).to eql([:attach])
   end
 
-  it "the pool_id property is the name property" do
-    expect(resource.pool_id).to eql("foo")
+  it "supports :attach, :remove actions" do
+    expect { resource.action :attach }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   describe "#subscription_attached?" do

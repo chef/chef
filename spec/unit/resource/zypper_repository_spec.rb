@@ -22,30 +22,29 @@ describe Chef::Resource::ZypperRepository do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:resource) { Chef::Resource::ZypperRepository.new("repo-source", run_context) }
+  let(:resource) { Chef::Resource::ZypperRepository.new("fakey_fakerton", run_context) }
 
   it "has a resource_name of :zypper_repository" do
     expect(resource.resource_name).to eq(:zypper_repository)
   end
 
-  it "repo_name is the name_property" do
-    expect(resource.repo_name).to eql("repo-source")
+  it "the repo_name property is the name_property" do
+    expect(resource.repo_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports :add, :create, :refresh, :remove actions" do
+    expect { resource.action :add }.not_to raise_error
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :refresh }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   it "fails if the user provides a repo_name with a forward slash" do
     expect { resource.repo_name "foo/bar" }.to raise_error(ArgumentError)
-  end
-
-  it "has a default action of :create" do
-    expect(resource.action).to eql([:create])
-  end
-
-  it "supports :create, :remove, :add, and :refresh actions" do
-    expect { resource.action :add }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :create }.not_to raise_error
-    expect { resource.action :refresh }.not_to raise_error
-    expect { resource.action :delete }.to raise_error(ArgumentError)
   end
 
   it "type property defaults to 'NONE'" do

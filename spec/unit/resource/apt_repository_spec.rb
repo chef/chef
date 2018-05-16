@@ -25,14 +25,23 @@ describe Chef::Resource::AptRepository do
     empty_events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, empty_events)
   end
-  let(:resource) { Chef::Resource::AptRepository.new("multiverse", run_context) }
+  let(:resource) { Chef::Resource::AptRepository.new("fakey_fakerton", run_context) }
 
   it "keyserver defaults to keyserver.ubuntu.com" do
     expect(resource.keyserver).to eql("keyserver.ubuntu.com")
   end
 
-  it "repo_name is the name property" do
-    expect(resource.repo_name).to eql("multiverse")
+  it "the repo_name property is the name_property" do
+    expect(resource.repo_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :add" do
+    expect(resource.action).to eql([:add])
+  end
+
+  it "supports :add, :remove actions" do
+    expect { resource.action :add }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   it "distribution defaults to the distro codename" do

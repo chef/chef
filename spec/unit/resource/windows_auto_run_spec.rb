@@ -18,29 +18,29 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsAutorun do
-  let(:resource) { Chef::Resource::WindowsAutorun.new("some_path") }
+  let(:resource) { Chef::Resource::WindowsAutorun.new("fakey_fakerton") }
 
   it "sets resource name as :windows_auto_run" do
     expect(resource.resource_name).to eql(:windows_auto_run)
+  end
+
+  it "the program_name property is the name_property" do
+    expect(resource.program_name).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "the program_name property is the name_property" do
-    expect(resource.program_name).to eql("some_path")
+  it "supports :create, :remove actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
+
   it "supports :machine and :user in the root property" do
     expect { resource.root :user }.not_to raise_error
     expect { resource.root :machine }.not_to raise_error
     expect { resource.root "user" }.to raise_error(ArgumentError)
-  end
-
-  it "supports :create and :remove actions" do
-    expect { resource.action :create }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :delete }.to raise_error(ArgumentError)
   end
 
   it "coerces forward slashes to backslashes for the path" do

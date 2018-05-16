@@ -24,6 +24,15 @@ describe Chef::Resource::AptUpdate do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::AptUpdate.new("update", run_context) }
 
+  it "sets the default action as :periodic" do
+    expect(resource.action).to eql([:periodic])
+  end
+
+  it "supports :periodic, :update actions" do
+    expect { resource.action :periodic }.not_to raise_error
+    expect { resource.action :update }.not_to raise_error
+  end
+
   it "default frequency is set to be 1 day" do
     expect(resource.frequency).to eql(86_400)
   end

@@ -25,7 +25,11 @@ describe Chef::Resource::MacosUserDefaults do
     expect(resource.resource_name).to eql(:macos_userdefaults)
   end
 
-  it "has a default action of install" do
+  it "sets the default action as :write" do
     expect(resource.action).to eql([:write])
+  end
+
+  it "supports :write action" do
+    expect { resource.action :write }.not_to raise_error
   end
 end

@@ -31,9 +31,19 @@ describe Chef::Resource::WindowsFeatureDism do
     expect(resource.action).to eql([:install])
   end
 
-  it "sets the feature_name property as its name_property" do
+  it "the feature_name property is the name_property" do
     node.automatic[:platform_version] = "6.2"
     expect(resource.feature_name).to eql(%w{snmp dhcp})
+  end
+
+  it "sets the default action as :install" do
+    expect(resource.action).to eql([:install])
+  end
+
+  it "supports :delete, :install, :remove actions" do
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   it "coerces comma separated lists of features to a lowercase array on 2012+" do
@@ -58,12 +68,5 @@ describe Chef::Resource::WindowsFeatureDism do
     node.automatic[:platform_version] = "6.1"
     resource.feature_name "SNMP"
     expect(resource.feature_name).to eql(["SNMP"])
-  end
-
-  it "supports :install, :remove, and :delete actions" do
-    expect { resource.action :install }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :update }.to raise_error(ArgumentError)
   end
 end

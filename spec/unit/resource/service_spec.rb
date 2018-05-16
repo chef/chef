@@ -30,6 +30,21 @@ describe Chef::Resource::Service do
     expect(resource.service_name).to eql("chef")
   end
 
+  it "sets the default action as :nothing" do
+    expect(resource.action).to eql([:nothing])
+  end
+
+  it "supports :disable, :enable, :mask, :reload, :restart, :start, :stop, :unmask actions" do
+    expect { resource.action :disable }.not_to raise_error
+    expect { resource.action :enable }.not_to raise_error
+    expect { resource.action :mask }.not_to raise_error
+    expect { resource.action :reload }.not_to raise_error
+    expect { resource.action :restart }.not_to raise_error
+    expect { resource.action :start }.not_to raise_error
+    expect { resource.action :stop }.not_to raise_error
+    expect { resource.action :unmask }.not_to raise_error
+  end
+
   it "sets the pattern to be the service name by default" do
     expect(resource.pattern).to eql("chef")
   end

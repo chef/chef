@@ -30,6 +30,14 @@ describe Chef::Resource::Csh do
     expect(resource.resource_name).to eql(:csh)
   end
 
+  it "sets the default action as :run" do
+    expect(resource.action).to eql([:run])
+  end
+
+  it "supports :run action" do
+    expect { resource.action :run }.not_to raise_error
+  end
+
   it "has an interpreter of csh" do
     expect(resource.interpreter).to eql("csh")
   end

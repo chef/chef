@@ -22,12 +22,23 @@ require "spec_helper"
 describe Chef::Resource::CookbookFile do
   let(:resource) { Chef::Resource::CookbookFile.new("/foo/bar/sourcecode_tarball.tgz") }
 
-  it "uses the basepath of the resourc ename for the source property" do
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create, :create_if_missing, :delete, :touch actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :create_if_missing }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :touch }.not_to raise_error
+  end
+
+  it "uses the basepath of the resource name for the source property" do
     expect(resource.source).to eq("sourcecode_tarball.tgz")
   end
 
   it "source property accepts Strings" do
-    resource.name("config_file.conf")
+    resource.source("config_file.conf")
     expect(resource.source).to eq("config_file.conf")
   end
 

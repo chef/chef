@@ -15,20 +15,26 @@
 require "spec_helper"
 
 describe Chef::Resource::Launchd do
-  let(:resource) { Chef::Resource::Launchd.new("io.chef.chef-client" ) }
+  let(:resource) { Chef::Resource::Launchd.new("fakey_fakerton" ) }
 
   it "has a resource name of Launchd" do
     expect(resource.resource_name).to eql(:launchd)
   end
 
-  it "has a default action of create" do
+  it "the label property is the name_property" do
+    expect(resource.label).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "accepts enable, disable, create, and delete as actions" do
-    expect { resource.action :enable }.not_to raise_error
-    expect { resource.action :disable }.not_to raise_error
+  it "supports :create, :create_if_missing, :delete, :disable, :enable, :restart actions" do
     expect { resource.action :create }.not_to raise_error
+    expect { resource.action :create_if_missing }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :disable }.not_to raise_error
+    expect { resource.action :enable }.not_to raise_error
+    expect { resource.action :restart }.not_to raise_error
   end
 end

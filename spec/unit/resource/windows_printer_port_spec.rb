@@ -28,6 +28,15 @@ describe Chef::Resource::WindowsPrinterPort do
     expect(resource.ipv4_address).to eql("63.192.209.236")
   end
 
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create, :delete actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
+  end
+
   it "port_number property defaults to 9100" do
     expect(resource.port_number).to eql(9100)
   end
@@ -44,16 +53,6 @@ describe Chef::Resource::WindowsPrinterPort do
     expect { resource.port_protocol 1 }.not_to raise_error
     expect { resource.port_protocol 2 }.not_to raise_error
     expect { resource.port_protocol 3 }.to raise_error(ArgumentError)
-  end
-
-  it "sets the default action as :create" do
-    expect(resource.action).to eql([:create])
-  end
-
-  it "supports :create and :delete actions" do
-    expect { resource.action :create }.not_to raise_error
-    expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :remove }.to raise_error(ArgumentError)
   end
 
   it "raises an error if ipv4_address isn't in X.X.X.X format" do
