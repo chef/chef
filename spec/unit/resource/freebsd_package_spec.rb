@@ -42,6 +42,22 @@ describe Chef::Resource::FreebsdPackage do
     end
   end
 
+  describe "Actions" do
+    it "sets the default action as :install" do
+      expect(resource.action).to eql([:install])
+    end
+
+    it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+      expect { resource.action :install }.not_to raise_error
+      expect { resource.action :lock }.not_to raise_error
+      expect { resource.action :purge }.not_to raise_error
+      expect { resource.action :reconfig }.not_to raise_error
+      expect { resource.action :remove }.not_to raise_error
+      expect { resource.action :unlock }.not_to raise_error
+      expect { resource.action :upgrade }.not_to raise_error
+    end
+  end
+
   describe "Assigning provider after creation" do
     describe "if ports specified as source" do
       it "is Freebsd::Port" do

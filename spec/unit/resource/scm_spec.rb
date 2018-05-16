@@ -20,14 +20,22 @@
 require "spec_helper"
 
 describe Chef::Resource::Scm do
-  let(:resource) { Chef::Resource::Scm.new("my awesome app") }
+  let(:resource) { Chef::Resource::Scm.new("fakey_fakerton") }
 
-  it "supports :checkout, :export, :sync, :diff, and :log actions" do
-    expect(resource.allowed_actions).to include(:checkout)
-    expect(resource.allowed_actions).to include(:export)
-    expect(resource.allowed_actions).to include(:sync)
-    expect(resource.allowed_actions).to include(:diff)
-    expect(resource.allowed_actions).to include(:log)
+  it "the destination property is the name_property" do
+    expect(resource.destination).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :sync" do
+    expect(resource.action).to eql([:sync])
+  end
+
+  it "supports :checkout, :diff, :export, :log, :sync actions" do
+    expect { resource.action :checkout }.not_to raise_error
+    expect { resource.action :diff }.not_to raise_error
+    expect { resource.action :export }.not_to raise_error
+    expect { resource.action :log }.not_to raise_error
+    expect { resource.action :sync }.not_to raise_error
   end
 
   it "takes the destination path as a string" do

@@ -25,12 +25,17 @@ describe Chef::Resource::HomebrewTap do
     expect(resource.resource_name).to eql(:homebrew_tap)
   end
 
-  it "has a default action of tap" do
+  it "the tap_name property is the name_property" do
+    expect(resource.tap_name).to eql("user/mytap")
+  end
+
+  it "sets the default action as :tap" do
     expect(resource.action).to eql([:tap])
   end
 
-  it "the tap_name property is the name property" do
-    expect(resource.tap_name).to eql("user/mytap")
+  it "supports :tap, :untap actions" do
+    expect { resource.action :tap }.not_to raise_error
+    expect { resource.action :untap }.not_to raise_error
   end
 
   it "fails if tap_name isn't in the USER/TAP format" do

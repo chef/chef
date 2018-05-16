@@ -31,12 +31,27 @@ describe Chef::Resource::DnfPackage, "initialize" do
 
 end
 
-describe Chef::Resource::DnfPackage, "arch" do
+describe Chef::Resource::DnfPackage, "defaults" do
   let(:resource) { Chef::Resource::DnfPackage.new("foo") }
 
   it "sets the arch variable to whatever is passed in" do
     resource.arch("i386")
     expect(resource.arch).to eql(["i386"])
+  end
+
+  it "sets the default action as :install" do
+    expect(resource.action).to eql([:install])
+  end
+
+  it "supports :flush_cache, :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+    expect { resource.action :flush_cache }.not_to raise_error
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
   end
 end
 

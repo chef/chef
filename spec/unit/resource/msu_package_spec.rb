@@ -33,6 +33,16 @@ describe Chef::Resource::MsuPackage do
     expect(resource.action).to eql([:install])
   end
 
+  it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
+  end
+
   it "coerces name property to package_name property" do
     expect(resource.package_name).to eql("test_pkg")
   end

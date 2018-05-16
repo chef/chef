@@ -25,15 +25,19 @@ describe Chef::Resource::OpensslRsaPublicKey do
     expect(resource.resource_name).to eql(:openssl_rsa_public_key)
   end
 
-  it "has a default action of create" do
+  it "the path property is the name_property" do
+    expect(resource.path).to eql("key")
+  end
+
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create action" do
+    expect { resource.action :create }.not_to raise_error
   end
 
   it "has a default mode of '0640'" do
     expect(resource.mode).to eql("0640")
-  end
-
-  it "the path property is the name property" do
-    expect(resource.path).to eql("key")
   end
 end

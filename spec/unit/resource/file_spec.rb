@@ -22,12 +22,19 @@ describe Chef::Resource::File do
 
   let(:resource) { Chef::Resource::File.new("fakey_fakerton") }
 
-  it "has a name property" do
-    expect(resource.name).to eql("fakey_fakerton")
+  it "the path property is the name_property" do
+    expect(resource.path).to eql("fakey_fakerton")
   end
 
-  it "has a default action of 'create'" do
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create, :create_if_missing, :delete, :touch actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :create_if_missing }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :touch }.not_to raise_error
   end
 
   it "has a default content of nil" do
@@ -55,13 +62,6 @@ describe Chef::Resource::File do
   it "accepts a sha256 for checksum" do
     expect { resource.checksum "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa" }.not_to raise_error
     expect { resource.checksum "monkey!" }.to raise_error(ArgumentError)
-  end
-
-  it "accepts create, delete or touch for action" do
-    expect { resource.action :create }.not_to raise_error
-    expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :touch }.not_to raise_error
-    expect { resource.action :blues }.to raise_error(ArgumentError)
   end
 
   it "accepts a block, symbol, or string for verify" do

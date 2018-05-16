@@ -29,4 +29,18 @@ describe Chef::Resource::PortagePackage, "initialize" do
   it "sets the resource_name to :portage_package" do
     expect(resource.resource_name).to eql(:portage_package)
   end
+
+  it "sets the default action as :install" do
+    expect(resource.action).to eql([:install])
+  end
+
+  it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
+  end
 end

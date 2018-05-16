@@ -22,8 +22,18 @@ describe Chef::Resource::RemoteDirectory do
 
   let(:resource) { Chef::Resource::RemoteDirectory.new("/etc/dunk") }
 
-  it "path is the name property" do
+  it "the path property is the name_property" do
     expect(resource.path).to eql("/etc/dunk")
+  end
+
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create, :create_if_missing, :delete actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :create_if_missing }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
   end
 
   it "accepts a string for the remote directory source" do

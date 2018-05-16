@@ -22,31 +22,30 @@ describe Chef::Resource::YumRepository do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:resource) { Chef::Resource::YumRepository.new("multiverse", run_context) }
+  let(:resource) { Chef::Resource::YumRepository.new("fakey_fakerton", run_context) }
 
   it "has a resource_name of :yum_repository" do
     expect(resource.resource_name).to eq(:yum_repository)
   end
 
   it "the repositoryid property is the name_property" do
-    expect(resource.repositoryid).to eq("multiverse")
+    expect(resource.repositoryid).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports :add, :create, :delete, :makecache, :remove actions" do
+    expect { resource.action :add }.not_to raise_error
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :makecache }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   it "fails if the user provides a repositoryid with a forward slash" do
     expect { resource.repositoryid "foo/bar" }.to raise_error(ArgumentError)
-  end
-
-  it "has a default action of :create" do
-    expect(resource.action).to eql([:create])
-  end
-
-  it "supports :create, :remove, :add, :makecache, and :delete actions" do
-    expect { resource.action :create }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :add }.not_to raise_error
-    expect { resource.action :makecache }.not_to raise_error
-    expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :refresh }.to raise_error(ArgumentError)
   end
 
   it "clean_headers property defaults to false" do

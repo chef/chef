@@ -19,25 +19,26 @@ require "spec_helper"
 
 describe Chef::Resource::OhaiHint do
 
-  let(:resource) { Chef::Resource::OhaiHint.new("foo") }
+  let(:resource) { Chef::Resource::OhaiHint.new("fakey_fakerton") }
 
   it "has a resource name of :ohai_hint" do
     expect(resource.resource_name).to eql(:ohai_hint)
   end
 
-  it "has a default action of create" do
+  it "the hint_name property is the name_property" do
+    expect(resource.hint_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "supports the :nothing, :create and :delete actions" do
-    expect(resource.allowed_actions).to include(:nothing, :create, :delete)
+  it "supports :create, :delete actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
   end
 
   it "runs at compile_time by default" do
     expect(resource.compile_time).to eql(true)
-  end
-
-  it "the hint_name property is the name property" do
-    expect(resource.hint_name).to eql("foo")
   end
 end

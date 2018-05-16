@@ -19,17 +19,22 @@ require "spec_helper"
 
 describe Chef::Resource::HomebrewCask do
 
-  let(:resource) { Chef::Resource::HomebrewCask.new("myapp") }
+  let(:resource) { Chef::Resource::HomebrewCask.new("fakey_fakerton") }
 
   it "has a resource name of :homebrew_cask" do
     expect(resource.resource_name).to eql(:homebrew_cask)
   end
 
-  it "has a default action of install" do
+  it "the cask_name property is the name_property" do
+    expect(resource.cask_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
   end
 
-  it "the cask_name property is the name property" do
-    expect(resource.cask_name).to eql("myapp")
+  it "supports :install, :remove actions" do
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 end

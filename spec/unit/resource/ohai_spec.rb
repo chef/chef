@@ -20,17 +20,25 @@ require "spec_helper"
 
 describe Chef::Resource::Ohai do
 
-  let(:resource) { Chef::Resource::Ohai.new("ohai_reload") }
+  let(:resource) { Chef::Resource::Ohai.new("fakey_fakerton") }
 
   it "has a resource name of :ohai" do
     expect(resource.resource_name).to eql(:ohai)
   end
 
-  it "has a default action of reload" do
+  it "the ohai_name property is the name_property" do
+    expect(resource.ohai_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :reload" do
     expect(resource.action).to eql([:reload])
   end
 
-  it "allows you to set the plugin attribute" do
+  it "supports :reload action" do
+    expect { resource.action :reload }.not_to raise_error
+  end
+
+  it "allows you to set the plugin property" do
     resource.plugin "passwd"
     expect(resource.plugin).to eql("passwd")
   end

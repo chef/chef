@@ -18,14 +18,14 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsFont do
-  let(:resource) { Chef::Resource::WindowsFont.new("some_font") }
+  let(:resource) { Chef::Resource::WindowsFont.new("fakey_fakerton") }
 
   it "sets resource name as :windows_font" do
     expect(resource.resource_name).to eql(:windows_font)
   end
 
   it "the font_name property is the name_property" do
-    expect(resource.font_name).to eql("some_font")
+    expect(resource.font_name).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :install" do
@@ -34,7 +34,6 @@ describe Chef::Resource::WindowsFont do
 
   it "supports :install action" do
     expect { resource.action :install }.not_to raise_error
-    expect { resource.action :remove }.to raise_error(ArgumentError)
   end
 
   it "coerces backslashes in the source property to forward slashes" do

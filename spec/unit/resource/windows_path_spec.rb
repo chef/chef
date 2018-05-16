@@ -19,23 +19,22 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsPath do
-  let(:resource) { Chef::Resource::WindowsPath.new("some_path") }
+  let(:resource) { Chef::Resource::WindowsPath.new("fakey_fakerton") }
 
   it "sets resource name as :windows_path" do
     expect(resource.resource_name).to eql(:windows_path)
   end
 
   it "the path property is the name_property" do
-    expect(resource.path).to eql("some_path")
+    expect(resource.path).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :add" do
     expect(resource.action).to eql([:add])
   end
 
-  it "supports :add and :remove actions" do
+  it "supports :add, :remove actions" do
     expect { resource.action :add }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :delete }.to raise_error(ArgumentError)
   end
 end

@@ -48,12 +48,12 @@ describe Chef::Resource::Breakpoint do
     provider.action_break
   end
 
-  it "allows the action :break" do
-    expect(resource.allowed_actions).to include(:break)
+  it "sets the default action as :break" do
+    expect(resource.action).to eql([:break])
   end
 
-  it "defaults to the break action" do
-    expect(resource.action).to eq([:break])
+  it "supports :break action" do
+    expect { resource.action :break }.not_to raise_error
   end
 
   it "names itself after the line number of the file where it's created" do

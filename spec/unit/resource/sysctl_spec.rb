@@ -18,18 +18,23 @@
 require "spec_helper"
 
 describe Chef::Resource::Sysctl do
-  let(:resource) { Chef::Resource::Sysctl.new("something.something") }
+  let(:resource) { Chef::Resource::Sysctl.new("fakey_fakerton") }
 
   it "sets resource name as :sysctl" do
     expect(resource.resource_name).to eql(:sysctl)
+  end
+
+  it "the key property is the name_property" do
+    expect(resource.key).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :apply" do
     expect(resource.action).to eql([:apply])
   end
 
-  it "sets the key property as its name property" do
-    expect(resource.key).to eql("something.something")
+  it "supports :apply, :remove actions" do
+    expect { resource.action :apply }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   it "coerces Arrays in the value property to space delimited Strings" do
@@ -45,12 +50,5 @@ describe Chef::Resource::Sysctl do
   it "coerces Floats in the value property to Strings" do
     resource.value 1.1
     expect(resource.value).to eql("1.1")
-  end
-
-  it "supports :apply and :remove actions" do
-    expect { resource.action :apply }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :delete }.to raise_error(ArgumentError)
-    expect { resource.action :install }.to raise_error(ArgumentError)
   end
 end

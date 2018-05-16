@@ -22,6 +22,20 @@ require "spec_helper"
 describe Chef::Resource::HttpRequest do
   let(:resource) { Chef::Resource::HttpRequest.new("fakey_fakerton") }
 
+  it "sets the default action as :get" do
+    expect(resource.action).to eql([:get])
+  end
+
+  it "supports :delete, :get, :head, :options, :patch, :post, :put actions" do
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :get }.not_to raise_error
+    expect { resource.action :head }.not_to raise_error
+    expect { resource.action :options }.not_to raise_error
+    expect { resource.action :patch }.not_to raise_error
+    expect { resource.action :post }.not_to raise_error
+    expect { resource.action :put }.not_to raise_error
+  end
+
   it "sets url to a string" do
     resource.url "http://slashdot.org"
     expect(resource.url).to eql("http://slashdot.org")

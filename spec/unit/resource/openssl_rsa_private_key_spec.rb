@@ -19,14 +19,22 @@ require "spec_helper"
 
 describe Chef::Resource::OpensslRsaPrivateKey do
 
-  let(:resource) { Chef::Resource::OpensslRsaPrivateKey.new("key") }
+  let(:resource) { Chef::Resource::OpensslRsaPrivateKey.new("fakey_fakerton") }
 
   it "has a resource name of :openssl_rsa_private_key" do
     expect(resource.resource_name).to eql(:openssl_rsa_private_key)
   end
 
-  it "has a default action of create" do
+  it "the path property is the name_property" do
+    expect(resource.path).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create action" do
+    expect { resource.action :create }.not_to raise_error
   end
 
   it "has a default mode of '0600'" do
@@ -53,7 +61,4 @@ describe Chef::Resource::OpensslRsaPrivateKey do
     expect(resource.force).to eql(false)
   end
 
-  it "the path property is the name property" do
-    expect(resource.path).to eql("key")
-  end
 end

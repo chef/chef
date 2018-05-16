@@ -28,6 +28,12 @@ describe Chef::Resource::WindowsFeaturePowershell do
     expect(resource.action).to eql([:install])
   end
 
+  it "supports :delete, :install, :remove actions" do
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+  end
+
   it "sets the feature_name property as its name_property" do
     expect(resource.feature_name).to eql(%w{SNMP DHCP})
   end
@@ -42,10 +48,4 @@ describe Chef::Resource::WindowsFeaturePowershell do
     expect(resource.feature_name).to eql(["SNMP"])
   end
 
-  it "supports :install, :remove, and :delete actions" do
-    expect { resource.action :install }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :update }.to raise_error(ArgumentError)
-  end
 end

@@ -27,13 +27,17 @@ describe Chef::Resource::Mdadm do
     expect(resource.resource_name).to eql(:mdadm)
   end
 
-  it "has a default action of create" do
+  it "the raid_device property is the name_property" do
+    expect(resource.raid_device).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "accepts create, assemble, stop as actions" do
-    expect { resource.action :create }.not_to raise_error
+  it "supports :assemble, :create, :stop actions" do
     expect { resource.action :assemble }.not_to raise_error
+    expect { resource.action :create }.not_to raise_error
     expect { resource.action :stop }.not_to raise_error
   end
 

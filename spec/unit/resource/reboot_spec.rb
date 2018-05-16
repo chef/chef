@@ -21,12 +21,14 @@ describe Chef::Resource::Reboot do
 
   let(:resource) { Chef::Resource::Reboot.new("reboot me!") }
 
-  it "has a default action of :nothing" do
+  it "sets the default action as :nothing" do
     expect(resource.action).to eql([:nothing])
   end
 
-  it "supports the :nothing, :request_reboot, :reboot_now, and :cancel actions" do
-    expect(resource.allowed_actions).to include(:nothing, :request_reboot, :reboot_now, :cancel)
+  it "supports :cancel, :reboot_now, :request_reboot actions" do
+    expect { resource.action :cancel }.not_to raise_error
+    expect { resource.action :reboot_now }.not_to raise_error
+    expect { resource.action :request_reboot }.not_to raise_error
   end
 
   it "has a resource_name of :reboot" do

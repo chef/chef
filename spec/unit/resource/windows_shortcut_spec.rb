@@ -18,22 +18,21 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsShortcut do
-  let(:resource) { Chef::Resource::WindowsShortcut.new("some_path") }
+  let(:resource) { Chef::Resource::WindowsShortcut.new("fakey_fakerton") }
 
   it "sets resource name as :windows_shortcut" do
     expect(resource.resource_name).to eql(:windows_shortcut)
   end
 
-  it "sets the shortcut_name property as its name" do
-    expect(resource.shortcut_name).to eql("some_path")
+  it "the shortcut_name property is the name_property" do
+    expect(resource.shortcut_name).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "supports :create action only" do
+  it "supports :create action" do
     expect { resource.action :create }.not_to raise_error
-    expect { resource.action :delete }.to raise_error(ArgumentError)
   end
 end

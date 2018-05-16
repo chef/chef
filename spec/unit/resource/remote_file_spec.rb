@@ -23,6 +23,25 @@ describe Chef::Resource::RemoteFile do
 
   let(:resource) { Chef::Resource::RemoteFile.new("fakey_fakerton") }
 
+  describe "name_property" do
+    it "the path property is the name_property" do
+      expect(resource.path).to eql("fakey_fakerton")
+    end
+  end
+
+  describe "Actions" do
+    it "sets the default action as :create" do
+      expect(resource.action).to eql([:create])
+    end
+
+    it "supports :create, :create_if_missing, :delete, :touch actions" do
+      expect { resource.action :create }.not_to raise_error
+      expect { resource.action :create_if_missing }.not_to raise_error
+      expect { resource.action :delete }.not_to raise_error
+      expect { resource.action :touch }.not_to raise_error
+    end
+  end
+
   describe "initialize" do
     it "is a subclass of Chef::Resource::File" do
       expect(resource).to be_a_kind_of(Chef::Resource::File)

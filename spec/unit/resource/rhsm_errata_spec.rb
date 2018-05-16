@@ -19,17 +19,21 @@ require "spec_helper"
 
 describe Chef::Resource::RhsmErrata do
 
-  let(:resource) { Chef::Resource::RhsmErrata.new("foo") }
+  let(:resource) { Chef::Resource::RhsmErrata.new("fakey_fakerton") }
 
   it "has a resource name of :rhsm_errata" do
     expect(resource.resource_name).to eql(:rhsm_errata)
   end
 
-  it "has a default action of install" do
+  it "the errata_id property is the name_property" do
+    expect(resource.errata_id).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
   end
 
-  it "the errata_id property is the name property" do
-    expect(resource.errata_id).to eql("foo")
+  it "supports :install action" do
+    expect { resource.action :install }.not_to raise_error
   end
 end
