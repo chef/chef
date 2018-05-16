@@ -55,7 +55,7 @@ describe Chef::ChefFS::DataHandler::DataHandlerBase do
     end
 
     it "prefers already existing values over default values" do
-      expect(handler.normalize_hash(some_item, item_defaults)['food']).to eq("honey")
+      expect(handler.normalize_hash(some_item, item_defaults)["food"]).to eq("honey")
     end
 
     it "handles being passed a nil value instead of Hash" do
