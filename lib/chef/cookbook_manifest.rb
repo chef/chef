@@ -204,7 +204,8 @@ class Chef
 
     def root_files
       manifest[:all_files].select do |file|
-        file[:name].split("/").length == 1
+        segment, name = file[:name].split("/")
+        name.nil? || segment == "root_files"
       end
     end
 
@@ -271,7 +272,7 @@ class Chef
         next if parts[0] == ".."
 
         # if we have a root_file, such as metadata.rb, the first part will be "."
-        return [ pathname.to_s, pathname.to_s, "default" ] if parts.length == 1
+        return [ "root_files/#{pathname}", pathname.to_s, "default" ] if parts.length == 1
 
         segment = parts[0]
 

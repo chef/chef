@@ -31,7 +31,7 @@ class Chef
         response[:all_files] = COOKBOOK_SEGMENTS.inject([]) do |memo, segment|
           next memo if hash[segment].nil? || hash[segment].empty?
           hash[segment].each do |file|
-            file["name"] = "#{segment}/#{file["name"]}" unless segment == "root_files"
+            file["name"] = "#{segment}/#{file["name"]}"
             memo << file
           end
           response.delete(segment)
@@ -49,7 +49,7 @@ class Chef
           if COOKBOOK_SEGMENTS.include?(parent)
             memo[parent] ||= []
             files[parent].each do |file|
-              file["name"] = file["name"].split("/")[1] unless parent == "root_files"
+              file["name"] = file["name"].split("/")[1]
               file.delete("full_path")
               memo[parent] << file
             end

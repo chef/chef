@@ -122,6 +122,8 @@ describe Chef::CookbookManifest do
         parts = relative_path.split("/")
         name = if %w{templates files}.include?(parts[0]) && parts.length == 3
                  File.join(parts[0], parts[2])
+               elsif parts.length == 1
+                 "root_files/#{parts[0]}"
                else
                  relative_path
                end
