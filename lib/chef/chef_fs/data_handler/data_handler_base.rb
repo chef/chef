@@ -63,8 +63,8 @@ class Chef
         def normalize_hash(object, defaults)
           # Make a normalized result in the specified order for diffing
           result = {}
-          defaults.each_pair do |key, default|
-            result[key] = object.is_a?(Hash) && object.key?(key) ? object[key] : default
+          defaults.each_pair do |key, value|
+            result[key] = object.is_a?(Hash) && object.key?(key) ? object[key] : value
           end
           if object.is_a?(Hash)
             object.each_pair do |key, value|

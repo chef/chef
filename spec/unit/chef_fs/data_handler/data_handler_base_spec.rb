@@ -24,14 +24,16 @@ describe Chef::ChefFS::DataHandler::DataHandlerBase do
     let(:some_item) do
       { "name" => "grizzly",
         "gender" => "female",
-        "age" => 3
+        "age" => 3,
+        "food" => "honey"
       }
     end
 
     let(:item_defaults) do
       { "family" => "ursidae",
         "hibernate" => true,
-        "avg_lifespan_years" => 22,
+        "food" => "berries",
+        "avg_lifespan_years" => 22
       }
     end
 
@@ -41,14 +43,19 @@ describe Chef::ChefFS::DataHandler::DataHandlerBase do
         "family" => "ursidae",
         "hibernate" => true,
         "avg_lifespan_years" => 22,
-        "age" => 3
+        "age" => 3,
+        "food" => "honey"
       }
     end
 
     let(:handler) { described_class.new }
 
-    it "normalizes the Hash, filling in defaults" do
+    it "normalizes the Hash, filling in default values" do
       expect(handler.normalize_hash(some_item, item_defaults)).to eq(normalized)
+    end
+
+    it "prefers already existing values over default values" do
+      expect(handler.normalize_hash(some_item, item_defaults)['food']).to eq("honey")
     end
 
     it "handles being passed a nil value instead of Hash" do
