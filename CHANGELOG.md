@@ -3,6 +3,7 @@
 ## Unreleased
 
 #### Merged Pull Requests
+- Add additional resource unit tests [#7275](https://github.com/chef/chef/pull/7275) ([tas50](https://github.com/tas50))
 - Add additional unit tests for resource actions/properties [#7266](https://github.com/chef/chef/pull/7266) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- Add additional resource unit tests [#7275](https://github.com/chef/chef/pull/7275) ([tas50](https://github.com/tas50)) <!-- 14.1.14 -->
 - Add additional unit tests for resource actions/properties [#7266](https://github.com/chef/chef/pull/7266) ([tas50](https://github.com/tas50)) <!-- 14.1.14 -->
 - improved regex accuracy lib/chef/resource/hostname.rb [#7262](https://github.com/chef/chef/pull/7262) ([bottkv488](https://github.com/bottkv488)) <!-- 14.1.14 -->
 - publish habitat packages [#7272](https://github.com/chef/chef/pull/7272) ([thommay](https://github.com/thommay)) <!-- 14.1.13 -->
