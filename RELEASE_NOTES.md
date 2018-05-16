@@ -1,5 +1,22 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.1.12:
+
+This release resolves a number of regressions in 14.1:
+
+- `git` resource: don't use `--prune-tags` as it's really new.
+- `rhsm_repo` resource: now works
+- `apt_repository` resource: use the `repo_name` property to name files
+- `windows_task` resource: properly handle commands with arguments
+- `windows_task` resource: handle creating tasks as the SYSTEM user
+- `remote_directory` resource: restore the default for the `overwrite` property
+
+## Ohai 14.1.3
+
+- Properly detect FIPS environments
+- `shard` plugin: work in FIPS compliant environments
+- `filesystem` plugin: Handle BSD platforms
+
 # Chef Client Release Notes 14.1.1:
 
 ## Platform Additions
