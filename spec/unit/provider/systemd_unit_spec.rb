@@ -74,7 +74,7 @@ describe Chef::Provider::SystemdUnit do
   end
 
   before(:each) do
-    allow(Etc).to receive(:getpwuid).and_return(OpenStruct.new(uid: 1000))
+    allow(Etc).to receive(:getpwnam).and_return(OpenStruct.new(uid: 1000))
     allow(Chef::Resource::SystemdUnit).to receive(:new)
                                             .with(unit_name)
                                             .and_return(current_resource)

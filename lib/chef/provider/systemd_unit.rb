@@ -245,7 +245,7 @@ class Chef
       def systemctl_opts
         @systemctl_opts ||=
           if new_resource.user
-            uid = Etc.getpwuid(new_resource.user).uid
+            uid = Etc.getpwnam(new_resource.user).uid
             {
               :user => new_resource.user,
               :environment => {
