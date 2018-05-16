@@ -1,29 +1,27 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.12 -->
-## [v14.1.12](https://github.com/chef/chef/tree/v14.1.12) (2018-05-16)
-
-#### Merged Pull Requests
-- Use some unique task names for windows_task functional tests [#7267](https://github.com/chef/chef/pull/7267) ([btm](https://github.com/btm))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.1.1 -->
-### Changes since 14.1.1 release
-
-#### Merged Pull Requests
-- Use some unique task names for windows_task functional tests [#7267](https://github.com/chef/chef/pull/7267) ([btm](https://github.com/btm)) <!-- 14.1.12 -->
-- Update win32-taskscheduler gem to fix creating tasks as the SYSTEM user [#7265](https://github.com/chef/chef/pull/7265) ([tas50](https://github.com/tas50)) <!-- 14.1.11 -->
-- Fix windows_task resource not handling commands with arguments [#7250](https://github.com/chef/chef/pull/7250) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.1.10 -->
-- Update Ohai to 14.1.3 [#7258](https://github.com/chef/chef/pull/7258) ([tas50](https://github.com/tas50)) <!-- 14.1.9 -->
-- Update Habitat plan to correctly build [#6111](https://github.com/chef/chef/pull/6111) ([elliott-davis](https://github.com/elliott-davis)) <!-- 14.1.8 -->
-- apt_repository: Use the repo_name name property [#7244](https://github.com/chef/chef/pull/7244) ([tas50](https://github.com/tas50)) <!-- 14.1.7 -->
-- remote_directory: restore overwrite default [#7254](https://github.com/chef/chef/pull/7254) ([rmoriz](https://github.com/rmoriz)) <!-- 14.1.6 -->
-- repo_name property should be part of new_resource object [#7252](https://github.com/chef/chef/pull/7252) ([tj-anderson](https://github.com/tj-anderson)) <!-- 14.1.5 -->
-- fix git provider: -prune-tags is not available with old git versions, fixes #7233 [#7247](https://github.com/chef/chef/pull/7247) ([rmoriz](https://github.com/rmoriz)) <!-- 14.1.4 -->
-- Switch Node#role? to use the attributes expansion instead of the run list [#7234](https://github.com/chef/chef/pull/7234) ([coderanger](https://github.com/coderanger)) <!-- 14.1.3 -->
-- Remove redundant &quot;?&quot; in knife configure [#7235](https://github.com/chef/chef/pull/7235) ([alexymik](https://github.com/alexymik)) <!-- 14.1.2 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.1.12](https://github.com/chef/chef/tree/v14.1.12) (2018-05-16)
+
+#### Merged Pull Requests
+- Remove redundant &quot;?&quot; in knife configure [#7235](https://github.com/chef/chef/pull/7235) ([alexymik](https://github.com/alexymik))
+- Switch Node#role? to use the attributes expansion instead of the run list [#7234](https://github.com/chef/chef/pull/7234) ([coderanger](https://github.com/coderanger))
+- fix git provider: -prune-tags is not available with old git versions, fixes #7233 [#7247](https://github.com/chef/chef/pull/7247) ([rmoriz](https://github.com/rmoriz))
+- repo_name property should be part of new_resource object [#7252](https://github.com/chef/chef/pull/7252) ([tj-anderson](https://github.com/tj-anderson))
+- remote_directory: restore overwrite default [#7254](https://github.com/chef/chef/pull/7254) ([rmoriz](https://github.com/rmoriz))
+- apt_repository: Use the repo_name name property [#7244](https://github.com/chef/chef/pull/7244) ([tas50](https://github.com/tas50))
+- Update Habitat plan to correctly build [#6111](https://github.com/chef/chef/pull/6111) ([elliott-davis](https://github.com/elliott-davis))
+- Update Ohai to 14.1.3 [#7258](https://github.com/chef/chef/pull/7258) ([tas50](https://github.com/tas50))
+- Fix windows_task resource not handling commands with arguments [#7250](https://github.com/chef/chef/pull/7250) ([Vasu1105](https://github.com/Vasu1105))
+- Update win32-taskscheduler gem to fix creating tasks as the SYSTEM user [#7265](https://github.com/chef/chef/pull/7265) ([tas50](https://github.com/tas50))
+- Use some unique task names for windows_task functional tests [#7267](https://github.com/chef/chef/pull/7267) ([btm](https://github.com/btm))
+<!-- latest_stable_release -->
+
 ## [v14.1.1](https://github.com/chef/chef/tree/v14.1.1) (2018-05-08)
 
 #### Merged Pull Requests
@@ -41,7 +39,6 @@
 - Allow specifying `ignore_failure :quiet` to disable the error spew [#7194](https://github.com/chef/chef/pull/7194) ([coderanger](https://github.com/coderanger))
 - [MSYS-752] windows task rewrite using win32-taskscheduler [#6815](https://github.com/chef/chef/pull/6815) ([Vasu1105](https://github.com/Vasu1105))
 - Trying to use --recipe-url on Windows with local file fails [#7223](https://github.com/chef/chef/pull/7223) ([tyler-ball](https://github.com/tyler-ball))
-<!-- latest_stable_release -->
 
 ## [v14.0.202](https://github.com/chef/chef/tree/v14.0.202) (2018-04-16)
 
