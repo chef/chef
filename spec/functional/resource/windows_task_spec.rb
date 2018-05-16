@@ -20,7 +20,8 @@ require "spec_helper"
 require "chef/provider/windows_task"
 
 describe Chef::Resource::WindowsTask, :windows_only do
-  let(:task_name) { "chef-client" }
+  # resource.task.application_name will default to task_name unless resource.command is set
+  let(:task_name) { "chef-client-functional-test" }
   let(:new_resource) { Chef::Resource::WindowsTask.new(task_name) }
   let(:windows_task_provider) do
     node = Chef::Node.new
@@ -131,7 +132,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         #loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         trigger_details = current_resource.task.trigger(0)
         expect(trigger_details[:start_year]).to eq("2017")
         expect(trigger_details[:start_month]).to eq("09")
@@ -164,7 +165,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         expect(trigger_details[:minutes_interval]).to eq(15)
         expect(trigger_details[:trigger_type]).to eq(1)
         expect(current_resource.task.principals[:run_level]).to eq(1)
@@ -188,7 +189,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         expect(trigger_details[:minutes_interval]).to eq(20)
         expect(trigger_details[:trigger_type]).to eq(1)
         expect(current_resource.task.principals[:run_level]).to eq(1)
@@ -212,7 +213,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         expect(trigger_details[:minutes_interval]).to eq(180)
         expect(trigger_details[:trigger_type]).to eq(1)
       end
@@ -235,7 +236,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         expect(trigger_details[:minutes_interval]).to eq(300)
         expect(trigger_details[:trigger_type]).to eq(1)
       end
@@ -257,7 +258,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         expect(trigger_details[:trigger_type]).to eq(2)
         expect(current_resource.task.principals[:run_level]).to eq(1)
         expect(trigger_details[:type][:days_interval]).to eq(1)
@@ -292,7 +293,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days]).to eq(1)
@@ -312,7 +313,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days]).to eq(7)
@@ -333,7 +334,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days]).to eq(1209548943) #TODO:: windows_task_provider.send(:days_of_month)
@@ -355,7 +356,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days]).to eq(538443919) #TODO:windows_task_provider.send(:days_of_month)
@@ -378,7 +379,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(5)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days_of_week]).to eq(35)
@@ -446,7 +447,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(5)
           expect(trigger_details[:type][:months]).to eq(4095)
           expect(trigger_details[:type][:weeks_of_month]).to eq(7)
@@ -469,7 +470,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(trigger_details[:type][:months]).to eq(2080)
           expect(trigger_details[:type][:days]).to eq(3)
@@ -501,7 +502,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(trigger_details[:type][:months]).to eq(4095)
           expect(trigger_details[:type][:days]).to eq(0)
@@ -522,7 +523,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(trigger_details[:type][:months]).to eq(4095)
           expect(trigger_details[:type][:days]).to eq(0)
@@ -546,7 +547,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(5)
           expect(trigger_details[:type][:months]).to eq(4095)
           expect(trigger_details[:type][:days_of_week]).to eq(34)
@@ -570,7 +571,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(trigger_details[:type][:months]).to eq(4095)
           expect(trigger_details[:type][:days]).to eq(1)
@@ -609,7 +610,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days]).to eq(2)
@@ -631,7 +632,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days]).to eq(7)
@@ -652,7 +653,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days]).to eq(1)
@@ -675,7 +676,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
           #loading current resource
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days]).to eq(1)
@@ -717,7 +718,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(1)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect("#{trigger_details[:start_hour]}:#{trigger_details[:start_minute]}" ).to eq(subject.start_time)
@@ -748,7 +749,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         expect(current_resource.task.principals[:run_level]).to eq(1)
         expect(trigger_details[:trigger_type]).to eq(3)
         expect(trigger_details[:type][:weeks_interval]).to eq(1)
@@ -768,7 +769,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:trigger_type]).to eq(3)
           expect(trigger_details[:type][:weeks_interval]).to eq(1)
@@ -792,7 +793,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:trigger_type]).to eq(3)
           expect(trigger_details[:type][:weeks_interval]).to eq(2)
@@ -815,7 +816,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:trigger_type]).to eq(3)
           expect(trigger_details[:type][:weeks_interval]).to eq(3)
@@ -872,7 +873,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:trigger_type]).to eq(3)
           expect(trigger_details[:type][:weeks_interval]).to eq(1)
@@ -897,7 +898,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         expect(current_resource.task.principals[:run_level]).to eq(1)
         expect(trigger_details[:trigger_type]).to eq(8)
       end
@@ -917,7 +918,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(8)
           expect(trigger_details[:start_year]).to eq("2018")
           expect(trigger_details[:start_month]).to eq("09")
@@ -944,7 +945,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         expect(current_resource.task.principals[:run_level]).to eq(1)
         expect(trigger_details[:trigger_type]).to eq(9)
       end
@@ -964,7 +965,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(9)
           expect(trigger_details[:start_year]).to eq("2018")
           expect(trigger_details[:start_month]).to eq("09")
@@ -999,7 +1000,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:trigger_type]).to eq(6)
           expect(current_resource.task.settings[:idle_settings][:idle_duration]).to eq("PT20M")
@@ -1024,7 +1025,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(6)
           expect(trigger_details[:start_year]).to eq("2018")
           expect(trigger_details[:start_month]).to eq("09")
@@ -1052,7 +1053,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         expect(current_resource.task.principals[:run_level]).to eq(1)
         expect(trigger_details[:trigger_type]).to eq(1)
         expect(trigger_details[:random_minutes_interval]).to eq(20)
@@ -1095,7 +1096,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
 
-        expect(current_resource.task.application_name).to eq("chef-client")
+        expect(current_resource.task.application_name).to eq(task_name)
         expect(current_resource.task.principals[:run_level]).to eq(1)
         expect(current_resource.task.trigger_count).to eq(0)
       end
@@ -1464,6 +1465,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
   end
 
   describe "action :enable" do
+    let(:task_name) { "chef-client-functional-test-enable" }
     after { delete_task }
 
     subject do
@@ -1486,6 +1488,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
   end
 
   describe "action :disable" do
+    let(:task_name) { "chef-client-functional-test-disable" }
     after { delete_task }
 
     subject do
