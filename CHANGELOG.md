@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.11 -->
-## [v14.1.11](https://github.com/chef/chef/tree/v14.1.11) (2018-05-15)
+<!-- latest_release 14.1.12 -->
+## [v14.1.12](https://github.com/chef/chef/tree/v14.1.12) (2018-05-16)
 
 #### Merged Pull Requests
-- Update win32-taskscheduler gem to fix creating tasks as the SYSTEM user [#7265](https://github.com/chef/chef/pull/7265) ([tas50](https://github.com/tas50))
+- Use some unique task names for windows_task functional tests [#7267](https://github.com/chef/chef/pull/7267) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.1 -->
 ### Changes since 14.1.1 release
 
 #### Merged Pull Requests
+- Use some unique task names for windows_task functional tests [#7267](https://github.com/chef/chef/pull/7267) ([btm](https://github.com/btm)) <!-- 14.1.12 -->
 - Update win32-taskscheduler gem to fix creating tasks as the SYSTEM user [#7265](https://github.com/chef/chef/pull/7265) ([tas50](https://github.com/tas50)) <!-- 14.1.11 -->
 - Fix windows_task resource not handling commands with arguments [#7250](https://github.com/chef/chef/pull/7250) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.1.10 -->
 - Update Ohai to 14.1.3 [#7258](https://github.com/chef/chef/pull/7258) ([tas50](https://github.com/tas50)) <!-- 14.1.9 -->
