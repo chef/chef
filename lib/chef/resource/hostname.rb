@@ -116,7 +116,7 @@ class Chef
               # this must come before other methods like /etc/hostname and /etc/sysconfig/network
               declare_resource(:execute, "hostnamectl set-hostname #{new_resource.hostname}") do
                 notifies :reload, "ohai[reload hostname]"
-                not_if { shell_out!("hostnamectl status", { :returns => [0, 1] }).stdout =~ /Static hostname:\s+#{new_resource.hostname}/ }
+                not_if { shell_out!("hostnamectl status", { :returns => [0, 1] }).stdout =~ /Static hostname:\s*#{new_resource.hostname}\s*$/ }
               end
             when ::File.exist?("/etc/hostname")
               # debian family uses /etc/hostname
