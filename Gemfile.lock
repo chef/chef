@@ -15,7 +15,7 @@ GIT
 
 GIT
   remote: https://github.com/coderanger/chefspec.git
-  revision: 8b6af752ecb1d8f3d7abc8ecc1be31f24efd465c
+  revision: e9546dd3e9044f4c5f3b9a2b611204caa03211c9
   branch: lot-of-upgrades
   specs:
     chefspec (7.2.1)
