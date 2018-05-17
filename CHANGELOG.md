@@ -1,17 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.15 -->
-## [v14.1.15](https://github.com/chef/chef/tree/v14.1.15) (2018-05-17)
+<!-- latest_release 14.1.16 -->
+## [v14.1.16](https://github.com/chef/chef/tree/v14.1.16) (2018-05-17)
 
 #### Merged Pull Requests
-- Add default_action to the resource inspector [#7276](https://github.com/chef/chef/pull/7276) ([tas50](https://github.com/tas50))
-- Add additional resource unit tests [#7275](https://github.com/chef/chef/pull/7275) ([tas50](https://github.com/tas50))
-- Add additional unit tests for resource actions/properties [#7266](https://github.com/chef/chef/pull/7266) ([tas50](https://github.com/tas50))
+- UID now starts at 501, uses createhomedir instead [#4903](https://github.com/chef/chef/pull/4903) ([nmcspadden](https://github.com/nmcspadden))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- UID now starts at 501, uses createhomedir instead [#4903](https://github.com/chef/chef/pull/4903) ([nmcspadden](https://github.com/nmcspadden)) <!-- 14.1.16 -->
 - Add default_action to the resource inspector [#7276](https://github.com/chef/chef/pull/7276) ([tas50](https://github.com/tas50)) <!-- 14.1.15 -->
 - Add additional resource unit tests [#7275](https://github.com/chef/chef/pull/7275) ([tas50](https://github.com/tas50)) <!-- 14.1.14 -->
 - Add additional unit tests for resource actions/properties [#7266](https://github.com/chef/chef/pull/7266) ([tas50](https://github.com/tas50)) <!-- 14.1.14 -->
