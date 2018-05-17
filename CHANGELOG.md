@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.9.2 -->
-## [v13.9.2](https://github.com/chef/chef/tree/v13.9.2) (2018-05-10)
+<!-- latest_release 13.9.3 -->
+## [v13.9.3](https://github.com/chef/chef/tree/v13.9.3) (2018-05-17)
 
 #### Merged Pull Requests
-- Update nokogiri, ruby, and openssl for CVEs [#7232](https://github.com/chef/chef/pull/7232) ([tas50](https://github.com/tas50))
+- Backport Ubuntu 18.04 fixes [#7280](https://github.com/chef/chef/pull/7280) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.9.1 -->
 ### Changes since 13.9.1 release
 
 #### Merged Pull Requests
+- Backport Ubuntu 18.04 fixes [#7280](https://github.com/chef/chef/pull/7280) ([thommay](https://github.com/thommay)) <!-- 13.9.3 -->
 - Update nokogiri, ruby, and openssl for CVEs [#7232](https://github.com/chef/chef/pull/7232) ([tas50](https://github.com/tas50)) <!-- 13.9.2 -->
 <!-- release_rollup -->
 
