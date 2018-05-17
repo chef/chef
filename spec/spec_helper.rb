@@ -47,6 +47,9 @@ if ENV["COVERAGE"]
   end
 end
 
+ENV['CHEFSPEC_NO_INCLUDE'] = 'true'
+require "chefspec"
+
 require "chef"
 require "chef/knife"
 

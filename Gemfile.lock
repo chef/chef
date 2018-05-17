@@ -6,6 +6,23 @@ GIT
     chefstyle (0.10.0)
       rubocop (= 0.55.0)
 
+GIT
+  remote: https://github.com/chefspec/fauxhai.git
+  revision: 7a9335de8af36d030b089b2ad6d58dcb1cfd36f5
+  specs:
+    fauxhai (6.2.0)
+      net-ssh
+
+GIT
+  remote: https://github.com/coderanger/chefspec.git
+  revision: 8b6af752ecb1d8f3d7abc8ecc1be31f24efd465c
+  branch: lot-of-upgrades
+  specs:
+    chefspec (7.2.1)
+      chef (>= 12.14.89)
+      fauxhai (>= 4)
+      rspec (~> 3.0)
+
 PATH
   remote: .
   specs:
@@ -358,7 +375,9 @@ DEPENDENCIES
   chef-config!
   chef-vault
   cheffish (~> 14)
+  chefspec!
   chefstyle!
+  fauxhai!
   inspec-core (~> 2)
   netrc
   octokit
