@@ -68,7 +68,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         expect(current_resource.task.application_name).to eq("chef-client")
-        expect(current_resource.task.parameters).to eq("-W -L C:\\chef\\chef-ad-join.log")
+        expect(current_resource.task.parameters).to eq("-W -L C:\\\\chef\\\\chef-ad-join.log")
       end
 
       it "does not converge the resource if it is already converged" do

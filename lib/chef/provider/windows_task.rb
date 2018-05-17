@@ -231,6 +231,7 @@ class Chef
 
         # seprated command arguments from :command property
         def set_command_and_arguments
+          new_resource.command = new_resource.command.gsub(/\\/, '\&\&')
           cmd, *args = Shellwords.split(new_resource.command)
           new_resource.command = cmd
           new_resource.command_arguments = args.join(" ")
