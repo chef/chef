@@ -690,14 +690,22 @@ end
     end
 
     it "accepts command options for only_if conditionals" do
-      expect_any_instance_of(Chef::Resource::Conditional).to receive(:evaluate_command).at_least(1).times
+      allow(Chef::Resource::Conditional).to receive(:new).and_wrap_original do |m, *args|
+        m.call(*args).tap do |cond|
+          expect(cond).to receive(:evaluate_command).at_least(1).times
+        end
+      end
       resource.only_if("true", :cwd => "/tmp")
       expect(resource.only_if.first.command_opts).to eq({ :cwd => "/tmp" })
       resource.run_action(:purr)
     end
 
     it "runs not_if as a command when it is a string" do
-      expect_any_instance_of(Chef::Resource::Conditional).to receive(:evaluate_command).at_least(1).times
+      allow(Chef::Resource::Conditional).to receive(:new).and_wrap_original do |m, *args|
+        m.call(*args).tap do |cond|
+          expect(cond).to receive(:evaluate_command).at_least(1).times
+        end
+      end
       resource.not_if "pwd"
       resource.run_action(:purr)
     end
