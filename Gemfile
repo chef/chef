@@ -50,7 +50,7 @@ group(:development, :test) do
   gem "rake"
   gem "simplecov"
   gem "webmock"
-  gem "chefspec", git: 'https://github.com/coderanger/chefspec.git', branch: "lot-of-upgrades"
+  gem "chefspec", git: "https://github.com/coderanger/chefspec.git", branch: "lot-of-upgrades"
   gem "fauxhai", git: "https://github.com/chefspec/fauxhai.git"
 
   # for testing new chefstyle rules
