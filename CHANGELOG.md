@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.16 -->
-## [v14.1.16](https://github.com/chef/chef/tree/v14.1.16) (2018-05-17)
+<!-- latest_release 14.1.17 -->
+## [v14.1.17](https://github.com/chef/chef/tree/v14.1.17) (2018-05-17)
 
 #### Merged Pull Requests
-- UID now starts at 501, uses createhomedir instead [#4903](https://github.com/chef/chef/pull/4903) ([nmcspadden](https://github.com/nmcspadden))
+- [MSYS-817] fix for windows_task does not parse backslashes in the commad property [#7281](https://github.com/chef/chef/pull/7281) ([Vasu1105](https://github.com/Vasu1105))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- [MSYS-817] fix for windows_task does not parse backslashes in the commad property [#7281](https://github.com/chef/chef/pull/7281) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.1.17 -->
 - UID now starts at 501, uses createhomedir instead [#4903](https://github.com/chef/chef/pull/4903) ([nmcspadden](https://github.com/nmcspadden)) <!-- 14.1.16 -->
 - Add default_action to the resource inspector [#7276](https://github.com/chef/chef/pull/7276) ([tas50](https://github.com/tas50)) <!-- 14.1.15 -->
 - Add additional resource unit tests [#7275](https://github.com/chef/chef/pull/7275) ([tas50](https://github.com/tas50)) <!-- 14.1.14 -->
