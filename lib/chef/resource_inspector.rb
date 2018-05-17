@@ -28,6 +28,7 @@ module ResourceInspector
     data = {}
     data[:description] = resource.description
     # data[:deprecated] = resource.deprecated || false
+    data[:default_action] = resource.default_action
     data[:actions] = resource.allowed_actions
     data[:examples] = resource.examples
     data[:introduced] = resource.introduced
