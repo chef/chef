@@ -191,7 +191,7 @@ class Chef
 
       def load_attributes_from_cookbook(cookbook_name)
         list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
-        root_alias = cookbook_collection[cookbook_name].files_for(:root_files).find { |record| record[:name] == "attributes.rb" }
+        root_alias = cookbook_collection[cookbook_name].files_for(:root_files).find { |record| record[:name] == "root_files/attributes.rb" }
         default_file = list_of_attr_files.find { |path| File.basename(path) == "default.rb" }
         if root_alias
           if default_file
