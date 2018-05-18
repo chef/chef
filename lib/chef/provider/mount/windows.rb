@@ -42,7 +42,7 @@ class Chef
           if is_volume(@new_resource.device)
             @mount = Chef::Util::Windows::Volume.new(@new_resource.name)
           else #assume network drive
-            @mount = Chef::Util::Windows::NetUse.new(@new_resource.name)
+            @mount = Chef::Util::Windows::NetUse.new(@new_resource.mount_point)
           end
 
           @current_resource = Chef::Resource::Mount.new(@new_resource.name)
