@@ -63,11 +63,15 @@ class Chef
         def normalize_hash(object, defaults)
           # Make a normalized result in the specified order for diffing
           result = {}
-          defaults.each_pair do |key, default|
-            result[key] = object.has_key?(key) ? object[key] : default
+          defaults.each_pair do |key, value|
+            result[key] = object.is_a?(Hash) && object.key?(key) ? object[key] : value
           end
-          object.each_pair do |key, value|
-            result[key] = value if !result.has_key?(key)
+          if object.is_a?(Hash)
+            object.each_pair do |key, value|
+              result[key] = value unless result.key?(key)
+            end
+          else
+            Chef::Log.warn "Encountered invalid object during normalization. Using these defaults #{defaults}"
           end
           result
         end
