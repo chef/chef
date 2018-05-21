@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.20 -->
-## [v14.1.20](https://github.com/chef/chef/tree/v14.1.20) (2018-05-21)
+<!-- latest_release 14.1.21 -->
+## [v14.1.21](https://github.com/chef/chef/tree/v14.1.21) (2018-05-21)
 
 #### Merged Pull Requests
-- Fix systemd_unit user context [#7274](https://github.com/chef/chef/pull/7274) ([mal](https://github.com/mal))
+- Cleanup AIX and Solaris user resources. [#7249](https://github.com/chef/chef/pull/7249) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- Cleanup AIX and Solaris user resources. [#7249](https://github.com/chef/chef/pull/7249) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.21 -->
 - Fix systemd_unit user context [#7274](https://github.com/chef/chef/pull/7274) ([mal](https://github.com/mal)) <!-- 14.1.20 -->
 - Fix manifest entries for root files [#7270](https://github.com/chef/chef/pull/7270) ([thommay](https://github.com/thommay)) <!-- 14.1.19 -->
 - object validation for DataHandlerBase#normalize_hash [#7264](https://github.com/chef/chef/pull/7264) ([jeremymv2](https://github.com/jeremymv2)) <!-- 14.1.18 -->
