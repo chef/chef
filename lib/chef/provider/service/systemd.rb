@@ -77,7 +77,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def get_systemctl_options_args
     if new_resource.user
-      uid = Etc.getpwuid(new_resource.user).uid
+      uid = Etc.getpwnam(new_resource.user).uid
       options = {
         :environment => {
           "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{uid}/bus",
