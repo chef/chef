@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software, Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -109,7 +109,6 @@ require "chef/provider/user/dscl"
 require "chef/provider/user/linux"
 require "chef/provider/user/pw"
 require "chef/provider/user/solaris"
-require "chef/provider/user/useradd"
 require "chef/provider/user/windows"
 
 require "chef/provider/group/aix"

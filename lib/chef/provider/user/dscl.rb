@@ -1,6 +1,6 @@
 #
 # Author:: Dreamcat4 (<dreamcat4@gmail.com>)
-# Copyright:: Copyright 2009-2017, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -654,9 +654,7 @@ user password using shadow hash.")
         end
 
         def run_dscl(*args)
-          argdup = args.dup
-          cmd = argdup.shift
-          result = shell_out_compact("dscl", ".", "-#{cmd}", argdup)
+          result = shell_out_compact("dscl", ".", "-#{args[0]}", args[1..-1])
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if result.stdout =~ /No such key: /
@@ -664,9 +662,7 @@ user password using shadow hash.")
         end
 
         def run_plutil(*args)
-          argdup = args.dup
-          cmd = argdup.shift
-          result = shell_out_compact("plutil", "-#{cmd}", argdup)
+          result = shell_out_compact("plutil", "-#{args[0]}", args[1..-1])
           raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
           if result.stdout.encoding == Encoding::ASCII_8BIT
             result.stdout.encode("utf-8", "binary", undef: :replace, invalid: :replace, replace: "?")

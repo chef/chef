@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -83,16 +83,6 @@ class Chef
           opts << "-r" if new_resource.manage_home
           opts << "-f" if new_resource.force
           opts
-        end
-
-        def should_set?(sym)
-          current_resource.send(sym).to_s != new_resource.send(sym).to_s && new_resource.send(sym)
-        end
-
-        def updating_home?
-          return false unless new_resource.home
-          return true unless current_resource.home
-          new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
         end
 
         def check_lock
