@@ -60,8 +60,9 @@ class Chef
       end
 
       def find_ignore_file(path)
-        ignore_path=path
-        for i in 0..2
+        ignore_path = path
+        ignore_file = ''
+        3.times do |i|
           if File.basename(ignore_path) =~ /chefignore/
             ignore_file = ignore_path
           else
@@ -70,7 +71,7 @@ class Chef
           if readable_file_or_symlink?(ignore_file)
             break
           else
-            Chef::Log.debug("No chefignore file found at #{@ignore_path}.")
+            Chef::Log.debug("No chefignore file found at #{ignore_path}.")
             ignore_path = File.dirname(ignore_path) unless i == 2
           end
         end
