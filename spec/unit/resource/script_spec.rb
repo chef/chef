@@ -24,6 +24,14 @@ describe Chef::Resource::Script do
   let(:script_resource) { Chef::Resource::Script.new(resource_instance_name) }
   let(:resource_name) { :script }
 
+  it "sets the default action as :run" do
+    expect(script_resource.action).to eql([:run])
+  end
+
+  it "supports :run action" do
+    expect { script_resource.action :run }.not_to raise_error
+  end
+
   it "accepts a string for the interpreter" do
     script_resource.interpreter "naaaaNaNaNaaNaaNaaNaa"
     expect(script_resource.interpreter).to eql("naaaaNaNaNaaNaaNaaNaa")

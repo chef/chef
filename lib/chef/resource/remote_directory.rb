@@ -41,16 +41,11 @@ class Chef
       def initialize(name, run_context = nil)
         super
         @path = name
-        @source = ::File.basename(name)
         @delete = false
         @recursive = true
-        @purge = false
-        @files_backup = 5
         @files_owner = nil
         @files_group = nil
         @files_mode = 0644 unless Chef::Platform.windows?
-        @overwrite = true
-        @cookbook = nil
       end
 
       if Chef::Platform.windows?
@@ -58,29 +53,11 @@ class Chef
         rights_attribute(:files_rights)
       end
 
-      def source(args = nil)
-        set_or_return(
-          :source,
-          args,
-          :kind_of => String
-        )
-      end
-
-      def files_backup(arg = nil)
-        set_or_return(
-          :files_backup,
-          arg,
-          :kind_of => [ Integer, FalseClass ]
-        )
-      end
-
-      def purge(arg = nil)
-        set_or_return(
-          :purge,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :source, String, default: lazy { ::File.basename(path) }
+      property :files_backup, [ Integer, FalseClass ], default: 5, desired_state: false
+      property :purge, [ TrueClass, FalseClass ], default: false, desired_state: false
+      property :overwrite, [ TrueClass, FalseClass ], default: true
+      property :cookbook, String
 
       def files_group(arg = nil)
         set_or_return(
@@ -105,23 +82,6 @@ class Chef
           :regex => Chef::Config[:user_valid_regex]
         )
       end
-
-      def overwrite(arg = nil)
-        set_or_return(
-          :overwrite,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def cookbook(args = nil)
-        set_or_return(
-          :cookbook,
-          args,
-          :kind_of => String
-        )
-      end
-
     end
   end
 end

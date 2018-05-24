@@ -22,22 +22,17 @@ require "spec_helper"
 describe Chef::Resource::Directory do
   let(:resource) { Chef::Resource::Directory.new("fakey_fakerton") }
 
-  it "has a name property" do
-    expect(resource.name).to eql("fakey_fakerton")
+  it "the path property is the name_property" do
+    expect(resource.path).to eql("fakey_fakerton")
   end
 
-  it "has a default action of 'create'" do
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "accepts create or delete for action" do
+  it "supports :create, :delete actions" do
     expect { resource.action :create }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :blues }.to raise_error(ArgumentError)
-  end
-
-  it "uses the object name as the path by default" do
-    expect(resource.path).to eql("fakey_fakerton")
   end
 
   it "accepts a string as the path" do

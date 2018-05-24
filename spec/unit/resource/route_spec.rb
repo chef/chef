@@ -23,22 +23,17 @@ describe Chef::Resource::Route do
 
   let(:resource) { Chef::Resource::Route.new("10.0.0.10") }
 
-  it "has a name property" do
-    expect(resource.name).to eql("10.0.0.10")
+  it "the target property is the name_property" do
+    expect(resource.target).to eql("10.0.0.10")
   end
 
-  it "has a default action of 'add'" do
+  it "sets the default action as :add" do
     expect(resource.action).to eql([:add])
   end
 
-  it "accepts add or delete for action" do
+  it "supports :add, :delete actions" do
     expect { resource.action :add }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :lolcat }.to raise_error(ArgumentError)
-  end
-
-  it "uses the object name as the target by default" do
-    expect(resource.target).to eql("10.0.0.10")
   end
 
   it "allows you to specify the netmask" do

@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 #
 # License:: Apache License, Version 2.0
 #
@@ -385,7 +385,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         expect(Pathname).to receive(:new).with(@new_resource.home).and_return(@new_home_mock)
         expect(@new_home_mock).to receive(:cleanpath).and_return(home_check["new_resource_home"].last)
 
-        expect(provider.updating_home?).to eq(home_check["expected_result"])
+        expect(provider.send(:updating_home?)).to eq(home_check["expected_result"])
       end
     end
     it "should return true if the current home does not exist but a home is specified by the new resource" do
@@ -396,7 +396,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       @current_resource.home nil
       @new_resource.home "/home/kitten"
 
-      expect(provider.updating_home?).to eq(true)
+      expect(provider.send(:updating_home?)).to eq(true)
     end
   end
 end

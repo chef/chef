@@ -17,10 +17,8 @@
 #
 
 require "spec_helper"
-require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::Subversion do
-
   static_provider_resolution(
     resource: Chef::Resource::Subversion,
     provider: Chef::Provider::Subversion,
@@ -28,19 +26,27 @@ describe Chef::Resource::Subversion do
     action: :install
   )
 
-  let(:resource) { Chef::Resource::Subversion.new("ohai, svn project!") }
+  let(:resource) { Chef::Resource::Subversion.new("fakey_fakerton") }
 
   it "is a subclass of Resource::Scm" do
-    expect(resource).to be_an_instance_of(Chef::Resource::Subversion)
     expect(resource).to be_a_kind_of(Chef::Resource::Scm)
   end
 
-  it "set destination property to the name_property" do
-    expect(resource.destination).to eq("ohai, svn project!")
+  it "the destination property is the name_property" do
+    expect(resource.destination).to eql("fakey_fakerton")
   end
 
-  it "allows the force_export action" do
-    expect(resource.allowed_actions).to include(:force_export)
+  it "sets the default action as :sync" do
+    expect(resource.action).to eql([:sync])
+  end
+
+  it "supports :checkout, :diff, :export, :force_export, :log, :sync actions" do
+    expect { resource.action :checkout }.not_to raise_error
+    expect { resource.action :diff }.not_to raise_error
+    expect { resource.action :export }.not_to raise_error
+    expect { resource.action :force_export }.not_to raise_error
+    expect { resource.action :log }.not_to raise_error
+    expect { resource.action :sync }.not_to raise_error
   end
 
   it "sets svn info arguments to --no-auth-cache by default" do

@@ -38,7 +38,7 @@ class Chef
 
       property :ignore_error, [TrueClass, FalseClass],
                description: "Ignore any errors when setting the value on the command line.",
-               default: false
+               default: false, desired_state: false
 
       property :value, [Array, String, Integer, Float],
                description: "The value to set.",
@@ -63,14 +63,12 @@ class Chef
         end
       end
 
-      def get_sysctl_value(key)
-        o = shell_out("sysctl -n -e #{key}")
-        raise "Unknown sysctl key #{key}!" if o.error?
-        o.stdout.to_s.tr("\t", " ").strip
-      end
-
+      # shellout to systctl to get the current value
+      # ignore missing keys by using '-e'
+      # convert tabs to spaces since systctl tab deliminates multivalue parameters
+      # strip the newline off the end of the output as well
       load_current_value do
-        value get_sysctl_value(key)
+        value shell_out!("sysctl -n -e #{key}").stdout.tr("\t", " ").strip
       end
 
       action :apply do
@@ -84,7 +82,10 @@ class Chef
             content "#{new_resource.key} = #{new_resource.value}"
           end
 
-          execute "sysctl -p"
+          execute "Load sysctl values" do
+            command "sysctl #{'-e ' if new_resource.ignore_error}-p"
+            action :run
+          end
         end
       end
 
@@ -96,7 +97,10 @@ class Chef
               action :delete
             end
 
-            execute "sysctl -p"
+            execute "Load sysctl values" do
+              command "sysctl -p"
+              action :run
+            end
           end
         end
       end

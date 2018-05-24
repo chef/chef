@@ -18,23 +18,22 @@
 require "spec_helper"
 
 describe Chef::Resource::SwapFile do
-  let(:resource) { Chef::Resource::SwapFile.new("swapfile") }
+  let(:resource) { Chef::Resource::SwapFile.new("fakey_fakerton") }
 
   it "sets resource name as :swap_file" do
     expect(resource.resource_name).to eql(:swap_file)
   end
 
-  it "sets the path as its name" do
-    expect(resource.path).to eql("swapfile")
+  it "the path property is the name_property" do
+    expect(resource.path).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "supports :create and :remove actions" do
+  it "supports :create, :remove actions" do
     expect { resource.action :create }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :delete }.to raise_error(ArgumentError)
   end
 end

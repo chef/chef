@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -166,6 +166,27 @@ class Chef
         resource
       end
 
+      # Find existing resources by searching the list of existing resources.  Possible
+      # forms are:
+      #
+      #   find(:file => "foobar")
+      #   find(:file => [ "foobar", "baz" ])
+      #   find("file[foobar]", "file[baz]")
+      #   find("file[foobar,baz]")
+      #
+      # Calls `run_context.resource_collection.find(*args)`
+      #
+      # The is backcompat API, the use of find_resource, below, is encouraged.
+      #
+      # @return the matching resource, or an Array of matching resources.
+      #
+      # @raise ArgumentError if you feed it bad lookup information
+      # @raise RuntimeError if it can't find the resources you are looking for.
+      #
+      def resources(*args)
+        run_context.resource_collection.find(*args)
+      end
+
       # Lookup a resource in the resource collection by name.  If the resource is not
       # found this will raise Chef::Exceptions::ResourceNotFound.  This API is identical to the
       # resources() call and while it is a synonym it is not intended to deprecate that call.
@@ -292,6 +313,7 @@ class Chef
           enclosing_provider:  is_a?(Chef::Provider) ? self : nil
         ).build(&resource_attrs_block)
       end
+
     end
   end
 end

@@ -27,6 +27,25 @@ describe Chef::Resource::Template do
     end
   end
 
+  describe "name" do
+    it "the path property is the name_property" do
+      expect(resource.path).to eql("fakey_fakerton")
+    end
+  end
+
+  describe "Actions" do
+    it "sets the default action as :create" do
+      expect(resource.action).to eql([:create])
+    end
+
+    it "supports :create, :create_if_missing, :delete, :touch actions" do
+      expect { resource.action :create }.not_to raise_error
+      expect { resource.action :create_if_missing }.not_to raise_error
+      expect { resource.action :delete }.not_to raise_error
+      expect { resource.action :touch }.not_to raise_error
+    end
+  end
+
   describe "source" do
     it "accepts a string for the template source" do
       resource.source "something"

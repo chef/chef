@@ -307,14 +307,25 @@ class Chef
 
         # GET /cookbooks/NAME/VERSION or /cookbook_artifacts/NAME/IDENTIFIER
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 3
-          with_cookbook_manifest(path) do |manifest, entry|
+          with_entry(path) do |entry|
             cookbook_type = path[0]
+            result = nil
+            begin
+              result = Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash
+            rescue Chef::ChefFS::FileSystem::NotFoundError => e
+              raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+            end
 
-            manifest.each_pair do |key, value|
+            result.each_pair do |key, value|
               if value.is_a?(Array)
                 value.each do |file|
                   if file.is_a?(Hash) && file.has_key?("checksum")
-                    relative = ["file_store", "repo", cookbook_type, entry.name ]
+                    relative = ["file_store", "repo", cookbook_type]
+                    if chef_fs.versioned_cookbooks || cookbook_type == "cookbook_artifacts"
+                      relative << "#{path[1]}-#{path[2]}"
+                    else
+                      relative << path[1]
+                    end
                     relative += file[:path].split("/")
                     file["url"] = ChefZero::RestBase.build_uri(request.base_uri, relative)
                   end
@@ -323,8 +334,8 @@ class Chef
             end
 
             if cookbook_type == "cookbook_artifacts"
-              manifest["metadata"] = manifest["metadata"].to_hash
-              manifest["metadata"].delete_if do |key, value|
+              result["metadata"] = result["metadata"].to_hash
+              result["metadata"].delete_if do |key, value|
                 value == [] ||
                   (value == {} && !%w{dependencies attributes recipes}.include?(key)) ||
                   (value == "" && %w{source_url issues_url}.include?(key)) ||
@@ -332,8 +343,9 @@ class Chef
               end
             end
 
-            Chef::JSONCompat.to_json_pretty(manifest)
+            Chef::JSONCompat.to_json_pretty(result)
           end
+
         else
           with_entry(path) do |entry|
             begin
@@ -507,7 +519,14 @@ class Chef
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 1
           with_entry(path) do |entry|
             begin
-              entry.children.map { |child| child.chef_object.name.to_s }.uniq
+              if path[0] == "cookbook_artifacts"
+                entry.children.map { |child| child.name.rpartition("-")[0] }.uniq
+              elsif chef_fs.versioned_cookbooks
+                # /cookbooks/name-version -> /cookbooks/name
+                entry.children.map { |child| split_name_version(child.name)[0] }.uniq
+              else
+                entry.children.map { |child| child.name }
+              end
             rescue Chef::ChefFS::FileSystem::NotFoundError
               # If the cookbooks dir doesn't exist, we have no cookbooks (not 404)
               []
@@ -515,15 +534,22 @@ class Chef
           end
 
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 2
-          result = with_entry([ path[0] ]) do |entry|
-            cookbooks = entry.children.map { |child| child.chef_object }
-            cookbooks.select { |cookbook| cookbook.name.to_s == path[1] }.
-            map { |cookbook| cookbook.version }
+          if chef_fs.versioned_cookbooks || path[0] == "cookbook_artifacts"
+            result = with_entry([ path[0] ]) do |entry|
+              # list /cookbooks/name = filter /cookbooks/name-version down to name
+              entry.children.map { |child| split_name_version(child.name) }.
+              select { |name, version| name == path[1] }.
+              map { |name, version| version }
+            end
+            if result.empty?
+              raise ChefZero::DataStore::DataNotFoundError.new(path)
+            end
+            result
+          else
+            # list /cookbooks/name = <single version>
+            version = get_single_cookbook_version(path)
+            [version]
           end
-          if result.empty?
-            raise ChefZero::DataStore::DataNotFoundError.new(path)
-          end
-          result
 
         else
           result = with_entry(path) do |entry|
@@ -754,26 +780,6 @@ class Chef
 
       def path_always_exists?(path)
         path.length == 1 && BASE_DIRNAMES.include?(path[0])
-      end
-
-      def with_cookbook_manifest(path)
-        cookbook_type = path[0]
-        begin
-          # this is fast and equivalent to with_entry() that also returns the cb manifest
-          entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path))
-          yield Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash, entry
-        rescue Chef::ChefFS::FileSystem::NotFoundError, ChefZero::DataStore::DataNotFoundError => e
-          # this is very slow and we walk through all the cookbook versions to find ones that have the correct name in the metadata
-          dir = Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path([path[0]]))
-          entry = dir.children.select do |child|
-            child.chef_object.full_name == "#{path[1]}-#{path[2]}" ||
-              (child.chef_object.name.to_s == path[1] && child.chef_object.identifier == path[2])
-          end[0]
-          raise ChefZero::DataStore::DataNotFoundError.new(path) if entry.nil?
-          yield Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash, entry
-        end
-      rescue Chef::ChefFS::FileSystem::NotFoundError => e
-        raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
       end
 
       def with_entry(path)

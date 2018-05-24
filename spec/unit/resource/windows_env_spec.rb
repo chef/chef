@@ -21,33 +21,25 @@ require "spec_helper"
 
 describe Chef::Resource::WindowsEnv do
 
-  let(:resource) { Chef::Resource::WindowsEnv.new("FOO") }
+  let(:resource) { Chef::Resource::WindowsEnv.new("fakey_fakerton") }
 
   it "creates a new Chef::Resource::WindowsEnv" do
     expect(resource).to be_a_kind_of(Chef::Resource)
     expect(resource).to be_a_kind_of(Chef::Resource::WindowsEnv)
   end
 
-  it "has a name" do
-    expect(resource.name).to eql("FOO")
+  it "the key_name property is the name_property" do
+    expect(resource.key_name).to eql("fakey_fakerton")
   end
 
-  it "has a default action of 'create'" do
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  { :create => false, :delete => false, :modify => false, :flibber => true }.each do |action, bad_value|
-    it "should #{bad_value ? 'not' : ''} accept #{action}" do
-      if bad_value
-        expect { resource.action action }.to raise_error(ArgumentError)
-      else
-        expect { resource.action action }.not_to raise_error
-      end
-    end
-  end
-
-  it "uses the object name as the key_name by default" do
-    expect(resource.key_name).to eql("FOO")
+  it "supports :create, :delete, :modify actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :modify }.not_to raise_error
   end
 
   it "accepts a string as the env value via 'value'" do

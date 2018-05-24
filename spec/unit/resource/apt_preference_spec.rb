@@ -22,7 +22,20 @@ describe Chef::Resource::AptPreference do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:resource) { Chef::Resource::AptPreference.new("libmysqlclient16", run_context) }
+  let(:resource) { Chef::Resource::AptPreference.new("fakey_fakerton", run_context) }
+
+  it "the package_name property is the name_property" do
+    expect(resource.package_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :add" do
+    expect(resource.action).to eql([:add])
+  end
+
+  it "supports :add, :remove actions" do
+    expect { resource.action :add }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+  end
 
   it "resolves to a Noop class when on non-linux OS" do
     node.automatic[:os] = "windows"

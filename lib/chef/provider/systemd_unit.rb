@@ -219,7 +219,7 @@ class Chef
       end
 
       def daemon_reload
-        shell_out_with_systems_locale!("#{systemctl_path} daemon-reload")
+        shell_out_with_systems_locale!("#{systemctl_cmd} daemon-reload", systemctl_opts)
       end
 
       def systemctl_execute!(action, unit)
@@ -245,7 +245,7 @@ class Chef
       def systemctl_opts
         @systemctl_opts ||=
           if new_resource.user
-            uid = Etc.getpwuid(new_resource.user).uid
+            uid = Etc.getpwnam(new_resource.user).uid
             {
               :user => new_resource.user,
               :environment => {

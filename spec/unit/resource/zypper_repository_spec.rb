@@ -22,30 +22,75 @@ describe Chef::Resource::ZypperRepository do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:resource) { Chef::Resource::ZypperRepository.new("repo-source", run_context) }
+  let(:resource) { Chef::Resource::ZypperRepository.new("fakey_fakerton", run_context) }
 
   it "has a resource_name of :zypper_repository" do
     expect(resource.resource_name).to eq(:zypper_repository)
   end
 
-  it "repo_name is the name_property" do
-    expect(resource.repo_name).to eql("repo-source")
+  it "the repo_name property is the name_property" do
+    expect(resource.repo_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports :add, :create, :refresh, :remove actions" do
+    expect { resource.action :add }.not_to raise_error
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :refresh }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   it "fails if the user provides a repo_name with a forward slash" do
     expect { resource.repo_name "foo/bar" }.to raise_error(ArgumentError)
   end
 
-  it "has a default action of create" do
-    expect(resource.action).to eql([:create])
+  it "type property defaults to 'NONE'" do
+    expect(resource.type).to eql("NONE")
   end
 
-  it "supports all valid actions" do
-    expect { resource.action :add }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :create }.not_to raise_error
-    expect { resource.action :refresh }.not_to raise_error
-    expect { resource.action :delete }.to raise_error(ArgumentError)
+  it "enabled property defaults to true" do
+    expect(resource.enabled).to eql(true)
+  end
+
+  it "autorefresh property defaults to true" do
+    expect(resource.autorefresh).to eql(true)
+  end
+
+  it "gpgcheck property defaults to true" do
+    expect(resource.gpgcheck).to eql(true)
+  end
+
+  it "keeppackages property defaults to false" do
+    expect(resource.keeppackages).to eql(false)
+  end
+
+  it "priority property defaults to 99" do
+    expect(resource.priority).to eql(99)
+  end
+
+  it "mode property defaults to '0644'" do
+    expect(resource.mode).to eql("0644")
+  end
+
+  it "refresh_cache property defaults to true" do
+    expect(resource.refresh_cache).to eql(true)
+  end
+
+  it "gpgautoimportkeys property defaults to true" do
+    expect(resource.gpgautoimportkeys).to eql(true)
+  end
+
+  it "accepts the legacy 'key' property" do
+    resource.key "foo"
+    expect(resource.gpgkey).to eql("foo")
+  end
+
+  it "accepts the legacy 'uri' property" do
+    resource.uri "foo"
+    expect(resource.baseurl).to eql("foo")
   end
 
   context "on linux", :linux_only do

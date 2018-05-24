@@ -30,6 +30,14 @@ describe Chef::Resource::Ksh do
     expect(resource.resource_name).to eql(:ksh)
   end
 
+  it "sets the default action as :run" do
+    expect(resource.action).to eql([:run])
+  end
+
+  it "supports :run action" do
+    expect { resource.action :run }.not_to raise_error
+  end
+
   it "has an interpreter of ksh" do
     expect(resource.interpreter).to eql("ksh")
   end

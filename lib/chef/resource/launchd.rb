@@ -31,8 +31,8 @@ class Chef
       allowed_actions :create, :create_if_missing, :delete, :enable, :disable, :restart
 
       property :label, String, identity: true, name_property: true
-      property :backup, [Integer, FalseClass]
-      property :cookbook, String
+      property :backup, [Integer, FalseClass], desired_state: false
+      property :cookbook, String, desired_state: false
       property :group, [String, Integer]
       property :plist_hash, Hash
       property :mode, [String, Integer]

@@ -24,16 +24,20 @@ describe Chef::Resource::WindowsAdJoin do
     expect(resource.resource_name).to eql(:windows_ad_join)
   end
 
-  it "sets the domain_name as its name" do
+  it "the domain_name property is the name_property" do
     expect(resource.domain_name).to eql("example.com")
-  end
-
-  it "only accepts FQDNs for the domain_name property" do
-    expect { resource.domain_name "example" }.to raise_error(ArgumentError)
   end
 
   it "sets the default action as :join" do
     expect(resource.action).to eql([:join])
+  end
+
+  it "supports :join action" do
+    expect { resource.action :join }.not_to raise_error
+  end
+
+  it "only accepts FQDNs for the domain_name property" do
+    expect { resource.domain_name "example" }.to raise_error(ArgumentError)
   end
 
   it "accepts :immediate, :delayed, or :never values for 'reboot' property" do

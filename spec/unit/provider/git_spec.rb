@@ -425,7 +425,7 @@ SHAS
 
   it "runs a sync command with default options" do
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
-    expected_cmd1 = "git fetch origin"
+    expected_cmd1 = "git fetch --prune origin"
     expect(@provider).to receive(:shell_out!).with(expected_cmd1, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
     expected_cmd2 = "git fetch origin --tags"
     expect(@provider).to receive(:shell_out!).with(expected_cmd2, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
@@ -440,7 +440,7 @@ SHAS
     @resource.group("thisis")
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
 
-    expected_cmd1 = "git fetch origin"
+    expected_cmd1 = "git fetch --prune origin"
     expect(@provider).to receive(:shell_out!).with(expected_cmd1, :cwd => "/my/deploy/dir",
                                                                   :user => "whois", :group => "thisis",
                                                                   :log_tag => "git[web2.0 app]",
@@ -461,7 +461,7 @@ SHAS
   it "configures remote tracking branches when remote is ``origin''" do
     @resource.remote "origin"
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
-    fetch_command1 = "git fetch origin"
+    fetch_command1 = "git fetch --prune origin"
     expect(@provider).to receive(:shell_out!).with(fetch_command1, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
     fetch_command2 = "git fetch origin --tags"
     expect(@provider).to receive(:shell_out!).with(fetch_command2, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
@@ -473,7 +473,7 @@ SHAS
   it "configures remote tracking branches when remote is not ``origin''" do
     @resource.remote "opscode"
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
-    fetch_command1 = "git fetch opscode"
+    fetch_command1 = "git fetch --prune opscode"
     expect(@provider).to receive(:shell_out!).with(fetch_command1, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
     fetch_command2 = "git fetch opscode --tags"
     expect(@provider).to receive(:shell_out!).with(fetch_command2, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")

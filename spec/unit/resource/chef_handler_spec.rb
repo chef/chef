@@ -19,17 +19,22 @@ require "spec_helper"
 
 describe Chef::Resource::ChefHandler do
 
-  let(:resource) { Chef::Resource::ChefHandler.new("foo") }
+  let(:resource) { Chef::Resource::ChefHandler.new("fakey_fakerton") }
 
   it "has a resource name of :chef_handler" do
     expect(resource.resource_name).to eql(:chef_handler)
   end
 
-  it "has a default action of enable" do
+  it "the class_name property is the name_property" do
+    expect(resource.class_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :enable" do
     expect(resource.action).to eql([:enable])
   end
 
-  it "the class_name property is the name property" do
-    expect(resource.class_name).to eql("foo")
+  it "supports :disable, :enable actions" do
+    expect { resource.action :disable }.not_to raise_error
+    expect { resource.action :enable }.not_to raise_error
   end
 end

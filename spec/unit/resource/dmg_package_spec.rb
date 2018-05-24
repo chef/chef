@@ -19,17 +19,21 @@ require "spec_helper"
 
 describe Chef::Resource::DmgPackage do
 
-  let(:resource) { Chef::Resource::DmgPackage.new("myapp") }
+  let(:resource) { Chef::Resource::DmgPackage.new("fakey_fakerton") }
 
   it "has a resource name of :dmg_package" do
     expect(resource.resource_name).to eql(:dmg_package)
   end
 
-  it "has a default action of install" do
+  it "the app property is the name_property" do
+    expect(resource.app).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
   end
 
-  it "the app property is the name property" do
-    expect(resource.app).to eql("myapp")
+  it "supports :install action" do
+    expect { resource.action :install }.not_to raise_error
   end
 end

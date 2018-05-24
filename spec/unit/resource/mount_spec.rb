@@ -20,29 +20,26 @@
 require "spec_helper"
 
 describe Chef::Resource::Mount do
-  let(:resource) { Chef::Resource::Mount.new("filesystem") }
+  let(:resource) { Chef::Resource::Mount.new("fakey_fakerton") }
 
-  it "has a name property" do
-    expect(resource.name).to eql("filesystem")
+  it "the mount_point property is the name_property" do
+    expect(resource.mount_point).to eql("fakey_fakerton")
   end
 
-  it "sets mount_point to the name" do
-    expect(resource.mount_point).to eql("filesystem")
-  end
-
-  it "has a default action of mount" do
+  it "sets the default action as :mount" do
     expect(resource.action).to eql([:mount])
   end
 
-  it "accepts mount, umount, unmount and remount as actions" do
+  it "supports :disable, :enable, :mount, :remount, :umount, :unmount actions" do
+    expect { resource.action :disable }.not_to raise_error
+    expect { resource.action :enable }.not_to raise_error
     expect { resource.action :mount }.not_to raise_error
+    expect { resource.action :remount }.not_to raise_error
     expect { resource.action :umount }.not_to raise_error
     expect { resource.action :unmount }.not_to raise_error
-    expect { resource.action :remount }.not_to raise_error
-    expect { resource.action :brooklyn }.to raise_error(ArgumentError)
   end
 
-  it "allows you to set the device attribute" do
+  it "allows you to set the device property" do
     resource.device "/dev/sdb3"
     expect(resource.device).to eql("/dev/sdb3")
   end
@@ -51,12 +48,12 @@ describe Chef::Resource::Mount do
     expect(resource.fsck_device).to eql("-")
   end
 
-  it "allows you to set the fsck_device attribute" do
+  it "allows you to set the fsck_device property" do
     resource.fsck_device "/dev/rdsk/sdb3"
     expect(resource.fsck_device).to eql("/dev/rdsk/sdb3")
   end
 
-  it "allows you to set the fstype attribute" do
+  it "allows you to set the fstype property" do
     resource.fstype "nfs"
     expect(resource.fstype).to eql("nfs")
   end
@@ -65,17 +62,17 @@ describe Chef::Resource::Mount do
     expect(resource.fstype).to eql("auto")
   end
 
-  it "allows you to set the dump attribute" do
+  it "allows you to set the dump property" do
     resource.dump 1
     expect(resource.dump).to eql(1)
   end
 
-  it "allows you to set the pass attribute" do
+  it "allows you to set the pass property" do
     resource.pass 1
     expect(resource.pass).to eql(1)
   end
 
-  it "sets the options attribute to defaults" do
+  it "sets the options property to defaults" do
     expect(resource.options).to eql(["defaults"])
   end
 
@@ -84,7 +81,7 @@ describe Chef::Resource::Mount do
     expect(resource.options).to be_a_kind_of(Array)
   end
 
-  it "allows options attribute as an array" do
+  it "allows options property as an array" do
     resource.options %w{ro nosuid}
     expect(resource.options).to be_a_kind_of(Array)
   end

@@ -22,8 +22,18 @@ describe Chef::Resource::RemoteDirectory do
 
   let(:resource) { Chef::Resource::RemoteDirectory.new("/etc/dunk") }
 
-  it "sets the path to the first argument to new" do
+  it "the path property is the name_property" do
     expect(resource.path).to eql("/etc/dunk")
+  end
+
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create, :create_if_missing, :delete actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :create_if_missing }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
   end
 
   it "accepts a string for the remote directory source" do
@@ -32,7 +42,8 @@ describe Chef::Resource::RemoteDirectory do
   end
 
   it "has the basename of the remote directory resource as the default source" do
-    expect(resource.source).to eql("dunk")
+    resource.path "/foo/bar"
+    expect(resource.source).to eql("bar")
   end
 
   it "accepts a number for the remote files backup" do
@@ -45,7 +56,7 @@ describe Chef::Resource::RemoteDirectory do
     expect(resource.files_backup).to eql(false)
   end
 
-  it "accepts 3 or 4 digets for the files_mode" do
+  it "accepts 3 or 4 digits for the files_mode" do
     resource.files_mode 100
     expect(resource.files_mode).to eql(100)
     resource.files_mode 1000
@@ -64,6 +75,10 @@ describe Chef::Resource::RemoteDirectory do
     expect(resource.files_owner).to eql("heart")
     resource.files_owner 1000
     expect(resource.files_owner).to eql(1000)
+  end
+
+  it "overwrites by default" do
+    expect(resource.overwrite).to be true
   end
 
   describe "when it has cookbook, files owner, files mode, and source" do

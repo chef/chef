@@ -28,6 +28,7 @@ module ResourceInspector
     data = {}
     data[:description] = resource.description
     # data[:deprecated] = resource.deprecated || false
+    data[:default_action] = resource.default_action
     data[:actions] = resource.allowed_actions
     data[:examples] = resource.examples
     data[:introduced] = resource.introduced
@@ -40,7 +41,10 @@ module ResourceInspector
 
     data[:properties] = properties.each_with_object([]) do |(n, k), acc|
       opts = k.options
-      acc << { name: n, description: opts[:description], introduced: opts[:introduced], is: opts[:is], deprecated: opts[:deprecated] || false }
+      acc << { name: n, description: opts[:description],
+               introduced: opts[:introduced], is: opts[:is],
+               deprecated: opts[:deprecated] || false,
+               name_property: opts[:name_property] || false }
     end
     data
   end

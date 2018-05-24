@@ -74,7 +74,7 @@ describe Chef::Provider::SystemdUnit do
   end
 
   before(:each) do
-    allow(Etc).to receive(:getpwuid).and_return(OpenStruct.new(uid: 1000))
+    allow(Etc).to receive(:getpwnam).and_return(OpenStruct.new(uid: 1000))
     allow(Chef::Resource::SystemdUnit).to receive(:new)
                                             .with(unit_name)
                                             .and_return(current_resource)
@@ -280,49 +280,53 @@ describe Chef::Provider::SystemdUnit do
           provider.action_create
         end
 
-        it "triggers a daemon-reload when creating a unit with triggers_reload" do
-          allow(provider).to receive(:manage_unit_file).with(:create)
-          expect(new_resource.triggers_reload).to eq true
-          allow(provider).to receive(:shell_out_with_systems_locale!)
-          expect(provider).to receive(:shell_out_with_systems_locale!)
-                                .with("#{systemctl_path} daemon-reload")
-          provider.action_create
-        end
-
-        it "triggers a daemon-reload when deleting a unit with triggers_reload" do
-          allow(File).to receive(:exist?)
-                           .with(unit_path_system)
-                           .and_return(true)
-          allow(provider).to receive(:manage_unit_file).with(:delete)
-          expect(new_resource.triggers_reload).to eq true
-          allow(provider).to receive(:shell_out_with_systems_locale!)
-          expect(provider).to receive(:shell_out_with_systems_locale!)
-                                .with("#{systemctl_path} daemon-reload")
-          provider.action_delete
-        end
-
-        it "does not trigger a daemon-reload when creating a unit without triggers_reload" do
-          new_resource.triggers_reload(false)
-          allow(provider).to receive(:manage_unit_file).with(:create)
-          allow(provider).to receive(:shell_out_with_systems_locale!)
-          expect(provider).to_not receive(:shell_out_with_systems_locale!)
-                                    .with("#{systemctl_path} daemon-reload")
-          provider.action_create
-        end
-
-        it "does not trigger a daemon-reload when deleting a unit without triggers_reload" do
-          new_resource.triggers_reload(false)
-          allow(File).to receive(:exist?)
-                           .with(unit_path_system)
-                           .and_return(true)
-          allow(provider).to receive(:manage_unit_file).with(:delete)
-          allow(provider).to receive(:shell_out_with_systems_locale!)
-          expect(provider).to_not receive(:shell_out_with_systems_locale!)
-                                    .with("#{systemctl_path} daemon-reload")
-          provider.action_delete
-        end
-
         context "when a user is specified" do
+          it "triggers a daemon-reload when creating a unit with triggers_reload" do
+            new_resource.user("joe")
+            allow(provider).to receive(:manage_unit_file).with(:create)
+            expect(new_resource.triggers_reload).to eq true
+            allow(provider).to receive(:shell_out_with_systems_locale!)
+            expect(provider).to receive(:shell_out_with_systems_locale!)
+                                  .with("#{systemctl_path} --user daemon-reload", user_cmd_opts)
+            provider.action_create
+          end
+
+          it "triggers a daemon-reload when deleting a unit with triggers_reload" do
+            new_resource.user("joe")
+            allow(File).to receive(:exist?)
+                             .with(unit_path_user)
+                             .and_return(true)
+            allow(provider).to receive(:manage_unit_file).with(:delete)
+            expect(new_resource.triggers_reload).to eq true
+            allow(provider).to receive(:shell_out_with_systems_locale!)
+            expect(provider).to receive(:shell_out_with_systems_locale!)
+                                  .with("#{systemctl_path} --user daemon-reload", user_cmd_opts)
+            provider.action_delete
+          end
+
+          it "does not trigger a daemon-reload when creating a unit without triggers_reload" do
+            new_resource.user("joe")
+            new_resource.triggers_reload(false)
+            allow(provider).to receive(:manage_unit_file).with(:create)
+            allow(provider).to receive(:shell_out_with_systems_locale!)
+            expect(provider).to_not receive(:shell_out_with_systems_locale!)
+                                      .with("#{systemctl_path} --user daemon-reload", user_cmd_opts)
+            provider.action_create
+          end
+
+          it "does not trigger a daemon-reload when deleting a unit without triggers_reload" do
+            new_resource.user("joe")
+            new_resource.triggers_reload(false)
+            allow(File).to receive(:exist?)
+                             .with(unit_path_user)
+                             .and_return(true)
+            allow(provider).to receive(:manage_unit_file).with(:delete)
+            allow(provider).to receive(:shell_out_with_systems_locale!)
+            expect(provider).to_not receive(:shell_out_with_systems_locale!)
+                                      .with("#{systemctl_path} --user daemon-reload", user_cmd_opts)
+            provider.action_delete
+          end
+
           it "deletes the file when it exists" do
             new_resource.user("joe")
             allow(File).to receive(:exist?)
@@ -364,6 +368,47 @@ describe Chef::Provider::SystemdUnit do
         end
 
         context "when no user is specified" do
+          it "triggers a daemon-reload when creating a unit with triggers_reload" do
+            allow(provider).to receive(:manage_unit_file).with(:create)
+            expect(new_resource.triggers_reload).to eq true
+            allow(provider).to receive(:shell_out_with_systems_locale!)
+            expect(provider).to receive(:shell_out_with_systems_locale!)
+                                  .with("#{systemctl_path} --system daemon-reload", {})
+            provider.action_create
+          end
+
+          it "triggers a daemon-reload when deleting a unit with triggers_reload" do
+            allow(File).to receive(:exist?)
+                             .with(unit_path_system)
+                             .and_return(true)
+            allow(provider).to receive(:manage_unit_file).with(:delete)
+            expect(new_resource.triggers_reload).to eq true
+            allow(provider).to receive(:shell_out_with_systems_locale!)
+            expect(provider).to receive(:shell_out_with_systems_locale!)
+                                  .with("#{systemctl_path} --system daemon-reload", {})
+            provider.action_delete
+          end
+
+          it "does not trigger a daemon-reload when creating a unit without triggers_reload" do
+            new_resource.triggers_reload(false)
+            allow(provider).to receive(:manage_unit_file).with(:create)
+            allow(provider).to receive(:shell_out_with_systems_locale!)
+            expect(provider).to_not receive(:shell_out_with_systems_locale!)
+                                      .with("#{systemctl_path} --system daemon-reload", {})
+            provider.action_create
+          end
+
+          it "does not trigger a daemon-reload when deleting a unit without triggers_reload" do
+            new_resource.triggers_reload(false)
+            allow(File).to receive(:exist?)
+                             .with(unit_path_system)
+                             .and_return(true)
+            allow(provider).to receive(:manage_unit_file).with(:delete)
+            allow(provider).to receive(:shell_out_with_systems_locale!)
+            expect(provider).to_not receive(:shell_out_with_systems_locale!)
+                                      .with("#{systemctl_path} --system daemon-reload", {})
+            provider.action_delete
+          end
           it "deletes the file when it exists" do
             allow(File).to receive(:exist?)
                              .with(unit_path_system)

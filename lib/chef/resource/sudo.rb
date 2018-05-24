@@ -171,7 +171,6 @@ class Chef
           end
         else
           declare_resource(:template, "#{target}#{new_resource.filename}") do
-            source "sudoer.erb"
             source ::File.expand_path("../support/sudoer.erb", __FILE__)
             local true
             mode "0440"

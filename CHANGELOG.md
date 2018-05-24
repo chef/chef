@@ -1,26 +1,79 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.198 -->
-## [v14.0.198](https://github.com/chef/chef/tree/v14.0.198) (2018-04-13)
+<!-- latest_release 14.1.21 -->
+## [v14.1.21](https://github.com/chef/chef/tree/v14.1.21) (2018-05-21)
 
 #### Merged Pull Requests
-- Add support for route metric [#7140](https://github.com/chef/chef/pull/7140) ([tomdoherty](https://github.com/tomdoherty))
+- Cleanup AIX and Solaris user resources. [#7249](https://github.com/chef/chef/pull/7249) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
-<!-- release_rollup since=14.0.190 -->
-### Changes since 14.0.190 release
+<!-- release_rollup since=14.1.12 -->
+### Changes since 14.1.12 release
 
 #### Merged Pull Requests
-- Add support for route metric [#7140](https://github.com/chef/chef/pull/7140) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.0.198 -->
-- Fix up knife logging [#7144](https://github.com/chef/chef/pull/7144) ([thommay](https://github.com/thommay)) <!-- 14.0.197 -->
-- fix for enable/disable repo ordering [#7148](https://github.com/chef/chef/pull/7148) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.196 -->
-- fix Chef-14 chef_fs/chef-zero perf regression [#7143](https://github.com/chef/chef/pull/7143) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.195 -->
-- Fix RHSM registration using passwords [#7133](https://github.com/chef/chef/pull/7133) ([tas50](https://github.com/tas50)) <!-- 14.0.194 -->
-- Modify the provides for all resources from cookbooks so chef wins [#7134](https://github.com/chef/chef/pull/7134) ([tas50](https://github.com/tas50)) <!-- 14.0.193 -->
-- add delegator for property_is_set? to providers [#7122](https://github.com/chef/chef/pull/7122) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.192 -->
-- Update InSpec to 2.1.21 [#7109](https://github.com/chef/chef/pull/7109) ([tas50](https://github.com/tas50)) <!-- 14.0.191 -->
+- Cleanup AIX and Solaris user resources. [#7249](https://github.com/chef/chef/pull/7249) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.21 -->
+- Fix systemd_unit user context [#7274](https://github.com/chef/chef/pull/7274) ([mal](https://github.com/mal)) <!-- 14.1.20 -->
+- Fix manifest entries for root files [#7270](https://github.com/chef/chef/pull/7270) ([thommay](https://github.com/thommay)) <!-- 14.1.19 -->
+- object validation for DataHandlerBase#normalize_hash [#7264](https://github.com/chef/chef/pull/7264) ([jeremymv2](https://github.com/jeremymv2)) <!-- 14.1.18 -->
+- [MSYS-817] fix for windows_task does not parse backslashes in the commad property [#7281](https://github.com/chef/chef/pull/7281) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.1.17 -->
+- UID now starts at 501, uses createhomedir instead [#4903](https://github.com/chef/chef/pull/4903) ([nmcspadden](https://github.com/nmcspadden)) <!-- 14.1.16 -->
+- Add default_action to the resource inspector [#7276](https://github.com/chef/chef/pull/7276) ([tas50](https://github.com/tas50)) <!-- 14.1.15 -->
+- Add additional resource unit tests [#7275](https://github.com/chef/chef/pull/7275) ([tas50](https://github.com/tas50)) <!-- 14.1.14 -->
+- Add additional unit tests for resource actions/properties [#7266](https://github.com/chef/chef/pull/7266) ([tas50](https://github.com/tas50)) <!-- 14.1.14 -->
+- improved regex accuracy lib/chef/resource/hostname.rb [#7262](https://github.com/chef/chef/pull/7262) ([bottkv488](https://github.com/bottkv488)) <!-- 14.1.14 -->
+- publish habitat packages [#7272](https://github.com/chef/chef/pull/7272) ([thommay](https://github.com/thommay)) <!-- 14.1.13 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.1.12](https://github.com/chef/chef/tree/v14.1.12) (2018-05-16)
+
+#### Merged Pull Requests
+- Remove redundant &quot;?&quot; in knife configure [#7235](https://github.com/chef/chef/pull/7235) ([alexymik](https://github.com/alexymik))
+- Switch Node#role? to use the attributes expansion instead of the run list [#7234](https://github.com/chef/chef/pull/7234) ([coderanger](https://github.com/coderanger))
+- fix git provider: -prune-tags is not available with old git versions, fixes #7233 [#7247](https://github.com/chef/chef/pull/7247) ([rmoriz](https://github.com/rmoriz))
+- repo_name property should be part of new_resource object [#7252](https://github.com/chef/chef/pull/7252) ([tj-anderson](https://github.com/tj-anderson))
+- remote_directory: restore overwrite default [#7254](https://github.com/chef/chef/pull/7254) ([rmoriz](https://github.com/rmoriz))
+- apt_repository: Use the repo_name name property [#7244](https://github.com/chef/chef/pull/7244) ([tas50](https://github.com/tas50))
+- Update Habitat plan to correctly build [#6111](https://github.com/chef/chef/pull/6111) ([elliott-davis](https://github.com/elliott-davis))
+- Update Ohai to 14.1.3 [#7258](https://github.com/chef/chef/pull/7258) ([tas50](https://github.com/tas50))
+- Fix windows_task resource not handling commands with arguments [#7250](https://github.com/chef/chef/pull/7250) ([Vasu1105](https://github.com/Vasu1105))
+- Update win32-taskscheduler gem to fix creating tasks as the SYSTEM user [#7265](https://github.com/chef/chef/pull/7265) ([tas50](https://github.com/tas50))
+- Use some unique task names for windows_task functional tests [#7267](https://github.com/chef/chef/pull/7267) ([btm](https://github.com/btm))
+<!-- latest_stable_release -->
+
+## [v14.1.1](https://github.com/chef/chef/tree/v14.1.1) (2018-05-08)
+
+#### Merged Pull Requests
+- fix for Red Hat Satellite yum_package bug [#7147](https://github.com/chef/chef/pull/7147) ([lamont-granquist](https://github.com/lamont-granquist))
+- add name_property to resource inspector [#7164](https://github.com/chef/chef/pull/7164) ([thommay](https://github.com/thommay))
+- Windows MSI: files are now re-unzipped during repair mode [#7111](https://github.com/chef/chef/pull/7111) ([stuartpreston](https://github.com/stuartpreston))
+- Some options, i.e. metric, require specifying dev [#7162](https://github.com/chef/chef/pull/7162) ([tomdoherty](https://github.com/tomdoherty))
+- Avoid conflict with build_powershell_command from powershell_out mixin [#7173](https://github.com/chef/chef/pull/7173) ([stuartpreston](https://github.com/stuartpreston))
+- Ubuntu 1804 - passing tests and fixed ifconfig provider [#7174](https://github.com/chef/chef/pull/7174) ([thommay](https://github.com/thommay))
+- CLI help text now includes :trace log level [#7186](https://github.com/chef/chef/pull/7186) ([stuartpreston](https://github.com/stuartpreston))
+- Fix NoMethodError when (un)locking single packages in apt and zypper [#7138](https://github.com/chef/chef/pull/7138) ([RoboticCheese](https://github.com/RoboticCheese))
+- Whitelist some additional Hash/Array methods [#7198](https://github.com/chef/chef/pull/7198) ([lamont-granquist](https://github.com/lamont-granquist))
+- Convert some of remote_directory to use properties [#7204](https://github.com/chef/chef/pull/7204) ([tas50](https://github.com/tas50))
+- Don&#39;t always request lazy files [#7208](https://github.com/chef/chef/pull/7208) ([thommay](https://github.com/thommay))
+- Allow specifying `ignore_failure :quiet` to disable the error spew [#7194](https://github.com/chef/chef/pull/7194) ([coderanger](https://github.com/coderanger))
+- [MSYS-752] windows task rewrite using win32-taskscheduler [#6815](https://github.com/chef/chef/pull/6815) ([Vasu1105](https://github.com/Vasu1105))
+- Trying to use --recipe-url on Windows with local file fails [#7223](https://github.com/chef/chef/pull/7223) ([tyler-ball](https://github.com/tyler-ball))
+
+## [v14.0.202](https://github.com/chef/chef/tree/v14.0.202) (2018-04-16)
+
+#### Merged Pull Requests
+- Update InSpec to 2.1.21 [#7109](https://github.com/chef/chef/pull/7109) ([tas50](https://github.com/tas50))
+- add delegator for property_is_set? to providers [#7122](https://github.com/chef/chef/pull/7122) ([lamont-granquist](https://github.com/lamont-granquist))
+- Modify the provides for all resources from cookbooks so chef wins [#7134](https://github.com/chef/chef/pull/7134) ([tas50](https://github.com/tas50))
+- Fix RHSM registration using passwords [#7133](https://github.com/chef/chef/pull/7133) ([tas50](https://github.com/tas50))
+- fix Chef-14 chef_fs/chef-zero perf regression [#7143](https://github.com/chef/chef/pull/7143) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix for enable/disable repo ordering [#7148](https://github.com/chef/chef/pull/7148) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix up knife logging [#7144](https://github.com/chef/chef/pull/7144) ([thommay](https://github.com/thommay))
+- Add support for route metric [#7140](https://github.com/chef/chef/pull/7140) ([tomdoherty](https://github.com/tomdoherty))
+- add the resources() dsl method back to providers [#7152](https://github.com/chef/chef/pull/7152) ([lamont-granquist](https://github.com/lamont-granquist))
+- bump omnibus [#7157](https://github.com/chef/chef/pull/7157) ([lamont-granquist](https://github.com/lamont-granquist))
+- add support for lock bot [#7136](https://github.com/chef/chef/pull/7136) ([lamont-granquist](https://github.com/lamont-granquist))
+-  Catch json.load exceptions causing syslog errors  [#7155](https://github.com/chef/chef/pull/7155) ([tomdoherty](https://github.com/tomdoherty))
+
 ## [v14.0.190](https://github.com/chef/chef/tree/v14.0.190) (2018-04-03)
 
 #### Merged Pull Requests
@@ -211,7 +264,6 @@
 - [CHEF-7026] Rewrite portage package provider candidate_version determination and fix tests [#7027](https://github.com/chef/chef/pull/7027) ([gengor](https://github.com/gengor))
 - Don&#39;t fail on every hostname with windows [#7107](https://github.com/chef/chef/pull/7107) ([tas50](https://github.com/tas50))
 - [windows_printer_port] fix typo + add action descriptions [#7093](https://github.com/chef/chef/pull/7093) ([brewn](https://github.com/brewn))
-<!-- latest_stable_release -->
 
 ## [v13.8.3](https://github.com/chef/chef/tree/v13.8.3) (2018-03-05)
 

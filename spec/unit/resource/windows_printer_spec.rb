@@ -18,24 +18,31 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsPrinter do
-  let(:resource) { Chef::Resource::WindowsPrinter.new("some_printer") }
+  let(:resource) { Chef::Resource::WindowsPrinter.new("fakey_fakerton") }
 
   it "sets resource name as :windows_printer" do
     expect(resource.resource_name).to eql(:windows_printer)
   end
 
-  it "sets the device_id as its name" do
-    expect(resource.device_id).to eql("some_printer")
+  it "the device_id property is the name_property" do
+    expect(resource.device_id).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "supports :create and :delete actions" do
+  it "supports :create, :delete actions" do
     expect { resource.action :create }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :remove }.to raise_error(ArgumentError)
+  end
+
+  it "default property defaults to false" do
+    expect(resource.default).to eql(false)
+  end
+
+  it "shared property defaults to false" do
+    expect(resource.shared).to eql(false)
   end
 
   it "raises an error if ipv4_address isn't in X.X.X.X format" do

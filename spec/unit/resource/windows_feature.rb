@@ -18,24 +18,43 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsFeature do
-  let(:resource) { Chef::Resource::WindowsFeature.new("SNMP") }
+  let(:resource) { Chef::Resource::WindowsFeature.new("fakey_fakerton") }
 
   it "sets resource name as :windows_feature" do
     expect(resource.resource_name).to eql(:windows_feature)
+  end
+
+  it "the feature_name property is the name_property" do
+    expect(resource.feature_name).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
   end
 
-  it "sets the feature_name property as its name" do
-    expect(resource.feature_name).to eql("SNMP")
-  end
-
-  it "supports :install, :remove, and :delete actions" do
+  it "supports :delete, :install, :remove actions" do
+    expect { resource.action :delete }.not_to raise_error
     expect { resource.action :install }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
-    expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :update }.to raise_error(ArgumentError)
   end
+
+  it "all property defaults to false" do
+    expect(resource.all).to eql(false)
+  end
+
+  it "management_tools property defaults to false" do
+    expect(resource.management_tools).to eql(false)
+  end
+
+  it "timeout property defaults to 600" do
+    expect(resource.timeout).to eql(600)
+  end
+
+  it "install_method accepts :windows_feature_dism, :windows_feature_powershell, and :windows_feature_servermanagercmd" do
+    expect { resource.install_method :windows_feature_dism }.not_to raise_error
+    expect { resource.install_method :windows_feature_powershell }.not_to raise_error
+    expect { resource.install_method :windows_feature_servermanagercmd }.not_to raise_error
+    expect { resource.install_method "windows_feature_servermanagercmd" }.to raise_error(ArgumentError)
+  end
+
 end

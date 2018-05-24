@@ -33,7 +33,7 @@ class Chef
 
       property :compile_time, [TrueClass, FalseClass],
                description: "Should the resource execute during the compile time phase",
-               default: true
+               default: true, desired_state: false
 
       action :create do
         description "Create an Ohai hint file"

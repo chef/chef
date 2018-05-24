@@ -23,7 +23,7 @@ require "webrick"
 module AptServer
   def enable_testing_apt_source
     File.open("/etc/apt/sources.list.d/chef-integration-test.list", "w+") do |f|
-      f.puts "deb http://localhost:9000/ sid main"
+      f.puts "deb [trusted=yes] http://localhost:9000/ sid main"
     end
     # Magic to update apt cache for only our repo
     shell_out!("apt-get update " +

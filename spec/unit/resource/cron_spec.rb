@@ -22,18 +22,13 @@ require "spec_helper"
 describe Chef::Resource::Cron do
   let(:resource) { Chef::Resource::Cron.new("cronify") }
 
-  it "has a name property" do
-    expect(resource.name).to eql("cronify")
-  end
-
-  it "has a default action of [:create]" do
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  it "accepts create or delete for action" do
+  it "supports :create, :delete actions" do
     expect { resource.action :create }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :lolcat }.to raise_error(ArgumentError)
   end
 
   it "allows you to set a command" do

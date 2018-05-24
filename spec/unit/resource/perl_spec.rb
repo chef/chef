@@ -33,4 +33,12 @@ describe Chef::Resource::Perl do
   it "has an interpreter of perl" do
     expect(resource.interpreter).to eql("perl")
   end
+
+  it "sets the default action as :run" do
+    expect(resource.action).to eql([:run])
+  end
+
+  it "supports :run action" do
+    expect { resource.action :run }.not_to raise_error
+  end
 end

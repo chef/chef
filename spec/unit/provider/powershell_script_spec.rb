@@ -84,7 +84,7 @@ describe Chef::Provider::PowershellScript, "action_run" do
 
         provider_flags.find do |value|
           execution_policy_index += 1
-          execution_policy_specified = value.casecmp("-ExecutionPolicy".downcase).zero?
+          execution_policy_specified = value.casecmp("-ExecutionPolicy".downcase) == 0
         end
 
         execution_policy = execution_policy_specified ? provider_flags[execution_policy_index] : nil

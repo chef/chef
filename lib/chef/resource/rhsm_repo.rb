@@ -34,20 +34,20 @@ class Chef
       action :enable do
         description "Enable a RHSM repository"
 
-        execute "Enable repository #{repo_name}" do
-          command "subscription-manager repos --enable=#{repo_name}"
+        execute "Enable repository #{new_resource.repo_name}" do
+          command "subscription-manager repos --enable=#{new_resource.repo_name}"
           action :run
-          not_if { repo_enabled?(repo_name) }
+          not_if { repo_enabled?(new_resource.repo_name) }
         end
       end
 
       action :disable do
         description "Disable a RHSM repository"
 
-        execute "Enable repository #{repo_name}" do
-          command "subscription-manager repos --disable=#{repo_name}"
+        execute "Enable repository #{new_resource.repo_name}" do
+          command "subscription-manager repos --disable=#{new_resource.repo_name}"
           action :run
-          only_if { repo_enabled?(repo_name) }
+          only_if { repo_enabled?(new_resource.repo_name) }
         end
       end
 

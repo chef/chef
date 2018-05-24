@@ -422,7 +422,6 @@ mpg123 1.12.1-0ubuntu1
                     )
         expect(logger).to receive(:trace).with("#{@provider.new_resource} is already locked")
 
-        @provider.new_resource.package_name = ["irssi"]
         @provider.action_lock
       end
     end
@@ -444,7 +443,6 @@ mpg123 1.12.1-0ubuntu1
                     )
         expect(logger).to receive(:trace).with("#{@provider.new_resource} is already unlocked")
 
-        @provider.new_resource.package_name = ["irssi"]
         @provider.action_unlock
       end
     end

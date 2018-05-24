@@ -20,14 +20,25 @@
 require "spec_helper"
 
 describe Chef::Resource::Group, "initialize" do
-  let(:resource) { Chef::Resource::Group.new("admin") }
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
 
   it "sets the resource_name to :group" do
     expect(resource.resource_name).to eql(:group)
   end
 
-  it "sets the group_name equal to the argument to initialize" do
-    expect(resource.group_name).to eql("admin")
+  it "the group_name property is the name_property" do
+    expect(resource.group_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports :create, :manage, :modify, :remove actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :manage }.not_to raise_error
+    expect { resource.action :modify }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   it "defaults gid to nil" do
@@ -42,16 +53,6 @@ describe Chef::Resource::Group, "initialize" do
     expect(resource.users).to eql([])
   end
 
-  it "sets action to :create" do
-    expect(resource.action).to eql([:create])
-  end
-
-  %w{create remove modify manage}.each do |action|
-    it "allows action #{action}" do
-      expect(resource.allowed_actions.detect { |a| a == action.to_sym }).to eql(action.to_sym)
-    end
-  end
-
   it "accepts domain groups (@ or \ separator) on non-windows" do
     expect { resource.group_name "domain\@group" }.not_to raise_error
     expect(resource.group_name).to eq("domain\@group")
@@ -63,7 +64,7 @@ describe Chef::Resource::Group, "initialize" do
 end
 
 describe Chef::Resource::Group, "group_name" do
-  let(:resource) { Chef::Resource::Group.new("admin") }
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
 
   it "allows a string" do
     resource.group_name "pirates"
@@ -76,7 +77,7 @@ describe Chef::Resource::Group, "group_name" do
 end
 
 describe Chef::Resource::Group, "gid" do
-  let(:resource) { Chef::Resource::Group.new("admin") }
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
 
   it "allows an integer" do
     resource.gid 100
@@ -89,7 +90,7 @@ describe Chef::Resource::Group, "gid" do
 end
 
 describe Chef::Resource::Group, "members" do
-  let(:resource) { Chef::Resource::Group.new("admin") }
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
 
   [ :users, :members].each do |method|
     it "(#{method}) allows and convert a string" do
@@ -114,7 +115,7 @@ describe Chef::Resource::Group, "members" do
 end
 
 describe Chef::Resource::Group, "append" do
-  let(:resource) { Chef::Resource::Group.new("admin") }
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
 
   it "defaults to false" do
     expect(resource.append).to eql(false)

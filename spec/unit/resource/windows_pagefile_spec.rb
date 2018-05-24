@@ -24,12 +24,7 @@ describe Chef::Resource::WindowsPagefile do
     expect(resource.resource_name).to eql(:windows_pagefile)
   end
 
-  it "sets the path as its name" do
-    expect(resource.path).to eql("C:\\pagefile.sys")
-  end
-
-  it "coerces forward slashes in the path property to back slashes" do
-    resource.path "C:/pagefile.sys"
+  it "the path property is the name_property" do
     expect(resource.path).to eql("C:\\pagefile.sys")
   end
 
@@ -37,9 +32,18 @@ describe Chef::Resource::WindowsPagefile do
     expect(resource.action).to eql([:set])
   end
 
-  it "supports :set and :delete actions" do
-    expect { resource.action :set }.not_to raise_error
+  it "supports :delete, :set actions" do
     expect { resource.action :delete }.not_to raise_error
-    expect { resource.action :create }.to raise_error(ArgumentError)
+    expect { resource.action :set }.not_to raise_error
   end
+
+  it "coerces forward slashes in the path property to back slashes" do
+    resource.path "C:/pagefile.sys"
+    expect(resource.path).to eql("C:\\pagefile.sys")
+  end
+
+  it "automatic_managed property defaults to false" do
+    expect(resource.automatic_managed).to eql(false)
+  end
+
 end

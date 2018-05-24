@@ -34,6 +34,20 @@ describe Chef::Resource::HomebrewPackage, "initialize" do
     expect(resource).to be_a_kind_of(Chef::Resource::Package)
   end
 
+  it "sets the default action as :install" do
+    expect(resource.action).to eql([:install])
+  end
+
+  it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
+  end
+
   shared_examples "home_brew user set and returned" do
     it "returns the configured homebrew_user" do
       resource.homebrew_user user

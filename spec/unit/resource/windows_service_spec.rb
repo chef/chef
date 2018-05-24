@@ -27,10 +27,33 @@ describe Chef::Resource::WindowsService, "initialize" do
     action: :start
   )
 
-  let(:resource) { Chef::Resource::WindowsService.new("BITS") }
+  let(:resource) { Chef::Resource::WindowsService.new("fakey_fakerton") }
 
   it "sets the resource_name to :windows_service" do
     expect(resource.resource_name).to eql(:windows_service)
+  end
+
+  it "the service_name property is the name_property" do
+    expect(resource.service_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :nothing" do
+    expect(resource.action).to eql([:nothing])
+  end
+
+  it "supports :configure, :configure_startup, :create, :delete, :disable, :enable, :mask, :reload, :restart, :start, :stop, :unmask actions" do
+    expect { resource.action :configure }.not_to raise_error
+    expect { resource.action :configure_startup }.not_to raise_error
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :disable }.not_to raise_error
+    expect { resource.action :enable }.not_to raise_error
+    expect { resource.action :mask }.not_to raise_error
+    expect { resource.action :reload }.not_to raise_error
+    expect { resource.action :restart }.not_to raise_error
+    expect { resource.action :start }.not_to raise_error
+    expect { resource.action :stop }.not_to raise_error
+    expect { resource.action :unmask }.not_to raise_error
   end
 
   it "supports setting startup_type" do

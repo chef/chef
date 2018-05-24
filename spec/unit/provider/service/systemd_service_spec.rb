@@ -47,7 +47,7 @@ describe Chef::Provider::Service::Systemd do
 
   before(:each) do
     allow(Chef::Resource::Service).to receive(:new).with(service_name).and_return(current_resource)
-    allow(Etc).to receive(:getpwuid).and_return(OpenStruct.new(uid: 10000))
+    allow(Etc).to receive(:getpwnam).and_return(OpenStruct.new(uid: 10000))
   end
 
   describe "load_current_resource" do

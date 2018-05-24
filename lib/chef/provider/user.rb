@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -198,6 +198,23 @@ class Chef
 
       def check_lock
         raise NotImplementedError
+      end
+
+      private
+
+      #
+      # helpers for subclasses
+      #
+
+      def should_set?(sym)
+        current_resource.send(sym).to_s != new_resource.send(sym).to_s && new_resource.send(sym)
+      end
+
+      def updating_home?
+        return false if new_resource.home.nil?
+        return true if current_resource.home.nil?
+        # Pathname#cleanpath matches more edge conditions than File.expand_path()
+        new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
       end
     end
   end

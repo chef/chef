@@ -22,7 +22,7 @@ require "spec_helper"
 shared_examples_for "an execute resource" do
 
   before(:each) do
-    @resource = execute_resource
+    @resource = resource
   end
 
   it "should create a new Chef::Resource::Execute" do

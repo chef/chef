@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::Git do
 
@@ -28,7 +27,7 @@ describe Chef::Resource::Git do
     action: :sync
   )
 
-  let(:resource) { Chef::Resource::Git.new("my awesome webapp") }
+  let(:resource) { Chef::Resource::Git.new("fakey_fakerton") }
 
   it "is a subclass of Chef::Resource::Scm" do
     expect(resource).to be_a_kind_of(Chef::Resource::Scm)
@@ -42,6 +41,22 @@ describe Chef::Resource::Git do
   it "aliases revision as reference" do
     resource.reference "v1.0 tag"
     expect(resource.revision).to eql("v1.0 tag")
+  end
+
+  it "the destination property is the name_property" do
+    expect(resource.destination).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :sync" do
+    expect(resource.action).to eql([:sync])
+  end
+
+  it "supports :checkout, :diff, :export, :log, :sync actions" do
+    expect { resource.action :checkout }.not_to raise_error
+    expect { resource.action :diff }.not_to raise_error
+    expect { resource.action :export }.not_to raise_error
+    expect { resource.action :log }.not_to raise_error
+    expect { resource.action :sync }.not_to raise_error
   end
 
 end

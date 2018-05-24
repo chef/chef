@@ -82,7 +82,7 @@ describe Chef::Cookbook::ManifestV0 do
 
     it "creates an all_files key and populates it" do
       result = described_class.from_hash(source_hash)
-      expect(result[:all_files].map { |f| f["name"] }).to match_array %w{ recipes/default.rb attributes/default.rb README.rdoc }
+      expect(result[:all_files].map { |f| f["name"] }).to match_array %w{ recipes/default.rb attributes/default.rb root_files/README.rdoc }
     end
 
     it "deletes unwanted segment types" do

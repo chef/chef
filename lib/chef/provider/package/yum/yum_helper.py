@@ -27,6 +27,11 @@ except ImportError:
         (prco_e, prco_v, prco_r) = stringToVersion(v)
         return (n, f, (prco_e, prco_v, prco_r))
 
+# hack to work around https://github.com/chef/chef/issues/7126
+# see https://bugzilla.redhat.com/show_bug.cgi?id=1396248
+if not hasattr(yum.packages.FakeRepository, 'compare_providers_priority'):
+    yum.packages.FakeRepository.compare_providers_priority = 99
+
 base = None
 
 def get_base():
@@ -186,7 +191,13 @@ while 1:
         sys.exit(0)
     setup_exit_handler()
     line = inpipe.readline()
-    command = json.loads(line)
+
+    try:
+        command = json.loads(line)
+    except ValueError, e:
+        base.closeRpmDB()
+        sys.exit(0)
+
     if command['action'] == "whatinstalled":
         query(command)
     elif command['action'] == "whatavailable":

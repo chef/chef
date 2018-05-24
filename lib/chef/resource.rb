@@ -23,6 +23,7 @@ require "chef/dsl/data_query"
 require "chef/dsl/registry_helper"
 require "chef/dsl/reboot_pending"
 require "chef/dsl/resources"
+require "chef/dsl/declare_resource"
 require "chef/json_compat"
 require "chef/mixin/convert_to_class_name"
 require "chef/guard_interpreter/resource_guard_interpreter"
@@ -51,6 +52,7 @@ class Chef
     # Generic User DSL (not resource-specific)
     #
 
+    include Chef::DSL::DeclareResource
     include Chef::DSL::DataQuery
     include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
@@ -95,26 +97,6 @@ class Chef
     #
     def node
       run_context && run_context.node
-    end
-
-    #
-    # Find existing resources by searching the list of existing resources.  Possible
-    # forms are:
-    #
-    #   find(:file => "foobar")
-    #   find(:file => [ "foobar", "baz" ])
-    #   find("file[foobar]", "file[baz]")
-    #   find("file[foobar,baz]")
-    #
-    # Calls `run_context.resource_collection.find(*args)`
-    #
-    # @return the matching resource, or an Array of matching resources.
-    #
-    # @raise ArgumentError if you feed it bad lookup information
-    # @raise RuntimeError if it can't find the resources you are looking for.
-    #
-    def resources(*args)
-      run_context.resource_collection.find(*args)
     end
 
     #
@@ -533,15 +515,16 @@ class Chef
     #
     # Whether to ignore failures.  If set to `true`, and this resource when an
     # action is run, the resource will be marked as failed but no exception will
-    # be thrown (and no error will be output).  Defaults to `false`.
+    # be thrown (and no error will be output).  Defaults to `false`. If set to
+    # `:quiet` or `'quiet'`, the normal error trace will be suppressed.
     #
     # TODO ignore_failure and retries seem to be mutually exclusive; I doubt
     # that was intended.
     #
-    # @param arg [Boolean] Whether to ignore failures.
+    # @param arg [Boolean, String, Symbol] Whether to ignore failures.
     # @return Whether this resource will ignore failures.
     #
-    property :ignore_failure, [ TrueClass, FalseClass ], default: false, desired_state: false
+    property :ignore_failure, [ true, false, :quiet, "quiet" ], default: false, desired_state: false
 
     #
     # Make this resource into an exact (shallow) copy of the other resource.

@@ -24,20 +24,20 @@ describe Chef::Resource::Log do
   let(:log_str) { "this is my string to log" }
   let(:resource) { Chef::Resource::Log.new(log_str) }
 
-  it "supports the :write actions" do
-    expect(resource.allowed_actions).to include(:write)
-  end
-
   it "has a name of log" do
     expect(resource.resource_name).to eq(:log)
   end
 
-  it "allows you to set a log string" do
-    expect(resource.name).to eq(log_str)
+  it "the message property is the name_property" do
+    expect(resource.message).to eql("this is my string to log")
   end
 
-  it "sets the message to the first argument to new" do
-    expect(resource.message).to eq(log_str)
+  it "sets the default action as :write" do
+    expect(resource.action).to eql([:write])
+  end
+
+  it "supports :write action" do
+    expect { resource.action :write }.not_to raise_error
   end
 
   it "accepts a string for the log message" do

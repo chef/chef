@@ -26,22 +26,17 @@ describe Chef::Resource::Link do
     expect_any_instance_of(Chef::Resource::Link).to receive(:verify_links_supported!).and_return(true)
   end
 
-  it "has a name property" do
-    expect(resource.name).to eql("fakey_fakerton")
+  it "the target_file property is the name_property" do
+    expect(resource.target_file).to eql("fakey_fakerton")
   end
 
-  it "has a default action of 'create'" do
+  it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
 
-  { :create => false, :delete => false, :blues => true }.each do |action, bad_value|
-    it "should #{bad_value ? 'not' : ''} accept #{action}" do
-      if bad_value
-        expect { resource.action action }.to raise_error(ArgumentError)
-      else
-        expect { resource.action action }.not_to raise_error
-      end
-    end
+  it "supports :create, :delete actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
   end
 
   it "uses the object name as the target_file by default" do

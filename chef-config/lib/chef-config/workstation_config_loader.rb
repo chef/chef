@@ -72,7 +72,7 @@ module ChefConfig
       load_credentials(profile)
       # Ignore it if there's no explicit_config_file and can't find one at a
       # default path.
-      if !config_location.nil?
+      unless config_location.nil?
         if explicit_config_file && !path_exists?(config_location)
           raise ChefConfig::ConfigurationError, "Specified config file #{config_location} does not exist"
         end
@@ -156,6 +156,8 @@ module ChefConfig
       Config.chef_server_url = creds.fetch("chef_server_url") if creds.key?("chef_server_url")
       Config.validation_client_name = creds.fetch("validation_client_name") if creds.key?("validation_client_name")
 
+      Config.knife.merge!(Hash[creds.fetch("knife", {}).map { |k, v| [k.to_sym, v] }])
+
       extract_key(creds, "validation_key", :validation_key, :validation_key_contents)
       extract_key(creds, "validator_key", :validation_key, :validation_key_contents)
       extract_key(creds, "client_key", :client_key, :client_key_contents)
@@ -196,7 +198,7 @@ module ChefConfig
       message << "#{e.class.name}: #{e.message}\n"
       filtered_trace = e.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
       filtered_trace.each { |bt_line| message << "  " << bt_line << "\n" }
-      if !filtered_trace.empty?
+      unless filtered_trace.empty?
         line_nr = filtered_trace.first[/#{Regexp.escape(config_file_path)}:([\d]+)/, 1]
         message << highlight_config_error(config_file_path, line_nr.to_i)
       end

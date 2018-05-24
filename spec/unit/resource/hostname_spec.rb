@@ -19,14 +19,22 @@ require "spec_helper"
 
 describe Chef::Resource::Hostname do
 
-  let(:resource) { Chef::Resource::Hostname.new("foo") }
+  let(:resource) { Chef::Resource::Hostname.new("fakey_fakerton") }
 
   it "has a resource name of :hostname" do
     expect(resource.resource_name).to eql(:hostname)
   end
 
-  it "has a default action of set" do
+  it "the hostname property is the name_property" do
+    expect(resource.hostname).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :set" do
     expect(resource.action).to eql([:set])
+  end
+
+  it "supports :set action" do
+    expect { resource.action :set }.not_to raise_error
   end
 
   it "runs at compile_time by default" do
@@ -35,9 +43,5 @@ describe Chef::Resource::Hostname do
 
   it "reboots windows nodes by default" do
     expect(resource.windows_reboot).to eql(true)
-  end
-
-  it "the hostname property is the name property" do
-    expect(resource.hostname).to eql("foo")
   end
 end

@@ -21,15 +21,23 @@ require "spec_helper"
 
 describe Chef::Resource::Execute do
   let(:resource_instance_name) { "some command" }
-  let(:execute_resource) { Chef::Resource::Execute.new(resource_instance_name) }
+  let(:resource) { Chef::Resource::Execute.new(resource_instance_name) }
   it_behaves_like "an execute resource"
 
+  it "sets the default action as :run" do
+    expect(resource.action).to eql([:run])
+  end
+
+  it "supports :run action" do
+    expect { resource.action :run }.not_to raise_error
+  end
+
   it "default guard interpreter is :execute interpreter" do
-    expect(execute_resource.guard_interpreter).to be(:execute)
+    expect(resource.guard_interpreter).to be(:execute)
   end
 
   it "defaults to not being a guard interpreter" do
-    expect(execute_resource.is_guard_interpreter).to eq(false)
+    expect(resource.is_guard_interpreter).to eq(false)
   end
 
   describe "#qualify_user" do
@@ -40,7 +48,7 @@ describe Chef::Resource::Execute do
       let(:username) { "user@domain" }
 
       it "correctly parses the user and domain" do
-        identity = execute_resource.qualify_user(username, password, domain)
+        identity = resource.qualify_user(username, password, domain)
         expect(identity[:domain]).to eq("domain")
         expect(identity[:user]).to eq("user")
       end
@@ -50,7 +58,7 @@ describe Chef::Resource::Execute do
       let(:username) { "domain\\user" }
 
       it "correctly parses the user and domain" do
-        identity = execute_resource.qualify_user(username, password, domain)
+        identity = resource.qualify_user(username, password, domain)
         expect(identity[:domain]).to eq("domain")
         expect(identity[:user]).to eq("user")
       end
@@ -60,14 +68,14 @@ describe Chef::Resource::Execute do
   shared_examples_for "it received valid credentials" do
     describe "the validation method" do
       it "does not raise an error" do
-        expect { execute_resource.validate_identity_platform(username, password, domain) }.not_to raise_error
+        expect { resource.validate_identity_platform(username, password, domain) }.not_to raise_error
       end
     end
 
     describe "the name qualification method" do
       it "correctly translates the user and domain" do
         identity = nil
-        expect { identity = execute_resource.qualify_user(username, password, domain) }.not_to raise_error
+        expect { identity = resource.qualify_user(username, password, domain) }.not_to raise_error
         expect(identity[:domain]).to eq(domain)
         expect(identity[:user]).to eq(username)
       end
@@ -77,7 +85,7 @@ describe Chef::Resource::Execute do
   shared_examples_for "it received invalid credentials" do
     describe "the validation method" do
       it "raises an error" do
-        expect { execute_resource.validate_identity_platform(username, password, domain, elevated) }.to raise_error(ArgumentError)
+        expect { resource.validate_identity_platform(username, password, domain, elevated) }.to raise_error(ArgumentError)
       end
     end
   end
@@ -85,7 +93,7 @@ describe Chef::Resource::Execute do
   shared_examples_for "it received invalid username and domain" do
     describe "the validation method" do
       it "raises an error" do
-        expect { execute_resource.qualify_user(username, password, domain) }.to raise_error(ArgumentError)
+        expect { resource.qualify_user(username, password, domain) }.to raise_error(ArgumentError)
       end
     end
   end
@@ -93,7 +101,7 @@ describe Chef::Resource::Execute do
   shared_examples_for "it received credentials that are not valid on the platform" do
     describe "the validation method" do
       it "raises an error" do
-        expect { execute_resource.validate_identity_platform(username, password, domain) }.to raise_error(Chef::Exceptions::UnsupportedPlatform)
+        expect { resource.validate_identity_platform(username, password, domain) }.to raise_error(Chef::Exceptions::UnsupportedPlatform)
       end
     end
   end
@@ -101,7 +109,7 @@ describe Chef::Resource::Execute do
   shared_examples_for "a consumer of the Execute resource" do
     context "when running on Windows" do
       before do
-        allow(execute_resource).to receive(:node).and_return({ :platform_family => "windows" })
+        allow(resource).to receive(:node).and_return({ :platform_family => "windows" })
       end
 
       context "when no user, domain, or password is specified" do
@@ -203,7 +211,7 @@ describe Chef::Resource::Execute do
 
     context "when not running on Windows" do
       before do
-        allow(execute_resource).to receive(:node).and_return({ :platform_family => "ubuntu" })
+        allow(resource).to receive(:node).and_return({ :platform_family => "ubuntu" })
       end
 
       context "when no user, domain, or password is specified" do

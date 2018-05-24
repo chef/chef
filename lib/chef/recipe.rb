@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,12 +64,6 @@ class Chef
     # Used in DSL mixins
     def node
       run_context.node
-    end
-
-    # Used by the DSL to look up resources when executing in the context of a
-    # recipe.
-    def resources(*args)
-      run_context.resource_collection.find(*args)
     end
 
     # This was moved to Chef::Node#tag, redirecting here for compatibility

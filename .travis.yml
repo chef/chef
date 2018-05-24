@@ -88,9 +88,10 @@ matrix:
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
     rvm: 2.5.1
   - env:
-      PEDANT_OPTS: --skip-oc_id
-      TEST_GEM: chef/chef-zero
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec cheffs
+      - PEDANT_OPTS=--skip-oc_id
+      - TEST_GEM=chef/chef-zero
+      - CHEF_FS=true
+    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake pedant
     rvm: 2.5.1
   - env:
       TEST_GEM: chef/cheffish
@@ -101,10 +102,6 @@ matrix:
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
     rvm: 2.5.1
   - env:
-      TEST_GEM: foodcritic/foodcritic
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake test
-    rvm: 2.5.1
-  - env:
       TEST_GEM: poise/halite
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
     rvm: 2.5.1
@@ -112,14 +109,11 @@ matrix:
       TEST_GEM: chef/knife-windows
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
     rvm: 2.5.1
-  - env:
-      TEST_GEM: poise/poise
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
-    rvm: 2.5.1
-  - env:
-      TEST_GEM: chef/knife-windows
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
-    rvm: 2.5.1
+  # disable this pending a Chef 14 compat version of poise
+  # - env:
+  #     TEST_GEM: poise/poise
+  #   script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
+  #   rvm: 2.5.1
   ### START TEST KITCHEN ONLY ###
   #
   - rvm: 2.4.4

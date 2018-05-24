@@ -322,6 +322,7 @@ module ChefConfig
     default :umask, 0022
 
     # Valid log_levels are:
+    # * :trace
     # * :debug
     # * :info
     # * :warn
@@ -1085,6 +1086,9 @@ module ChefConfig
 
     # can be set to a string or array of strings for URIs to set as rubygems sources
     default :rubygems_url, "https://www.rubygems.org"
+
+    # globally sets the default of the clear_sources property on the gem_package and chef_gem resources
+    default :clear_gem_sources, false
 
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with

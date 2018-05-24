@@ -25,7 +25,7 @@ yum_repository "epel" do
   only_if { platform_family?("rhel") }
 end
 
-build_essential "install compilation tools"
+build_essential
 
 include_recipe "::packages"
 

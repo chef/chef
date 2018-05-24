@@ -25,7 +25,19 @@ describe Chef::Resource::BuildEssential do
     expect(resource.resource_name).to eql(:build_essential)
   end
 
-  it "has a default action of install" do
+  it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
+  end
+
+  it "supports :install action" do
+    expect { resource.action :install }.not_to raise_error
+  end
+
+  context "when not settting a resource name" do
+    let(:resource) { Chef::Resource::BuildEssential.new(nil) }
+
+    it "the name defaults to an empty string" do
+      expect(resource.name).to eql("")
+    end
   end
 end

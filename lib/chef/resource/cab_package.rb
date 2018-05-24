@@ -27,13 +27,13 @@ class Chef
       resource_name :cab_package
       provides :cab_package
 
-      description "Use the cab_package resource to install or remove Microsoft Windows"\
-                  " cabinet (.cab) packages."
+      description "Use the cab_package resource to install or remove Microsoft Windows cabinet (.cab) packages."
       introduced "12.15"
 
       allowed_actions :install, :remove
 
       property  :source, String,
+                description: "The local file path or URL for the CAB package.",
                 coerce: (proc do |s|
                   unless s.nil?
                     uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)

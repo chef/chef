@@ -26,8 +26,13 @@ describe Chef::Resource::RhsmRegister do
     expect(resource.resource_name).to eql(:rhsm_register)
   end
 
-  it "has a default action of register" do
+  it "sets the default action as :register" do
     expect(resource.action).to eql([:register])
+  end
+
+  it "supports :register, :unregister actions" do
+    expect { resource.action :register }.not_to raise_error
+    expect { resource.action :unregister }.not_to raise_error
   end
 
   it "coerces activation_key to an array" do

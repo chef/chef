@@ -29,4 +29,12 @@ describe Chef::Resource::Python do
   it "has an interpreter of python" do
     expect(resource.interpreter).to eql("python")
   end
+
+  it "sets the default action as :run" do
+    expect(resource.action).to eql([:run])
+  end
+
+  it "supports :run action" do
+    expect { resource.action :run }.not_to raise_error
+  end
 end
