@@ -801,6 +801,11 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
         provider.action_configure_startup
       end
     end
+
+    it "calls converge_delayed_start" do
+      expect(provider).to receive(:converge_delayed_start)
+      provider.action_configure_startup
+    end
   end
 
   describe Chef::Provider::Service::Windows, "set_start_type" do
