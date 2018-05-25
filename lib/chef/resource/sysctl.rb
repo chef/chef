@@ -1,6 +1,6 @@
 #
 # Copyright:: 2018, Webb Agile Solutions Ltd.
-# Copyright:: 2018, Chef Software Inc.
+# Copyright:: 2018-2018, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -84,6 +84,7 @@ class Chef
 
           execute "Load sysctl values" do
             command "sysctl #{'-e ' if new_resource.ignore_error}-p"
+            internal true
             action :run
           end
         end
@@ -98,6 +99,7 @@ class Chef
             end
 
             execute "Load sysctl values" do
+              internal true
               command "sysctl -p"
               action :run
             end

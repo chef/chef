@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@chef.io>)
-# Copyright:: Copyright 2014-2017, Chef Software Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +51,7 @@ describe Chef::Resource::Execute do
 
       # why_run mode doesn't disable the updated_by_last_action logic, so we really have to look at the provider action
       # to see if why_run correctly disabled the resource.  It should shell_out! for the guard but not the resource.
-      expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out_with_systems_locale!).once
+      expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out!).once
 
       resource.only_if guard
       resource.run_action(:run)

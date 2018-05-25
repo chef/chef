@@ -131,7 +131,7 @@ describe Chef::Provider::Script, "action_run" do
 
     describe "when running the script" do
       let (:default_opts) do
-        { timeout: 3600, returns: 0, log_level: :info, log_tag: "script[run some perl code]" }
+        { timeout: 3600, returns: 0, internal: false, log_level: :info, log_tag: "script[run some perl code]" }
       end
 
       before do
@@ -143,7 +143,7 @@ describe Chef::Provider::Script, "action_run" do
       end
 
       it "should call shell_out! with the command" do
-        expect(provider).to receive(:shell_out_with_systems_locale!).with(provider.command, default_opts).and_return(true)
+        expect(provider).to receive(:shell_out!).with(provider.command, default_opts).and_return(true)
         provider.action_run
       end
 
