@@ -155,37 +155,46 @@ class Chef
       end
 
       def action_delete
-        if @cron_exists
-          crontab = ""
-          cron_found = false
-          read_crontab.each_line do |line|
-            case line.chomp
-            when "# Chef Name: #{new_resource.name}"
-              cron_found = true
-              next
-            when ENV_PATTERN
-              next if cron_found
-            when SPECIAL_PATTERN
-              if cron_found
-                cron_found = false
-                next
-              end
-            when CRON_PATTERN
-              if cron_found
-                cron_found = false
-                next
-              end
-            else
-              # We've got a Chef comment with no following crontab line
+        crontab = String.new
+        cron_found = false
+        cron_job_found = false
+        manual_job_found = false
+        read_crontab.each_line do |line|
+          case line.chomp
+          when "# Chef Name: #{new_resource.name}"
+            cron_job_found = true
+            cron_found = true
+            next
+          when ENV_PATTERN
+            next if cron_found
+          when SPECIAL_PATTERN
+            if cron_found
               cron_found = false
+              next
             end
-            crontab << line
+          when CRON_PATTERN
+            if cron_found
+              cron_found = false
+              next
+            elsif resource_details == line.split(CRON_PATTERN)[1..-2]
+              # Deletion of Manually created task
+              manual_job_found = true
+              next
+            end
+          else
+            # We've got a Chef comment with no following crontab line
+            cron_found = false
           end
-          description = cron_found ? "remove #{new_resource.name} from crontab" : "save unmodified crontab"
-          converge_by(description) do
-            write_crontab crontab
-            logger.info("#{new_resource} deleted crontab entry")
-          end
+          crontab << line
+        end
+        description = Array.new
+        description << "remove #{new_resource.name} from crontab" if cron_job_found
+        description << "remove manual job from crontab" if manual_job_found
+        description << "save unmodified crontab" if description.empty?
+        description = description.join("\n - ")
+        converge_by(description) do
+          write_crontab crontab
+          Chef::Log.info("#{new_resource} deleted crontab entry")
         end
       end
 
@@ -238,6 +247,15 @@ class Chef
         else
           weekday_in_crontab.to_s
         end
+      end
+
+      def resource_details
+        [ new_resource.minute,
+          new_resource.hour,
+          new_resource.day,
+          new_resource.month,
+          new_resource.weekday,
+          new_resource.command ]
       end
     end
   end
