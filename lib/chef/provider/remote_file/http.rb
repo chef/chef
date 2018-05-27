@@ -70,7 +70,7 @@ class Chef
             end
           else
             tempfile = http.streaming_request(uri, headers, orig_tempfile)
-          end
+          end unless Chef::Config[:why_run]
           if tempfile
             update_cache_control_data(tempfile, http.last_response)
             tempfile.close
