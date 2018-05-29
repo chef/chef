@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,7 @@ require_relative "../util/diff"
 require_relative "../util/selinux"
 require_relative "../file_content_management/deploy"
 require_relative "../dist"
+require_relative "file/file_editor"
 
 # The Tao of File Providers:
 #  - the content provider must always return a tempfile that we can delete/mv
@@ -139,6 +140,7 @@ class Chef
 
       def action_create
         do_generate_content
+        do_file_editing
         do_validate_content
         do_unlink
         do_create_file
@@ -189,7 +191,7 @@ class Chef
       # be overridden in subclasses.
       def managing_content?
         return true if new_resource.checksum
-        return true if !new_resource.content.nil? && @action != :create_if_missing
+        return true if !tempfile.nil? && @action != :create_if_missing
         false
       end
 
@@ -330,6 +332,14 @@ class Chef
 
       def tempfile_checksum
         @tempfile_checksum ||= checksum(tempfile.path)
+      end
+
+      def do_file_editing
+        if new_resource.edit && tempfile
+          editor = Chef::Provider::File::FileEditor.new(tempfile.path)
+          editor.instance_exec(&new_resource.edit)
+          editor.finish!
+        end
       end
 
       def do_validate_content

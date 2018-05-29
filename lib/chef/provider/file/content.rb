@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +21,17 @@ require_relative "../../file_content_management/tempfile"
 
 class Chef
   class Provider
-    class File
+    class File < Chef::Provider
       class Content < Chef::FileContentManagement::ContentBase
         def file_for_provider
           if @new_resource.content
             tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
             tempfile.write(@new_resource.content)
+            tempfile.close
+            tempfile
+          elsif @new_resource.edit
+            tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
+            tempfile.write(IO.read(@new_resource.path)) if ::File.exist?(@new_resource.path)
             tempfile.close
             tempfile
           else

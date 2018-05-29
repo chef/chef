@@ -77,6 +77,11 @@ class Chef
 
       property :verifications, Array, default: lazy { [] }
 
+      def edit(arg = nil, &block)
+        arg ||= block
+        set_or_return(:edit, arg, :kind_of => [Proc])
+      end
+
       def verify(command = nil, opts = {}, &block)
         if ! (command.nil? || [String, Symbol].include?(command.class))
           raise ArgumentError, "verify requires either a string, symbol, or a block"
