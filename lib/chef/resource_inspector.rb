@@ -24,6 +24,17 @@ require "chef/resources"
 require "chef/json_compat"
 
 module ResourceInspector
+  def self.get_default(default)
+    if default.kind_of?(Chef::DelayedEvaluator)
+      # ideally we'd get the block we pass to `lazy`, but the best we can do
+      # is to get the source location, which then results in reparsing the source
+      # code for the resource ourselves and just no
+      "lazy default"
+    else
+      default
+    end
+  end
+
   def self.extract_resource(resource, complete = false)
     data = {}
     data[:description] = resource.description
@@ -44,6 +55,7 @@ module ResourceInspector
       acc << { name: n, description: opts[:description],
                introduced: opts[:introduced], is: opts[:is],
                deprecated: opts[:deprecated] || false,
+               default: get_default(opts[:default]),
                name_property: opts[:name_property] || false }
     end
     data
