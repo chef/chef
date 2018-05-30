@@ -41,8 +41,8 @@ class Chef
       property :family, String, default: "inet"
       property :inet_addr, String
       property :bcast, String
-      property :mtu, String
-      property :metric, String
+      property :mtu, [String, Integer]
+      property :metric, [String, Integer]
       property :device, String, identity: true
       property :onboot, String
       property :network, String

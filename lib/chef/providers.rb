@@ -141,6 +141,7 @@ require "chef/provider/remote_file/content"
 require "chef/provider/cookbook_file/content"
 require "chef/provider/template/content"
 
+require "chef/provider/ifconfig/systemd"
 require "chef/provider/ifconfig/redhat"
 require "chef/provider/ifconfig/debian"
 require "chef/provider/ifconfig/aix"
