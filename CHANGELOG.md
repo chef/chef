@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.22 -->
-## [v14.1.22](https://github.com/chef/chef/tree/v14.1.22) (2018-05-30)
+<!-- latest_release 14.1.23 -->
+## [v14.1.23](https://github.com/chef/chef/tree/v14.1.23) (2018-05-30)
 
 #### Merged Pull Requests
-- Cookbook Version:  add host-&lt;fqdn&gt; to the error message for templates and files specificity [#7295](https://github.com/chef/chef/pull/7295) ([lamont-granquist](https://github.com/lamont-granquist))
+- add default_env flag to shell_out and execute resource [#7298](https://github.com/chef/chef/pull/7298) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- add default_env flag to shell_out and execute resource [#7298](https://github.com/chef/chef/pull/7298) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.23 -->
 - Cookbook Version:  add host-&lt;fqdn&gt; to the error message for templates and files specificity [#7295](https://github.com/chef/chef/pull/7295) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.22 -->
 - Cleanup AIX and Solaris user resources. [#7249](https://github.com/chef/chef/pull/7249) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.21 -->
 - Fix systemd_unit user context [#7274](https://github.com/chef/chef/pull/7274) ([mal](https://github.com/mal)) <!-- 14.1.20 -->
