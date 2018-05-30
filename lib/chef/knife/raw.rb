@@ -39,10 +39,15 @@ class Chef
         :default => false,
         :description => "Use webui proxy authentication. Client key must be the webui key."
 
+      # We need a custom HTTP client class here because we don't want to even
+      # try to decode the body, in case we get back corrupted JSON or whatnot.
       class RawInputServerAPI < Chef::HTTP
         def initialize(options = {})
+          # If making a change here, also update Chef::ServerAPI.
           options[:client_name] ||= Chef::Config[:node_name]
-          options[:signing_key_filename] ||= Chef::Config[:client_key]
+          options[:raw_key] ||= Chef::Config[:client_key_contents]
+          options[:signing_key_filename] ||= Chef::Config[:client_key] unless options[:raw_key]
+          options[:ssh_agent_signing] ||= Chef::Config[:ssh_agent_signing]
           super(Chef::Config[:chef_server_url], options)
         end
         use Chef::HTTP::JSONOutput
