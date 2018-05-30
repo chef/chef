@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2017, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,13 +104,17 @@ class Chef
       # generally must support UTF-8 unicode.
       def shell_out(*args, **options)
         options = options.dup
-        env_key = options.has_key?(:env) ? :env : :environment
-        options[env_key] = {
-          "LC_ALL" => Chef::Config[:internal_locale],
-          "LANGUAGE" => Chef::Config[:internal_locale],
-          "LANG" => Chef::Config[:internal_locale],
-          env_path => sanitized_path,
-        }.update(options[env_key] || {})
+        default_env = options.delete(:default_env)
+        default_env = true if default_env.nil?
+        if default_env
+          env_key = options.key?(:env) ? :env : :environment
+          options[env_key] = {
+            "LC_ALL" => Chef::Config[:internal_locale],
+            "LANGUAGE" => Chef::Config[:internal_locale],
+            "LANG" => Chef::Config[:internal_locale],
+            env_path => sanitized_path,
+          }.update(options[env_key] || {})
+        end
         shell_out_command(*args, **options)
       end
 
@@ -121,14 +125,12 @@ class Chef
         cmd
       end
 
-      def shell_out_with_systems_locale(*command_args)
-        shell_out_command(*command_args)
+      def shell_out_with_systems_locale(*args, **options) # FIXME: deprecate
+        shell_out(*args, default_env: false, **options)
       end
 
-      def shell_out_with_systems_locale!(*command_args)
-        cmd = shell_out_with_systems_locale(*command_args)
-        cmd.error!
-        cmd
+      def shell_out_with_systems_locale!(*args, **options) # FIXME: deprecate
+        shell_out!(*args, default_env: false, **options)
       end
 
       # Helper for subclasses to convert an array of string args into a string.  It

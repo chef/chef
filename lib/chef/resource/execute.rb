@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,6 +64,9 @@ class Chef
 
       property :group, [ String, Integer ]
       property :live_stream, [ TrueClass, FalseClass ], default: false
+      # default_env defaults to `false` so that the command execution more exactly matches what the user gets on the command line without magic
+      property :default_env, [ TrueClass, FalseClass ], desired_state: false, default: false,
+        description: "When true this enables ENV magic to add path_sanity to the PATH and force the locale to English+UTF-8 for parsing output"
       property :returns, [ Integer, Array ], default: 0
       property :timeout, [ Integer, Float ]
       property :user, [ String, Integer ]

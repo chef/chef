@@ -226,7 +226,7 @@ describe Chef::Mixin::ShellOut do
 
       describe "when the last argument is not a Hash" do
         it "should no longer add environment options and set environment['LC_ALL'] to nil" do
-          expect(shell_out_obj).to receive(:shell_out_command).with(cmd).and_return(true)
+          expect(shell_out_obj).to receive(:shell_out_command).with(cmd, {}).and_return(true)
           shell_out_obj.shell_out_with_systems_locale(cmd)
         end
       end
