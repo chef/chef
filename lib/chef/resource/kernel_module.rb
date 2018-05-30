@@ -4,7 +4,7 @@
 # The MIT License (MIT)
 #
 # Copyright 2016-2018, Shopify Inc.
-# Copyright 22018, Chef Software, Inc.
+# Copyright 2018, Chef Software, Inc.
 
 require "chef/resource"
 
