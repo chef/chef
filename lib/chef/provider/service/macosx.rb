@@ -174,9 +174,9 @@ class Chef
 
         def shell_out_as_user(cmd)
           if @console_user
-            shell_out_with_systems_locale("#{@base_user_cmd} '#{cmd}'")
+            shell_out("#{@base_user_cmd} '#{cmd}'", default_env: false)
           else
-            shell_out_with_systems_locale(cmd)
+            shell_out(cmd, default_env: false)
 
           end
         end
@@ -224,8 +224,9 @@ class Chef
 
           # plist files can come in XML or Binary formats. this command
           # will make sure we get XML every time.
-          plist_xml = shell_out_with_systems_locale!(
-            "plutil -convert xml1 -o - #{@plist}"
+          plist_xml = shell_out!(
+            "plutil -convert xml1 -o - #{@plist}",
+            default_env: false
           ).stdout
 
           plist_doc = REXML::Document.new(plist_xml)

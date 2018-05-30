@@ -1,6 +1,6 @@
 #
 # Author:: Tim Smith (<tsmith@chef.io>)
-# Copyright:: 2017, Chef Software, Inc.
+# Copyright:: 2017-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,11 +45,11 @@ describe Chef::Provider::ZypperRepository do
   end
 
   let(:rpm_key_finger) do
-    double("shell_out_with_systems_locale", stdout: RPM_KEYS, exitstatus: 0, error?: false)
+    double("shell_out", stdout: RPM_KEYS, exitstatus: 0, error?: false)
   end
 
   let(:gpg_finger) do
-    double("shell_out_with_systems_locale", stdout: GPG_FINGER, exitstatus: 0, error?: false)
+    double("shell_out", stdout: GPG_FINGER, exitstatus: 0, error?: false)
   end
 
   it "responds to load_current_resource" do

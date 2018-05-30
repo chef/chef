@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,10 +36,6 @@ describe Chef::Resource do
 
   it "should mixin shell_out!" do
     expect(resource.respond_to?(:shell_out!)).to be true
-  end
-
-  it "should mixin shell_out_with_systems_locale" do
-    expect(resource.respond_to?(:shell_out_with_systems_locale)).to be true
   end
 
   describe "when inherited" do

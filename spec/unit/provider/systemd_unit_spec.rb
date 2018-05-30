@@ -58,19 +58,19 @@ describe Chef::Provider::SystemdUnit do
   end
 
   let(:shell_out_success) do
-    double("shell_out_with_systems_locale", :exitstatus => 0, :error? => false)
+    double("shell_out", :exitstatus => 0, :error? => false)
   end
 
   let(:shell_out_failure) do
-    double("shell_out_with_systems_locale", :exitstatus => 1, :error? => true)
+    double("shell_out", :exitstatus => 1, :error? => true)
   end
 
   let(:shell_out_masked) do
-    double("shell_out_with_systems_locale", :exit_status => 0, :error? => false, :stdout => "masked")
+    double("shell_out", :exit_status => 0, :error? => false, :stdout => "masked")
   end
 
   let(:shell_out_static) do
-    double("shell_out_with_systems_locale", :exit_status => 0, :error? => false, :stdout => "static")
+    double("shell_out", :exit_status => 0, :error? => false, :stdout => "static")
   end
 
   before(:each) do
@@ -285,9 +285,9 @@ describe Chef::Provider::SystemdUnit do
             new_resource.user("joe")
             allow(provider).to receive(:manage_unit_file).with(:create)
             expect(new_resource.triggers_reload).to eq true
-            allow(provider).to receive(:shell_out_with_systems_locale!)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user daemon-reload", user_cmd_opts)
+            allow(provider).to receive(:shell_out!)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user daemon-reload", **user_cmd_opts, default_env: false)
             provider.action_create
           end
 
@@ -298,9 +298,9 @@ describe Chef::Provider::SystemdUnit do
                              .and_return(true)
             allow(provider).to receive(:manage_unit_file).with(:delete)
             expect(new_resource.triggers_reload).to eq true
-            allow(provider).to receive(:shell_out_with_systems_locale!)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user daemon-reload", user_cmd_opts)
+            allow(provider).to receive(:shell_out!)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user daemon-reload", **user_cmd_opts, default_env: false)
             provider.action_delete
           end
 
@@ -308,9 +308,9 @@ describe Chef::Provider::SystemdUnit do
             new_resource.user("joe")
             new_resource.triggers_reload(false)
             allow(provider).to receive(:manage_unit_file).with(:create)
-            allow(provider).to receive(:shell_out_with_systems_locale!)
-            expect(provider).to_not receive(:shell_out_with_systems_locale!)
-                                      .with("#{systemctl_path} --user daemon-reload", user_cmd_opts)
+            allow(provider).to receive(:shell_out!)
+            expect(provider).to_not receive(:shell_out!)
+                                      .with("#{systemctl_path} --user daemon-reload", **user_cmd_opts, default_env: false)
             provider.action_create
           end
 
@@ -321,9 +321,9 @@ describe Chef::Provider::SystemdUnit do
                              .with(unit_path_user)
                              .and_return(true)
             allow(provider).to receive(:manage_unit_file).with(:delete)
-            allow(provider).to receive(:shell_out_with_systems_locale!)
-            expect(provider).to_not receive(:shell_out_with_systems_locale!)
-                                      .with("#{systemctl_path} --user daemon-reload", user_cmd_opts)
+            allow(provider).to receive(:shell_out!)
+            expect(provider).to_not receive(:shell_out!)
+                                      .with("#{systemctl_path} --user daemon-reload", **user_cmd_opts, default_env: false)
             provider.action_delete
           end
 
@@ -352,16 +352,16 @@ describe Chef::Provider::SystemdUnit do
 
           it "presets the unit" do
             new_resource.user("joe")
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user preset #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user preset #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_preset
           end
 
           it "reverts the unit" do
             new_resource.user("joe")
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user revert #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user revert #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_revert
           end
@@ -371,9 +371,9 @@ describe Chef::Provider::SystemdUnit do
           it "triggers a daemon-reload when creating a unit with triggers_reload" do
             allow(provider).to receive(:manage_unit_file).with(:create)
             expect(new_resource.triggers_reload).to eq true
-            allow(provider).to receive(:shell_out_with_systems_locale!)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system daemon-reload", {})
+            allow(provider).to receive(:shell_out!)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system daemon-reload", default_env: false)
             provider.action_create
           end
 
@@ -383,18 +383,18 @@ describe Chef::Provider::SystemdUnit do
                              .and_return(true)
             allow(provider).to receive(:manage_unit_file).with(:delete)
             expect(new_resource.triggers_reload).to eq true
-            allow(provider).to receive(:shell_out_with_systems_locale!)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system daemon-reload", {})
+            allow(provider).to receive(:shell_out!)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system daemon-reload", default_env: false)
             provider.action_delete
           end
 
           it "does not trigger a daemon-reload when creating a unit without triggers_reload" do
             new_resource.triggers_reload(false)
             allow(provider).to receive(:manage_unit_file).with(:create)
-            allow(provider).to receive(:shell_out_with_systems_locale!)
-            expect(provider).to_not receive(:shell_out_with_systems_locale!)
-                                      .with("#{systemctl_path} --system daemon-reload", {})
+            allow(provider).to receive(:shell_out!)
+            expect(provider).to_not receive(:shell_out!)
+                                      .with("#{systemctl_path} --system daemon-reload", default_env: false)
             provider.action_create
           end
 
@@ -404,9 +404,9 @@ describe Chef::Provider::SystemdUnit do
                              .with(unit_path_system)
                              .and_return(true)
             allow(provider).to receive(:manage_unit_file).with(:delete)
-            allow(provider).to receive(:shell_out_with_systems_locale!)
-            expect(provider).to_not receive(:shell_out_with_systems_locale!)
-                                      .with("#{systemctl_path} --system daemon-reload", {})
+            allow(provider).to receive(:shell_out!)
+            expect(provider).to_not receive(:shell_out!)
+                                      .with("#{systemctl_path} --system daemon-reload", default_env: false)
             provider.action_delete
           end
           it "deletes the file when it exists" do
@@ -431,15 +431,15 @@ describe Chef::Provider::SystemdUnit do
           end
 
           it "presets the unit" do
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system preset #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system preset #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_preset
           end
 
           it "reverts the unit" do
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system revert #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system revert #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_revert
           end
@@ -450,8 +450,8 @@ describe Chef::Provider::SystemdUnit do
         context "when a user is specified" do
           it "reenables the unit" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user reenable #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user reenable #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_reenable
           end
@@ -459,8 +459,8 @@ describe Chef::Provider::SystemdUnit do
           it "enables the unit when it is disabled" do
             current_resource.user(user_name)
             current_resource.enabled(false)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user enable #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user enable #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_enable
           end
@@ -468,22 +468,22 @@ describe Chef::Provider::SystemdUnit do
           it "does not enable the unit when it is enabled" do
             current_resource.user(user_name)
             current_resource.enabled(true)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_enable
           end
 
           it "does not enable the unit when it is static" do
             current_resource.user(user_name)
             current_resource.static(true)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_enable
           end
 
           it "disables the unit when it is enabled" do
             current_resource.user(user_name)
             current_resource.enabled(true)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user disable #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user disable #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_disable
           end
@@ -491,64 +491,64 @@ describe Chef::Provider::SystemdUnit do
           it "does not disable the unit when it is disabled" do
             current_resource.user(user_name)
             current_resource.enabled(false)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_disable
           end
 
           it "does not disable the unit when it is static" do
             current_resource.user(user_name)
             current_resource.static(true)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_disable
           end
         end
 
         context "when no user is specified" do
           it "reenables the unit" do
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system reenable #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system reenable #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_reenable
           end
 
           it "enables the unit when it is disabled" do
             current_resource.enabled(false)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system enable #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system enable #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_enable
           end
 
           it "does not enable the unit when it is enabled" do
             current_resource.enabled(true)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_enable
           end
 
           it "does not enable the unit when it is static" do
             current_resource.static(true)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_enable
           end
 
           it "disables the unit when it is enabled" do
             current_resource.enabled(true)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system disable #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system disable #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_disable
           end
 
           it "does not disable the unit when it is disabled" do
             current_resource.enabled(false)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_disable
           end
 
           it "does not disable the unit when it is static" do
             current_resource.user(user_name)
             current_resource.static(true)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_disable
           end
         end
@@ -559,8 +559,8 @@ describe Chef::Provider::SystemdUnit do
           it "masks the unit when it is unmasked" do
             current_resource.user(user_name)
             current_resource.masked(false)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user mask #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user mask #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_mask
           end
@@ -568,15 +568,15 @@ describe Chef::Provider::SystemdUnit do
           it "does not mask the unit when it is masked" do
             current_resource.user(user_name)
             current_resource.masked(true)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_mask
           end
 
           it "unmasks the unit when it is masked" do
             current_resource.user(user_name)
             current_resource.masked(true)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user unmask #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user unmask #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_unmask
           end
@@ -584,7 +584,7 @@ describe Chef::Provider::SystemdUnit do
           it "does not unmask the unit when it is unmasked" do
             current_resource.user(user_name)
             current_resource.masked(false)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_unmask
           end
         end
@@ -592,29 +592,29 @@ describe Chef::Provider::SystemdUnit do
         context "when no user is specified" do
           it "masks the unit when it is unmasked" do
             current_resource.masked(false)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system mask #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system mask #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_mask
           end
 
           it "does not mask the unit when it is masked" do
             current_resource.masked(true)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_mask
           end
 
           it "unmasks the unit when it is masked" do
             current_resource.masked(true)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system unmask #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system unmask #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_unmask
           end
 
           it "does not unmask the unit when it is unmasked" do
             current_resource.masked(false)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_unmask
           end
         end
@@ -625,8 +625,8 @@ describe Chef::Provider::SystemdUnit do
           it "starts the unit when it is inactive" do
             current_resource.user(user_name)
             current_resource.active(false)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user start #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user start #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_start
           end
@@ -634,15 +634,15 @@ describe Chef::Provider::SystemdUnit do
           it "does not start the unit when it is active" do
             current_resource.user(user_name)
             current_resource.active(true)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_start
           end
 
           it "stops the unit when it is active" do
             current_resource.user(user_name)
             current_resource.active(true)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user stop #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user stop #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_stop
           end
@@ -650,7 +650,7 @@ describe Chef::Provider::SystemdUnit do
           it "does not stop the unit when it is inactive" do
             current_resource.user(user_name)
             current_resource.active(false)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_stop
           end
         end
@@ -658,29 +658,29 @@ describe Chef::Provider::SystemdUnit do
         context "when no user is specified" do
           it "starts the unit when it is inactive" do
             current_resource.active(false)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system start #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system start #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_start
           end
 
           it "does not start the unit when it is active" do
             current_resource.active(true)
-            expect(provider).to_not receive(:shell_out_with_systems_locale!)
+            expect(provider).to_not receive(:shell_out!)
             provider.action_start
           end
 
           it "stops the unit when it is active" do
             current_resource.active(true)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system stop #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system stop #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_stop
           end
 
           it "does not stop the unit when it is inactive" do
             current_resource.active(false)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_stop
           end
         end
@@ -690,8 +690,8 @@ describe Chef::Provider::SystemdUnit do
         context "when a user is specified" do
           it "restarts the unit" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user restart #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user restart #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_restart
           end
@@ -699,8 +699,8 @@ describe Chef::Provider::SystemdUnit do
           it "reloads the unit if active" do
             current_resource.user(user_name)
             current_resource.active(true)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user reload #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user reload #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_reload
           end
@@ -708,30 +708,30 @@ describe Chef::Provider::SystemdUnit do
           it "does not reload if the unit is inactive" do
             current_resource.user(user_name)
             current_resource.active(false)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_reload
           end
         end
 
         context "when no user is specified" do
           it "restarts the unit" do
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system restart #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system restart #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_restart
           end
 
           it "reloads the unit if active" do
             current_resource.active(true)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system reload #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system reload #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_reload
           end
 
           it "does not reload the unit if inactive" do
             current_resource.active(false)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!)
+            expect(provider).not_to receive(:shell_out!)
             provider.action_reload
           end
         end
@@ -741,8 +741,8 @@ describe Chef::Provider::SystemdUnit do
         context "when a user is specified" do
           it "try-restarts the unit" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user try-restart #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user try-restart #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_try_restart
           end
@@ -750,8 +750,8 @@ describe Chef::Provider::SystemdUnit do
 
         context "when no user is specified" do
           it "try-restarts the unit" do
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system try-restart #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system try-restart #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_try_restart
           end
@@ -762,8 +762,8 @@ describe Chef::Provider::SystemdUnit do
         context "when a user is specified" do
           it "reload-or-restarts the unit" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user reload-or-restart #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user reload-or-restart #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_reload_or_restart
           end
@@ -771,8 +771,8 @@ describe Chef::Provider::SystemdUnit do
 
         context "when no user is specified" do
           it "reload-or-restarts the unit" do
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system reload-or-restart #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system reload-or-restart #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_reload_or_restart
           end
@@ -783,8 +783,8 @@ describe Chef::Provider::SystemdUnit do
         context "when a user is specified" do
           it "reload-or-try-restarts the unit" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --user reload-or-try-restart #{unit_name_escaped}", user_cmd_opts)
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --user reload-or-try-restart #{unit_name_escaped}", **user_cmd_opts, default_env: false)
                                   .and_return(shell_out_success)
             provider.action_reload_or_try_restart
           end
@@ -792,8 +792,8 @@ describe Chef::Provider::SystemdUnit do
 
         context "when no user is specified" do
           it "reload-or-try-restarts the unit" do
-            expect(provider).to receive(:shell_out_with_systems_locale!)
-                                  .with("#{systemctl_path} --system reload-or-try-restart #{unit_name_escaped}", {})
+            expect(provider).to receive(:shell_out!)
+                                  .with("#{systemctl_path} --system reload-or-try-restart #{unit_name_escaped}", default_env: false)
                                   .and_return(shell_out_success)
             provider.action_reload_or_try_restart
           end
