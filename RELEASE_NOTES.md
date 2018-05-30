@@ -65,6 +65,7 @@ To encrypt your existing user key, you can use OpenSSL:
 
 ```
 ( openssl rsa -in user.pem -pubout && openssl rsa -in user.pem -aes256 ) > user_enc.pem
+chmod 600 user_enc.pem
 ```
 
 This will prompt you for a passphrase for to use to encrypt the key. You can then
