@@ -1,26 +1,23 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.22.5 -->
-## [v12.22.5](https://github.com/chef/chef/tree/v12.22.5) (2018-05-17)
-
-#### Merged Pull Requests
-- Backport Ubuntu 1804 fixes [#7279](https://github.com/chef/chef/pull/7279) ([thommay](https://github.com/thommay))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=12.22.3 -->
-### Changes since 12.22.3 release
-
-#### Merged Pull Requests
-- Backport Ubuntu 1804 fixes [#7279](https://github.com/chef/chef/pull/7279) ([thommay](https://github.com/thommay)) <!-- 12.22.5 -->
-- we removed the state default property in 13 [#7273](https://github.com/chef/chef/pull/7273) ([thommay](https://github.com/thommay)) <!-- 12.22.4 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v12.22.5](https://github.com/chef/chef/tree/v12.22.5) (2018-05-30)
+
+#### Merged Pull Requests
+- we removed the state default property in 13 [#7273](https://github.com/chef/chef/pull/7273) ([thommay](https://github.com/thommay))
+- Backport Ubuntu 1804 fixes [#7279](https://github.com/chef/chef/pull/7279) ([thommay](https://github.com/thommay))
+<!-- latest_stable_release -->
+
 ## [v12.22.3](https://github.com/chef/chef/tree/v12.22.3) (2018-04-09)
 
 #### Merged Pull Requests
 - Pass pointer to LsaFreeMemory, not FFI::MemoryPointer [#6992](https://github.com/chef/chef/pull/6992) ([btm](https://github.com/btm))
 - Fix regression in #6980, add functional tests [#7011](https://github.com/chef/chef/pull/7011) ([btm](https://github.com/btm))
-<!-- latest_stable_release -->
 
 ## [v12.22.1](https://github.com/chef/chef/tree/v12.22.1) (2018-03-01)
 
