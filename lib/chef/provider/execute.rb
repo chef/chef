@@ -27,7 +27,7 @@ class Chef
 
       provides :execute
 
-      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :internal
+      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
@@ -97,7 +97,7 @@ class Chef
         opts[:group]       = group if group
         opts[:cwd]         = cwd if cwd
         opts[:umask]       = umask if umask
-        opts[:internal]    = internal
+        opts[:default_env] = default_env
         opts[:log_level]   = :info
         opts[:log_tag]     = new_resource.to_s
         if (logger.info? || live_stream?) && !sensitive?

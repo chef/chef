@@ -131,7 +131,7 @@ describe Chef::Provider::Script, "action_run" do
 
     describe "when running the script" do
       let (:default_opts) do
-        { timeout: 3600, returns: 0, internal: false, log_level: :info, log_tag: "script[run some perl code]" }
+        { timeout: 3600, returns: 0, default_env: false, log_level: :info, log_tag: "script[run some perl code]" }
       end
 
       before do

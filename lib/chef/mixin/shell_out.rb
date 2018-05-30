@@ -104,9 +104,9 @@ class Chef
       # generally must support UTF-8 unicode.
       def shell_out(*args, **options)
         options = options.dup
-        internal = options.delete(:internal)
-        internal = true if internal.nil?
-        if internal
+        default_env = options.delete(:default_env)
+        default_env = true if default_env.nil?
+        if default_env
           env_key = options.key?(:env) ? :env : :environment
           options[env_key] = {
             "LC_ALL" => Chef::Config[:internal_locale],
@@ -126,11 +126,11 @@ class Chef
       end
 
       def shell_out_with_systems_locale(*args, **options) # FIXME: deprecate
-        shell_out(*args, internal: false, **options)
+        shell_out(*args, default_env: false, **options)
       end
 
       def shell_out_with_systems_locale!(*args, **options) # FIXME: deprecate
-        shell_out!(*args, internal: false, **options)
+        shell_out!(*args, default_env: false, **options)
       end
 
       # Helper for subclasses to convert an array of string args into a string.  It

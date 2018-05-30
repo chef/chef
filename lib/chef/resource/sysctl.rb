@@ -84,7 +84,7 @@ class Chef
 
           execute "Load sysctl values" do
             command "sysctl #{'-e ' if new_resource.ignore_error}-p"
-            internal true
+            default_env true
             action :run
           end
         end
@@ -99,7 +99,7 @@ class Chef
             end
 
             execute "Load sysctl values" do
-              internal true
+              default_env true
               command "sysctl -p"
               action :run
             end
