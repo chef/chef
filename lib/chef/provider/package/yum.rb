@@ -260,7 +260,7 @@ class Chef
         end
 
         def yum(*args)
-          shell_out_with_timeout!(a_to_s(yum_binary, *args))
+          shell_out_compact_timeout!(yum_binary, *args)
         end
 
         def safe_version_array
