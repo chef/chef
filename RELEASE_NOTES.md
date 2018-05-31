@@ -52,6 +52,28 @@ suppress the error output when the resource does in fact fail.
 - The sysctl resource correctly handles missing keys when used with `ignore_error`
 - --recipe-url apparently never worked on Windows. Now it does.
 
+## `ssh-agent` support for user keys
+
+You can now use `ssh-agent` to hold your user key when using knife. This allows
+storing your user key in an encrypted form as well as using `ssh -A` agent forwarding
+for running knife commands from remote devices.
+
+You can enable this by add `ssh_agent_signing true` to your `knife.rb` or
+`ssh_agent_signing = true` in your `credentials` file.
+
+To encrypt your existing user key, you can use OpenSSL:
+
+```
+( openssl rsa -in user.pem -pubout && openssl rsa -in user.pem -aes256 ) > user_enc.pem
+chmod 600 user_enc.pem
+```
+
+This will prompt you for a passphrase for to use to encrypt the key. You can then
+load the key into your `ssh-agent` by running `ssh-add user_enc.pem`. Make sure
+you add the `ssh_agent_signing` to your configuration, and update your `client_key`
+to point at the new, encrypted key (and once you've verified things are working,
+remember to delete your unencrypted key file).
+
 # Ohai Release Notes 14.1:
 
 ## Configurable DMI Whitelist

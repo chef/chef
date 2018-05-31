@@ -592,7 +592,7 @@ module ChefConfig
     # the 'mixlib-authorization' project for more detail). Currently, versions
     # 1.0, 1.1, and 1.3 are available.
     default :authentication_protocol_version do
-      if fips
+      if fips || ssh_agent_signing
         "1.3"
       else
         "1.1"
@@ -620,6 +620,10 @@ module ChefConfig
     # If the path of the key goes through a directory like /tmp this should
     # never be set to true or its possibly an easily exploitable security hole.
     default :follow_client_key_symlink, false
+
+    # Enable ssh-agent signing mode. This requires {client_key} be set to a
+    # public key rather than the usual private key.
+    default :ssh_agent_signing, false
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
