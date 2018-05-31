@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -95,10 +95,10 @@ class Chef
 
         def install_package(names, versions)
           if new_resource.source
-            dnf(options, "-y install", new_resource.source)
+            dnf(options, "-y", "install", new_resource.source)
           else
             resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
-            dnf(options, "-y install", resolved_names)
+            dnf(options, "-y", "install", resolved_names)
           end
           flushcache
         end
@@ -108,7 +108,7 @@ class Chef
 
         def remove_package(names, versions)
           resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }
-          dnf(options, "-y remove", resolved_names)
+          dnf(options, "-y", "remove", resolved_names)
           flushcache
         end
 
@@ -167,7 +167,7 @@ class Chef
         end
 
         def dnf(*args)
-          shell_out_with_timeout!(a_to_s("dnf", *args))
+          shell_out_compact_timeout!("dnf", *args)
         end
 
         def safe_version_array
