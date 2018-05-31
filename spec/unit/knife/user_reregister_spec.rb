@@ -32,24 +32,6 @@ describe Chef::Knife::UserReregister do
     allow(user_mock).to receive(:username).and_return("a_user")
   end
 
-  # delete this once OSC11 support is gone
-  context "when the username field is not supported by the server" do
-    before do
-      allow(knife).to receive(:run_osc_11_user_reregister).and_raise(SystemExit)
-      allow(user_mock).to receive(:username).and_return(nil)
-    end
-
-    it "displays the osc warning" do
-      expect(knife.ui).to receive(:warn).with(knife.osc_11_warning)
-      expect { knife.run }.to raise_error(SystemExit)
-    end
-
-    it "forwards the command to knife osc_user edit" do
-      expect(knife).to receive(:run_osc_11_user_reregister)
-      expect { knife.run }.to raise_error(SystemExit)
-    end
-  end
-
   it "prints usage and exits when a user name is not provided" do
     knife.name_args = []
     expect(knife).to receive(:show_usage)
