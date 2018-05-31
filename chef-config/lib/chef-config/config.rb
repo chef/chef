@@ -767,7 +767,6 @@ module ChefConfig
       default :bootstrap_template, nil
       default :secret, nil
       default :secret_file, nil
-      default :identity_file, nil
       default :host_key_verify, nil
       default :forward_agent, nil
       default :sort_status_reverse, nil
