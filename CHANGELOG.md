@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.26 -->
-## [v14.1.26](https://github.com/chef/chef/tree/v14.1.26) (2018-05-31)
+<!-- latest_release 14.1.27 -->
+## [v14.1.27](https://github.com/chef/chef/tree/v14.1.27) (2018-05-31)
 
 #### Merged Pull Requests
-- Better errors with uninstalled official knife plugins [#7326](https://github.com/chef/chef/pull/7326) ([tas50](https://github.com/tas50))
+- convert a_to_s to shell_out_compact in DNF/yum [#7313](https://github.com/chef/chef/pull/7313) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- convert a_to_s to shell_out_compact in DNF/yum [#7313](https://github.com/chef/chef/pull/7313) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.27 -->
 - Better errors with uninstalled official knife plugins [#7326](https://github.com/chef/chef/pull/7326) ([tas50](https://github.com/tas50)) <!-- 14.1.26 -->
 - windows_ad_join: Ensure that reboot requests work [#7328](https://github.com/chef/chef/pull/7328) ([thommay](https://github.com/thommay)) <!-- 14.1.25 -->
 - Properly print path to config file to the screen in knife configure [#7325](https://github.com/chef/chef/pull/7325) ([tas50](https://github.com/tas50)) <!-- 14.1.24 -->
