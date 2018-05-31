@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.23 -->
-## [v14.1.23](https://github.com/chef/chef/tree/v14.1.23) (2018-05-30)
+<!-- latest_release 14.1.24 -->
+## [v14.1.24](https://github.com/chef/chef/tree/v14.1.24) (2018-05-31)
 
 #### Merged Pull Requests
-- add default_env flag to shell_out and execute resource [#7298](https://github.com/chef/chef/pull/7298) ([lamont-granquist](https://github.com/lamont-granquist))
+- Properly print path to config file to the screen in knife configure [#7325](https://github.com/chef/chef/pull/7325) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- Properly print path to config file to the screen in knife configure [#7325](https://github.com/chef/chef/pull/7325) ([tas50](https://github.com/tas50)) <!-- 14.1.24 -->
 - add default_env flag to shell_out and execute resource [#7298](https://github.com/chef/chef/pull/7298) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.23 -->
 - Cookbook Version:  add host-&lt;fqdn&gt; to the error message for templates and files specificity [#7295](https://github.com/chef/chef/pull/7295) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.22 -->
 - Cleanup AIX and Solaris user resources. [#7249](https://github.com/chef/chef/pull/7249) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.21 -->
