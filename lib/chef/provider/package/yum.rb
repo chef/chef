@@ -150,7 +150,7 @@ class Chef
         # support to lock / unlock.  The best solution is to write an execute resource which does a only_if `yum versionlock | grep '^pattern`` kind of approach
         def unlock_package(names, versions)
           # yum versionlock delete on rhel6 needs the glob nonsense in the following command
-          yum("-d0", "-e0", "-y", options, "versionlock", "delete", resolved_package_lock_names(names).map { |n| "'*:#{n}-*'" })
+          yum("-d0", "-e0", "-y", options, "versionlock", "delete", resolved_package_lock_names(names).map { |n| "*:#{n}-*" })
         end
 
         private
