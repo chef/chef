@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.25 -->
-## [v14.1.25](https://github.com/chef/chef/tree/v14.1.25) (2018-05-31)
+<!-- latest_release 14.1.26 -->
+## [v14.1.26](https://github.com/chef/chef/tree/v14.1.26) (2018-05-31)
 
 #### Merged Pull Requests
-- windows_ad_join: Ensure that reboot requests work [#7328](https://github.com/chef/chef/pull/7328) ([thommay](https://github.com/thommay))
+- Better errors with uninstalled official knife plugins [#7326](https://github.com/chef/chef/pull/7326) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- Better errors with uninstalled official knife plugins [#7326](https://github.com/chef/chef/pull/7326) ([tas50](https://github.com/tas50)) <!-- 14.1.26 -->
 - windows_ad_join: Ensure that reboot requests work [#7328](https://github.com/chef/chef/pull/7328) ([thommay](https://github.com/thommay)) <!-- 14.1.25 -->
 - Properly print path to config file to the screen in knife configure [#7325](https://github.com/chef/chef/pull/7325) ([tas50](https://github.com/tas50)) <!-- 14.1.24 -->
 - add default_env flag to shell_out and execute resource [#7298](https://github.com/chef/chef/pull/7298) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.23 -->
