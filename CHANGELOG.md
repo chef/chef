@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.29 -->
-## [v14.1.29](https://github.com/chef/chef/tree/v14.1.29) (2018-05-31)
+<!-- latest_release 14.1.30 -->
+## [v14.1.30](https://github.com/chef/chef/tree/v14.1.30) (2018-05-31)
 
 #### Merged Pull Requests
-- fix yum versionlock quoting [#7329](https://github.com/chef/chef/pull/7329) ([lamont-granquist](https://github.com/lamont-granquist))
+- resource_inspector: Add default values for properties [#7300](https://github.com/chef/chef/pull/7300) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- resource_inspector: Add default values for properties [#7300](https://github.com/chef/chef/pull/7300) ([thommay](https://github.com/thommay)) <!-- 14.1.30 -->
 - fix yum versionlock quoting [#7329](https://github.com/chef/chef/pull/7329) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.29 -->
 - Support signing with ssh-agent [#7324](https://github.com/chef/chef/pull/7324) ([coderanger](https://github.com/coderanger)) <!-- 14.1.28 -->
 - convert a_to_s to shell_out_compact in DNF/yum [#7313](https://github.com/chef/chef/pull/7313) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.27 -->
