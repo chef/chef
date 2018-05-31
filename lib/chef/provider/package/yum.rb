@@ -117,10 +117,10 @@ class Chef
           end
 
           if new_resource.source
-            yum(options, "-y #{method}", new_resource.source)
+            yum(options, "-y", method, new_resource.source)
           else
             resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
-            yum(options, "-y #{method}", resolved_names)
+            yum(options, "-y", method, resolved_names)
           end
           flushcache
         end
@@ -130,7 +130,7 @@ class Chef
 
         def remove_package(names, versions)
           resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }
-          yum(options, "-y remove", resolved_names)
+          yum(options, "-y", "remove", resolved_names)
           flushcache
         end
 
@@ -143,14 +143,14 @@ class Chef
         # NB: the yum_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
         # support to lock / unlock.  The best solution is to write an execute resource which does a not_if `yum versionlock | grep '^pattern`` kind of approach
         def lock_package(names, versions)
-          yum("-d0 -e0 -y", options, "versionlock add", resolved_package_lock_names(names))
+          yum("-d0", "-e0", "-y", options, "versionlock", "add", resolved_package_lock_names(names))
         end
 
         # NB: the yum_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
         # support to lock / unlock.  The best solution is to write an execute resource which does a only_if `yum versionlock | grep '^pattern`` kind of approach
         def unlock_package(names, versions)
           # yum versionlock delete on rhel6 needs the glob nonsense in the following command
-          yum("-d0 -e0 -y", options, "versionlock delete", resolved_package_lock_names(names).map { |n| "'*:#{n}-*'" })
+          yum("-d0", "-e0", "-y", options, "versionlock", "delete", resolved_package_lock_names(names).map { |n| "'*:#{n}-*'" })
         end
 
         private
@@ -171,7 +171,7 @@ class Chef
         def locked_packages
           @locked_packages ||=
             begin
-              locked = shell_out_with_timeout!("yum versionlock list")
+              locked = yum("versionlock", "list")
               locked.stdout.each_line.map do |line|
                 line.sub(/-[^-]*-[^-]*$/, "").split(":").last.strip
               end
