@@ -219,15 +219,15 @@ class Chef
       end
 
       def daemon_reload
-        shell_out_with_systems_locale!("#{systemctl_cmd} daemon-reload", systemctl_opts)
+        shell_out!("#{systemctl_cmd} daemon-reload", **systemctl_opts, default_env: false)
       end
 
       def systemctl_execute!(action, unit)
-        shell_out_with_systems_locale!("#{systemctl_cmd} #{action} #{Shellwords.escape(unit)}", systemctl_opts)
+        shell_out!("#{systemctl_cmd} #{action} #{Shellwords.escape(unit)}", **systemctl_opts, default_env: false)
       end
 
       def systemctl_execute(action, unit)
-        shell_out("#{systemctl_cmd} #{action} #{Shellwords.escape(unit)}", systemctl_opts)
+        shell_out("#{systemctl_cmd} #{action} #{Shellwords.escape(unit)}", **systemctl_opts)
       end
 
       def systemctl_cmd

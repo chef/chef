@@ -82,13 +82,13 @@ XML
             allow(Etc).to receive(:getpwuid).and_return(@getpwuid)
             allow(node).to receive(:[]).with("platform_version").and_return(platform_version)
             cmd = "launchctl list #{service_label}"
-            allow(provider).to receive(:shell_out_with_systems_locale).
-              with(/(#{su_cmd} '#{cmd}'|#{cmd})/).
+            allow(provider).to receive(:shell_out).
+              with(/(#{su_cmd} '#{cmd}'|#{cmd})/, default_env: false).
               and_return(double("Status",
                                     :stdout => launchctl_stdout, :exitstatus => 0))
             allow(File).to receive(:exists?).and_return([true], [])
-            allow(provider).to receive(:shell_out_with_systems_locale!).
-              with(/plutil -convert xml1 -o/).
+            allow(provider).to receive(:shell_out!).
+              with(/plutil -convert xml1 -o/, default_env: false).
               and_return(double("Status", :stdout => plutil_stdout))
           end
 
@@ -256,7 +256,7 @@ SVC_LIST
               it "calls the start command if one is specified and service is not running" do
                 allow(new_resource).to receive(:start_command).and_return("cowsay dirty")
 
-                expect(provider).to receive(:shell_out_with_systems_locale!).with("cowsay dirty")
+                expect(provider).to receive(:shell_out!).with("cowsay dirty", default_env: false)
                 provider.start_service
               end
 
@@ -269,8 +269,8 @@ SVC_LIST
 
               it "starts service via launchctl if service found" do
                 cmd = "launchctl load -w " + session + plist
-                expect(provider).to receive(:shell_out_with_systems_locale).
-                  with(/(#{su_cmd} .#{cmd}.|#{cmd})/).
+                expect(provider).to receive(:shell_out).
+                  with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false).
                   and_return(0)
 
                 provider.start_service
@@ -288,7 +288,7 @@ SVC_LIST
               it "calls the stop command if one is specified and service is running" do
                 allow(new_resource).to receive(:stop_command).and_return("kill -9 123")
 
-                expect(provider).to receive(:shell_out_with_systems_locale!).with("kill -9 123")
+                expect(provider).to receive(:shell_out!).with("kill -9 123", default_env: false)
                 provider.stop_service
               end
 
@@ -301,8 +301,8 @@ SVC_LIST
 
               it "stops the service via launchctl if service found" do
                 cmd = "launchctl unload -w " + plist
-                expect(provider).to receive(:shell_out_with_systems_locale).
-                  with(/(#{su_cmd} .#{cmd}.|#{cmd})/).
+                expect(provider).to receive(:shell_out).
+                  with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false).
                   and_return(0)
 
                 provider.stop_service
@@ -321,7 +321,7 @@ SVC_LIST
               it "issues a command if given" do
                 allow(new_resource).to receive(:restart_command).and_return("reload that thing")
 
-                expect(provider).to receive(:shell_out_with_systems_locale!).with("reload that thing")
+                expect(provider).to receive(:shell_out!).with("reload that thing", default_env: false)
                 provider.restart_service
               end
 

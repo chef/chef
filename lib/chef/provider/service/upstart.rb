@@ -169,7 +169,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              shell_out_with_systems_locale!("/sbin/start #{@job}")
+              shell_out!("/sbin/start #{@job}", default_env: false)
             end
           end
 
@@ -185,7 +185,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              shell_out_with_systems_locale!("/sbin/stop #{@job}")
+              shell_out!("/sbin/stop #{@job}", default_env: false)
             end
           end
 
@@ -217,7 +217,7 @@ class Chef
             super
           else
             # upstart >= 0.6.3-4 supports reload (HUP)
-            shell_out_with_systems_locale!("/sbin/reload #{@job}")
+            shell_out!("/sbin/reload #{@job}", default_env: false)
           end
 
           @upstart_service_running = true
