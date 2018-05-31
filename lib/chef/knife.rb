@@ -234,7 +234,7 @@ class Chef
       end
     end
 
-    OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack terremark bluebox}
+    OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack azure google linode push vcenter lpar}
 
     class << self
       def list_commands(preferred_category = nil)
@@ -258,7 +258,6 @@ class Chef
         caller_line.split(/:\d+/).first
       end
 
-      # :nodoc:
       # Error out and print usage. probably because the arguments given by the
       # user could not be resolved to a subcommand.
       # @api private
@@ -272,10 +271,8 @@ class Chef
 
         if category_commands = guess_category(args)
           list_commands(category_commands)
-        elsif missing_plugin = ( OFFICIAL_PLUGINS.find { |plugin| plugin == args[0] } )
-          ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
-          ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}`")
-          ui.info("Use `chef gem install knife-#{missing_plugin}` instead if using ChefDK")
+        elsif OFFICIAL_PLUGINS.include?(args[0]) # command was an uninstalled official chef knife plugin
+          ui.info("Use `chef gem install knife-#{args[0]}` to install the plugin into ChefDK")
         else
           list_commands
         end
