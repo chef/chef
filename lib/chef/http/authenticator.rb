@@ -92,7 +92,7 @@ class Chef
         # Pass in '' as the passphrase to avoid OpenSSL prompting on the TTY if
         # given an encrypted key. This also helps if using a single file for
         # both the public and private key with ssh-agent mode.
-        @key = OpenSSL::PKey::RSA.new(@raw_key, '')
+        @key = OpenSSL::PKey::RSA.new(@raw_key, "")
       rescue SystemCallError, IOError => e
         Chef::Log.warn "Failed to read the private key #{key_file}: #{e.inspect}"
         raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key_file}, which you told me to use to sign requests!"

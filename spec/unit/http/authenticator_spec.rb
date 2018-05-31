@@ -20,7 +20,7 @@ require "spec_helper"
 require "chef/http/authenticator"
 
 describe Chef::HTTP::Authenticator do
-  let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: 'test') }
+  let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: "test") }
   let(:method) { "GET" }
   let(:url) { URI("https://chef.example.com/organizations/test") }
   let(:headers) { Hash.new }
@@ -110,7 +110,7 @@ YwIDAQAB
 -----END PUBLIC KEY-----
 EOH
 
-      let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: 'test', raw_key: public_key, ssh_agent_signing: true) }
+      let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: "test", raw_key: public_key, ssh_agent_signing: true) }
 
       it "sets use_ssh_agent if needed" do
         expect(Mixlib::Authentication::SignedHeaderAuth).to receive(:signing_object).and_wrap_original { |m, *args|
