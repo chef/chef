@@ -40,9 +40,11 @@ describe Chef::Resource::WindowsAdJoin do
     expect { resource.domain_name "example" }.to raise_error(ArgumentError)
   end
 
-  it "accepts :immediate, :delayed, or :never values for 'reboot' property" do
+  it "accepts :immediate, :reboot_now, :request_reboot, :delayed, or :never values for 'reboot' property" do
     expect { resource.reboot :immediate }.not_to raise_error
     expect { resource.reboot :delayed }.not_to raise_error
+    expect { resource.reboot :reboot_now }.not_to raise_error
+    expect { resource.reboot :request_reboot }.not_to raise_error
     expect { resource.reboot :never }.not_to raise_error
     expect { resource.reboot :nopenope }.to raise_error(ArgumentError)
   end

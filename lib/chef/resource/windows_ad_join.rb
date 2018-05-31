@@ -47,7 +47,7 @@ class Chef
                description: "The path to the OU where you would like to place the host."
 
       property :reboot, Symbol,
-               equal_to: [:immediate, :delayed, :never],
+               equal_to: [:immediate, :delayed, :never, :request_reboot, :reboot_now],
                validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the Chef run completes), and :never (Don't reboot)",
                description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the Chef run completes, or never. Note that a reboot is necessary for changes to take effect.",
                default: :immediate
@@ -71,8 +71,8 @@ class Chef
             raise "Failed to join the domain #{new_resource.domain_name}: #{ps_run.stderr}}" if ps_run.error?
 
             unless new_resource.reboot == :never
-              declare_resource(:reboot, "Reboot to join domain #{new_resource.domain_name}") do
-                action new_resource.reboot
+              reboot "Reboot to join domain #{new_resource.domain_name}" do
+                action clarify_reboot(new_resource.reboot)
                 reason "Reboot to join domain #{new_resource.domain_name}"
               end
             end
@@ -85,6 +85,19 @@ class Chef
           node_domain = powershell_out!("(Get-WmiObject Win32_ComputerSystem).Domain")
           raise "Failed to check if the system is joined to the domain #{new_resource.domain_name}: #{node_domain.stderr}}" if node_domain.error?
           node_domain.stdout.downcase.strip == new_resource.domain_name.downcase
+        end
+
+        # This resource historically took `:immediate` and `:delayed` as arguments to the reboot property but then
+        # tried to shove that straight to the `reboot` resource which objected strenuously
+        def clarify_reboot(reboot_action)
+          case reboot_action
+          when :immediate
+            :reboot_now
+          when :delayed
+            :request_reboot
+          else
+            reboot_action
+          end
         end
       end
     end
