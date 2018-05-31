@@ -100,7 +100,7 @@ class Chef
         @url.path.empty? ? SLASH : @url.path
       end
 
-      # DEPRECATED. Call request on an HTTP client object instead.
+      # @deprecated Call request on an HTTP client object instead.
       def call
         hide_net_http_bug do
           http_client.request(http_request) do |response|
@@ -114,7 +114,7 @@ class Chef
         Chef::Config
       end
 
-      # DEPRECATED. Call request on an HTTP client object instead.
+      # @deprecated Call request on an HTTP client object instead.
       def http_client
         @http_client ||= BasicClient.new(url).http_client
       end

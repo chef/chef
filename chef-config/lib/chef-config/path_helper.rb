@@ -152,7 +152,7 @@ module ChefConfig
       canonical_path(path1) == canonical_path(path2)
     end
 
-    # Note: this method is deprecated. Please use escape_glob_dirs
+    # @deprecated this method is deprecated. Please use escape_glob_dirs
     # Paths which may contain glob-reserved characters need
     # to be escaped before globbing can be done.
     # http://stackoverflow.com/questions/14127343
