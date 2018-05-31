@@ -271,9 +271,9 @@ class Chef
 
         if category_commands = guess_category(args)
           list_commands(category_commands)
-        elsif missing_plugin = ( OFFICIAL_PLUGINS.find { |plugin| plugin == args[0] } )
-          ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}`")
-          ui.info("Use `chef gem install knife-#{missing_plugin}` instead if using ChefDK")
+        elsif OFFICIAL_PLUGINS.include?(args[0]) # command was an uninstalled official chef knife plugin
+          ui.info("You can install the plugin with `(sudo) gem install knife-#{args[0]}`")
+          ui.info("Use `chef gem install knife-#{args[0]}` instead if using ChefDK")
         else
           list_commands
         end
