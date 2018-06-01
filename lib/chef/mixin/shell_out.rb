@@ -62,6 +62,7 @@ class Chef
       #
 
       def shell_out_compact(*args, **options)
+        options = maybe_add_timeout(options)
         if options.empty?
           shell_out(*clean_array(*args))
         else
@@ -70,6 +71,7 @@ class Chef
       end
 
       def shell_out_compact!(*args, **options)
+        options = maybe_add_timeout(options)
         if options.empty?
           shell_out!(*clean_array(*args))
         else
@@ -77,22 +79,21 @@ class Chef
         end
       end
 
-      # helper sugar for resources that support passing timeouts to shell_out
+      def maybe_add_timeout(options)
+        if is_a?(Chef::Provider) && !new_resource.is_a?(Chef::Resource::LWRPBase) && new_resource.respond_to?(:timeout)
+          options = options.dup
+          options[:timeout] = new_resource.timeout if new_resource.timeout
+          options[:timeout] = 900 unless options.key?(:timeout)
+        end
+        options
+      end
 
       def shell_out_compact_timeout(*args, **options)
-        raise "object is not a resource that supports timeouts" unless respond_to?(:new_resource) && new_resource.respond_to?(:timeout)
-        options_dup = options.dup
-        options_dup[:timeout] = new_resource.timeout if new_resource.timeout
-        options_dup[:timeout] = 900 unless options_dup.key?(:timeout)
-        shell_out_compact(*args, **options_dup)
+        shell_out_compact(*args, **options)
       end
 
       def shell_out_compact_timeout!(*args, **options)
-        raise "object is not a resource that supports timeouts" unless respond_to?(:new_resource) && new_resource.respond_to?(:timeout)
-        options_dup = options.dup
-        options_dup[:timeout] = new_resource.timeout if new_resource.timeout
-        options_dup[:timeout] = 900 unless options_dup.key?(:timeout)
-        shell_out_compact!(*args, **options_dup)
+        shell_out_compact!(*args, **options)
       end
 
       # shell_out! runs a command on the system and will raise an error if the command fails, which is what you want
