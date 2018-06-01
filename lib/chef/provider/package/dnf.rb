@@ -167,7 +167,7 @@ class Chef
         end
 
         def dnf(*args)
-          shell_out_compact_timeout!("dnf", *args)
+          shell_out_compact!("dnf", *args)
         end
 
         def safe_version_array

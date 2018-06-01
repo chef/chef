@@ -25,6 +25,8 @@ class Chef
       provides :portage_package
 
       description "Use the portage_package resource to manage packages for the Gentoo platform."
+
+      property :timeout, default: 3600
     end
   end
 end

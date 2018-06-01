@@ -207,7 +207,7 @@ Section: ruby
 
     it "should raise an exception if dpkg-deb -W fails to run" do
       status = double(:stdout => "", :exitstatus => -1)
-      expect(provider).to receive(:shell_out_compact_timeout!).with("dpkg-deb", "-W", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb").and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      expect(provider).to receive(:shell_out_compact!).with("dpkg-deb", "-W", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb").and_raise(Mixlib::ShellOut::ShellCommandFailed)
       expect { provider.load_current_resource }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
   end

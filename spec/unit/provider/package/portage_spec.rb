@@ -1,6 +1,6 @@
 #
 # Author:: Caleb Tennis (<caleb.tennis@gmail.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,19 +22,19 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Package.new("dev-util/git")
-    @new_resource_without_category = Chef::Resource::Package.new("git")
-    @current_resource = Chef::Resource::Package.new("dev-util/git")
+    @new_resource = Chef::Resource::PortagePackage.new("dev-util/git")
+    @new_resource_without_category = Chef::Resource::PortagePackage.new("git")
+    @current_resource = Chef::Resource::PortagePackage.new("dev-util/git")
 
     @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context)
-    allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
+    allow(Chef::Resource::PortagePackage).to receive(:new).and_return(@current_resource)
   end
 
   describe "when determining the current state of the package" do
 
     it "should create a current resource with the name of new_resource" do
       allow(::Dir).to receive(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0"])
-      expect(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
+      expect(Chef::Resource::PortagePackage).to receive(:new).and_return(@current_resource)
       @provider.load_current_resource
     end
 
@@ -148,17 +148,17 @@ EOF
 
     describe Chef::Provider::Package::Portage, "install_package" do
       it "should install a normally versioned package using portage" do
-        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0")
+        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0", timeout: 3600)
         @provider.install_package("dev-util/git", "1.0.0")
       end
 
       it "should install a tilde versioned package using portage" do
-        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "~dev-util/git-1.0.0")
+        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "~dev-util/git-1.0.0", timeout: 3600)
         @provider.install_package("dev-util/git", "~1.0.0")
       end
 
       it "should add options to the emerge command when specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "--oneshot", "=dev-util/git-1.0.0")
+        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "--oneshot", "=dev-util/git-1.0.0", timeout: 3600)
         @new_resource.options "--oneshot"
         @provider.install_package("dev-util/git", "1.0.0")
       end
@@ -166,12 +166,12 @@ EOF
 
     describe Chef::Provider::Package::Portage, "remove_package" do
       it "should un-emerge the package with no version specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "dev-util/git")
+        expect(@provider).to receive(:shell_out!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "dev-util/git", timeout: 3600)
         @provider.remove_package("dev-util/git", nil)
       end
 
       it "should un-emerge the package with a version specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0")
+        expect(@provider).to receive(:shell_out!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0", timeout: 3600)
         @provider.remove_package("dev-util/git", "1.0.0")
       end
     end

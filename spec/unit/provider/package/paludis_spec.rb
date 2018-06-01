@@ -1,6 +1,6 @@
 #
 # Author:: Vasiliy Tolstov <v.tolstov@selfip.ru>
-# Copyright:: Copyright 2014-2016, Chef Software Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,7 +59,7 @@ PKG_STATUS
     end
 
     it "should run pkg info with the package name" do
-      expect(@provider).to receive(:shell_out!).with("cave", "-L", "warning", "print-ids", "-M", "none", "-m", @new_resource.package_name, "-f", "%c/%p %v %r\n").and_return(@shell_out)
+      expect(@provider).to receive(:shell_out!).with("cave", "-L", "warning", "print-ids", "-M", "none", "-m", @new_resource.package_name, "-f", "%c/%p %v %r\n", timeout: 900).and_return(@shell_out)
       @provider.load_current_resource
     end
 
@@ -126,7 +126,7 @@ PKG_STATUS
 
   context "when uninstalling a package" do
     it "should run pkg uninstall with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("cave", "-L", "warning", "uninstall", "-x", "=net/ntp-4.2.6_p5-r2")
+      expect(@provider).to receive(:shell_out!).with("cave", "-L", "warning", "uninstall", "-x", "=net/ntp-4.2.6_p5-r2", timeout: 900)
       @provider.remove_package("net/ntp", "4.2.6_p5-r2")
     end
 

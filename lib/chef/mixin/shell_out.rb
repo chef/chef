@@ -80,10 +80,10 @@ class Chef
       end
 
       def maybe_add_timeout(options)
-        if is_a?(Chef::Provider) && !new_resource.is_a?(Chef::Resource::LWRPBase) && new_resource.respond_to?(:timeout)
+        if is_a?(Chef::Provider) && !new_resource.is_a?(Chef::Resource::LWRPBase) && new_resource.respond_to?(:timeout) && !options.key?(:timeout)
           options = options.dup
-          options[:timeout] = new_resource.timeout if new_resource.timeout
-          options[:timeout] = 900 unless options.key?(:timeout)
+          # historically resources have not properly declared defaults on their timeouts, so a default default of 900s was enforced here
+          options[:timeout] = new_resource.timeout ? new_resource.timeout.to_f : 900
         end
         options
       end

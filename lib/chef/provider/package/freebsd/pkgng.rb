@@ -28,21 +28,21 @@ class Chef
             unless current_resource.version
               case new_resource.source
               when /^(http|ftp|\/)/
-                shell_out_compact_timeout!("pkg", "add", options, new_resource.source, env: { "LC_ALL" => nil }).status
+                shell_out_compact!("pkg", "add", options, new_resource.source, env: { "LC_ALL" => nil }).status
                 logger.trace("#{new_resource} installed from: #{new_resource.source}")
               else
-                shell_out_compact_timeout!("pkg", "install", "-y", options, name, env: { "LC_ALL" => nil }).status
+                shell_out_compact!("pkg", "install", "-y", options, name, env: { "LC_ALL" => nil }).status
               end
             end
           end
 
           def remove_package(name, version)
             options_dup = options && options.map { |str| str.sub(repo_regex, "") }.reject!(&:empty?)
-            shell_out_compact_timeout!("pkg", "delete", "-y", options_dup, "#{name}#{version ? '-' + version : ''}", env: nil).status
+            shell_out_compact!("pkg", "delete", "-y", options_dup, "#{name}#{version ? '-' + version : ''}", env: nil).status
           end
 
           def current_installed_version
-            pkg_info = shell_out_compact_timeout!("pkg", "info", new_resource.package_name, env: nil, returns: [0, 70])
+            pkg_info = shell_out_compact!("pkg", "info", new_resource.package_name, env: nil, returns: [0, 70])
             pkg_info.stdout[/^Version +: (.+)$/, 1]
           end
 
@@ -61,7 +61,7 @@ class Chef
               options = $1.split(" ")
             end
 
-            pkg_query = shell_out_compact_timeout!("pkg", "rquery", options, "%v", new_resource.package_name, env: nil)
+            pkg_query = shell_out_compact!("pkg", "rquery", options, "%v", new_resource.package_name, env: nil)
             pkg_query.exitstatus == 0 ? pkg_query.stdout.strip.split(/\n/).last : nil
           end
 
