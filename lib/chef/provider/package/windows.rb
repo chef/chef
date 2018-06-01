@@ -39,6 +39,13 @@ class Chef
             a.assertion { new_resource.source || msi? }
             a.failure_message Chef::Exceptions::NoWindowsPackageSource, "Source for package #{new_resource.name} must be specified in the resource's source property for package to be installed because the package_name property is used to test for the package installation state for this package type."
           end
+
+          unless uri_scheme?(new_resource.source)
+            requirements.assert(:install) do |a|
+              a.assertion { ::File.exist?(new_resource.source) }
+              a.failure_message Chef::Exceptions::Package, "Source for package #{new_resource.name} does not exist"
+            end
+          end
         end
 
         # load_current_resource is run in Chef::Provider#run_action when not in whyrun_mode?

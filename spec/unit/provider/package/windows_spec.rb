@@ -394,6 +394,18 @@ describe Chef::Provider::Package::Windows, :windows_only do
         end
       end
     end
+
+    context "a missing local file is given" do
+      let(:resource_source) { "C:/a_missing_file.exe" }
+      let(:installer_type) { nil }
+
+      it "raises a Package error" do
+        allow(::File).to receive(:exist?).with(provider.new_resource.source).and_return(false)
+
+        provider.load_current_resource
+        expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+      end
+    end
   end
 
   shared_context "valid checksum" do
