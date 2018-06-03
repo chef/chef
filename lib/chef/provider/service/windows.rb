@@ -273,6 +273,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       logger.trace("#{@new_resource} startup_type already #{startup_type} - nothing to do")
     end
 
+    converge_delayed_start
+
     # Avoid changing enabled from true/false for now
     @new_resource.enabled(nil)
   end
