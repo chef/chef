@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.31 -->
-## [v14.1.31](https://github.com/chef/chef/tree/v14.1.31) (2018-06-01)
+<!-- latest_release 14.1.32 -->
+## [v14.1.32](https://github.com/chef/chef/tree/v14.1.32) (2018-06-03)
 
 #### Merged Pull Requests
-- Check local file exists before installing a windows package [#7299](https://github.com/chef/chef/pull/7299) ([josh-barker](https://github.com/josh-barker))
+- Fix :configure_startup action to configure delayed start [#7297](https://github.com/chef/chef/pull/7297) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- Fix :configure_startup action to configure delayed start [#7297](https://github.com/chef/chef/pull/7297) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.1.32 -->
 - Check local file exists before installing a windows package [#7299](https://github.com/chef/chef/pull/7299) ([josh-barker](https://github.com/josh-barker)) <!-- 14.1.31 -->
 - resource_inspector: Add default values for properties [#7300](https://github.com/chef/chef/pull/7300) ([thommay](https://github.com/thommay)) <!-- 14.1.30 -->
 - fix yum versionlock quoting [#7329](https://github.com/chef/chef/pull/7329) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.29 -->
