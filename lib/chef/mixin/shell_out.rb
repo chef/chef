@@ -62,7 +62,7 @@ class Chef
       #
 
       def shell_out_compact(*args, **options)
-        options = maybe_add_timeout(options)
+        options = Chef::Mixin::ShellOut.maybe_add_timeout(options)
         if options.empty?
           shell_out(*clean_array(*args))
         else
@@ -71,7 +71,7 @@ class Chef
       end
 
       def shell_out_compact!(*args, **options)
-        options = maybe_add_timeout(options)
+        options = Chef::Mixin::ShellOut.maybe_add_timeout(options)
         if options.empty?
           shell_out!(*clean_array(*args))
         else
@@ -79,7 +79,8 @@ class Chef
         end
       end
 
-      def maybe_add_timeout(options)
+      # @api private
+      def self.maybe_add_timeout(options)
         if is_a?(Chef::Provider) && !new_resource.is_a?(Chef::Resource::LWRPBase) && new_resource.respond_to?(:timeout) && !options.key?(:timeout)
           options = options.dup
           # historically resources have not properly declared defaults on their timeouts, so a default default of 900s was enforced here
