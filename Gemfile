@@ -11,14 +11,9 @@ gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.ex
 gem "cheffish", "~> 14"
 
 group(:omnibus_package) do
-  # override for unf_ext for inspec 2 until
-  # https://github.com/knu/ruby-unf_ext/pull/39
-  # is merged and released
-  gem "unf_ext", "=0.0.7.6", :git => "https://github.com/jquick/ruby-unf_ext.git"
-
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec", "~> 2"
+  gem "inspec-core", "~> 2"
   gem "chef-vault"
 end
 
