@@ -157,6 +157,10 @@ class Chef
             "--no-gpg-checks"
           end
         end
+
+        def allow_downgrade
+          "--oldpackage" if new_resource.allow_downgrade
+        end
       end
     end
   end

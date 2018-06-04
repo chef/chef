@@ -23,6 +23,7 @@ class Chef
     class ZypperPackage < Chef::Resource::Package
       resource_name :zypper_package
       provides :package, platform_family: "suse"
+      property :allow_downgrade, [ true, false ], default: false
     end
   end
 end
