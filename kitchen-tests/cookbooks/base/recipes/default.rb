@@ -2,7 +2,7 @@
 # Cookbook:: base
 # Recipe:: default
 #
-# Copyright:: 2014-2017, Chef Software, Inc.
+# Copyright:: 2014-2018, Chef Software, Inc.
 #
 
 hostname "chef-travis-ci.chef.io"
@@ -85,3 +85,5 @@ openssl_rsa_public_key "/etc/ssl/rsakey_aes128cbc.pub" do
 end
 
 include_recipe "::tests"
+
+include_recipe "::docker"
