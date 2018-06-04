@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.33 -->
-## [v14.1.33](https://github.com/chef/chef/tree/v14.1.33) (2018-06-04)
+<!-- latest_release 14.1.34 -->
+## [v14.1.34](https://github.com/chef/chef/tree/v14.1.34) (2018-06-04)
 
 #### Merged Pull Requests
-- Allow securable resource tests to work on Windows 10 machines connected to an Azure Active Directory [#7301](https://github.com/chef/chef/pull/7301) ([stuartpreston](https://github.com/stuartpreston))
+- Quote git remote_url property (PR 6249 + chefstyle fix) [#7014](https://github.com/chef/chef/pull/7014) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- Quote git remote_url property (PR 6249 + chefstyle fix) [#7014](https://github.com/chef/chef/pull/7014) ([tas50](https://github.com/tas50)) <!-- 14.1.34 -->
 - Allow securable resource tests to work on Windows 10 machines connected to an Azure Active Directory [#7301](https://github.com/chef/chef/pull/7301) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.1.33 -->
 - Fix :configure_startup action to configure delayed start [#7297](https://github.com/chef/chef/pull/7297) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.1.32 -->
 - Check local file exists before installing a windows package [#7299](https://github.com/chef/chef/pull/7299) ([josh-barker](https://github.com/josh-barker)) <!-- 14.1.31 -->
