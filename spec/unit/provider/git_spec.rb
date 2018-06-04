@@ -550,7 +550,7 @@ SHAS
                                                    :cwd => "/my/deploy/dir",
                                                    :log_tag => "git[web2.0 app]",
                                                    :returns => [0, 1, 2]).and_return(command_response)
-        expected_command = "git config --replace-all remote.#{@resource.remote}.url #{@resource.repository}"
+        expected_command = "git config --replace-all remote.#{@resource.remote}.url \"#{@resource.repository}\""
         expect(@provider).to receive(:shell_out!).with(expected_command,
                                                    :cwd => "/my/deploy/dir",
                                                    :log_tag => "git[web2.0 app]")
@@ -566,7 +566,7 @@ SHAS
                                                    :cwd => "/my/deploy/dir",
                                                    :log_tag => "git[web2.0 app]",
                                                    :returns => [0, 1, 2]).and_return(command_response)
-        unexpected_command = "git config --replace-all remote.#{@resource.remote}.url #{@resource.repository}"
+        unexpected_command = "git config --replace-all remote.#{@resource.remote}.url \"#{@resource.repository}\""
         expect(@provider).not_to receive(:shell_out!).with(unexpected_command,
                                                        :cwd => "/my/deploy/dir",
                                                        :log_tag => "git[web2.0 app]")
@@ -581,7 +581,7 @@ SHAS
                                                    :cwd => "/my/deploy/dir",
                                                    :log_tag => "git[web2.0 app]",
                                                    :returns => [0, 1, 2]).and_return(command_response)
-        expected_command = "git config --replace-all remote.#{@resource.remote}.url #{@resource.repository}"
+        expected_command = "git config --replace-all remote.#{@resource.remote}.url \"#{@resource.repository}\""
         expect(@provider).to receive(:shell_out!).with(expected_command,
                                                    :cwd => "/my/deploy/dir",
                                                    :log_tag => "git[web2.0 app]")
