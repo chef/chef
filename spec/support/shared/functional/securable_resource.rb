@@ -313,7 +313,7 @@ shared_examples_for "a securable resource without existing target" do
     end
 
     it "sets owner when owner is specified with a \\" do
-      resource.owner "#{ENV['USERDOMAIN']}\\Guest"
+      resource.owner "#{ENV['COMPUTERNAME']}\\Guest"
       resource.run_action(:create)
       expect(descriptor.owner).to eq(SID.Guest)
     end
