@@ -995,14 +995,14 @@ module ChefConfig
       end
 
       path = uri.to_s
-      ENV["#{scheme}_proxy".downcase] = path unless ENV["#{scheme}_proxy".downcase]
-      ENV["#{scheme}_proxy".upcase] = path unless ENV["#{scheme}_proxy".upcase]
+      ENV["#{scheme}_proxy".downcase] = path
+      ENV["#{scheme}_proxy".upcase] = path
     end
 
     # @api private
     def self.export_no_proxy(value)
-      ENV["no_proxy"] = value unless ENV["no_proxy"]
-      ENV["NO_PROXY"] = value unless ENV["NO_PROXY"]
+      ENV["no_proxy"] = value
+      ENV["NO_PROXY"] = value
     end
 
     # Given a scheme, host, and port, return the correct proxy URI based on the
