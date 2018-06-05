@@ -119,10 +119,6 @@ matrix:
       TEST_GEM: poise/poise
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
     rvm: 2.4.3
-  - env:
-      TEST_GEM: chef/knife-windows
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
-    rvm: 2.4.3
   ### START TEST KITCHEN ONLY ###
   #
   # Temporarily Disable Amazon Linux 2
