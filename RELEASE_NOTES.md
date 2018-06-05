@@ -6,7 +6,7 @@ This file holds "in progress" release notes for the current release under develo
 
 You can now use `ssh-agent` to hold your user key when using knife. This allows storing your user key in an encrypted form as well as using `ssh -A` agent forwarding for running knife commands from remote devices.
 
-You can enable this by add `ssh_agent_signing true` to your `knife.rb` or `ssh_agent_signing = true` in your `credentials` file.
+You can enable this by adding `ssh_agent_signing true` to your `knife.rb` or `ssh_agent_signing = true` in your `credentials` file.
 
 To encrypt your existing user key, you can use OpenSSL:
 
@@ -25,7 +25,7 @@ The execute resource has also been updated with a new property `default_env` tha
 
 ## Small Size on Disk
 
-Chef now bundles the inspec-core and train-core gems, which omit many cloud dependencies not needed within the Chef client. This change reduces the install size of a typical system by ~22% and the number of files within that installation by ~20% compared to Chef 14.1\. Enjoy the extra disk space.
+Chef now bundles the inspec-core and train-core gems, which omit many cloud dependencies not needed within the Chef client. This change reduces the install size of a typical system by ~22% and the number of files within that installation by ~20% compared to Chef 14.1. Enjoy the extra disk space.
 
 ## Virtualization detection on AWS
 
