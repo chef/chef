@@ -226,8 +226,68 @@ describe Chef::Mixin::ShellOut do
 
       describe "when the last argument is not a Hash" do
         it "should no longer add environment options and set environment['LC_ALL'] to nil" do
-          expect(shell_out_obj).to receive(:shell_out_command).with(cmd).and_return(true)
+          expect(shell_out_obj).to receive(:shell_out_command).with(cmd, {}).and_return(true)
           shell_out_obj.shell_out_with_systems_locale(cmd)
+        end
+      end
+    end
+
+    describe "#shell_out default_env: false" do
+
+      describe "when the last argument is a Hash" do
+        describe "and environment is an option" do
+          it "should not change environment['LC_ALL'] when set to nil" do
+            options = { :environment => { "LC_ALL" => nil } }
+            expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
+            shell_out_obj.shell_out(cmd, **options, default_env: false)
+          end
+
+          it "should not change environment['LC_ALL'] when set to non-nil" do
+            options = { :environment => { "LC_ALL" => "en_US.UTF-8" } }
+            expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
+            shell_out_obj.shell_out(cmd, **options, default_env: false)
+          end
+
+          it "should no longer set environment['LC_ALL'] to nil when 'LC_ALL' not present" do
+            options = { :environment => { "HOME" => "/Users/morty" } }
+            expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
+            shell_out_obj.shell_out(cmd, **options, default_env: false)
+          end
+        end
+
+        describe "and env is an option" do
+          it "should not change env when set to nil" do
+            options = { :env => { "LC_ALL" => nil } }
+            expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
+            shell_out_obj.shell_out(cmd, **options, default_env: false)
+          end
+
+          it "should not change env when set to non-nil" do
+            options = { :env => { "LC_ALL" => "en_US.UTF-8" } }
+            expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
+            shell_out_obj.shell_out(cmd, **options, default_env: false)
+          end
+
+          it "should no longer set env['LC_ALL'] to nil when 'LC_ALL' not present" do
+            options = { :env => { "HOME" => "/Users/morty" } }
+            expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
+            shell_out_obj.shell_out(cmd, **options, default_env: false)
+          end
+        end
+
+        describe "and no env/environment option is present" do
+          it "should no longer add environment option and set environment['LC_ALL'] to nil" do
+            options = { :user => "morty" }
+            expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
+            shell_out_obj.shell_out(cmd, **options, default_env: false)
+          end
+        end
+      end
+
+      describe "when the last argument is not a Hash" do
+        it "should no longer add environment options and set environment['LC_ALL'] to nil" do
+          expect(shell_out_obj).to receive(:shell_out_command).with(cmd, {}).and_return(true)
+          shell_out_obj.shell_out(cmd, default_env: false)
         end
       end
     end

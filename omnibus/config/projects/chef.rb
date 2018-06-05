@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2017, Chef Software Inc.
+# Copyright 2012-2018, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,11 +46,6 @@ overrides_path = File.expand_path("../../../../omnibus_overrides.rb", current_fi
 instance_eval(IO.read(overrides_path), overrides_path)
 
 dependency "preparation"
-
-# InSpec 2 depends on unf_ext, which doesn't currently build on solaris on aix. There exists a fork
-# of unf_ext which fixes this, so let's use that in Chef for now.
-# FIXME: must remove this ASAP.
-dependency "unf_ext"
 
 dependency "chef"
 

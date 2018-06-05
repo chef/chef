@@ -69,15 +69,12 @@ class Chef
 
       def run
         FileUtils.mkdir_p(chef_config_path)
-        config_file = File.join(chef_config_path, "credentials")
 
         ask_user_for_config
 
-        config_file = File.expand_path(config_file)
-        if File.exist?(config_file)
-          confirm("Overwrite #{config_file}")
-        end
-        ::File.open(config_file, "w") do |f|
+        confirm("Overwrite #{config_file_path}") if ::File.exist?(config_file_path)
+
+        ::File.open(config_file_path, "w") do |f|
           f.puts <<-EOH
 [default]
 client_name     = '#{new_client_name}'
@@ -110,7 +107,7 @@ EOH
           ui.msg("*****")
         end
 
-        ui.msg("Configuration file written to #{config[:config_file]}")
+        ui.msg("Knife configuration file written to #{config_file_path}")
       end
 
       def ask_user_for_config
@@ -129,14 +126,21 @@ EOH
         @new_client_key = File.expand_path(@new_client_key)
       end
 
+      # @return [String] our best guess at what the servername should be using Ohai data and falling back to localhost
       def guess_servername
         o = Ohai::System.new
         o.all_plugins(%w{ os hostname fqdn })
         o[:fqdn] || o[:machinename] || o[:hostname] || "localhost"
       end
 
+      # @return [String] the path to the user's .chef directory
       def chef_config_path
-        Chef::Util::PathHelper.home(".chef")
+        @chef_config_path ||= Chef::Util::PathHelper.home(".chef")
+      end
+
+      # @return [String] the full path to the config file (credential file)
+      def config_file_path
+        @config_file_path ||= ::File.expand_path(::File.join(chef_config_path, "credentials"))
       end
     end
   end

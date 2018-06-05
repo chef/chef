@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2011-2017, Chef Software Inc.
+# Copyright:: Copyright 2011-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,7 +92,7 @@ describe Chef::Resource::Conditional do
     describe "after running a command which timed out" do
       before do
         @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "false")
-        allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out_with_systems_locale).and_raise(Chef::Exceptions::CommandTimeout)
+        allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
       it "indicates that resource convergence should not continue" do
@@ -195,7 +195,7 @@ describe Chef::Resource::Conditional do
     describe "after running a command which timed out" do
       before do
         @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "false")
-        allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out_with_systems_locale).and_raise(Chef::Exceptions::CommandTimeout)
+        allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
       it "indicates that resource convergence should continue" do

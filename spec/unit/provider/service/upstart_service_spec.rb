@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Provider::Service::Upstart do
   let(:shell_out_success) do
-    double("shell_out_with_systems_locale", :exitstatus => 0, :error? => false)
+    double("shell_out", :exitstatus => 0, :error? => false)
   end
 
   before(:each) do
@@ -267,19 +267,19 @@ describe Chef::Provider::Service::Upstart do
     it "should call the start command if one is specified" do
       @provider.upstart_service_running = false
       @new_resource.start_command("/sbin/rsyslog startyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog startyousillysally")
+      expect(@provider).to receive(:shell_out!).with("/sbin/rsyslog startyousillysally", default_env: false)
       @provider.start_service()
     end
 
     it "should call '/sbin/start service_name' if no start command is specified" do
       @provider.upstart_service_running = false
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(shell_out_success)
+      expect(@provider).to receive(:shell_out!).with("/sbin/start #{@new_resource.service_name}", default_env: false).and_return(shell_out_success)
       @provider.start_service()
     end
 
     it "should not call '/sbin/start service_name' if it is already running" do
       @provider.upstart_service_running = true
-      expect(@provider).not_to receive(:shell_out_with_systems_locale!)
+      expect(@provider).not_to receive(:shell_out!)
       @provider.start_service()
     end
 
@@ -288,14 +288,14 @@ describe Chef::Provider::Service::Upstart do
       @new_resource.parameters({ "OSD_ID" => "2" })
       @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
       @provider.current_resource = @current_resource
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start rsyslog OSD_ID=2").and_return(shell_out_success)
+      expect(@provider).to receive(:shell_out!).with("/sbin/start rsyslog OSD_ID=2", default_env: false).and_return(shell_out_success)
       @provider.start_service()
     end
 
     it "should call the restart command if one is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
       @new_resource.restart_command("/sbin/rsyslog restartyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog restartyousillysally")
+      expect(@provider).to receive(:shell_out!).with("/sbin/rsyslog restartyousillysally", default_env: false)
       @provider.restart_service()
     end
 
@@ -310,40 +310,40 @@ describe Chef::Provider::Service::Upstart do
     it "should call '/sbin/start service_name' if restart_service is called for a stopped service" do
       @provider.upstart_service_running = false
       allow(@current_resource).to receive(:running).and_return(false)
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(shell_out_success)
+      expect(@provider).to receive(:shell_out!).with("/sbin/start #{@new_resource.service_name}", default_env: false).and_return(shell_out_success)
       @provider.restart_service()
     end
 
     it "should call the reload command if one is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
       @new_resource.reload_command("/sbin/rsyslog reloadyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog reloadyousillysally")
+      expect(@provider).to receive(:shell_out!).with("/sbin/rsyslog reloadyousillysally", default_env: false)
       @provider.reload_service()
     end
 
     it "should call '/sbin/reload service_name' if no reload command is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/reload #{@new_resource.service_name}").and_return(shell_out_success)
+      expect(@provider).to receive(:shell_out!).with("/sbin/reload #{@new_resource.service_name}", default_env: false).and_return(shell_out_success)
       @provider.reload_service()
     end
 
     it "should call the stop command if one is specified" do
       @provider.upstart_service_running = true
       @new_resource.stop_command("/sbin/rsyslog stopyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally")
+      expect(@provider).to receive(:shell_out!).with("/sbin/rsyslog stopyousillysally", default_env: false)
       @provider.stop_service()
     end
 
     it "should call '/sbin/stop service_name' if no stop command is specified" do
       @provider.upstart_service_running = true
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/stop #{@new_resource.service_name}").and_return(shell_out_success)
+      expect(@provider).to receive(:shell_out!).with("/sbin/stop #{@new_resource.service_name}", default_env: false).and_return(shell_out_success)
       @provider.stop_service()
     end
 
     it "should not call '/sbin/stop service_name' if it is already stopped" do
       @provider.upstart_service_running = false
       allow(@current_resource).to receive(:running).and_return(false)
-      expect(@provider).not_to receive(:shell_out_with_systems_locale!).with("/sbin/stop #{@new_resource.service_name}")
+      expect(@provider).not_to receive(:shell_out!).with("/sbin/stop #{@new_resource.service_name}", default_env: false)
       @provider.stop_service()
       expect(@upstart_service_running).to be_falsey
     end

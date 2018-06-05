@@ -239,6 +239,7 @@ class Chef
                               filename.map { |name| "  #{File.join(segment.to_s, name)}" }
                             else
                               [
+                                "  #{segment}/host-#{node[:fqdn]}/#{filename}",
                                 "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
                                 "  #{segment}/#{node[:platform]}/#{filename}",
                                 "  #{segment}/default/#{filename}",

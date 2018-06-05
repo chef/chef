@@ -1,15 +1,30 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.21 -->
-## [v14.1.21](https://github.com/chef/chef/tree/v14.1.21) (2018-05-21)
+<!-- latest_release 14.1.36 -->
+## [v14.1.36](https://github.com/chef/chef/tree/v14.1.36) (2018-06-04)
 
 #### Merged Pull Requests
-- Cleanup AIX and Solaris user resources. [#7249](https://github.com/chef/chef/pull/7249) ([lamont-granquist](https://github.com/lamont-granquist))
+- bump ohai to 14.2.0 [#7333](https://github.com/chef/chef/pull/7333) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- bump ohai to 14.2.0 [#7333](https://github.com/chef/chef/pull/7333) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.36 -->
+- Use inspec-core, new ffi gem, and bump deps [#7332](https://github.com/chef/chef/pull/7332) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.35 -->
+- Quote git remote_url property (PR 6249 + chefstyle fix) [#7014](https://github.com/chef/chef/pull/7014) ([tas50](https://github.com/tas50)) <!-- 14.1.34 -->
+- Allow securable resource tests to work on Windows 10 machines connected to an Azure Active Directory [#7301](https://github.com/chef/chef/pull/7301) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.1.33 -->
+- Fix :configure_startup action to configure delayed start [#7297](https://github.com/chef/chef/pull/7297) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.1.32 -->
+- Check local file exists before installing a windows package [#7299](https://github.com/chef/chef/pull/7299) ([josh-barker](https://github.com/josh-barker)) <!-- 14.1.31 -->
+- resource_inspector: Add default values for properties [#7300](https://github.com/chef/chef/pull/7300) ([thommay](https://github.com/thommay)) <!-- 14.1.30 -->
+- fix yum versionlock quoting [#7329](https://github.com/chef/chef/pull/7329) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.29 -->
+- Support signing with ssh-agent [#7324](https://github.com/chef/chef/pull/7324) ([coderanger](https://github.com/coderanger)) <!-- 14.1.28 -->
+- convert a_to_s to shell_out_compact in DNF/yum [#7313](https://github.com/chef/chef/pull/7313) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.27 -->
+- Better errors with uninstalled official knife plugins [#7326](https://github.com/chef/chef/pull/7326) ([tas50](https://github.com/tas50)) <!-- 14.1.26 -->
+- windows_ad_join: Ensure that reboot requests work [#7328](https://github.com/chef/chef/pull/7328) ([thommay](https://github.com/thommay)) <!-- 14.1.25 -->
+- Properly print path to config file to the screen in knife configure [#7325](https://github.com/chef/chef/pull/7325) ([tas50](https://github.com/tas50)) <!-- 14.1.24 -->
+- add default_env flag to shell_out and execute resource [#7298](https://github.com/chef/chef/pull/7298) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.23 -->
+- Cookbook Version:  add host-&lt;fqdn&gt; to the error message for templates and files specificity [#7295](https://github.com/chef/chef/pull/7295) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.22 -->
 - Cleanup AIX and Solaris user resources. [#7249](https://github.com/chef/chef/pull/7249) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.21 -->
 - Fix systemd_unit user context [#7274](https://github.com/chef/chef/pull/7274) ([mal](https://github.com/mal)) <!-- 14.1.20 -->
 - Fix manifest entries for root files [#7270](https://github.com/chef/chef/pull/7270) ([thommay](https://github.com/thommay)) <!-- 14.1.19 -->

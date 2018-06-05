@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2014-2017, Chef Software Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@ class Chef
       public
 
       def evaluate
-        result = shell_out_with_systems_locale(@command, @command_opts)
+        result = shell_out(@command, default_env: false, **@command_opts)
         Chef::Log.debug "Command failed: #{result.stderr}" unless result.status.success?
         result.status.success?
       # Timeout fails command rather than chef-client run, see:

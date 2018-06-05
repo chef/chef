@@ -19,13 +19,12 @@ Gem::Specification.new do |s|
 
   s.add_dependency "mixlib-cli", "~> 1.7"
   s.add_dependency "mixlib-log", "~> 2.0", ">= 2.0.3"
-  s.add_dependency "mixlib-authentication", "~> 2.0"
+  s.add_dependency "mixlib-authentication", "~> 2.1"
   s.add_dependency "mixlib-shellout", "~> 2.0"
   s.add_dependency "mixlib-archive", "~> 0.4"
   s.add_dependency "ohai", "~> 14.0"
 
-  # ffi 1.9.22+1.9.23 are buggy in our spec/unit/application/client_spec.rb tests on el6/el7
-  s.add_dependency "ffi", "< 1.9.22"
+  s.add_dependency "ffi", "~> 1.9", ">= 1.9.25"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-ssh", "~> 4.2"
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"

@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,7 +100,7 @@ PS
     end
 
     it "should use the init_command if one has been specified" do
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/opt/chef-server/service/erchef start")
+      expect(@provider).to receive(:shell_out!).with("/opt/chef-server/service/erchef start", default_env: false)
       @provider.start_service
     end
 
@@ -164,12 +164,12 @@ RUNNING_PS
   describe "when starting the service" do
     it "should call the start command if one is specified" do
       @new_resource.start_command("/etc/init.d/chef startyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef startyousillysally")
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/chef startyousillysally", default_env: false)
       @provider.start_service()
     end
 
     it "should call '/etc/init.d/service_name start' if no start command is specified" do
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} start")
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/#{@new_resource.service_name} start", default_env: false)
       @provider.start_service()
     end
   end
@@ -177,12 +177,12 @@ RUNNING_PS
   describe Chef::Provider::Service::Init, "stop_service" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/etc/init.d/chef itoldyoutostop")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef itoldyoutostop")
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/chef itoldyoutostop", default_env: false)
       @provider.stop_service()
     end
 
     it "should call '/etc/init.d/service_name stop' if no stop command is specified" do
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} stop")
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/#{@new_resource.service_name} stop", default_env: false)
       @provider.stop_service()
     end
   end
@@ -190,13 +190,13 @@ RUNNING_PS
   describe "when restarting a service" do
     it "should call 'restart' on the service_name if the resource supports it" do
       @new_resource.supports({ :restart => true })
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} restart")
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/#{@new_resource.service_name} restart", default_env: false)
       @provider.restart_service()
     end
 
     it "should call the restart_command if one has been specified" do
       @new_resource.restart_command("/etc/init.d/chef restartinafire")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} restartinafire")
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/#{@new_resource.service_name} restartinafire", default_env: false)
       @provider.restart_service()
     end
 
@@ -211,13 +211,13 @@ RUNNING_PS
   describe "when reloading a service" do
     it "should call 'reload' on the service if it supports it" do
       @new_resource.supports({ :reload => true })
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef reload")
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/chef reload", default_env: false)
       @provider.reload_service()
     end
 
     it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
       @new_resource.reload_command("/etc/init.d/chef lollerpants")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef lollerpants")
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/chef lollerpants", default_env: false)
       @provider.reload_service()
     end
   end
@@ -225,7 +225,7 @@ RUNNING_PS
   describe "when a custom command has been specified" do
     before do
       @new_resource.start_command("/etc/init.d/chef startyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef startyousillysally")
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/chef startyousillysally", default_env: false)
     end
 
     it "should still pass all why run assertions" do

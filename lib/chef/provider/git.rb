@@ -213,7 +213,7 @@ class Chef
             #   which we can fix by replacing them all with our target url (hence the --replace-all option)
 
             if multiple_remotes?(remote_status) || !remote_matches?(remote_url, remote_status)
-              git("config", "--replace-all", "remote.#{remote_name}.url", remote_url, cwd: cwd)
+              git("config", "--replace-all", "remote.#{remote_name}.url", %{"#{remote_url}"}, cwd: cwd)
             end
           when 1
             git("remote", "add", remote_name, remote_url, cwd: cwd)

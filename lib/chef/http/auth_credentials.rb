@@ -28,8 +28,10 @@ class Chef
     class AuthCredentials
       attr_reader :client_name, :key
 
-      def initialize(client_name = nil, key = nil)
-        @client_name, @key = client_name, key
+      def initialize(client_name = nil, key = nil, use_ssh_agent: false)
+        @client_name = client_name
+        @key = key
+        @use_ssh_agent = use_ssh_agent
       end
 
       def sign_requests?
@@ -48,7 +50,7 @@ class Chef
         host = request_params.delete(:host) || "localhost"
 
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(request_params)
-        signed = sign_obj.sign(key).merge({ :host => host })
+        signed = sign_obj.sign(key, use_ssh_agent: @use_ssh_agent).merge({ :host => host })
         signed.inject({}) { |memo, kv| memo["#{kv[0].to_s.upcase}"] = kv[1]; memo }
       end
 
