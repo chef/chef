@@ -12,10 +12,10 @@ verifier:
 provisioner:
   name: chef_github
   chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
-  chef_omnibus_install_options: "-c current"
+  chef_omnibus_install_options: "-c current -v 13"
   github_owner: "chef"
   github_repo: "chef"
-  ohai_refname: "master"
+  ohai_refname: "13-stable"
   refname: <%= %x(git rev-parse HEAD) %>
   client_rb:
     diff_disabled: true
