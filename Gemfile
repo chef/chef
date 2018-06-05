@@ -12,8 +12,6 @@ gem "ohai", "~> 13"
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
 gem "cheffish", "~> 13" # required for rspec tests
 
-# FFI crashes on EL6/7 on 1.9.22 and newer
-gem "ffi", "= 1.9.21"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
