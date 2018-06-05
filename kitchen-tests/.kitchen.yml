@@ -37,11 +37,3 @@ suites:
   - name: base
     run_list:
       - recipe[base::default]
-  - name: awesome_customers_ubuntu
-    includes: [ubuntu-14.04, ubuntu-16.04]
-    run_list:
-      - recipe[awesome_customers_ubuntu_wrapper::default]
-  - name: awesome_customers_rhel
-    includes: [centos-6, centos-7]
-    run_list:
-      - recipe[awesome_customers_rhel_wrapper::default]
