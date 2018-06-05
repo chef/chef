@@ -62,7 +62,7 @@ class Chef
       #
 
       def shell_out_compact(*args, **options)
-        options = Chef::Mixin::ShellOut.maybe_add_timeout(options)
+        options = Chef::Mixin::ShellOut.maybe_add_timeout(self, options)
         if options.empty?
           shell_out(*clean_array(*args))
         else
@@ -71,7 +71,7 @@ class Chef
       end
 
       def shell_out_compact!(*args, **options)
-        options = Chef::Mixin::ShellOut.maybe_add_timeout(options)
+        options = Chef::Mixin::ShellOut.maybe_add_timeout(self, options)
         if options.empty?
           shell_out!(*clean_array(*args))
         else
@@ -79,12 +79,13 @@ class Chef
         end
       end
 
+      # module method to not pollute namespaces, but that means we need self injected as an arg
       # @api private
-      def self.maybe_add_timeout(options)
-        if is_a?(Chef::Provider) && !new_resource.is_a?(Chef::Resource::LWRPBase) && new_resource.respond_to?(:timeout) && !options.key?(:timeout)
+      def self.maybe_add_timeout(obj, options)
+        if obj.is_a?(Chef::Provider) && !obj.new_resource.is_a?(Chef::Resource::LWRPBase) && obj.new_resource.respond_to?(:timeout) && !options.key?(:timeout)
           options = options.dup
           # historically resources have not properly declared defaults on their timeouts, so a default default of 900s was enforced here
-          options[:timeout] = new_resource.timeout ? new_resource.timeout.to_f : 900
+          options[:timeout] = obj.new_resource.timeout ? obj.new_resource.timeout.to_f : 900
         end
         options
       end
