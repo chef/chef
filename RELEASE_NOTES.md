@@ -1,5 +1,36 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.2:
+
+## `ssh-agent` support for user keys
+
+You can now use `ssh-agent` to hold your user key when using knife. This allows storing your user key in an encrypted form as well as using `ssh -A` agent forwarding for running knife commands from remote devices.
+
+You can enable this by add `ssh_agent_signing true` to your `knife.rb` or `ssh_agent_signing = true` in your `credentials` file.
+
+To encrypt your existing user key, you can use OpenSSL:
+
+```
+( openssl rsa -in user.pem -pubout && openssl rsa -in user.pem -aes256 ) > user_enc.pem
+chmod 600 user_enc.pem
+```
+
+This will prompt you for a passphrase for to use to encrypt the key. You can then load the key into your `ssh-agent` by running `ssh-add user_enc.pem`. Make sure you add the `ssh_agent_signing` to your configuration, and update your `client_key` to point at the new, encrypted key (and once you've verified things are working, remember to delete your unencrypted key file).
+
+## default_env Property in Execute Resource
+
+The shell_out helper has been extended with a new option `default_env` to allow disabling Chef from modifying PATH and LOCALE environmental variables as it shells out. This new option defaults to true (modify the env), preserving the previous behavior of the helper.
+
+The execute resource has also been updated with a new property `default_env` that allows utilizing this the ENV sanity functionality in shell_out. The new property defaults to false, but it can be set to true in order to ensure a sane PATH and LOCALE when shelling out. If you find that binaries cannot be found when using the execute resource, `default_env` set to true may resolve those issues.
+
+## Small Size on Disk
+
+Chef now bundles the inspec-core and train-core gems, which omit many cloud dependencies not needed within the Chef client. This change reduces the install size of a typical system by ~22% and the number of files within that installation by ~20% compared to Chef 14.1\. Enjoy the extra disk space.
+
+## Virtualization detection on AWS
+
+Ohai now detects the virtualization hypervisor `amazonec2` when running on Amazon's new C5/M5 instances.
+
 # Chef Client Release Notes 14.1.12:
 
 This release resolves a number of regressions in 14.1:
@@ -27,11 +58,7 @@ Enable Ubuntu-18.04 and Debian-9 tested chef-client packages.
 
 ## Windows Task
 
-The `windows_task` resource has been entirely rewritten. This resolves a
-large number of bugs, including being able to correctly set the start
-time of tasks, proper creation and deletion of tasks, and improves
-Chef's validation of tasks. The rewrite will also solve the idempotency
-problems that users have reported.
+The `windows_task` resource has been entirely rewritten. This resolves a large number of bugs, including being able to correctly set the start time of tasks, proper creation and deletion of tasks, and improves Chef's validation of tasks. The rewrite will also solve the idempotency problems that users have reported.
 
 ## build_essential
 
@@ -39,8 +66,7 @@ The `build_essential` resource no longer requires a name, similar to the `apt_up
 
 ## Ignore Failure
 
-The `ignore_failure` property takes a new argument, `:quiet`, to
-suppress the error output when the resource does in fact fail.
+The `ignore_failure` property takes a new argument, `:quiet`, to suppress the error output when the resource does in fact fail.
 
 ## This release of Chef Client 14 resolves a number of regressions in 14.0
 
@@ -52,40 +78,15 @@ suppress the error output when the resource does in fact fail.
 - The sysctl resource correctly handles missing keys when used with `ignore_error`
 - --recipe-url apparently never worked on Windows. Now it does.
 
-## `ssh-agent` support for user keys
-
-You can now use `ssh-agent` to hold your user key when using knife. This allows
-storing your user key in an encrypted form as well as using `ssh -A` agent forwarding
-for running knife commands from remote devices.
-
-You can enable this by add `ssh_agent_signing true` to your `knife.rb` or
-`ssh_agent_signing = true` in your `credentials` file.
-
-To encrypt your existing user key, you can use OpenSSL:
-
-```
-( openssl rsa -in user.pem -pubout && openssl rsa -in user.pem -aes256 ) > user_enc.pem
-chmod 600 user_enc.pem
-```
-
-This will prompt you for a passphrase for to use to encrypt the key. You can then
-load the key into your `ssh-agent` by running `ssh-add user_enc.pem`. Make sure
-you add the `ssh_agent_signing` to your configuration, and update your `client_key`
-to point at the new, encrypted key (and once you've verified things are working,
-remember to delete your unencrypted key file).
-
 # Ohai Release Notes 14.1:
 
 ## Configurable DMI Whitelist
 
-The whitelist of DMI IDs is now user configurable using the
-`additional_dmi_ids` configuration setting, which takes an Array.
+The whitelist of DMI IDs is now user configurable using the `additional_dmi_ids` configuration setting, which takes an Array.
 
 ## Shard plugin
 
-The Shard plugin has been returned to a default plugin rather than an
-optional one. To ensure we work in FIPS environments, the plugin will
-use SHA256 rather than MD5 in those environments.
+The Shard plugin has been returned to a default plugin rather than an optional one. To ensure we work in FIPS environments, the plugin will use SHA256 rather than MD5 in those environments.
 
 ## SCSI plugin
 
