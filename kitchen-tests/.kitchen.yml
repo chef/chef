@@ -7,7 +7,6 @@ driver:
 
 verifier:
   name: inspec
-  format: progress
 
 provisioner:
   name: chef_github

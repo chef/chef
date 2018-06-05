@@ -24,7 +24,6 @@ provisioner:
 
 verifier:
   name: inspec
-  format: progress
 
 platforms:
 - name: amazonlinux
