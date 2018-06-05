@@ -61,7 +61,7 @@ class Chef
 
       def find_ignore_file(path)
         ignore_path = path
-        ignore_file = ''
+        ignore_file = ""
         3.times do |i|
           if File.basename(ignore_path) =~ /chefignore/
             ignore_file = ignore_path
