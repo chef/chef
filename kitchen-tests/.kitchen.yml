@@ -26,12 +26,12 @@ platforms:
       box: mvbcoding/awslinux
   - name: centos-6
   - name: centos-7
-  - name: debian-7
   - name: debian-8
   - name: debian-9
   - name: opensuse-leap-42
   - name: ubuntu-14.04
   - name: ubuntu-16.04
+  - name: ubuntu-18.04
 
 suites:
   - name: base

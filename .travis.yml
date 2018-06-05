@@ -131,6 +131,23 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
+      - bundle exec kitchen test base-amazonlinux-2
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - AMAZON=2
+      - KITCHEN_YAML=.kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
       - bundle exec kitchen test base-amazonlinux
     after_failure:
       - cat .kitchen/logs/kitchen.log
@@ -182,11 +199,11 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-debian-7
+      - bundle exec kitchen test base-ubuntu-1804
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
-      - DEBIAN=7
+      - UBUNTU=18.04
       - KITCHEN_YAML=.kitchen.travis.yml
   - rvm: 2.4.4
     services: docker
