@@ -79,6 +79,8 @@ class Chef
         end
       end
 
+      # helper sugar for resources that support passing timeouts to shell_out
+      #
       # module method to not pollute namespaces, but that means we need self injected as an arg
       # @api private
       def self.maybe_add_timeout(obj, options)
