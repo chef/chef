@@ -2,8 +2,6 @@
 driver:
   name: dokken
   privileged: true
-  chef_image: chef/chef
-  chef_version: current
 
 transport:
   name: dokken
