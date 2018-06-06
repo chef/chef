@@ -70,7 +70,7 @@ class Chef
 
       # Check if the key is already present and locked, unless the override is allowed.
       # The checks to see if we should reject, in order:
-      # 1. Core overide mode is not set.
+      # 1. Core override mode is not set.
       # 2. The key exists.
       # 3. At least one previous `provides` is now locked.
       # 4. No previous `provides` had `allow_cookbook_override`, either set to
