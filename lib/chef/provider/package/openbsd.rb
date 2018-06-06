@@ -57,7 +57,7 @@ class Chef
           end
           requirements.assert(:all_actions) do |a|
             a.assertion do
-              if new_resource.package_name =~ /^(.+?)--(.+)/
+              if new_resource.package_name =~ /^(.+?)--(.?+)/
                 !new_resource.version
               else
                 true
@@ -69,7 +69,7 @@ class Chef
 
         def install_package(name, version)
           unless current_resource.version
-            if parts = name.match(/^(.+?)--(.+)/) # use double-dash for stems with flavors, see man page for pkg_add
+            if parts = name.match(/^(.+?)--(.?+)/) # use double-dash for stems with flavors, see man page for pkg_add
               name = parts[1]
             end
             shell_out_compact_timeout!("pkg_add", "-r", package_string(name, version), env: { "PKG_PATH" => pkg_path }).status
@@ -78,7 +78,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          if parts = name.match(/^(.+?)--(.+)/)
+          if parts = name.match(/^(.+?)--(.?+)/)
             name = parts[1]
           end
           shell_out_compact_timeout!("pkg_delete", package_string(name, version), env: nil).status
@@ -87,7 +87,7 @@ class Chef
         private
 
         def installed_version
-          name = if parts = new_resource.package_name.match(/^(.+?)--(.+)/)
+          name = if parts = new_resource.package_name.match(/^(.+?)--(.?+)/)
                    parts[1]
                  else
                    new_resource.package_name
@@ -101,8 +101,8 @@ class Chef
         def candidate_version
           @candidate_version ||= begin
             results = []
-            shell_out_compact_timeout!("pkg_info", "-I", package_string(new_resource.package_name, new_resource.version), env: nil, returns: [0, 1]).stdout.each_line do |line|
-              results << if parts = new_resource.package_name.match(/^(.+?)--(.+)/)
+            shell_out_compact_timeout!("pkg_info", "-I", package_string(new_resource.package_name, new_resource.version), env: { "PKG_PATH" => pkg_path }, returns: [0, 1]).stdout.each_line do |line|
+              results << if parts = new_resource.package_name.match(/^(.+?)--(.?+)/)
                            line[/^#{Regexp.escape(parts[1])}-(.+?)\s/, 1]
                          else
                            line[/^#{Regexp.escape(new_resource.package_name)}-(.+?)\s/, 1]
