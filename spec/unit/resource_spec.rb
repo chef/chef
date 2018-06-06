@@ -1144,4 +1144,38 @@ end
       it { is_expected.to eq [:two, :one] }
     end
   end
+
+  describe ".preview_resource" do
+    let(:klass) { Class.new(Chef::Resource) }
+
+    before do
+      allow(Chef::DSL::Resources).to receive(:add_resource_dsl).with(:test_resource)
+    end
+
+    it "defaults to false" do
+      expect(klass.preview_resource).to eq false
+    end
+
+    it "can be set to true" do
+      klass.preview_resource(true)
+      expect(klass.preview_resource).to eq true
+    end
+
+    it "does not affect provides by default" do
+      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, {canonical: true})
+      klass.resource_name(:test_resource)
+    end
+
+    it "adds allow_cookbook_override when true" do
+      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, {canonical: true, allow_cookbook_override: true})
+      klass.preview_resource(true)
+      klass.resource_name(:test_resource)
+    end
+
+    it "allows manually overriding back to false" do
+      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, {allow_cookbook_override: false})
+      klass.preview_resource(true)
+      klass.provides(:test_resource, allow_cookbook_override: false)
+    end
+  end
 end

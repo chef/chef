@@ -1161,6 +1161,22 @@ class Chef
         end
     end
 
+    # Set or return if this resource is in preview mode.
+    #
+    # This is used in Chef core as part of the process of migrating resources
+    # from a cookbook into core. It should be set to `true` when a cookbook
+    # resource is added to core, and then removed (set to `false`) in the next
+    # major release.
+    #
+    # @param value [nil, Boolean] If nil, get the current value. If not nil, set
+    #   the value of the flag.
+    # @return [Boolean]
+    def self.preview_resource(value=nil)
+        @preview_resource = false unless defined?(@preview_resource)
+        @preview_resource = value unless value.nil?
+        @preview_resource
+    end
+
     #
     # Internal Resource Interface (for Chef)
     #
@@ -1303,6 +1319,12 @@ class Chef
       # canonical DSL before adding the new one.
       if @resource_name && name == @resource_name
         remove_canonical_dsl
+      end
+
+      # If a resource is in preview mode, set allow_cookbook_override on all its
+      # mappings by default.
+      if preview_resource && !options.include?(:allow_cookbook_override)
+        options[:allow_cookbook_override] = true
       end
 
       result = Chef.resource_handler_map.set(name, self, options, &block)
