@@ -1171,7 +1171,7 @@ class Chef
     # @param value [nil, Boolean] If nil, get the current value. If not nil, set
     #   the value of the flag.
     # @return [Boolean]
-    def self.preview_resource(value=nil)
+    def self.preview_resource(value = nil)
       @preview_resource = false unless defined?(@preview_resource)
       @preview_resource = value unless value.nil?
       @preview_resource

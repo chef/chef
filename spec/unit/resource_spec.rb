@@ -1162,18 +1162,18 @@ end
     end
 
     it "does not affect provides by default" do
-      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, {canonical: true})
+      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, { canonical: true })
       klass.resource_name(:test_resource)
     end
 
     it "adds allow_cookbook_override when true" do
-      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, {canonical: true, allow_cookbook_override: true})
+      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, { canonical: true, allow_cookbook_override: true })
       klass.preview_resource(true)
       klass.resource_name(:test_resource)
     end
 
     it "allows manually overriding back to false" do
-      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, {allow_cookbook_override: false})
+      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, { allow_cookbook_override: false })
       klass.preview_resource(true)
       klass.provides(:test_resource, allow_cookbook_override: false)
     end
