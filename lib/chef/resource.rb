@@ -1172,9 +1172,9 @@ class Chef
     #   the value of the flag.
     # @return [Boolean]
     def self.preview_resource(value=nil)
-        @preview_resource = false unless defined?(@preview_resource)
-        @preview_resource = value unless value.nil?
-        @preview_resource
+      @preview_resource = false unless defined?(@preview_resource)
+      @preview_resource = value unless value.nil?
+      @preview_resource
     end
 
     #
