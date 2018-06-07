@@ -56,13 +56,11 @@ Install:
 - Ruby 2.4 or later
 - bundler gem
 
-We support too many platforms, and there are too many different ways to manage ruby installs, so
-it is assumed the user understands how to accomplish this for their platform and needs (see previous
-note about downloading the pre-built omnibus install if you do not understand how to accomplish this).
+**NOTE:** Chef supports a large number of platforms, and there are many different ways to manage Ruby installs on each of those platforms. We assume you will install Ruby in a way appropriate for your development platform, but do not provide instructions for setting up Ruby.
 
 ### Chef Installation
 
-Then get the source and install it:
+Once you have your development environment configured you can clone the Chef repository and install Chef:
 
 ```bash
 git clone https://github.com/chef/chef.git
