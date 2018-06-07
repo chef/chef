@@ -142,13 +142,13 @@ Chef is an amalgam of many components. These components update all the time, nec
 
 ## Chef Packages
 
-Chef is distributed as packages for debian, rhel, ubuntu, windows, solaris, aix, and os x. It includes a large number of components from various sources, and these are versioned and maintained separately from chef project, which bundles them all together conveniently for the user.
+Chef is distributed as packages for debian, rhel, ubuntu, windows, solaris, aix, and macos. It includes a large number of components from various sources, and these are versioned and maintained separately from the chef project, which bundles them all together conveniently for the user.
 
 These packages go through several milestones:
-- `master`: When code is checked in to master, the patch version of chef is bumped (e.g. 0.9.10 -> 0.9.11) and a build is kicked off automatically to create and test the packages in Chef's Jenkins cluster.
+- `master`: When code is checked in to master, the patch version of chef is bumped (e.g. 14.5.1 -> 14.5.2) and a build is kicked off automatically to create and test the packages in Chef's internal CI cluster.
 - `unstable`: When a package is built, it enters the unstable channel. When all packages for all OS's have successfully built, the test phase is kicked off in Jenkins across all supported OS's. These builds are password-protected and generally only available to the test systems.
-- `current`: If the packages pass all the tests on all supported OS's, it is promoted as a unit to `current`, and is available via Chef's artifactory by running `curl https://www.chef.io/chef/install.sh | sudo bash -s -- -c current -P chef`
-- `stable`: Periodically, Chef will pick a release to "bless" for folks who would like a slower update schedule than "every time a build passes the tests." When this happens, it is manually promoted to stable and an announcement is sent to the list. It can be reached at https://downloads.chef.io or installed using the `curl` command without specifying `-c current`. Packages in `stable` are no longer available in `current`.
+- `current`: If the packages pass all the tests on all supported OS's, it is promoted as a unit to `current`, and is available by running `curl https://www.chef.io/chef/install.sh | sudo bash -s -- -c current -P chef` or at <https://downloads.chef.io/chef/current>
+- `stable`: Periodically, Chef will pick a release to "bless" for folks who would like a slower update schedule than "every time a build passes the tests." When this happens, it is manually promoted to stable and an announcement is sent to the list. It can be reached at <https://downloads.chef.io> or installed using the `curl` command without specifying `-c current`. Packages in `stable` are no longer available in `current`.
 
 Additionally, periodically Chef will update the desired versions of chef components and check that in to `master`, triggering a new build with the updated components in it.
 
