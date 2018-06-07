@@ -1,5 +1,49 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 13.9.X:
+
+## Security Updates
+
+Ruby has been updated to 2.4.4
+
+- CVE-2017-17742: HTTP response splitting in WEBrick
+- CVE-2018-6914: Unintentional file and directory creation with directory traversal in tempfile and tmpdir
+- CVE-2018-8777: DoS by large request in WEBrick
+- CVE-2018-8778: Buffer under-read in String#unpack
+- CVE-2018-8779: Unintentional socket creation by poisoned NUL byte in UNIXServer and UNIXSocket
+- CVE-2018-8780: Unintentional directory traversal by poisoned NUL byte in Dir
+- Multiple vulnerabilities in RubyGems
+
+Nokogiri has been updated to 1.8.2
+
+- [MRI] Behavior in libxml2 has been reverted which caused CVE-2018-8048 (loofah gem), CVE-2018-3740 (sanitize gem), and CVE-2018-3741 (rails-html-sanitizer gem).
+
+OpenSSL has been updated to 1.0.2o
+
+- CVE-2018-0739: Constructed ASN.1 types with a recursive definition could exceed the stack.
+
+## Platform Updates
+
+As Debian 7 is now end of life we will no longer produce Debian 7 chef-client packages.
+
+## Ifconfig on Ubuntu 18.04
+
+Incompatibilities with Ubuntu 18.04 in the ifconfig resource have been resolved.
+
+## Ohai Updated to 13.9.2
+
+### Virtualization detection on AWS
+
+Ohai now detects the virtualization hypervisor `amazonec2` when running on Amazon's new C5/M5 instances.
+
+### Configurable DMI Whitelist
+
+The whitelist of DMI IDs is now user configurable using the `additional_dmi_ids` configuration setting, which takes an Array.
+
+### Filesystem2 on BSD
+
+The Filesystem2 functionality has been backported to BSD systems to provide a consistent filesystem format.
+
 # Chef Client Release Notes 13.9.1:
 
 ## Platform Additions
@@ -88,16 +132,15 @@ end
 
 ## Revert attributes changes from 13.7
 
-Per https://discourse.chef.io/t/regression-in-chef-client-13-7-16/12518/1 , there was a regression in how arrays and hashes were handled in 13.7. In 13.8, we've reverted to the same code as 13.6.
+Per <https://discourse.chef.io/t/regression-in-chef-client-13-7-16/12518/1> , there was a regression in how arrays and hashes were handled in 13.7\. In 13.8, we've reverted to the same code as 13.6.
 
 ## Continuing work on `windows_task`
 
-13.8 has better validation for the `idle_time` property, when using the
-`on_idle` frequency.
+13.8 has better validation for the `idle_time` property, when using the `on_idle` frequency.
 
 ## Security Updates
 
- * Updated libxml2 to 2.9.7; fixes: CVE-2017-15412
+- Updated libxml2 to 2.9.7; fixes: CVE-2017-15412
 
 # Chef Client Release Notes 13.7:
 
@@ -166,7 +209,7 @@ The mdadm plugin has been updated to properly handle arrays with more than 10 di
 
 ## Bugfixes
 
-  - Resolved a regression in 13.6.0 that prevented upgrading packages on Debian/Ubuntu when the package name contained a tilde.
+- Resolved a regression in 13.6.0 that prevented upgrading packages on Debian/Ubuntu when the package name contained a tilde.
 
 ## Security Updates
 
@@ -177,31 +220,21 @@ The mdadm plugin has been updated to properly handle arrays with more than 10 di
 
 ## `deploy` Resource Is Deprecated
 
-The `deploy` resource (and its alter ego `deploy_revision`) have been deprecated,
-to be removed in Chef 14. This is being done because this resource is considered
-overcomplicated and error-prone in the modern Chef ecosystem. A compatibility
-cookbook will be available to help users migrate during the Chef 14 release
-cycle. See [the deprecation documentation](https://docs.chef.io/deprecations_deploy_resource.html)
-for more information.
+The `deploy` resource (and its alter ego `deploy_revision`) have been deprecated, to be removed in Chef 14\. This is being done because this resource is considered overcomplicated and error-prone in the modern Chef ecosystem. A compatibility cookbook will be available to help users migrate during the Chef 14 release cycle. See [the deprecation documentation](https://docs.chef.io/deprecations_deploy_resource.html) for more information.
 
-## zypper\_package supports package downgrades
+## zypper_package supports package downgrades
 
-`zypper_package` now supports downgrading installed packages with the
-`allow_downgrade` property.
+`zypper_package` now supports downgrading installed packages with the `allow_downgrade` property.
 
 ## InSpec updated to 1.42.3
 
 ## Reserve certain Data Bag names
 
-It's no longer possible to create data bags named `node`, `role`,
-`client`, or `environment`. Existing data bags will continue to work as
-before.
+It's no longer possible to create data bags named `node`, `role`, `client`, or `environment`. Existing data bags will continue to work as before.
 
 ## Properly use yum on RHEL 7
 
-If both dnf and yum were installed, in some circumstances the yum
-provider might choose to run dnf, which is not what we intended it to
-do. It now properly runs yum, all the time.
+If both dnf and yum were installed, in some circumstances the yum provider might choose to run dnf, which is not what we intended it to do. It now properly runs yum, all the time.
 
 ## Ohai 13.6 Release Notes:
 
@@ -227,7 +260,7 @@ The Packages plugin now supports gathering packages data on Amazon Linux
 
 ### Deprecation updates
 
-In Ohai 13 we replaced the filesystem and cloud plugins with the filesystem2 and cloud_v2 plugins. To maintain compatibility with users of the previous V2 plugins we write data to both locations. We had originally planned to continue writing data to both locations until Chef 15. Instead due to the large amount of duplicate node data this introduces we are updating OHAI-11 and OHAI-12 deprecations to remove node['cloud_v2'] and node['filesystem2'] with the release of Chef 14 in April 2018.
+In Ohai 13 we replaced the filesystem and cloud plugins with the filesystem2 and cloud_v2 plugins. To maintain compatibility with users of the previous V2 plugins we write data to both locations. We had originally planned to continue writing data to both locations until Chef 15\. Instead due to the large amount of duplicate node data this introduces we are updating OHAI-11 and OHAI-12 deprecations to remove node['cloud_v2'] and node['filesystem2'] with the release of Chef 14 in April 2018.
 
 # Chef Client Release Notes 13.5:
 
@@ -237,10 +270,7 @@ This means that passwords passed to mount won't show up in logs.
 
 ## The `windows_task` resource now correctly handles `start_day`
 
-Previously, the resource would accept any date that was formatted
-correctly in the local locale, unlike the Windows cookbook and Windows
-itself. We now only support the `MM/DD/YYYY` format, in common with the
-Windows cookbook.
+Previously, the resource would accept any date that was formatted correctly in the local locale, unlike the Windows cookbook and Windows itself. We now only support the `MM/DD/YYYY` format, in common with the Windows cookbook.
 
 ## InSpec updated to 1.39.1
 
@@ -248,90 +278,79 @@ Windows cookbook.
 
 ### Correctly detect IPv6 routes ending in ::
 
-Previously we would ignore routes that ended `::`, and now we properly
-detect them.
+Previously we would ignore routes that ended `::`, and now we properly detect them.
 
 ### Plugin run time is now measured
 
-Debug logs will show the length of time each plugin takes to run, making
-debugging of long ohai runs easier.
+Debug logs will show the length of time each plugin takes to run, making debugging of long ohai runs easier.
 
 # Chef Client Release Notes 13.4:
 
 ## Security release of Ruby
 
 Chef Client 13.4 includes Ruby 2.4.2 to fix the following CVEs:
-  * CVE-2017-0898
-  * CVE-2017-10784
-  * CVE-2017-14033
-  * CVE-2017-14064
+
+- CVE-2017-0898
+- CVE-2017-10784
+- CVE-2017-14033
+- CVE-2017-14064
 
 ## Security release of RubyGems
 
 Chef Client 13.4 includes RubyGems 2.6.13 to fix the following CVEs:
-  * CVE-2017-0899
-  * CVE-2017-0900
-  * CVE-2017-0901
-  * CVE-2017-0902
+
+- CVE-2017-0899
+- CVE-2017-0900
+- CVE-2017-0901
+- CVE-2017-0902
 
 ## Ifconfig provider on Red Hat now supports additional properties
 
-It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and
-`SLAVE` properties on interfaces on Red Hat compatible systems. See https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Deployment_Guide/s1-networkscripts-interfaces.html for further information
+It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and `SLAVE` properties on interfaces on Red Hat compatible systems. See <https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Deployment_Guide/s1-networkscripts-interfaces.html> for further information
 
 ### Properties
 
-*   `ethtool\_opts`<br/>
-    **Ruby types:** String</br>
-    **Platforms:** Fedora, RHEL, Amazon Linux
-    A string containing arguments to ethtool. The string will be wrapped
-    in double quotes, so ensure that any needed quotes in the property
-    are surrounded by single quotes
+- `ethtool\_opts`<br>
+  **Ruby types:** String<br>
+  **Platforms:** Fedora, RHEL, Amazon Linux A string containing arguments to ethtool. The string will be wrapped in double quotes, so ensure that any needed quotes in the property are surrounded by single quotes
 
-*   `bonding\_opts`<br/>
-    **Ruby types:** String</br>
-    **Platforms:** Fedora, RHEL, Amazon Linux
-    A string containing configuration parameters for the bonding device.
+- `bonding\_opts`<br>
+  **Ruby types:** String<br>
+  **Platforms:** Fedora, RHEL, Amazon Linux A string containing configuration parameters for the bonding device.
 
-*   `master`<br/>
-    **Ruby types:** String</br>
-    **Platforms:** Fedora, RHEL, Amazon Linux
-    The channel bonding interface that this interface is linked to.
+- `master`<br>
+  **Ruby types:** String<br>
+  **Platforms:** Fedora, RHEL, Amazon Linux The channel bonding interface that this interface is linked to.
 
-*   `slave`<br/>
-    **Ruby types:** String</br>
-    **Platforms:** Fedora, RHEL, Amazon Linux
-    Whether the interface is controlled by the channel bonding interface
-    defined by `master`, above.
+- `slave`<br>
+  **Ruby types:** String<br>
+  **Platforms:** Fedora, RHEL, Amazon Linux Whether the interface is controlled by the channel bonding interface defined by `master`, above.
 
 ## Chef Vault is now included
 
-Chef Client 13.4 now includes the `chef-vault` gem, making it easier for
-users of chef-vault to use their encrypted items.
+Chef Client 13.4 now includes the `chef-vault` gem, making it easier for users of chef-vault to use their encrypted items.
 
 ## Windows `remote_file` resource with alternate credentials
 
-The `remote_file` resource now supports the use of credentials on Windows when accessing a remote UNC path on Windows such as `\\myserver\myshare\mydirectory\myfile.txt`. This
-allows access to the file at that path location even if the Chef client process identity does not have permission to access the file. The new properties `remote_user`, `remote_domain`, and `remote_password` may be used to specify credentials with access to the remote file so that it may be read.
+The `remote_file` resource now supports the use of credentials on Windows when accessing a remote UNC path on Windows such as `\\myserver\myshare\mydirectory\myfile.txt`. This allows access to the file at that path location even if the Chef client process identity does not have permission to access the file. The new properties `remote_user`, `remote_domain`, and `remote_password` may be used to specify credentials with access to the remote file so that it may be read.
 
-**Note**: This feature is mainly used for accessing files between two nodes in different domains and having different user accounts.
-In case the two nodes are in same domain, `remote_file` resource does not need `remote_user` and `remote_password` specified because the user has the same access on both systems through the domain.
+**Note**: This feature is mainly used for accessing files between two nodes in different domains and having different user accounts. In case the two nodes are in same domain, `remote_file` resource does not need `remote_user` and `remote_password` specified because the user has the same access on both systems through the domain.
 
 ### Properties
 
 The following properties are new for the `remote_file` resource:
 
-*   `remote_user`</br>
-    **Ruby types:** String</br>
-    *Windows only:* The user name of a user with access to the remote file specified by the `source` property. Default value: `nil`. The user name may optionally be specifed with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. It can also be specified without a domain simply as `user` if the domain is instead specified using the `remote_domain` attribute. Note that this property is ignored if `source` is not a UNC path. If this property is specified, the `remote_password` property **must** be specified.
+- `remote_user`<br>
+  **Ruby types:** String<br>
+  _Windows only:_ The user name of a user with access to the remote file specified by the `source` property. Default value: `nil`. The user name may optionally be specifed with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. It can also be specified without a domain simply as `user` if the domain is instead specified using the `remote_domain` attribute. Note that this property is ignored if `source` is not a UNC path. If this property is specified, the `remote_password` property **must** be specified.
 
-*   `remote_password`</br>
-    **Ruby types** String</br>
-    *Windows only:* The password of the user specified by the `remote_user` property. Default value: `nil`. This property is mandatory if `remote_user` is specified and may only be specified if `remote_user` is specified. The `sensitive` property for this resource will automatically be set to `true` if `remote_password` is specified.
+- `remote_password`<br>
+  **Ruby types** String<br>
+  _Windows only:_ The password of the user specified by the `remote_user` property. Default value: `nil`. This property is mandatory if `remote_user` is specified and may only be specified if `remote_user` is specified. The `sensitive` property for this resource will automatically be set to `true` if `remote_password` is specified.
 
-*   `remote_domain`</br>
-    **Ruby types** String</br>
-    *Windows only:* The domain of the user user specified by the `remote_user` property. Default value: `nil`. If not specified, the user and password properties specified by the `remote_user` and `remote_password` properties will be used to authenticate that user against the domain in which the system hosting the UNC path specified via `source` is joined, or if that system is not joined to a domain it will authenticate the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the `remote_user` property.
+- `remote_domain`<br>
+  **Ruby types** String<br>
+  _Windows only:_ The domain of the user user specified by the `remote_user` property. Default value: `nil`. If not specified, the user and password properties specified by the `remote_user` and `remote_password` properties will be used to authenticate that user against the domain in which the system hosting the UNC path specified via `source` is joined, or if that system is not joined to a domain it will authenticate the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the `remote_user` property.
 
 ### Examples
 
@@ -345,7 +364,9 @@ remote_file "E://domain_test.txt"  do
   remote_password "password"
 end
 ```
+
 OR
+
 ```ruby
 remote_file "E://domain_test.txt"  do
   source  "\\\\myserver\\myshare\\mydirectory\\myfile.txt"
@@ -364,7 +385,9 @@ remote_file "E://domain_test.txt"  do
   remote_password "password"
 end
 ```
+
 OR
+
 ```ruby
 remote_file "E://domain_test.txt"  do
   source  "\\\\myserver\\myshare\\mydirectory\\myfile.txt"
@@ -476,7 +499,6 @@ Sample data now available under azure:
 ### Package Plugin Supports Arch Linux
 
 The Package plugin has been updated to include package information on Arch Linux systems.
-
 
 # Chef Client Release Notes 13.3:
 
