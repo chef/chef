@@ -6,41 +6,46 @@
 - Expand development docs with branch/backport + more [#7343](https://github.com/chef/chef/pull/7343) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup since=14.1.12 -->
-### Changes since 14.1.12 release
+<!-- release_rollup since=14.2.0 -->
+### Changes since 14.2.0 release
 
 #### Merged Pull Requests
-- Expand development docs with branch/backport + more [#7343](https://github.com/chef/chef/pull/7343) ([tas50](https://github.com/tas50)) <!-- 14.2.2 -->
 - Add skip_publisher_check property to powershell_package [#7259](https://github.com/chef/chef/pull/7259) ([Happycoil](https://github.com/Happycoil)) <!-- 14.2.1 -->
-- bump ohai to 14.2.0 [#7333](https://github.com/chef/chef/pull/7333) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.36 -->
-- Use inspec-core, new ffi gem, and bump deps [#7332](https://github.com/chef/chef/pull/7332) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.35 -->
-- Quote git remote_url property (PR 6249 + chefstyle fix) [#7014](https://github.com/chef/chef/pull/7014) ([tas50](https://github.com/tas50)) <!-- 14.1.34 -->
-- Allow securable resource tests to work on Windows 10 machines connected to an Azure Active Directory [#7301](https://github.com/chef/chef/pull/7301) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.1.33 -->
-- Fix :configure_startup action to configure delayed start [#7297](https://github.com/chef/chef/pull/7297) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.1.32 -->
-- Check local file exists before installing a windows package [#7299](https://github.com/chef/chef/pull/7299) ([josh-barker](https://github.com/josh-barker)) <!-- 14.1.31 -->
-- resource_inspector: Add default values for properties [#7300](https://github.com/chef/chef/pull/7300) ([thommay](https://github.com/thommay)) <!-- 14.1.30 -->
-- fix yum versionlock quoting [#7329](https://github.com/chef/chef/pull/7329) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.29 -->
-- Support signing with ssh-agent [#7324](https://github.com/chef/chef/pull/7324) ([coderanger](https://github.com/coderanger)) <!-- 14.1.28 -->
-- convert a_to_s to shell_out_compact in DNF/yum [#7313](https://github.com/chef/chef/pull/7313) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.27 -->
-- Better errors with uninstalled official knife plugins [#7326](https://github.com/chef/chef/pull/7326) ([tas50](https://github.com/tas50)) <!-- 14.1.26 -->
-- windows_ad_join: Ensure that reboot requests work [#7328](https://github.com/chef/chef/pull/7328) ([thommay](https://github.com/thommay)) <!-- 14.1.25 -->
-- Properly print path to config file to the screen in knife configure [#7325](https://github.com/chef/chef/pull/7325) ([tas50](https://github.com/tas50)) <!-- 14.1.24 -->
-- add default_env flag to shell_out and execute resource [#7298](https://github.com/chef/chef/pull/7298) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.23 -->
-- Cookbook Version:  add host-&lt;fqdn&gt; to the error message for templates and files specificity [#7295](https://github.com/chef/chef/pull/7295) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.22 -->
-- Cleanup AIX and Solaris user resources. [#7249](https://github.com/chef/chef/pull/7249) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.21 -->
-- Fix systemd_unit user context [#7274](https://github.com/chef/chef/pull/7274) ([mal](https://github.com/mal)) <!-- 14.1.20 -->
-- Fix manifest entries for root files [#7270](https://github.com/chef/chef/pull/7270) ([thommay](https://github.com/thommay)) <!-- 14.1.19 -->
-- object validation for DataHandlerBase#normalize_hash [#7264](https://github.com/chef/chef/pull/7264) ([jeremymv2](https://github.com/jeremymv2)) <!-- 14.1.18 -->
-- [MSYS-817] fix for windows_task does not parse backslashes in the commad property [#7281](https://github.com/chef/chef/pull/7281) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.1.17 -->
-- UID now starts at 501, uses createhomedir instead [#4903](https://github.com/chef/chef/pull/4903) ([nmcspadden](https://github.com/nmcspadden)) <!-- 14.1.16 -->
-- Add default_action to the resource inspector [#7276](https://github.com/chef/chef/pull/7276) ([tas50](https://github.com/tas50)) <!-- 14.1.15 -->
-- Add additional resource unit tests [#7275](https://github.com/chef/chef/pull/7275) ([tas50](https://github.com/tas50)) <!-- 14.1.14 -->
-- Add additional unit tests for resource actions/properties [#7266](https://github.com/chef/chef/pull/7266) ([tas50](https://github.com/tas50)) <!-- 14.1.14 -->
-- improved regex accuracy lib/chef/resource/hostname.rb [#7262](https://github.com/chef/chef/pull/7262) ([bottkv488](https://github.com/bottkv488)) <!-- 14.1.14 -->
-- publish habitat packages [#7272](https://github.com/chef/chef/pull/7272) ([thommay](https://github.com/thommay)) <!-- 14.1.13 -->
+- Expand development docs with branch/backport + more [#7343](https://github.com/chef/chef/pull/7343) ([tas50](https://github.com/tas50)) <!-- 14.2.2 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.2.0](https://github.com/chef/chef/tree/v14.2.0) (2018-06-07)
+
+#### Merged Pull Requests
+- publish habitat packages [#7272](https://github.com/chef/chef/pull/7272) ([thommay](https://github.com/thommay))
+- improved regex accuracy lib/chef/resource/hostname.rb [#7262](https://github.com/chef/chef/pull/7262) ([bottkv488](https://github.com/bottkv488))
+- Add additional unit tests for resource actions/properties [#7266](https://github.com/chef/chef/pull/7266) ([tas50](https://github.com/tas50))
+- Add additional resource unit tests [#7275](https://github.com/chef/chef/pull/7275) ([tas50](https://github.com/tas50))
+- Add default_action to the resource inspector [#7276](https://github.com/chef/chef/pull/7276) ([tas50](https://github.com/tas50))
+- UID now starts at 501, uses createhomedir instead [#4903](https://github.com/chef/chef/pull/4903) ([nmcspadden](https://github.com/nmcspadden))
+- [MSYS-817] fix for windows_task does not parse backslashes in the commad property [#7281](https://github.com/chef/chef/pull/7281) ([Vasu1105](https://github.com/Vasu1105))
+- object validation for DataHandlerBase#normalize_hash [#7264](https://github.com/chef/chef/pull/7264) ([jeremymv2](https://github.com/jeremymv2))
+- Fix manifest entries for root files [#7270](https://github.com/chef/chef/pull/7270) ([thommay](https://github.com/thommay))
+- Fix systemd_unit user context [#7274](https://github.com/chef/chef/pull/7274) ([mal](https://github.com/mal))
+- Cleanup AIX and Solaris user resources. [#7249](https://github.com/chef/chef/pull/7249) ([lamont-granquist](https://github.com/lamont-granquist))
+- Cookbook Version:  add host-&lt;fqdn&gt; to the error message for templates and files specificity [#7295](https://github.com/chef/chef/pull/7295) ([lamont-granquist](https://github.com/lamont-granquist))
+- add default_env flag to shell_out and execute resource [#7298](https://github.com/chef/chef/pull/7298) ([lamont-granquist](https://github.com/lamont-granquist))
+- Properly print path to config file to the screen in knife configure [#7325](https://github.com/chef/chef/pull/7325) ([tas50](https://github.com/tas50))
+- windows_ad_join: Ensure that reboot requests work [#7328](https://github.com/chef/chef/pull/7328) ([thommay](https://github.com/thommay))
+- Better errors with uninstalled official knife plugins [#7326](https://github.com/chef/chef/pull/7326) ([tas50](https://github.com/tas50))
+- convert a_to_s to shell_out_compact in DNF/yum [#7313](https://github.com/chef/chef/pull/7313) ([lamont-granquist](https://github.com/lamont-granquist))
+- Support signing with ssh-agent [#7324](https://github.com/chef/chef/pull/7324) ([coderanger](https://github.com/coderanger))
+- fix yum versionlock quoting [#7329](https://github.com/chef/chef/pull/7329) ([lamont-granquist](https://github.com/lamont-granquist))
+- resource_inspector: Add default values for properties [#7300](https://github.com/chef/chef/pull/7300) ([thommay](https://github.com/thommay))
+- Check local file exists before installing a windows package [#7299](https://github.com/chef/chef/pull/7299) ([josh-barker](https://github.com/josh-barker))
+- Fix :configure_startup action to configure delayed start [#7297](https://github.com/chef/chef/pull/7297) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Allow securable resource tests to work on Windows 10 machines connected to an Azure Active Directory [#7301](https://github.com/chef/chef/pull/7301) ([stuartpreston](https://github.com/stuartpreston))
+- Quote git remote_url property (PR 6249 + chefstyle fix) [#7014](https://github.com/chef/chef/pull/7014) ([tas50](https://github.com/tas50))
+- Use inspec-core, new ffi gem, and bump deps [#7332](https://github.com/chef/chef/pull/7332) ([lamont-granquist](https://github.com/lamont-granquist))
+- bump ohai to 14.2.0 [#7333](https://github.com/chef/chef/pull/7333) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v14.1.12](https://github.com/chef/chef/tree/v14.1.12) (2018-05-16)
 
 #### Merged Pull Requests
@@ -55,7 +60,6 @@
 - Fix windows_task resource not handling commands with arguments [#7250](https://github.com/chef/chef/pull/7250) ([Vasu1105](https://github.com/Vasu1105))
 - Update win32-taskscheduler gem to fix creating tasks as the SYSTEM user [#7265](https://github.com/chef/chef/pull/7265) ([tas50](https://github.com/tas50))
 - Use some unique task names for windows_task functional tests [#7267](https://github.com/chef/chef/pull/7267) ([btm](https://github.com/btm))
-<!-- latest_stable_release -->
 
 ## [v14.1.1](https://github.com/chef/chef/tree/v14.1.1) (2018-05-08)
 
