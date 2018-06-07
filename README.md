@@ -113,9 +113,7 @@ bundle install
 bundle exec omnibus build chef
 ```
 
-The prerequisites necessary to run omnibus itself are not documented here.  The automation we use is
-the [opscode-ci cookbook](https://github.com/chef-cookbooks/opscode-ci) cookbook, which serves as the most
-current documentation.
+The prerequisites necessary to run omnibus itself are not documented in this repository. See the [Omnibus repository](https://github.com/chef/omnibus) for additional details.
 
 ## Updating Dependencies
 
