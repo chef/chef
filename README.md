@@ -43,9 +43,9 @@ against the repository you think best fits and it will be directed to the approp
 
 ## Installing From Git for Developers
 
-**NOTE:** As a Chef user, please download the omnibus package of [Chef](https://downloads.chef.io/chef) or [Chef-DK](https://downloads.chef.io/chef)
+**NOTE:** As a Chef user, please download the [Chef](https://downloads.chef.io/chef) or [Chef-DK](https://downloads.chef.io/chef) packages, which provide Ruby and other necessary libraries for running Chef.
 
-We do not recommend installing from gems, or building from source.  The following instructions apply only to those doing software development on Chef.
+We do not recommend end users install Chef from gems or build from source. The following instructions apply only to those doing software development on Chef.
 
 ### Prerequisites
 
