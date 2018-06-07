@@ -28,7 +28,7 @@ As Debian 7 is now end of life we will no longer produce Debian 7 chef-client pa
 
 ## Ifconfig on Ubuntu 18.04
 
-The ifconfig resource has been updated to support Ubuntu 18.04
+Incompatibilities with Ubuntu 18.04 in the ifconfig resource have been resolved.
 
 ## Ohai Updated to 13.9.2
 
