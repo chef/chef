@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.36 -->
-## [v14.1.36](https://github.com/chef/chef/tree/v14.1.36) (2018-06-04)
+<!-- latest_release 14.2.1 -->
+## [v14.2.1](https://github.com/chef/chef/tree/v14.2.1) (2018-06-07)
 
 #### Merged Pull Requests
-- bump ohai to 14.2.0 [#7333](https://github.com/chef/chef/pull/7333) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add skip_publisher_check property to powershell_package [#7259](https://github.com/chef/chef/pull/7259) ([Happycoil](https://github.com/Happycoil))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.12 -->
 ### Changes since 14.1.12 release
 
 #### Merged Pull Requests
+- Add skip_publisher_check property to powershell_package [#7259](https://github.com/chef/chef/pull/7259) ([Happycoil](https://github.com/Happycoil)) <!-- 14.2.1 -->
 - bump ohai to 14.2.0 [#7333](https://github.com/chef/chef/pull/7333) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.36 -->
 - Use inspec-core, new ffi gem, and bump deps [#7332](https://github.com/chef/chef/pull/7332) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.1.35 -->
 - Quote git remote_url property (PR 6249 + chefstyle fix) [#7014](https://github.com/chef/chef/pull/7014) ([tas50](https://github.com/tas50)) <!-- 14.1.34 -->
