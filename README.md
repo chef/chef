@@ -168,20 +168,25 @@ After each "official" stable release we need to bump the minor version. To do th
 
 Submit a PR with the changes made by the above.
 
-## Addressing a Regression
+## Branch Structure
 
-Sometimes, regressions split through the cracks. Since new functionality is always being added and the minor version is bumped immediately after release, we can't simply roll forward. In this scenario, we'll need to perform a special regression release process. In the example that follows, the stable release with a regression is `1.10.60` while master is currently sitting at `1.11.30`. *Note:* To perform this process, you must be a Chef employee.
+We develop and ship the current release of Chef off the master branch of this repository. Our goal is that master should always be in a shipable state. Previous stable releases of Chef are developed on their own branches named by the major version (ex: chef-13 or chef-12). We do not perform direct development on these stable branches except to resolve build failures. Instead we backport fixes from our master branch to these stable branches. Stable branches receive critical bugfixes and security releases and stable Chef releases are made as necessary for security purposes.
 
-1. If the regression has not already been addressed, open a Pull Request against master with the fix.
-2. Wait until that Pull Request has been merged and `1.11.31` has passed all the necessary tests and is available in the current channel.
+## Backporting Fixes to Stable Releases
+
+If there is a critical fix you believe should be backported from master to a stable branch please follow these steps to backport your change:
+
+1. Ask in the #chef-dev channel on [Chef Community Slack](https://community-slack.chef.io/) if this is an appropriate change to backport.
 3. Inspect the Git history and find the `SHA` associated with the Merge Commit for the Pull Request above.
 4. Apply the fix for the regression via a cherry-pick:
-  1. Check out the stable release tag: `git checkout v1.10.60`
+  1. Check out the stable release tag: `git checkout chef-13`
+  1. Create a branch for your backport: `git checkout -b my_great_bug_packport`
   2. Cherry Pick the SHA with the fix: `git cherry-pick SHA`
   3. Address any conflicts (if necessary)
-  4. Tag the sha with the appropriate version: `git tag -a v1.10.61 -m "Release v1.10.61"`
-  5. Push the new tag to origin: `git push origin --tags`
-5. Log in to Jenkins and trigger a `chef-trigger-release` job specifying the new tag as the `GIT_REF`.
+  5. Push the new tag to origin: `git push origin`
+5. Open a PR for your backport 
+  1. The PR title should be `Backport: ORIGINAL_PR_TEXT`
+  2. The description should link to the original PR and include a description of why it needs to be backported
 
 ## Component Versions
 
