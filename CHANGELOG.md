@@ -1,21 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.9.4 -->
-## [v13.9.4](https://github.com/chef/chef/tree/v13.9.4) (2018-06-05)
-
-#### Merged Pull Requests
-- Chef-13: Bump ffi to 1.9.25 along with the rest of things [#7337](https://github.com/chef/chef/pull/7337) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=13.9.1 -->
-### Changes since 13.9.1 release
-
-#### Merged Pull Requests
-- Chef-13: Bump ffi to 1.9.25 along with the rest of things [#7337](https://github.com/chef/chef/pull/7337) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.9.4 -->
-- Backport Ubuntu 18.04 fixes [#7280](https://github.com/chef/chef/pull/7280) ([thommay](https://github.com/thommay)) <!-- 13.9.3 -->
-- Update nokogiri, ruby, and openssl for CVEs [#7232](https://github.com/chef/chef/pull/7232) ([tas50](https://github.com/tas50)) <!-- 13.9.2 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.9.4](https://github.com/chef/chef/tree/v13.9.4) (2018-06-07)
+
+#### Merged Pull Requests
+- Update nokogiri, ruby, and openssl for CVEs [#7232](https://github.com/chef/chef/pull/7232) ([tas50](https://github.com/tas50))
+- Backport Ubuntu 18.04 fixes [#7280](https://github.com/chef/chef/pull/7280) ([thommay](https://github.com/thommay))
+- Chef-13: Bump ffi to 1.9.25 along with the rest of things [#7337](https://github.com/chef/chef/pull/7337) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v13.9.1](https://github.com/chef/chef/tree/v13.9.1) (2018-05-08)
 
 #### Merged Pull Requests
@@ -30,7 +28,6 @@
 - Don&#39;t always request lazy files [#7216](https://github.com/chef/chef/pull/7216) ([thommay](https://github.com/thommay))
 - 13.9 Release notes [#7218](https://github.com/chef/chef/pull/7218) ([thommay](https://github.com/thommay))
 - RFC-102: Deprecation warning in resources [#7219](https://github.com/chef/chef/pull/7219) ([thommay](https://github.com/thommay))
-<!-- latest_stable_release -->
 
 ## [v13.8.5](https://github.com/chef/chef/tree/v13.8.5) (2018-03-07)
 
