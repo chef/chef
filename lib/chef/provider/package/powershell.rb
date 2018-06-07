@@ -53,7 +53,9 @@ class Chef
         # Installs the package specified with the version passed else latest version will be installed
         def install_package(names, versions)
           names.each_with_index do |name, index|
-            powershell_out(build_powershell_package_command("Install-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
+            cmd = powershell_out(build_powershell_package_command("Install-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
+            next if cmd.nil?
+            raise Chef::Exceptions::PowershellCmdletException, "Failed to install package due to catalog signing error, use skip_publisher_check to force install" if cmd.stderr =~ /SkipPublisherCheck/
           end
         end
 
@@ -110,12 +112,14 @@ class Chef
 
         def build_powershell_package_command(command, version = nil)
           command = [command] unless command.is_a?(Array)
+          cmdlet_name = command.first
           command.unshift("(")
           %w{-Force -ForceBootstrap}.each do |arg|
             command.push(arg)
           end
           command.push("-RequiredVersion #{version}") if version
-          command.push("-Source #{new_resource.source}") if new_resource.source && command[1] =~ Regexp.union(/Install-Package/, /Find-Package/)
+          command.push("-Source #{new_resource.source}") if new_resource.source && cmdlet_name =~ Regexp.union(/Install-Package/, /Find-Package/)
+          command.push("-SkipPublisherCheck") if new_resource.skip_publisher_check && cmdlet_name !~ /Find-Package/
           command.push(").Version")
           command.join(" ")
         end
