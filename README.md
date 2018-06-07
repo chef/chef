@@ -26,7 +26,7 @@ If you just want to use Chef, check out these resources:
 - [learnchef](https://learn.chef.io): Getting started guide
 - [docs.chef.io](https://docs.chef.io): Comprehensive User Docs
 - [Installer Downloads](https://downloads.chef.io/chef/): Install Chef as a complete package
-- [chef/chef](https://hub.docker.com/r/chef/chef): Docker image for use with [kitchen-dokken](https://github.com/someara/kitchen-dokken)
+- [chef/chef](https://hub.docker.com/r/chef/chef/): Docker image for use with [kitchen-dokken](https://github.com/someara/kitchen-dokken/)
 
 ## Reporting Issues
 
@@ -72,24 +72,20 @@ bundle exec rake install
 
 ## Contributing/Development
 
-Please read our [Community Contributions Guidelines](https://docs.chef.io/community_contributions.html), and
-ensure you are signing all your commits with DCO sign-off.
+Please read our [Community Contributions Guidelines](https://docs.chef.io/community_contributions.html), and ensure you are signing all your commits with DCO sign-off.
 
 The general development process is:
 
 1. Fork this repo and clone it to your workstation.
 2. Create a feature branch for your change.
 3. Write code and tests.
-4. Push your feature branch to github and open a pull request against master.
+4. Push your feature branch to GitHub and open a pull request against master.
 
-Once your repository is set up, you can start working on the code.  We do utilize
-RSpec for test driven development, so you'll need to get a development
-environment running. Follow the above procedure ("Installing from Git") to get
-your local copy of the source running.
+Once your repository is set up, you can start working on the code. We do utilize RSpec for test driven development, so you'll need to get a development environment running. Follow the above procedure ("Installing from Git") to get your local copy of the source running.
 
 ## Testing
 
-This repository only uses rspec for testing.
+This repository uses rspec for testing.
 
 ```bash
 # all tests
@@ -102,11 +98,11 @@ bundle exec rspec spec/PATH/TO/FILE_spec.rb
 bundle exec rspec spec/PATH/TO/DIR
 ```
 
-When you submit a PR rspec tests will run automatically on travis and appveyor.
+When you submit a PR rspec tests will run automatically on [Travis-CI](https://travis-ci.org/) and [AppVeyor](https://www.appveyor.com/).
 
 ## Building the Full Package
 
-To build chef as a standalone package, we use the [omnibus](omnibus/README.md) system.
+To build Chef as a standalone package, we use the [omnibus](omnibus/README.md) packaging system.
 
 To build:
 
