@@ -51,11 +51,10 @@ We do not recommend end users install Chef from gems or build from source. The f
 
 Install:
 
-* git
-* C compiler, header files, etc.
-* ruby 2.4 or later
-* rubygems
-* bundler gem
+- git
+- C compiler, header files, etc.
+- Ruby 2.4 or later
+- bundler gem
 
 We support too many platforms, and there are too many different ways to manage ruby installs, so
 it is assumed the user understands how to accomplish this for their platform and needs (see previous
