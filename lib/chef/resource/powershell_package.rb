@@ -37,7 +37,7 @@ class Chef
       property :package_name, [String, Array], coerce: proc { |x| [x].flatten }
       property :version, [String, Array], coerce: proc { |x| [x].flatten }
       property :source, [String]
-      property :skip_publisher_check, [true, false], default: false, introduced: "14.2", description: "Skip validating module author"
+      property :skip_publisher_check, [true, false], default: false, introduced: "14.3", description: "Skip validating module author"
     end
   end
 end
