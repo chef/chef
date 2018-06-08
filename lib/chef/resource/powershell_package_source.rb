@@ -57,6 +57,7 @@ class Chef
       action :register do
         register_cmd = "Register-PackageSource -Name '#{new_resource.name}' -Location '#{new_resource.url}'"
         register_cmd << " -Trusted" if new_resource.trusted
+        register_cmd << " -PackageManagementProvider '#{new_resource.package_management_provider}'"
         register_cmd << " -PublishLocation '#{new_resource.publish_location}'" if new_resource.publish_location
         register_cmd << " -ScriptSourceLocation '#{new_resource.script_source_location}'" if new_resource.script_source_location
         register_cmd << " -ScriptPublishLocation '#{new_resource.script_publish_location}'" if new_resource.script_publish_location
