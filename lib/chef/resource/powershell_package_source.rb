@@ -79,7 +79,7 @@ class Chef
 
       action_class do
         def package_source_exists?
-          cmd = powershell_out!("(Get-PackageSource -Name '#{new_resource.source}').Name")
+          cmd = powershell_out!("(Get-PackageSource -Name '#{new_resource.name}').Name")
           cmd.stdout.downcase.strip == new_resource.name.downcase
         end
       end
