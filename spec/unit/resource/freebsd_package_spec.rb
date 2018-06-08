@@ -93,6 +93,7 @@ describe Chef::Resource::FreebsdPackage do
 
         [1000016, 1000000, 901503, 902506, 802511].each do |freebsd_version|
           node.automatic_attrs[:os_version] = freebsd_version
+          expect(Chef).to receive(:deprecated).with(:freebsd_package_provider, kind_of(String))
           resource.after_created
           expect(resource.provider).to eq(Chef::Provider::Package::Freebsd::Pkg)
         end
