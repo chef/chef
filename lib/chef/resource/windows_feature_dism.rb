@@ -201,7 +201,7 @@ class Chef
           # dism on windows 2012+ isn't case sensitive so it's best to compare
           # lowercase lists so the user input doesn't need to be case sensitive
           # @todo when we're ready to remove windows 2008R2 the gating here can go away
-          feature_details.downcase! unless Chef::Platform.older_than_win_2012_or_8
+          feature_details.downcase! unless Chef::Platform.older_than_win_2012_or_8?
           node.override["dism_features_cache"][feature_type] << feature_details
         end
 
@@ -219,7 +219,7 @@ class Chef
         # Fail unless we're on windows 8+ / 2012+ where deleting a feature is supported
         # @return [void]
         def raise_if_delete_unsupported
-          raise Chef::Exceptions::UnsupportedAction, "#{self} :delete action not support on Windows releases before Windows 8/2012. Cannot continue!" unless node["platform_version"].to_f >= 6.2
+          raise Chef::Exceptions::UnsupportedAction, "#{self} :delete action not supported on Windows releases before Windows 8/2012. Cannot continue!" if Chef::Platform.older_than_win_2012_or_8?
         end
       end
     end

@@ -259,7 +259,7 @@ class Chef
 
         # Fail unless we're on windows 8+ / 2012+ where deleting a feature is supported
         def raise_if_delete_unsupported
-          raise Chef::Exceptions::UnsupportedAction, "#{self} :delete action not support on Windows releases before Windows 8/2012. Cannot continue!" if Chef::Platform.older_than_win_2012_or_8
+          raise Chef::Exceptions::UnsupportedAction, "#{self} :delete action not supported on Windows releases before Windows 8/2012. Cannot continue!" if Chef::Platform.older_than_win_2012_or_8?
         end
       end
     end
