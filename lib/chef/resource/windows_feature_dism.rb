@@ -17,6 +17,7 @@
 #
 
 require "chef/resource"
+require "chef/platform/query_helpers"
 
 class Chef
   class Resource
@@ -49,13 +50,7 @@ class Chef
         x = x.split(/\s*,\s*/) if x.is_a?(String) # split multiple forms of a comma separated list
 
         # feature installs on windows < 2012 are case sensitive so only downcase when on 2012+
-        older_than_2012_or_8? ? x : x.map(&:downcase)
-      end
-
-      # a simple helper to determine if we're on a windows release pre-2012 / 8
-      # @return [Boolean] Is the system older than Windows 8 / 2012
-      def older_than_2012_or_8?
-        node["platform_version"].to_f < 6.2
+        Chef::Platform.older_than_win_2012_or_8? ? x : x.map(&:downcase)
       end
 
       action :install do
@@ -206,7 +201,7 @@ class Chef
           # dism on windows 2012+ isn't case sensitive so it's best to compare
           # lowercase lists so the user input doesn't need to be case sensitive
           # @todo when we're ready to remove windows 2008R2 the gating here can go away
-          feature_details.downcase! unless older_than_2012_or_8?
+          feature_details.downcase! unless Chef::Platform.older_than_win_2012_or_8
           node.override["dism_features_cache"][feature_type] << feature_details
         end
 
