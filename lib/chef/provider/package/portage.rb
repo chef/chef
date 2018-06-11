@@ -1,6 +1,6 @@
 #
 # Author:: Ezra Zygmuntowicz (<ezra@engineyard.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,7 @@ class Chef
         PACKAGE_NAME_PATTERN = %r{(?:([^/]+)/)?([^/]+)}
 
         def load_current_resource
-          @current_resource = Chef::Resource::Package.new(new_resource.name)
+          @current_resource = Chef::Resource::PortagePackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
 
           category, pkg = /^#{PACKAGE_NAME_PATTERN}$/.match(new_resource.package_name)[1, 2]

@@ -58,7 +58,7 @@ class Chef
                 else
                   new_resource.package_name.to_s
                 end
-          shell_out_compact_timeout!("cave", "-L", "warning", "resolve", "-x", options, pkg)
+          shell_out_compact!("cave", "-L", "warning", "resolve", "-x", options, pkg)
         end
 
         def upgrade_package(name, version)

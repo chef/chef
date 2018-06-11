@@ -43,7 +43,7 @@ class Chef
         def check_package_state(name)
           logger.trace("#{new_resource} checking package #{name}")
           version = nil
-          info = shell_out_compact_timeout!("/opt/local/sbin/pkg_info", "-E", "#{name}*", env: nil, returns: [0, 1])
+          info = shell_out_compact!("/opt/local/sbin/pkg_info", "-E", "#{name}*", env: nil, returns: [0, 1])
 
           if info.stdout
             version = info.stdout[/^#{new_resource.package_name}-(.+)/, 1]
@@ -58,7 +58,7 @@ class Chef
           return @candidate_version if @candidate_version
           name = nil
           version = nil
-          pkg = shell_out_compact_timeout!("/opt/local/bin/pkgin", "se", new_resource.package_name, env: nil, returns: [0, 1])
+          pkg = shell_out_compact!("/opt/local/bin/pkgin", "se", new_resource.package_name, env: nil, returns: [0, 1])
           pkg.stdout.each_line do |line|
             case line
             when /^#{new_resource.package_name}/
@@ -72,7 +72,7 @@ class Chef
         def install_package(name, version)
           logger.trace("#{new_resource} installing package #{name} version #{version}")
           package = "#{name}-#{version}"
-          out = shell_out_compact_timeout!("/opt/local/bin/pkgin", "-y", "install", package, env: nil)
+          out = shell_out_compact!("/opt/local/bin/pkgin", "-y", "install", package, env: nil)
         end
 
         def upgrade_package(name, version)
@@ -83,7 +83,7 @@ class Chef
         def remove_package(name, version)
           logger.trace("#{new_resource} removing package #{name} version #{version}")
           package = name.to_s
-          out = shell_out_compact_timeout!("/opt/local/bin/pkgin", "-y", "remove", package, env: nil)
+          out = shell_out_compact!("/opt/local/bin/pkgin", "-y", "remove", package, env: nil)
         end
 
       end

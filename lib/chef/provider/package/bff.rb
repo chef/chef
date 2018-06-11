@@ -49,7 +49,7 @@ class Chef
 
           if package_source_found?
             logger.trace("#{new_resource} checking pkg status")
-            ret = shell_out_compact_timeout("installp", "-L", "-d", new_resource.source)
+            ret = shell_out_compact("installp", "-L", "-d", new_resource.source)
             ret.stdout.each_line do |line|
               case line
               when /:#{new_resource.package_name}:/
@@ -65,7 +65,7 @@ class Chef
           end
 
           logger.trace("#{new_resource} checking install state")
-          ret = shell_out_compact_timeout("lslpp", "-lcq", current_resource.package_name)
+          ret = shell_out_compact("lslpp", "-lcq", current_resource.package_name)
           ret.stdout.each_line do |line|
             case line
             when /#{current_resource.package_name}/
@@ -85,7 +85,7 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
           if package_source_found?
-            ret = shell_out_compact_timeout("installp", "-L", "-d", new_resource.source)
+            ret = shell_out_compact("installp", "-L", "-d", new_resource.source)
             ret.stdout.each_line do |line|
               case line
               when /\w:#{Regexp.escape(new_resource.package_name)}:(.*)/
@@ -112,10 +112,10 @@ class Chef
         def install_package(name, version)
           logger.trace("#{new_resource} package install options: #{options}")
           if options.nil?
-            shell_out_compact_timeout!("installp", "-aYF", "-d", new_resource.source, new_resource.package_name)
+            shell_out_compact!("installp", "-aYF", "-d", new_resource.source, new_resource.package_name)
             logger.trace("#{new_resource} installed version #{new_resource.version} from: #{new_resource.source}")
           else
-            shell_out_compact_timeout!("installp", "-aYF", options, "-d", new_resource.source, new_resource.package_name)
+            shell_out_compact!("installp", "-aYF", options, "-d", new_resource.source, new_resource.package_name)
             logger.trace("#{new_resource} installed version #{new_resource.version} from: #{new_resource.source}")
           end
         end
@@ -124,10 +124,10 @@ class Chef
 
         def remove_package(name, version)
           if options.nil?
-            shell_out_compact_timeout!("installp", "-u", name)
+            shell_out_compact!("installp", "-u", name)
             logger.trace("#{new_resource} removed version #{new_resource.version}")
           else
-            shell_out_compact_timeout!("installp", "-u", options, name)
+            shell_out_compact!("installp", "-u", options, name)
             logger.trace("#{new_resource} removed version #{new_resource.version}")
           end
         end

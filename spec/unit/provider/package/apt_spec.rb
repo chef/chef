@@ -415,7 +415,7 @@ mpg123 1.12.1-0ubuntu1
         @provider.lock_package("irssi", "0.8.12-7")
       end
       it "should not lock if the package is already locked" do
-        allow(@provider).to receive(:shell_out_compact_timeout!).with(
+        allow(@provider).to receive(:shell_out_compact!).with(
           "apt-mark", "showhold"
         ).and_return(instance_double(
           Mixlib::ShellOut, stdout: "irssi")
@@ -436,7 +436,7 @@ mpg123 1.12.1-0ubuntu1
         @provider.unlock_package("irssi", "0.8.12-7")
       end
       it "should not unlock if the package is already unlocked" do
-        allow(@provider).to receive(:shell_out_compact_timeout!).with(
+        allow(@provider).to receive(:shell_out_compact!).with(
           "apt-mark", "showhold"
         ).and_return(instance_double(
           Mixlib::ShellOut, stdout: "")
@@ -499,7 +499,7 @@ mpg123 1.12.1-0ubuntu1
       it "should run dpkg to compare versions if an existing version is installed" do
         allow(@provider).to receive(:get_current_versions).and_return("1.4.0")
         allow(@new_resource).to receive(:allow_downgrade).and_return(false)
-        expect(@provider).to receive(:shell_out_compact_timeout).with(
+        expect(@provider).to receive(:shell_out_compact).with(
           "dpkg", "--compare-versions", "1.4.0", "gt", "0.8.12-7"
         ).and_return(double(error?: false))
         @provider.run_action(:upgrade)

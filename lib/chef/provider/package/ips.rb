@@ -42,14 +42,14 @@ class Chef
         end
 
         def get_current_version
-          shell_out_compact_timeout("pkg", "info", new_resource.package_name).stdout.each_line do |line|
+          shell_out_compact("pkg", "info", new_resource.package_name).stdout.each_line do |line|
             return $1.split[0] if line =~ /^\s+Version: (.*)/
           end
           nil
         end
 
         def get_candidate_version
-          shell_out_compact_timeout!("pkg", "info", "-r", new_resource.package_name).stdout.each_line do |line|
+          shell_out_compact!("pkg", "info", "-r", new_resource.package_name).stdout.each_line do |line|
             return $1.split[0] if line =~ /Version: (.*)/
           end
           nil
@@ -68,7 +68,7 @@ class Chef
           command = [ "pkg", options, "install", "-q" ]
           command << "--accept" if new_resource.accept_license
           command << "#{name}@#{version}"
-          shell_out_compact_timeout!(command)
+          shell_out_compact!(command)
         end
 
         def upgrade_package(name, version)
@@ -77,7 +77,7 @@ class Chef
 
         def remove_package(name, version)
           package_name = "#{name}@#{version}"
-          shell_out_compact_timeout!( "pkg", options, "uninstall", "-q", package_name )
+          shell_out_compact!( "pkg", options, "uninstall", "-q", package_name )
         end
       end
     end
