@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.3 -->
-## [v14.3.3](https://github.com/chef/chef/tree/v14.3.3) (2018-06-11)
+<!-- latest_release 14.3.4 -->
+## [v14.3.4](https://github.com/chef/chef/tree/v14.3.4) (2018-06-11)
 
 #### Merged Pull Requests
-- Add whyrun message when installing a local file on Windows [#7351](https://github.com/chef/chef/pull/7351) ([josh-barker](https://github.com/josh-barker))
+- Implement rfc107: NodeMap locking for resource and provider handlers [#7224](https://github.com/chef/chef/pull/7224) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Implement rfc107: NodeMap locking for resource and provider handlers [#7224](https://github.com/chef/chef/pull/7224) ([coderanger](https://github.com/coderanger)) <!-- 14.3.4 -->
 - Add whyrun message when installing a local file on Windows [#7351](https://github.com/chef/chef/pull/7351) ([josh-barker](https://github.com/josh-barker)) <!-- 14.3.3 -->
 - Make shell_out_compact automatically pull timeouts off the resource + remove uses of shell_out_compact_timeout [#7330](https://github.com/chef/chef/pull/7330) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.2 -->
 - Deprecated the Chef::Provider::Package::Freebsd::Pkg provider [#7350](https://github.com/chef/chef/pull/7350) ([tas50](https://github.com/tas50)) <!-- 14.3.1 -->
