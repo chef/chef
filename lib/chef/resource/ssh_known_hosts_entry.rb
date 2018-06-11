@@ -26,7 +26,8 @@ class Chef
       provides(:ssh_known_hosts_entry) { true }
 
       description "Use the ssh_known_hosts_entry resource to append an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified."
-      introduced "15.0"
+      introduced "14.3"
+      preview_resource true
 
       property :host, String,
                description: "The host to add to the known hosts file.",
