@@ -32,6 +32,9 @@ class Chef
       action :install do
         description "Load kernel module, and ensure it loads on reboot"
 
+        # load the module first before installing
+        new_resource.run_action(:load)
+
         directory new_resource.load_dir do
           recursive true
         end
@@ -45,8 +48,6 @@ class Chef
           command initramfs_command
           action :nothing
         end
-
-        new_resource.run_action(:load)
       end
 
       action :uninstall do
