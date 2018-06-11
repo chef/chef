@@ -22,6 +22,12 @@ require "chef/node_map"
 class Foo; end
 class Bar; end
 
+class FooResource < Chef::Resource; end
+class BarResource < Chef::Resource; end
+
+class FooProvider < Chef::Provider; end
+class BarProvider < Chef::Provider; end
+
 describe Chef::NodeMap do
 
   let(:node_map) { Chef::NodeMap.new }
@@ -139,14 +145,14 @@ describe Chef::NodeMap do
   describe "deleting classes" do
     it "deletes a class and removes the mapping completely" do
       node_map.set(:thing, Bar)
-      expect( node_map.delete_class(Bar) ).to eql({ :thing => [{ :klass => Bar }] })
+      expect( node_map.delete_class(Bar) ).to include({ :thing => [{ :klass => Bar, :cookbook_override => false, :core_override => false }] })
       expect( node_map.get(node, :thing) ).to eql(nil)
     end
 
     it "deletes a class and leaves the mapping that still has an entry" do
       node_map.set(:thing, Bar)
       node_map.set(:thing, Foo)
-      expect( node_map.delete_class(Bar) ).to eql({ :thing => [{ :klass => Bar }] })
+      expect( node_map.delete_class(Bar) ).to eql({ :thing => [{ :klass => Bar, :cookbook_override => false, :core_override => false }] })
       expect( node_map.get(node, :thing) ).to eql(Foo)
     end
 
@@ -154,7 +160,7 @@ describe Chef::NodeMap do
       node_map.set(:thing1, Bar)
       node_map.set(:thing2, Bar)
       node_map.set(:thing2, Foo)
-      expect( node_map.delete_class(Bar) ).to eql({ :thing1 => [{ :klass => Bar }], :thing2 => [{ :klass => Bar }] })
+      expect( node_map.delete_class(Bar) ).to eql({ :thing1 => [{ :klass => Bar, :cookbook_override => false, :core_override => false }], :thing2 => [{ :klass => Bar, :cookbook_override => false, :core_override => false }] })
       expect( node_map.get(node, :thing1) ).to eql(nil)
       expect( node_map.get(node, :thing2) ).to eql(Foo)
     end
@@ -200,6 +206,68 @@ describe Chef::NodeMap do
         allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
         allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
         expect(node_map.get(node, :thing)).to eql(:foo)
+      end
+    end
+  end
+
+  describe "locked mode" do
+    context "while unlocked" do
+      it "allows setting the same key twice" do
+        expect(Chef).to_not receive(:log_deprecation)
+        node_map.set(:foo, FooResource)
+        node_map.set(:foo, BarResource)
+        expect(node_map.get(node, :foo)).to eql(BarResource)
+      end
+    end
+
+    context "while locked" do
+      # Uncomment the commented `expect`s in 15.0.
+      it "rejects setting the same key twice" do
+        expect(Chef).to receive(:log_deprecation).with("Trying to register resource foo on top of existing Chef core resource. Check if a new version of the cookbook is available.")
+        node_map.set(:foo, FooResource)
+        node_map.lock!
+        node_map.set(:foo, BarResource)
+        # expect(node_map.get(node, :foo)).to eql(FooResource)
+      end
+
+      it "allows setting the same key twice when the first has allow_cookbook_override" do
+        expect(Chef).to_not receive(:log_deprecation)
+        node_map.set(:foo, FooResource, allow_cookbook_override: true)
+        node_map.lock!
+        node_map.set(:foo, BarResource)
+        expect(node_map.get(node, :foo)).to eql(BarResource)
+      end
+
+      it "allows setting the same key twice when the first has allow_cookbook_override with a future version" do
+        expect(Chef).to_not receive(:log_deprecation)
+        node_map.set(:foo, FooResource, allow_cookbook_override: "< 100")
+        node_map.lock!
+        node_map.set(:foo, BarResource)
+        expect(node_map.get(node, :foo)).to eql(BarResource)
+      end
+
+      it "rejects setting the same key twice when the first has allow_cookbook_override with a past version" do
+        expect(Chef).to receive(:log_deprecation).with("Trying to register resource foo on top of existing Chef core resource. Check if a new version of the cookbook is available.")
+        node_map.set(:foo, FooResource, allow_cookbook_override: "< 1")
+        node_map.lock!
+        node_map.set(:foo, BarResource)
+        # expect(node_map.get(node, :foo)).to eql(FooResource)
+      end
+
+      it "allows setting the same key twice when the second has __core_override__" do
+        expect(Chef).to_not receive(:log_deprecation)
+        node_map.set(:foo, FooResource)
+        node_map.lock!
+        node_map.set(:foo, BarResource, __core_override__: true)
+        expect(node_map.get(node, :foo)).to eql(BarResource)
+      end
+
+      it "rejects setting the same key twice for a provider" do
+        expect(Chef).to receive(:log_deprecation).with("Trying to register provider foo on top of existing Chef core provider. Check if a new version of the cookbook is available.")
+        node_map.set(:foo, FooProvider)
+        node_map.lock!
+        node_map.set(:foo, BarProvider)
+        # expect(node_map.get(node, :foo)).to eql(FooProvider)
       end
     end
   end

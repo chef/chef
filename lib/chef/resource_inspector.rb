@@ -43,6 +43,7 @@ module ResourceInspector
     data[:actions] = resource.allowed_actions
     data[:examples] = resource.examples
     data[:introduced] = resource.introduced
+    data[:preview] = resource.preview_resource
 
     properties = unless complete
                    resource.properties.reject { |_, k| k.options[:declared_in] == Chef::Resource }

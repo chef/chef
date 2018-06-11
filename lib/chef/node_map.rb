@@ -45,12 +45,18 @@ class Chef
     # @param key [Object] Key to store
     # @param value [Object] Value associated with the key
     # @param filters [Hash] Node filter options to apply to key retrieval
+    # @param allow_cookbook_override [Boolean, String] Allow a cookbook to add
+    #   to this key even in locked mode. If a string is given, it should be a
+    #   Gem::Requirement-compatible value indicating for which Chef versions an
+    #   override from cookbooks is allowed.
+    # @param __core_override__ [Boolean] Advanced-mode override to add to a key
+    #   even in locked mode.
     #
     # @yield [node] Arbitrary node filter as a block which takes a node argument
     #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, &block)
+    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, allow_cookbook_override: false, __core_override__: false, &block) # rubocop:disable Lint/UnderscorePrefixedVariableName
       new_matcher = { klass: klass }
       new_matcher[:platform] = platform if platform
       new_matcher[:platform_version] = platform_version if platform_version
@@ -59,6 +65,31 @@ class Chef
       new_matcher[:block] = block if block
       new_matcher[:canonical] = canonical if canonical
       new_matcher[:override] = override if override
+      new_matcher[:cookbook_override] = allow_cookbook_override
+      new_matcher[:core_override] = __core_override__
+
+      # Check if the key is already present and locked, unless the override is allowed.
+      # The checks to see if we should reject, in order:
+      # 1. Core override mode is not set.
+      # 2. The key exists.
+      # 3. At least one previous `provides` is now locked.
+      # 4. No previous `provides` had `allow_cookbook_override`, either set to
+      #    true or with a string version matcher that still matches Chef::VERSION
+      if !__core_override__ && map[key] && map[key].any? { |matcher| matcher[:locked] } && !map[key].any? { |matcher| matcher[:cookbook_override].is_a?(String) ? Chef::VERSION =~ matcher[:cookbook_override] : matcher[:cookbook_override] }
+        # If we ever use locked mode on things other than the resource and provider handler maps, this probably needs a tweak.
+        type_of_thing = if klass < Chef::Resource
+                          "resource"
+                        elsif klass < Chef::Provider
+                          "provider"
+                        else
+                          klass.superclass.to_s
+                        end
+        # For now, only log the warning.
+        Chef.log_deprecation("Trying to register #{type_of_thing} #{key} on top of existing Chef core #{type_of_thing}. Check if a new version of the cookbook is available.")
+        # In 15.0, uncomment this and remove the log above.
+        # Chef.log_deprecation("Rejecting attempt to register #{type_of_thing} #{key} on top of existing Chef core #{type_of_thing}. Check if a new version of the cookbook is available.")
+        # return
+      end
 
       # The map is sorted in order of preference already; we just need to find
       # our place in it (just before the first value with the same preference level).
@@ -157,6 +188,34 @@ class Chef
         end
       end
       remaining
+    end
+
+    # Check if this map has been locked.
+    #
+    # @api internal
+    # @since 14.2
+    # @return [Boolean]
+    def locked?
+      if defined?(@locked)
+        @locked
+      else
+        false
+      end
+    end
+
+    # Set this map to locked mode. This is used to prevent future overwriting
+    # of existing names.
+    #
+    # @api internal
+    # @since 14.2
+    # @return [void]
+    def lock!
+      map.each do |key, matchers|
+        matchers.each do |matcher|
+          matcher[:locked] = true
+        end
+      end
+      @locked = true
     end
 
     private
