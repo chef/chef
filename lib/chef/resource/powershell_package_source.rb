@@ -1,5 +1,5 @@
 # Author:: Tor Magnus Rakvåg (tm@intility.no)
-# Copyright:: 2015-2018 Chef Software, Inc.
+# Copyright:: 2018, Intility AS
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
