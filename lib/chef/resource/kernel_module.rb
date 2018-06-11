@@ -11,11 +11,11 @@ require "chef/resource"
 class Chef
   class Resource
     class KernelModule < Chef::Resource
+      preview_resource true
       resource_name :kernel_module
-      provides(:kernel_module) { true }
 
       description "Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, install, and uninstall modules."
-      introduced "15.0"
+      introduced "14.3"
 
       property :modname, String,
                description: "The name of the kernel module.",
