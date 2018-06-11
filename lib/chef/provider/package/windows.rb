@@ -44,6 +44,7 @@ class Chef
             requirements.assert(:install) do |a|
               a.assertion { ::File.exist?(new_resource.source) }
               a.failure_message Chef::Exceptions::Package, "Source for package #{new_resource.name} does not exist"
+              a.whyrun "Assuming source file #{new_resource.source} would have been created."
             end
           end
         end
