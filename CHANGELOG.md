@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.1 -->
-## [v14.3.1](https://github.com/chef/chef/tree/v14.3.1) (2018-06-11)
+<!-- latest_release 14.3.2 -->
+## [v14.3.2](https://github.com/chef/chef/tree/v14.3.2) (2018-06-11)
 
 #### Merged Pull Requests
-- Deprecated the Chef::Provider::Package::Freebsd::Pkg provider [#7350](https://github.com/chef/chef/pull/7350) ([tas50](https://github.com/tas50))
-- Bump the version to 14.3.0 [#7346](https://github.com/chef/chef/pull/7346) ([tas50](https://github.com/tas50))
+- Make shell_out_compact automatically pull timeouts off the resource + remove uses of shell_out_compact_timeout [#7330](https://github.com/chef/chef/pull/7330) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Make shell_out_compact automatically pull timeouts off the resource + remove uses of shell_out_compact_timeout [#7330](https://github.com/chef/chef/pull/7330) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.2 -->
 - Deprecated the Chef::Provider::Package::Freebsd::Pkg provider [#7350](https://github.com/chef/chef/pull/7350) ([tas50](https://github.com/tas50)) <!-- 14.3.1 -->
 - Bump the version to 14.3.0 [#7346](https://github.com/chef/chef/pull/7346) ([tas50](https://github.com/tas50)) <!-- 14.3.0 -->
 - Support windows_feature_powershell on Windows 2008 R2 [#7349](https://github.com/chef/chef/pull/7349) ([tas50](https://github.com/tas50)) <!-- 14.2.3 -->
