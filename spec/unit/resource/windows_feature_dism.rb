@@ -32,7 +32,7 @@ describe Chef::Resource::WindowsFeatureDism do
   end
 
   it "the feature_name property is the name_property" do
-    node.automatic[:platform_version] = "6.2"
+    node.automatic[:platform_version] = "6.2.9200"
     expect(resource.feature_name).to eql(%w{snmp dhcp})
   end
 
@@ -47,25 +47,25 @@ describe Chef::Resource::WindowsFeatureDism do
   end
 
   it "coerces comma separated lists of features to a lowercase array on 2012+" do
-    node.automatic[:platform_version] = "6.2"
+    node.automatic[:platform_version] = "6.2.9200"
     resource.feature_name "SNMP, DHCP"
     expect(resource.feature_name).to eql(%w{snmp dhcp})
   end
 
   it "coerces a single feature as a String to a lowercase array on 2012+" do
-    node.automatic[:platform_version] = "6.2"
+    node.automatic[:platform_version] = "6.2.9200"
     resource.feature_name "SNMP"
     expect(resource.feature_name).to eql(["snmp"])
   end
 
   it "coerces comma separated lists of features to an array, but preserves case on < 2012" do
-    node.automatic[:platform_version] = "6.1"
+    node.automatic[:platform_version] = "6.1.7601"
     resource.feature_name "SNMP, DHCP"
     expect(resource.feature_name).to eql(%w{SNMP DHCP})
   end
 
   it "coerces a single feature as a String to an array, but preserves case on < 2012" do
-    node.automatic[:platform_version] = "6.1"
+    node.automatic[:platform_version] = "6.1.7601"
     resource.feature_name "SNMP"
     expect(resource.feature_name).to eql(["SNMP"])
   end

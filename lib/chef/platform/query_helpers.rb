@@ -20,6 +20,12 @@ class Chef
   class Platform
 
     class << self
+      # a simple helper to determine if we're on a windows release pre-2012 / 8
+      # @return [Boolean] Is the system older than Windows 8 / 2012
+      def older_than_win_2012_or_8?
+        node["platform_version"].to_f < 6.2
+      end
+
       def windows?
         ChefConfig.windows?
       end
