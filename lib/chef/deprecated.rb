@@ -278,6 +278,16 @@ class Chef
       end
     end
 
+    class FreebsdPkgProvider < Base
+      def id
+        23
+      end
+
+      def target
+        "freebsd_pkg_provider.html"
+      end
+    end
+
     # id 3694 was deleted
 
     # Returned when using the deprecated option on a property

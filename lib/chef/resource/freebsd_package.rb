@@ -63,6 +63,8 @@ class Chef
                     elsif supports_pkgng?
                       Chef::Provider::Package::Freebsd::Pkgng
                     else
+                      Chef.deprecated(:freebsd_package_provider, "The freebsd_package provider for pkg (Chef::Provider::Package::Freebsd::Pkg) is deprecated and will be removed from Chef core in 15.0 (April 2019).")
+
                       Chef::Provider::Package::Freebsd::Pkg
                     end
       end
