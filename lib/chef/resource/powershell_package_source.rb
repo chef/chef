@@ -36,7 +36,7 @@ class Chef
                description: "",
                default: false
 
-      property :package_management_provider, String,
+      property :provider_name, String,
                equal_to: %w{ Programs msi NuGet msu PowerShellGet psl chocolatey },
                validation_message: "The following providers are supported: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' or 'chocolatey'",
                description: "",
@@ -55,13 +55,19 @@ class Chef
                required: false
 
       action :register do
-        register_cmd = "Register-PackageSource -Name '#{new_resource.name}' -Location '#{new_resource.url}'"
-        register_cmd << " -Trusted" if new_resource.trusted
-        register_cmd << " -PackageManagementProvider '#{new_resource.package_management_provider}'"
-        register_cmd << " -PublishLocation '#{new_resource.publish_location}'" if new_resource.publish_location
-        register_cmd << " -ScriptSourceLocation '#{new_resource.script_source_location}'" if new_resource.script_source_location
-        register_cmd << " -ScriptPublishLocation '#{new_resource.script_publish_location}'" if new_resource.script_publish_location
-        register_cmd << " -Force -ForceBootstrap"
+        if psrepository_cmdlet_appropriate?
+          register_cmd = "Install-PackageProvider -Name 'NuGet';"
+          register_cmd << " Register-PSRepository -Name '#{new_resource.name}' -SourceLocation '#{new_resource.url}'"
+          register_cmd << " -PublishLocation '#{new_resource.publish_location}'" if new_resource.publish_location
+          register_cmd << " -ScriptSourceLocation '#{new_resource.script_source_location}'" if new_resource.script_source_location
+          register_cmd << " -ScriptPublishLocation '#{new_resource.script_publish_location}'" if new_resource.script_publish_location
+          register_cmd << " -InstallationPolicy Trusted" if new_resource.trusted
+        else
+          register_cmd = "Register-PackageSource -Name '#{new_resource.name}' -Location '#{new_resource.url}'"
+          register_cmd << " -ProviderName '#{new_resource.provider_name}'"
+          register_cmd << " -Force -ForceBootstrap"
+          register_cmd << " -Trusted" if new_resource.trusted
+        end
 
         powershell_script "register package source: #{new_resource.name}" do
           code register_cmd
@@ -82,6 +88,10 @@ class Chef
         def package_source_exists?
           cmd = powershell_out!("(Get-PackageSource -Name '#{new_resource.name}').Name")
           cmd.stdout.downcase.strip == new_resource.name.downcase
+        end
+
+        def psrepository_cmdlet_appropriate?
+          new_resource.provider_name == "PowerShellGet"
         end
       end
     end
