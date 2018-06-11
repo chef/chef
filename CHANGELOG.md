@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 14.3.5 -->
+## [v14.3.5](https://github.com/chef/chef/tree/v14.3.5) (2018-06-11)
 
 #### Merged Pull Requests
+- Add ssh_known_hosts_entry resource from ssh_known_hosts cookbook [#7161](https://github.com/chef/chef/pull/7161) ([tas50](https://github.com/tas50))
 - Update help link in Add/Remove Programs on Windows [#7345](https://github.com/chef/chef/pull/7345) ([stuartpreston](https://github.com/stuartpreston))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Add ssh_known_hosts_entry resource from ssh_known_hosts cookbook [#7161](https://github.com/chef/chef/pull/7161) ([tas50](https://github.com/tas50)) <!-- 14.3.5 -->
 - Update help link in Add/Remove Programs on Windows [#7345](https://github.com/chef/chef/pull/7345) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.3.4 -->
 - Implement rfc107: NodeMap locking for resource and provider handlers [#7224](https://github.com/chef/chef/pull/7224) ([coderanger](https://github.com/coderanger)) <!-- 14.3.4 -->
 - Add whyrun message when installing a local file on Windows [#7351](https://github.com/chef/chef/pull/7351) ([josh-barker](https://github.com/josh-barker)) <!-- 14.3.3 -->
