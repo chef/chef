@@ -22,12 +22,11 @@ require "chef/resource"
 class Chef
   class Resource
     class SshKnownHostsEntry < Chef::Resource
+      preview_resource true
       resource_name :ssh_known_hosts_entry
-      provides(:ssh_known_hosts_entry) { true }
 
       description "Use the ssh_known_hosts_entry resource to append an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified."
       introduced "14.3"
-      preview_resource true
 
       property :host, String,
                description: "The host to add to the known hosts file.",
