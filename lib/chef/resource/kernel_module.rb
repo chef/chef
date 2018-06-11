@@ -32,16 +32,16 @@ class Chef
       action :install do
         description "Load kernel module, and ensure it loads on reboot"
 
-        declare_resource(:directory, new_resource.load_dir) do
+        directory new_resource.load_dir do
           recursive true
         end
 
-        declare_resource(:file, "#{new_resource.load_dir}/#{new_resource.modname}.conf") do
+        file "#{new_resource.load_dir}/#{new_resource.modname}.conf" do
           content "#{new_resource.modname}\n"
           notifies :run, "execute[update initramfs]"
         end
 
-        declare_resource(:execute, "update initramfs") do
+        execute "update initramfs" do
           command initramfs_command
           action :nothing
         end
@@ -52,17 +52,17 @@ class Chef
       action :uninstall do
         description "Unload a kernel module and remove module config, so it doesn't load on reboot."
 
-        declare_resource(:file, "#{new_resource.load_dir}/#{new_resource.modname}.conf") do
+        file "#{new_resource.load_dir}/#{new_resource.modname}.conf" do
           action :delete
           notifies :run, "execute[update initramfs]"
         end
 
-        declare_resource(:file, "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf") do
+        file "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf" do
           action :delete
           notifies :run, "execute[update initramfs]"
         end
 
-        declare_resource(:execute, "update initramfs") do
+        execute "update initramfs" do
           command initramfs_command
           action :nothing
         end
@@ -73,12 +73,12 @@ class Chef
       action :blacklist do
         description "Blacklist a kernel module."
 
-        declare_resource(:file, "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf") do
+        file "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf" do
           content "blacklist #{new_resource.modname}"
           notifies :run, "execute[update initramfs]"
         end
 
-        declare_resource(:execute, "update initramfs") do
+        execute "update initramfs" do
           command initramfs_command
           action :nothing
         end
