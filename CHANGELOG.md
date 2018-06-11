@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 14.3.1 -->
+## [v14.3.1](https://github.com/chef/chef/tree/v14.3.1) (2018-06-11)
 
 #### Merged Pull Requests
+- Deprecated the Chef::Provider::Package::Freebsd::Pkg provider [#7350](https://github.com/chef/chef/pull/7350) ([tas50](https://github.com/tas50))
 - Bump the version to 14.3.0 [#7346](https://github.com/chef/chef/pull/7346) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Deprecated the Chef::Provider::Package::Freebsd::Pkg provider [#7350](https://github.com/chef/chef/pull/7350) ([tas50](https://github.com/tas50)) <!-- 14.3.1 -->
 - Bump the version to 14.3.0 [#7346](https://github.com/chef/chef/pull/7346) ([tas50](https://github.com/tas50)) <!-- 14.3.0 -->
 - Support windows_feature_powershell on Windows 2008 R2 [#7349](https://github.com/chef/chef/pull/7349) ([tas50](https://github.com/tas50)) <!-- 14.2.3 -->
 - Add skip_publisher_check property to powershell_package [#7259](https://github.com/chef/chef/pull/7259) ([Happycoil](https://github.com/Happycoil)) <!-- 14.2.1 -->
