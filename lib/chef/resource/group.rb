@@ -20,45 +20,20 @@
 class Chef
   class Resource
     class Group < Chef::Resource
-      state_attrs :members
-
       description "Use the group resource to manage a local group."
 
       allowed_actions :create, :remove, :modify, :manage
       default_action :create
 
-      def initialize(name, run_context = nil)
-        super
-        @members = []
-        @excluded_members = []
-      end
-
       property :group_name, String, name_property: true, identity: true
       property :gid, [ String, Integer ]
-
-      def members(arg = nil)
-        converted_members = arg.is_a?(String) ? arg.split(",") : arg
-        set_or_return(
-          :members,
-          converted_members,
-          :kind_of => [ Array ]
-        )
-      end
-
-      alias_method :users, :members
-
-      def excluded_members(arg = nil)
-        converted_members = arg.is_a?(String) ? arg.split(",") : arg
-        set_or_return(
-          :excluded_members,
-          converted_members,
-          :kind_of => [ Array ]
-        )
-      end
-
+      property :members, [Array, String], default: lazy { [] }, coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg }
+      property :excluded_members, [Array, String], default: lazy { [] }, coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg }
       property :append, [ TrueClass, FalseClass ], default: false
       property :system, [ TrueClass, FalseClass ], default: false
       property :non_unique, [ TrueClass, FalseClass ], default: false
+
+      alias_method :users, :members
     end
   end
 end
