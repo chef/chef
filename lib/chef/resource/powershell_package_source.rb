@@ -25,15 +25,15 @@ class Chef
       introduced "15.0"
 
       property :name, String,
-               description: "",
+               description: "The name of the package source",
                name_property: true
 
       property :url, String,
-               description: "",
+               description: "The url to the package source",
                required: true
 
       property :trusted, [true, false],
-               description: "",
+               description: "Whether or not to trust packages from this source",
                default: false
 
       property :provider_name, String,
@@ -43,15 +43,15 @@ class Chef
                default: "NuGet"
 
       property :publish_location, String,
-               description: "",
+               description: "The url where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'.",
                required: false
 
       property :script_source_location, String,
-               description: "",
+               description: "The url where scripts are located for this source. Only valid if the provider is 'PowerShellGet'.",
                required: false
 
       property :script_publish_location, String,
-               description: "",
+               description: "The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'.",
                required: false
 
       load_current_value do
