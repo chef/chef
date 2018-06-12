@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.7 -->
-## [v14.3.7](https://github.com/chef/chef/tree/v14.3.7) (2018-06-12)
+<!-- latest_release 14.3.8 -->
+## [v14.3.8](https://github.com/chef/chef/tree/v14.3.8) (2018-06-12)
 
 #### Merged Pull Requests
-- Mount: Fix errors on Windows when using the mount_point property [#7284](https://github.com/chef/chef/pull/7284) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Update to the latest inspec and liblzma [#7355](https://github.com/chef/chef/pull/7355) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Update to the latest inspec and liblzma [#7355](https://github.com/chef/chef/pull/7355) ([tas50](https://github.com/tas50)) <!-- 14.3.8 -->
 - Mount: Fix errors on Windows when using the mount_point property [#7284](https://github.com/chef/chef/pull/7284) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.3.7 -->
 - Add kernel_module resource from the kernel_module cookbook [#7165](https://github.com/chef/chef/pull/7165) ([tas50](https://github.com/tas50)) <!-- 14.3.6 -->
 - Add ssh_known_hosts_entry resource from ssh_known_hosts cookbook [#7161](https://github.com/chef/chef/pull/7161) ([tas50](https://github.com/tas50)) <!-- 14.3.5 -->
