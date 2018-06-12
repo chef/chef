@@ -116,7 +116,7 @@ class Chef
             when 1
               results[0]
             else
-              raise Chef::Exceptions::Package, "#{new_resource.name} has multiple matching candidates. Please use a more specific name" if results.length > 1
+              raise Chef::Exceptions::Package, "#{new_resource.package_name} has multiple matching candidates. Please use a more specific name" if results.length > 1
             end
           end
         end
