@@ -37,8 +37,13 @@ class Chef
                   " entry that is not built into the resource collection, use Chef::Log instead"\
                   " of the log resource.)"
 
-      property :message, String, name_property: true, identity: true
-      property :level, Symbol, equal_to: [ :debug, :info, :warn, :error, :fatal ], default: :info
+      property :message, String,
+               name_property: true, identity: true,
+               description: "The message to be added to a log file. If not specified we'll use the resource's name instead."
+
+      property :level, Symbol,
+               equal_to: [ :debug, :info, :warn, :error, :fatal ], default: :info,
+               description: "The level of logging that is to be displayed by the Chef Client."
 
       allowed_actions :write
       default_action :write

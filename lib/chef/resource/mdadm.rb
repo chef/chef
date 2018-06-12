@@ -32,14 +32,35 @@ class Chef
       default_action :create
       allowed_actions :create, :assemble, :stop
 
-      property :chunk, Integer, default: 16
-      property :devices, Array, default: lazy { [] }
-      property :exists, [ TrueClass, FalseClass ], default: false
-      property :level, Integer, default: 1
-      property :metadata, String, default: "0.90"
-      property :bitmap, String
-      property :raid_device, String, identity: true, name_property: true
-      property :layout, String
+      property :chunk, Integer,
+               default: 16,
+               description: "The chunk size. This property should not be used for a RAID 1 mirrored pair (i.e. when the level property is set to 1)."
+
+      property :devices, Array,
+               default: lazy { [] },
+               description: "A comma-separated list of devices to be part of a RAID array"
+
+      property :exists, [ TrueClass, FalseClass ],
+               default: false,
+               description: "Indicates whether the RAID array exists."
+
+      property :level, Integer,
+               default: 1,
+               description: "The RAID level."
+
+      property :metadata, String,
+               default: "0.90",
+               description: "The superblock type for RAID metadata"
+
+      property :bitmap, String,
+                description: "The path to a file in which a write-intent bitmap is stored."
+
+      property :raid_device, String,
+               identity: true, name_property: true,
+               description: "The name of the RAID device. We'll use the resource's name if this isn't specified."
+
+      property :layout, String,
+               description: "The RAID5 parity algorithm. Possible values: left-asymmetric (or la), left-symmetric (or ls), right-asymmetric (or ra), or right-symmetric (or rs)."
     end
   end
 end
