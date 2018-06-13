@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.9 -->
-## [v14.3.9](https://github.com/chef/chef/tree/v14.3.9) (2018-06-13)
+<!-- latest_release 14.3.10 -->
+## [v14.3.10](https://github.com/chef/chef/tree/v14.3.10) (2018-06-13)
 
 #### Merged Pull Requests
-- Add missing chef/resource requires in resource [#7364](https://github.com/chef/chef/pull/7364) ([tas50](https://github.com/tas50))
+- package: Make sure to use the package_name name properties [#7365](https://github.com/chef/chef/pull/7365) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- package: Make sure to use the package_name name properties [#7365](https://github.com/chef/chef/pull/7365) ([tas50](https://github.com/tas50)) <!-- 14.3.10 -->
 - Add missing chef/resource requires in resource [#7364](https://github.com/chef/chef/pull/7364) ([tas50](https://github.com/tas50)) <!-- 14.3.9 -->
 - Update to the latest inspec and liblzma [#7355](https://github.com/chef/chef/pull/7355) ([tas50](https://github.com/tas50)) <!-- 14.3.8 -->
 - Mount: Fix errors on Windows when using the mount_point property [#7284](https://github.com/chef/chef/pull/7284) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.3.7 -->
