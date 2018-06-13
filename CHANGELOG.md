@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.11 -->
-## [v14.3.11](https://github.com/chef/chef/tree/v14.3.11) (2018-06-13)
+<!-- latest_release 14.3.12 -->
+## [v14.3.12](https://github.com/chef/chef/tree/v14.3.12) (2018-06-13)
 
 #### Merged Pull Requests
-- windows_feature_dism: Fix errors when specifying the source [#7370](https://github.com/chef/chef/pull/7370) ([tas50](https://github.com/tas50))
+- Add more property descriptions to resources [#7358](https://github.com/chef/chef/pull/7358) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Add more property descriptions to resources [#7358](https://github.com/chef/chef/pull/7358) ([tas50](https://github.com/tas50)) <!-- 14.3.12 -->
 - windows_feature_dism: Fix errors when specifying the source [#7370](https://github.com/chef/chef/pull/7370) ([tas50](https://github.com/tas50)) <!-- 14.3.11 -->
 - package: Make sure to use the package_name name properties [#7365](https://github.com/chef/chef/pull/7365) ([tas50](https://github.com/tas50)) <!-- 14.3.10 -->
 - Add missing chef/resource requires in resource [#7364](https://github.com/chef/chef/pull/7364) ([tas50](https://github.com/tas50)) <!-- 14.3.9 -->
