@@ -79,7 +79,7 @@ PATH
       win32-mutex (~> 0.4.2)
       win32-process (~> 0.8.2)
       win32-service (~> 0.8.7)
-      win32-taskscheduler (~> 0.4.0)
+      win32-taskscheduler (~> 1.0.0)
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
 
@@ -339,7 +339,7 @@ GEM
     win32-service (0.8.10)
       ffi
       ffi-win32-extensions
-    win32-taskscheduler (0.4.1)
+    win32-taskscheduler (1.0.2)
       ffi
       structured_warnings
     windows-api (0.4.4)
