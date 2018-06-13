@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+require "chef/resource"
+
 class Chef
   class Resource
     class ChefHandler < Chef::Resource
