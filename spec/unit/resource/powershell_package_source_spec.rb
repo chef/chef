@@ -26,7 +26,7 @@ describe Chef::Resource::PowershellPackageSource do
   end
 
   it "the name_property is 'name'" do
-    expect(resource.name).to eql("MyGallery")
+    expect(resource.source_name).to eql("MyGallery")
   end
 
   it "the default action is :register" do
@@ -81,7 +81,7 @@ describe Chef::Resource::PowershellPackageSource do
 
   describe "#build_ps_repository_command" do
     before do
-      resource.name("MyGallery")
+      resource.source_name("MyGallery")
       resource.url("https://mygallery.company.co/api/v2/")
     end
 
@@ -145,7 +145,7 @@ describe Chef::Resource::PowershellPackageSource do
 
   describe "#build_package_source_command" do
     before do
-      resource.name("NuGet")
+      resource.source_name("NuGet")
       resource.url("http://nuget.org/api/v2/")
     end
 
@@ -160,7 +160,7 @@ describe Chef::Resource::PowershellPackageSource do
       end
 
       it "builds a command with a different provider" do
-        resource.name("choco")
+        resource.source_name("choco")
         resource.url("https://chocolatey.org/api/v2/")
         resource.provider_name("chocolatey")
         expect(provider.build_package_source_command("Register", resource)).to eql("Register-PackageSource -Name 'choco' -Location 'https://chocolatey.org/api/v2/' -Trusted:$false -ProviderName 'chocolatey'")
@@ -183,7 +183,7 @@ describe Chef::Resource::PowershellPackageSource do
       end
 
       it "builds a command with a different provider" do
-        resource.name("choco")
+        resource.source_name("choco")
         resource.url("https://chocolatey.org/api/v2/")
         resource.provider_name("chocolatey")
         expect(provider.build_package_source_command("Set", resource)).to eql("Set-PackageSource -Name 'choco' -Location 'https://chocolatey.org/api/v2/' -Trusted:$false -ProviderName 'chocolatey'")
@@ -206,13 +206,13 @@ describe Chef::Resource::PowershellPackageSource do
   describe "#package_source_exists?" do
     it "returns true if it exists" do
       allow(provider).to receive(:powershell_out!).with("(Get-PackageSource -Name 'MyGallery').Name").and_return(double("powershell_out!", :stdout => "MyGallery\r\n"))
-      resource.name("MyGallery")
+      resource.source_name("MyGallery")
       expect(provider.package_source_exists?).to eql(true)
     end
 
     it "returns false if it doesn't exist" do
       allow(provider).to receive(:powershell_out!).with("(Get-PackageSource -Name 'MyGallery').Name").and_return(double("powershell_out!", :stdout => ""))
-      resource.name("MyGallery")
+      resource.source_name("MyGallery")
       expect(provider.package_source_exists?).to eql(false)
     end
   end

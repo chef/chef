@@ -24,7 +24,7 @@ class Chef
       description "Use the powershell_package_source resource to register a powershell package repository"
       introduced "14.3"
 
-      property :name, String,
+      property :source_name, String,
                description: "The name of the package source",
                name_property: true
 
@@ -75,13 +75,13 @@ class Chef
             converge_if_changed :url, :trusted, :publish_location, :script_source_location, :script_publish_location do
               update_cmd = build_ps_repository_command("Set", new_resource)
               res = powershell_out(update_cmd)
-              raise "Failed to update #{new_resource.name}: #{res.stderr}" unless res.stderr.empty?
+              raise "Failed to update #{new_resource.source_name}: #{res.stderr}" unless res.stderr.empty?
             end
           else
-            converge_by("register source: #{new_resource.name}") do
+            converge_by("register source: #{new_resource.source_name}") do
               register_cmd = build_ps_repository_command("Register", new_resource)
               res = powershell_out(register_cmd)
-              raise "Failed to register #{new_resource.name}: #{res.stderr}" unless res.stderr.empty?
+              raise "Failed to register #{new_resource.source_name}: #{res.stderr}" unless res.stderr.empty?
             end
           end
         else
@@ -89,13 +89,13 @@ class Chef
             converge_if_changed :url, :trusted, :provider_name do
               update_cmd = build_package_source_command("Set", new_resource)
               res = powershell_out(update_cmd)
-              raise "Failed to update #{new_resource.name}: #{res.stderr}" unless res.stderr.empty?
+              raise "Failed to update #{new_resource.source_name}: #{res.stderr}" unless res.stderr.empty?
             end
           else
-            converge_by("register source: #{new_resource.name}") do
+            converge_by("register source: #{new_resource.source_name}") do
               register_cmd = build_package_source_command("Register", new_resource)
               res = powershell_out(register_cmd)
-              raise "Failed to register #{new_resource.name}: #{res.stderr}" unless res.stderr.empty?
+              raise "Failed to register #{new_resource.source_name}: #{res.stderr}" unless res.stderr.empty?
             end
           end
         end
@@ -103,18 +103,18 @@ class Chef
 
       action :unregister do
         if package_source_exists?
-          unregister_cmd = "Get-PackageSource -Name '#{new_resource.name}' | Unregister-PackageSource"
-          converge_by("unregister source: #{new_resource.name}") do
+          unregister_cmd = "Get-PackageSource -Name '#{new_resource.source_name}' | Unregister-PackageSource"
+          converge_by("unregister source: #{new_resource.source_name}") do
             res = powershell_out(unregister_cmd)
-            raise "Failed to unregister #{new_resource.name}: #{res.stderr}" unless res.stderr.empty?
+            raise "Failed to unregister #{new_resource.source_name}: #{res.stderr}" unless res.stderr.empty?
           end
         end
       end
 
       action_class do
         def package_source_exists?
-          cmd = powershell_out!("(Get-PackageSource -Name '#{new_resource.name}').Name")
-          cmd.stdout.downcase.strip == new_resource.name.downcase
+          cmd = powershell_out!("(Get-PackageSource -Name '#{new_resource.source_name}').Name")
+          cmd.stdout.downcase.strip == new_resource.source_name.downcase
         end
 
         def psrepository_cmdlet_appropriate?
@@ -122,7 +122,7 @@ class Chef
         end
 
         def build_ps_repository_command(cmdlet_type, new_resource)
-          cmd = "#{cmdlet_type}-PSRepository -Name '#{new_resource.name}'"
+          cmd = "#{cmdlet_type}-PSRepository -Name '#{new_resource.source_name}'"
           cmd << " -SourceLocation '#{new_resource.url}'" if new_resource.url
           cmd << " -InstallationPolicy '#{new_resource.trusted ? "Trusted" : "Untrusted"}'"
           cmd << " -PublishLocation '#{new_resource.publish_location}'" if new_resource.publish_location
@@ -132,7 +132,7 @@ class Chef
         end
 
         def build_package_source_command(cmdlet_type, new_resource)
-          cmd = "#{cmdlet_type}-PackageSource -Name '#{new_resource.name}'"
+          cmd = "#{cmdlet_type}-PackageSource -Name '#{new_resource.source_name}'"
           cmd << " -Location '#{new_resource.url}'" if new_resource.url
           cmd << " -Trusted:#{new_resource.trusted ? "$true" : "$false"}"
           cmd << " -ProviderName '#{new_resource.provider_name}'" if new_resource.provider_name
