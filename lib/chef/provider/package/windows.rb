@@ -228,6 +228,7 @@ class Chef
             r.timeout(new_resource.timeout)
             r.returns(new_resource.returns)
             r.options(new_resource.options)
+            r.sensitive(new_resource.sensitive)
           end
         end
 

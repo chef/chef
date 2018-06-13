@@ -42,10 +42,7 @@ class Chef
       end
 
       # windows can't take array options yet
-      property :options, String, sensitive: true
-
-      # lazy used to set default value of sensitive to true if options is set
-      property :sensitive, [ TrueClass, FalseClass ], default: lazy { |r| r.options ? true : false }
+      property :options, String
 
       # Unique to this resource
       property :installer_type, Symbol
