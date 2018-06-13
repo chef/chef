@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.13 -->
-## [v14.3.13](https://github.com/chef/chef/tree/v14.3.13) (2018-06-13)
+<!-- latest_release 14.3.14 -->
+## [v14.3.14](https://github.com/chef/chef/tree/v14.3.14) (2018-06-13)
 
 #### Merged Pull Requests
-- removing mwrock from client maintainers [#7369](https://github.com/chef/chef/pull/7369) ([mwrock](https://github.com/mwrock))
+- Pull in win32-taskscheduler 1.0.2 [#7371](https://github.com/chef/chef/pull/7371) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Pull in win32-taskscheduler 1.0.2 [#7371](https://github.com/chef/chef/pull/7371) ([tas50](https://github.com/tas50)) <!-- 14.3.14 -->
 - removing mwrock from client maintainers [#7369](https://github.com/chef/chef/pull/7369) ([mwrock](https://github.com/mwrock)) <!-- 14.3.13 -->
 - Add more property descriptions to resources [#7358](https://github.com/chef/chef/pull/7358) ([tas50](https://github.com/tas50)) <!-- 14.3.12 -->
 - windows_feature_dism: Fix errors when specifying the source [#7370](https://github.com/chef/chef/pull/7370) ([tas50](https://github.com/tas50)) <!-- 14.3.11 -->
