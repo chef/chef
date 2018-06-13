@@ -16,7 +16,7 @@ class Chef
           @candidate_version = macports_candidate_version
 
           if !new_resource.version && !@candidate_version
-            raise Chef::Exceptions::Package, "Could not get a candidate version for this package -- #{new_resource.name} does not seem to be a valid package!"
+            raise Chef::Exceptions::Package, "Could not get a candidate version for this package -- #{new_resource.package_name} does not seem to be a valid package!"
           end
 
           logger.trace("#{new_resource} candidate version is #{@candidate_version}") if @candidate_version

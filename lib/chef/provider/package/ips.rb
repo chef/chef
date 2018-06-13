@@ -58,7 +58,7 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::IpsPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
-          logger.trace("Checking package status for #{new_resource.name}")
+          logger.trace("Checking package status for #{new_resource.package_name}")
           current_resource.version(get_current_version)
           @candidate_version = get_candidate_version
           current_resource

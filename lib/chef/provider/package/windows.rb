@@ -37,13 +37,13 @@ class Chef
         def define_resource_requirements
           requirements.assert(:install) do |a|
             a.assertion { new_resource.source || msi? }
-            a.failure_message Chef::Exceptions::NoWindowsPackageSource, "Source for package #{new_resource.name} must be specified in the resource's source property for package to be installed because the package_name property is used to test for the package installation state for this package type."
+            a.failure_message Chef::Exceptions::NoWindowsPackageSource, "Source for package #{new_resource.package_name} must be specified in the resource's source property for package to be installed because the package_name property is used to test for the package installation state for this package type."
           end
 
           unless uri_scheme?(new_resource.source)
             requirements.assert(:install) do |a|
               a.assertion { ::File.exist?(new_resource.source) }
-              a.failure_message Chef::Exceptions::Package, "Source for package #{new_resource.name} does not exist"
+              a.failure_message Chef::Exceptions::Package, "Source for package #{new_resource.package_name} does not exist"
               a.whyrun "Assuming source file #{new_resource.source} would have been created."
             end
           end
@@ -121,7 +121,7 @@ class Chef
                 if basename == "setup.exe"
                   :installshield
                 else
-                  raise Chef::Exceptions::CannotDetermineWindowsInstallerType, "Installer type for Windows Package '#{new_resource.name}' not specified and cannot be determined from file extension '#{file_extension}'"
+                  raise Chef::Exceptions::CannotDetermineWindowsInstallerType, "Installer type for Windows Package '#{new_resource.package_name}' not specified and cannot be determined from file extension '#{file_extension}'"
                 end
               end
             end
