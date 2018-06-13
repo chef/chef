@@ -74,7 +74,7 @@ class Chef
       #   { "Hour"=>0, "Weekday"=>"6-7"}
       # will not just run on midnight of Sat and Sun, rather it will run _every_ midnight.
       property :start_calendar_interval, [Hash, Array],
-               description: "A Hash (similar to crontab) that defines the calendar frequency at which a job is started.",
+               description: "A Hash (similar to crontab) that defines the calendar frequency at which a job is started or an Array.",
                coerce: proc { |type|
                          # Coerce into an array of hashes to make validation easier
                          array = if type.is_a?(Array)
@@ -246,7 +246,7 @@ class Chef
                description: "An array of paths which, if any are modified, will cause a job to be started."
 
       property :working_directory, String,
-               description: "chdir to this directory, and then run the job."
+               description: "Chdir to this directory, and then run the job."
     end
   end
 end

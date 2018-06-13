@@ -43,7 +43,7 @@ class Chef
 
       property :level, Symbol,
                equal_to: [ :debug, :info, :warn, :error, :fatal ], default: :info,
-               description: "The level of logging that is to be displayed by the Chef Client."
+               description: "The logging level to display this message at."
 
       allowed_actions :write
       default_action :write

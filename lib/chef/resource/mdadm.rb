@@ -38,7 +38,7 @@ class Chef
 
       property :devices, Array,
                default: lazy { [] },
-               description: "A comma-separated list of devices to be part of a RAID array"
+               description: "The devices to be part of a RAID array."
 
       property :exists, [ TrueClass, FalseClass ],
                default: false,
@@ -50,7 +50,7 @@ class Chef
 
       property :metadata, String,
                default: "0.90",
-               description: "The superblock type for RAID metadata"
+               description: "The superblock type for RAID metadata."
 
       property :bitmap, String,
                 description: "The path to a file in which a write-intent bitmap is stored."
