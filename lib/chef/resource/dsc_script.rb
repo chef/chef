@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require "chef/resource"
 require "chef/exceptions"
 require "chef/dsl/powershell"
 
