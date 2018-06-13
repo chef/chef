@@ -53,27 +53,17 @@ class Chef
 
           def install_package
             Chef::Log.debug("#{new_resource} installing #{new_resource.installer_type} package '#{new_resource.source}'")
-            begin
-              shell_out!(
-                [
-                  "start",
-                  "\"\"",
-                  "/wait",
-                  "\"#{new_resource.source}\"",
-                  unattended_flags,
-                  expand_options(new_resource.options),
-                  "& exit %%%%ERRORLEVEL%%%%",
-                ].join(" "), timeout: new_resource.timeout, returns: new_resource.returns
-              )
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              if sensitive?
-                ex = Mixlib::ShellOut::ShellCommandFailed.new("Command execution failed. STDOUT/STDERR suppressed for sensitive resource")
-                raise ex
-              else
-                raise
-              end
-            end
-            Chef::Log.info("#{new_resource} ran successfully")
+            shell_out!(
+              [
+                "start",
+                "\"\"",
+                "/wait",
+                "\"#{new_resource.source}\"",
+                unattended_flags,
+                expand_options(new_resource.options),
+                "& exit %%%%ERRORLEVEL%%%%",
+              ].join(" "), timeout: new_resource.timeout, returns: new_resource.returns, sensitive: new_resource.sensitive
+            )
           end
 
           def remove_package
@@ -86,10 +76,6 @@ class Chef
           end
 
           private
-
-          def sensitive?
-           !!new_resource.sensitive
-          end
 
           def uninstall_command(uninstall_string)
             uninstall_string = "\"#{uninstall_string}\"" if ::File.exist?(uninstall_string)
