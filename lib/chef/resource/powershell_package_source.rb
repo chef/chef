@@ -22,7 +22,7 @@ class Chef
       provides(:powershell_package_source) { true }
 
       description "Use the powershell_package_source resource to register a powershell package repository"
-      introduced "15.0"
+      introduced "14.3"
 
       property :name, String,
                description: "The name of the package source",
@@ -32,27 +32,25 @@ class Chef
                description: "The url to the package source",
                required: true
 
-      property :trusted, [true, false],
+      property :trusted, [TrueClass, FalseClass],
                description: "Whether or not to trust packages from this source",
                default: false
 
       property :provider_name, String,
                equal_to: %w{ Programs msi NuGet msu PowerShellGet psl chocolatey },
                validation_message: "The following providers are supported: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' or 'chocolatey'",
-               description: "",
+               description: "The package management provider for the source. It supports the following providers: "\
+                            "'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' and 'chocolatey'.",
                default: "NuGet"
 
       property :publish_location, String,
-               description: "The url where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'.",
-               required: false
+               description: "The url where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'."
 
       property :script_source_location, String,
-               description: "The url where scripts are located for this source. Only valid if the provider is 'PowerShellGet'.",
-               required: false
+               description: "The url where scripts are located for this source. Only valid if the provider is 'PowerShellGet'."
 
       property :script_publish_location, String,
-               description: "The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'.",
-               required: false
+               description: "The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'."
 
       load_current_value do
         cmd = load_resource_state_script(name)
