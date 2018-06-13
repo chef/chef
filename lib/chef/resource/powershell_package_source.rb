@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+require "chef/json_compat"
+
 class Chef
   class Resource
     class PowershellPackageSource < Chef::Resource
@@ -55,13 +57,9 @@ class Chef
       load_current_value do
         cmd = load_resource_state_script(name)
         repo = powershell_out!(cmd)
-        status = {}
-        repo.stdout.split(/\r\n/).each do |line|
-          kv = line.strip.split(/\s*:\s*/, 2)
-          status[kv[0]] = kv[1] if kv.length == 2
-        end
+        status = Chef::JSONCompat.from_json(repo.stdout)
         url status["url"].nil? ? "not_set" : status["url"]
-        trusted (status["trusted"] == "True" ? true : false)
+        trusted status["trusted"]
         provider_name status["provider_name"]
         publish_location status["publish_location"]
         script_source_location status["script_source_location"]
@@ -145,14 +143,19 @@ class Chef
 
     def load_resource_state_script(name)
       <<-EOH
-        if ((Get-PackageSource -Name '#{name}' -ErrorAction SilentlyContinue).ProviderName -eq 'PowerShellGet') {
-            (Get-PSRepository -Name '#{name}') | Select @{n='name';e={$_.Name}}, @{n='url';e={$_.SourceLocation}},
-            @{n='trusted';e={$_.Trusted}}, @{n='provider_name';e={$_.PackageManagementProvider}}, @{n='publish_location';e={$_.PublishLocation}},
-            @{n='script_source_location';e={$_.ScriptSourceLocation}}, @{n='script_publish_location';e={$_.ScriptPublishLocation}} | fl
+        if(Get-PackageSource -Name '#{name}' -ErrorAction SilentlyContinue) {
+            if ((Get-PackageSource -Name '#{name}').ProviderName -eq 'PowerShellGet') {
+                (Get-PSRepository -Name '#{name}') | Select @{n='source_name';e={$_.Name}}, @{n='url';e={$_.SourceLocation}},
+                @{n='trusted';e={$_.Trusted}}, @{n='provider_name';e={$_.PackageManagementProvider}}, @{n='publish_location';e={$_.PublishLocation}},
+                @{n='script_source_location';e={$_.ScriptSourceLocation}}, @{n='script_publish_location';e={$_.ScriptPublishLocation}} | ConvertTo-Json
+            }
+            else {
+                (Get-PackageSource -Name '#{name}') | Select @{n='source_name';e={$_.Name}}, @{n='url';e={$_.Location}},
+                @{n='provider_name';e={$_.ProviderName}}, @{n='trusted';e={$_.IsTrusted}} | ConvertTo-Json
+            }
         }
         else {
-            (Get-PackageSource -Name '#{name}'-ErrorAction SilentlyContinue) | Select @{n='name';e={$_.Name}}, @{n='url';e={$_.Location}},
-            @{n='provider_name';e={$_.ProviderName}}, @{n='trusted';e={$_.IsTrusted}} | fl
+            "" | Select source_name, url, provider_name, trusted | ConvertTo-Json
         }
       EOH
     end
