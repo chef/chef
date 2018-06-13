@@ -31,13 +31,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.11.66)
-      aws-sdk-resources (= 2.11.66)
-    aws-sdk-core (2.11.66)
+    aws-sdk (2.11.67)
+      aws-sdk-resources (= 2.11.67)
+    aws-sdk-core (2.11.67)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.66)
-      aws-sdk-core (= 2.11.66)
+    aws-sdk-resources (2.11.67)
+      aws-sdk-core (= 2.11.67)
     aws-sigv4 (1.0.2)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -127,7 +127,7 @@ GEM
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.6)
+    mixlib-config (2.2.8)
       tomlrb
     mixlib-install (3.10.0)
       mixlib-shellout
@@ -226,7 +226,7 @@ GEM
       hitimes
     toml-rb (1.1.1)
       citrus (~> 3.0, > 3.0)
-    tomlrb (1.2.6)
+    tomlrb (1.2.7)
     varia_model (0.4.1)
       buff-extensions (~> 1.0)
       hashie (>= 2.0.2, < 4.0.0)
