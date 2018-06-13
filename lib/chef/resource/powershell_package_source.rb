@@ -20,8 +20,8 @@ require "chef/json_compat"
 class Chef
   class Resource
     class PowershellPackageSource < Chef::Resource
+      preview_resource true
       resource_name "powershell_package_source"
-      provides(:powershell_package_source) { true }
 
       description "Use the powershell_package_source resource to register a powershell package repository"
       introduced "14.3"
