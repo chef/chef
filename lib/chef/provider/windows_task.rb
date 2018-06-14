@@ -100,15 +100,13 @@ class Chef
 
         def load_current_resource
           @current_resource = Chef::Resource::WindowsTask.new(new_resource.name)
-          task = TaskScheduler.new
-          if task.exists?(new_resource.task_name)
-            @current_resource.exists = true
+          task = TaskScheduler.new(new_resource.task_name, nil, "\\", false)
+          @current_resource.exists = task.exists?(new_resource.task_name)
+          if @current_resource.exists
             task.get_task(new_resource.task_name)
             @current_resource.task = task
             pathed_task_name = new_resource.task_name.start_with?('\\') ? new_resource.task_name : "\\#{new_resource.task_name}"
             @current_resource.task_name(pathed_task_name)
-          else
-            @current_resource.exists = false
           end
           @current_resource
         end

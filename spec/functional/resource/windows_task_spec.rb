@@ -1109,6 +1109,60 @@ describe Chef::Resource::WindowsTask, :windows_only do
     end
   end
 
+  context "task_name with parent folder" do
+    describe "task_name with path '\\foo\\chef-client-functional-test' " do
+      let(:task_name) { "\\foo\\chef-client-functional-test" }
+      after { delete_task }
+      subject do
+        new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
+        new_resource.command task_name
+        new_resource.run_level :highest
+        new_resource.frequency :once
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource
+      end
+
+      it "creates the scheduled task with task name 'chef-client-functional-test' inside path '\\foo'" do
+        call_for_create_action
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.application_name).to eq(task_name)
+      end
+
+      it "does not converge the resource if it is already converged" do
+        subject.run_action(:create)
+        subject.run_action(:create)
+        expect(subject).not_to be_updated_by_last_action
+      end
+    end
+
+    describe "task_name with path '\\foo\\bar\\chef-client-functional-test' " do
+      let(:task_name) { "\\foo\\bar\\chef-client-functional-test" }
+      after { delete_task }
+      subject do
+        new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
+        new_resource.command task_name
+        new_resource.run_level :highest
+        new_resource.frequency :once
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource
+      end
+
+      it "creates the scheduled task with task with name 'chef-client-functional-test' inside path '\\foo\\bar' " do
+        call_for_create_action
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.application_name).to eq(task_name)
+      end
+
+      it "does not converge the resource if it is already converged" do
+        subject.run_action(:create)
+        subject.run_action(:create)
+        expect(subject).not_to be_updated_by_last_action
+      end
+    end
+  end
+
   describe "Examples of idempotent checks for each frequency" do
     after { delete_task }
     context "For frequency :once" do
