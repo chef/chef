@@ -48,6 +48,7 @@ if ENV["COVERAGE"]
 end
 
 ENV["CHEFSPEC_NO_INCLUDE"] = "true"
+ENV["CHEFSPEC_NO_PRELOAD"] = "true"
 require "chefspec"
 
 require "chef"
@@ -294,6 +295,9 @@ RSpec.configure do |config|
   config.before(:suite) do
     ARGV.clear
   end
+
+  # For tests using ChefSpec, make sure ChefSpec doesn't try to load any cookbooks.
+  config.cookbook_path = config.cookbook_root = File.expand_path("../support/empty", __FILE__)
 end
 
 require "webrick/utils"
