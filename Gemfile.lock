@@ -372,7 +372,6 @@ DEPENDENCIES
   cheffish (~> 14)
   chefspec!
   chefstyle!
-  fauxhai!
   inspec-core (~> 2)
   netrc
   octokit
