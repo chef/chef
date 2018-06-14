@@ -133,10 +133,10 @@ class Chef
             converge_by("#{new_resource} task created") do
               task = TaskScheduler.new
               if new_resource.frequency == :none
-                task.new_work_item(new_resource.task_name, {})
+                task.new_work_item(new_resource.task_name, {}, { user: new_resource.user, password: new_resource.password })
                 task.activate(new_resource.task_name)
               else
-                task.new_work_item(new_resource.task_name, trigger)
+                task.new_work_item(new_resource.task_name, trigger, { user: new_resource.user, password: new_resource.password })
               end
               task.application_name = new_resource.command
               task.parameters = new_resource.command_arguments if new_resource.command_arguments
