@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+require "chef/resource"
 require "chef/json_compat"
 
 class Chef
@@ -41,8 +42,7 @@ class Chef
       property :provider_name, String,
                equal_to: %w{ Programs msi NuGet msu PowerShellGet psl chocolatey },
                validation_message: "The following providers are supported: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' or 'chocolatey'",
-               description: "The package management provider for the source. It supports the following providers: "\
-                            "'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' and 'chocolatey'.",
+               description: "The package management provider for the source. It supports the following providers: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' and 'chocolatey'.",
                default: "NuGet"
 
       property :publish_location, String,
@@ -67,6 +67,7 @@ class Chef
       end
 
       action :register do
+        description "Registers and updates the powershell package source."
         # TODO: Ensure package provider is installed?
         if psrepository_cmdlet_appropriate?
           if package_source_exists?
@@ -100,6 +101,7 @@ class Chef
       end
 
       action :unregister do
+        description "Unregisters the powershell package source."
         if package_source_exists?
           unregister_cmd = "Get-PackageSource -Name '#{new_resource.source_name}' | Unregister-PackageSource"
           converge_by("unregister source: #{new_resource.source_name}") do
