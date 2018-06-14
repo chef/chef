@@ -20,9 +20,9 @@ require "spec_helper"
 describe Chef::Resource::Sysctl do
   include ::ChefSpec::API
   step_into :sysctl
-  platform 'ubuntu'
+  platform "ubuntu"
 
-  stubs_for_current_resource('sysctl[fakey_fakerton]') do |res|
+  stubs_for_current_resource("sysctl[fakey_fakerton]") do |res|
     allow(res).to receive_shell_out("sysctl -n -e fakey_fakerton")
   end
 
@@ -37,7 +37,7 @@ describe Chef::Resource::Sysctl do
       end
     end
 
-    stubs_for_provider('sysctl[fakey_fakerton]') do |prov|
+    stubs_for_provider("sysctl[fakey_fakerton]") do |prov|
       expect(prov).to receive_shell_out('sysctl -w "fakey_fakerton=teapot"')
     end
 
@@ -53,7 +53,7 @@ describe Chef::Resource::Sysctl do
       end
     end
 
-    stubs_for_provider('sysctl[fakey_fakerton]') do |prov|
+    stubs_for_provider("sysctl[fakey_fakerton]") do |prov|
       expect(prov).to receive_shell_out('sysctl -w "fakey_fakerton=1 2 3"')
     end
 
@@ -68,7 +68,7 @@ describe Chef::Resource::Sysctl do
       end
     end
 
-    stubs_for_provider('sysctl[fakey_fakerton]') do |prov|
+    stubs_for_provider("sysctl[fakey_fakerton]") do |prov|
       expect(prov).to receive_shell_out('sysctl -w "fakey_fakerton=1"')
     end
 
@@ -83,7 +83,7 @@ describe Chef::Resource::Sysctl do
       end
     end
 
-    stubs_for_provider('sysctl[fakey_fakerton]') do |prov|
+    stubs_for_provider("sysctl[fakey_fakerton]") do |prov|
       expect(prov).to receive_shell_out('sysctl -w "fakey_fakerton=1.1"')
     end
 
@@ -99,7 +99,7 @@ describe Chef::Resource::Sysctl do
       end
     end
 
-    stubs_for_provider('sysctl[fakey_fakerton]') do |prov|
+    stubs_for_provider("sysctl[fakey_fakerton]") do |prov|
       expect(prov).to receive_shell_out('sysctl -e -w "fakey_fakerton=teapot"')
     end
 
