@@ -18,37 +18,112 @@
 require "spec_helper"
 
 describe Chef::Resource::Sysctl do
-  let(:resource) { Chef::Resource::Sysctl.new("fakey_fakerton") }
+  include ::ChefSpec::API
+  step_into :sysctl
+  platform 'ubuntu'
 
-  it "sets resource name as :sysctl" do
-    expect(resource.resource_name).to eql(:sysctl)
+  stubs_for_current_resource('sysctl[fakey_fakerton]') do |res|
+    allow(res).to receive_shell_out("sysctl -n -e fakey_fakerton")
   end
 
-  it "the key property is the name_property" do
-    expect(resource.key).to eql("fakey_fakerton")
+  before do
+    allow(File).to receive(:exist?).and_call_original
   end
 
-  it "sets the default action as :apply" do
-    expect(resource.action).to eql([:apply])
+  context "with a simple sysctl" do
+    recipe do
+      sysctl "fakey_fakerton" do
+        value "teapot"
+      end
+    end
+
+    stubs_for_provider('sysctl[fakey_fakerton]') do |prov|
+      expect(prov).to receive_shell_out('sysctl -w "fakey_fakerton=teapot"')
+    end
+
+    it { is_expected.to apply_sysctl("fakey_fakerton").with(value: "teapot") }
+    it { is_expected.to render_file("/etc/sysctl.d/99-chef-fakey_fakerton.conf").with_content("fakey_fakerton = teapot") }
+    it { is_expected.to run_execute("Load sysctl values").with_command("sysctl -p") }
   end
 
-  it "supports :apply, :remove actions" do
-    expect { resource.action :apply }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
+  context "with an array value" do
+    recipe do
+      sysctl "fakey_fakerton" do
+        value [1, 2, 3]
+      end
+    end
+
+    stubs_for_provider('sysctl[fakey_fakerton]') do |prov|
+      expect(prov).to receive_shell_out('sysctl -w "fakey_fakerton=1 2 3"')
+    end
+
+    it { is_expected.to apply_sysctl("fakey_fakerton").with(value: "1 2 3") }
+    it { is_expected.to render_file("/etc/sysctl.d/99-chef-fakey_fakerton.conf").with_content("fakey_fakerton = 1 2 3") }
   end
 
-  it "coerces Arrays in the value property to space delimited Strings" do
-    resource.value [1, 2, 3]
-    expect(resource.value).to eql("1 2 3")
+  context "with an integer value" do
+    recipe do
+      sysctl "fakey_fakerton" do
+        value 1
+      end
+    end
+
+    stubs_for_provider('sysctl[fakey_fakerton]') do |prov|
+      expect(prov).to receive_shell_out('sysctl -w "fakey_fakerton=1"')
+    end
+
+    it { is_expected.to apply_sysctl("fakey_fakerton").with(value: "1") }
+    it { is_expected.to render_file("/etc/sysctl.d/99-chef-fakey_fakerton.conf").with_content("fakey_fakerton = 1") }
   end
 
-  it "coerces Integers in the value property to Strings" do
-    resource.value 1
-    expect(resource.value).to eql("1")
+  context "with a float value" do
+    recipe do
+      sysctl "fakey_fakerton" do
+        value 1.1
+      end
+    end
+
+    stubs_for_provider('sysctl[fakey_fakerton]') do |prov|
+      expect(prov).to receive_shell_out('sysctl -w "fakey_fakerton=1.1"')
+    end
+
+    it { is_expected.to apply_sysctl("fakey_fakerton").with(value: "1.1") }
+    it { is_expected.to render_file("/etc/sysctl.d/99-chef-fakey_fakerton.conf").with_content("fakey_fakerton = 1.1") }
   end
 
-  it "coerces Floats in the value property to Strings" do
-    resource.value 1.1
-    expect(resource.value).to eql("1.1")
+  context "with ignore_error" do
+    recipe do
+      sysctl "fakey_fakerton" do
+        value "teapot"
+        ignore_error true
+      end
+    end
+
+    stubs_for_provider('sysctl[fakey_fakerton]') do |prov|
+      expect(prov).to receive_shell_out('sysctl -e -w "fakey_fakerton=teapot"')
+    end
+
+    it { is_expected.to run_execute("Load sysctl values").with_command("sysctl -e -p") }
+  end
+
+  context "with action :remove" do
+    recipe do
+      sysctl "fakey_fakerton" do
+        action :remove
+      end
+    end
+
+    context "with an existing file" do
+      before { allow(File).to receive(:exist?).with("/etc/sysctl.d/99-chef-fakey_fakerton.conf").and_return(true) }
+      it { is_expected.to delete_file("/etc/sysctl.d/99-chef-fakey_fakerton.conf") }
+      it { is_expected.to run_execute("Load sysctl values").with_command("sysctl -p") }
+    end
+
+    context "without an existing file" do
+      before { allow(File).to receive(:exist?).with("/etc/sysctl.d/99-chef-fakey_fakerton.conf").and_return(false) }
+      it { is_expected.to_not delete_file("/etc/sysctl.d/99-chef-fakey_fakerton.conf") }
+      it { is_expected.to_not run_execute("Load sysctl values") }
+    end
+
   end
 end
