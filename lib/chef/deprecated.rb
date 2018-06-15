@@ -206,6 +206,8 @@ class Chef
 
     # Returned when using the deprecated option on a property
     class Property < Base
+      target 24
+
       def to_s
         "#{message}\n#{location}"
       end
