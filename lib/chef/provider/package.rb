@@ -307,7 +307,7 @@ class Chef
       # used by subclasses.  deprecated.  use #a_to_s instead.
       def expand_options(options)
         # its deprecated but still work to do to deprecate it fully
-        #Chef.deprecated(:package_misc, "expand_options is deprecated, use shell_out_compact instead")
+        #Chef.deprecated(:package_misc, "expand_options is deprecated, use shell_out instead")
         if options
           " #{options.is_a?(Array) ? Shellwords.join(options) : options}"
         else
@@ -668,17 +668,17 @@ class Chef
         end
       end
 
-      def shell_out_with_timeout(*command_args)
+      def shell_out_with_timeout(*command_args) # FIXME: deprecated
         shell_out(*add_timeout_option(command_args))
       end
 
-      def shell_out_with_timeout!(*command_args)
+      def shell_out_with_timeout!(*command_args) # FIXME: deprecated
         shell_out!(*add_timeout_option(command_args))
       end
 
       def add_timeout_option(command_args)
         # this is deprecated but its not quite done yet
-        #Chef.deprecated(:package_misc, "shell_out_with_timeout and add_timeout_option are deprecated methods, use shell_out_compact instead")
+        #Chef.deprecated(:package_misc, "shell_out_with_timeout and add_timeout_option are deprecated methods, use shell_out instead")
         args = command_args.dup
         if args.last.is_a?(Hash)
           options = args.pop.dup

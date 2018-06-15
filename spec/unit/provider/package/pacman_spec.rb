@@ -30,7 +30,7 @@ describe Chef::Provider::Package::Pacman do
     @provider = Chef::Provider::Package::Pacman.new(@new_resource, @run_context)
     allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
 
-    allow(@provider).to receive(:shell_out).and_return(@status)
+    allow(@provider).to receive(:shell_out_compacted).and_return(@status)
     @stdin = StringIO.new
     @stdout = StringIO.new(<<-ERR)
 error: package "nano" not found
@@ -51,17 +51,17 @@ ERR
     end
 
     it "should run pacman query with the package name" do
-      expect(@provider).to receive(:shell_out).with("pacman", "-Qi", @new_resource.package_name, { timeout: 900 }).and_return(@status)
+      expect(@provider).to receive(:shell_out_compacted).with("pacman", "-Qi", @new_resource.package_name, { timeout: 900 }).and_return(@status)
       @provider.load_current_resource
     end
 
     it "should read stdout on pacman" do
-      allow(@provider).to receive(:shell_out).and_return(@status)
+      allow(@provider).to receive(:shell_out_compacted).and_return(@status)
       @provider.load_current_resource
     end
 
     it "should set the installed version to nil on the current resource if pacman installed version not exists" do
-      allow(@provider).to receive(:shell_out).and_return(@status)
+      allow(@provider).to receive(:shell_out_compacted).and_return(@status)
       @provider.load_current_resource
     end
 
@@ -89,14 +89,14 @@ Description    : Pico editor clone with enhancements
 PACMAN
 
       status = double(:stdout => stdout, :exitstatus => 0)
-      allow(@provider).to receive(:shell_out).and_return(status)
+      allow(@provider).to receive(:shell_out_compacted).and_return(status)
       @provider.load_current_resource
       expect(@current_resource.version).to eq("2.2.2-1")
     end
 
     it "should set the candidate version if pacman has one" do
       status = double(:stdout => "core nano 2.2.3-1", :exitstatus => 0)
-      allow(@provider).to receive(:shell_out).and_return(status)
+      allow(@provider).to receive(:shell_out_compacted).and_return(status)
       @provider.load_current_resource
       expect(@provider.candidate_version).to eql("2.2.3-1")
     end
@@ -123,7 +123,7 @@ PACMAN_CONF
       status = double(:stdout => "customrepo nano 1.2.3-4", :exitstatus => 0)
       allow(::File).to receive(:exist?).with("/etc/pacman.conf").and_return(true)
       allow(::File).to receive(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
-      allow(@provider).to receive(:shell_out).and_return(status)
+      allow(@provider).to receive(:shell_out_compacted).and_return(status)
 
       @provider.load_current_resource
       expect(@provider.candidate_version).to eql("1.2.3-4")
@@ -140,7 +140,7 @@ PACMAN_CONF
     end
 
     it "should raise an exception if pacman does not return a candidate version" do
-      allow(@provider).to receive(:shell_out).and_return(@status)
+      allow(@provider).to receive(:shell_out_compacted).and_return(@status)
       expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
     end
 
@@ -151,12 +151,12 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "install_package" do
     it "should run pacman install with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("pacman", "--sync", "--noconfirm", "--noprogressbar", "nano", { timeout: 900 })
+      expect(@provider).to receive(:shell_out_compacted!).with("pacman", "--sync", "--noconfirm", "--noprogressbar", "nano", { timeout: 900 })
       @provider.install_package("nano", "1.0")
     end
 
     it "should run pacman install with the package name and version and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("pacman", "--sync", "--noconfirm", "--noprogressbar", "--debug", "nano", { timeout: 900 })
+      expect(@provider).to receive(:shell_out_compacted!).with("pacman", "--sync", "--noconfirm", "--noprogressbar", "--debug", "nano", { timeout: 900 })
       @new_resource.options("--debug")
 
       @provider.install_package("nano", "1.0")
@@ -172,12 +172,12 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "remove_package" do
     it "should run pacman remove with the package name" do
-      expect(@provider).to receive(:shell_out!).with("pacman", "--remove", "--noconfirm", "--noprogressbar", "nano", { timeout: 900 })
+      expect(@provider).to receive(:shell_out_compacted!).with("pacman", "--remove", "--noconfirm", "--noprogressbar", "nano", { timeout: 900 })
       @provider.remove_package("nano", "1.0")
     end
 
     it "should run pacman remove with the package name and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("pacman", "--remove", "--noconfirm", "--noprogressbar", "--debug", "nano", { timeout: 900 })
+      expect(@provider).to receive(:shell_out_compacted!).with("pacman", "--remove", "--noconfirm", "--noprogressbar", "--debug", "nano", { timeout: 900 })
       @new_resource.options("--debug")
 
       @provider.remove_package("nano", "1.0")

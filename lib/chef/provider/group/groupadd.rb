@@ -44,19 +44,19 @@ class Chef
 
         # Create the group
         def create_group
-          shell_out_compact!("groupadd", set_options, groupadd_options)
+          shell_out!("groupadd", set_options, groupadd_options)
           modify_group_members
         end
 
         # Manage the group when it already exists
         def manage_group
-          shell_out_compact!("groupmod", set_options)
+          shell_out!("groupmod", set_options)
           modify_group_members
         end
 
         # Remove the group
         def remove_group
-          shell_out_compact!("groupdel", new_resource.group_name)
+          shell_out!("groupdel", new_resource.group_name)
         end
 
         def modify_group_members

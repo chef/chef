@@ -547,9 +547,9 @@ class Chef
           end
           src_str = src.empty? ? "" : " #{src.join(" ")}"
           if !version.nil? && !version.empty?
-            shell_out_with_timeout!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src_str}#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src_str}#{opts}", env: nil)
           else
-            shell_out_with_timeout!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src_str}#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src_str}#{opts}", env: nil)
           end
         end
 
@@ -573,9 +573,9 @@ class Chef
 
         def uninstall_via_gem_command(name, version)
           if version
-            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", env: nil)
           else
-            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", env: nil)
           end
         end
 

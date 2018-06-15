@@ -24,7 +24,7 @@ class Chef
         provides :aix_user
 
         def create_user
-          shell_out_compact!("useradd", universal_options, useradd_options, new_resource.username)
+          shell_out!("useradd", universal_options, useradd_options, new_resource.username)
           add_password
         end
 
@@ -32,11 +32,11 @@ class Chef
           add_password
           manage_home
           return if universal_options.empty? && usermod_options.empty?
-          shell_out_compact!("usermod", universal_options, usermod_options, new_resource.username)
+          shell_out!("usermod", universal_options, usermod_options, new_resource.username)
         end
 
         def remove_user
-          shell_out_compact!("userdel", userdel_options, new_resource.username)
+          shell_out!("userdel", userdel_options, new_resource.username)
         end
 
         # Aix does not support -r like other unix, sytem account is created by adding to 'system' group
@@ -66,7 +66,7 @@ class Chef
         end
 
         def check_lock
-          lock_info = shell_out_compact!("lsuser", "-a", "account_locked", new_resource.username)
+          lock_info = shell_out!("lsuser", "-a", "account_locked", new_resource.username)
           if whyrun_mode? && passwd_s.stdout.empty? && lock_info.stderr.match(/does not exist/)
             # if we're in whyrun mode and the user is not yet created we assume it would be
             return false
@@ -85,11 +85,11 @@ class Chef
         end
 
         def lock_user
-          shell_out_compact!("chuser", "account_locked=true", new_resource.username)
+          shell_out!("chuser", "account_locked=true", new_resource.username)
         end
 
         def unlock_user
-          shell_out_compact!("chuser", "account_locked=false", new_resource.username)
+          shell_out!("chuser", "account_locked=false", new_resource.username)
         end
 
         def universal_options

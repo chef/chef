@@ -36,7 +36,7 @@ class Chef
             useradd.concat(universal_options)
             useradd.concat(useradd_options)
           end
-          shell_out_compact!(command)
+          shell_out!(command)
         end
 
         def manage_user
@@ -44,7 +44,7 @@ class Chef
           command = compile_command("usermod") do |u|
             u.concat(universal_options)
           end
-          shell_out_compact!(command)
+          shell_out!(command)
         end
 
         def remove_user
@@ -52,13 +52,13 @@ class Chef
           command << "-r" if new_resource.manage_home
           command << "-f" if new_resource.force
           command << new_resource.username
-          shell_out_compact!(command)
+          shell_out!(command)
         end
 
         def check_lock
           # we can get an exit code of 1 even when it's successful on
           # rhel/centos (redhat bug 578534). See additional error checks below.
-          passwd_s = shell_out_compact!("passwd", "-S", new_resource.username, returns: [0, 1])
+          passwd_s = shell_out!("passwd", "-S", new_resource.username, returns: [0, 1])
           if whyrun_mode? && passwd_s.stdout.empty? && passwd_s.stderr.match(/does not exist/)
             # if we're in whyrun mode and the user is not yet created we assume it would be
             return false
@@ -79,7 +79,7 @@ class Chef
           unless passwd_s.exitstatus == 0
             raise_lock_error = false
             if %w{redhat centos}.include?(node[:platform])
-              passwd_version_check = shell_out_compact!("rpm", "-q", "passwd")
+              passwd_version_check = shell_out!("rpm", "-q", "passwd")
               passwd_version = passwd_version_check.stdout.chomp
 
               unless passwd_version == "passwd-0.73-1"
@@ -96,11 +96,11 @@ class Chef
         end
 
         def lock_user
-          shell_out_compact!("usermod", "-L", new_resource.username)
+          shell_out!("usermod", "-L", new_resource.username)
         end
 
         def unlock_user
-          shell_out_compact!("usermod", "-U", new_resource.username)
+          shell_out!("usermod", "-U", new_resource.username)
         end
 
         def compile_command(base_command)

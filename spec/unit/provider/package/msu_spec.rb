@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -243,7 +243,7 @@ The operation completed successfully.
 
   describe "#extract_msu_contents" do
     it "extracts the msu contents by using mixlib shellout" do
-      expect(provider).to receive(:shell_out_with_timeout!).with("#{ENV['SYSTEMROOT']}\\system32\\expand.exe -f:* msu_file destination")
+      expect(provider).to receive(:shell_out!).with("#{ENV['SYSTEMROOT']}\\system32\\expand.exe -f:* msu_file destination")
       provider.extract_msu_contents("msu_file", "destination")
     end
   end

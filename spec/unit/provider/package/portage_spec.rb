@@ -108,26 +108,26 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
     describe Chef::Provider::Package::Portage, "candidate_version" do
       it "should return the candidate_version variable if already set" do
         @provider.candidate_version = "1.0.0"
-        expect(@provider).not_to receive(:shell_out)
+        expect(@provider).not_to receive(:shell_out_compacted)
         @provider.candidate_version
       end
 
       it "should throw an exception if the exitstatus is not 0" do
         status = double(:stdout => "", :stderr => "", :exitstatus => 1)
-        allow(@provider).to receive(:shell_out).and_return(status)
+        allow(@provider).to receive(:shell_out_compacted).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
       end
 
       it "should find the candidate_version if a category is specifed and there are no duplicates" do
         status = double(:stdout => "dev-vcs/git-2.16.2", :exitstatus => 0)
-        expect(@provider).to receive(:shell_out).and_return(status)
+        expect(@provider).to receive(:shell_out_compacted).and_return(status)
         expect(@provider.candidate_version).to eq("2.16.2")
       end
 
       it "should find the candidate_version if a category is not specifed and there are no duplicates" do
         status = double(:stdout => "dev-vcs/git-2.16.2", :exitstatus => 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
-        expect(@provider).to receive(:shell_out).and_return(status)
+        expect(@provider).to receive(:shell_out_compacted).and_return(status)
         expect(@provider.candidate_version).to eq("2.16.2")
       end
 
@@ -141,24 +141,24 @@ Please use a more specific atom.
 EOF
         status = double(:stdout => "", :stderr => stderr_output, :exitstatus => 1)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
-        expect(@provider).to receive(:shell_out).and_return(status)
+        expect(@provider).to receive(:shell_out_compacted).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
       end
     end
 
     describe Chef::Provider::Package::Portage, "install_package" do
       it "should install a normally versioned package using portage" do
-        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0", timeout: 3600)
+        expect(@provider).to receive(:shell_out_compacted!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0", timeout: 3600)
         @provider.install_package("dev-util/git", "1.0.0")
       end
 
       it "should install a tilde versioned package using portage" do
-        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "~dev-util/git-1.0.0", timeout: 3600)
+        expect(@provider).to receive(:shell_out_compacted!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "~dev-util/git-1.0.0", timeout: 3600)
         @provider.install_package("dev-util/git", "~1.0.0")
       end
 
       it "should add options to the emerge command when specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "--oneshot", "=dev-util/git-1.0.0", timeout: 3600)
+        expect(@provider).to receive(:shell_out_compacted!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "--oneshot", "=dev-util/git-1.0.0", timeout: 3600)
         @new_resource.options "--oneshot"
         @provider.install_package("dev-util/git", "1.0.0")
       end
@@ -166,12 +166,12 @@ EOF
 
     describe Chef::Provider::Package::Portage, "remove_package" do
       it "should un-emerge the package with no version specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "dev-util/git", timeout: 3600)
+        expect(@provider).to receive(:shell_out_compacted!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "dev-util/git", timeout: 3600)
         @provider.remove_package("dev-util/git", nil)
       end
 
       it "should un-emerge the package with a version specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0", timeout: 3600)
+        expect(@provider).to receive(:shell_out_compacted!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0", timeout: 3600)
         @provider.remove_package("dev-util/git", "1.0.0")
       end
     end

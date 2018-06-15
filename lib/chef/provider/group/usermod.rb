@@ -66,7 +66,7 @@ class Chef
         end
 
         def add_member(member)
-          shell_out_compact!("usermod", append_flags, new_resource.group_name, member)
+          shell_out!("usermod", append_flags, new_resource.group_name, member)
         end
 
         def remove_member(member)

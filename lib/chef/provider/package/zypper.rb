@@ -35,7 +35,7 @@ class Chef
           candidate_version = current_version = nil
           is_installed = false
           logger.trace("#{new_resource} checking zypper")
-          status = shell_out_compact!("zypper", "--non-interactive", "info", package_name)
+          status = shell_out!("zypper", "--non-interactive", "info", package_name)
           status.stdout.each_line do |line|
             case line
             when /^Version *: (.+) *$/
@@ -86,7 +86,7 @@ class Chef
         def locked_packages
           @locked_packages ||=
             begin
-              locked = shell_out_compact!("zypper", "locks")
+              locked = shell_out!("zypper", "locks")
               locked.stdout.each_line.map do |line|
                 line.split("|").shift(2).last.strip
               end
@@ -144,9 +144,9 @@ class Chef
         def zypper_package(command, *options, names, versions)
           zipped_names = zip(names, versions)
           if zypper_version < 1.0
-            shell_out_compact!("zypper", gpg_checks, command, *options, "-y", names)
+            shell_out!("zypper", gpg_checks, command, *options, "-y", names)
           else
-            shell_out_compact!("zypper", "--non-interactive", gpg_checks, command, *options, zipped_names)
+            shell_out!("zypper", "--non-interactive", gpg_checks, command, *options, zipped_names)
           end
         end
 

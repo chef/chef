@@ -113,9 +113,9 @@ class Chef
         #
         # @return [Integer] 1 if v1 > v2. 0 if they're equal. -1 if v1 < v2
         def version_compare(v1, v2)
-          if !shell_out_compact("dpkg", "--compare-versions", v1.to_s, "gt", v2.to_s).error?
+          if !shell_out("dpkg", "--compare-versions", v1.to_s, "gt", v2.to_s).error?
             1
-          elsif !shell_out_compact("dpkg", "--compare-versions", v1.to_s, "eq", v2.to_s).error?
+          elsif !shell_out("dpkg", "--compare-versions", v1.to_s, "eq", v2.to_s).error?
             0
           else
             -1
@@ -124,7 +124,7 @@ class Chef
 
         def read_current_version_of_package(package_name)
           logger.trace("#{new_resource} checking install state of #{package_name}")
-          status = shell_out_compact!("dpkg", "-s", package_name, returns: [0, 1])
+          status = shell_out!("dpkg", "-s", package_name, returns: [0, 1])
           package_installed = false
           status.stdout.each_line do |line|
             case line
@@ -149,10 +149,10 @@ class Chef
           end
         end
 
-        # Runs command via shell_out_with_timeout with magic environment to disable
+        # Runs command via shell_out with magic environment to disable
         # interactive prompts.
         def run_noninteractive(*command)
-          shell_out_compact!(*command, env: { "DEBIAN_FRONTEND" => "noninteractive" })
+          shell_out!(*command, env: { "DEBIAN_FRONTEND" => "noninteractive" })
         end
 
         # Returns true if all sources exist.  Returns false if any do not, or if no
@@ -192,7 +192,7 @@ class Chef
             begin
               pkginfos = resolved_source_array.map do |src|
                 logger.trace("#{new_resource} checking #{src} dpkg status")
-                status = shell_out_compact!("dpkg-deb", "-W", src)
+                status = shell_out!("dpkg-deb", "-W", src)
                 status.stdout
               end
               Hash[*package_name_array.zip(pkginfos).flatten]

@@ -48,9 +48,9 @@ EOS
 
     before do
       ifconfig = double(stdout: "", exitstatus: 1)
-      allow(@provider).to receive(:shell_out).and_return(ifconfig)
+      allow(@provider).to receive(:shell_out_compacted).and_return(ifconfig)
       ifconfig_version = double(stdout: "", stderr: net_tools_version, exitstatus: 4)
-      allow(@provider).to receive(:shell_out).with("ifconfig --version").and_return(ifconfig_version)
+      allow(@provider).to receive(:shell_out_compacted).with("ifconfig --version").and_return(ifconfig_version)
       @provider.load_current_resource
     end
     it "should track state of ifconfig failure" do
@@ -67,7 +67,7 @@ EOS
       allow(@provider).to receive(:load_current_resource)
       @current_resource.inet_addr nil
       command = "ifconfig eth0 10.0.0.1 netmask 255.255.254.0 metric 1 mtu 1500"
-      expect(@provider).to receive(:shell_out!).with(*command.split(" "))
+      expect(@provider).to receive(:shell_out_compacted!).with(*command.split(" "))
       expect(@provider).to receive(:generate_config)
 
       @provider.run_action(:add)
@@ -78,7 +78,7 @@ EOS
       allow(@provider).to receive(:load_current_resource)
       @new_resource.target "172.16.32.2"
       command = "ifconfig eth0 172.16.32.2 netmask 255.255.254.0 metric 1 mtu 1500"
-      expect(@provider).to receive(:shell_out!).with(*command.split(" "))
+      expect(@provider).to receive(:shell_out_compacted!).with(*command.split(" "))
 
       @provider.run_action(:add)
       expect(@new_resource).to be_updated
@@ -86,7 +86,7 @@ EOS
 
     it "should not add an interface if it already exists" do
       allow(@provider).to receive(:load_current_resource)
-      expect(@provider).not_to receive(:shell_out!)
+      expect(@provider).not_to receive(:shell_out_compacted!)
       @current_resource.inet_addr "10.0.0.1"
       expect(@provider).to receive(:generate_config)
 
@@ -105,7 +105,7 @@ EOS
       allow(@provider).to receive(:load_current_resource)
       @current_resource.inet_addr nil
       command = "ifconfig eth0 10.0.0.1 netmask 255.255.254.0 metric 1 mtu 1500"
-      expect(@provider).to receive(:shell_out!).with(*command.split(" "))
+      expect(@provider).to receive(:shell_out_compacted!).with(*command.split(" "))
       expect(@provider).not_to receive(:generate_config)
 
       @provider.run_action(:enable)
@@ -116,7 +116,7 @@ EOS
       allow(@provider).to receive(:load_current_resource)
       @new_resource.target "172.16.32.2"
       command = "ifconfig eth0 172.16.32.2 netmask 255.255.254.0 metric 1 mtu 1500"
-      expect(@provider).to receive(:shell_out!).with(*command.split(" "))
+      expect(@provider).to receive(:shell_out_compacted!).with(*command.split(" "))
 
       @provider.run_action(:enable)
       expect(@new_resource).to be_updated
@@ -139,7 +139,7 @@ EOS
       allow(@provider).to receive(:load_current_resource)
       @current_resource.device "eth0"
       command = "ifconfig #{@new_resource.device} down"
-      expect(@provider).to receive(:shell_out!).with(*command.split(" "))
+      expect(@provider).to receive(:shell_out_compacted!).with(*command.split(" "))
       expect(@provider).to receive(:delete_config)
 
       @provider.run_action(:delete)
@@ -148,7 +148,7 @@ EOS
 
     it "should not delete interface if it does not exist" do
       allow(@provider).to receive(:load_current_resource)
-      expect(@provider).not_to receive(:shell_out!)
+      expect(@provider).not_to receive(:shell_out_compacted!)
       expect(@provider).to receive(:delete_config)
 
       @provider.run_action(:delete)
@@ -162,7 +162,7 @@ EOS
       allow(@provider).to receive(:load_current_resource)
       @current_resource.device "eth0"
       command = "ifconfig #{@new_resource.device} down"
-      expect(@provider).to receive(:shell_out!).with(*command.split(" "))
+      expect(@provider).to receive(:shell_out_compacted!).with(*command.split(" "))
       expect(@provider).not_to receive(:delete_config)
 
       @provider.run_action(:disable)
@@ -171,7 +171,7 @@ EOS
 
     it "should not delete interface if it does not exist" do
       allow(@provider).to receive(:load_current_resource)
-      expect(@provider).not_to receive(:shell_out!)
+      expect(@provider).not_to receive(:shell_out_compacted!)
       expect(@provider).not_to receive(:delete_config)
 
       @provider.run_action(:disable)
@@ -185,7 +185,7 @@ EOS
       allow(@provider).to receive(:load_current_resource)
       @current_resource.device "eth0"
       command = "ifconfig #{@new_resource.device} down"
-      expect(@provider).to receive(:shell_out!).with(*command.split(" "))
+      expect(@provider).to receive(:shell_out_compacted!).with(*command.split(" "))
       expect(@provider).to receive(:delete_config)
 
       @provider.run_action(:delete)
@@ -196,7 +196,7 @@ EOS
       # This is so that our fake values do not get overwritten
       allow(@provider).to receive(:load_current_resource)
       # This is so that nothing actually runs
-      expect(@provider).not_to receive(:shell_out!)
+      expect(@provider).not_to receive(:shell_out_compacted!)
       expect(@provider).to receive(:delete_config)
 
       @provider.run_action(:delete)

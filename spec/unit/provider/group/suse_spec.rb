@@ -76,14 +76,14 @@ describe Chef::Provider::Group::Suse do
 
   describe "#add_member" do
     it "should call out to groupmod to add user" do
-      expect(provider).to receive(:shell_out!).with("groupmod", "-A", "new_user", "new_group")
+      expect(provider).to receive(:shell_out_compacted!).with("groupmod", "-A", "new_user", "new_group")
       provider.add_member("new_user")
     end
   end
 
   describe "#remove_member" do
     it "should call out to groupmod to remove user" do
-      expect(provider).to receive(:shell_out!).with("groupmod", "-R", "new_user", "new_group")
+      expect(provider).to receive(:shell_out_compacted!).with("groupmod", "-R", "new_user", "new_group")
       provider.remove_member("new_user")
     end
   end

@@ -32,11 +32,11 @@ describe Chef::Provider::Group::Dscl do
     @provider.current_resource = @current_resource
 
     @status = double(stdout: "\n", stderr: "", exitstatus: 0)
-    allow(@provider).to receive(:shell_out).and_return(@status)
+    allow(@provider).to receive(:shell_out_compacted).and_return(@status)
   end
 
   it "should run shell_out with the supplied array of arguments appended to the dscl command" do
-    expect(@provider).to receive(:shell_out).with("dscl", ".", "-cmd", "/Path", "arg1", "arg2")
+    expect(@provider).to receive(:shell_out_compacted).with("dscl", ".", "-cmd", "/Path", "arg1", "arg2")
     @provider.dscl("cmd", "/Path", "arg1", "arg2")
   end
 
