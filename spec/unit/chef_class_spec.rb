@@ -108,7 +108,7 @@ describe "Chef class" do
     end
   end
 
-  fdescribe "Deprecation system" do
+  describe "Deprecation system" do
     context "with treat_deprecation_warnings_as_errors false" do
       before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
 
