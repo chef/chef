@@ -200,13 +200,14 @@ class Chef
     #
     # Emit a deprecation message.
     #
-    # @param [Symbol] type The message to send. This should refer to a class
+    # @param type [Symbol] The message to send. This should refer to a class
     #   defined in Chef::Deprecated
-    # @param message  An explicit message to display, rather than the generic one
-    #   associated with the deprecation.
-    # @param location The location. Defaults to the caller who called you (since
-    #   generally the person who triggered the check is the one that needs to be
-    #   fixed).
+    # @param message [String, nil] An explicit message to display, rather than
+    #   the generic one associated with the deprecation.
+    # @param location [String, nil] The location. Defaults to the caller who
+    #   called you (since generally the person who triggered the check is the one
+    #   that needs to be fixed).
+    # @return [void]
     #
     # @example
     #     Chef.deprecated(:my_deprecation, message: "This is deprecated!")
@@ -220,11 +221,18 @@ class Chef
       # run. If we are not yet in a run, print to `Chef::Log`.
       if run_context && run_context.events
         run_context.events.deprecation(deprecation, location)
-      else
-        Chef::Log.deprecation(deprecation, location)
+      elsif !deprecation.silenced?
+        Chef::Log.deprecation(deprecation.to_s)
       end
     end
 
+    # Log a generic deprecation warning that doesn't have a specific class in
+    # Chef::Deprecated.
+    #
+    # This should generally not be used, as the user will not be given a link
+    # to get more infomration on fixing the deprecation warning.
+    #
+    # @see #deprecated
     def log_deprecation(message, location = nil)
       location ||= Chef::Log.caller_location
       Chef.deprecated(:generic, message, location)

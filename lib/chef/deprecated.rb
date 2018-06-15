@@ -24,275 +24,189 @@ class Chef
     class << self
       include Chef::Mixin::ConvertToClassName
 
-      def create(type, message = nil, location = nil)
-        Chef::Deprecated.const_get(convert_to_class_name(type.to_s)).send(:new, message, location)
+      def create(type, message, location)
+        Chef::Deprecated.const_get(convert_to_class_name(type.to_s)).new(message, location)
       end
     end
 
     class Base
       BASE_URL = "https://docs.chef.io/deprecations_"
 
-      attr_accessor :message, :location
+      attr_reader :message, :location
 
       def initialize(msg = nil, location = nil)
-        @message = msg if msg
-        @location = location if location
+        @message = msg
+        @location = location
       end
 
       def link
         "Please see #{url} for further details and information on how to correct this problem."
       end
 
+      # Render the URL for the deprecation documentation page.
+      #
+      # @return [String]
       def url
-        "#{BASE_URL}#{target}"
+        "#{BASE_URL}#{self.class.doc_page}"
       end
 
-      # We know that the only time this gets called is by Chef::Log.deprecation,
-      # so special case
-      def <<(location)
-        @location = location
+      # Render the user-visible message for this deprecation.
+      #
+      # @return [String]
+      def to_s
+        "#{message} (CHEF-#{self.class.deprecation_id})#{location}.\n#{link}"
       end
 
-      def inspect
-        "#{message} (CHEF-#{id})#{location}.\n#{link}"
+      # Check if this deprecation has been silenced.
+      #
+      # @return [Boolean]
+      def silenced?
+        # Check if all warnings have been silenced.
+        return true if Chef::Config[:silence_deprecation_warnings] == true
+        # Check if this warning has been silenced by the config.
+        return true if Chef::Config[:silence_deprecation_warnings].any? do |silence_spec|
+          # Just in case someone uses a symbol in the config by mistake.
+          silence_spec = silence_spec.to_s
+           # Check for a silence by deprecation name, or by location.
+          self.class.deprecation_key == silence_spec || location.include?(silence_spec)
+        end
+        # check if this warning has been silenced by inline comment.
+        return true if location =~ /^(.*?):(\d+):in/ && begin
+          # Don't buffer the whole file in memory, so read it one line at a time.
+          line_no = $2.to_i
+          location_file = ::File.open($1)
+          (line_no - 1).times { location_file.readline } # Read all the lines we don't care about.
+          relevant_line = location_file.readline
+          relevant_line.match?(/#.*chef:silence_deprecation($|[^:]|:#{self.class.deprecation_key})/)
+        end
+        false
       end
 
-      def id
-        raise NotImplementedError, "subclasses of Chef::Deprecated::Base should define #id with a unique number"
-      end
+      class << self
+        attr_reader :deprecation_id, :doc_page
 
-      def target
-        raise NotImplementedError, "subclasses of Chef::Deprecated::Base should define #target"
+        # Return the deprecation key as would be used with {Chef::Deprecated.create}.
+        #
+        # @return [String]
+        def deprecation_key
+          Chef::Mixin::ConvertToClassName.convert_to_snake_case(name, "Chef::Deprecated")
+        end
+
+        # Set the ID and documentation page path for this deprecation.
+        #
+        # Used in subclasses to set the data for each type of deprecation.
+        #
+        # @example
+        #   class MyDeprecation < Base
+        #     target 123, "my_deprecation.html"
+        #   end
+        # @param id [Integer] Deprecation ID number. This must be unique among
+        #   all deprecations.
+        # @param page [String, nil] Optional documentation page path. If not
+        #   specified, the deprecation key is used.
+        # @return [void]
+        def target(id, page = nil)
+          @deprecation_id = id
+          @doc_page = page || "#{deprecation_key}.html"
+        end
       end
     end
 
     class InternalApi < Base
-      def id
-        0
-      end
-
-      def target
-        "internal_api.html"
-      end
+      target 0
     end
 
     class JsonAutoInflate < Base
-      def id
-        1
-      end
-
-      def target
-        "json_auto_inflate.html"
-      end
+      target 1
     end
 
     class ExitCode < Base
-      def id
-        2
-      end
-
-      def target
-        "exit_code.html"
-      end
+      target 2
     end
 
     # id 3 has been deleted
 
     class Attributes < Base
-      def id
-        4
-      end
-
-      def target
-        "attributes.html"
-      end
+      target 4
     end
 
     class CustomResource < Base
-      def id
-        5
-      end
-
-      def target
-        "custom_resource_cleanups.html"
-      end
+      target 5, "custom_resource_cleanups.html"
     end
 
     class EasyInstall < Base
-      def id
-        6
-      end
-
-      def target
-        "easy_install.html"
-      end
+      target 6
     end
 
     class VerifyFile < Base
-      def id
-        7
-      end
-
-      def target
-        "verify_file.html"
-      end
+      target 7
     end
 
     class SupportsProperty < Base
-      def id
-        8
-      end
-
-      def target
-        "supports_property.html"
-      end
+      target 8
     end
 
     class ChefRest < Base
-      def id
-        9
-      end
-
-      def target
-        "chef_rest.html"
-      end
+      target 9
     end
 
     class DnfPackageAllowDowngrade < Base
-      def id
-        10
-      end
-
-      def target
-        "dnf_package_allow_downgrade.html"
-      end
+      target 10
     end
 
     class PropertyNameCollision < Base
-      def id
-        11
-      end
-
-      def target
-        "property_name_collision.html"
-      end
+      target 11
     end
 
     class LaunchdHashProperty < Base
-      def id
-        12
-      end
-
-      def target
-        "launchd_hash_property.html"
-      end
+      target 12
     end
 
     class ChefPlatformMethods < Base
-      def id
-        13
-      end
-
-      def target
-        "chef_platform_methods.html"
-      end
+      target 13
     end
 
     class RunCommand < Base
-      def id
-        14
-      end
-
-      def target
-        "run_command.html"
-      end
+      target 14
     end
 
     class PackageMisc < Base
-      def id
-        15
-      end
-
-      def target
-        "package_misc.html"
-      end
+      target 15
     end
 
     class MultiresourceMatch < Base
-      def id
-        16
-      end
-
-      def target
-        "multiresource_match.html"
-      end
+      target 16
     end
 
     class UseInlineResources < Base
-      def id
-        17
-      end
-
-      def target
-        "use_inline_resources.html"
-      end
+      target 17
     end
 
     class LocalListen < Base
-      def id
-        18
-      end
-
-      def target
-        "local_listen.html"
-      end
+      target 18
     end
 
     class NamespaceCollisions < Base
-      def id
-        19
-      end
-
-      def target
-        "namespace_collisions.html"
-      end
+      target 19
     end
 
     class DeployResource < Base
-      def id
-        21
-      end
-
-      def target
-        "deploy_resource.html"
-      end
+      target 21
     end
 
     class ErlResource < Base
-      def id
-        22
-      end
-
-      def target
-        "erl_resource.html"
-      end
+      target 22
     end
 
     class FreebsdPkgProvider < Base
-      def id
-        23
-      end
-
-      def target
-        "freebsd_pkg_provider.html"
-      end
+      target 23
     end
 
     # id 3694 was deleted
 
     # Returned when using the deprecated option on a property
     class Property < Base
-      def inspect
+      def to_s
         "#{message}\n#{location}"
       end
     end
@@ -302,8 +216,8 @@ class Chef
         "https://docs.chef.io/chef_deprecations_client.html"
       end
 
-      def inspect
-        "#{message}\nThis is a generic error message and should be updated to have a proper deprecation class. #{location}\nPlease see #{url} for an overview of Chef deprecations."
+      def to_s
+        "#{message} #{location}.\n#{link}"
       end
     end
 
