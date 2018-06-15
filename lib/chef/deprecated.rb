@@ -202,6 +202,10 @@ class Chef
       target 23
     end
 
+    class MapCollision < Base
+      target 25
+    end
+
     # id 3694 was deleted
 
     # Returned when using the deprecated option on a property

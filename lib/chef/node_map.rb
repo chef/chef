@@ -85,9 +85,9 @@ class Chef
                           klass.superclass.to_s
                         end
         # For now, only log the warning.
-        Chef.log_deprecation("Trying to register #{type_of_thing} #{key} on top of existing Chef core #{type_of_thing}. Check if a new version of the cookbook is available.")
+        Chef.deprecated(:map_collision, "Trying to register #{type_of_thing} #{key} on top of existing Chef core #{type_of_thing}. Check if a new version of the cookbook is available.")
         # In 15.0, uncomment this and remove the log above.
-        # Chef.log_deprecation("Rejecting attempt to register #{type_of_thing} #{key} on top of existing Chef core #{type_of_thing}. Check if a new version of the cookbook is available.")
+        # Chef.ldeprecated(:map_collision, "Rejecting attempt to register #{type_of_thing} #{key} on top of existing Chef core #{type_of_thing}. Check if a new version of the cookbook is available.")
         # return
       end
 
