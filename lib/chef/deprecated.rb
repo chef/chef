@@ -68,7 +68,7 @@ class Chef
           # Just in case someone uses a symbol in the config by mistake.
           silence_spec = silence_spec.to_s
            # Check for a silence by deprecation name, or by location.
-          self.class.deprecation_key == silence_spec || location.include?(silence_spec)
+          self.class.deprecation_key == silence_spec || self.class.deprecation_id.to_s == silence_spec || "chef-#{self.class.deprecation_id}" == silence_spec.downcase || location.include?(silence_spec)
         end
         # check if this warning has been silenced by inline comment.
         return true if location =~ /^(.*?):(\d+):in/ && begin

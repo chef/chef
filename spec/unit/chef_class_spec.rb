@@ -134,6 +134,33 @@ describe "Chef class" do
         Chef.deprecated(:generic, "This is my handle.")
       end
 
+      it "allows silencing specific IDs" do
+        Chef::Config[:silence_deprecation_warnings] = [0]
+        expect(Chef::Log).to receive(:warn).with(/I'm a little teapot/).once
+        expect(Chef::Log).to receive(:warn).with(/This is my handle/).once
+        Chef.deprecated(:generic, "I'm a little teapot.")
+        Chef.deprecated(:internal_api, "Short and stout.")
+        Chef.deprecated(:generic, "This is my handle.")
+      end
+
+      it "allows silencing specific IDs using the CHEF- syntax" do
+        Chef::Config[:silence_deprecation_warnings] = ["CHEF-0"]
+        expect(Chef::Log).to receive(:warn).with(/I'm a little teapot/).once
+        expect(Chef::Log).to receive(:warn).with(/This is my handle/).once
+        Chef.deprecated(:generic, "I'm a little teapot.")
+        Chef.deprecated(:internal_api, "Short and stout.")
+        Chef.deprecated(:generic, "This is my handle.")
+      end
+
+      it "allows silencing specific IDs using the chef- syntax" do
+        Chef::Config[:silence_deprecation_warnings] = ["chef-0"]
+        expect(Chef::Log).to receive(:warn).with(/I'm a little teapot/).once
+        expect(Chef::Log).to receive(:warn).with(/This is my handle/).once
+        Chef.deprecated(:generic, "I'm a little teapot.")
+        Chef.deprecated(:internal_api, "Short and stout.")
+        Chef.deprecated(:generic, "This is my handle.")
+      end
+
       it "allows silencing specific lines" do
         Chef::Config[:silence_deprecation_warnings] = ["chef_class_spec.rb:#{__LINE__ + 4}"]
         expect(Chef::Log).to receive(:warn).with(/I'm a little teapot/).once
