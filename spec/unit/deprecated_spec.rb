@@ -51,4 +51,15 @@ describe Chef::Deprecated do
       expect(TestDeprecation.new(message, location).to_s).to eql("A test message (CHEF-999)the location.\nPlease see https://docs.chef.io/deprecations_test.html for further details and information on how to correct this problem.")
     end
   end
+
+  it "has no overlapping deprecation IDs" do
+    id_map = {}
+    ObjectSpace.each_object(Class).select { |cls| cls < Chef::Deprecated::Base }.each do |cls|
+      (id_map[cls.deprecation_id] ||= []) << cls
+    end
+    collisions = id_map.select {|k, v| v.size != 1 }
+    unless collisions.empty?
+      raise "Found deprecation ID collisions:\n#{collisions.map {|k, v| "* #{k} #{v.map(&:name).join(', ')}"}.join("\n")}"
+    end
+  end
 end
