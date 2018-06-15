@@ -26,6 +26,19 @@ or `solo.rb`:
 silence_deprecation_warnings %w{deploy_resource chef-23 recipes/install.rb:22}
 ```
 
+or in your `kitchen.yml`:
+
+```yaml
+provisioner:
+  name: chef_solo
+  solo_rb:
+    treat_deprecation_warnings_as_errors: true
+    silence_deprecation_warnings:
+    - deploy_resource
+    - chef-23
+    - recipes/install.rb:22
+```
+
 You can also silence deprecations using a comment on the line that is raising
 the warning:
 
