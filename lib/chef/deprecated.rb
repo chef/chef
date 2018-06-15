@@ -54,7 +54,7 @@ class Chef
       #
       # @return [String]
       def to_s
-        "#{message} (CHEF-#{self.class.deprecation_id})#{location}.\n#{link}"
+        "Deprecation CHEF-#{self.class.deprecation_id} from #{location}\n\n  #{message}\n\n#{link}"
       end
 
       # Check if this deprecation has been silenced.
@@ -213,7 +213,7 @@ class Chef
       target 24
 
       def to_s
-        "#{message}\n#{location}"
+        "Deprecated resource property used from #{location}\n\n  #{message}\n\nPlease consult the resource documentation for more information."
       end
     end
 
@@ -223,7 +223,7 @@ class Chef
       end
 
       def to_s
-        "#{message} #{location}.\n#{link}"
+        "Deprecation from #{location}\n\n  #{message}\n\n#{link}"
       end
     end
 
