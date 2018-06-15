@@ -113,7 +113,7 @@ describe "Chef class" do
       before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
 
       it "displays a simple deprecation warning" do
-        expect(Chef::Log).to receive(:warn).with(%r{I'm a little teapot\..*?spec/unit/chef_class_spec\.rb.*?Please see}m)
+        expect(Chef::Log).to receive(:warn).with(%r{spec/unit/chef_class_spec\.rb.*?I'm a little teapot.*?Please see}m)
         Chef.deprecated(:generic, "I'm a little teapot.")
       end
 
@@ -222,7 +222,7 @@ describe "Chef class" do
       before { Chef::Config[:treat_deprecation_warnings_as_errors] = true }
 
       it "displays a simple deprecation error" do
-        expect(Chef::Log).to receive(:error).with(%r{I'm a little teapot\..*?spec/unit/chef_class_spec\.rb.*?Please see}m)
+        expect(Chef::Log).to receive(:error).with(%r{spec/unit/chef_class_spec\.rb.*?I'm a little teapot.*?Please see}m)
         expect { Chef.deprecated(:generic, "I'm a little teapot.") }.to raise_error(/I'm a little teapot./)
       end
     end

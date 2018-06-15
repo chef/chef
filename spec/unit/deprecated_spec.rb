@@ -48,7 +48,7 @@ describe Chef::Deprecated do
     end
 
     it "formats a complete deprecation message" do
-      expect(TestDeprecation.new(message, location).to_s).to eql("A test message (CHEF-999)the location.\nPlease see https://docs.chef.io/deprecations_test.html for further details and information on how to correct this problem.")
+      expect(TestDeprecation.new(message, location).to_s).to eql("Deprecation CHEF-999 from the location\n\n  A test message\n\nPlease see https://docs.chef.io/deprecations_test.html for further details and information on how to correct this problem.")
     end
   end
 
