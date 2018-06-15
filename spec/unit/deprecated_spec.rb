@@ -57,9 +57,9 @@ describe Chef::Deprecated do
     ObjectSpace.each_object(Class).select { |cls| cls < Chef::Deprecated::Base }.each do |cls|
       (id_map[cls.deprecation_id] ||= []) << cls
     end
-    collisions = id_map.select {|k, v| v.size != 1 }
+    collisions = id_map.select { |k, v| v.size != 1 }
     unless collisions.empty?
-      raise "Found deprecation ID collisions:\n#{collisions.map {|k, v| "* #{k} #{v.map(&:name).join(', ')}"}.join("\n")}"
+      raise "Found deprecation ID collisions:\n#{collisions.map { |k, v| "* #{k} #{v.map(&:name).join(', ')}" }.join("\n")}"
     end
   end
 end
