@@ -1,9 +1,3 @@
 source "https://supermarket.chef.io"
 
 cookbook "base", path: "cookbooks/base"
-
-# Disabled pending updating these test cases for Chef 13.
-# cookbook "awesome_customers_ubuntu_wrapper", path: "cookbooks/awesome_customers_ubuntu_wrapper"
-# cookbook "awesome_customers_ubuntu", github: "lamont-granquist/awesome_customers_ubuntu", branch: "lcg/bump-mysql-version"
-# cookbook "awesome_customers_rhel_wrapper", path: "cookbooks/awesome_customers_rhel_wrapper"
-# cookbook "awesome_customers_rhel", github: "lamont-granquist/awesome_customers_rhel", branch: "lcg/bump-mysql-version"

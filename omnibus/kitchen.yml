@@ -33,25 +33,21 @@ provisioner:
   chef_omnibus_root: /opt/angrychef
 
 platforms:
-  - name: centos-5.11
+  - name: centos-6
     run_list: yum-epel::default
-  - name: centos-6.7
+  - name: centos-7
     run_list: yum-epel::default
-  - name: centos-7.2
-    run_list: yum-epel::default
-  - name: debian-8.2
+  - name: debian-8
     run_list: apt::default
-  - name: freebsd-9.3
-    run_list:
-      - freebsd::portsnap
-      - freebsd::pkgng
-  - name: freebsd-10.2
+  - name: freebsd-10
     run_list: freebsd::portsnap
-  - name: ubuntu-10.04
-    run_list: apt::default
-  - name: ubuntu-12.04
-    run_list: apt::default
+  - name: freebsd-11
+    run_list: freebsd::portsnap
   - name: ubuntu-14.04
+    run_list: apt::default
+  - name: ubuntu-16.04
+    run_list: apt::default
+  - name: ubuntu-18.04
     run_list: apt::default
   # The following (private) boxes are shared via Atlas and are only
   # available to users working for Chef. Sorry, it's about software licensing.
@@ -64,10 +60,10 @@ platforms:
   #     the private boxes.
   #
   # The Mac OS X boxes are VMware only also. You can enable VMware Fusion
-  # by activating the `.kitchen.vmware.yml` file with the `KITCHEN_LOCAL_YAML`
+  # by activating the `kitchen.vmware.yml` file with the `KITCHEN_LOCAL_YAML`
   # environment variable:
   #
-  #   KITCHEN_LOCAL_YAML=.kitchen.vmware.yml kitchen converge chefdk-macosx-109
+  #   KITCHEN_LOCAL_YAML=kitchen.vmware.yml kitchen converge chefdk-macosx-109
   #
 
   # OSX
