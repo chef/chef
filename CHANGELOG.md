@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.16 -->
-## [v14.3.16](https://github.com/chef/chef/tree/v14.3.16) (2018-06-14)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- windows_task: Fix for task is not idempotent when task name includes parent folder [#7293](https://github.com/chef/chef/pull/7293) ([Vasu1105](https://github.com/Vasu1105))
+- Remove awesome customers testing and update kitchen configs [#7377](https://github.com/chef/chef/pull/7377) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Remove awesome customers testing and update kitchen configs [#7377](https://github.com/chef/chef/pull/7377) ([tas50](https://github.com/tas50)) <!-- 14.3.16 -->
 - windows_task: Fix for task is not idempotent when task name includes parent folder [#7293](https://github.com/chef/chef/pull/7293) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.3.16 -->
 - windows_task: Don&#39;t allow bad username/password to be provided to a task which will fail later [#7288](https://github.com/chef/chef/pull/7288) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.3.15 -->
 - Pull in win32-taskscheduler 1.0.2 [#7371](https://github.com/chef/chef/pull/7371) ([tas50](https://github.com/tas50)) <!-- 14.3.14 -->
