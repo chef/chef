@@ -48,33 +48,33 @@ class Chef
 
       def shell_out_compact(*args, **options) # FIXME: deprecate
         if options.empty?
-          shell_out_compact(*args)
+          shell_out(*args)
         else
-          shell_out_compact(*args, **options)
+          shell_out(*args, **options)
         end
       end
 
       def shell_out_compact!(*args, **options) # FIXME: deprecate
         if options.empty?
-          shell_out_compact!(*args)
+          shell_out!(*args)
         else
-          shell_out_compact!(*args, **options)
+          shell_out!(*args, **options)
         end
       end
 
       def shell_out_compact_timeout(*args, **options) # FIXME: deprecate
         if options.empty?
-          shell_out_compact(*args)
+          shell_out(*args)
         else
-          shell_out_compact(*args, **options)
+          shell_out(*args, **options)
         end
       end
 
       def shell_out_compact_timeout!(*args, **options) # FIXME: deprecate
         if options.empty?
-          shell_out_compact!(*args)
+          shell_out!(*args)
         else
-          shell_out_compact!(*args, **options)
+          shell_out!(*args, **options)
         end
       end
 
