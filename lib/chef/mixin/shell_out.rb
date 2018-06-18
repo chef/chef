@@ -125,6 +125,9 @@ class Chef
       # module method to not pollute namespaces, but that means we need self injected as an arg
       # @api private
       def self.maybe_add_timeout(obj, options)
+        # note that we can't define an empty Chef::Resource::LWRPBase because that breaks descendants tracker, so we'd have to instead require the file here, which would pull in half
+        # of chef, so instead convert to using strings.  once descendants tracker is gone, we can just declare the empty classes instead and use `is_a?` against the symbols.
+        # (be nice if ruby supported strings in `is_a?` for looser coupling).
         if obj.class.ancestors.map(&:to_s).include?("Chef::Provider") && !obj.class.ancestors.map(&:to_s).include?("Chef::Resource::LWRPBase") && obj.new_resource.respond_to?(:timeout) && !options.key?(:timeout)
           options = options.dup
           # historically resources have not properly declared defaults on their timeouts, so a default default of 900s was enforced here
