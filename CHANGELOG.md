@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.17 -->
-## [v14.3.17](https://github.com/chef/chef/tree/v14.3.17) (2018-06-18)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Silence deprecation warnings [#7375](https://github.com/chef/chef/pull/7375) ([coderanger](https://github.com/coderanger))
-- Remove awesome customers testing and update kitchen configs [#7377](https://github.com/chef/chef/pull/7377) ([tas50](https://github.com/tas50))
+- Remove the unused audit test cookbook [#7378](https://github.com/chef/chef/pull/7378) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Remove the unused audit test cookbook [#7378](https://github.com/chef/chef/pull/7378) ([tas50](https://github.com/tas50)) <!-- 14.3.17 -->
 - Silence deprecation warnings [#7375](https://github.com/chef/chef/pull/7375) ([coderanger](https://github.com/coderanger)) <!-- 14.3.17 -->
 - Remove awesome customers testing and update kitchen configs [#7377](https://github.com/chef/chef/pull/7377) ([tas50](https://github.com/tas50)) <!-- 14.3.16 -->
 - windows_task: Fix for task is not idempotent when task name includes parent folder [#7293](https://github.com/chef/chef/pull/7293) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.3.16 -->
