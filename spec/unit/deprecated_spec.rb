@@ -20,40 +20,46 @@ require "chef/deprecated"
 
 describe Chef::Deprecated do
   class TestDeprecation < Chef::Deprecated::Base
-    def id; 999; end
-
-    def target; "test.html"; end
-
-    def link; "#{Chef::Deprecated::Base::BASE_URL}test.html"; end
+    target 999, "test.html"
   end
 
   context "loading a deprecation class" do
     it "loads the correct class" do
-      expect(Chef::Deprecated.create(:test_deprecation)).to be_an_instance_of(TestDeprecation)
+      expect(Chef::Deprecated.create(:test_deprecation, nil, nil)).to be_an_instance_of(TestDeprecation)
     end
 
-    it "optionally sets a message" do
-      deprecation = Chef::Deprecated.create(:test_deprecation, "A test message")
+    it "sets a message" do
+      deprecation = Chef::Deprecated.create(:test_deprecation, "A test message", nil)
       expect(deprecation.message).to eql("A test message")
     end
 
-    it "optionally sets the location" do
+    it "sets the location" do
       deprecation = Chef::Deprecated.create(:test_deprecation, nil, "A test location")
       expect(deprecation.location).to eql("A test location")
     end
   end
 
   context "formatting deprecation warnings" do
-    let(:base_url) { Chef::Deprecated::Base::BASE_URL }
     let(:message) { "A test message" }
     let(:location) { "the location" }
 
     it "displays the full URL" do
-      expect(TestDeprecation.new().url).to eql("#{base_url}test.html")
+      expect(TestDeprecation.new().url).to eql("https://docs.chef.io/deprecations_test.html")
     end
 
     it "formats a complete deprecation message" do
-      expect(TestDeprecation.new(message, location).inspect).to eql("#{message} (CHEF-999)#{location}.\nhttps://docs.chef.io/deprecations_test.html")
+      expect(TestDeprecation.new(message, location).to_s).to eql("Deprecation CHEF-999 from the location\n\n  A test message\n\nPlease see https://docs.chef.io/deprecations_test.html for further details and information on how to correct this problem.")
+    end
+  end
+
+  it "has no overlapping deprecation IDs" do
+    id_map = {}
+    ObjectSpace.each_object(Class).select { |cls| cls < Chef::Deprecated::Base }.each do |cls|
+      (id_map[cls.deprecation_id] ||= []) << cls
+    end
+    collisions = id_map.select { |k, v| v.size != 1 }
+    unless collisions.empty?
+      raise "Found deprecation ID collisions:\n#{collisions.map { |k, v| "* #{k} #{v.map(&:name).join(', ')}" }.join("\n")}"
     end
   end
 end

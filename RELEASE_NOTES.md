@@ -1,5 +1,54 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+## Silencing deprecation warnings
+
+While deprecation warnings have been great for the Chef community to ensure
+cookbooks are kept up-to-date and to prepare for major version upgrades, sometimes
+you just can't fix a deprecation right now. This is often compounded by the
+recommendation to enable `treat_deprecation_warnings_as_errors` mode in your
+Test Kitchen integration tests, which doesn't understand the difference between
+deprecations from community cookbooks and those from your own code.
+
+Two new options are provided for silencing deprecation warnings: `silence_deprecation_warnings`
+and inline `chef:silence_deprecation` comments.
+
+The `silence_deprecation_warnings` configuration value can be set in your
+`client.rb` or `solo.rb` config file, either to `true` to silence all deprecation
+warnings or to an array of deprecations to silence. You can specify which to
+silence either by the deprecation key name (e.g. `"internal_api"`), the numeric
+deprecation ID (e.g. `25` or `"CHEF-25"`), or by specifying the filename and
+line number where the deprecation is being raised from (e.g. `"default.rb:67"`).
+
+An example of setting the `silence_deprecation_warnings` option in your `client.rb`
+or `solo.rb`:
+
+```ruby
+silence_deprecation_warnings %w{deploy_resource chef-23 recipes/install.rb:22}
+```
+
+or in your `kitchen.yml`:
+
+```yaml
+provisioner:
+  name: chef_solo
+  solo_rb:
+    treat_deprecation_warnings_as_errors: true
+    silence_deprecation_warnings:
+    - deploy_resource
+    - chef-23
+    - recipes/install.rb:22
+```
+
+You can also silence deprecations using a comment on the line that is raising
+the warning:
+
+```ruby
+erl_call 'something' do # chef:silence_deprecation
+```
+
+We advise caution in the use of this feature, as excessive or prolonged silencing
+can lead to difficulty upgrading when the next major release of Chef comes out.
+
 # Chef Client Release Notes 14.2:
 
 ## `ssh-agent` support for user keys

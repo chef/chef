@@ -414,19 +414,15 @@ class Chef
         end
       end
 
-      def deprecation(message, location = caller(2..2)[0])
+      # (see Base#deprecation)
+      def deprecation(deprecation, _location = nil)
         if Chef::Config[:treat_deprecation_warnings_as_errors]
           super
+        elsif !deprecation.silenced?
+          # Save non-silenced deprecations to the screen until the end.
+          deprecations[deprecation.message] ||= { url: deprecation.url, locations: Set.new }
+          deprecations[deprecation.message][:locations] << deprecation.location
         end
-
-        # Save deprecations to the screen until the end
-        if is_structured_deprecation?(message)
-          url = message.url
-          message = message.message
-        end
-
-        deprecations[message] ||= { url: url, locations: Set.new }
-        deprecations[message][:locations] << location
       end
 
       def indent
