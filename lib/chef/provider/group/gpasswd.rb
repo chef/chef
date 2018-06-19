@@ -39,18 +39,18 @@ class Chef
 
         def set_members(members)
           if members.empty?
-            shell_out_compact!("gpasswd", "-M", "", new_resource.group_name)
+            shell_out!("gpasswd", "-M", "", new_resource.group_name)
           else
-            shell_out_compact!("gpasswd", "-M", members.join(","), new_resource.group_name)
+            shell_out!("gpasswd", "-M", members.join(","), new_resource.group_name)
           end
         end
 
         def add_member(member)
-          shell_out_compact!("gpasswd", "-a", member, new_resource.group_name)
+          shell_out!("gpasswd", "-a", member, new_resource.group_name)
         end
 
         def remove_member(member)
-          shell_out_compact!("gpasswd", "-d", member, new_resource.group_name)
+          shell_out!("gpasswd", "-d", member, new_resource.group_name)
         end
       end
     end

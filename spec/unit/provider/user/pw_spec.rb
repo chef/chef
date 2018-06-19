@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,12 +81,12 @@ describe Chef::Provider::User::Pw do
 
   describe "create_user" do
     before(:each) do
-      allow(@provider).to receive(:shell_out!).and_return(true)
+      allow(@provider).to receive(:shell_out_compacted!).and_return(true)
       allow(@provider).to receive(:modify_password).and_return(true)
     end
 
     it "should run pw useradd with the return of set_options" do
-      expect(@provider).to receive(:shell_out!).with("pw", "useradd", "adam", "-m").and_return(true)
+      expect(@provider).to receive(:shell_out_compacted!).with( "pw", "useradd", "adam", "-m").and_return(true)
       @provider.create_user
     end
 
@@ -98,12 +98,12 @@ describe Chef::Provider::User::Pw do
 
   describe "manage_user" do
     before(:each) do
-      allow(@provider).to receive(:shell_out!).and_return(true)
+      allow(@provider).to receive(:shell_out_compacted!).and_return(true)
       allow(@provider).to receive(:modify_password).and_return(true)
     end
 
     it "should run pw usermod with the return of set_options" do
-      expect(@provider).to receive(:shell_out!).with("pw", "usermod", "adam", "-m").and_return(true)
+      expect(@provider).to receive(:shell_out_compacted!).with( "pw", "usermod", "adam", "-m").and_return(true)
       @provider.manage_user
     end
 
@@ -116,12 +116,12 @@ describe Chef::Provider::User::Pw do
   describe "remove_user" do
     it "should run pw userdel with the new resources user name" do
       @new_resource.manage_home false
-      expect(@provider).to receive(:shell_out!).with("pw", "userdel", @new_resource.username).and_return(true)
+      expect(@provider).to receive(:shell_out_compacted!).with( "pw", "userdel", @new_resource.username).and_return(true)
       @provider.remove_user
     end
 
     it "should run pw userdel with the new resources user name and -r if manage_home is true" do
-      expect(@provider).to receive(:shell_out!).with("pw", "userdel", @new_resource.username, "-r").and_return(true)
+      expect(@provider).to receive(:shell_out_compacted!).with( "pw", "userdel", @new_resource.username, "-r").and_return(true)
       @provider.remove_user
     end
   end
@@ -140,14 +140,14 @@ describe Chef::Provider::User::Pw do
 
   describe "when locking the user" do
     it "should run pw lock with the new resources username" do
-      expect(@provider).to receive(:shell_out!).with("pw", "lock", @new_resource.username)
+      expect(@provider).to receive(:shell_out_compacted!).with( "pw", "lock", @new_resource.username)
       @provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
     it "should run pw unlock with the new resources username" do
-      expect(@provider).to receive(:shell_out!).with("pw", "unlock", @new_resource.username)
+      expect(@provider).to receive(:shell_out_compacted!).with( "pw", "unlock", @new_resource.username)
       @provider.unlock_user
     end
   end
@@ -155,7 +155,7 @@ describe Chef::Provider::User::Pw do
   describe "when modifying the password" do
     before(:each) do
       @status = double("Status", exitstatus: 0)
-      allow(@provider).to receive(:shell_out!).and_return(@status)
+      allow(@provider).to receive(:shell_out_compacted!).and_return(@status)
     end
 
     describe "and the new password has not been specified" do
@@ -202,12 +202,12 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should run pw usermod with the username and the option -H 0" do
-        expect(@provider).to receive(:shell_out!).with("pw usermod adam -H 0", { :input => "abracadabra" }).and_return(@status)
+        expect(@provider).to receive(:shell_out_compacted!).with( "pw usermod adam -H 0", { :input => "abracadabra" }).and_return(@status)
         @provider.modify_password
       end
 
       it "should raise an exception if pw usermod fails" do
-        expect(@provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+        expect(@provider).to receive(:shell_out_compacted!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
         expect { @provider.modify_password }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
       end
 

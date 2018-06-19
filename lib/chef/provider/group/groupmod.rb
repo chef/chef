@@ -32,7 +32,7 @@ class Chef
 
         # Create the group
         def create_group
-          shell_out_compact!("group", "add", set_options)
+          shell_out!("group", "add", set_options)
 
           add_group_members(new_resource.members)
         end
@@ -79,14 +79,14 @@ class Chef
 
         # Remove the group
         def remove_group
-          shell_out_compact!("group", "del", new_resource.group_name)
+          shell_out!("group", "del", new_resource.group_name)
         end
 
         # Adds a list of usernames to the group using `user mod`
         def add_group_members(members)
           logger.trace("#{new_resource} adding members #{members.join(', ')}") unless members.empty?
           members.each do |user|
-            shell_out_compact!("user", "mod", "-G", new_resource.group_name, user)
+            shell_out!("user", "mod", "-G", new_resource.group_name, user)
           end
         end
 
@@ -94,11 +94,11 @@ class Chef
         # "<name>_bak", create a new group with the same GID and
         # "<name>", then set correct members on that group
         def reset_group_membership
-          shell_out_compact!("group", "mod", "-n", "#{new_resource.group_name}_bak", new_resource.group_name)
+          shell_out!("group", "mod", "-n", "#{new_resource.group_name}_bak", new_resource.group_name)
 
-          shell_out_compact!("group", "add", set_options(overwrite_gid: true))
+          shell_out!("group", "add", set_options(overwrite_gid: true))
 
-          shell_out_compact!("group", "del", "#{new_resource.group_name}_bak")
+          shell_out!("group", "del", "#{new_resource.group_name}_bak")
         end
 
         # Little bit of magic as per Adam's useradd provider to pull and assign the command line flags

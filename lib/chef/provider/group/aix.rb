@@ -32,33 +32,33 @@ class Chef
         end
 
         def create_group
-          shell_out_compact!("mkgroup", set_options, new_resource.group_name)
+          shell_out!("mkgroup", set_options, new_resource.group_name)
           modify_group_members
         end
 
         def manage_group
           options = set_options
           if options.size > 0
-            shell_out_compact!("chgroup", options, new_resource.group_name)
+            shell_out!("chgroup", options, new_resource.group_name)
           end
           modify_group_members
         end
 
         def remove_group
-          shell_out_compact!("rmgroup", new_resource.group_name)
+          shell_out!("rmgroup", new_resource.group_name)
         end
 
         def add_member(member)
-          shell_out_compact!("chgrpmem", "-m", "+", member, new_resource.group_name)
+          shell_out!("chgrpmem", "-m", "+", member, new_resource.group_name)
         end
 
         def set_members(members)
           return if members.empty?
-          shell_out_compact!("chgrpmem", "-m", "=", members.join(","), new_resource.group_name)
+          shell_out!("chgrpmem", "-m", "=", members.join(","), new_resource.group_name)
         end
 
         def remove_member(member)
-          shell_out_compact!("chgrpmem", "-m", "-", member, new_resource.group_name)
+          shell_out!("chgrpmem", "-m", "-", member, new_resource.group_name)
         end
 
         def set_options

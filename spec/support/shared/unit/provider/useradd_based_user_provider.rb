@@ -160,7 +160,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                        "-d", "/Users/mud",
                        "-m",
                        "adam" ])
-      expect(provider).to receive(:shell_out!).with(*command).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.create_user
     end
 
@@ -181,7 +181,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                          "-u", "1000",
                          "-r", "-m",
                          "adam" ])
-        expect(provider).to receive(:shell_out!).with(*command).and_return(true)
+        expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
         provider.create_user
       end
 
@@ -204,7 +204,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-d", "/Users/mud",
                   "-m",
                   "adam" ]
-      expect(provider).to receive(:shell_out!).with(*command).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.manage_user
     end
 
@@ -215,7 +215,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-d", "/Users/mud",
                   "-m",
                   "adam" ]
-      expect(provider).to receive(:shell_out!).with(*command).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.manage_user
     end
 
@@ -224,7 +224,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       command = ["usermod",
                   "-g", "23",
                   "adam" ]
-      expect(provider).to receive(:shell_out!).with(*command).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.manage_user
     end
   end
@@ -232,24 +232,24 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
   describe "when removing a user" do
 
     it "should run userdel with the new resources user name" do
-      expect(provider).to receive(:shell_out!).with("userdel", @new_resource.username).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("userdel", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name and -r if manage_home is true" do
       @new_resource.manage_home true
-      expect(provider).to receive(:shell_out!).with("userdel", "-r", @new_resource.username).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("userdel", "-r", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name if non_unique is true" do
-      expect(provider).to receive(:shell_out!).with("userdel", @new_resource.username).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("userdel", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name and -f if force is true" do
       @new_resource.force(true)
-      expect(provider).to receive(:shell_out!).with("userdel", "-f", @new_resource.username).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("userdel", "-f", @new_resource.username).and_return(true)
       provider.remove_user
     end
   end
@@ -335,14 +335,14 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
   describe "when locking the user" do
     it "should run usermod -L with the new resources username" do
-      expect(provider).to receive(:shell_out!).with("usermod", "-L", @new_resource.username)
+      expect(provider).to receive(:shell_out_compacted!).with("usermod", "-L", @new_resource.username)
       provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
     it "should run usermod -L with the new resources username" do
-      expect(provider).to receive(:shell_out!).with("usermod", "-U", @new_resource.username)
+      expect(provider).to receive(:shell_out_compacted!).with("usermod", "-U", @new_resource.username)
       provider.unlock_user
     end
   end

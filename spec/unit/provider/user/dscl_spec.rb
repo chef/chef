@@ -116,31 +116,31 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
   describe "when shelling out to dscl" do
     it "should run dscl with the supplied cmd /Path args" do
       shell_return = shellcmdresult.new("stdout", "err", 0)
-      expect(provider).to receive(:shell_out).with("dscl", ".", "-cmd", "/Path", "args").and_return(shell_return)
+      expect(provider).to receive(:shell_out_compacted).with("dscl", ".", "-cmd", "/Path", "args").and_return(shell_return)
       expect(provider.run_dscl("cmd", "/Path", "args")).to eq("stdout")
     end
 
     it "returns an empty string from delete commands" do
       shell_return = shellcmdresult.new("out", "err", 23)
-      expect(provider).to receive(:shell_out).with("dscl", ".", "-delete", "/Path", "args").and_return(shell_return)
+      expect(provider).to receive(:shell_out_compacted).with("dscl", ".", "-delete", "/Path", "args").and_return(shell_return)
       expect(provider.run_dscl("delete", "/Path", "args")).to eq("")
     end
 
     it "should raise an exception for any other command" do
       shell_return = shellcmdresult.new("out", "err", 23)
-      expect(provider).to receive(:shell_out).with("dscl", ".", "-cmd", "/Path", "arguments").and_return(shell_return)
+      expect(provider).to receive(:shell_out_compacted).with("dscl", ".", "-cmd", "/Path", "arguments").and_return(shell_return)
       expect { provider.run_dscl("cmd", "/Path", "arguments") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
 
     it "raises an exception when dscl reports 'no such key'" do
       shell_return = shellcmdresult.new("No such key: ", "err", 23)
-      expect(provider).to receive(:shell_out).with("dscl", ".", "-cmd", "/Path", "args").and_return(shell_return)
+      expect(provider).to receive(:shell_out_compacted).with("dscl", ".", "-cmd", "/Path", "args").and_return(shell_return)
       expect { provider.run_dscl("cmd", "/Path", "args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
 
     it "raises an exception when dscl reports 'eDSRecordNotFound'" do
       shell_return = shellcmdresult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", "err", -14136)
-      expect(provider).to receive(:shell_out).with("dscl", ".", "-cmd", "/Path", "args").and_return(shell_return)
+      expect(provider).to receive(:shell_out_compacted).with("dscl", ".", "-cmd", "/Path", "args").and_return(shell_return)
       expect { provider.run_dscl("cmd", "/Path", "args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
   end
@@ -284,7 +284,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     it "should run createhomedir to create the user's new home folder" do
-      expect(provider).to receive(:shell_out!).with("/usr/sbin/createhomedir", "-c", "-u", "toor")
+      expect(provider).to receive(:shell_out_compacted!).with("/usr/sbin/createhomedir", "-c", "-u", "toor")
       provider.ditto_home
     end
 
@@ -399,8 +399,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     let(:user_plist_file) { nil }
 
     before do
-      expect(provider).to receive(:shell_out).with("dscacheutil", "-flushcache")
-      expect(provider).to receive(:shell_out).with("plutil", "-convert", "xml1", "-o", "-", "/var/db/dslocal/nodes/Default/users/toor.plist") do
+      expect(provider).to receive(:shell_out_compacted).with("dscacheutil", "-flushcache")
+      expect(provider).to receive(:shell_out_compacted).with("plutil", "-convert", "xml1", "-o", "-", "/var/db/dslocal/nodes/Default/users/toor.plist") do
         if user_plist_file.nil?
           shellcmdresult.new("Can not find the file", "Sorry!!", 1)
         else
@@ -743,7 +743,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       expect(provider).to receive(:prepare_password_shadow_info).and_return({})
       mock_shellout = double("Mock::Shellout")
       allow(mock_shellout).to receive(:run_command)
-      expect(provider).to receive(:shell_out).and_return(mock_shellout)
+      expect(provider).to receive(:shell_out_compacted).and_return(mock_shellout)
       expect(provider).to receive(:read_user_info)
       expect(provider).to receive(:dscl_set)
       expect(provider).to receive(:sleep).with(3)
@@ -812,7 +812,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
       it "should raise an exception when the group does not exist" do
         shell_return = shellcmdresult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", "err", -14136)
-        expect(provider).to receive(:shell_out).with("dscl", ".", "-read", "/Groups/newgroup", "PrimaryGroupID").and_return(shell_return)
+        expect(provider).to receive(:shell_out_compacted).with("dscl", ".", "-read", "/Groups/newgroup", "PrimaryGroupID").and_return(shell_return)
         expect { provider.dscl_set_gid }.to raise_error(Chef::Exceptions::GroupIDNotFound)
       end
     end
@@ -867,8 +867,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
   describe "when the user exists" do
     before do
-      expect(provider).to receive(:shell_out).with("dscacheutil", "-flushcache")
-      expect(provider).to receive(:shell_out).with("plutil", "-convert", "xml1", "-o", "-", "/var/db/dslocal/nodes/Default/users/toor.plist") do
+      expect(provider).to receive(:shell_out_compacted).with("dscacheutil", "-flushcache")
+      expect(provider).to receive(:shell_out_compacted).with("plutil", "-convert", "xml1", "-o", "-", "/var/db/dslocal/nodes/Default/users/toor.plist") do
         shellcmdresult.new(File.read(File.join(CHEF_SPEC_DATA, "mac_users/10.9.plist.xml")), "", 0)
       end
       provider.load_current_resource

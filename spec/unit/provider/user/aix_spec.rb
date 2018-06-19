@@ -52,7 +52,7 @@ describe Chef::Provider::User::Aix do
     end
 
     it "should call chpasswd correctly" do
-      expect(provider).to receive(:shell_out!).with("echo 'adam:Ostagazuzulum' | chpasswd -e").and_return true
+      expect(provider).to receive(:shell_out_compacted!).with("echo 'adam:Ostagazuzulum' | chpasswd -e").and_return true
       provider.manage_user
     end
   end
@@ -61,7 +61,7 @@ describe Chef::Provider::User::Aix do
     context "with a system user" do
       before { new_resource.system(true) }
       it "should add the user to the system group" do
-        expect(provider).to receive(:shell_out!).with("useradd", "-g", "system", "adam")
+        expect(provider).to receive(:shell_out_compacted!).with("useradd", "-g", "system", "adam")
         provider.create_user
       end
     end
@@ -74,13 +74,13 @@ describe Chef::Provider::User::Aix do
       end
 
       it "should create the home directory" do
-        allow(provider).to receive(:shell_out!).with("usermod", "-d", "/home/adam", "adam")
+        allow(provider).to receive(:shell_out_compacted!).with("usermod", "-d", "/home/adam", "adam")
         expect(FileUtils).to receive(:mkdir_p).and_return(true)
         provider.manage_user
       end
 
       it "should move an existing home dir" do
-        allow(provider).to receive(:shell_out!).with("usermod", "-d", "/mnt/home/adam", "adam")
+        allow(provider).to receive(:shell_out_compacted!).with("usermod", "-d", "/mnt/home/adam", "adam")
         new_resource.home("/mnt/home/adam")
         allow(File).to receive(:directory?).with("/home/adam").and_return(true)
         expect(FileUtils).to receive(:mv).with("/home/adam", "/mnt/home/adam")
@@ -89,7 +89,7 @@ describe Chef::Provider::User::Aix do
 
       it "should not pass -m" do
         allow(FileUtils).to receive(:mkdir_p).and_return(true)
-        expect(provider).to receive(:shell_out!).with("usermod", "-d", "/home/adam", "adam")
+        expect(provider).to receive(:shell_out_compacted!).with("usermod", "-d", "/home/adam", "adam")
         provider.manage_user
       end
     end

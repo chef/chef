@@ -72,7 +72,7 @@ class Chef
             if parts = name.match(/^(.+?)--(.+)/) # use double-dash for stems with flavors, see man page for pkg_add
               name = parts[1]
             end
-            shell_out_compact!("pkg_add", "-r", package_string(name, version), env: { "PKG_PATH" => pkg_path }).status
+            shell_out!("pkg_add", "-r", package_string(name, version), env: { "PKG_PATH" => pkg_path }).status
             logger.trace("#{new_resource.package_name} installed")
           end
         end
@@ -81,7 +81,7 @@ class Chef
           if parts = name.match(/^(.+?)--(.+)/)
             name = parts[1]
           end
-          shell_out_compact!("pkg_delete", package_string(name, version), env: nil).status
+          shell_out!("pkg_delete", package_string(name, version), env: nil).status
         end
 
         private
@@ -92,7 +92,7 @@ class Chef
                  else
                    new_resource.package_name
                  end
-          pkg_info = shell_out_compact!("pkg_info", "-e", "#{name}->0", env: nil, returns: [0, 1])
+          pkg_info = shell_out!("pkg_info", "-e", "#{name}->0", env: nil, returns: [0, 1])
           result = pkg_info.stdout[/^inst:#{Regexp.escape(name)}-(.+?)\s/, 1]
           logger.trace("installed_version of '#{new_resource.package_name}' is '#{result}'")
           result
@@ -101,7 +101,7 @@ class Chef
         def candidate_version
           @candidate_version ||= begin
             results = []
-            shell_out_compact!("pkg_info", "-I", package_string(new_resource.package_name, new_resource.version), env: nil, returns: [0, 1]).stdout.each_line do |line|
+            shell_out!("pkg_info", "-I", package_string(new_resource.package_name, new_resource.version), env: nil, returns: [0, 1]).stdout.each_line do |line|
               results << if parts = new_resource.package_name.match(/^(.+?)--(.+)/)
                            line[/^#{Regexp.escape(parts[1])}-(.+?)\s/, 1]
                          else

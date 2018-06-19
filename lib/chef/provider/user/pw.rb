@@ -31,19 +31,19 @@ class Chef
         end
 
         def create_user
-          shell_out_compact!("pw", "useradd", set_options)
+          shell_out!("pw", "useradd", set_options)
           modify_password
         end
 
         def manage_user
-          shell_out_compact!("pw", "usermod", set_options)
+          shell_out!("pw", "usermod", set_options)
           modify_password
         end
 
         def remove_user
           command = [ "pw", "userdel", new_resource.username ]
           command << "-r" if new_resource.manage_home
-          shell_out_compact!(command)
+          shell_out!(command)
         end
 
         def check_lock
@@ -57,11 +57,11 @@ class Chef
         end
 
         def lock_user
-          shell_out_compact!("pw", "lock", new_resource.username)
+          shell_out!("pw", "lock", new_resource.username)
         end
 
         def unlock_user
-          shell_out_compact!("pw", "unlock", new_resource.username)
+          shell_out!("pw", "unlock", new_resource.username)
         end
 
         def set_options

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,18 +34,18 @@ describe Chef::Provider::Package::Zypper do
 
   before(:each) do
     allow(Chef::Resource::Package).to receive(:new).and_return(current_resource)
-    allow(provider).to receive(:shell_out!).and_return(status)
+    allow(provider).to receive(:shell_out_compacted!).and_return(status)
     allow(provider).to receive(:`).and_return("2.0")
   end
 
   def shell_out_expectation(*command, **options)
     options[:timeout] ||= 900
-    expect(provider).to receive(:shell_out).with(*command, **options)
+    expect(provider).to receive(:shell_out_compacted).with(*command, **options)
   end
 
   def shell_out_expectation!(*command, **options)
     options[:timeout] ||= 900
-    expect(provider).to receive(:shell_out!).with(*command, **options)
+    expect(provider).to receive(:shell_out_compacted!).with(*command, **options)
   end
 
   describe "when loading the current package state" do
@@ -67,7 +67,7 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should set the installed version to nil on the current resource if zypper info installed version is (none)" do
-      allow(provider).to receive(:shell_out).and_return(status)
+      allow(provider).to receive(:shell_out_compacted).and_return(status)
       expect(current_resource).to receive(:version).with([nil]).and_return(true)
       provider.load_current_resource
     end
@@ -75,7 +75,7 @@ describe Chef::Provider::Package::Zypper do
     it "should set the installed version if zypper info has one (zypper version < 1.13.0)" do
       status = double(:stdout => "Version: 1.0\nInstalled: Yes\n", :exitstatus => 0)
 
-      allow(provider).to receive(:shell_out!).and_return(status)
+      allow(provider).to receive(:shell_out_compacted!).and_return(status)
       expect(current_resource).to receive(:version).with(["1.0"]).and_return(true)
       provider.load_current_resource
     end
@@ -83,7 +83,7 @@ describe Chef::Provider::Package::Zypper do
     it "should set the installed version if zypper info has one (zypper version >= 1.13.0)" do
       status = double(:stdout => "Version        : 1.0                             \nInstalled      : Yes                             \n", :exitstatus => 0)
 
-      allow(provider).to receive(:shell_out!).and_return(status)
+      allow(provider).to receive(:shell_out_compacted!).and_return(status)
       expect(current_resource).to receive(:version).with(["1.0"]).and_return(true)
       provider.load_current_resource
     end
@@ -91,7 +91,7 @@ describe Chef::Provider::Package::Zypper do
     it "should set the installed version if zypper info has one (zypper version >= 1.13.17)" do
       status = double(:stdout => "Version        : 1.0\nInstalled      : Yes (automatically)\n", :exitstatus => 0)
 
-      allow(provider).to receive(:shell_out!).and_return(status)
+      allow(provider).to receive(:shell_out_compacted!).and_return(status)
       expect(current_resource).to receive(:version).with(["1.0"]).and_return(true)
       provider.load_current_resource
     end
@@ -99,7 +99,7 @@ describe Chef::Provider::Package::Zypper do
     it "should set the candidate version if zypper info has one (zypper version < 1.13.0)" do
       status = double(:stdout => "Version: 1.0\nInstalled: No\nStatus: out-of-date (version 0.9 installed)", :exitstatus => 0)
 
-      allow(provider).to receive(:shell_out!).and_return(status)
+      allow(provider).to receive(:shell_out_compacted!).and_return(status)
       provider.load_current_resource
       expect(provider.candidate_version).to eql(["1.0"])
     end
@@ -107,7 +107,7 @@ describe Chef::Provider::Package::Zypper do
     it "should set the candidate version if zypper info has one (zypper version >= 1.13.0)" do
       status = double(:stdout => "Version        : 1.0                             \nInstalled      : No                              \nStatus         : out-of-date (version 0.9 installed)", :exitstatus => 0)
 
-      allow(provider).to receive(:shell_out!).and_return(status)
+      allow(provider).to receive(:shell_out_compacted!).and_return(status)
       provider.load_current_resource
       expect(provider.candidate_version).to eql(["1.0"])
     end
@@ -269,35 +269,33 @@ describe Chef::Provider::Package::Zypper do
 
   describe "action_lock" do
     it "should lock if the package is not already locked" do
-      prov = provider
-      allow(prov).to receive(:shell_out_compact!).with(
-        "zypper", "--non-interactive", "info", new_resource.package_name
+      expect(provider).to receive(:shell_out_compacted!).with(
+        "zypper", "--non-interactive", "info", new_resource.package_name, timeout: 900
       ).and_return(status)
-      allow(prov).to receive(:shell_out_compact!).with(
-        "zypper", "locks"
+      expect(provider).to receive(:shell_out_compacted!).with(
+        "zypper", "locks", timeout: 900
       ).and_return(instance_double(
         Mixlib::ShellOut, stdout: "1 | somethingelse | package | (any)"
       ))
-      expect(prov).to receive(:lock_package).with(["cups"], [nil])
+      expect(provider).to receive(:lock_package).with(["cups"], [nil])
 
-      prov.load_current_resource
-      prov.action_lock
+      provider.load_current_resource
+      provider.action_lock
     end
 
     it "should not lock if the package is already locked" do
-      prov = provider
-      allow(prov).to receive(:shell_out_compact!).with(
-        "zypper", "--non-interactive", "info", new_resource.package_name
+      expect(provider).to receive(:shell_out_compacted!).with(
+        "zypper", "--non-interactive", "info", new_resource.package_name, timeout: 900
       ).and_return(status)
-      allow(prov).to receive(:shell_out_compact!).with(
-        "zypper", "locks"
+      expect(provider).to receive(:shell_out_compacted!).with(
+        "zypper", "locks", timeout: 900
       ).and_return(instance_double(
         Mixlib::ShellOut, stdout: "1 | cups | package | (any)"
       ))
-      expect(prov).to_not receive(:lock_package)
+      expect(provider).to_not receive(:lock_package)
 
-      prov.load_current_resource
-      prov.action_lock
+      provider.load_current_resource
+      provider.action_lock
     end
   end
 
@@ -326,33 +324,31 @@ describe Chef::Provider::Package::Zypper do
 
   describe "action_unlock" do
     it "should unlock if the package is not already unlocked" do
-      prov = provider
-      allow(prov).to receive(:shell_out_compact!).with(
-        "zypper", "--non-interactive", "info", new_resource.package_name
+      allow(provider).to receive(:shell_out_compacted!).with(
+        "zypper", "--non-interactive", "info", new_resource.package_name, timeout: 900
       ).and_return(status)
-      allow(prov).to receive(:shell_out_compact!).with(
-        "zypper", "locks"
+      allow(provider).to receive(:shell_out_compacted!).with(
+        "zypper", "locks", timeout: 900
       ).and_return(instance_double(
         Mixlib::ShellOut, stdout: "1 | cups | package | (any)"
       ))
-      expect(prov).to receive(:unlock_package).with(["cups"], [nil])
+      expect(provider).to receive(:unlock_package).with(["cups"], [nil])
 
-      prov.load_current_resource
+      provider.load_current_resource
       provider.action_unlock
     end
     it "should not unlock if the package is already unlocked" do
-      prov = provider
-      allow(prov).to receive(:shell_out_compact!).with(
-        "zypper", "--non-interactive", "info", new_resource.package_name
+      allow(provider).to receive(:shell_out_compacted!).with(
+        "zypper", "--non-interactive", "info", new_resource.package_name, timeout: 900
       ).and_return(status)
-      allow(prov).to receive(:shell_out_compact!).with(
-        "zypper", "locks"
+      allow(provider).to receive(:shell_out_compacted!).with(
+        "zypper", "locks", timeout: 900
       ).and_return(instance_double(
         Mixlib::ShellOut, stdout: "1 | somethingelse | package | (any)"
       ))
-      expect(prov).to_not receive(:unlock_package)
+      expect(provider).to_not receive(:unlock_package)
 
-      prov.load_current_resource
+      provider.load_current_resource
       provider.action_unlock
     end
   end

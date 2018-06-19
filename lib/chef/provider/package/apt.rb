@@ -81,7 +81,7 @@ class Chef
         def locked_packages
           @locked_packages ||=
             begin
-              locked = shell_out_compact!("apt-mark", "showhold")
+              locked = shell_out!("apt-mark", "showhold")
               locked.stdout.each_line.map do |line|
                 line.strip
               end
@@ -140,9 +140,9 @@ class Chef
         #
         # @return [Integer] 1 if v1 > v2. 0 if they're equal. -1 if v1 < v2
         def version_compare(v1, v2)
-          if !shell_out_compact("dpkg", "--compare-versions", v1.to_s, "gt", v2.to_s).error?
+          if !shell_out("dpkg", "--compare-versions", v1.to_s, "gt", v2.to_s).error?
             1
-          elsif !shell_out_compact("dpkg", "--compare-versions", v1.to_s, "eq", v2.to_s).error?
+          elsif !shell_out("dpkg", "--compare-versions", v1.to_s, "eq", v2.to_s).error?
             0
           else
             -1
@@ -153,7 +153,7 @@ class Chef
         # interactive prompts. Command is run with default localization rather
         # than forcing locale to "C", so command output may not be stable.
         def run_noninteractive(*args)
-          shell_out_compact!(*args, env: { "DEBIAN_FRONTEND" => "noninteractive" })
+          shell_out!(*args, env: { "DEBIAN_FRONTEND" => "noninteractive" })
         end
 
         def default_release_options

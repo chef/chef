@@ -24,23 +24,23 @@ class Chef
         provides :user, os: "linux"
 
         def create_user
-          shell_out_compact!("useradd", universal_options, useradd_options, new_resource.username)
+          shell_out!("useradd", universal_options, useradd_options, new_resource.username)
         end
 
         def manage_user
-          shell_out_compact!("usermod", universal_options, usermod_options, new_resource.username)
+          shell_out!("usermod", universal_options, usermod_options, new_resource.username)
         end
 
         def remove_user
-          shell_out_compact!("userdel", userdel_options, new_resource.username)
+          shell_out!("userdel", userdel_options, new_resource.username)
         end
 
         def lock_user
-          shell_out_compact!("usermod", "-L", new_resource.username)
+          shell_out!("usermod", "-L", new_resource.username)
         end
 
         def unlock_user
-          shell_out_compact!("usermod", "-U", new_resource.username)
+          shell_out!("usermod", "-U", new_resource.username)
         end
 
         # common to usermod and useradd
@@ -88,7 +88,7 @@ class Chef
         def check_lock
           # there's an old bug in rhel (https://bugzilla.redhat.com/show_bug.cgi?id=578534)
           # which means that both 0 and 1 can be success.
-          passwd_s = shell_out_compact("passwd", "-S", new_resource.username, returns: [ 0, 1 ])
+          passwd_s = shell_out("passwd", "-S", new_resource.username, returns: [ 0, 1 ])
 
           # checking "does not exist" has to come before exit code handling since centos and ubuntu differ in exit codes
           if passwd_s.stderr =~ /does not exist/

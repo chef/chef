@@ -46,7 +46,7 @@ class Chef
       #
       # @return [Boolean] do we support pkgng
       def supports_pkgng?
-        ships_with_pkgng? || !!shell_out_compact!("make", "-V", "WITH_PKGNG", :env => nil).stdout.match(/yes/i)
+        ships_with_pkgng? || !!shell_out!("make", "-V", "WITH_PKGNG", :env => nil).stdout.match(/yes/i)
       end
 
       private

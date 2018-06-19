@@ -66,7 +66,7 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
 
-          pkginfo = shell_out_compact("portageq", "best_visible", "/", new_resource.package_name)
+          pkginfo = shell_out("portageq", "best_visible", "/", new_resource.package_name)
 
           if pkginfo.exitstatus != 0
             pkginfo.stderr.each_line do |line|
@@ -106,7 +106,7 @@ class Chef
             pkg = "~#{name}-#{$1}"
           end
 
-          shell_out_compact!( "emerge", "-g", "--color", "n", "--nospinner", "--quiet", options, pkg )
+          shell_out!( "emerge", "-g", "--color", "n", "--nospinner", "--quiet", options, pkg )
         end
 
         def upgrade_package(name, version)
@@ -120,7 +120,7 @@ class Chef
                   new_resource.package_name.to_s
                 end
 
-          shell_out_compact!( "emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", options, pkg )
+          shell_out!( "emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", options, pkg )
         end
 
         def purge_package(name, version)

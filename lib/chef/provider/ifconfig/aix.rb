@@ -31,7 +31,7 @@ class Chef
           found_interface = false
           interface = {}
 
-          @status = shell_out_compact("ifconfig", "-a")
+          @status = shell_out("ifconfig", "-a")
           @status.stdout.each_line do |line|
             if !found_interface
               if line =~ /^(\S+):\sflags=(\S+)/

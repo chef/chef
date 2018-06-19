@@ -27,7 +27,7 @@ class Chef
           argdup = args.dup
           cmd = argdup.shift
           shellcmd = [ "dscl", ".", "-#{cmd}", argdup ]
-          status = shell_out_compact(shellcmd)
+          status = shell_out(shellcmd)
           stdout_result = ""
           stderr_result = ""
           status.stdout.each_line { |line| stdout_result << line }

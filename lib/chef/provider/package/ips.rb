@@ -1,7 +1,7 @@
 #
 # Author:: Jason J. W. Williams (<williamsjj@digitar.com>)
 # Author:: Stephen Nelson-Smith (<sns@chef.io>)
-# Copyright:: Copyright 2011-2017, Chef Software Inc.
+# Copyright:: Copyright 2011-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,14 +42,14 @@ class Chef
         end
 
         def get_current_version
-          shell_out_compact("pkg", "info", new_resource.package_name).stdout.each_line do |line|
+          shell_out("pkg", "info", new_resource.package_name).stdout.each_line do |line|
             return $1.split[0] if line =~ /^\s+Version: (.*)/
           end
           nil
         end
 
         def get_candidate_version
-          shell_out_compact!("pkg", "info", "-r", new_resource.package_name).stdout.each_line do |line|
+          shell_out!("pkg", "info", "-r", new_resource.package_name).stdout.each_line do |line|
             return $1.split[0] if line =~ /Version: (.*)/
           end
           nil
@@ -68,7 +68,7 @@ class Chef
           command = [ "pkg", options, "install", "-q" ]
           command << "--accept" if new_resource.accept_license
           command << "#{name}@#{version}"
-          shell_out_compact!(command)
+          shell_out!(command)
         end
 
         def upgrade_package(name, version)
@@ -77,7 +77,7 @@ class Chef
 
         def remove_package(name, version)
           package_name = "#{name}@#{version}"
-          shell_out_compact!( "pkg", options, "uninstall", "-q", package_name )
+          shell_out!( "pkg", options, "uninstall", "-q", package_name )
         end
       end
     end

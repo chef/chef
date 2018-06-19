@@ -108,14 +108,14 @@ describe Chef::Provider::Group::Groupadd do
 
   describe "#create_group" do
     before do
-      allow(provider).to receive(:shell_out!).and_return(true)
+      allow(provider).to receive(:shell_out_compacted!).and_return(true)
       allow(provider).to receive(:set_options).and_return("monkey")
       allow(provider).to receive(:groupadd_options).and_return([])
       allow(provider).to receive(:modify_group_members).and_return(true)
     end
 
     it "should run groupadd with the return of set_options" do
-      expect(provider).to receive(:shell_out!).with("groupadd", "monkey").and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("groupadd", "monkey").and_return(true)
       provider.create_group
     end
 
@@ -127,13 +127,13 @@ describe Chef::Provider::Group::Groupadd do
 
   describe "#manage_group" do
     before do
-      allow(provider).to receive(:shell_out!).and_return(true)
+      allow(provider).to receive(:shell_out_compacted!).and_return(true)
       allow(provider).to receive(:set_options).and_return("monkey")
     end
 
     it "should run groupmod with the return of set_options" do
       allow(provider).to receive(:modify_group_members).and_return(true)
-      expect(provider).to receive(:shell_out!).with("groupmod", "monkey").and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("groupmod", "monkey").and_return(true)
       provider.manage_group
     end
 
@@ -145,12 +145,12 @@ describe Chef::Provider::Group::Groupadd do
 
   describe "#remove_group" do
     before do
-      allow(provider).to receive(:shell_out!).and_return(true)
+      allow(provider).to receive(:shell_out_compacted!).and_return(true)
       allow(provider).to receive(:set_options).and_return("monkey")
     end
 
     it "should run groupdel with the new resources group name" do
-      expect(provider).to receive(:shell_out!).with("groupdel", "aj").and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("groupdel", "aj").and_return(true)
       provider.remove_group
     end
   end
@@ -163,7 +163,7 @@ describe Chef::Provider::Group::Groupadd do
 
   describe "#load_current_resource" do
     before do
-      allow(provider).to receive(:shell_out!).and_return(true)
+      allow(provider).to receive(:shell_out_compacted!).and_return(true)
       allow(provider).to receive(:set_options).and_return("monkey")
     end
 
