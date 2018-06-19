@@ -715,6 +715,11 @@ module ChefConfig
       ENV.key?("CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS")
     end
 
+    # Which deprecations warnings to silence. Can be set to `true` to silence
+    # all warnings, or an array of strings like either `"deprecation_type"` or
+    # `"filename.rb:lineno"`.
+    default :silence_deprecation_warnings, []
+
     # Whether the resource count should be updated for log resource
     # on running chef-client
     default :count_log_resource_updates, true

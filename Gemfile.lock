@@ -9,10 +9,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (14.3.10)
+    chef (14.3.17)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.3.10)
+      chef-config (= 14.3.17)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -40,10 +40,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.3.10-universal-mingw32)
+    chef (14.3.17-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.3.10)
+      chef-config (= 14.3.17)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -79,14 +79,14 @@ PATH
       win32-mutex (~> 0.4.2)
       win32-process (~> 0.8.2)
       win32-service (~> 0.8.7)
-      win32-taskscheduler (~> 0.4.0)
+      win32-taskscheduler (~> 1.0.0)
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (14.3.10)
+    chef-config (14.3.17)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -179,7 +179,7 @@ GEM
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.6)
+    mixlib-config (2.2.8)
       tomlrb
     mixlib-log (2.0.4)
     mixlib-shellout (2.3.2)
@@ -339,7 +339,7 @@ GEM
     win32-service (0.8.10)
       ffi
       ffi-win32-extensions
-    win32-taskscheduler (0.4.1)
+    win32-taskscheduler (1.0.2)
       ffi
       structured_warnings
     windows-api (0.4.4)

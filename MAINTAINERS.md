@@ -40,7 +40,6 @@ To mention the team, use @chef/client-core
 * [Joshua Timberman](https://github.com/jtimberman)
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Claire McQuin](https://github.com/mcquin)
-* [Matt Wrock](https://github.com/mwrock)
 * [Ranjib Dey](https://github.com/ranjib)
 * [Steven Murawski](https://github.com/smurawski)
 * [Steven Danna](https://github.com/stevendanna)

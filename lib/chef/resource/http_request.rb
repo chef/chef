@@ -32,8 +32,11 @@ class Chef
       default_action :get
       allowed_actions :get, :patch, :put, :post, :delete, :head, :options
 
-      property :url, String, identity: true
-      property :headers, Hash, default: lazy { Hash.new }
+      property :url, String, identity: true,
+               description: "The URL to which an HTTP request is sent."
+
+      property :headers, Hash, default: lazy { Hash.new },
+               description: "A Hash of custom headers."
 
       def initialize(name, run_context = nil)
         super

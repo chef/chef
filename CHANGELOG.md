@@ -1,15 +1,24 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.10 -->
-## [v14.3.10](https://github.com/chef/chef/tree/v14.3.10) (2018-06-13)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- package: Make sure to use the package_name name properties [#7365](https://github.com/chef/chef/pull/7365) ([tas50](https://github.com/tas50))
+- Remove the unused audit test cookbook [#7378](https://github.com/chef/chef/pull/7378) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Remove the unused audit test cookbook [#7378](https://github.com/chef/chef/pull/7378) ([tas50](https://github.com/tas50)) <!-- 14.3.17 -->
+- Silence deprecation warnings [#7375](https://github.com/chef/chef/pull/7375) ([coderanger](https://github.com/coderanger)) <!-- 14.3.17 -->
+- Remove awesome customers testing and update kitchen configs [#7377](https://github.com/chef/chef/pull/7377) ([tas50](https://github.com/tas50)) <!-- 14.3.16 -->
+- windows_task: Fix for task is not idempotent when task name includes parent folder [#7293](https://github.com/chef/chef/pull/7293) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.3.16 -->
+- windows_task: Don&#39;t allow bad username/password to be provided to a task which will fail later [#7288](https://github.com/chef/chef/pull/7288) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.3.15 -->
+- Pull in win32-taskscheduler 1.0.2 [#7371](https://github.com/chef/chef/pull/7371) ([tas50](https://github.com/tas50)) <!-- 14.3.14 -->
+- removing mwrock from client maintainers [#7369](https://github.com/chef/chef/pull/7369) ([mwrock](https://github.com/mwrock)) <!-- 14.3.13 -->
+- Add more property descriptions to resources [#7358](https://github.com/chef/chef/pull/7358) ([tas50](https://github.com/tas50)) <!-- 14.3.12 -->
+- windows_feature_dism: Fix errors when specifying the source [#7370](https://github.com/chef/chef/pull/7370) ([tas50](https://github.com/tas50)) <!-- 14.3.11 -->
 - package: Make sure to use the package_name name properties [#7365](https://github.com/chef/chef/pull/7365) ([tas50](https://github.com/tas50)) <!-- 14.3.10 -->
 - Add missing chef/resource requires in resource [#7364](https://github.com/chef/chef/pull/7364) ([tas50](https://github.com/tas50)) <!-- 14.3.9 -->
 - Update to the latest inspec and liblzma [#7355](https://github.com/chef/chef/pull/7355) ([tas50](https://github.com/tas50)) <!-- 14.3.8 -->

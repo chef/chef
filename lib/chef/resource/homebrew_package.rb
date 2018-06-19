@@ -30,7 +30,8 @@ class Chef
       description "Use the homebrew_package resource to manage packages for the macOS platform."
       introduced "12.0"
 
-      property :homebrew_user, [ String, Integer ]
+      property :homebrew_user, [ String, Integer ],
+               description: "The name of the Homebrew owner to be used by the chef-client when executing a command."
 
     end
   end

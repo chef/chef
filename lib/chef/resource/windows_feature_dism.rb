@@ -117,7 +117,7 @@ class Chef
         def features_to_install
           @install ||= begin
             # disabled features are always available to install
-            available_for_install = node["dism_features_cache"]["disabled"]
+            available_for_install = node["dism_features_cache"]["disabled"].dup
 
             # if the user passes a source then removed features are also available for installation
             available_for_install.concat(node["dism_features_cache"]["removed"]) if new_resource.source

@@ -100,15 +100,13 @@ class Chef
 
         def load_current_resource
           @current_resource = Chef::Resource::WindowsTask.new(new_resource.name)
-          task = TaskScheduler.new
-          if task.exists?(new_resource.task_name)
-            @current_resource.exists = true
+          task = TaskScheduler.new(new_resource.task_name, nil, "\\", false)
+          @current_resource.exists = task.exists?(new_resource.task_name)
+          if @current_resource.exists
             task.get_task(new_resource.task_name)
             @current_resource.task = task
             pathed_task_name = new_resource.task_name.start_with?('\\') ? new_resource.task_name : "\\#{new_resource.task_name}"
             @current_resource.task_name(pathed_task_name)
-          else
-            @current_resource.exists = false
           end
           @current_resource
         end
@@ -133,10 +131,10 @@ class Chef
             converge_by("#{new_resource} task created") do
               task = TaskScheduler.new
               if new_resource.frequency == :none
-                task.new_work_item(new_resource.task_name, {})
+                task.new_work_item(new_resource.task_name, {}, { user: new_resource.user, password: new_resource.password })
                 task.activate(new_resource.task_name)
               else
-                task.new_work_item(new_resource.task_name, trigger)
+                task.new_work_item(new_resource.task_name, trigger, { user: new_resource.user, password: new_resource.password })
               end
               task.application_name = new_resource.command
               task.parameters = new_resource.command_arguments if new_resource.command_arguments

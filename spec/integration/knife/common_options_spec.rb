@@ -28,7 +28,7 @@ describe "knife common options", :workstation do
     Chef::Config.treat_deprecation_warnings_as_errors(false)
   end
 
-  let(:local_listen_warning) { /\Awarn:.*local.*listen.*$/i }
+  let(:local_listen_warning) { /\Awarn:.*local.*listen.*$/im }
 
   when_the_repository "has a node" do
     before { file "nodes/x.json", {} }

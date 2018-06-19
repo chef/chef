@@ -213,7 +213,7 @@ describe Chef::NodeMap do
   describe "locked mode" do
     context "while unlocked" do
       it "allows setting the same key twice" do
-        expect(Chef).to_not receive(:log_deprecation)
+        expect(Chef).to_not receive(:deprecated)
         node_map.set(:foo, FooResource)
         node_map.set(:foo, BarResource)
         expect(node_map.get(node, :foo)).to eql(BarResource)
@@ -223,7 +223,7 @@ describe Chef::NodeMap do
     context "while locked" do
       # Uncomment the commented `expect`s in 15.0.
       it "rejects setting the same key twice" do
-        expect(Chef).to receive(:log_deprecation).with("Trying to register resource foo on top of existing Chef core resource. Check if a new version of the cookbook is available.")
+        expect(Chef).to receive(:deprecated).with(:map_collision, /resource foo/)
         node_map.set(:foo, FooResource)
         node_map.lock!
         node_map.set(:foo, BarResource)
@@ -231,7 +231,7 @@ describe Chef::NodeMap do
       end
 
       it "allows setting the same key twice when the first has allow_cookbook_override" do
-        expect(Chef).to_not receive(:log_deprecation)
+        expect(Chef).to_not receive(:deprecated)
         node_map.set(:foo, FooResource, allow_cookbook_override: true)
         node_map.lock!
         node_map.set(:foo, BarResource)
@@ -239,7 +239,7 @@ describe Chef::NodeMap do
       end
 
       it "allows setting the same key twice when the first has allow_cookbook_override with a future version" do
-        expect(Chef).to_not receive(:log_deprecation)
+        expect(Chef).to_not receive(:deprecated)
         node_map.set(:foo, FooResource, allow_cookbook_override: "< 100")
         node_map.lock!
         node_map.set(:foo, BarResource)
@@ -247,7 +247,7 @@ describe Chef::NodeMap do
       end
 
       it "rejects setting the same key twice when the first has allow_cookbook_override with a past version" do
-        expect(Chef).to receive(:log_deprecation).with("Trying to register resource foo on top of existing Chef core resource. Check if a new version of the cookbook is available.")
+        expect(Chef).to receive(:deprecated).with(:map_collision, /resource foo/)
         node_map.set(:foo, FooResource, allow_cookbook_override: "< 1")
         node_map.lock!
         node_map.set(:foo, BarResource)
@@ -255,7 +255,7 @@ describe Chef::NodeMap do
       end
 
       it "allows setting the same key twice when the second has __core_override__" do
-        expect(Chef).to_not receive(:log_deprecation)
+        expect(Chef).to_not receive(:deprecated)
         node_map.set(:foo, FooResource)
         node_map.lock!
         node_map.set(:foo, BarResource, __core_override__: true)
@@ -263,7 +263,7 @@ describe Chef::NodeMap do
       end
 
       it "rejects setting the same key twice for a provider" do
-        expect(Chef).to receive(:log_deprecation).with("Trying to register provider foo on top of existing Chef core provider. Check if a new version of the cookbook is available.")
+        expect(Chef).to receive(:deprecated).with(:map_collision, /provider foo/)
         node_map.set(:foo, FooProvider)
         node_map.lock!
         node_map.set(:foo, BarProvider)

@@ -212,14 +212,13 @@ class Chef
         file_load_failed(path, exception)
       end
 
-      def deprecation(message, location = caller(2..2)[0])
-        out = if is_structured_deprecation?(message)
-                message.inspect
-              else
-                "#{message} at #{location}"
-              end
-
-        Chef::Log.deprecation(out)
+      # Log a deprecation warning object.
+      #
+      # @param deprecation [Chef::Deprecated::Base] Deprecation object to log.
+      #   In previous versions, this could be a string. Don't do that anymore.
+      # @param location [Object] Unused, present only for compatbility.
+      def deprecation(deprecation, _location = nil)
+        Chef::Log.deprecation(deprecation.to_s) unless deprecation.silenced?
       end
 
       def is_structured_deprecation?(deprecation)
