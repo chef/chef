@@ -1,8 +1,8 @@
 #
-# Cookbook:: base
+# Cookbook:: end_to_end
 # Recipe:: tests
 #
-# Copyright:: 2014-2017, Chef Software, Inc.
+# Copyright:: 2014-2018, Chef Software, Inc.
 #
 
 #

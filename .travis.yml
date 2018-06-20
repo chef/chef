@@ -127,7 +127,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-amazonlinux-2
+      - bundle exec kitchen test end-to-end-amazonlinux-2
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -144,7 +144,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-amazonlinux
+      - bundle exec kitchen test end-to-end-amazonlinux
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -161,7 +161,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-ubuntu-1404
+      - bundle exec kitchen test end-to-end-ubuntu-1404
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -178,7 +178,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-ubuntu-1604
+      - bundle exec kitchen test end-to-end-ubuntu-1604
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -195,7 +195,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-ubuntu-1804
+      - bundle exec kitchen test end-to-end-ubuntu-1804
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -212,7 +212,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-debian-8
+      - bundle exec kitchen test end-to-end-debian-8
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -229,7 +229,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-debian-9
+      - bundle exec kitchen test end-to-end-debian-9
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -246,7 +246,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-centos-6
+      - bundle exec kitchen test end-to-end-centos-6
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -263,7 +263,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-centos-7
+      - bundle exec kitchen test end-to-end-centos-7
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -280,7 +280,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-fedora-latest
+      - bundle exec kitchen test end-to-end-fedora-latest
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -297,7 +297,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test base-opensuse-leap
+      - bundle exec kitchen test end-to-end-opensuse-leap
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:

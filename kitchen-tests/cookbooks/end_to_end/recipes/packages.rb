@@ -1,8 +1,8 @@
 #
-# Cookbook:: base
+# Cookbook:: end_to_end
 # Recipe:: packages
 #
-# Copyright:: 2014-2017, Chef Software, Inc.
+# Copyright:: 2014-2018, Chef Software, Inc.
 #
 
 # this is just a list of package that exist on every O/S we test, and often aren't installed by default.  you don't
