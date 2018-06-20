@@ -53,6 +53,9 @@ describe Chef::Mixin::ShellOut do
 
     [ :shell_out, :shell_out_compact, :shell_out_compact_timeout, :shell_out!, :shell_out_compact!, :shell_out_compact_timeout! ].each do |method|
       describe "##{method}" do
+        before do
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+        end
 
         describe "when the last argument is a Hash" do
           describe "and environment is an option" do
@@ -157,24 +160,27 @@ describe Chef::Mixin::ShellOut do
             end
           end
         end
-      end
 
-      describe "when the last argument is not a Hash" do
-        it "should set environment language settings to the configured internal locale" do
-          expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
-            :environment => {
-              "LC_ALL"   => Chef::Config[:internal_locale],
-              "LANG"     => Chef::Config[:internal_locale],
-              "LANGUAGE" => Chef::Config[:internal_locale],
-              env_path   => sanitized_path,
-            },
-          }).and_return(retobj)
-          shell_out_obj.send(method, cmd)
+        describe "when the last argument is not a Hash" do
+          it "should set environment language settings to the configured internal locale" do
+            expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
+              :environment => {
+                "LC_ALL"   => Chef::Config[:internal_locale],
+                "LANG"     => Chef::Config[:internal_locale],
+                "LANGUAGE" => Chef::Config[:internal_locale],
+                env_path   => sanitized_path,
+              },
+            }).and_return(retobj)
+            shell_out_obj.send(method, cmd)
+          end
         end
       end
     end
 
     describe "#shell_out_with_systems_locale" do
+      before do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      end
 
       describe "when the last argument is a Hash" do
         describe "and environment is an option" do
@@ -294,5 +300,151 @@ describe Chef::Mixin::ShellOut do
       end
     end
 
+    describe "deprecations" do
+      [ :shell_out_with_systems_locale, :shell_out_compact, :shell_out_compact_timeout, :shell_out_with_systems_locale!, :shell_out_compact!, :shell_out_compact_timeout! ].each do |method|
+        it "should not respond to #{method} in Chef-15", chef: ">= 15" do
+          expect(shell_out_obj.respond_to?(method)).to be false
+        end
+      end
+
+      it "removed shell_out_with_timeout from Chef::Provider::Package", chef: ">= 15" do
+        expect(Chef::Provider::Package.instance_methods + Chef::Provider::Package.private_instance_methods).not_to include(:shell_out_with_timeout)
+      end
+
+      it "removed shell_out_with_timeout! from Chef::Provider::Package", chef: ">= 15" do
+        expect(Chef::Provider::Package.instance_methods + Chef::Provider::Package.private_instance_methods).not_to include(:shell_out_with_timeout!)
+      end
+    end
+
+    describe "Custom Resource timeouts" do
+      class CustomResource < Chef::Resource
+        provides :whatever
+
+        property :timeout, Numeric
+
+        action :install do
+        end
+      end
+
+      let(:new_resource) { CustomResource.new("foo") }
+      let(:provider) { new_resource.provider_for_action(:install) }
+
+      describe "on Chef-14", chef: "< 15" do
+        it "doesn't add timeout for shell_out" do
+          expect(provider).to receive(:shell_out_compacted).with("foo")
+          provider.shell_out("foo")
+        end
+        it "doesn't add timeout for shell_out!" do
+          expect(provider).to receive(:shell_out_compacted!).with("foo")
+          provider.shell_out!("foo")
+        end
+      end
+
+      describe "on Chef-15", chef: ">= 15" do
+        [ :shell_out, :shell_out! ].each do |method|
+          stubbed_method = (method == :shell_out) ? :shell_out_compacted : :shell_out_compacted!
+          it "#{method} defaults to 900 seconds" do
+            expect(provider).to receive(stubbed_method).with("foo", timeout: 900)
+            provider.send(method, "foo")
+          end
+          it "#{method} overrides the default timeout with its options" do
+            expect(provider).to receive(stubbed_method).with("foo", timeout: 1)
+            provider.send(method, "foo", timeout: 1)
+          end
+          it "#{method} overrides the new_resource.timeout with the timeout option" do
+            new_resource.timeout(99)
+            expect(provider).to receive(stubbed_method).with("foo", timeout: 1)
+            provider.send(method, "foo", timeout: 1)
+          end
+          it "#{method} defaults to 900 seconds and preserves options" do
+            expect(provider).to receive(stubbed_method).with("foo", env: nil, timeout: 900)
+            provider.send(method, "foo", env: nil)
+          end
+          it "#{method} overrides the default timeout with its options and preserves options" do
+            expect(provider).to receive(stubbed_method).with("foo", timeout: 1, env: nil)
+            provider.send(method, "foo", timeout: 1, env: nil)
+          end
+          it "#{method} overrides the new_resource.timeout with the timeout option and preseves options" do
+            new_resource.timeout(99)
+            expect(provider).to receive(stubbed_method).with("foo", timeout: 1, env: nil)
+            provider.send(method, "foo", timeout: 1, env: nil)
+          end
+        end
+      end
+    end
+
+    describe "timeouts" do
+      let(:new_resource) { Chef::Resource::Package.new("foo") }
+      let(:provider) { new_resource.provider_for_action(:install) }
+
+      [ :shell_out, :shell_out! ].each do |method|
+        stubbed_method = (method == :shell_out) ? :shell_out_compacted : :shell_out_compacted!
+        it "#{method} defaults to 900 seconds" do
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 900)
+          provider.send(method, "foo")
+        end
+        it "#{method} overrides the default timeout with its options" do
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 1)
+          provider.send(method, "foo", timeout: 1)
+        end
+        it "#{method} overrides the new_resource.timeout with the timeout option" do
+          new_resource.timeout(99)
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 1)
+          provider.send(method, "foo", timeout: 1)
+        end
+        it "#{method} defaults to 900 seconds and preserves options" do
+          expect(provider).to receive(stubbed_method).with("foo", env: nil, timeout: 900)
+          provider.send(method, "foo", env: nil)
+        end
+        it "#{method} overrides the default timeout with its options and preserves options" do
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 1, env: nil)
+          provider.send(method, "foo", timeout: 1, env: nil)
+        end
+        it "#{method} overrides the new_resource.timeout with the timeout option and preseves options" do
+          new_resource.timeout(99)
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 1, env: nil)
+          provider.send(method, "foo", timeout: 1, env: nil)
+        end
+      end
+    end
+
+    describe "deprecated timeouts" do
+      let(:new_resource) { Chef::Resource::Package.new("foo") }
+      let(:provider) { new_resource.provider_for_action(:install) }
+
+      before(:each) do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      end
+
+      [ :shell_out_compact_timeout, :shell_out_compact_timeout! ].each do |method|
+        stubbed_method = (method == :shell_out_compact_timeout) ? :shell_out_compacted : :shell_out_compacted!
+        it "#{method} defaults to 900 seconds" do
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 900)
+          provider.send(method, "foo")
+        end
+        it "#{method} overrides the default timeout with its options" do
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 1)
+          provider.send(method, "foo", timeout: 1)
+        end
+        it "#{method} overrides the new_resource.timeout with the timeout option" do
+          new_resource.timeout(99)
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 1)
+          provider.send(method, "foo", timeout: 1)
+        end
+        it "#{method} defaults to 900 seconds and preserves options" do
+          expect(provider).to receive(stubbed_method).with("foo", env: nil, timeout: 900)
+          provider.send(method, "foo", env: nil)
+        end
+        it "#{method} overrides the default timeout with its options and preserves options" do
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 1, env: nil)
+          provider.send(method, "foo", timeout: 1, env: nil)
+        end
+        it "#{method} overrides the new_resource.timeout with the timeout option and preseves options" do
+          new_resource.timeout(99)
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 1, env: nil)
+          provider.send(method, "foo", timeout: 1, env: nil)
+        end
+      end
+    end
   end
 end
