@@ -125,7 +125,7 @@ class Chef
 
         def extract_msu_contents(msu_file, destination)
           with_os_architecture(nil) do
-            shell_out_with_timeout!("#{ENV['SYSTEMROOT']}\\system32\\expand.exe -f:* #{msu_file} #{destination}")
+            shell_out!("#{ENV['SYSTEMROOT']}\\system32\\expand.exe -f:* #{msu_file} #{destination}")
           end
         end
 

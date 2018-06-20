@@ -48,24 +48,24 @@ class Chef
             command += [ "-M", new_resource.members.join(",") ]
           end
 
-          shell_out_compact!(command)
+          shell_out!(command)
         end
 
         # Manage the group when it already exists
         def manage_group
           member_options = set_members_options
           if member_options.empty?
-            shell_out_compact!("pw", "groupmod", set_options)
+            shell_out!("pw", "groupmod", set_options)
           else
             member_options.each do |option|
-              shell_out_compact!("pw", "groupmod", set_options, option)
+              shell_out!("pw", "groupmod", set_options, option)
             end
           end
         end
 
         # Remove the group
         def remove_group
-          shell_out_compact!("pw", "groupdel", new_resource.group_name)
+          shell_out!("pw", "groupdel", new_resource.group_name)
         end
 
         # Little bit of magic as per Adam's useradd provider to pull and assign the command line flags

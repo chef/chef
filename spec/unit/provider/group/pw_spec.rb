@@ -52,7 +52,7 @@ describe Chef::Provider::Group::Pw do
   describe "when creating a group" do
     it "should run pw groupadd with the return of set_options and set_members_option" do
       @new_resource.gid(23)
-      expect(@provider).to receive(:shell_out!).with("pw", "groupadd", "wheel", "-g", "23", "-M", "root,aj").and_return(true)
+      expect(@provider).to receive(:shell_out_compacted!).with("pw", "groupadd", "wheel", "-g", "23", "-M", "root,aj").and_return(true)
       @provider.create_group
     end
   end
@@ -62,8 +62,8 @@ describe Chef::Provider::Group::Pw do
     it "should run pw groupmod with the return of set_options" do
       @new_resource.gid(42)
       @new_resource.members(["someone"])
-      expect(@provider).to receive(:shell_out!).with("pw", "groupmod", "wheel", "-g", "42", "-m", "someone").and_return(true)
-      expect(@provider).to receive(:shell_out!).with("pw", "groupmod", "wheel", "-g", "42", "-d", "root,aj").and_return(true)
+      expect(@provider).to receive(:shell_out_compacted!).with("pw", "groupmod", "wheel", "-g", "42", "-m", "someone").and_return(true)
+      expect(@provider).to receive(:shell_out_compacted!).with("pw", "groupmod", "wheel", "-g", "42", "-d", "root,aj").and_return(true)
       @provider.manage_group
     end
 
@@ -71,7 +71,7 @@ describe Chef::Provider::Group::Pw do
 
   describe "when removing the group" do
     it "should run pw groupdel with the new resources group name" do
-      expect(@provider).to receive(:shell_out!).with("pw", "groupdel", "wheel").and_return(true)
+      expect(@provider).to receive(:shell_out_compacted!).with("pw", "groupdel", "wheel").and_return(true)
       @provider.remove_group
     end
   end

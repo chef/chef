@@ -66,7 +66,7 @@ class Chef
         end
 
         def add_member(member)
-          shell_out_compact!("groupmod", "-A", member, new_resource.group_name)
+          shell_out!("groupmod", "-A", member, new_resource.group_name)
         end
 
         def to_remove(members)
@@ -74,7 +74,7 @@ class Chef
         end
 
         def remove_member(member)
-          shell_out_compact!("groupmod", "-R", member, new_resource.group_name)
+          shell_out!("groupmod", "-R", member, new_resource.group_name)
         end
 
       end

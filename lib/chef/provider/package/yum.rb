@@ -210,7 +210,7 @@ class Chef
         end
 
         def resolve_source_to_version_obj
-          shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
+          shell_out!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
             # this is another case of committing the sin of doing some lightweight mangling of RPM versions in ruby -- but the output of the rpm command
             # does not match what the yum library accepts.
             case line
@@ -260,7 +260,7 @@ class Chef
         end
 
         def yum(*args)
-          shell_out_compact!(yum_binary, *args)
+          shell_out!(yum_binary, *args)
         end
 
         def safe_version_array

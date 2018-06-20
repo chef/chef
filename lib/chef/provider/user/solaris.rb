@@ -30,18 +30,18 @@ class Chef
         PASSWORD_FILE = "/etc/shadow"
 
         def create_user
-          shell_out_compact!("useradd", universal_options, useradd_options, new_resource.username)
+          shell_out!("useradd", universal_options, useradd_options, new_resource.username)
           manage_password
         end
 
         def manage_user
           manage_password
           return if universal_options.empty? && usermod_options.empty?
-          shell_out_compact!("usermod", universal_options, usermod_options, new_resource.username)
+          shell_out!("usermod", universal_options, usermod_options, new_resource.username)
         end
 
         def remove_user
-          shell_out_compact!("userdel", userdel_options, new_resource.username)
+          shell_out!("userdel", userdel_options, new_resource.username)
         end
 
         def check_lock
@@ -56,11 +56,11 @@ class Chef
         end
 
         def lock_user
-          shell_out_compact!("passwd", "-l", new_resource.username)
+          shell_out!("passwd", "-l", new_resource.username)
         end
 
         def unlock_user
-          shell_out_compact!("passwd", "-u", new_resource.username)
+          shell_out!("passwd", "-u", new_resource.username)
         end
 
         private

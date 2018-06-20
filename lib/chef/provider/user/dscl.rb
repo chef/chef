@@ -326,7 +326,7 @@ user password using shadow hash.")
         end
 
         def ditto_home
-          shell_out_compact!("/usr/sbin/createhomedir", "-c", "-u", "#{new_resource.username}")
+          shell_out!("/usr/sbin/createhomedir", "-c", "-u", "#{new_resource.username}")
         end
 
         def move_home
@@ -364,7 +364,7 @@ user password using shadow hash.")
 
           # Shadow info is saved as binary plist. Convert the info to binary plist.
           shadow_info_binary = StringIO.new
-          shell_out_compact("plutil", "-convert", "binary1", "-o", "-", "-",
+          shell_out("plutil", "-convert", "binary1", "-o", "-", "-",
                             input: shadow_info.to_plist, live_stream: shadow_info_binary)
 
           if user_info.nil?
@@ -586,7 +586,7 @@ user password using shadow hash.")
 
           # We flush the cache here in order to make sure that we read fresh information
           # for the user.
-          shell_out_compact("dscacheutil", "-flushcache") # FIXME: this is MacOS version dependent
+          shell_out("dscacheutil", "-flushcache") # FIXME: this is MacOS version dependent
 
           begin
             user_plist_file = "#{USER_PLIST_DIRECTORY}/#{new_resource.username}.plist"
@@ -654,7 +654,7 @@ user password using shadow hash.")
         end
 
         def run_dscl(*args)
-          result = shell_out_compact("dscl", ".", "-#{args[0]}", args[1..-1])
+          result = shell_out("dscl", ".", "-#{args[0]}", args[1..-1])
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if result.stdout =~ /No such key: /
@@ -662,7 +662,7 @@ user password using shadow hash.")
         end
 
         def run_plutil(*args)
-          result = shell_out_compact("plutil", "-#{args[0]}", args[1..-1])
+          result = shell_out("plutil", "-#{args[0]}", args[1..-1])
           raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
           if result.stdout.encoding == Encoding::ASCII_8BIT
             result.stdout.encode("utf-8", "binary", undef: :replace, invalid: :replace, replace: "?")
@@ -672,7 +672,7 @@ user password using shadow hash.")
         end
 
         def convert_binary_plist_to_xml(binary_plist_string)
-          shell_out_compact("plutil", "-convert", "xml1", "-o", "-", "-", input: binary_plist_string).stdout
+          shell_out("plutil", "-convert", "xml1", "-o", "-", "-", input: binary_plist_string).stdout
         end
 
         def convert_to_binary(string)

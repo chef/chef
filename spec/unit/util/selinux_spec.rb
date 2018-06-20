@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@chef.io>)
-# Copyright:: Copyright 2013-2017, Chef Software Inc.
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -124,21 +124,21 @@ describe Chef::Util::Selinux do
     end
 
     it "should call restorecon non-recursive by default" do
-      expect(@test_instance).to receive(:shell_out_compact!).twice.with(@restorecon_enabled_path, [ "-R", path ])
+      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, "-R", path).twice
       @test_instance.restore_security_context(path)
       expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path)
     end
 
     it "should call restorecon recursive when recursive is set" do
-      expect(@test_instance).to receive(:shell_out_compact!).twice.with(@restorecon_enabled_path, [ "-R", "-r", path ])
+      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, "-R", "-r", path).twice
       @test_instance.restore_security_context(path, true)
       expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path, true)
     end
 
     it "should call restorecon non-recursive when recursive is not set" do
-      expect(@test_instance).to receive(:shell_out_compact!).twice.with(@restorecon_enabled_path, [ "-R", path ])
+      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, "-R", path).twice
       @test_instance.restore_security_context(path)
       expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path)

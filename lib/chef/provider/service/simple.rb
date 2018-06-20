@@ -163,6 +163,7 @@ class Chef
         end
 
         def ps_cmd
+          # XXX: magic attributes are a shitty api, need something better here and deprecate this attribute
           @run_context.node[:command] && @run_context.node[:command][:ps]
         end
       end

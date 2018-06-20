@@ -44,8 +44,8 @@ describe Chef::Provider::Package::Rpm do
     allow(::File).to receive(:exist?).with("PLEASE STUB File.exists? EXACTLY").and_return(true)
 
     # Ensure all shell out usage is stubbed with exact arguments
-    allow(provider).to receive(:shell_out!).with("PLEASE STUB YOUR SHELLOUT CALLS").and_return(nil)
-    allow(provider).to receive(:shell_out).with("PLEASE STUB YOUR SHELLOUT CALLS").and_return(nil)
+    allow(provider).to receive(:shell_out_compacted!).with("PLEASE STUB YOUR SHELLOUT CALLS").and_return(nil)
+    allow(provider).to receive(:shell_out_compacted).with("PLEASE STUB YOUR SHELLOUT CALLS").and_return(nil)
   end
 
   describe "when the package source is not valid" do
@@ -85,11 +85,11 @@ describe Chef::Provider::Package::Rpm do
   describe "when the package source is valid" do
 
     before do
-      expect(provider).to receive(:shell_out!).
+      expect(provider).to receive(:shell_out_compacted!).
         with("rpm", "-qp", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", package_source, timeout: 900).
         and_return(rpm_qp_status)
 
-      expect(provider).to receive(:shell_out).
+      expect(provider).to receive(:shell_out_compacted).
         with("rpm", "-q", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", package_name, timeout: 900).
         and_return(rpm_q_status)
     end
@@ -151,7 +151,7 @@ describe Chef::Provider::Package::Rpm do
 
           context "when at the desired version already" do
             it "does nothing when the correct version is installed" do
-              expect(provider).to_not receive(:shell_out!).with("rpm", "-i", "/tmp/imagemagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              expect(provider).to_not receive(:shell_out_compacted!).with("rpm", "-i", "/tmp/imagemagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
 
               provider.action_install
             end
@@ -162,7 +162,7 @@ describe Chef::Provider::Package::Rpm do
             let(:rpm_q_stdout) { "imagemagick-c++ 0.5.4.7-7.el6_5" }
 
             it "runs rpm -u with the package source to upgrade" do
-              expect(provider).to receive(:shell_out!).with("rpm", "-U", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
               provider.action_install
             end
           end
@@ -178,7 +178,7 @@ describe Chef::Provider::Package::Rpm do
             let(:rpm_q_stdout) { "imagemagick-c++ 21.4-19.el6_5" }
 
             it "should run rpm -u --oldpackage with the package source to downgrade" do
-              expect(provider).to receive(:shell_out!).with("rpm", "-U", "--oldpackage", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "--oldpackage", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
               provider.action_install
             end
 
@@ -192,7 +192,7 @@ describe Chef::Provider::Package::Rpm do
 
           context "when at the desired version already" do
             it "does nothing when the correct version is installed" do
-              expect(provider).to_not receive(:shell_out!).with("rpm", "-i", "/tmp/imagemagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              expect(provider).to_not receive(:shell_out_compacted!).with("rpm", "-i", "/tmp/imagemagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
 
               provider.action_upgrade
             end
@@ -203,7 +203,7 @@ describe Chef::Provider::Package::Rpm do
             let(:rpm_q_stdout) { "imagemagick-c++ 0.5.4.7-7.el6_5" }
 
             it "runs rpm -u with the package source to upgrade" do
-              expect(provider).to receive(:shell_out!).with("rpm", "-U", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
               provider.action_upgrade
             end
           end
@@ -219,7 +219,7 @@ describe Chef::Provider::Package::Rpm do
             let(:rpm_q_stdout) { "imagemagick-c++ 21.4-19.el6_5" }
 
             it "should run rpm -u --oldpackage with the package source to downgrade" do
-              expect(provider).to receive(:shell_out!).with("rpm", "-U", "--oldpackage", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "--oldpackage", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
               provider.action_upgrade
             end
 
@@ -231,7 +231,7 @@ describe Chef::Provider::Package::Rpm do
           let(:action) { :remove }
 
           it "should remove the package" do
-            expect(provider).to receive(:shell_out!).with("rpm", "-e", "ImageMagick-c++-6.5.4.7-7.el6_5", timeout: 900)
+            expect(provider).to receive(:shell_out_compacted!).with("rpm", "-e", "ImageMagick-c++-6.5.4.7-7.el6_5", timeout: 900)
             provider.action_remove
           end
         end
@@ -357,7 +357,7 @@ describe Chef::Provider::Package::Rpm do
         describe "action install" do
 
           it "installs the package" do
-            expect(provider).to receive(:shell_out!).with("rpm", "-i", package_source, timeout: 900)
+            expect(provider).to receive(:shell_out_compacted!).with("rpm", "-i", package_source, timeout: 900)
 
             provider.action_install
           end
@@ -365,7 +365,7 @@ describe Chef::Provider::Package::Rpm do
           context "when custom resource options are given" do
             it "installs with custom options specified in the resource" do
               new_resource.options("--dbpath /var/lib/rpm")
-              expect(provider).to receive(:shell_out!).with("rpm", "--dbpath", "/var/lib/rpm", "-i", package_source, timeout: 900)
+              expect(provider).to receive(:shell_out_compacted!).with("rpm", "--dbpath", "/var/lib/rpm", "-i", package_source, timeout: 900)
               provider.action_install
             end
           end
@@ -376,7 +376,7 @@ describe Chef::Provider::Package::Rpm do
           let(:action) { :upgrade }
 
           it "installs the package" do
-            expect(provider).to receive(:shell_out!).with("rpm", "-i", package_source, timeout: 900)
+            expect(provider).to receive(:shell_out_compacted!).with("rpm", "-i", package_source, timeout: 900)
 
             provider.action_upgrade
           end
@@ -387,7 +387,7 @@ describe Chef::Provider::Package::Rpm do
           let(:action) { :remove }
 
           it "should do nothing" do
-            expect(provider).to_not receive(:shell_out!).with("rpm", "-e", "ImageMagick-c++-6.5.4.7-7.el6_5", timeout: 900)
+            expect(provider).to_not receive(:shell_out_compacted!).with("rpm", "-e", "ImageMagick-c++-6.5.4.7-7.el6_5", timeout: 900)
             provider.action_remove
           end
         end
@@ -413,7 +413,7 @@ describe Chef::Provider::Package::Rpm do
     it "should install from a path when the package is a path and the source is nil" do
       expect(new_resource.source).to eq("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
       provider.current_resource = current_resource
-      expect(provider).to receive(:shell_out!).with("rpm", "-i", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+      expect(provider).to receive(:shell_out_compacted!).with("rpm", "-i", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
       provider.install_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
     end
 
@@ -421,7 +421,7 @@ describe Chef::Provider::Package::Rpm do
       expect(new_resource.source).to eq("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
       current_resource.version("21.4-19.el5")
       provider.current_resource = current_resource
-      expect(provider).to receive(:shell_out!).with("rpm", "-U", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+      expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
       provider.upgrade_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
     end
   end

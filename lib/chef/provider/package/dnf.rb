@@ -121,7 +121,7 @@ class Chef
         private
 
         def resolve_source_to_version_obj
-          shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
+          shell_out!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
             # this is another case of committing the sin of doing some lightweight mangling of RPM versions in ruby -- but the output of the rpm command
             # does not match what the dnf library accepts.
             case line
@@ -167,7 +167,7 @@ class Chef
         end
 
         def dnf(*args)
-          shell_out_compact!("dnf", *args)
+          shell_out!("dnf", *args)
         end
 
         def safe_version_array

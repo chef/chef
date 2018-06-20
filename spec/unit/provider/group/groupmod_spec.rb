@@ -65,9 +65,9 @@ describe Chef::Provider::Group::Groupmod do
 
         it "logs a message and sets group's members to 'none', then removes existing group members" do
           expect(logger).to receive(:trace).with("group[wheel] setting group members to: none")
-          expect(@provider).to receive(:shell_out!).with("group", "mod", "-n", "wheel_bak", "wheel")
-          expect(@provider).to receive(:shell_out!).with("group", "add", "-g", "123", "-o", "wheel")
-          expect(@provider).to receive(:shell_out!).with("group", "del", "wheel_bak")
+          expect(@provider).to receive(:shell_out_compacted!).with("group", "mod", "-n", "wheel_bak", "wheel")
+          expect(@provider).to receive(:shell_out_compacted!).with("group", "add", "-g", "123", "-o", "wheel")
+          expect(@provider).to receive(:shell_out_compacted!).with("group", "del", "wheel_bak")
           @provider.manage_group
         end
       end
@@ -80,7 +80,7 @@ describe Chef::Provider::Group::Groupmod do
 
         it "logs a message and does not modify group membership" do
           expect(logger).to receive(:trace).with("group[wheel] not changing group members, the group has no members to add")
-          expect(@provider).not_to receive(:shell_out!)
+          expect(@provider).not_to receive(:shell_out_compacted!)
           @provider.manage_group
         end
       end
@@ -93,10 +93,10 @@ describe Chef::Provider::Group::Groupmod do
 
         it "updates group membership correctly" do
           allow(logger).to receive(:trace)
-          expect(@provider).to receive(:shell_out!).with("group", "mod", "-n", "wheel_bak", "wheel")
-          expect(@provider).to receive(:shell_out!).with("user", "mod", "-G", "wheel", "lobster")
-          expect(@provider).to receive(:shell_out!).with("group", "add", "-g", "123", "-o", "wheel")
-          expect(@provider).to receive(:shell_out!).with("group", "del", "wheel_bak")
+          expect(@provider).to receive(:shell_out_compacted!).with("group", "mod", "-n", "wheel_bak", "wheel")
+          expect(@provider).to receive(:shell_out_compacted!).with("user", "mod", "-G", "wheel", "lobster")
+          expect(@provider).to receive(:shell_out_compacted!).with("group", "add", "-g", "123", "-o", "wheel")
+          expect(@provider).to receive(:shell_out_compacted!).with("group", "del", "wheel_bak")
           @provider.manage_group
         end
       end
@@ -111,10 +111,10 @@ describe Chef::Provider::Group::Groupmod do
       end
 
       it "should run a group add command and some user mod commands" do
-        expect(@provider).to receive(:shell_out!).with("group", "add", "-g", "123", "wheel")
-        expect(@provider).to receive(:shell_out!).with("user", "mod", "-G", "wheel", "lobster")
-        expect(@provider).to receive(:shell_out!).with("user", "mod", "-G", "wheel", "rage")
-        expect(@provider).to receive(:shell_out!).with("user", "mod", "-G", "wheel", "fist")
+        expect(@provider).to receive(:shell_out_compacted!).with("group", "add", "-g", "123", "wheel")
+        expect(@provider).to receive(:shell_out_compacted!).with("user", "mod", "-G", "wheel", "lobster")
+        expect(@provider).to receive(:shell_out_compacted!).with("user", "mod", "-G", "wheel", "rage")
+        expect(@provider).to receive(:shell_out_compacted!).with("user", "mod", "-G", "wheel", "fist")
         @provider.create_group
       end
     end
@@ -128,7 +128,7 @@ describe Chef::Provider::Group::Groupmod do
       end
 
       it "should run a group del command" do
-        expect(@provider).to receive(:shell_out!).with("group", "del", "wheel")
+        expect(@provider).to receive(:shell_out_compacted!).with("group", "del", "wheel")
         @provider.remove_group
       end
     end

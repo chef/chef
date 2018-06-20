@@ -171,7 +171,7 @@ EOS
         # @param args [String] variable number of string arguments
         # @return [Mixlib::ShellOut] object returned from shell_out!
         def choco_command(*args)
-          shell_out_with_timeout!(args_to_string(choco_exe, *args), returns: new_resource.returns)
+          shell_out!(args_to_string(choco_exe, *args), returns: new_resource.returns)
         end
 
         # Use the available_packages Hash helper to create an array suitable for
