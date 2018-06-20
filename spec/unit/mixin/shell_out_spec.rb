@@ -408,7 +408,7 @@ describe Chef::Mixin::ShellOut do
       end
     end
 
-    describe "deprecated timeouts" do
+    describe "deprecated timeouts" do # Chef 15: delete me
       let(:new_resource) { Chef::Resource::Package.new("foo") }
       let(:provider) { new_resource.provider_for_action(:install) }
 
@@ -428,7 +428,7 @@ describe Chef::Mixin::ShellOut do
         end
         it "#{method} overrides the new_resource.timeout with the timeout option" do
           new_resource.timeout(99)
-          expect(provider).to receive(stubbed_method).with("foo", timeout: 1)
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 99)
           provider.send(method, "foo", timeout: 1)
         end
         it "#{method} defaults to 900 seconds and preserves options" do
@@ -441,7 +441,7 @@ describe Chef::Mixin::ShellOut do
         end
         it "#{method} overrides the new_resource.timeout with the timeout option and preseves options" do
           new_resource.timeout(99)
-          expect(provider).to receive(stubbed_method).with("foo", timeout: 1, env: nil)
+          expect(provider).to receive(stubbed_method).with("foo", timeout: 99, env: nil)
           provider.send(method, "foo", timeout: 1, env: nil)
         end
       end
