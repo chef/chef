@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.19 -->
-## [v14.3.19](https://github.com/chef/chef/tree/v14.3.19) (2018-06-21)
+<!-- latest_release 14.3.20 -->
+## [v14.3.20](https://github.com/chef/chef/tree/v14.3.20) (2018-06-21)
 
 #### Merged Pull Requests
-- Rework the credentials file system to support any config keys. [#7387](https://github.com/chef/chef/pull/7387) ([coderanger](https://github.com/coderanger))
+- deprecate old shell_out APIs [#7382](https://github.com/chef/chef/pull/7382) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- deprecate old shell_out APIs [#7382](https://github.com/chef/chef/pull/7382) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.20 -->
 - Rework the credentials file system to support any config keys. [#7387](https://github.com/chef/chef/pull/7387) ([coderanger](https://github.com/coderanger)) <!-- 14.3.19 -->
 - Unification of shell_out APIs [#7372](https://github.com/chef/chef/pull/7372) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.18 -->
 - Remove the unused audit test cookbook [#7378](https://github.com/chef/chef/pull/7378) ([tas50](https://github.com/tas50)) <!-- 14.3.17 -->
