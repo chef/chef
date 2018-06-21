@@ -942,7 +942,7 @@ describe "Chef::Provider::Package - Multi" do
     end
 
     [ :shell_out_with_timeout, :shell_out_with_timeout! ].each do |method|
-      stubbed_method = method == :shell_out_with_timeout! ? :shell_out! : :shell_out
+      stubbed_method = method == :shell_out_with_timeout! ? :shell_out_compacted! : :shell_out_compacted
       [ %w{command arg1 arg2}, "command arg1 arg2" ].each do |command|
         it "#{method} defaults to 900 seconds" do
           expect(provider).to receive(stubbed_method).with(*command, timeout: 900)

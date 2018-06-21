@@ -21,6 +21,10 @@ describe Chef::Mixin::ShellOut do
   include Chef::Mixin::ShellOut
 
   describe "shell_out_with_systems_locale" do
+    before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    end
+
     describe "when environment['LC_ALL'] is not set" do
       it "should use the default shell_out setting" do
         cmd = if windows?

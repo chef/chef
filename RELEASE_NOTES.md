@@ -1,5 +1,31 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+## Simplification of `shell_out` APIs
+
+The following methods are deprecated:
+
+- `shell_out_with_systems_locale`
+- `shell_out_with_timeout`
+- `shell_out_compact`
+- `shell_out_compact_timeout`
+- `shell_out_with_systems_locale!`
+- `shell_out_with_timeout!`
+- `shell_out_compact!`
+- `shell_out_compact_timeout!`
+
+The functionality of `shell_out_with_systems_locale` has been implemented using the `default_env: false`
+option that removes the PATH and locale mangling that has been the default behavior of `shell_out`.
+
+The functionality of `shell_out_compact` has been folded into `shell_out`.  The `shell_out` API when called
+with varargs has its arguments flatted, compacted and coerced to strings.  This style of calling is encouraged
+over using strings and building up commands using `join(" ")` since it avoids shell interpolation and edge
+conditions in the construction of spaces between arguments.  The varargs form is still not supported on
+Windows.
+
+The functionality of `shell_out*timeout` has also been folded into `shell_out`.  Users writing Custom Resources
+should be explicit for Chef-14:  `shell_out!("whatever", timeout: new_resource.timeout)` which will become
+automatic in Chef-15.
+
 ## Silencing deprecation warnings
 
 While deprecation warnings have been great for the Chef community to ensure
