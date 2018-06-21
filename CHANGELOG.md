@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.18 -->
-## [v14.3.18](https://github.com/chef/chef/tree/v14.3.18) (2018-06-19)
+<!-- latest_release 14.3.19 -->
+## [v14.3.19](https://github.com/chef/chef/tree/v14.3.19) (2018-06-21)
 
 #### Merged Pull Requests
-- Unification of shell_out APIs [#7372](https://github.com/chef/chef/pull/7372) ([lamont-granquist](https://github.com/lamont-granquist))
-- Remove the unused audit test cookbook [#7378](https://github.com/chef/chef/pull/7378) ([tas50](https://github.com/tas50))
+- Rework the credentials file system to support any config keys. [#7387](https://github.com/chef/chef/pull/7387) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Rework the credentials file system to support any config keys. [#7387](https://github.com/chef/chef/pull/7387) ([coderanger](https://github.com/coderanger)) <!-- 14.3.19 -->
 - Unification of shell_out APIs [#7372](https://github.com/chef/chef/pull/7372) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.18 -->
 - Remove the unused audit test cookbook [#7378](https://github.com/chef/chef/pull/7378) ([tas50](https://github.com/tas50)) <!-- 14.3.17 -->
 - Silence deprecation warnings [#7375](https://github.com/chef/chef/pull/7375) ([coderanger](https://github.com/coderanger)) <!-- 14.3.17 -->
