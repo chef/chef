@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -215,6 +215,10 @@ class Chef
       def to_s
         "Deprecated resource property used from #{location}\n\n  #{message}\n\nPlease consult the resource documentation for more information."
       end
+    end
+
+    class ShellOut < Base
+      target 26
     end
 
     class Generic < Base

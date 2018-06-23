@@ -147,31 +147,36 @@ module ChefConfig
     end
 
     def apply_credentials(creds, profile)
+      # Store the profile used in case other things want it.
       Config.profile ||= profile
+      # Validate the credentials data.
       if creds.key?("node_name") && creds.key?("client_name")
         raise ChefConfig::ConfigurationError, "Do not specify both node_name and client_name. You should prefer client_name."
       end
-      Config.node_name = creds.fetch("node_name") if creds.key?("node_name")
-      Config.node_name = creds.fetch("client_name") if creds.key?("client_name")
-      Config.chef_server_url = creds.fetch("chef_server_url") if creds.key?("chef_server_url")
-      Config.validation_client_name = creds.fetch("validation_client_name") if creds.key?("validation_client_name")
-
-      Config.knife.merge!(Hash[creds.fetch("knife", {}).map { |k, v| [k.to_sym, v] }])
-
-      extract_key(creds, "validation_key", :validation_key, :validation_key_contents)
-      extract_key(creds, "validator_key", :validation_key, :validation_key_contents)
-      extract_key(creds, "client_key", :client_key, :client_key_contents)
+      # Load credentials data into the Chef configuration.
+      creds.each do |key, value|
+        case key.to_s
+        when "client_name"
+          # Special case because it's weird to set your username via `node_name`.
+          Config.node_name = value
+        when "validation_key", "validator_key"
+          extract_key(value, :validation_key, :validation_key_contents)
+        when "client_key"
+          extract_key(value, :client_key, :client_key_contents)
+        when "knife"
+          Config.knife.merge!(Hash[value.map { |k, v| [k.to_sym, v] }])
+        else
+          Config[key.to_sym] = value
+        end
+      end
       @credentials_found = true
     end
 
-    def extract_key(creds, name, config_path, config_contents)
-      return unless creds.has_key?(name)
-
-      val = creds.fetch(name)
-      if val.start_with?("-----BEGIN RSA PRIVATE KEY-----")
-        Config.send(config_contents, val)
+    def extract_key(key_value, config_path, config_contents)
+      if key_value.start_with?("-----BEGIN RSA PRIVATE KEY-----")
+        Config.send(config_contents, key_value)
       else
-        abs_path = Pathname.new(val).expand_path(home_chef_dir)
+        abs_path = Pathname.new(key_value).expand_path(home_chef_dir)
         Config.send(config_path, abs_path)
       end
     end

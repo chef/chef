@@ -394,6 +394,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 node_name = 'barney'
 client_key = "barney_rubble.pem"
 chef_server_url = "https://api.chef.io/organizations/bedrock"
+invalid_config_option1234 = "foobar"
 EOH
           content
         end
@@ -403,6 +404,7 @@ EOH
           expect(ChefConfig::Config.chef_server_url).to eq("https://api.chef.io/organizations/bedrock")
           expect(ChefConfig::Config.client_key.to_s).to eq("#{home}/.chef/barney_rubble.pem")
           expect(ChefConfig::Config.profile.to_s).to eq("default")
+          expect(ChefConfig::Config[:invalid_config_option1234]).to eq("foobar")
         end
       end
 

@@ -668,27 +668,12 @@ class Chef
         end
       end
 
-      def shell_out_with_timeout(*command_args) # FIXME: deprecated
-        shell_out(*add_timeout_option(command_args))
+      def shell_out_with_timeout(*command_args)
+        shell_out_compact_timeout(*command_args)
       end
 
-      def shell_out_with_timeout!(*command_args) # FIXME: deprecated
-        shell_out!(*add_timeout_option(command_args))
-      end
-
-      def add_timeout_option(command_args)
-        # this is deprecated but its not quite done yet
-        #Chef.deprecated(:package_misc, "shell_out_with_timeout and add_timeout_option are deprecated methods, use shell_out instead")
-        args = command_args.dup
-        if args.last.is_a?(Hash)
-          options = args.pop.dup
-          options[:timeout] = new_resource.timeout if new_resource.timeout
-          options[:timeout] = 900 unless options.key?(:timeout)
-          args << options
-        else
-          args << { timeout: new_resource.timeout ? new_resource.timeout : 900 }
-        end
-        args
+      def shell_out_with_timeout!(*command_args)
+        shell_out_compact_timeout!(*command_args)
       end
     end
   end
