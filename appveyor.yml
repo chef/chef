@@ -25,7 +25,6 @@ install:
   - winrm quickconfig -q
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - echo %PATH%
-  - copy c:\projects\chef\distro\powershell\chef\*.dll C:\Ruby%ruby_version%\bin /y
   - appveyor DownloadFile http://curl.haxx.se/ca/cacert.pem -FileName C:\cacert.pem
   - set SSL_CERT_FILE=C:\cacert.pem
   - SET BUNDLE_WITHOUT=server:docgen:maintenance:pry:travis:integration:ci
