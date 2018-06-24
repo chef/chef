@@ -78,13 +78,14 @@ class Chef
               end
             else
               # It's a dotted path string.
-              output_data[filter] = filter.split(/\./).inject(config_data) do |memo, filter_part|
-                if memo.is_a?(Hash)
-                  memo[filter_part.to_sym]
-                else
-                  nil
-                end
+              filter_parts = filter.split(/\./)
+              extract = lambda do |memo, filter_part|
+                memo.is_a?(Hash) ? memo[filter_part.to_sym] : nil
               end
+              # Check against both config_data and all of the data, so that even
+              # in non-all mode, if you ask for a key that isn't in the non-all
+              # data, it will check against the broader set.
+              output_data[filter] = filter_parts.inject(config_data, &extract) || filter_parts.inject(Chef::Config.save(true), &extract)
             end
           end
         end
