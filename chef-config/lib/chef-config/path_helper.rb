@@ -172,6 +172,18 @@ module ChefConfig
       Pathname.new(cleanpath(to)).relative_path_from(Pathname.new(cleanpath(from)))
     end
 
+    # Set the project-specific home directory environment variable.
+    #
+    # This can be used to allow per-tool home directory aliases like $KNIFE_HOME.
+    #
+    # @param [env_var] Key for an environment variable to use.
+    # @return [nil]
+    def self.per_tool_home_environment=(env_var)
+      @@per_tool_home_environment = env_var
+      # Reset this in case .home was already called.
+      @@home_dir = nil
+    end
+
     # Retrieves the "home directory" of the current user while trying to ascertain the existence
     # of said directory.  The path returned uses / for all separators (the ruby standard format).
     # If the home directory doesn't exist or an error is otherwise encountered, nil is returned.
@@ -185,7 +197,9 @@ module ChefConfig
     # Home-path discovery is performed once.  If a path is discovered, that value is memoized so
     # that subsequent calls to home_dir don't bounce around.
     #
-    # See self.all_homes.
+    # @see all_homes
+    # @param args [Array<String>] Path components to look for under the home directory.
+    # @return [String]
     def self.home(*args)
       @@home_dir ||= all_homes { |p| break p }
       if @@home_dir
@@ -203,6 +217,8 @@ module ChefConfig
     # if no block is provided.
     def self.all_homes(*args)
       paths = []
+      paths << ENV[@@per_tool_home_environment] if defined?(@@per_tool_home_environment) && @@per_tool_home_environment && ENV[@@per_tool_home_environment]
+      paths << ENV["CHEF_HOME"] if ENV["CHEF_HOME"]
       if ChefConfig.windows?
         # By default, Ruby uses the the following environment variables to determine Dir.home:
         # HOME

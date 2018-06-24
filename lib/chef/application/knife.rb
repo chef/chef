@@ -154,6 +154,7 @@ class Chef::Application::Knife < Chef::Application
 
   # Run knife
   def run
+    ChefConfig::PathHelper.per_tool_home_environment = "KNIFE_HOME"
     Mixlib::Log::Formatter.show_time = false
     validate_and_parse_options
     quiet_traps
