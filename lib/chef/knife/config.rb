@@ -89,6 +89,15 @@ class Chef
           end
         end
 
+        # Fix up some values.
+        output_data.each do |key, value|
+          if value == STDOUT
+            output_data[key] = "STDOUT"
+          elsif value == STDERR
+            output_data[key] = "STDERR"
+          end
+        end
+
         # Show the data.
         if config[:raw]
           output_data.each_value do |value|
