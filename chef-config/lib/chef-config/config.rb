@@ -286,7 +286,7 @@ module ChefConfig
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
           secondary_cache_path = PathHelper.join(user_home, ".chef")
-          ChefConfig.logger.info("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
+          ChefConfig.logger.trace("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
           secondary_cache_path
         else
           primary_cache_path
