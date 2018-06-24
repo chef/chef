@@ -1,5 +1,27 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+## New `knife config` command
+
+The `knife config` command has been added to help with debugging configuration
+issues with `knife` and other tools that use the `knife.rb` file.
+
+With no arguments, it will display all options you've set:
+
+```bash
+$ knife config
+Loading from configuration file /Users/.../.chef/knife.rb
+chef_server_url: https://...
+client_key:      /Users/.../.chef/user.pem
+config_file:     /Users/.../.chef/knife.rb
+log_level:       warn
+log_location:    STDERR
+node_name:       ...
+validation_key:
+```
+
+You can also pass specific keys to only display those `knife config node_name client_key`,
+or use `--all` to display everything (including options that are using the default value).
+
 ## Simplification of `shell_out` APIs
 
 The following methods are deprecated:
