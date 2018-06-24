@@ -656,7 +656,15 @@ module ChefConfig
     #
     # If chef-zero is enabled, this defaults to nil (no authentication).
     default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/validation.pem") }
-    default :validation_client_name, "chef-validator"
+    default :validation_client_name do
+      # If the URL is set and looks like a normal Chef Server URL, extract the
+      # org name and use that as part of the default.
+      if chef_server_url.to_s =~ %r{/organizations/(.*)$}
+        "#{$1}-validator"
+      else
+        "chef-validator"
+      end
+    end
 
     default :validation_key_contents, nil
     # When creating a new client via the validation_client account, Chef 11

@@ -1191,4 +1191,22 @@ RSpec.describe ChefConfig::Config do
 
   end
 
+  describe "validation_client_name" do
+    context "with a normal server URL" do
+      before { ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/myorg" }
+
+      it "sets the validation client to myorg-validator" do
+        expect(ChefConfig::Config[:validation_client_name]).to eq "myorg-validator"
+      end
+    end
+
+    context "with an unusual server URL" do
+      before { ChefConfig::Config[:chef_server_url] = "https://chef.example/myorg" }
+
+      it "sets the validation client to chef-validator" do
+        expect(ChefConfig::Config[:validation_client_name]).to eq "chef-validator"
+      end
+    end
+  end
+
 end
