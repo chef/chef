@@ -970,10 +970,10 @@ module ChefConfig
     # TODO add some post-file-parsing logic that automatically calls this so
     # users don't have to
     def self.export_proxies
-      export_proxy("http", http_proxy, http_proxy_user, http_proxy_pass) if has_key?(:http_proxy)
-      export_proxy("https", https_proxy, https_proxy_user, https_proxy_pass) if has_key?(:https_proxy)
-      export_proxy("ftp", ftp_proxy, ftp_proxy_user, ftp_proxy_pass) if has_key?(:ftp_proxy)
-      export_no_proxy(no_proxy) if has_key?(:no_proxy)
+      export_proxy("http", http_proxy, http_proxy_user, http_proxy_pass) if has_key?(:http_proxy) && http_proxy
+      export_proxy("https", https_proxy, https_proxy_user, https_proxy_pass) if has_key?(:https_proxy) && https_proxy
+      export_proxy("ftp", ftp_proxy, ftp_proxy_user, ftp_proxy_pass) if has_key?(:ftp_proxy) && ftp_proxy
+      export_no_proxy(no_proxy) if has_key?(:no_proxy) && no_proxy
     end
 
     # Character classes for Addressable
