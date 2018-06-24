@@ -24,7 +24,7 @@ require "chef/chef_fs/file_system_cache"
 
 module KnifeSupport
   DEBUG = ENV["DEBUG"]
-  def knife(*args, input: nil, &block)
+  def knife(*args, input: nil, instance_filter: nil)
     # Allow knife('role from file roles/blah.json') rather than requiring the
     # arguments to be split like knife('role', 'from', 'file', 'roles/blah.json')
     # If any argument will have actual spaces in it, the long form is required.
@@ -92,7 +92,7 @@ module KnifeSupport
         $__KNIFE_INTEGRATION_FAILSAFE_CHECK = "ole"
 
         # Allow tweaking the knife instance before configuration.
-        yield(instance) if block
+        instance_filter.call(instance) if instance_filter
 
         instance.configure_chef
 

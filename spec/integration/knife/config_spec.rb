@@ -30,14 +30,14 @@ describe "knife config", :workstation do
   let(:cmd_args) { [] }
 
   subject do
-    cmd = knife("config", *cmd_args) do |instance|
+    cmd = knife("config", *cmd_args, instance_filter: lambda { |instance|
       # Clear the stub set up in KnifeSupport.
       allow(File).to receive(:file?).and_call_original
       # Lies, damn lies, and config files. We need to allow normal config loading
       # behavior to be able to test stuff.
       instance.config.delete(:config_file)
       $__KNIFE_INTEGRATION_FAILSAFE_CHECK << " ole"
-    end
+    })
     cmd.stdout
   end
 
