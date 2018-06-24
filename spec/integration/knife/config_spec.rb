@@ -16,10 +16,6 @@
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
-require "pry"
-Pry.config.history.should_load = false
-Pry.config.history.should_save = false
-
 describe "knife config", :workstation do
   include IntegrationSupport
   include KnifeSupport
