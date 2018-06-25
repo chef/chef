@@ -28,7 +28,7 @@ module ChefConfig
 
         return unless File.file?(credentials_file)
 
-        context = File.read(context_file) if File.file?(context_file)
+        context = File.read(context_file).strip if File.file?(context_file)
 
         environment = ENV.fetch("CHEF_PROFILE", nil)
 
