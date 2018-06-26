@@ -17,6 +17,7 @@
 
 require "ffi"
 require "chef/json_compat"
+
 class Chef
   class PowerShell
     extend FFI::Library
