@@ -31,40 +31,22 @@ class Chef
       def utf8_to_wide(ustring)
         # ensure it is actually UTF-8
         # Ruby likes to mark binary data as ASCII-8BIT
-        ustring = (ustring + "").force_encoding("UTF-8") if ustring.respond_to?(:force_encoding) && ustring.encoding.name != "UTF-8"
+        ustring = (ustring + "").force_encoding("UTF-8")
 
         # ensure we have the double-null termination Windows Wide likes
         ustring += "\000\000" if ustring.length == 0 || ustring[-1].chr != "\000"
 
         # encode it all as UTF-16LE AKA Windows Wide Character AKA Windows Unicode
-        ustring = begin
-          if ustring.respond_to?(:encode)
-            ustring.encode("UTF-16LE")
-          else
-            require "iconv"
-            Iconv.conv("UTF-16LE", "UTF-8", ustring)
-          end
-        end
-        ustring
+        ustring.encode("UTF-16LE")
       end
 
       def wide_to_utf8(wstring)
         # ensure it is actually UTF-16LE
         # Ruby likes to mark binary data as ASCII-8BIT
-        wstring = wstring.force_encoding("UTF-16LE") if wstring.respond_to?(:force_encoding)
+        wstring = wstring.force_encoding("UTF-16LE")
 
-        # encode it all as UTF-8
-        wstring = begin
-          if wstring.respond_to?(:encode)
-            wstring.encode("UTF-8")
-          else
-            require "iconv"
-            Iconv.conv("UTF-8", "UTF-16LE", wstring)
-          end
-        end
-        # remove trailing CRLF and NULL characters
-        wstring.strip!
-        wstring
+        # encode it all as UTF-8 and remove trailing CRLF and NULL characters
+        wstring.encode("UTF-8").strip
       end
 
     end
