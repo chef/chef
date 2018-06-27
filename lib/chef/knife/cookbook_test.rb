@@ -1,5 +1,4 @@
 #
-#
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Matthew Kent (<mkent@magoazul.com>)
 # Copyright:: Copyright 2009-2018, Chef Software Inc.
@@ -18,6 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 require "chef/knife"
 
 class Chef
