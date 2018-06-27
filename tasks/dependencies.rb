@@ -40,7 +40,6 @@ namespace :dependencies do
   task :update_ci => %w{
                     dependencies:update_gemfile_lock
                     dependencies:update_omnibus_gemfile_lock
-                    dependencies:update_acceptance_gemfile_lock
                     dependencies:update_audit_tests_berksfile_lock
                   }
 
@@ -83,7 +82,6 @@ namespace :dependencies do
 
   bundle_update_locked_multiplatform_task :update_gemfile_lock, "."
   bundle_update_locked_multiplatform_task :update_omnibus_gemfile_lock, "omnibus"
-  bundle_update_task :update_acceptance_gemfile_lock, "acceptance"
   berks_update_task :update_audit_tests_berksfile_lock, "kitchen-tests/cookbooks/audit_test"
 
 end

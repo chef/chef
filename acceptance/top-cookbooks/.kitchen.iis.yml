@@ -1,4 +1,0 @@
-suites:
-  - name: iis
-    run_list: ["recipe[iis::default]"]
-    includes: [windows-2012r2]
