@@ -41,7 +41,7 @@ CONFIG
   # we save off the ENV and set ALLUSERSPROFILE so these specs will work on *nix and non-C drive Windows installs
   before(:each) do
     @original_env = ENV.to_hash
-    ENV['ALLUSERSPROFILE'] = 'C:\ProgramData'
+    ENV["ALLUSERSPROFILE"] = 'C:\ProgramData'
   end
 
   after(:each) do
