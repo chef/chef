@@ -3,6 +3,7 @@
 ## Unreleased
 
 #### Merged Pull Requests
+- Remove sudo/gcc-c++ package installs from kitchen tests [#7398](https://github.com/chef/chef/pull/7398) ([tas50](https://github.com/tas50))
 - Remove the existing acceptance testing framework [#7399](https://github.com/chef/chef/pull/7399) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Remove sudo/gcc-c++ package installs from kitchen tests [#7398](https://github.com/chef/chef/pull/7398) ([tas50](https://github.com/tas50)) <!-- 14.3.21 -->
 - Remove the existing acceptance testing framework [#7399](https://github.com/chef/chef/pull/7399) ([tas50](https://github.com/tas50)) <!-- 14.3.21 -->
 - Add chocolatey_config and chocolatey_source resources [#7388](https://github.com/chef/chef/pull/7388) ([tas50](https://github.com/tas50)) <!-- 14.3.21 -->
 - Add missing knife license headers [#7397](https://github.com/chef/chef/pull/7397) ([tas50](https://github.com/tas50)) <!-- 14.3.20 -->
