@@ -43,7 +43,7 @@ class Chef
       def fetch_source_element(id)
         require "rexml/document"
 
-        config_file = 'C:\ProgramData\chocolatey\config\chocolatey.config'
+        config_file = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\config\\chocolatey.config"
         raise "Could not find the Chocolatey config at #{config_file}!" unless ::File.exist?(config_file)
 
         config_contents = REXML::Document.new(::File.read(config_file))
@@ -75,7 +75,7 @@ class Chef
         # @param [String] action the name of the action to perform
         # @return [String] the choco source command string
         def choco_cmd(action)
-          cmd = "C:\\ProgramData\\chocolatey\\bin\\choco source #{action} -n \"#{new_resource.source_name}\""
+          cmd = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\bin\\choco source #{action} -n \"#{new_resource.source_name}\""
           if action == "add"
             cmd << " -s #{new_resource.source} --priority=#{new_resource.priority}"
             cmd << " --bypassproxy" if new_resource.bypass_proxy

@@ -38,6 +38,17 @@ describe Chef::Resource::ChocolateySource do
 CONFIG
   end
 
+  # we save off the ENV and set ALLUSERSPROFILE so these specs will work on *nix and non-C drive Windows installs
+  before(:each) do
+    @original_env = ENV.to_hash
+    ENV['ALLUSERSPROFILE'] = 'C:\ProgramData'
+  end
+
+  after(:each) do
+    ENV.clear
+    ENV.update(@original_env)
+  end
+
   it "has a resource name of :chocolatey_source" do
     expect(resource.resource_name).to eql(:chocolatey_source)
   end
