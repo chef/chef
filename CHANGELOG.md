@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 14.3.21 -->
+## [v14.3.21](https://github.com/chef/chef/tree/v14.3.21) (2018-06-27)
 
 #### Merged Pull Requests
+- Add chocolatey_config and chocolatey_source resources [#7388](https://github.com/chef/chef/pull/7388) ([tas50](https://github.com/tas50))
 - Add missing knife license headers [#7397](https://github.com/chef/chef/pull/7397) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Add chocolatey_config and chocolatey_source resources [#7388](https://github.com/chef/chef/pull/7388) ([tas50](https://github.com/tas50)) <!-- 14.3.21 -->
 - Add missing knife license headers [#7397](https://github.com/chef/chef/pull/7397) ([tas50](https://github.com/tas50)) <!-- 14.3.20 -->
 - deprecate old shell_out APIs [#7382](https://github.com/chef/chef/pull/7382) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.20 -->
 - Rework the credentials file system to support any config keys. [#7387](https://github.com/chef/chef/pull/7387) ([coderanger](https://github.com/coderanger)) <!-- 14.3.19 -->
