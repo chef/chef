@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require "chef/knife"
+
 class Chef
   class Knife
     class EnvironmentFromFile < Knife
