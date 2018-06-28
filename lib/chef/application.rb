@@ -205,7 +205,7 @@ class Chef
     # Based on config and whether or not STDOUT is a tty, should we setup a
     # secondary logger for stdout?
     def want_additional_logger?
-      !( chef_config[:log_location].is_a?(IO) && chef_config[:log_location].tty? ) && !chef_config[:daemonize]
+      ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && !Chef::Config[:daemonize]
     end
 
     def configure_stdout_logger
