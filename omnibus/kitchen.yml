@@ -131,6 +131,8 @@ suites:
   - name: chef
     attributes:
       omnibus:
+        toolchain_channel: stable
+        toolchain_version: latest
         install_dir: /opt/chef
     run_list:
       - omnibus::default
