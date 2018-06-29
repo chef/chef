@@ -57,7 +57,7 @@ module Win32
 
     end
 
-    if RUBY_VERSION =~ /^2\.1/
+    if RUBY_VERSION.match?(/^2\.1/)
       # ::Win32::Registry#write does not correctly handle data in Ruby 2.1
       # This bug is _reportedly_ resolved in Ruby 2.1.7 and 2.2.3
       # but fails in appveyor on 2.1.8 unless we keep applying this monkeypatch

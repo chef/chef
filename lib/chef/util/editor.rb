@@ -61,7 +61,7 @@ class Chef
         count = 0
 
         @lines.map! do |line|
-          if line.match(search)
+          if line.match?(search)
             count += 1
             line.gsub!(search, replace)
           else
@@ -76,7 +76,7 @@ class Chef
         count = 0
 
         @lines.map! do |line|
-          if line.match(search)
+          if line.match?(search)
             count += 1
             replace
           else

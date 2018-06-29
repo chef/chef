@@ -161,7 +161,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
       dsc = conf_man.send(:configuration_code, "archive{}", "hello", {})
       found_configuration = false
       dsc.split(";").each do |command|
-        if command.downcase =~ /\s*configuration\s+'hello'\s*\{\s*node\s+'localhost'\s*\{\s*archive\s*\{\s*\}\s*\}\s*\}\s*/
+        if /\s*configuration\s+'hello'\s*\{\s*node\s+'localhost'\s*\{\s*archive\s*\{\s*\}\s*\}\s*\}\s*/.match?(command.downcase)
           found_configuration = true
         end
       end

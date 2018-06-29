@@ -120,7 +120,7 @@ class Chef::Application::Client < Chef::Application
       :description =>
         "Daemonize the process. Accepts an optional integer which is the " \
         "number of seconds to wait before the first daemonized run.",
-      :proc => lambda { |wait| wait =~ /^\d+$/ ? wait.to_i : true }
+      :proc => lambda { |wait| /^\d+$/.match?(wait) ? wait.to_i : true }
   end
 
   option :pid_file,
@@ -535,7 +535,7 @@ class Chef::Application::Client < Chef::Application
 
   def fetch_recipe_tarball(url, path)
     Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
-    if url =~ URI.regexp
+    if url&.match?(URI.regexp)
       File.open(path, "wb") do |f|
         open(url) do |r|
           f.write(r.read)

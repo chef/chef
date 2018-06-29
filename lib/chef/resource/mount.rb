@@ -40,7 +40,7 @@ class Chef
       property :device_type, [String, Symbol],
         coerce: proc { |arg| arg.kind_of?(String) ? arg.to_sym : arg },
         default: :device,
-        equal_to: RUBY_PLATFORM =~ /solaris/i ? %i{ device } : %i{ device label uuid }
+        equal_to: RUBY_PLATFORM.match?(/solaris/i) ? %i{ device } : %i{ device label uuid }
 
       property :fsck_device, String, default: "-"
       property :fstype, [String, nil], default: "auto"

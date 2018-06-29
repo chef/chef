@@ -17,7 +17,7 @@
 #
 
 require "chef/provider/mount"
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
   require "chef/util/windows/net_use"
   require "chef/util/windows/volume"
 end
@@ -30,7 +30,7 @@ class Chef
         provides :mount, os: "windows"
 
         def is_volume(name)
-          name =~ /^\\\\\?\\Volume\{[\w-]+\}\\$/ ? true : false
+          /^\\\\\?\\Volume\{[\w-]+\}\\$/.match?(name) ? true : false
         end
 
         def initialize(new_resource, run_context)
