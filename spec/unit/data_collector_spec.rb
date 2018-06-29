@@ -2,7 +2,7 @@
 # Author:: Adam Leff (<adamleff@chef.io)
 # Author:: Ryan Cragun (<ryan@chef.io>)
 #
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -804,6 +804,7 @@ describe Chef::DataCollector::Reporter do
 
     context "when valid output_locations are provided" do
       it "does not raise an exception" do
+        expect(reporter).to receive(:open).with("data_collection.json", "a")
         Chef::Config[:data_collector][:output_locations] = { :urls => ["http://data_collector"], :files => ["data_collection.json"] }
         expect { reporter.send(:validate_data_collector_output_locations!) }.not_to raise_error(Chef::Exceptions::ConfigurationError)
       end
