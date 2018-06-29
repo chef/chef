@@ -32,3 +32,5 @@ Lint/ShadowedException:
 Layout/AlignHash:
   Enabled: true
   EnforcedLastArgumentHashStyle: ignore_implicit
+Performance/UnneededSort:
+  Enabled: true
