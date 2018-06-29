@@ -1,8 +1,8 @@
 #
-# Cookbook:: base
+# Cookbook:: end_to_end
 # Recipe:: default
 #
-# Copyright:: 2014-2017, Chef Software, Inc.
+# Copyright:: 2014-2018, Chef Software, Inc.
 #
 
 hostname "chef-travis-ci.chef.io"
