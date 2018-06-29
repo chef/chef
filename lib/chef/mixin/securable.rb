@@ -172,14 +172,14 @@ class Chef
         end
       end
 
-      if RUBY_PLATFORM =~ /mswin|mingw|windows/
+      if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
         include WindowsSecurableAttributes
       end
 
       # Callback that fires when included; will extend the including class
       # with WindowsMacros and define #rights and #deny_rights on it.
       def self.included(including_class)
-        if RUBY_PLATFORM =~ /mswin|mingw|windows/
+        if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
           including_class.extend(WindowsMacros)
           # create a default 'rights' attribute
           including_class.rights_attribute(:rights)

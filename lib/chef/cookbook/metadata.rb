@@ -373,7 +373,7 @@ class Chef
       def recipes_from_cookbook_version(cookbook)
         cookbook.fully_qualified_recipe_names.map do |recipe_name|
           unqualified_name =
-            if recipe_name =~ /::default$/
+            if /::default$/.match?(recipe_name)
               name.to_s
             else
               recipe_name

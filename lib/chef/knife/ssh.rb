@@ -366,7 +366,7 @@ class Chef
               raise ArgumentError, "Cannot execute #{command}" unless success
               ch.on_data do |ichannel, data|
                 print_data(ichannel.connection[:prefix], data)
-                if data =~ /^knife sudo password: /
+                if /^knife sudo password: /.match?(data)
                   print_data(ichannel.connection[:prefix], "\n")
                   ichannel.send_data("#{get_password}\n")
                 end

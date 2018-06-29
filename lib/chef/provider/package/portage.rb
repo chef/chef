@@ -70,7 +70,7 @@ class Chef
 
           if pkginfo.exitstatus != 0
             pkginfo.stderr.each_line do |line|
-              if line =~ /[Uu]nqualified atom .*match.* multiple/
+              if /[Uu]nqualified atom .*match.* multiple/.match?(line)
                 raise_error_for_query("matched multiple packages (please specify a category):\n#{pkginfo.inspect}")
               end
             end
@@ -87,7 +87,7 @@ class Chef
           end
 
           pkginfo.stdout.chomp!
-          if pkginfo.stdout =~ /-r\d+$/
+          if /-r\d+$/.match?(pkginfo.stdout)
             # Latest/Best version of the package is a revision (-rX).
             @candidate_version = pkginfo.stdout.split(/(?<=-)/).last(2).join
           else

@@ -1,4 +1,5 @@
 AllCops:
+  TargetRubyVersion: 2.4
   Exclude:
     - "spec/data/**/*"
     - "vendor/**/*"
@@ -32,3 +33,5 @@ Lint/ShadowedException:
 Layout/AlignHash:
   Enabled: true
   EnforcedLastArgumentHashStyle: ignore_implicit
+Performance/UnneededSort:
+  Enabled: true

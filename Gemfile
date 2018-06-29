@@ -72,7 +72,7 @@ eval_gemfile(__FILE__ + ".local") if File.exist?(__FILE__ + ".local")
 #
 # We copy (and overwrite) these files every time "bundle <exec|install>" is
 # executed, just in case they have changed.
-if RUBY_PLATFORM =~ /mswin|mingw|windows/
+if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   instance_eval do
     ruby_exe_dir = RbConfig::CONFIG["bindir"]
     assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder", Dir.pwd) + "/*.dll")

@@ -57,7 +57,7 @@ class Chef
           end
           requirements.assert(:all_actions) do |a|
             a.assertion do
-              if new_resource.package_name =~ /^(.+?)--(.+)/
+              if /^(.+?)--(.+)/.match?(new_resource.package_name)
                 !new_resource.version
               else
                 true

@@ -55,7 +55,7 @@ class Chef
 
         @net_tools_version = shell_out("ifconfig --version")
         @net_tools_version.stderr.each_line do |line|
-          if line =~ /^net-tools (\d+.\d+)/
+          if /^net-tools (\d+.\d+)/.match?(line)
             @ifconfig_version = line.match(/^net-tools (\d+.\d+)/)[1]
           end
         end
@@ -111,7 +111,7 @@ class Chef
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
             addr_regex = /^(\w+):?(\d*):?\ .+$/
-            if line =~ addr_regex
+            if line&.match?(addr_regex)
               if line.match(addr_regex).nil?
                 @int_name = "nil"
               elsif line.match(addr_regex)[2] == ""

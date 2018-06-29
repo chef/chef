@@ -237,7 +237,7 @@ user password using shadow hash.")
           next_uid_guess = base_uid
           users_uids = run_dscl("list", "/Users", "uid")
           while next_uid_guess < search_limit + base_uid
-            if users_uids =~ Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n")
+            if users_uids&.match?(Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n"))
               next_uid_guess += 1
             else
               uid = next_uid_guess
@@ -312,7 +312,7 @@ user password using shadow hash.")
         end
 
         def validate_home_dir_specification!
-          unless new_resource.home =~ /^\//
+          unless /^\//.match?(new_resource.home)
             raise(Chef::Exceptions::InvalidHomeDirectory, "invalid path spec for User: '#{new_resource.username}', home directory: '#{new_resource.home}'")
           end
         end
@@ -612,7 +612,7 @@ user password using shadow hash.")
         # Sets a value in user information hash using Chef attributes as keys.
         #
         def dscl_set(user_hash, key, value)
-          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
+          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.key?(key)
           user_hash[DSCL_PROPERTY_MAP[key]] = [ value ]
           user_hash
         end
@@ -621,7 +621,7 @@ user password using shadow hash.")
         # Gets a value from user information hash using Chef attributes as keys.
         #
         def dscl_get(user_hash, key)
-          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
+          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.key?(key)
           # DSCL values are set as arrays
           value = user_hash[DSCL_PROPERTY_MAP[key]]
           value.nil? ? value : value.first

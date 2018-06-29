@@ -105,7 +105,7 @@ def mac_osx_106?
   if File.exists? "/usr/bin/sw_vers"
     result = ShellHelpers.shell_out("/usr/bin/sw_vers")
     result.stdout.each_line do |line|
-      if line =~ /^ProductVersion:\s10.6.*$/
+      if /^ProductVersion:\s10.6.*$/.match?(line)
         return true
       end
     end
@@ -118,7 +118,7 @@ def mac_osx?
   if File.exists? "/usr/bin/sw_vers"
     result = ShellHelpers.shell_out("/usr/bin/sw_vers")
     result.stdout.each_line do |line|
-      if line =~ /^ProductName:\sMac OS X.*$/
+      if /^ProductName:\sMac OS X.*$/.match?(line)
         return true
       end
     end

@@ -46,7 +46,7 @@ class Chef
         # temporary hack, skip processing if return_value is false
         # needed to keep conditional get stuff working correctly.
         return [http_response, rest_request, return_value] if return_value == false
-        if http_response["content-type"] =~ /json/
+        if /json/.match?(http_response["content-type"])
           if http_response.body.nil?
             return_value = nil
           elsif raw_output

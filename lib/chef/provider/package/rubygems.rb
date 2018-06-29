@@ -409,7 +409,7 @@ class Chef
         end
 
         def is_omnibus?
-          if RbConfig::CONFIG["bindir"] =~ %r{/(opscode|chef|chefdk)/embedded/bin}
+          if %r{/(opscode|chef|chefdk)/embedded/bin}.match?(RbConfig::CONFIG["bindir"])
             logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
             # Omnibus installs to a static path because of linking on unix, find it.
             true

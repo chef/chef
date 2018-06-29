@@ -661,7 +661,7 @@ class Chef
       # As of this writing, `name` is the only Chef::Resource property created with the
       # `property` definition, but this will allow for future properties to be extended
       # as needed.
-      !Chef::Resource.properties.keys.include?(name)
+      !Chef::Resource.properties.key?(name)
     end
 
     def exec_in_resource(resource, proc, *args)

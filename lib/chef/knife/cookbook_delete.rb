@@ -89,7 +89,7 @@ class Chef
           url_and_version["versions"].map { |url_by_version| url_by_version["version"] }
         end.flatten
       rescue Net::HTTPServerException => e
-        if e.to_s =~ /^404/
+        if /^404/.match?(e.to_s)
           ui.error("Cannot find a cookbook named #{@cookbook_name} to delete")
           nil
         else

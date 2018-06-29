@@ -18,7 +18,7 @@
 module ChefConfig
 
   def self.windows?
-    if RUBY_PLATFORM =~ /mswin|mingw|windows/
+    if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
       true
     else
       false

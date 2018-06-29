@@ -126,7 +126,7 @@ class Chef
       rescue NoMethodError => e
         # http://redmine.ruby-lang.org/issues/show/2708
         # http://redmine.ruby-lang.org/issues/show/2758
-        if e.to_s =~ /#{Regexp.escape(%q{undefined method `closed?' for nil:NilClass})}/
+        if /#{Regexp.escape(%q{undefined method `closed?' for nil:NilClass})}/.match?(e.to_s)
           Chef::Log.trace("Rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
           Chef::Log.trace("#{e.class.name}: #{e}")
           Chef::Log.trace(e.backtrace.join("\n"))
