@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.23 -->
-## [v14.3.23](https://github.com/chef/chef/tree/v14.3.23) (2018-06-28)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Switch powershell_exec mixin to use FFI instead of COM [#7380](https://github.com/chef/chef/pull/7380) ([stuartpreston](https://github.com/stuartpreston))
+- Rename the kitchen base test suite to end-to-end [#7385](https://github.com/chef/chef/pull/7385) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Rename the kitchen base test suite to end-to-end [#7385](https://github.com/chef/chef/pull/7385) ([tas50](https://github.com/tas50)) <!-- 14.3.23 -->
 - Switch powershell_exec mixin to use FFI instead of COM [#7380](https://github.com/chef/chef/pull/7380) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.3.23 -->
 - Add missing require knife [#7400](https://github.com/chef/chef/pull/7400) ([tas50](https://github.com/tas50)) <!-- 14.3.22 -->
 - Remove sudo/gcc-c++ package installs from kitchen tests [#7398](https://github.com/chef/chef/pull/7398) ([tas50](https://github.com/tas50)) <!-- 14.3.21 -->
