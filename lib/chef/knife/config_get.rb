@@ -21,8 +21,8 @@ require "chef/knife"
 
 class Chef
   class Knife
-    class Config < Knife
-      banner "knife config [OPTION...] (options)\nDisplays the value of Chef::Config[OPTION] (or all config values)"
+    class ConfigGet < Knife
+      banner "knife config get [OPTION...] (options)\nDisplays the value of Chef::Config[OPTION] (or all config values)"
 
       option :all,
              short: "-a",
