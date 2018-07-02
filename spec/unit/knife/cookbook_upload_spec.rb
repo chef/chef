@@ -61,9 +61,9 @@ describe Chef::Knife::CookbookUpload do
       test_cookbook = Chef::CookbookVersion.new("test_cookbook", "/tmp/blah")
       allow(cookbook_loader).to receive(:each).and_yield("test_cookbook", test_cookbook)
       allow(cookbook_loader).to receive(:cookbook_names).and_return(["test_cookbook"])
-      expect(Chef::CookbookUploader).to receive(:new).
-        with( kind_of(Array), { force: nil, concurrency: 3 }).
-        and_return(double("Chef::CookbookUploader", upload_cookbooks: true))
+      expect(Chef::CookbookUploader).to receive(:new)
+        .with( kind_of(Array), { force: nil, concurrency: 3 })
+        .and_return(double("Chef::CookbookUploader", upload_cookbooks: true))
       knife.run
     end
   end
@@ -106,8 +106,8 @@ describe Chef::Knife::CookbookUpload do
 
       before do
         allow(cookbook_loader).to receive(:merged_cookbooks).and_return(["test_cookbook"])
-        allow(cookbook_loader).to receive(:merged_cookbook_paths).
-          and_return({ "test_cookbook" => %w{/path/one/test_cookbook /path/two/test_cookbook} })
+        allow(cookbook_loader).to receive(:merged_cookbook_paths)
+          .and_return({ "test_cookbook" => %w{/path/one/test_cookbook /path/two/test_cookbook} })
       end
 
       it "emits a warning" do
@@ -310,8 +310,8 @@ E
     describe "when a frozen cookbook exists on the server" do
       it "should fail to replace it" do
         exception = Chef::Exceptions::CookbookFrozen.new
-        expect(cookbook_uploader).to receive(:upload_cookbooks).
-          and_raise(exception)
+        expect(cookbook_uploader).to receive(:upload_cookbooks)
+          .and_raise(exception)
         allow(knife.ui).to receive(:error)
         expect(knife.ui).to receive(:error).with(exception)
         expect { knife.run }.to raise_error(SystemExit)

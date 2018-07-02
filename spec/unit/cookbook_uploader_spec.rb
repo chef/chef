@@ -85,9 +85,9 @@ describe Chef::CookbookUploader do
     end
 
     def expect_sandbox_create
-      expect(http_client).to receive(:post).
-        with("sandboxes", { checksums: checksums_set }).
-        and_return(sandbox_response)
+      expect(http_client).to receive(:post)
+        .with("sandboxes", { checksums: checksums_set })
+        .and_return(sandbox_response)
     end
 
     def expect_checksum_upload
@@ -100,8 +100,8 @@ describe Chef::CookbookUploader do
           "accept"       => "application/json",
         }
 
-        expect(http_client).to receive(:put).
-          with(url_for(md5), IO.binread(file_path), upload_headers)
+        expect(http_client).to receive(:put)
+          .with(url_for(md5), IO.binread(file_path), upload_headers)
 
       end
     end
@@ -117,8 +117,8 @@ describe Chef::CookbookUploader do
     def expect_cookbook_create
       cookbooks_to_upload.each do |cookbook|
 
-        expect(http_client).to receive(:put).
-          with(expected_save_url(cookbook), cookbook)
+        expect(http_client).to receive(:put)
+          .with(expected_save_url(cookbook), cookbook)
 
       end
     end

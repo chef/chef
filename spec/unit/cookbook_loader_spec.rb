@@ -44,10 +44,10 @@ describe Chef::CookbookLoader do
     cookbook_paths.delete_if { |path| File.basename(path) == "chefignore" }
 
     cookbook_paths.each do |cookbook_path|
-      expect(Chef::Cookbook::CookbookVersionLoader).to receive(:new).
-        with(cookbook_path, anything).
-        once.
-        and_call_original
+      expect(Chef::Cookbook::CookbookVersionLoader).to receive(:new)
+        .with(cookbook_path, anything)
+        .once
+        .and_call_original
     end
     expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
     cookbook_loader.load_cookbooks

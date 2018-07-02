@@ -44,10 +44,10 @@ describe Chef::Audit::AuditEventProxy do
       let(:parents) { [double("ExampleGroup")] }
 
       it "notifies control_group_started event" do
-        expect(Chef::Log).to receive(:trace).
-          with("Entered \`control_group\` block named poots")
-        expect(events).to receive(:control_group_started).
-          with(description)
+        expect(Chef::Log).to receive(:trace)
+          .with("Entered \`control_group\` block named poots")
+        expect(events).to receive(:control_group_started)
+          .with(description)
         audit_event_proxy.example_group_started(notification)
       end
     end
@@ -87,14 +87,14 @@ describe Chef::Audit::AuditEventProxy do
       let(:excpetion) { nil }
 
       before do
-        allow(audit_event_proxy).to receive(:build_control_from).
-          with(example).
-          and_return([control_group_name, control_data])
+        allow(audit_event_proxy).to receive(:build_control_from)
+          .with(example)
+          .and_return([control_group_name, control_data])
       end
 
       it "notifies events" do
-        expect(events).to receive(:control_example_success).
-          with(control_group_name, control_data)
+        expect(events).to receive(:control_example_success)
+          .with(control_group_name, control_data)
         audit_event_proxy.stop(notification)
       end
     end
@@ -105,14 +105,14 @@ describe Chef::Audit::AuditEventProxy do
       let(:exception) { double("ExpectationNotMet") }
 
       before do
-        allow(audit_event_proxy).to receive(:build_control_from).
-          with(example).
-          and_return([control_group_name, control_data])
+        allow(audit_event_proxy).to receive(:build_control_from)
+          .with(example)
+          .and_return([control_group_name, control_data])
       end
 
       it "notifies events" do
-        expect(events).to receive(:control_example_failure).
-          with(control_group_name, control_data, exception)
+        expect(events).to receive(:control_example_failure)
+          .with(control_group_name, control_data, exception)
         audit_event_proxy.stop(notification)
       end
     end
@@ -165,17 +165,17 @@ describe Chef::Audit::AuditEventProxy do
 
         before do
           if described_class
-            allow(described_class).to receive(:instance_variable_get).
-              with(:@name).
-              and_return(resource_name)
-            allow(described_class.class).to receive(:name).
-              and_return(described_class.class)
+            allow(described_class).to receive(:instance_variable_get)
+              .with(:@name)
+              .and_return(resource_name)
+            allow(described_class.class).to receive(:name)
+              .and_return(described_class.class)
           end
         end
 
         it "returns the controls block name and example metadata for reporting" do
-          expect(events).to receive(:control_example_success).
-            with(control_group_name, control_data)
+          expect(events).to receive(:control_example_success)
+            .with(control_group_name, control_data)
           audit_event_proxy.stop(notification)
         end
       end

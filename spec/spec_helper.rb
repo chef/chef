@@ -50,10 +50,10 @@ end
 require "chef"
 require "chef/knife"
 
-Dir["lib/chef/knife/**/*.rb"].
-  map { |f| f.gsub("lib/", "") }.
-  map { |f| f.gsub(%r{\.rb$}, "") }.
-  each { |f| require f }
+Dir["lib/chef/knife/**/*.rb"]
+  .map { |f| f.gsub("lib/", "") }
+  .map { |f| f.gsub(%r{\.rb$}, "") }
+  .each { |f| require f }
 
 require "chef/resource_resolver"
 require "chef/provider_resolver"
@@ -90,12 +90,12 @@ require "spec/support/shared/unit/mock_shellout"
 # Autoloads support files
 # Excludes support/platforms by default
 # Do not change the gsub.
-Dir["spec/support/**/*.rb"].
-  reject { |f| f =~ %r{^spec/support/platforms} }.
-  reject { |f| f =~ %r{^spec/support/pedant} }.
-  map { |f| f.gsub(%r{.rb$}, "") }.
-  map { |f| f.gsub(%r{spec/}, "") }.
-  each { |f| require f }
+Dir["spec/support/**/*.rb"]
+  .reject { |f| f =~ %r{^spec/support/platforms} }
+  .reject { |f| f =~ %r{^spec/support/pedant} }
+  .map { |f| f.gsub(%r{.rb$}, "") }
+  .map { |f| f.gsub(%r{spec/}, "") }
+  .each { |f| require f }
 
 OHAI_SYSTEM = Ohai::System.new
 OHAI_SYSTEM.all_plugins(["platform", "hostname", "languages/powershell"])

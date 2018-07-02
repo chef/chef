@@ -192,9 +192,9 @@ describe Chef::Client do
             #
             expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
             expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
-            expect(http_cookbook_sync).to receive(:post).
-              with("environments/_default/cookbook_versions", { run_list: ["override_recipe"] }).
-              and_return({})
+            expect(http_cookbook_sync).to receive(:post)
+              .with("environments/_default/cookbook_versions", { run_list: ["override_recipe"] })
+              .and_return({})
           end
 
           def stub_for_node_save
@@ -226,9 +226,9 @@ describe Chef::Client do
           #
           expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
           expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
-          expect(http_cookbook_sync).to receive(:post).
-            with("environments/_default/cookbook_versions", { run_list: ["new_run_list_recipe"] }).
-            and_return({})
+          expect(http_cookbook_sync).to receive(:post)
+            .with("environments/_default/cookbook_versions", { run_list: ["new_run_list_recipe"] })
+            .and_return({})
         end
 
         before do

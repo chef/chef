@@ -193,11 +193,11 @@ describe Chef::Audit::ControlGroupData do
                                    context: context, line_number: line_number) end
 
     before do
-      allow(Chef::Audit::ControlData).to receive(:new).
-        with(name: name, resource_type: resource_type,
+      allow(Chef::Audit::ControlData).to receive(:new)
+        .with(name: name, resource_type: resource_type,
              resource_name: resource_name, context: context,
-             line_number: line_number).
-        and_return(control)
+             line_number: line_number)
+        .and_return(control)
     end
   end
 

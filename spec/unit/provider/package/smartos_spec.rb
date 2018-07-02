@@ -76,9 +76,9 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
 
     it "should lookup the candidate_version if the variable is not already set (pkgin separated by spaces)" do
       search = double()
-      expect(search).to receive(:each_line).
-        and_yield("something-varnish-1.1.1   something varnish like\n").
-        and_yield("varnish-2.3.4             actual varnish\n")
+      expect(search).to receive(:each_line)
+        .and_yield("something-varnish-1.1.1   something varnish like\n")
+        .and_yield("varnish-2.3.4             actual varnish\n")
       @shell_out = double("shell_out!", stdout: search)
       expect(@provider).to receive(:shell_out_compacted!).with("/opt/local/bin/pkgin", "se", "varnish", env: nil, returns: [0, 1], timeout: 900).and_return(@shell_out)
       expect(@provider.candidate_version).to eq("2.3.4")
@@ -86,9 +86,9 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
 
     it "should lookup the candidate_version if the variable is not already set (pkgin separated by semicolons)" do
       search = double()
-      expect(search).to receive(:each_line).
-        and_yield("something-varnish-1.1.1;;something varnish like\n").
-        and_yield("varnish-2.3.4;;actual varnish\n")
+      expect(search).to receive(:each_line)
+        .and_yield("something-varnish-1.1.1;;something varnish like\n")
+        .and_yield("varnish-2.3.4;;actual varnish\n")
       @shell_out = double("shell_out!", stdout: search)
       expect(@provider).to receive(:shell_out_compacted!).with("/opt/local/bin/pkgin", "se", "varnish", env: nil, returns: [0, 1], timeout: 900).and_return(@shell_out)
       expect(@provider.candidate_version).to eq("2.3.4")

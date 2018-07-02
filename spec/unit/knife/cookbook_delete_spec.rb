@@ -62,8 +62,8 @@ describe Chef::Knife::CookbookDelete do
       describe "with -p or --purge" do
         it "should prompt to purge the files" do
           @knife.config[:purge] = true
-          expect(@knife).to receive(:confirm).
-            with(/.+Are you sure you want to purge files.+/)
+          expect(@knife).to receive(:confirm)
+            .with(/.+Are you sure you want to purge files.+/)
           expect(@knife).to receive(:delete_without_explicit_version)
           @knife.run
         end
@@ -146,8 +146,8 @@ describe Chef::Knife::CookbookDelete do
 
     describe "if the cookbook can't be found" do
       before(:each) do
-        expect(@rest_mock).to receive(:get).
-          and_raise(Net::HTTPServerException.new("404 Not Found", "404"))
+        expect(@rest_mock).to receive(:get)
+          .and_raise(Net::HTTPServerException.new("404 Not Found", "404"))
       end
 
       it "should print an error" do

@@ -44,9 +44,9 @@ describe "key edit commands that inherit knife" do
 
       context "when the service object is called" do
         it "creates a new instance of Chef::Knife::KeyEdit with the correct args" do
-          expect(Chef::Knife::KeyEdit).to receive(:new).
-            with("charmander-key", "charmander", command.actor_field_name, command.ui, command.config).
-            and_return(service_object)
+          expect(Chef::Knife::KeyEdit).to receive(:new)
+            .with("charmander-key", "charmander", command.actor_field_name, command.ui, command.config)
+            .and_return(service_object)
           command.service_object
         end
       end # when the service object is called

@@ -82,14 +82,14 @@ XML
             allow(Etc).to receive(:getpwuid).and_return(@getpwuid)
             allow(node).to receive(:[]).with("platform_version").and_return(platform_version)
             cmd = "launchctl list #{service_label}"
-            allow(provider).to receive(:shell_out).
-              with(/(#{su_cmd} '#{cmd}'|#{cmd})/, default_env: false).
-              and_return(double("Status",
+            allow(provider).to receive(:shell_out)
+              .with(/(#{su_cmd} '#{cmd}'|#{cmd})/, default_env: false)
+              .and_return(double("Status",
                                     stdout: launchctl_stdout, exitstatus: 0))
             allow(File).to receive(:exists?).and_return([true], [])
-            allow(provider).to receive(:shell_out!).
-              with(/plutil -convert xml1 -o/, default_env: false).
-              and_return(double("Status", stdout: plutil_stdout))
+            allow(provider).to receive(:shell_out!)
+              .with(/plutil -convert xml1 -o/, default_env: false)
+              .and_return(double("Status", stdout: plutil_stdout))
           end
 
           context "#{service_name} that is a #{service_type} running Osx #{platform_version}" do
@@ -113,9 +113,9 @@ XML
                 before do
                   allow(Dir).to receive(:glob).and_return([])
                   allow(File).to receive(:exists?).and_return([true], [])
-                  allow(provider).to receive(:shell_out!).
-                    with(/plutil -convert xml1 -o/).
-                    and_raise(Mixlib::ShellOut::ShellCommandFailed)
+                  allow(provider).to receive(:shell_out!)
+                    .with(/plutil -convert xml1 -o/)
+                    .and_raise(Mixlib::ShellOut::ShellCommandFailed)
                 end
 
                 it "works for action :nothing" do
@@ -269,9 +269,9 @@ SVC_LIST
 
               it "starts service via launchctl if service found" do
                 cmd = "launchctl load -w " + session + plist
-                expect(provider).to receive(:shell_out).
-                  with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false).
-                  and_return(0)
+                expect(provider).to receive(:shell_out)
+                  .with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false)
+                  .and_return(0)
 
                 provider.start_service
               end
@@ -301,9 +301,9 @@ SVC_LIST
 
               it "stops the service via launchctl if service found" do
                 cmd = "launchctl unload -w " + plist
-                expect(provider).to receive(:shell_out).
-                  with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false).
-                  and_return(0)
+                expect(provider).to receive(:shell_out)
+                  .with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false)
+                  .and_return(0)
 
                 provider.stop_service
               end

@@ -35,9 +35,9 @@ describe Chef::Knife::CookbookSiteDownload do
 
       allow(@knife.ui).to receive(:stderr).and_return(@stderr)
       allow(@knife).to receive(:noauth_rest).and_return(@noauth_rest)
-      expect(@noauth_rest).to receive(:get).
-        with("#{@cookbook_api_url}/apache2").
-        and_return(@current_data)
+      expect(@noauth_rest).to receive(:get)
+        .with("#{@cookbook_api_url}/apache2")
+        .and_return(@current_data)
       @knife.configure_chef
     end
 
@@ -47,10 +47,10 @@ describe Chef::Knife::CookbookSiteDownload do
       end
 
       it "should warn with info about the replacement" do
-        expect(@knife.ui).to receive(:warn).
-          with(/.+deprecated.+replaced by other_apache2.+/i)
-        expect(@knife.ui).to receive(:warn).
-          with(/use --force.+download.+/i)
+        expect(@knife.ui).to receive(:warn)
+          .with(/.+deprecated.+replaced by other_apache2.+/i)
+        expect(@knife.ui).to receive(:warn)
+          .with(/use --force.+download.+/i)
         @knife.run
       end
     end
@@ -65,12 +65,12 @@ describe Chef::Knife::CookbookSiteDownload do
 
       context "downloading the latest version" do
         before do
-          expect(@noauth_rest).to receive(:get).
-            with(@current_data["latest_version"]).
-            and_return(@cookbook_data)
-          expect(@noauth_rest).to receive(:streaming_request).
-            with(@cookbook_data["file"]).
-            and_return(@temp_file)
+          expect(@noauth_rest).to receive(:get)
+            .with(@current_data["latest_version"])
+            .and_return(@cookbook_data)
+          expect(@noauth_rest).to receive(:streaming_request)
+            .with(@cookbook_data["file"])
+            .and_return(@temp_file)
         end
 
         context "and it is deprecated and with --force" do
@@ -80,8 +80,8 @@ describe Chef::Knife::CookbookSiteDownload do
           end
 
           it "should download the latest version" do
-            expect(@knife.ui).to receive(:warn).
-              with(/.+deprecated.+replaced by other_apache2.+/i)
+            expect(@knife.ui).to receive(:warn)
+              .with(/.+deprecated.+replaced by other_apache2.+/i)
             expect(FileUtils).to receive(:cp).with(@temp_file.path, @file)
             @knife.run
             expect(@stderr.string).to match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
@@ -130,12 +130,12 @@ describe Chef::Knife::CookbookSiteDownload do
         end
 
         it "should download the desired version" do
-          expect(@noauth_rest).to receive(:get).
-            with("#{@cookbook_api_url}/apache2/versions/#{@version_us}").
-            and_return(@cookbook_data)
-          expect(@noauth_rest).to receive(:streaming_request).
-            with(@cookbook_data["file"]).
-            and_return(@temp_file)
+          expect(@noauth_rest).to receive(:get)
+            .with("#{@cookbook_api_url}/apache2/versions/#{@version_us}")
+            .and_return(@cookbook_data)
+          expect(@noauth_rest).to receive(:streaming_request)
+            .with(@cookbook_data["file"])
+            .and_return(@temp_file)
           expect(FileUtils).to receive(:cp).with(@temp_file.path, @file)
           @knife.run
           expect(@stderr.string).to match /downloading apache2.+version.+#{Regexp.escape(@version)}/i

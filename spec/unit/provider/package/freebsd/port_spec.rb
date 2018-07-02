@@ -98,8 +98,8 @@ describe Chef::Provider::Package::Freebsd::Port do
     it "should return candidate version if port exists" do
       allow(::File).to receive(:exist?).with("/usr/ports/Makefile").and_return(true)
       allow(@provider).to receive(:port_dir).and_return("/usr/ports/shells/zsh")
-      expect(@provider).to receive(:shell_out_compacted!).with("make", "-V", "PORTVERSION", cwd: "/usr/ports/shells/zsh", env: nil, returns: [0, 1], timeout: 900).
-        and_return(@port_version)
+      expect(@provider).to receive(:shell_out_compacted!).with("make", "-V", "PORTVERSION", cwd: "/usr/ports/shells/zsh", env: nil, returns: [0, 1], timeout: 900)
+        .and_return(@port_version)
       expect(@provider.candidate_version).to eq("5.0.5")
     end
 
@@ -140,9 +140,9 @@ describe Chef::Provider::Package::Freebsd::Port do
 
     it "should run make install in port directory" do
       allow(@provider).to receive(:port_dir).and_return("/usr/ports/shells/zsh")
-      expect(@provider).to receive(:shell_out_compacted!).
-        with("make", "-DBATCH", "install", "clean", timeout: 1800, cwd: "/usr/ports/shells/zsh", env: nil).
-        and_return(@install_result)
+      expect(@provider).to receive(:shell_out_compacted!)
+        .with("make", "-DBATCH", "install", "clean", timeout: 1800, cwd: "/usr/ports/shells/zsh", env: nil)
+        .and_return(@install_result)
       @provider.install_package("zsh", "5.0.5")
     end
   end
@@ -154,9 +154,9 @@ describe Chef::Provider::Package::Freebsd::Port do
 
     it "should run make deinstall in port directory" do
       allow(@provider).to receive(:port_dir).and_return("/usr/ports/shells/zsh")
-      expect(@provider).to receive(:shell_out_compacted!).
-        with("make", "deinstall", timeout: 300, cwd: "/usr/ports/shells/zsh", env: nil).
-        and_return(@install_result)
+      expect(@provider).to receive(:shell_out_compacted!)
+        .with("make", "deinstall", timeout: 300, cwd: "/usr/ports/shells/zsh", env: nil)
+        .and_return(@install_result)
       @provider.remove_package("zsh", "5.0.5")
     end
   end

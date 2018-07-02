@@ -199,12 +199,12 @@ E
       before do
         @old_signal = trap(:INT, "DEFAULT")
 
-        expect(ssl_check).to receive(:proxified_socket).
-          with("foo.example.com", 8443).
-          and_return(tcp_socket_for_debug)
-        expect(OpenSSL::SSL::SSLSocket).to receive(:new).
-          with(tcp_socket_for_debug, ssl_check.noverify_peer_ssl_context).
-          and_return(ssl_socket_for_debug)
+        expect(ssl_check).to receive(:proxified_socket)
+          .with("foo.example.com", 8443)
+          .and_return(tcp_socket_for_debug)
+        expect(OpenSSL::SSL::SSLSocket).to receive(:new)
+          .with(tcp_socket_for_debug, ssl_check.noverify_peer_ssl_context)
+          .and_return(ssl_socket_for_debug)
       end
 
       after do
@@ -215,9 +215,9 @@ E
         before do
           expect(ssl_check).to receive(:verify_X509).and_return(true) # X509 valid certs
           expect(ssl_socket).to receive(:connect) # no error
-          expect(ssl_socket).to receive(:post_connection_check).
-            with("foo.example.com").
-            and_raise(OpenSSL::SSL::SSLError)
+          expect(ssl_socket).to receive(:post_connection_check)
+            .with("foo.example.com")
+            .and_raise(OpenSSL::SSL::SSLError)
           expect(ssl_socket).to receive(:hostname=).with("foo.example.com") # no error
           expect(ssl_socket_for_debug).to receive(:connect)
           expect(ssl_socket_for_debug).to receive(:peer_cert).and_return(self_signed_crt)
@@ -235,10 +235,10 @@ E
       context "when the cert is not signed by any trusted authority" do
         before do
           expect(ssl_check).to receive(:verify_X509).and_return(true) # X509 valid certs
-          expect(ssl_socket).to receive(:connect).
-            and_raise(OpenSSL::SSL::SSLError)
-          expect(ssl_socket).to receive(:hostname=).
-            with("foo.example.com") # no error
+          expect(ssl_socket).to receive(:connect)
+            .and_raise(OpenSSL::SSL::SSLError)
+          expect(ssl_socket).to receive(:hostname=)
+            .with("foo.example.com") # no error
           expect(ssl_socket_for_debug).to receive(:connect)
           expect(ssl_socket_for_debug).to receive(:peer_cert).and_return(self_signed_crt)
         end

@@ -290,28 +290,28 @@ describe Chef::Knife::Ssh do
     let(:command) { "false" }
 
     before do
-      expect(execution_channel).
-        to receive(:on_request).
-        and_yield(nil, double(:data_stream, read_long: exit_status))
+      expect(execution_channel)
+        .to receive(:on_request)
+        .and_yield(nil, double(:data_stream, read_long: exit_status))
 
-      expect(session_channel).
-        to receive(:exec).
-        with(command).
-        and_yield(execution_channel, true)
+      expect(session_channel)
+        .to receive(:exec)
+        .with(command)
+        .and_yield(execution_channel, true)
 
-      expect(execution_channel2).
-        to receive(:on_request).
-        and_yield(nil, double(:data_stream, read_long: exit_status2))
+      expect(execution_channel2)
+        .to receive(:on_request)
+        .and_yield(nil, double(:data_stream, read_long: exit_status2))
 
-      expect(session_channel2).
-        to receive(:exec).
-        with(command).
-        and_yield(execution_channel2, true)
+      expect(session_channel2)
+        .to receive(:exec)
+        .with(command)
+        .and_yield(execution_channel2, true)
 
-      expect(session).
-        to receive(:open_channel).
-        and_yield(session_channel).
-        and_yield(session_channel2)
+      expect(session)
+        .to receive(:open_channel)
+        .and_yield(session_channel)
+        .and_yield(session_channel2)
     end
 
     context "both connections return 0" do

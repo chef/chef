@@ -105,9 +105,9 @@ describe "LWRPs with inline resources" do
         r = lwrp_inline_resources_test2 "hi" do
           action :b
         end
-      end.to have_updated("lwrp_inline_resources_test2[hi]", :b).
-        and have_updated("ruby_block[run a]", :run).
-        and have_updated("ruby_block[run b]", :run)
+      end.to have_updated("lwrp_inline_resources_test2[hi]", :b)
+        .and have_updated("ruby_block[run a]", :run)
+        .and have_updated("ruby_block[run b]", :run)
       expect(r.ran_b).to eq "ran b: ran_a value was \"ran a\""
     end
   end

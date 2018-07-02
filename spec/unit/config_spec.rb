@@ -7,8 +7,8 @@ RSpec.describe Chef::Config do
 
   shared_examples_for "deprecated by ohai but not deprecated" do
     it "does not emit a deprecation warning when set" do
-      expect(Chef::Log).to_not receive(:warn).
-        with(/Ohai::Config\[:#{option}\] is deprecated/)
+      expect(Chef::Log).to_not receive(:warn)
+        .with(/Ohai::Config\[:#{option}\] is deprecated/)
       Chef::Config[option] = value
       expect(Chef::Config[option]).to eq(value)
     end

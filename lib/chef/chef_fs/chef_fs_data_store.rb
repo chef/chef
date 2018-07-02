@@ -537,9 +537,9 @@ class Chef
           if chef_fs.versioned_cookbooks || path[0] == "cookbook_artifacts"
             result = with_entry([ path[0] ]) do |entry|
               # list /cookbooks/name = filter /cookbooks/name-version down to name
-              entry.children.map { |child| split_name_version(child.name) }.
-              select { |name, version| name == path[1] }.
-              map { |name, version| version }
+              entry.children.map { |child| split_name_version(child.name) }
+              .select { |name, version| name == path[1] }
+              .map { |name, version| version }
             end
             if result.empty?
               raise ChefZero::DataStore::DataNotFoundError.new(path)

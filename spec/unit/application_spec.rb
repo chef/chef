@@ -127,9 +127,9 @@ describe Chef::Application do
           # force let binding to get evaluated or else we stub Pathname.new before we try to use it.
           config_location_pathname
           allow(Pathname).to receive(:new).with(config_location).and_return(config_location_pathname)
-          expect(File).to receive(:read).
-            with(config_location).
-            and_return(config_content)
+          expect(File).to receive(:read)
+            .with(config_location)
+            .and_return(config_content)
         end
 
         it "should configure chef::config from a file" do
@@ -393,11 +393,11 @@ describe Chef::Application do
 
     def raises_informative_fatals_on_configure_chef
       config_file_regexp = Regexp.new @app.config[:config_file]
-      expect(Chef::Log).to receive(:fatal).
-        with(/Configuration error/)
-      expect(Chef::Log).to receive(:fatal).
-        with(config_file_regexp).
-        at_least(1).times
+      expect(Chef::Log).to receive(:fatal)
+        .with(/Configuration error/)
+      expect(Chef::Log).to receive(:fatal)
+        .with(config_file_regexp)
+        .at_least(1).times
       @app.configure_chef
     end
 

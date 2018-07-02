@@ -101,8 +101,8 @@ describe Chef::Application::Apply do
 
     before do
       Chef::Config[:json_attribs] = json_source
-      expect(Chef::ConfigFetcher).to receive(:new).with(json_source).
-        and_return(config_fetcher)
+      expect(Chef::ConfigFetcher).to receive(:new).with(json_source)
+        .and_return(config_fetcher)
     end
 
     it "reads the JSON attributes from the specified source" do

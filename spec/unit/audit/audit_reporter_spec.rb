@@ -79,8 +79,8 @@ describe Chef::Audit::AuditReporter do
           "X-Ops-Audit-Report-Protocol-Version" => Chef::Audit::AuditReporter::PROTOCOL_VERSION,
         }
 
-        expect(rest).to receive(:post).
-          with("controls", run_data, headers)
+        expect(rest).to receive(:post)
+          .with("controls", run_data, headers)
         reporter.run_completed(node)
       end
 
@@ -145,12 +145,12 @@ EOM
           shared_examples "non-404 error code" do
 
             it "saves the error report" do
-              expect(Chef::FileCache).to receive(:store).
-                with("failed-audit-data.json", an_instance_of(String), 0640).
-                and_return(true)
-              expect(Chef::FileCache).to receive(:load).
-                with("failed-audit-data.json", false).
-                and_return(true)
+              expect(Chef::FileCache).to receive(:store)
+                .with("failed-audit-data.json", an_instance_of(String), 0640)
+                .and_return(true)
+              expect(Chef::FileCache).to receive(:load)
+                .with("failed-audit-data.json", false)
+                .and_return(true)
               expect(Chef::Log).to receive(:error).with(/Failed to post audit report to server/)
               reporter.run_completed(node)
             end
@@ -184,9 +184,9 @@ EOM
         context "when reporting url fatals are enabled" do
 
           before do
-            allow(Chef::Config).to receive(:[]).
-              with(:enable_reporting_url_fatals).
-              and_return(true)
+            allow(Chef::Config).to receive(:[])
+              .with(:enable_reporting_url_fatals)
+              .and_return(true)
           end
 
           it "raises the error" do
@@ -353,17 +353,17 @@ EOM
       metadata: double("metadata")) end
 
     before do
-      allow(Chef::Audit::ControlGroupData).to receive(:new).
-        with(name, control_group.metadata).
-        and_return(control_group)
+      allow(Chef::Audit::ControlGroupData).to receive(:new)
+        .with(name, control_group.metadata)
+        .and_return(control_group)
     end
 
     it "stores the control group" do
       expect(ordered_control_groups).to receive(:has_key?).with(name).and_return(false)
       allow(run_context.audits).to receive(:[]).with(name).and_return(control_group)
-      expect(ordered_control_groups).to receive(:store).
-        with(name, control_group).
-        and_call_original
+      expect(ordered_control_groups).to receive(:store)
+        .with(name, control_group)
+        .and_call_original
       reporter.control_group_started(name)
       # stubbed :has_key? above, which is used by the have_key matcher,
       # so instead we check the response to Hash's #key? because luckily
@@ -400,8 +400,8 @@ EOM
     let(:error) { double("Exception", message: "oopsie") }
 
     it "notifies the control group the example failed" do
-      expect(control_group_bar).to receive(:example_failure).
-        with(example_data, error.message)
+      expect(control_group_bar).to receive(:example_failure)
+        .with(example_data, error.message)
       reporter.control_example_failure(name, example_data, error)
     end
   end
@@ -410,9 +410,9 @@ EOM
     shared_examples "enabled?" do |true_or_false|
 
       it "returns #{true_or_false}" do
-        expect(Chef::Config).to receive(:[]).
-          with(:audit_mode).
-          and_return(audit_setting)
+        expect(Chef::Config).to receive(:[])
+          .with(:audit_mode)
+          .and_return(audit_setting)
         expect(reporter.auditing_enabled?).to be true_or_false
       end
     end

@@ -112,14 +112,14 @@ XML
       describe "agent" do
         it "path should be /Library/LaunchAgents/call.mom.weekly.plist" do
           new_resource.type "agent"
-          expect(provider.gen_path_from_type).
-            to eq("/Library/LaunchAgents/call.mom.weekly.plist")
+          expect(provider.gen_path_from_type)
+            .to eq("/Library/LaunchAgents/call.mom.weekly.plist")
         end
       end
       describe "daemon" do
         it "path should be /Library/LaunchDaemons/call.mom.weekly.plist" do
-          expect(provider.gen_path_from_type).
-            to eq("/Library/LaunchDaemons/call.mom.weekly.plist")
+          expect(provider.gen_path_from_type)
+            .to eq("/Library/LaunchDaemons/call.mom.weekly.plist")
         end
       end
     end

@@ -616,11 +616,11 @@ describe Chef::ResourceReporter do
         # 404 getting the run_id
         @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
         @error = Net::HTTPServerException.new("404 message", @response)
-        expect(@rest_client).to receive(:post).
-          with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id,
+        expect(@rest_client).to receive(:post)
+          .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id,
                                                 start_time: @start_time.to_s },
-               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION }).
-          and_raise(@error)
+               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
+          .and_raise(@error)
       end
 
       it "assumes the feature is not enabled" do
@@ -646,10 +646,10 @@ describe Chef::ResourceReporter do
         # 500 getting the run_id
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
-        expect(@rest_client).to receive(:post).
-          with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
-               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION }).
-          and_raise(@error)
+        expect(@rest_client).to receive(:post)
+          .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
+               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
+          .and_raise(@error)
       end
 
       it "assumes the feature is not enabled" do
@@ -676,10 +676,10 @@ describe Chef::ResourceReporter do
         # 500 getting the run_id
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
-        expect(@rest_client).to receive(:post).
-          with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
-               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION }).
-          and_raise(@error)
+        expect(@rest_client).to receive(:post)
+          .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
+               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
+          .and_raise(@error)
       end
 
       after do
@@ -697,10 +697,10 @@ describe Chef::ResourceReporter do
     context "after creating the run history document" do
       before do
         response = { "uri" => "https://example.com/reports/nodes/spitfire/runs/@run_id" }
-        expect(@rest_client).to receive(:post).
-          with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
-               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION }).
-          and_return(response)
+        expect(@rest_client).to receive(:post)
+          .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
+               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
+          .and_return(response)
         @resource_reporter.run_started(@run_status)
       end
 

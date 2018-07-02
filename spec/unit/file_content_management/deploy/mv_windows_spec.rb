@@ -59,10 +59,10 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
     end
 
     before do
-      allow(Chef::ReservedNames::Win32::Security::SecurableObject).
-        to receive(:new).
-        with(target_file_path).
-        and_return(target_file_security_object, updated_target_security_object)
+      allow(Chef::ReservedNames::Win32::Security::SecurableObject)
+        .to receive(:new)
+        .with(target_file_path)
+        .and_return(target_file_security_object, updated_target_security_object)
 
     end
 
@@ -147,19 +147,19 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
           allow(target_file_security_descriptor).to receive(:dacl_inherits?).and_return(false)
 
           allow(target_file_security_descriptor).to receive(:dacl).and_return(original_target_file_dacl)
-          expect(Chef::ReservedNames::Win32::Security::ACL).
-            to receive(:create).
-            with([]).
-            and_return(empty_dacl)
+          expect(Chef::ReservedNames::Win32::Security::ACL)
+            .to receive(:create)
+            .with([])
+            .and_return(empty_dacl)
 
           allow(target_file_security_descriptor).to receive(:sacl_present?).and_return(true)
           allow(target_file_security_descriptor).to receive(:sacl_inherits?).and_return(false)
 
           allow(target_file_security_descriptor).to receive(:sacl).and_return(original_target_file_sacl)
-          expect(Chef::ReservedNames::Win32::Security::ACL).
-            to receive(:create).
-            with([]).
-            and_return(empty_sacl)
+          expect(Chef::ReservedNames::Win32::Security::ACL)
+            .to receive(:create)
+            .with([])
+            .and_return(empty_sacl)
 
           expect(updated_target_security_object).to receive(:set_dacl).with(empty_dacl, false)
           expect(updated_target_security_object).to receive(:set_sacl).with(empty_sacl, false)
@@ -188,19 +188,19 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
           allow(target_file_security_descriptor).to receive(:dacl_inherits?).and_return(dacl_inherits?)
 
           allow(target_file_security_descriptor).to receive(:dacl).and_return(original_target_file_dacl)
-          expect(Chef::ReservedNames::Win32::Security::ACL).
-            to receive(:create).
-            with([not_inherited_dacl_ace]).
-            and_return(custom_dacl)
+          expect(Chef::ReservedNames::Win32::Security::ACL)
+            .to receive(:create)
+            .with([not_inherited_dacl_ace])
+            .and_return(custom_dacl)
 
           allow(target_file_security_descriptor).to receive(:sacl_present?).and_return(true)
           allow(target_file_security_descriptor).to receive(:sacl_inherits?).and_return(sacl_inherits?)
 
           allow(target_file_security_descriptor).to receive(:sacl).and_return(original_target_file_sacl)
-          expect(Chef::ReservedNames::Win32::Security::ACL).
-            to receive(:create).
-            with([not_inherited_sacl_ace]).
-            and_return(custom_sacl)
+          expect(Chef::ReservedNames::Win32::Security::ACL)
+            .to receive(:create)
+            .with([not_inherited_sacl_ace])
+            .and_return(custom_sacl)
 
           expect(updated_target_security_object).to receive(:set_dacl).with(custom_dacl, dacl_inherits?)
           expect(updated_target_security_object).to receive(:set_sacl).with(custom_sacl, sacl_inherits?)

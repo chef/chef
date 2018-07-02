@@ -99,30 +99,30 @@ describe Chef::Provider::Package::Freebsd::Port do
 
     it "should handle package source from file" do
       @provider.new_resource.source("/nas/pkg/repo/zsh-5.0.1.txz")
-      expect(@provider).to receive(:shell_out_compacted!).
-        with("pkg", "add", "/nas/pkg/repo/zsh-5.0.1.txz", env: { "LC_ALL" => nil }, timeout: 900).
-        and_return(@install_result)
+      expect(@provider).to receive(:shell_out_compacted!)
+        .with("pkg", "add", "/nas/pkg/repo/zsh-5.0.1.txz", env: { "LC_ALL" => nil }, timeout: 900)
+        .and_return(@install_result)
       @provider.install_package("zsh", "5.0.1")
     end
 
     it "should handle package source over ftp or http" do
       @provider.new_resource.source("http://repo.example.com/zsh-5.0.1.txz")
-      expect(@provider).to receive(:shell_out_compacted!).
-        with("pkg", "add", "http://repo.example.com/zsh-5.0.1.txz", env: { "LC_ALL" => nil }, timeout: 900).
-        and_return(@install_result)
+      expect(@provider).to receive(:shell_out_compacted!)
+        .with("pkg", "add", "http://repo.example.com/zsh-5.0.1.txz", env: { "LC_ALL" => nil }, timeout: 900)
+        .and_return(@install_result)
       @provider.install_package("zsh", "5.0.1")
     end
 
     it "should handle a package name" do
-      expect(@provider).to receive(:shell_out_compacted!).
-        with("pkg", "install", "-y", "zsh", env: { "LC_ALL" => nil }, timeout: 900).and_return(@install_result)
+      expect(@provider).to receive(:shell_out_compacted!)
+        .with("pkg", "install", "-y", "zsh", env: { "LC_ALL" => nil }, timeout: 900).and_return(@install_result)
       @provider.install_package("zsh", "5.0.1")
     end
 
     it "should handle a package name with a specified repo" do
       @provider.new_resource.options("-r LocalMirror") # This requires LocalMirror repo configuration.
-      expect(@provider).to receive(:shell_out_compacted!).
-        with("pkg", "install", "-y", "-r", "LocalMirror", "zsh", env: { "LC_ALL" => nil }, timeout: 900).and_return(@install_result)
+      expect(@provider).to receive(:shell_out_compacted!)
+        .with("pkg", "install", "-y", "-r", "LocalMirror", "zsh", env: { "LC_ALL" => nil }, timeout: 900).and_return(@install_result)
       @provider.install_package("zsh", "5.0.1")
     end
   end
@@ -133,15 +133,15 @@ describe Chef::Provider::Package::Freebsd::Port do
     end
 
     it "should call pkg delete" do
-      expect(@provider).to receive(:shell_out_compacted!).
-        with("pkg", "delete", "-y", "zsh-5.0.1", env: nil, timeout: 900).and_return(@install_result)
+      expect(@provider).to receive(:shell_out_compacted!)
+        .with("pkg", "delete", "-y", "zsh-5.0.1", env: nil, timeout: 900).and_return(@install_result)
       @provider.remove_package("zsh", "5.0.1")
     end
 
     it "should not include repo option in pkg delete" do
       @provider.new_resource.options("-r LocalMirror") # This requires LocalMirror repo configuration.
-      expect(@provider).to receive(:shell_out_compacted!).
-        with("pkg", "delete", "-y", "zsh-5.0.1", env: nil, timeout: 900).and_return(@install_result)
+      expect(@provider).to receive(:shell_out_compacted!)
+        .with("pkg", "delete", "-y", "zsh-5.0.1", env: nil, timeout: 900).and_return(@install_result)
       @provider.remove_package("zsh", "5.0.1")
     end
   end

@@ -221,9 +221,9 @@ describe Chef::PolicyBuilder::Policyfile do
         let(:error404) { Net::HTTPServerException.new("404 message", :body) }
 
         before do
-          expect(api_service).to receive(:get).
-            with("data/policyfiles/example-policy-stage").
-            and_raise(error404)
+          expect(api_service).to receive(:get)
+            .with("data/policyfiles/example-policy-stage")
+            .and_raise(error404)
         end
 
         it "raises an error" do
@@ -744,8 +744,8 @@ describe Chef::PolicyBuilder::Policyfile do
               policy_builder.finish_load_node(node)
               policy_builder.build_node
 
-              expect(api_service).to receive(:get).with(cookbook1_url).
-                and_raise(error404)
+              expect(api_service).to receive(:get).with(cookbook1_url)
+                .and_raise(error404)
             end
 
             it "raises an error indicating which cookbook is missing" do
@@ -763,9 +763,9 @@ describe Chef::PolicyBuilder::Policyfile do
               policy_builder.finish_load_node(node)
               policy_builder.build_node
 
-              allow(Chef::CookbookSynchronizer).to receive(:new).
-                with(expected_cookbook_hash, events).
-                and_return(cookbook_synchronizer)
+              allow(Chef::CookbookSynchronizer).to receive(:new)
+                .with(expected_cookbook_hash, events)
+                .and_return(cookbook_synchronizer)
             end
 
             after do
@@ -814,15 +814,15 @@ describe Chef::PolicyBuilder::Policyfile do
           context "when the cookbooks exist on the server" do
 
             before do
-              expect(api_service).to receive(:get).with(cookbook1_url).
-                and_return(example1_cookbook_data)
-              expect(api_service).to receive(:get).with(cookbook2_url).
-                and_return(example2_cookbook_data)
+              expect(api_service).to receive(:get).with(cookbook1_url)
+                .and_return(example1_cookbook_data)
+              expect(api_service).to receive(:get).with(cookbook2_url)
+                .and_return(example2_cookbook_data)
 
-              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data).
-                and_return(example1_cookbook_object)
-              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example2_cookbook_data).
-                and_return(example2_cookbook_object)
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data)
+                .and_return(example1_cookbook_object)
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example2_cookbook_data)
+                .and_return(example2_cookbook_object)
             end
 
             include_examples "fetching cookbooks when they exist"
@@ -847,15 +847,15 @@ describe Chef::PolicyBuilder::Policyfile do
           context "when the cookbooks exist on the server" do
 
             before do
-              expect(api_service).to receive(:get).with(cookbook1_url).
-                and_return(example1_cookbook_data)
-              expect(api_service).to receive(:get).with(cookbook2_url).
-                and_return(example2_cookbook_data)
+              expect(api_service).to receive(:get).with(cookbook1_url)
+                .and_return(example1_cookbook_data)
+              expect(api_service).to receive(:get).with(cookbook2_url)
+                .and_return(example2_cookbook_data)
 
-              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data).
-                and_return(example1_cookbook_object)
-              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example2_cookbook_data).
-                and_return(example2_cookbook_object)
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data)
+                .and_return(example1_cookbook_object)
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example2_cookbook_data)
+                .and_return(example2_cookbook_object)
             end
 
             include_examples "fetching cookbooks when they exist"
