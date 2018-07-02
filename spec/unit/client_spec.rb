@@ -410,8 +410,8 @@ describe Chef::Client do
     let(:run_context) { double("Chef::RunContext") }
     let(:recipe)      { double("Chef::Recipe (required recipe)") }
     let(:required_recipe) do
-      <<EOM
-fake_recipe_variable = "for reals"
+      <<~EOM
+        fake_recipe_variable = "for reals"
 EOM
     end
 
@@ -429,8 +429,8 @@ EOM
 
       context "when the required_recipe has bad contents" do
         let(:required_recipe) do
-          <<EOM
-this is not a recipe
+          <<~EOM
+            this is not a recipe
 EOM
         end
         it "should not raise an error" do

@@ -29,55 +29,55 @@ describe Chef::Provider::Launchd do
     let(:label) { "call.mom.weekly" }
     let(:new_resource) { Chef::Resource::Launchd.new(label) }
     let!(:current_resource) { Chef::Resource::Launchd.new(label) }
-    let(:test_plist) { String.new <<-XML }
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-\t<key>Label</key>
-\t<string>call.mom.weekly</string>
-\t<key>Program</key>
-\t<string>/Library/scripts/call_mom.sh</string>
-\t<key>StartCalendarInterval</key>
-\t<dict>
-\t\t<key>Hour</key>
-\t\t<integer>10</integer>
-\t\t<key>Weekday</key>
-\t\t<integer>7</integer>
-\t</dict>
-\t<key>TimeOut</key>
-\t<integer>300</integer>
-</dict>
-</plist>
+    let(:test_plist) { String.new <<~XML }
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+      \t<key>Label</key>
+      \t<string>call.mom.weekly</string>
+      \t<key>Program</key>
+      \t<string>/Library/scripts/call_mom.sh</string>
+      \t<key>StartCalendarInterval</key>
+      \t<dict>
+      \t\t<key>Hour</key>
+      \t\t<integer>10</integer>
+      \t\t<key>Weekday</key>
+      \t\t<integer>7</integer>
+      \t</dict>
+      \t<key>TimeOut</key>
+      \t<integer>300</integer>
+      </dict>
+      </plist>
 XML
-    let(:test_plist_multiple_intervals) { String.new <<-XML }
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-\t<key>Label</key>
-\t<string>call.mom.weekly</string>
-\t<key>Program</key>
-\t<string>/Library/scripts/call_mom.sh</string>
-\t<key>StartCalendarInterval</key>
-\t<array>
-\t\t<dict>
-\t\t\t<key>Hour</key>
-\t\t\t<integer>11</integer>
-\t\t\t<key>Weekday</key>
-\t\t\t<integer>1</integer>
-\t\t</dict>
-\t\t<dict>
-\t\t\t<key>Hour</key>
-\t\t\t<integer>12</integer>
-\t\t\t<key>Weekday</key>
-\t\t\t<integer>2</integer>
-\t\t</dict>
-\t</array>
-\t<key>TimeOut</key>
-\t<integer>300</integer>
-</dict>
-</plist>
+    let(:test_plist_multiple_intervals) { String.new <<~XML }
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+      \t<key>Label</key>
+      \t<string>call.mom.weekly</string>
+      \t<key>Program</key>
+      \t<string>/Library/scripts/call_mom.sh</string>
+      \t<key>StartCalendarInterval</key>
+      \t<array>
+      \t\t<dict>
+      \t\t\t<key>Hour</key>
+      \t\t\t<integer>11</integer>
+      \t\t\t<key>Weekday</key>
+      \t\t\t<integer>1</integer>
+      \t\t</dict>
+      \t\t<dict>
+      \t\t\t<key>Hour</key>
+      \t\t\t<integer>12</integer>
+      \t\t\t<key>Weekday</key>
+      \t\t\t<integer>2</integer>
+      \t\t</dict>
+      \t</array>
+      \t<key>TimeOut</key>
+      \t<integer>300</integer>
+      </dict>
+      </plist>
 XML
 
     let(:test_hash) do

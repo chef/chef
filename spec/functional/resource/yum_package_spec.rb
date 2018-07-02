@@ -45,12 +45,12 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
   before(:each) do
     File.open("/etc/yum.repos.d/chef-yum-localtesting.repo", "w+") do |f|
-      f.write <<-EOF
-[chef-yum-localtesting]
-name=Chef DNF spec testing repo
-baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
-enable=1
-gpgcheck=0
+      f.write <<~EOF
+        [chef-yum-localtesting]
+        name=Chef DNF spec testing repo
+        baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
+        enable=1
+        gpgcheck=0
       EOF
     end
     shell_out!("rpm -qa --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | grep chef_rpm | xargs -r rpm -e")

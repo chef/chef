@@ -209,12 +209,12 @@ class Chef
 
         unless cookbook_repo.merged_cookbooks.empty?
           ui.warn "* " * 40
-          ui.warn(<<-WARNING)
-The cookbooks: #{cookbook_repo.merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path.
-A composite version of these cookbooks has been compiled for uploading.
-
-#{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this behavior will be removed and you will no longer
-be able to have the same version of a cookbook in multiple places in your cookbook_path.
+          ui.warn(<<~WARNING)
+            The cookbooks: #{cookbook_repo.merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path.
+            A composite version of these cookbooks has been compiled for uploading.
+            
+            #{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this behavior will be removed and you will no longer
+            be able to have the same version of a cookbook in multiple places in your cookbook_path.
 WARNING
           ui.warn "The affected cookbooks are located:"
           ui.output ui.format_for_display(cookbook_repo.merged_cookbook_paths)

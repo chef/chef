@@ -75,11 +75,11 @@ class Chef
         confirm("Overwrite #{config_file_path}") if ::File.exist?(config_file_path)
 
         ::File.open(config_file_path, "w") do |f|
-          f.puts <<-EOH
-[default]
-client_name     = '#{new_client_name}'
-client_key      = '#{new_client_key}'
-chef_server_url = '#{chef_server}'
+          f.puts <<~EOH
+            [default]
+            client_name     = '#{new_client_name}'
+            client_key      = '#{new_client_key}'
+            chef_server_url = '#{chef_server}'
 EOH
         end
 

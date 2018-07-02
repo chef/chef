@@ -245,9 +245,9 @@ describe Chef::Role do
     end
   end
 
-  ROLE_DSL = <<-EOR
-name "ceiling_cat"
-description "like Aliens, but furry"
+  ROLE_DSL = <<~EOR
+    name "ceiling_cat"
+    description "like Aliens, but furry"
 EOR
 
   describe "when loading from disk" do

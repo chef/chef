@@ -258,10 +258,10 @@ describe Chef::Runner do
       end
       expect(exception).to be_a(Chef::Exceptions::MultipleFailures)
 
-      expected_message = <<-E
-Multiple failures occurred:
-* FailureProvider::ChefClientFail occurred in delayed notification: [explode] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
-* FailureProvider::ChefClientFail occurred in delayed notification: [explode again] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
+      expected_message = <<~E
+        Multiple failures occurred:
+        * FailureProvider::ChefClientFail occurred in delayed notification: [explode] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
+        * FailureProvider::ChefClientFail occurred in delayed notification: [explode again] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
       E
       expect(exception.message).to eq(expected_message)
 

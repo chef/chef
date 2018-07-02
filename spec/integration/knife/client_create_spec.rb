@@ -33,11 +33,11 @@ describe "knife client create", :workstation do
 
     it "creates a new validator client" do
       knife("client create -k --validator bah").should_succeed stderr: out
-      knife("client show bah").should_succeed <<EOM
-admin:     false
-chef_type: client
-name:      bah
-validator: true
+      knife("client show bah").should_succeed <<~EOM
+        admin:     false
+        chef_type: client
+        name:      bah
+        validator: true
 EOM
     end
 

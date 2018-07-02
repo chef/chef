@@ -34,13 +34,13 @@ describe Chef::Provider::Package::Apt do
     @status = double("Status", exitstatus: 0)
     @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
     @stdin = StringIO.new
-    @stdout = <<-PKG_STATUS
-irssi:
-  Installed: (none)
-  Candidate: 0.8.14-1ubuntu4
-  Version table:
-     0.8.14-1ubuntu4 0
-        500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
+    @stdout = <<~PKG_STATUS
+      irssi:
+        Installed: (none)
+        Candidate: 0.8.14-1ubuntu4
+        Version table:
+           0.8.14-1ubuntu4 0
+              500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
     PKG_STATUS
     @stderr = ""
     @shell_out = OpenStruct.new(stdout: @stdout, stdin: @stdin, stderr: @stderr, status: @status, exitstatus: 0)
@@ -65,17 +65,17 @@ irssi:
     end
 
     it "should set the installed version if package has one" do
-      @stdout.replace(<<-INSTALLED)
-sudo:
-  Installed: 1.7.2p1-1ubuntu5.3
-  Candidate: 1.7.2p1-1ubuntu5.3
-  Version table:
- *** 1.7.2p1-1ubuntu5.3 0
-        500 http://us.archive.ubuntu.com/ubuntu/ lucid-updates/main Packages
-        500 http://security.ubuntu.com/ubuntu/ lucid-security/main Packages
-        100 /var/lib/dpkg/status
-     1.7.2p1-1ubuntu5 0
-        500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
+      @stdout.replace(<<~INSTALLED)
+        sudo:
+          Installed: 1.7.2p1-1ubuntu5.3
+          Candidate: 1.7.2p1-1ubuntu5.3
+          Version table:
+         *** 1.7.2p1-1ubuntu5.3 0
+                500 http://us.archive.ubuntu.com/ubuntu/ lucid-updates/main Packages
+                500 http://security.ubuntu.com/ubuntu/ lucid-security/main Packages
+                100 /var/lib/dpkg/status
+             1.7.2p1-1ubuntu5 0
+                500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
       INSTALLED
       expect(@provider).to receive(:shell_out_compacted!).and_return(@shell_out)
       @provider.load_current_resource
@@ -86,8 +86,8 @@ sudo:
     # it is the superclasses responsibility to throw most exceptions
     it "if the package does not exist in the cache sets installed + candidate version to nil" do
       @new_resource.package_name("conic-smarms")
-      policy_out = <<-POLICY_STDOUT
-N: Unable to locate package conic-smarms
+      policy_out = <<~POLICY_STDOUT
+        N: Unable to locate package conic-smarms
       POLICY_STDOUT
       policy = double(stdout: policy_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
@@ -95,8 +95,8 @@ N: Unable to locate package conic-smarms
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(policy)
-      showpkg_out = <<-SHOWPKG_STDOUT
-N: Unable to locate package conic-smarms
+      showpkg_out = <<~SHOWPKG_STDOUT
+        N: Unable to locate package conic-smarms
       SHOWPKG_STDOUT
       showpkg = double(stdout: showpkg_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
@@ -111,11 +111,11 @@ N: Unable to locate package conic-smarms
     # list of virtual packages: http://www.debian.org/doc/packaging-manuals/virtual-package-names-list.txt
     it "should not install the virtual package there is a single provider package and it is installed" do
       @new_resource.package_name("libmysqlclient15-dev")
-      virtual_package_out = <<-VPKG_STDOUT
-libmysqlclient15-dev:
-  Installed: (none)
-  Candidate: (none)
-  Version table:
+      virtual_package_out = <<~VPKG_STDOUT
+        libmysqlclient15-dev:
+          Installed: (none)
+          Candidate: (none)
+          Version table:
       VPKG_STDOUT
       virtual_package = double(stdout: virtual_package_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
@@ -123,23 +123,23 @@ libmysqlclient15-dev:
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(virtual_package)
-      showpkg_out = <<-SHOWPKG_STDOUT
-Package: libmysqlclient15-dev
-Versions:
-
-Reverse Depends:
-  libmysqlclient-dev,libmysqlclient15-dev
-  libmysqlclient-dev,libmysqlclient15-dev
-  libmysqlclient-dev,libmysqlclient15-dev
-  libmysqlclient-dev,libmysqlclient15-dev
-  libmysqlclient-dev,libmysqlclient15-dev
-  libmysqlclient-dev,libmysqlclient15-dev
-Dependencies:
-Provides:
-Reverse Provides:
-libmysqlclient-dev 5.1.41-3ubuntu12.7
-libmysqlclient-dev 5.1.41-3ubuntu12.10
-libmysqlclient-dev 5.1.41-3ubuntu12
+      showpkg_out = <<~SHOWPKG_STDOUT
+        Package: libmysqlclient15-dev
+        Versions:
+        
+        Reverse Depends:
+          libmysqlclient-dev,libmysqlclient15-dev
+          libmysqlclient-dev,libmysqlclient15-dev
+          libmysqlclient-dev,libmysqlclient15-dev
+          libmysqlclient-dev,libmysqlclient15-dev
+          libmysqlclient-dev,libmysqlclient15-dev
+          libmysqlclient-dev,libmysqlclient15-dev
+        Dependencies:
+        Provides:
+        Reverse Provides:
+        libmysqlclient-dev 5.1.41-3ubuntu12.7
+        libmysqlclient-dev 5.1.41-3ubuntu12.10
+        libmysqlclient-dev 5.1.41-3ubuntu12
       SHOWPKG_STDOUT
       showpkg = double(stdout: showpkg_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
@@ -147,18 +147,18 @@ libmysqlclient-dev 5.1.41-3ubuntu12
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(showpkg)
-      real_package_out = <<-RPKG_STDOUT
-libmysqlclient-dev:
-  Installed: 5.1.41-3ubuntu12.10
-  Candidate: 5.1.41-3ubuntu12.10
-  Version table:
- *** 5.1.41-3ubuntu12.10 0
-        500 http://us.archive.ubuntu.com/ubuntu/ lucid-updates/main Packages
-        100 /var/lib/dpkg/status
-     5.1.41-3ubuntu12.7 0
-        500 http://security.ubuntu.com/ubuntu/ lucid-security/main Packages
-     5.1.41-3ubuntu12 0
-        500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
+      real_package_out = <<~RPKG_STDOUT
+        libmysqlclient-dev:
+          Installed: 5.1.41-3ubuntu12.10
+          Candidate: 5.1.41-3ubuntu12.10
+          Version table:
+         *** 5.1.41-3ubuntu12.10 0
+                500 http://us.archive.ubuntu.com/ubuntu/ lucid-updates/main Packages
+                100 /var/lib/dpkg/status
+             5.1.41-3ubuntu12.7 0
+                500 http://security.ubuntu.com/ubuntu/ lucid-security/main Packages
+             5.1.41-3ubuntu12 0
+                500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
       RPKG_STDOUT
       real_package = double(stdout: real_package_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
@@ -171,11 +171,11 @@ libmysqlclient-dev:
 
     it "should raise an exception if you specify a virtual package with multiple provider packages" do
       @new_resource.package_name("mp3-decoder")
-      virtual_package_out = <<-VPKG_STDOUT
-mp3-decoder:
-  Installed: (none)
-  Candidate: (none)
-  Version table:
+      virtual_package_out = <<~VPKG_STDOUT
+        mp3-decoder:
+          Installed: (none)
+          Candidate: (none)
+          Version table:
       VPKG_STDOUT
       virtual_package = double(stdout: virtual_package_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
@@ -183,26 +183,26 @@ mp3-decoder:
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(virtual_package)
-      showpkg_out = <<-SHOWPKG_STDOUT
-Package: mp3-decoder
-Versions:
-
-Reverse Depends:
-  nautilus,mp3-decoder
-  vux,mp3-decoder
-  plait,mp3-decoder
-  ecasound,mp3-decoder
-  nautilus,mp3-decoder
-Dependencies:
-Provides:
-Reverse Provides:
-vlc-nox 1.0.6-1ubuntu1.8
-vlc 1.0.6-1ubuntu1.8
-vlc-nox 1.0.6-1ubuntu1
-vlc 1.0.6-1ubuntu1
-opencubicplayer 1:0.1.17-2
-mpg321 0.2.10.6
-mpg123 1.12.1-0ubuntu1
+      showpkg_out = <<~SHOWPKG_STDOUT
+        Package: mp3-decoder
+        Versions:
+        
+        Reverse Depends:
+          nautilus,mp3-decoder
+          vux,mp3-decoder
+          plait,mp3-decoder
+          ecasound,mp3-decoder
+          nautilus,mp3-decoder
+        Dependencies:
+        Provides:
+        Reverse Provides:
+        vlc-nox 1.0.6-1ubuntu1.8
+        vlc 1.0.6-1ubuntu1.8
+        vlc-nox 1.0.6-1ubuntu1
+        vlc 1.0.6-1ubuntu1
+        opencubicplayer 1:0.1.17-2
+        mpg321 0.2.10.6
+        mpg123 1.12.1-0ubuntu1
       SHOWPKG_STDOUT
       showpkg = double(stdout: showpkg_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(

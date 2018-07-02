@@ -48,15 +48,15 @@ describe Chef::Provider::Service::Macosx do
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
     let(:provider) { described_class.new(new_resource, run_context) }
     let(:launchctl_stdout) { StringIO.new }
-    let(:plutil_stdout) { String.new <<-XML }
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key>
-  <string>io.redis.redis-server</string>
-</dict>
-</plist>
+    let(:plutil_stdout) { String.new <<~XML }
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>Label</key>
+        <string>io.redis.redis-server</string>
+      </dict>
+      </plist>
 XML
 
     %w{Daemon Agent}.each do |service_type|
@@ -136,20 +136,20 @@ XML
               end
 
               context "when launchctl returns pid in service list" do
-                let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-{
-  "LimitLoadToSessionType" = "System";
-  "Label" = "io.redis.redis-server";
-  "TimeOut" = 30;
-  "OnDemand" = false;
-  "LastExitStatus" = 0;
-  "PID" = 62803;
-  "Program" = "do_some.sh";
-  "ProgramArguments" = (
-    "path/to/do_something.sh";
-    "-f";
-  );
-};
+                let(:launchctl_stdout) { StringIO.new <<~SVC_LIST }
+                  {
+                    "LimitLoadToSessionType" = "System";
+                    "Label" = "io.redis.redis-server";
+                    "TimeOut" = 30;
+                    "OnDemand" = false;
+                    "LastExitStatus" = 0;
+                    "PID" = 62803;
+                    "Program" = "do_some.sh";
+                    "ProgramArguments" = (
+                      "path/to/do_something.sh";
+                      "-f";
+                    );
+                  };
 SVC_LIST
 
                 before do
@@ -175,19 +175,19 @@ SVC_LIST
                 end
               end
               context "when launchctl returns empty service pid" do
-                let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-{
-  "LimitLoadToSessionType" = "System";
-  "Label" = "io.redis.redis-server";
-  "TimeOut" = 30;
-  "OnDemand" = false;
-  "LastExitStatus" = 0;
-  "Program" = "do_some.sh";
-  "ProgramArguments" = (
-    "path/to/do_something.sh";
-    "-f";
-  );
-};
+                let(:launchctl_stdout) { StringIO.new <<~SVC_LIST }
+                  {
+                    "LimitLoadToSessionType" = "System";
+                    "Label" = "io.redis.redis-server";
+                    "TimeOut" = 30;
+                    "OnDemand" = false;
+                    "LastExitStatus" = 0;
+                    "Program" = "do_some.sh";
+                    "ProgramArguments" = (
+                      "path/to/do_something.sh";
+                      "-f";
+                    );
+                  };
 SVC_LIST
 
                 before do
@@ -204,8 +204,8 @@ SVC_LIST
               end
 
               context "when launchctl doesn't return service entry at all" do
-                let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-Could not find service "io.redis.redis-server" in domain for system
+                let(:launchctl_stdout) { StringIO.new <<~SVC_LIST }
+                  Could not find service "io.redis.redis-server" in domain for system
 SVC_LIST
 
                 it "sets service running state to false" do

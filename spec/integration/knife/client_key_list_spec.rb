@@ -41,10 +41,10 @@ describe "knife client key list", :workstation do
     end
 
     it "shows detailed output" do
-      knife("client key list -w cons").should_succeed <<EOM
-expired:    http://127.0.0.1:8900/clients/cons/keys/expired (expired)
-new:        http://127.0.0.1:8900/clients/cons/keys/new
-next_month: http://127.0.0.1:8900/clients/cons/keys/next_month
+      knife("client key list -w cons").should_succeed <<~EOM
+        expired:    http://127.0.0.1:8900/clients/cons/keys/expired (expired)
+        new:        http://127.0.0.1:8900/clients/cons/keys/new
+        next_month: http://127.0.0.1:8900/clients/cons/keys/next_month
 EOM
     end
 

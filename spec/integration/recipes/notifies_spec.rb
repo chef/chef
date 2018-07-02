@@ -26,10 +26,10 @@ describe "notifications" do
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
@@ -43,34 +43,34 @@ EOM
     before do
       directory "cookbooks/x" do
 
-        file "resources/notifying_test.rb", <<EOM
-default_action :run
-provides :notifying_test
-resource_name :notifying_test
-
-action :run do
-  log "bar" do
-    notifies :write, 'log[foo]', :delayed
-  end
-end
+        file "resources/notifying_test.rb", <<~EOM
+          default_action :run
+          provides :notifying_test
+          resource_name :notifying_test
+          
+          action :run do
+            log "bar" do
+              notifies :write, 'log[foo]', :delayed
+            end
+          end
 EOM
 
-        file "recipes/default.rb", <<EOM
-log "foo" do
-  action :nothing
-end
-notifying_test "whatever"
-log "baz"
+        file "recipes/default.rb", <<~EOM
+          log "foo" do
+            action :nothing
+          end
+          notifying_test "whatever"
+          log "baz"
 EOM
 
       end
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
@@ -84,36 +84,36 @@ EOM
     before do
       directory "cookbooks/x" do
 
-        file "resources/notifying_test.rb", <<EOM
-default_action :run
-provides :notifying_test
-resource_name :notifying_test
-
-action :run do
-  log "bar" do
-    notifies :write, 'log[foo]', :delayed
-  end
-end
+        file "resources/notifying_test.rb", <<~EOM
+          default_action :run
+          provides :notifying_test
+          resource_name :notifying_test
+          
+          action :run do
+            log "bar" do
+              notifies :write, 'log[foo]', :delayed
+            end
+          end
 EOM
 
-        file "recipes/default.rb", <<EOM
-log "foo" do
-  action :nothing
-end
-notifying_test "whatever"
-log "baz" do
-  notifies :write, 'log[foo]', :delayed
-end
+        file "recipes/default.rb", <<~EOM
+          log "foo" do
+            action :nothing
+          end
+          notifying_test "whatever"
+          log "baz" do
+            notifies :write, 'log[foo]', :delayed
+          end
 EOM
 
       end
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
@@ -129,38 +129,38 @@ EOM
     before do
       directory "cookbooks/x" do
 
-        file "resources/notifying_test.rb", <<EOM
-default_action :run
-provides :notifying_test
-resource_name :notifying_test
-
-action :run do
-  log "bar" do
-    notifies :write, 'log[foo]', :delayed
-  end
-end
+        file "resources/notifying_test.rb", <<~EOM
+          default_action :run
+          provides :notifying_test
+          resource_name :notifying_test
+          
+          action :run do
+            log "bar" do
+              notifies :write, 'log[foo]', :delayed
+            end
+          end
 EOM
 
-        file "recipes/default.rb", <<EOM
-log "foo" do
-  action :nothing
-end
-log "quux" do
-  notifies :write, 'log[foo]', :delayed
-  notifies :write, 'log[baz]', :delayed
-end
-notifying_test "whatever"
-log "baz"
+        file "recipes/default.rb", <<~EOM
+          log "foo" do
+            action :nothing
+          end
+          log "quux" do
+            notifies :write, 'log[foo]', :delayed
+            notifies :write, 'log[baz]', :delayed
+          end
+          notifying_test "whatever"
+          log "baz"
 EOM
 
       end
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
@@ -175,26 +175,26 @@ EOM
   when_the_repository "notifies delayed four" do
     before do
       directory "cookbooks/x" do
-        file "recipes/default.rb", <<EOM
-log "foo" do
-  action :nothing
-end
-log "bar" do
-  notifies :write, 'log[foo]', :delayed
-end
-log "baz" do
-  notifies :write, 'log[foo]', :delayed
-end
+        file "recipes/default.rb", <<~EOM
+          log "foo" do
+            action :nothing
+          end
+          log "bar" do
+            notifies :write, 'log[foo]', :delayed
+          end
+          log "baz" do
+            notifies :write, 'log[foo]', :delayed
+          end
 EOM
 
       end
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
@@ -210,34 +210,34 @@ EOM
     before do
       directory "cookbooks/x" do
 
-        file "resources/notifying_test.rb", <<EOM
-default_action :run
-provides :notifying_test
-resource_name :notifying_test
-
-action :run do
-  log "bar" do
-    notifies :write, 'log[foo]', :immediately
-  end
-end
+        file "resources/notifying_test.rb", <<~EOM
+          default_action :run
+          provides :notifying_test
+          resource_name :notifying_test
+          
+          action :run do
+            log "bar" do
+              notifies :write, 'log[foo]', :immediately
+            end
+          end
 EOM
 
-        file "recipes/default.rb", <<EOM
-log "foo" do
-  action :nothing
-end
-notifying_test "whatever"
-log "baz"
+        file "recipes/default.rb", <<~EOM
+          log "foo" do
+            action :nothing
+          end
+          notifying_test "whatever"
+          log "baz"
 EOM
 
       end
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
@@ -250,34 +250,34 @@ EOM
     before do
       directory "cookbooks/x" do
 
-        file "resources/notifying_test.rb", <<EOM
-default_action :run
-provides :notifying_test
-resource_name :notifying_test
-
-action :run do
-  log "bar" do
-    notifies :write, resources(log: "foo"), :immediately
-  end
-end
+        file "resources/notifying_test.rb", <<~EOM
+          default_action :run
+          provides :notifying_test
+          resource_name :notifying_test
+          
+          action :run do
+            log "bar" do
+              notifies :write, resources(log: "foo"), :immediately
+            end
+          end
 EOM
 
-        file "recipes/default.rb", <<EOM
-log "foo" do
-  action :nothing
-end
-notifying_test "whatever"
-log "baz"
+        file "recipes/default.rb", <<~EOM
+          log "foo" do
+            action :nothing
+          end
+          notifying_test "whatever"
+          log "baz"
 EOM
 
       end
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
@@ -290,31 +290,31 @@ EOM
     before do
       directory "cookbooks/x" do
 
-        file "resources/notifying_test.rb", <<EOM
-default_action :run
-provides :notifying_test
-resource_name :notifying_test
-
-action :run do
-  log "bar" do
-    notifies :write, "log[foo]"
-  end
-end
+        file "resources/notifying_test.rb", <<~EOM
+          default_action :run
+          provides :notifying_test
+          resource_name :notifying_test
+          
+          action :run do
+            log "bar" do
+              notifies :write, "log[foo]"
+            end
+          end
 EOM
 
-        file "recipes/default.rb", <<EOM
-notifying_test "whatever"
-log "baz"
+        file "recipes/default.rb", <<~EOM
+          notifying_test "whatever"
+          log "baz"
 EOM
 
       end
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
@@ -327,34 +327,34 @@ EOM
     before do
       directory "cookbooks/x" do
 
-        file "resources/cloning_test.rb", <<EOM
-default_action :run
-provides :cloning_test
-resource_name :cloning_test
-
-action :run do
-  log "bar" do
-    level :info
-  end
-end
+        file "resources/cloning_test.rb", <<~EOM
+          default_action :run
+          provides :cloning_test
+          resource_name :cloning_test
+          
+          action :run do
+            log "bar" do
+              level :info
+            end
+          end
 EOM
 
-        file "recipes/default.rb", <<EOM
-log "bar" do
-  level :warn
-end
-
-cloning_test "whatever"
+        file "recipes/default.rb", <<~EOM
+          log "bar" do
+            level :warn
+          end
+          
+          cloning_test "whatever"
 EOM
 
       end
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
@@ -379,10 +379,10 @@ EOM
     end
 
     it "notifying the resource should work" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)

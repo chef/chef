@@ -147,21 +147,21 @@ describe Chef::Provider::Template::Content do
     end
 
     it "creates the template with the rendered content" do
-      expect(IO.read(content.tempfile.path)).to eql <<EOF
-openldap
-default
-#{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb:2:in `from_file'
-#{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb
-2
-helpers.erb
-#{CHEF_SPEC_DATA}/cookbooks/openldap/templates/default/helpers.erb
-openldap
-default
-#{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb:2:in `from_file'
-#{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb
-2
-helpers.erb
-#{CHEF_SPEC_DATA}/cookbooks/openldap/templates/default/helpers.erb
+      expect(IO.read(content.tempfile.path)).to eql <<~EOF
+        openldap
+        default
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb:2:in `from_file'
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb
+        2
+        helpers.erb
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/templates/default/helpers.erb
+        openldap
+        default
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb:2:in `from_file'
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb
+        2
+        helpers.erb
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/templates/default/helpers.erb
 EOF
     end
 

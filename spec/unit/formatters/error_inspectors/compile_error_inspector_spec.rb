@@ -18,22 +18,22 @@
 
 require "spec_helper"
 
-BAD_RECIPE = <<-E
-#
-# Cookbook Name:: syntax-err
-# Recipe:: default
-#
-# Copyright 2012-2016, YOUR_COMPANY_NAME
-#
-# All rights reserved - Do Not Redistribute
-#
-
-
-file "/tmp/explode-me" do
-  mode 0655
-  owner "root"
-  this_is_not_a_valid_method
-end
+BAD_RECIPE = <<~E
+  #
+  # Cookbook Name:: syntax-err
+  # Recipe:: default
+  #
+  # Copyright 2012-2016, YOUR_COMPANY_NAME
+  #
+  # All rights reserved - Do Not Redistribute
+  #
+  
+  
+  file "/tmp/explode-me" do
+    mode 0655
+    owner "root"
+    this_is_not_a_valid_method
+  end
 E
 
 describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do

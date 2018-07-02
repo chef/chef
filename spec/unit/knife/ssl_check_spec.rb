@@ -67,11 +67,11 @@ describe Chef::Knife::SslCheck do
 
     it "prints an error and exits" do
       expect { ssl_check.run }.to raise_error(SystemExit)
-      expected_stdout = <<-E
-USAGE: knife ssl check [URL] (options)
+      expected_stdout = <<~E
+        USAGE: knife ssl check [URL] (options)
 E
-      expected_stderr = <<-E
-ERROR: Given URI: `foo.test' is invalid
+      expected_stderr = <<~E
+        ERROR: Given URI: `foo.test' is invalid
 E
       expect(stdout_io.string).to eq(expected_stdout)
       expect(stderr_io.string).to eq(expected_stderr)
@@ -83,11 +83,11 @@ E
 
       it "prints an error and exits" do
         expect { ssl_check.run }.to raise_error(SystemExit)
-        expected_stdout = <<-E
-USAGE: knife ssl check [URL] (options)
+        expected_stdout = <<~E
+          USAGE: knife ssl check [URL] (options)
 E
-        expected_stderr = <<-E
-ERROR: Given URI: `#{name_args[0]}' is invalid
+        expected_stderr = <<~E
+          ERROR: Given URI: `#{name_args[0]}' is invalid
 E
         expect(stdout_io.string).to eq(expected_stdout)
         expect(stderr_io.string).to eq(expected_stderr)

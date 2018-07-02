@@ -22,32 +22,32 @@ require "ostruct"
 describe Chef::Provider::Mount::Aix do
 
   before(:all) do
-    @mounted_output = <<-MOUNT
-  node       mounted        mounted over    vfs       date        options
--------- ---------------  ---------------  ------ ------------ ---------------
-         /dev/sdz1         /tmp/foo         jfs2   Jul 17 13:22 rw,log=/dev/hd8
+    @mounted_output = <<~MOUNT
+        node       mounted        mounted over    vfs       date        options
+      -------- ---------------  ---------------  ------ ------------ ---------------
+               /dev/sdz1         /tmp/foo         jfs2   Jul 17 13:22 rw,log=/dev/hd8
 MOUNT
 
-    @unmounted_output = <<-UNMOUNTED
-  node       mounted        mounted over    vfs       date        options
--------- ---------------  ---------------  ------ ------------ ---------------
-         /dev/sdz2         /                jfs2   Jul 17 13:22 rw,log=/dev/hd8
+    @unmounted_output = <<~UNMOUNTED
+        node       mounted        mounted over    vfs       date        options
+      -------- ---------------  ---------------  ------ ------------ ---------------
+               /dev/sdz2         /                jfs2   Jul 17 13:22 rw,log=/dev/hd8
 UNMOUNTED
 
-    @conflict_mounted_output = <<-MOUNT
-  node       mounted        mounted over    vfs       date        options
--------- ---------------  ---------------  ------ ------------ ---------------
-         /dev/sdz3         /tmp/foo         jfs2   Jul 17 13:22 rw,log=/dev/hd8
+    @conflict_mounted_output = <<~MOUNT
+        node       mounted        mounted over    vfs       date        options
+      -------- ---------------  ---------------  ------ ------------ ---------------
+               /dev/sdz3         /tmp/foo         jfs2   Jul 17 13:22 rw,log=/dev/hd8
 MOUNT
 
-    @enabled_output = <<-ENABLED
-#MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
-/tmp/foo:/dev/sdz1:jfs2::bootfs:10485760:rw:yes:no
+    @enabled_output = <<~ENABLED
+      #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
+      /tmp/foo:/dev/sdz1:jfs2::bootfs:10485760:rw:yes:no
 ENABLED
 
-    @test_wrong_output = <<-WRONG
-#MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
-/tmp/foo::/dev/sdz1:jfs2:bootfs:10485760:rw:yes:no
+    @test_wrong_output = <<~WRONG
+      #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
+      /tmp/foo::/dev/sdz1:jfs2:bootfs:10485760:rw:yes:no
 WRONG
   end
 
@@ -232,22 +232,22 @@ WRONG
     it "should disable mount if it is mounted and enabled" do
       stub_mounted_enabled(@provider, @mounted_output, @enabled_output)
 
-      allow(::File).to receive(:open).with("/etc/filesystems", "r").and_return(<<-ETCFILESYSTEMS)
-/tmp/foo:
-  dev   = /dev/sdz1
-  vfs   = jfs2
-  log   = /dev/hd8
-  mount   = true
-  check   = true
-  vol   = /opt
-  free    = false
-  quota   = no
-
-/tmp/abc:
-  dev   = /dev/sdz2
-  vfs   = jfs2
-  mount   = true
-  options   = rw
+      allow(::File).to receive(:open).with("/etc/filesystems", "r").and_return(<<~ETCFILESYSTEMS)
+        /tmp/foo:
+          dev   = /dev/sdz1
+          vfs   = jfs2
+          log   = /dev/hd8
+          mount   = true
+          check   = true
+          vol   = /opt
+          free    = false
+          quota   = no
+        
+        /tmp/abc:
+          dev   = /dev/sdz2
+          vfs   = jfs2
+          mount   = true
+          options   = rw
 ETCFILESYSTEMS
 
       filesystems = StringIO.new

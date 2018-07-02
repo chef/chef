@@ -99,10 +99,10 @@ describe Chef::Audit::AuditReporter do
           reporter.run_completed(node)
           expect(run_data).to have_key(:error)
           expect(run_data).to have_key(:error)
-          expect(run_data[:error]).to eq <<-EOM.strip!
-Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
-/path/recipe.rb:57
-/path/library.rb:106
+          expect(run_data[:error]).to eq <<~EOM.strip!
+            Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
+            /path/recipe.rb:57
+            /path/library.rb:106
 EOM
         end
 
@@ -269,10 +269,10 @@ EOM
         expect(rest).to receive(:post)
         reporter.run_failed(run_error)
         expect(run_data).to have_key(:error)
-        expect(run_data[:error]).to eq <<-EOM.strip!
-Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
-/path/recipe.rb:57
-/path/library.rb:106
+        expect(run_data[:error]).to eq <<~EOM.strip!
+          Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
+          /path/recipe.rb:57
+          /path/library.rb:106
 EOM
       end
     end

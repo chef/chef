@@ -28,17 +28,17 @@ describe "chef-client" do
   when_the_repository "uses RFC 062 defined exit codes" do
 
     def setup_client_rb
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
     end
 
     def setup_client_rb_with_audit_mode
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-audit_mode :audit_only
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        audit_mode :audit_only
 EOM
     end
 
@@ -66,12 +66,12 @@ EOM
       context "with an audit recipe" do
         context "which fails" do
           before do
-            file "cookbooks/x/recipes/default.rb", <<-RECIPE
-control_group "control group without top level control" do
-  it "should fail" do
-    expect(4 - 4).to eq(1)
-  end
-end
+            file "cookbooks/x/recipes/default.rb", <<~RECIPE
+              control_group "control group without top level control" do
+                it "should fail" do
+                  expect(4 - 4).to eq(1)
+                end
+              end
 RECIPE
           end
 
@@ -112,8 +112,8 @@ RECIPE
 
         context "when a reboot exception is raised (like from the reboot resource)" do
           before do
-            file "cookbooks/x/recipes/default.rb", <<EOM
-raise Chef::Exceptions::Reboot.new
+            file "cookbooks/x/recipes/default.rb", <<~EOM
+              raise Chef::Exceptions::Reboot.new
 EOM
           end
 
@@ -125,8 +125,8 @@ EOM
 
         context "when an attempt to reboot fails (like from the reboot resource)" do
           before do
-            file "cookbooks/x/recipes/default.rb", <<EOM
-raise Chef::Exceptions::RebootFailed.new
+            file "cookbooks/x/recipes/default.rb", <<~EOM
+              raise Chef::Exceptions::RebootFailed.new
 EOM
           end
 

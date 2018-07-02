@@ -69,12 +69,12 @@ describe Chef::Knife::Core::BootstrapContext do
   end
 
   it "generates the config file data" do
-    expected = <<-EXPECTED
-chef_server_url  "http://chef.example.com:4444"
-validation_client_name "chef-validator-testing"
-log_level   :info
-log_location   "/tmp/log"
-# Using default node name (fqdn)
+    expected = <<~EXPECTED
+      chef_server_url  "http://chef.example.com:4444"
+      validation_client_name "chef-validator-testing"
+      log_level   :info
+      log_location   "/tmp/log"
+      # Using default node name (fqdn)
 EXPECTED
     expect(bootstrap_context.config_content).to eq expected
   end

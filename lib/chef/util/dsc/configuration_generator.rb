@@ -81,16 +81,16 @@ class Chef::Util::DSC
     end
 
     def configuration_code(code, configuration_name, imports)
-      <<-EOF
-$ProgressPreference = 'SilentlyContinue';
-Configuration '#{configuration_name}'
-{
-  #{generate_import_resource_statements(imports).join("  \n")}
-  node 'localhost'
-  {
-    #{code}
-  }
-}
+      <<~EOF
+        $ProgressPreference = 'SilentlyContinue';
+        Configuration '#{configuration_name}'
+        {
+          #{generate_import_resource_statements(imports).join("  \n")}
+          node 'localhost'
+          {
+            #{code}
+          }
+        }
       EOF
     end
 

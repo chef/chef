@@ -32,18 +32,18 @@ describe "knife node bulk delete", :workstation do
     end
 
     it "deletes all matching nodes" do
-      knife("node bulk delete ^ca.*", input: "Y").should_succeed <<EOM
-The following nodes will be deleted:
-
-car  cat
-
-Are you sure you want to delete these nodes? (Y/N) Deleted node car
-Deleted node cat
+      knife("node bulk delete ^ca.*", input: "Y").should_succeed <<~EOM
+        The following nodes will be deleted:
+        
+        car  cat
+        
+        Are you sure you want to delete these nodes? (Y/N) Deleted node car
+        Deleted node cat
 EOM
 
-      knife("node list").should_succeed <<EOM
-cdr
-cons
+      knife("node list").should_succeed <<~EOM
+        cdr
+        cons
 EOM
     end
   end

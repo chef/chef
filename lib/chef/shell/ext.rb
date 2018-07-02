@@ -190,12 +190,12 @@ module Shell
       extend Shell::Extensions::ObjectCoreExtensions
 
       desc "prints this help message"
-      explain(<<-E)
-## SUMMARY ##
-  When called with no argument, +help+ prints a table of all
-  chef-shell commands. When called with an argument COMMAND, +help+
-  prints a detailed explanation of the command if available, or the
-  description if no explanation is available.
+      explain(<<~E)
+        ## SUMMARY ##
+          When called with no argument, +help+ prints a table of all
+          chef-shell commands. When called with an argument COMMAND, +help+
+          prints a detailed explanation of the command if available, or the
+          description if no explanation is available.
       E
       def help(commmand = nil)
         if commmand
@@ -302,18 +302,18 @@ module Shell
 
     RESTApiExtensions = Proc.new do
       desc "edit an object in your EDITOR"
-      explain(<<-E)
-## SUMMARY ##
-  +edit(object)+ allows you to edit any object that can be converted to JSON.
-  When finished editing, this method will return the edited object:
-
-      new_node = edit(existing_node)
-
-## EDITOR SELECTION ##
-  chef-shell looks for an editor using the following logic
-  1. Looks for an EDITOR set by Shell.editor = "EDITOR"
-  2. Looks for an EDITOR configured in your chef-shell config file
-  3. Uses the value of the EDITOR environment variable
+      explain(<<~E)
+        ## SUMMARY ##
+          +edit(object)+ allows you to edit any object that can be converted to JSON.
+          When finished editing, this method will return the edited object:
+        
+              new_node = edit(existing_node)
+        
+        ## EDITOR SELECTION ##
+          chef-shell looks for an editor using the following logic
+          1. Looks for an EDITOR set by Shell.editor = "EDITOR"
+          2. Looks for an EDITOR configured in your chef-shell config file
+          3. Uses the value of the EDITOR environment variable
       E
       def edit(object)
         unless Shell.editor
@@ -340,58 +340,58 @@ module Shell
       end
 
       desc "Find and edit API clients"
-      explain(<<-E)
-## SUMMARY ##
-  +clients+ allows you to query you chef server for information about your api
-  clients.
-
-## LIST ALL CLIENTS ##
-  To see all clients on the system, use
-
-      clients.all #=> [<Chef::ApiClient...>, ...]
-
-  If the output from all is too verbose, or you're only interested in a specific
-  value from each of the objects, you can give a code block to +all+:
-
-      clients.all { |client| client.name } #=> [CLIENT1_NAME, CLIENT2_NAME, ...]
-
-## SHOW ONE CLIENT ##
-  To see a specific client, use
-
-      clients.show(CLIENT_NAME)
-
-## SEARCH FOR CLIENTS ##
-  You can also search for clients using +find+ or +search+. You can use the
-  familiar string search syntax:
-
-      clients.search("KEY:VALUE")
-
-  Just as the +all+ subcommand, the +search+ subcommand can use a code block to
-  filter or transform the information returned from the search:
-
-      clients.search("KEY:VALUE") { |c| c.name }
-
-  You can also use a Hash based syntax, multiple search conditions will be
-  joined with AND.
-
-      clients.find :KEY => :VALUE, :KEY2 => :VALUE2, ...
-
-## BULK-EDIT CLIENTS ##
-                    **BE CAREFUL, THIS IS DESTRUCTIVE**
-  You can bulk edit API Clients using the +transform+ subcommand, which requires
-  a code block. Each client will be saved after the code block is run. If the
-  code block returns +nil+ or +false+, that client will be skipped:
-
-      clients.transform("*:*") do |client|
-        if client.name =~ /borat/i
-          client.admin(false)
-          true
-        else
-          nil
-        end
-      end
-
-  This will strip the admin privileges from any client named after borat.
+      explain(<<~E)
+        ## SUMMARY ##
+          +clients+ allows you to query you chef server for information about your api
+          clients.
+        
+        ## LIST ALL CLIENTS ##
+          To see all clients on the system, use
+        
+              clients.all #=> [<Chef::ApiClient...>, ...]
+        
+          If the output from all is too verbose, or you're only interested in a specific
+          value from each of the objects, you can give a code block to +all+:
+        
+              clients.all { |client| client.name } #=> [CLIENT1_NAME, CLIENT2_NAME, ...]
+        
+        ## SHOW ONE CLIENT ##
+          To see a specific client, use
+        
+              clients.show(CLIENT_NAME)
+        
+        ## SEARCH FOR CLIENTS ##
+          You can also search for clients using +find+ or +search+. You can use the
+          familiar string search syntax:
+        
+              clients.search("KEY:VALUE")
+        
+          Just as the +all+ subcommand, the +search+ subcommand can use a code block to
+          filter or transform the information returned from the search:
+        
+              clients.search("KEY:VALUE") { |c| c.name }
+        
+          You can also use a Hash based syntax, multiple search conditions will be
+          joined with AND.
+        
+              clients.find :KEY => :VALUE, :KEY2 => :VALUE2, ...
+        
+        ## BULK-EDIT CLIENTS ##
+                            **BE CAREFUL, THIS IS DESTRUCTIVE**
+          You can bulk edit API Clients using the +transform+ subcommand, which requires
+          a code block. Each client will be saved after the code block is run. If the
+          code block returns +nil+ or +false+, that client will be skipped:
+        
+              clients.transform("*:*") do |client|
+                if client.name =~ /borat/i
+                  client.admin(false)
+                  true
+                else
+                  nil
+                end
+              end
+        
+          This will strip the admin privileges from any client named after borat.
       E
       subcommands all: "list all api clients",
                   show: "load an api client by name",
@@ -410,50 +410,50 @@ module Shell
       end
 
       desc "Find and edit nodes via the API"
-      explain(<<-E)
-## SUMMARY ##
-  +nodes+ Allows you to query your chef server for information about your nodes.
-
-## LIST ALL NODES ##
-  You can list all nodes using +all+ or +list+
-
-      nodes.all #=> [<Chef::Node...>, <Chef::Node...>, ...]
-
-  To limit the information returned for each node, pass a code block to the +all+
-  subcommand:
-
-      nodes.all { |node| node.name } #=> [NODE1_NAME, NODE2_NAME, ...]
-
-## SHOW ONE NODE ##
-  You can show the data for a single node using the +show+ subcommand:
-
-      nodes.show("NODE_NAME") => <Chef::Node @name="NODE_NAME" ...>
-
-## SEARCH FOR NODES ##
-  You can search for nodes using the +search+ or +find+ subcommands:
-
-      nodes.find(:name => "app*") #=> [<Chef::Node @name="app1.example.com" ...>, ...]
-
-  Similarly to +all+, you can pass a code block to limit or transform the
-  information returned:
-
-      nodes.find(:name => "app#") { |node| node.ec2 }
-
-## BULK EDIT NODES ##
-              **BE CAREFUL, THIS OPERATION IS DESTRUCTIVE**
-
-  Bulk edit nodes by passing a code block to the +transform+ or +bulk_edit+
-  subcommand. The block will be applied to each matching node, and then the node
-  will be saved. If the block returns +nil+ or +false+, that node will be
-  skipped.
-
-      nodes.transform do |node|
-        if node.fqdn =~ /.*\\.preprod\\.example\\.com/
-          node.set[:environment] = "preprod"
-        end
-      end
-
-  This will assign the attribute to every node with a FQDN matching the regex.
+      explain(<<~E)
+        ## SUMMARY ##
+          +nodes+ Allows you to query your chef server for information about your nodes.
+        
+        ## LIST ALL NODES ##
+          You can list all nodes using +all+ or +list+
+        
+              nodes.all #=> [<Chef::Node...>, <Chef::Node...>, ...]
+        
+          To limit the information returned for each node, pass a code block to the +all+
+          subcommand:
+        
+              nodes.all { |node| node.name } #=> [NODE1_NAME, NODE2_NAME, ...]
+        
+        ## SHOW ONE NODE ##
+          You can show the data for a single node using the +show+ subcommand:
+        
+              nodes.show("NODE_NAME") => <Chef::Node @name="NODE_NAME" ...>
+        
+        ## SEARCH FOR NODES ##
+          You can search for nodes using the +search+ or +find+ subcommands:
+        
+              nodes.find(:name => "app*") #=> [<Chef::Node @name="app1.example.com" ...>, ...]
+        
+          Similarly to +all+, you can pass a code block to limit or transform the
+          information returned:
+        
+              nodes.find(:name => "app#") { |node| node.ec2 }
+        
+        ## BULK EDIT NODES ##
+                      **BE CAREFUL, THIS OPERATION IS DESTRUCTIVE**
+        
+          Bulk edit nodes by passing a code block to the +transform+ or +bulk_edit+
+          subcommand. The block will be applied to each matching node, and then the node
+          will be saved. If the block returns +nil+ or +false+, that node will be
+          skipped.
+        
+              nodes.transform do |node|
+                if node.fqdn =~ /.*\\.preprod\\.example\\.com/
+                  node.set[:environment] = "preprod"
+                end
+              end
+        
+          This will assign the attribute to every node with a FQDN matching the regex.
       E
       subcommands all: "list all nodes",
                   show: "load a node by name",
@@ -464,18 +464,18 @@ module Shell
       end
 
       desc "Find and edit roles via the API"
-      explain(<<-E)
-## SUMMARY ##
-  +roles+ allows you to query and edit roles on your Chef server.
-
-## SUBCOMMANDS ##
-  * all       (list)
-  * show      (load)
-  * search    (find)
-  * transform (bulk_edit)
-
-## SEE ALSO ##
-  See the help for +nodes+ for more information about the subcommands.
+      explain(<<~E)
+        ## SUMMARY ##
+          +roles+ allows you to query and edit roles on your Chef server.
+        
+        ## SUBCOMMANDS ##
+          * all       (list)
+          * show      (load)
+          * search    (find)
+          * transform (bulk_edit)
+        
+        ## SEE ALSO ##
+          See the help for +nodes+ for more information about the subcommands.
       E
       subcommands all: "list all roles",
                   show: "load a role by name",
@@ -486,22 +486,22 @@ module Shell
       end
 
       desc "Find and edit +databag_name+ via the api"
-      explain(<<-E)
-## SUMMARY ##
-  +databags(DATABAG_NAME)+ allows you to query and edit data bag items on your
-  Chef server. Unlike other commands for working with data on the server,
-  +databags+ requires the databag name as an argument, for example:
-    databags(:users).all
-
-## SUBCOMMANDS ##
-  * all       (list)
-  * show      (load)
-  * search    (find)
-  * transform (bulk_edit)
-
-## SEE ALSO ##
-  See the help for +nodes+ for more information about the subcommands.
-
+      explain(<<~E)
+        ## SUMMARY ##
+          +databags(DATABAG_NAME)+ allows you to query and edit data bag items on your
+          Chef server. Unlike other commands for working with data on the server,
+          +databags+ requires the databag name as an argument, for example:
+            databags(:users).all
+        
+        ## SUBCOMMANDS ##
+          * all       (list)
+          * show      (load)
+          * search    (find)
+          * transform (bulk_edit)
+        
+        ## SEE ALSO ##
+          See the help for +nodes+ for more information about the subcommands.
+        
       E
       subcommands all: "list all items in the data bag",
                   show: "load a data bag item by id",
@@ -513,18 +513,18 @@ module Shell
       end
 
       desc "Find and edit environments via the API"
-      explain(<<-E)
-## SUMMARY ##
-  +environments+ allows you to query and edit environments on your Chef server.
-
-## SUBCOMMANDS ##
-  * all       (list)
-  * show      (load)
-  * search    (find)
-  * transform (bulk_edit)
-
-## SEE ALSO ##
-  See the help for +nodes+ for more information about the subcommands.
+      explain(<<~E)
+        ## SUMMARY ##
+          +environments+ allows you to query and edit environments on your Chef server.
+        
+        ## SUBCOMMANDS ##
+          * all       (list)
+          * show      (load)
+          * search    (find)
+          * transform (bulk_edit)
+        
+        ## SEE ALSO ##
+          See the help for +nodes+ for more information about the subcommands.
       E
       subcommands all: "list all environments",
                   show: "load an environment by name",

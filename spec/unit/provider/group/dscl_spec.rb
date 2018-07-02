@@ -309,19 +309,19 @@ describe "Test DSCL loading" do
     @new_resource = Chef::Resource::Group.new("group name aj")
     @new_resource.group_name("aj")
     @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
-    @output = <<-EOF
-AppleMetaNodeLocation: /Local/Default
-Comment:
- Test Group
-GeneratedUID: AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA
-NestedGroups: AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAB
-Password: *
-PrimaryGroupID: 999
-RealName:
- TestGroup
-RecordName: com.apple.aj
-RecordType: dsRecTypeStandard:Groups
-GroupMembership: waka bar
+    @output = <<~EOF
+      AppleMetaNodeLocation: /Local/Default
+      Comment:
+       Test Group
+      GeneratedUID: AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA
+      NestedGroups: AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAB
+      Password: *
+      PrimaryGroupID: 999
+      RealName:
+       TestGroup
+      RecordName: com.apple.aj
+      RecordType: dsRecTypeStandard:Groups
+      GroupMembership: waka bar
 EOF
     allow(@provider).to receive(:safe_dscl).with(*"read /Groups/aj".split(" ")).and_return(@output)
     @current_resource = @provider.load_current_resource

@@ -35,10 +35,10 @@ describe Chef::Provider::Package::Chocolatey do
 
   # installed packages (ConEmu is upgradable)
   let(:local_list_stdout) do
-    <<-EOF
-Chocolatey v0.9.9.11
-chocolatey|0.9.9.11
-ConEmu|15.10.25.0
+    <<~EOF
+      Chocolatey v0.9.9.11
+      chocolatey|0.9.9.11
+      ConEmu|15.10.25.0
     EOF
   end
 
@@ -50,13 +50,13 @@ ConEmu|15.10.25.0
   end
 
   def allow_remote_list(package_names, args = nil)
-    remote_list_stdout = <<-EOF
-Chocolatey v0.9.9.11
-chocolatey|0.9.9.11
-ConEmu|15.10.25.1
-Git|2.6.1
-Git|2.6.2
-munin-node|1.6.1.20130823
+    remote_list_stdout = <<~EOF
+      Chocolatey v0.9.9.11
+      chocolatey|0.9.9.11
+      ConEmu|15.10.25.1
+      Git|2.6.1
+      Git|2.6.2
+      munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
     package_names.each do |pkg|

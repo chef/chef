@@ -145,10 +145,10 @@ describe "LWRPs with inline resources" do
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)

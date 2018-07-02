@@ -30,15 +30,15 @@ class Chef
       banner "knife user reregister USER (options)"
 
       def osc_11_warning
-        <<-EOF
-The Chef Server you are using does not support the username field.
-This means it is an Open Source 11 Server.
-knife user reregister for Open Source 11 Server is being deprecated.
-Open Source 11 Server user commands now live under the knife osc_user namespace.
-For backwards compatibility, we will forward this request to knife osc_user reregister.
-If you are using an Open Source 11 Server, please use that command to avoid this warning.
-NOTE: Backwards compatibility for Open Source 11 Server in these commands will be removed
-in Chef 15 which will be released April 2019.
+        <<~EOF
+          The Chef Server you are using does not support the username field.
+          This means it is an Open Source 11 Server.
+          knife user reregister for Open Source 11 Server is being deprecated.
+          Open Source 11 Server user commands now live under the knife osc_user namespace.
+          For backwards compatibility, we will forward this request to knife osc_user reregister.
+          If you are using an Open Source 11 Server, please use that command to avoid this warning.
+          NOTE: Backwards compatibility for Open Source 11 Server in these commands will be removed
+          in Chef 15 which will be released April 2019.
 EOF
       end
 

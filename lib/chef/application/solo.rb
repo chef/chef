@@ -315,12 +315,12 @@ class Chef::Application::Solo < Chef::Application
   private
 
   def for_ezra
-    puts <<-EOH
-For Ezra Zygmuntowicz:
-  The man who brought you Chef Solo
-  Early contributor to Chef
-  Kind hearted open source advocate
-  Rest in peace, Ezra.
+    puts <<~EOH
+      For Ezra Zygmuntowicz:
+        The man who brought you Chef Solo
+        Early contributor to Chef
+        Kind hearted open source advocate
+        Rest in peace, Ezra.
 EOH
   end
 

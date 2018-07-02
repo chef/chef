@@ -398,9 +398,9 @@ class Chef
     # length declared in the http response.
     class ContentLengthMismatch < RuntimeError
       def initialize(response_length, content_length)
-        super <<-EOF
-Response body length #{response_length} does not match HTTP Content-Length header #{content_length}.
-This error is most often caused by network issues (proxies, etc) outside of chef-client.
+        super <<~EOF
+          Response body length #{response_length} does not match HTTP Content-Length header #{content_length}.
+          This error is most often caused by network issues (proxies, etc) outside of chef-client.
         EOF
       end
     end

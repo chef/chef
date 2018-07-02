@@ -207,14 +207,14 @@ module Shell
 
     banner("chef-shell #{Chef::VERSION}\n\nUsage: chef-shell [NAMED_CONF] (OPTIONS)")
 
-    footer(<<-FOOTER)
-When no CONFIG is specified, chef-shell attempts to load a default configuration file:
-* If a NAMED_CONF is given, chef-shell will load ~/.chef/NAMED_CONF/chef_shell.rb
-* If no NAMED_CONF is given chef-shell will load ~/.chef/chef_shell.rb if it exists
-* If no chef_shell.rb can be found, chef-shell falls back to load:
-      /etc/chef/client.rb if -z option is given.
-      /etc/chef/solo.rb   if --solo-legacy-mode option is given.
-      .chef/knife.rb      if -s option is given.
+    footer(<<~FOOTER)
+      When no CONFIG is specified, chef-shell attempts to load a default configuration file:
+      * If a NAMED_CONF is given, chef-shell will load ~/.chef/NAMED_CONF/chef_shell.rb
+      * If no NAMED_CONF is given chef-shell will load ~/.chef/chef_shell.rb if it exists
+      * If no chef_shell.rb can be found, chef-shell falls back to load:
+            /etc/chef/client.rb if -z option is given.
+            /etc/chef/solo.rb   if --solo-legacy-mode option is given.
+            .chef/knife.rb      if -s option is given.
 FOOTER
 
     option :config_file,

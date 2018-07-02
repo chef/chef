@@ -22,26 +22,26 @@ describe "LWRPs" do
     before do
       directory "cookbooks/l-w-r-p" do
 
-        file "resources/foo.rb", <<EOM
-default_action :create
+        file "resources/foo.rb", <<~EOM
+          default_action :create
 EOM
-        file "providers/foo.rb", <<EOM
-action :create do
-end
+        file "providers/foo.rb", <<~EOM
+          action :create do
+          end
 EOM
 
-        file "recipes/default.rb", <<EOM
-l_w_r_p_foo "me"
+        file "recipes/default.rb", <<~EOM
+          l_w_r_p_foo "me"
 EOM
 
       end # directory 'cookbooks/x'
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'l-w-r-p::default'", cwd: chef_dir)

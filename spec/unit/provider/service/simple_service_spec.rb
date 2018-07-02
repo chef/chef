@@ -31,10 +31,10 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     @provider = Chef::Provider::Service::Simple.new(@new_resource, @run_context)
     allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
 
-    @stdout = StringIO.new(<<-NOMOCKINGSTRINGSPLZ)
-aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
-aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
-aj        8119  6041  0 21:34 pts/3    00:00:03 vi simple_service_spec.rb
+    @stdout = StringIO.new(<<~NOMOCKINGSTRINGSPLZ)
+      aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
+      aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
+      aj        8119  6041  0 21:34 pts/3    00:00:03 vi simple_service_spec.rb
 NOMOCKINGSTRINGSPLZ
     @status = double("Status", exitstatus: 0, stdout: @stdout)
     allow(@provider).to receive(:shell_out!).and_return(@status)
@@ -75,9 +75,9 @@ NOMOCKINGSTRINGSPLZ
     end
 
     it "should set running to true if the regex matches the output" do
-      @stdout = StringIO.new(<<-NOMOCKINGSTRINGSPLZ)
-aj        7842  5057  0 21:26 pts/2    00:00:06 chef
-aj        7842  5057  0 21:26 pts/2    00:00:06 poos
+      @stdout = StringIO.new(<<~NOMOCKINGSTRINGSPLZ)
+        aj        7842  5057  0 21:26 pts/2    00:00:06 chef
+        aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 NOMOCKINGSTRINGSPLZ
       @status = double("Status", exitstatus: 0, stdout: @stdout)
       allow(@provider).to receive(:shell_out!).and_return(@status)

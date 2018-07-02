@@ -30,10 +30,10 @@ describe "knife environment list", :workstation do
     end
 
     it "lists all the environments" do
-      knife("environment list").should_succeed <<EOM
-_default
-b
-y
+      knife("environment list").should_succeed <<~EOM
+        _default
+        b
+        y
 EOM
     end
 

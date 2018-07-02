@@ -21,9 +21,9 @@ class DummyResource < Chef::Resource
   resource_name :dummy
   description "A dummy resource"
   examples <<~EOH
-  dummy "foo" do
-    first "yes"
-  end
+    dummy "foo" do
+      first "yes"
+    end
   EOH
   introduced "14.0"
   property :first, String, description: "My First Property", introduced: "14.0"

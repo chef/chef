@@ -138,10 +138,10 @@ describe Chef::Provider::Service::Freebsd do
 
     context "when we have a 'ps' attribute" do
       let(:stdout) do
-        StringIO.new(<<-PS_SAMPLE)
-413  ??  Ss     0:02.51 /usr/sbin/syslogd -s
-539  ??  Is     0:00.14 /usr/sbin/sshd
-545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
+        StringIO.new(<<~PS_SAMPLE)
+          413  ??  Ss     0:02.51 /usr/sbin/syslogd -s
+          539  ??  Is     0:00.14 /usr/sbin/sshd
+          545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
 PS_SAMPLE
       end
       let(:status) { double(stdout: stdout, exitstatus: 0) }
@@ -163,9 +163,9 @@ PS_SAMPLE
 
       context "when the regex matches the output" do
         let(:stdout) do
-          StringIO.new(<<-PS_SAMPLE)
-555  ??  Ss     0:05.16 /usr/sbin/cron -s
- 9881  ??  Ss     0:06.67 /usr/local/sbin/httpd -DNOHTTPACCEPT
+          StringIO.new(<<~PS_SAMPLE)
+            555  ??  Ss     0:05.16 /usr/sbin/cron -s
+             9881  ??  Ss     0:06.67 /usr/local/sbin/httpd -DNOHTTPACCEPT
           PS_SAMPLE
         end
 
@@ -341,9 +341,9 @@ PS_SAMPLE
 
     context "when the rc script has a 'name' variable" do
       let(:rcscript) do
-        StringIO.new(<<-EOF)
-name="#{new_resource.service_name}"
-rcvar=`set_rcvar`
+        StringIO.new(<<~EOF)
+          name="#{new_resource.service_name}"
+          rcvar=`set_rcvar`
 EOF
       end
 
@@ -363,8 +363,8 @@ EOF
 
     describe "when the rcscript does not have a name variable" do
       let(:rcscript) do
-        StringIO.new <<-EOF
-rcvar=`set_rcvar`
+        StringIO.new <<~EOF
+          rcvar=`set_rcvar`
 EOF
       end
 
@@ -375,11 +375,11 @@ EOF
 
       describe "when rcvar returns foobar_enable" do
         let(:rcvar_stdout) do
-          rcvar_stdout = <<-EOF
-# apache22
-#
-# #{new_resource.service_name}_enable="YES"
-#   (default: "")
+          rcvar_stdout = <<~EOF
+            # apache22
+            #
+            # #{new_resource.service_name}_enable="YES"
+            #   (default: "")
 EOF
         end
 
@@ -394,9 +394,9 @@ EOF
 
       describe "when rcvar does not return foobar_enable" do
         let(:rcvar_stdout) do
-          rcvar_stdout = <<-EOF
-# service_with_noname
-#
+          rcvar_stdout = <<~EOF
+            # service_with_noname
+            #
 EOF
         end
 

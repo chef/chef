@@ -54,18 +54,18 @@ describe "chef-client" do
     before { file "cookbooks/x/recipes/default.rb", "" }
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
     end
 
     it "should complete successfully with no other environment variables", skip: (Chef::Platform.windows?) do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       begin
@@ -79,9 +79,9 @@ EOM
     end
 
     it "should complete successfully with --no-listen" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} --no-listen -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
@@ -123,9 +123,9 @@ EOM
     end
 
     it "should complete with success" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
@@ -134,42 +134,42 @@ EOM
 
     context "and a private key" do
       before do
-        file "mykey.pem", <<EOM
------BEGIN RSA PRIVATE KEY-----
-MIIEogIBAAKCAQEApubutqtYYQ5UiA9QhWP7UvSmsfHsAoPKEVVPdVW/e8Svwpyf
-0Xef6OFWVmBE+W442ZjLOe2y6p2nSnaq4y7dg99NFz6X+16mcKiCbj0RCiGqCvCk
-NftHhTgO9/RFvCbmKZ1RKNob1YzLrFpxBHaSh9po+DGWhApcd+I+op+ZzvDgXhNn
-0nauZu3rZmApI/r7EEAOjFedAXs7VPNXhhtZAiLSAVIrwU3ZajtSzgXOxbNzgj5O
-AAAMmThK+71qPdffAdO4J198H6/MY04qgtFo7vumzCq0UCaGZfmeI1UNE4+xQWwP
-HJ3pDAP61C6Ebx2snI2kAd9QMx9Y78nIedRHPwIDAQABAoIBAHssRtPM1GacWsom
-8zfeN6ZbI4KDlbetZz0vhnqDk9NVrpijWlcOP5dwZXVNitnB/HaqCqFvyPDY9JNB
-zI/pEFW4QH59FVDP42mVEt0keCTP/1wfiDDGh1vLqVBYl/ZphscDcNgDTzNkuxMx
-k+LFVxKnn3w7rGc59lALSkpeGvbbIDjp3LUMlUeCF8CIFyYZh9ZvXe4OCxYdyjxb
-i8tnMLKvJ4Psbh5jMapsu3rHQkfPdqzztQUz8vs0NYwP5vWge46FUyk+WNm/IhbJ
-G3YM22nwUS8Eu2bmTtADSJolATbCSkOwQ1D+Fybz/4obfYeGaCdOqB05ttubhenV
-ShsAb7ECgYEA20ecRVxw2S7qA7sqJ4NuYOg9TpfGooptYNA1IP971eB6SaGAelEL
-awYkGNuu2URmm5ElZpwJFFTDLGA7t2zB2xI1FeySPPIVPvJGSiZoFQOVlIg9WQzK
-7jTtFQ/tOMrF+bigEUJh5bP1/7HzqSpuOsPjEUb2aoCTp+tpiRGL7TUCgYEAwtns
-g3ysrSEcTzpSv7fQRJRk1lkBhatgNd0oc+ikzf74DaVLhBg1jvSThDhiDCdB59mr
-Jh41cnR1XqE8jmdQbCDRiFrI1Pq6TPaDZFcovDVE1gue9x86v3FOH2ukPG4d2/Xy
-HevXjThtpMMsWFi0JYXuzXuV5HOvLZiP8sN3lSMCgYANpdxdGM7RRbE9ADY0dWK2
-V14ReTLcxP7fyrWz0xLzEeCqmomzkz3BsIUoouu0DCTSw+rvAwExqcDoDylIVlWO
-fAifz7SeZHbcDxo+3TsXK7zwnLYsx7YNs2+aIv6hzUUbMNmNmXMcZ+IEwx+mRMTN
-lYmZdrA5mr0V83oDFPt/jQKBgC74RVE03pMlZiObFZNtheDiPKSG9Bz6wMh7NWMr
-c37MtZLkg52mEFMTlfPLe6ceV37CM8WOhqe+dwSGrYhOU06dYqUR7VOZ1Qr0aZvo
-fsNPu/Y0+u7rMkgv0fs1AXQnvz7kvKaF0YITVirfeXMafuKEtJoH7owRbur42cpV
-YCAtAoGAP1rHOc+w0RUcBK3sY7aErrih0OPh9U5bvJsrw1C0FIZhCEoDVA+fNIQL
-syHLXYFNy0OxMtH/bBAXBGNHd9gf5uOnqh0pYcbe/uRAxumC7Rl0cL509eURiA2T
-+vFmf54y9YdnLXaqv+FhJT6B6V7WX7IpU9BMqJY1cJYXHuHG2KA=
------END RSA PRIVATE KEY-----
+        file "mykey.pem", <<~EOM
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIEogIBAAKCAQEApubutqtYYQ5UiA9QhWP7UvSmsfHsAoPKEVVPdVW/e8Svwpyf
+          0Xef6OFWVmBE+W442ZjLOe2y6p2nSnaq4y7dg99NFz6X+16mcKiCbj0RCiGqCvCk
+          NftHhTgO9/RFvCbmKZ1RKNob1YzLrFpxBHaSh9po+DGWhApcd+I+op+ZzvDgXhNn
+          0nauZu3rZmApI/r7EEAOjFedAXs7VPNXhhtZAiLSAVIrwU3ZajtSzgXOxbNzgj5O
+          AAAMmThK+71qPdffAdO4J198H6/MY04qgtFo7vumzCq0UCaGZfmeI1UNE4+xQWwP
+          HJ3pDAP61C6Ebx2snI2kAd9QMx9Y78nIedRHPwIDAQABAoIBAHssRtPM1GacWsom
+          8zfeN6ZbI4KDlbetZz0vhnqDk9NVrpijWlcOP5dwZXVNitnB/HaqCqFvyPDY9JNB
+          zI/pEFW4QH59FVDP42mVEt0keCTP/1wfiDDGh1vLqVBYl/ZphscDcNgDTzNkuxMx
+          k+LFVxKnn3w7rGc59lALSkpeGvbbIDjp3LUMlUeCF8CIFyYZh9ZvXe4OCxYdyjxb
+          i8tnMLKvJ4Psbh5jMapsu3rHQkfPdqzztQUz8vs0NYwP5vWge46FUyk+WNm/IhbJ
+          G3YM22nwUS8Eu2bmTtADSJolATbCSkOwQ1D+Fybz/4obfYeGaCdOqB05ttubhenV
+          ShsAb7ECgYEA20ecRVxw2S7qA7sqJ4NuYOg9TpfGooptYNA1IP971eB6SaGAelEL
+          awYkGNuu2URmm5ElZpwJFFTDLGA7t2zB2xI1FeySPPIVPvJGSiZoFQOVlIg9WQzK
+          7jTtFQ/tOMrF+bigEUJh5bP1/7HzqSpuOsPjEUb2aoCTp+tpiRGL7TUCgYEAwtns
+          g3ysrSEcTzpSv7fQRJRk1lkBhatgNd0oc+ikzf74DaVLhBg1jvSThDhiDCdB59mr
+          Jh41cnR1XqE8jmdQbCDRiFrI1Pq6TPaDZFcovDVE1gue9x86v3FOH2ukPG4d2/Xy
+          HevXjThtpMMsWFi0JYXuzXuV5HOvLZiP8sN3lSMCgYANpdxdGM7RRbE9ADY0dWK2
+          V14ReTLcxP7fyrWz0xLzEeCqmomzkz3BsIUoouu0DCTSw+rvAwExqcDoDylIVlWO
+          fAifz7SeZHbcDxo+3TsXK7zwnLYsx7YNs2+aIv6hzUUbMNmNmXMcZ+IEwx+mRMTN
+          lYmZdrA5mr0V83oDFPt/jQKBgC74RVE03pMlZiObFZNtheDiPKSG9Bz6wMh7NWMr
+          c37MtZLkg52mEFMTlfPLe6ceV37CM8WOhqe+dwSGrYhOU06dYqUR7VOZ1Qr0aZvo
+          fsNPu/Y0+u7rMkgv0fs1AXQnvz7kvKaF0YITVirfeXMafuKEtJoH7owRbur42cpV
+          YCAtAoGAP1rHOc+w0RUcBK3sY7aErrih0OPh9U5bvJsrw1C0FIZhCEoDVA+fNIQL
+          syHLXYFNy0OxMtH/bBAXBGNHd9gf5uOnqh0pYcbe/uRAxumC7Rl0cL509eURiA2T
+          +vFmf54y9YdnLXaqv+FhJT6B6V7WX7IpU9BMqJY1cJYXHuHG2KA=
+          -----END RSA PRIVATE KEY-----
 EOM
       end
 
       it "should complete with success even with a client key" do
-        file "config/client.rb", <<EOM
-local_mode true
-client_key #{path_to('mykey.pem').inspect}
-cookbook_path #{path_to('cookbooks').inspect}
+        file "config/client.rb", <<~EOM
+          local_mode true
+          client_key #{path_to('mykey.pem').inspect}
+          cookbook_path #{path_to('cookbooks').inspect}
 EOM
 
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
@@ -177,22 +177,22 @@ EOM
       end
 
       it "should run recipes specified directly on the command line" do
-        file "config/client.rb", <<EOM
-local_mode true
-client_key #{path_to('mykey.pem').inspect}
-cookbook_path #{path_to('cookbooks').inspect}
+        file "config/client.rb", <<~EOM
+          local_mode true
+          client_key #{path_to('mykey.pem').inspect}
+          cookbook_path #{path_to('cookbooks').inspect}
 EOM
 
-        file "arbitrary.rb", <<EOM
-file #{path_to('tempfile.txt').inspect} do
-  content '1'
-end
+        file "arbitrary.rb", <<~EOM
+          file #{path_to('tempfile.txt').inspect} do
+            content '1'
+          end
 EOM
 
-        file "arbitrary2.rb", <<EOM
-file #{path_to('tempfile2.txt').inspect} do
-  content '2'
-end
+        file "arbitrary2.rb", <<~EOM
+          file #{path_to('tempfile2.txt').inspect} do
+            content '2'
+          end
 EOM
 
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" #{path_to('arbitrary.rb')} #{path_to('arbitrary2.rb')}", cwd: chef_dir)
@@ -203,16 +203,16 @@ EOM
       end
 
       it "should run recipes specified as relative paths directly on the command line" do
-        file "config/client.rb", <<EOM
-local_mode true
-client_key #{path_to('mykey.pem').inspect}
-cookbook_path #{path_to('cookbooks').inspect}
+        file "config/client.rb", <<~EOM
+          local_mode true
+          client_key #{path_to('mykey.pem').inspect}
+          cookbook_path #{path_to('cookbooks').inspect}
 EOM
 
-        file "arbitrary.rb", <<EOM
-file #{path_to('tempfile.txt').inspect} do
-  content '1'
-end
+        file "arbitrary.rb", <<~EOM
+          file #{path_to('tempfile.txt').inspect} do
+            content '1'
+          end
 EOM
 
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" arbitrary.rb", cwd: path_to(""))
@@ -222,21 +222,21 @@ EOM
       end
 
       it "should run recipes specified directly on the command line AFTER recipes in the run list" do
-        file "config/client.rb", <<EOM
-local_mode true
-client_key #{path_to('mykey.pem').inspect}
-cookbook_path #{path_to('cookbooks').inspect}
+        file "config/client.rb", <<~EOM
+          local_mode true
+          client_key #{path_to('mykey.pem').inspect}
+          cookbook_path #{path_to('cookbooks').inspect}
 EOM
 
-        file "cookbooks/x/recipes/constant_definition.rb", <<EOM
-class ::Blah
-  THECONSTANT = '1'
-end
+        file "cookbooks/x/recipes/constant_definition.rb", <<~EOM
+          class ::Blah
+            THECONSTANT = '1'
+          end
 EOM
-        file "arbitrary.rb", <<EOM
-file #{path_to('tempfile.txt').inspect} do
-  content ::Blah::THECONSTANT
-end
+        file "arbitrary.rb", <<~EOM
+          file #{path_to('tempfile.txt').inspect} do
+            content ::Blah::THECONSTANT
+          end
 EOM
 
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", cwd: path_to(""))
@@ -248,9 +248,9 @@ EOM
     end
 
     it "should complete with success when passed the -z flag" do
-      file "config/client.rb", <<EOM
-chef_server_url 'http://omg.com/blah'
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        chef_server_url 'http://omg.com/blah'
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", cwd: chef_dir)
@@ -258,9 +258,9 @@ EOM
     end
 
     it "should complete with success when passed the --local-mode flag" do
-      file "config/client.rb", <<EOM
-chef_server_url 'http://omg.com/blah'
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        chef_server_url 'http://omg.com/blah'
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", cwd: chef_dir)
@@ -268,9 +268,9 @@ EOM
     end
 
     it "should not print SSL warnings when running in local-mode" do
-      file "config/client.rb", <<EOM
-chef_server_url 'http://omg.com/blah'
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        chef_server_url 'http://omg.com/blah'
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", cwd: chef_dir)
@@ -279,9 +279,9 @@ EOM
     end
 
     it "should complete with success when passed -z and --chef-zero-port" do
-      file "config/client.rb", <<EOM
-chef_server_url 'http://omg.com/blah'
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        chef_server_url 'http://omg.com/blah'
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", cwd: chef_dir)
@@ -289,9 +289,9 @@ EOM
     end
 
     it "should complete with success when setting the run list with -r" do
-      file "config/client.rb", <<EOM
-chef_server_url 'http://omg.com/blah'
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        chef_server_url 'http://omg.com/blah'
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z -l info", cwd: chef_dir)
@@ -301,9 +301,9 @@ EOM
     end
 
     it "should complete with success when using --profile-ruby and output a profile file", :not_supported_on_aix do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
       result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z --profile-ruby", cwd: chef_dir)
       result.error!
@@ -311,9 +311,9 @@ EOM
     end
 
     it "doesn't produce a profile when --profile-ruby is not present" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
       result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", cwd: chef_dir)
       result.error!
@@ -324,14 +324,14 @@ EOM
   when_the_repository "has a cookbook that should fail chef_version checks" do
     before do
       file "cookbooks/x/recipes/default.rb", ""
-      file "cookbooks/x/metadata.rb", <<EOM
-name 'x'
-version '0.0.1'
-chef_version '~> 999.99'
+      file "cookbooks/x/metadata.rb", <<~EOM
+        name 'x'
+        version '0.0.1'
+        chef_version '~> 999.99'
 EOM
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
     end
     it "should fail the chef client run" do
@@ -405,12 +405,12 @@ EOM
     end
 
     it "should output each deprecation warning only once, at the end of the run" do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-# Mimick what happens when you are on the console
-formatters << :doc
-log_level :warn
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        # Mimick what happens when you are on the console
+        formatters << :doc
+        log_level :warn
 EOM
 
       ENV.delete("CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS")
@@ -430,20 +430,20 @@ EOM
   when_the_repository "has a cookbook with only an audit recipe" do
 
     before do
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-audit_mode :enabled
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        audit_mode :enabled
 EOM
     end
 
     it "should exit with a zero code when there is not an audit failure" do
-      file "cookbooks/audit_test/recipes/succeed.rb", <<-RECIPE
-control_group "control group without top level control" do
-  it "should succeed" do
-    expect(2 - 2).to eq(0)
-  end
-end
+      file "cookbooks/audit_test/recipes/succeed.rb", <<~RECIPE
+        control_group "control group without top level control" do
+          it "should succeed" do
+            expect(2 - 2).to eq(0)
+          end
+        end
       RECIPE
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed' -l info", cwd: chef_dir)
@@ -452,12 +452,12 @@ end
     end
 
     it "should exit with a non-zero code when there is an audit failure" do
-      file "cookbooks/audit_test/recipes/fail.rb", <<-RECIPE
-control_group "control group without top level control" do
-  it "should fail" do
-    expect(2 - 2).to eq(1)
-  end
-end
+      file "cookbooks/audit_test/recipes/fail.rb", <<~RECIPE
+        control_group "control group without top level control" do
+          it "should fail" do
+            expect(2 - 2).to eq(1)
+          end
+        end
       RECIPE
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::fail'", cwd: chef_dir)
@@ -468,24 +468,24 @@ end
 
   when_the_repository "has a cookbook that deploys a file" do
     before do
-      file "cookbooks/x/recipes/default.rb", <<-RECIPE
-cookbook_file #{path_to('tempfile.txt').inspect} do
-  source "my_file"
-end
+      file "cookbooks/x/recipes/default.rb", <<~RECIPE
+        cookbook_file #{path_to('tempfile.txt').inspect} do
+          source "my_file"
+        end
       RECIPE
 
-      file "cookbooks/x/files/my_file", <<-FILE
-this is my file
+      file "cookbooks/x/files/my_file", <<~FILE
+        this is my file
       FILE
     end
 
     [true, false].each do |lazy|
       context "with no_lazy_load set to #{lazy}" do
         it "should create the file" do
-          file "config/client.rb", <<EOM
-no_lazy_load #{lazy}
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+          file "config/client.rb", <<~EOM
+            no_lazy_load #{lazy}
+            local_mode true
+            cookbook_path "#{path_to('cookbooks')}"
 EOM
           result = shell_out("#{chef_client} -l debug -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
           result.error!
@@ -498,10 +498,10 @@ EOM
 
   when_the_repository "has a cookbook with an ohai plugin" do
     before do
-      file "cookbooks/x/recipes/default.rb", <<-RECIPE
-file #{path_to('tempfile.txt').inspect} do
-  content node["english"]["version"]
-end
+      file "cookbooks/x/recipes/default.rb", <<~RECIPE
+        file #{path_to('tempfile.txt').inspect} do
+          content node["english"]["version"]
+        end
       RECIPE
 
       file "cookbooks/x/ohai/english.rb", <<-OHAI
@@ -515,9 +515,9 @@ end
         end
       OHAI
 
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
     end
 
@@ -542,8 +542,8 @@ EOM
     let(:tmp_dir) { Dir.mktmpdir("recipe-url") }
 
     it "should complete with success when passed -z and --recipe-url" do
-      file "config/client.rb", <<EOM
-chef_repo_path "#{tmp_dir}"
+      file "config/client.rb", <<~EOM
+        chef_repo_path "#{tmp_dir}"
 EOM
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", cwd: tmp_dir)
       result.error!
@@ -564,21 +564,21 @@ EOM
   when_the_repository "has a cookbook with broken metadata.rb, but has metadata.json" do
     before do
       file "cookbooks/x/recipes/default.rb", ""
-      file "cookbooks/x/metadata.rb", <<EOM
-name 'x'
-version '0.0.1'
-raise "TEH SADNESS"
+      file "cookbooks/x/metadata.rb", <<~EOM
+        name 'x'
+        version '0.0.1'
+        raise "TEH SADNESS"
 EOM
-      file "cookbooks/x/metadata.json", <<EOM
-{
-  "name": "x",
-  "version": "0.0.1"
-}
+      file "cookbooks/x/metadata.json", <<~EOM
+        {
+          "name": "x",
+          "version": "0.0.1"
+        }
 EOM
 
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
     end
 
@@ -600,9 +600,9 @@ EOM
         level :info
       end
 EOM
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
     end
 
@@ -636,9 +636,9 @@ EOM
       file "cookbooks/x/recipes/default.rb", <<~EOM
         puts Chef::Config[:client_fork] ? "WITHFORK" : "NOFORK"
 EOM
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
 EOM
     end
 
@@ -684,10 +684,10 @@ EOM
       file "cookbooks/x/recipes/default.rb", <<~EOM
         puts Chef::Config[:client_fork] ? "WITHFORK" : "NOFORK"
 EOM
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-client_fork true
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        client_fork true
 EOM
     end
 
@@ -709,10 +709,10 @@ EOM
       file "cookbooks/x/recipes/default.rb", <<~EOM
         puts Chef::Config[:client_fork] ? "WITHFORK" : "NOFORK"
 EOM
-      file "config/client.rb", <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-client_fork false
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        client_fork false
 EOM
     end
 

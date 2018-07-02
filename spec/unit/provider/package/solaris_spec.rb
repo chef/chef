@@ -32,18 +32,18 @@ describe Chef::Provider::Package::Solaris do
 
   describe "assessing the current package status" do
     before do
-      @pkginfo = <<-PKGINFO
-PKGINST:  SUNWbash
-NAME:  GNU Bourne-Again shell (bash)
-CATEGORY:  system
-ARCH:  sparc
-VERSION:  11.10.0,REV=2005.01.08.05.16
-BASEDIR:  /
-VENDOR:  Sun Microsystems, Inc.
-DESC:  GNU Bourne-Again shell (bash) version 3.0
-PSTAMP:  sfw10-patch20070430084444
-INSTDATE:  Nov 04 2009 01:02
-HOTLINE:  Please contact your local service provider
+      @pkginfo = <<~PKGINFO
+        PKGINST:  SUNWbash
+        NAME:  GNU Bourne-Again shell (bash)
+        CATEGORY:  system
+        ARCH:  sparc
+        VERSION:  11.10.0,REV=2005.01.08.05.16
+        BASEDIR:  /
+        VENDOR:  Sun Microsystems, Inc.
+        DESC:  GNU Bourne-Again shell (bash) version 3.0
+        PSTAMP:  sfw10-patch20070430084444
+        INSTDATE:  Nov 04 2009 01:02
+        HOTLINE:  Please contact your local service provider
 PKGINFO
 
       @status = double("Status", stdout: "", exitstatus: 0)

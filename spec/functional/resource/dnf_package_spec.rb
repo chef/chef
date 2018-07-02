@@ -39,12 +39,12 @@ describe Chef::Resource::RpmPackage, :requires_root, external: exclude_test do
 
   before(:each) do
     File.open("/etc/yum.repos.d/chef-dnf-localtesting.repo", "w+") do |f|
-      f.write <<-EOF
-[chef-dnf-localtesting]
-name=Chef DNF spec testing repo
-baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
-enable=1
-gpgcheck=0
+      f.write <<~EOF
+        [chef-dnf-localtesting]
+        name=Chef DNF spec testing repo
+        baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
+        enable=1
+        gpgcheck=0
       EOF
     end
     shell_out!("rpm -qa | grep chef_rpm | xargs -r rpm -e")

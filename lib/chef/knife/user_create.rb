@@ -69,17 +69,17 @@ class Chef
       end
 
       def osc_11_warning
-        <<-EOF
-IF YOU ARE USING CHEF SERVER 12+, PLEASE FOLLOW THE INSTRUCTIONS UNDER knife user create --help.
-You only passed a single argument to knife user create.
-For backwards compatibility, when only a single argument is passed,
-knife user create assumes you want Open Source 11 Server user creation.
-knife user create for Open Source 11 Server is being deprecated.
-Open Source 11 Server user commands now live under the knife osc_user namespace.
-For backwards compatibility, we will forward this request to knife osc_user create.
-If you are using an Open Source 11 Server, please use that command to avoid this warning.
-NOTE: Backwards compatibility for Open Source 11 Server in these commands will be removed
-in Chef 15 which will be released April 2019.
+        <<~EOF
+          IF YOU ARE USING CHEF SERVER 12+, PLEASE FOLLOW THE INSTRUCTIONS UNDER knife user create --help.
+          You only passed a single argument to knife user create.
+          For backwards compatibility, when only a single argument is passed,
+          knife user create assumes you want Open Source 11 Server user creation.
+          knife user create for Open Source 11 Server is being deprecated.
+          Open Source 11 Server user commands now live under the knife osc_user namespace.
+          For backwards compatibility, we will forward this request to knife osc_user create.
+          If you are using an Open Source 11 Server, please use that command to avoid this warning.
+          NOTE: Backwards compatibility for Open Source 11 Server in these commands will be removed
+          in Chef 15 which will be released April 2019.
 EOF
       end
 

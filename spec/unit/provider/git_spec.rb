@@ -244,21 +244,21 @@ describe Chef::Provider::Git do
     end
 
     it "gives the latest HEAD revision SHA if nothing is specified" do
-      @stdout = <<-SHAS
-28af684d8460ba4793eda3e7ac238c864a5d029a\tHEAD
-503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha
-28af684d8460ba4793eda3e7ac238c864a5d029a\trefs/heads/master
-c44fe79bb5e36941ce799cee6b9de3a2ef89afee\trefs/tags/0.5.2
-14534f0e0bf133dc9ff6dbe74f8a0c863ff3ac6d\trefs/tags/0.5.4
-d36fddb4291341a1ff2ecc3c560494e398881354\trefs/tags/0.5.6
-9e5ce9031cbee81015de680d010b603bce2dd15f\trefs/tags/0.6.0
-9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13\trefs/tags/0.6.2
-014a69af1cdce619de82afaf6cdb4e6ac658fede\trefs/tags/0.7.0
-fa8097ff666af3ce64761d8e1f1c2aa292a11378\trefs/tags/0.7.2
-44f9be0b33ba5c10027ddb030a5b2f0faa3eeb8d\trefs/tags/0.7.4
-d7b9957f67236fa54e660cc3ab45ffecd6e0ba38\trefs/tags/0.7.8
-b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}
-ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package
+      @stdout = <<~SHAS
+        28af684d8460ba4793eda3e7ac238c864a5d029a\tHEAD
+        503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha
+        28af684d8460ba4793eda3e7ac238c864a5d029a\trefs/heads/master
+        c44fe79bb5e36941ce799cee6b9de3a2ef89afee\trefs/tags/0.5.2
+        14534f0e0bf133dc9ff6dbe74f8a0c863ff3ac6d\trefs/tags/0.5.4
+        d36fddb4291341a1ff2ecc3c560494e398881354\trefs/tags/0.5.6
+        9e5ce9031cbee81015de680d010b603bce2dd15f\trefs/tags/0.6.0
+        9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13\trefs/tags/0.6.2
+        014a69af1cdce619de82afaf6cdb4e6ac658fede\trefs/tags/0.7.0
+        fa8097ff666af3ce64761d8e1f1c2aa292a11378\trefs/tags/0.7.2
+        44f9be0b33ba5c10027ddb030a5b2f0faa3eeb8d\trefs/tags/0.7.4
+        d7b9957f67236fa54e660cc3ab45ffecd6e0ba38\trefs/tags/0.7.8
+        b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}
+        ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package
 SHAS
       @resource.revision ""
       expect(@provider).to receive(:shell_out!).with(@git_ls_remote + "\"HEAD\"", { log_tag: "git[web2.0 app]" }).and_return(double("ShellOut result", stdout: @stdout))

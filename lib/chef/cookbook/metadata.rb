@@ -649,14 +649,14 @@ class Chef
         elsif version_constraints.size == 1
           version_constraints.first
         else
-          msg = <<-OBSOLETED
-The dependency specification syntax you are using is no longer valid. You may not
-specify more than one version constraint for a particular cookbook.
-Consult https://docs.chef.io/config_rb_metadata.html for the updated syntax.
-
-Called by: #{caller_name} '#{dep_name}', #{version_constraints.map { |vc| vc.inspect }.join(", ")}
-Called from:
-#{caller[0...5].map { |line| "  " + line }.join("\n")}
+          msg = <<~OBSOLETED
+            The dependency specification syntax you are using is no longer valid. You may not
+            specify more than one version constraint for a particular cookbook.
+            Consult https://docs.chef.io/config_rb_metadata.html for the updated syntax.
+            
+            Called by: #{caller_name} '#{dep_name}', #{version_constraints.map { |vc| vc.inspect }.join(", ")}
+            Called from:
+            #{caller[0...5].map { |line| "  " + line }.join("\n")}
 OBSOLETED
           raise Exceptions::ObsoleteDependencySyntax, msg
         end
@@ -667,15 +667,15 @@ OBSOLETED
       rescue Chef::Exceptions::InvalidVersionConstraint => e
         Log.debug(e)
 
-        msg = <<-INVALID
-The version constraint syntax you are using is not valid. If you recently
-upgraded to Chef 0.10.0, be aware that you no may longer use "<<" and ">>" for
-'less than' and 'greater than'; use '<' and '>' instead.
-Consult https://docs.chef.io/config_rb_metadata.html for more information.
-
-Called by: #{caller_name} '#{dep_name}', '#{constraint_str}'
-Called from:
-#{caller[0...5].map { |line| "  " + line }.join("\n")}
+        msg = <<~INVALID
+          The version constraint syntax you are using is not valid. If you recently
+          upgraded to Chef 0.10.0, be aware that you no may longer use "<<" and ">>" for
+          'less than' and 'greater than'; use '<' and '>' instead.
+          Consult https://docs.chef.io/config_rb_metadata.html for more information.
+          
+          Called by: #{caller_name} '#{dep_name}', '#{constraint_str}'
+          Called from:
+          #{caller[0...5].map { |line| "  " + line }.join("\n")}
 INVALID
         raise Exceptions::InvalidVersionConstraint, msg
       end

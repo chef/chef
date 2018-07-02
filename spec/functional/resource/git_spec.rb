@@ -65,10 +65,10 @@ describe Chef::Resource::Git, requires_git: true do
   let(:rev_head) { "d294fbfd05aa7709ad9a9b8ef6343b17d355bf5f" }
 
   let(:git_user_config) do
-    <<-E
-[user]
-  name = frodoTbaggins
-  email = frodo@shire.org
+    <<~E
+      [user]
+        name = frodoTbaggins
+        email = frodo@shire.org
 E
   end
 

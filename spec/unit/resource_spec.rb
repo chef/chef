@@ -400,16 +400,16 @@ describe Chef::Resource do
 
     it "can have some examples" do
       c = Class.new(Chef::Resource) do
-        examples <<-EOH
-resource "foo" do
-  foo foo
-end
+        examples <<~EOH
+          resource "foo" do
+            foo foo
+          end
         EOH
       end
-      expect(c.examples).to eq <<-EOH
-resource "foo" do
-  foo foo
-end
+      expect(c.examples).to eq <<~EOH
+        resource "foo" do
+          foo foo
+        end
         EOH
     end
   end

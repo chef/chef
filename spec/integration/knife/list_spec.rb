@@ -27,45 +27,45 @@ describe "knife list", :workstation do
 
   when_the_chef_server "is empty" do
     it "knife list / returns all top level directories" do
-      knife("list /").should_succeed <<-EOM
-/clients
-/cookbooks
-/data_bags
-/environments
-/nodes
-/roles
-/users
+      knife("list /").should_succeed <<~EOM
+        /clients
+        /cookbooks
+        /data_bags
+        /environments
+        /nodes
+        /roles
+        /users
 EOM
     end
 
     it "knife list -R / returns everything" do
-      knife("list -R /").should_succeed <<-EOM
-/:
-clients
-cookbooks
-data_bags
-environments
-nodes
-roles
-users
-
-/clients:
-chef-validator.json
-chef-webui.json
-
-/cookbooks:
-
-/data_bags:
-
-/environments:
-_default.json
-
-/nodes:
-
-/roles:
-
-/users:
-admin.json
+      knife("list -R /").should_succeed <<~EOM
+        /:
+        clients
+        cookbooks
+        data_bags
+        environments
+        nodes
+        roles
+        users
+        
+        /clients:
+        chef-validator.json
+        chef-webui.json
+        
+        /cookbooks:
+        
+        /data_bags:
+        
+        /environments:
+        _default.json
+        
+        /nodes:
+        
+        /roles:
+        
+        /users:
+        admin.json
 EOM
     end
   end
@@ -92,160 +92,160 @@ EOM
     end
 
     it "knife list / returns all top level directories" do
-      knife("list /").should_succeed <<-EOM
-/clients
-/cookbooks
-/data_bags
-/environments
-/nodes
-/roles
-/users
+      knife("list /").should_succeed <<~EOM
+        /clients
+        /cookbooks
+        /data_bags
+        /environments
+        /nodes
+        /roles
+        /users
 EOM
     end
 
     it "knife list -R / returns everything" do
-      knife("list -R /").should_succeed <<-EOM
-/:
-clients
-cookbooks
-data_bags
-environments
-nodes
-roles
-users
-
-/clients:
-chef-validator.json
-chef-webui.json
-client1.json
-client2.json
-
-/cookbooks:
-cookbook1
-cookbook2
-
-/cookbooks/cookbook1:
-metadata.rb
-
-/cookbooks/cookbook2:
-metadata.rb
-recipes
-
-/cookbooks/cookbook2/recipes:
-default.rb
-
-/data_bags:
-bag1
-bag2
-
-/data_bags/bag1:
-item1.json
-item2.json
-
-/data_bags/bag2:
-item1.json
-item2.json
-
-/environments:
-_default.json
-environment1.json
-environment2.json
-
-/nodes:
-node1.json
-node2.json
-
-/roles:
-role1.json
-role2.json
-
-/users:
-admin.json
-user1.json
-user2.json
+      knife("list -R /").should_succeed <<~EOM
+        /:
+        clients
+        cookbooks
+        data_bags
+        environments
+        nodes
+        roles
+        users
+        
+        /clients:
+        chef-validator.json
+        chef-webui.json
+        client1.json
+        client2.json
+        
+        /cookbooks:
+        cookbook1
+        cookbook2
+        
+        /cookbooks/cookbook1:
+        metadata.rb
+        
+        /cookbooks/cookbook2:
+        metadata.rb
+        recipes
+        
+        /cookbooks/cookbook2/recipes:
+        default.rb
+        
+        /data_bags:
+        bag1
+        bag2
+        
+        /data_bags/bag1:
+        item1.json
+        item2.json
+        
+        /data_bags/bag2:
+        item1.json
+        item2.json
+        
+        /environments:
+        _default.json
+        environment1.json
+        environment2.json
+        
+        /nodes:
+        node1.json
+        node2.json
+        
+        /roles:
+        role1.json
+        role2.json
+        
+        /users:
+        admin.json
+        user1.json
+        user2.json
 EOM
     end
 
     it "knife list -R --flat / returns everything" do
-      knife("list -R --flat /").should_succeed <<-EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/client1.json
-/clients/client2.json
-/cookbooks
-/cookbooks/cookbook1
-/cookbooks/cookbook1/metadata.rb
-/cookbooks/cookbook2
-/cookbooks/cookbook2/metadata.rb
-/cookbooks/cookbook2/recipes
-/cookbooks/cookbook2/recipes/default.rb
-/data_bags
-/data_bags/bag1
-/data_bags/bag1/item1.json
-/data_bags/bag1/item2.json
-/data_bags/bag2
-/data_bags/bag2/item1.json
-/data_bags/bag2/item2.json
-/environments
-/environments/_default.json
-/environments/environment1.json
-/environments/environment2.json
-/nodes
-/nodes/node1.json
-/nodes/node2.json
-/roles
-/roles/role1.json
-/roles/role2.json
-/users
-/users/admin.json
-/users/user1.json
-/users/user2.json
+      knife("list -R --flat /").should_succeed <<~EOM
+        /clients
+        /clients/chef-validator.json
+        /clients/chef-webui.json
+        /clients/client1.json
+        /clients/client2.json
+        /cookbooks
+        /cookbooks/cookbook1
+        /cookbooks/cookbook1/metadata.rb
+        /cookbooks/cookbook2
+        /cookbooks/cookbook2/metadata.rb
+        /cookbooks/cookbook2/recipes
+        /cookbooks/cookbook2/recipes/default.rb
+        /data_bags
+        /data_bags/bag1
+        /data_bags/bag1/item1.json
+        /data_bags/bag1/item2.json
+        /data_bags/bag2
+        /data_bags/bag2/item1.json
+        /data_bags/bag2/item2.json
+        /environments
+        /environments/_default.json
+        /environments/environment1.json
+        /environments/environment2.json
+        /nodes
+        /nodes/node1.json
+        /nodes/node2.json
+        /roles
+        /roles/role1.json
+        /roles/role2.json
+        /users
+        /users/admin.json
+        /users/user1.json
+        /users/user2.json
 EOM
     end
 
     it "knife list -Rfp / returns everything" do
-      knife("list -Rfp /").should_succeed <<-EOM
-/clients/
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/client1.json
-/clients/client2.json
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/metadata.rb
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/metadata.rb
-/cookbooks/cookbook2/recipes/
-/cookbooks/cookbook2/recipes/default.rb
-/data_bags/
-/data_bags/bag1/
-/data_bags/bag1/item1.json
-/data_bags/bag1/item2.json
-/data_bags/bag2/
-/data_bags/bag2/item1.json
-/data_bags/bag2/item2.json
-/environments/
-/environments/_default.json
-/environments/environment1.json
-/environments/environment2.json
-/nodes/
-/nodes/node1.json
-/nodes/node2.json
-/roles/
-/roles/role1.json
-/roles/role2.json
-/users/
-/users/admin.json
-/users/user1.json
-/users/user2.json
+      knife("list -Rfp /").should_succeed <<~EOM
+        /clients/
+        /clients/chef-validator.json
+        /clients/chef-webui.json
+        /clients/client1.json
+        /clients/client2.json
+        /cookbooks/
+        /cookbooks/cookbook1/
+        /cookbooks/cookbook1/metadata.rb
+        /cookbooks/cookbook2/
+        /cookbooks/cookbook2/metadata.rb
+        /cookbooks/cookbook2/recipes/
+        /cookbooks/cookbook2/recipes/default.rb
+        /data_bags/
+        /data_bags/bag1/
+        /data_bags/bag1/item1.json
+        /data_bags/bag1/item2.json
+        /data_bags/bag2/
+        /data_bags/bag2/item1.json
+        /data_bags/bag2/item2.json
+        /environments/
+        /environments/_default.json
+        /environments/environment1.json
+        /environments/environment2.json
+        /nodes/
+        /nodes/node1.json
+        /nodes/node2.json
+        /roles/
+        /roles/role1.json
+        /roles/role2.json
+        /users/
+        /users/admin.json
+        /users/user1.json
+        /users/user2.json
 EOM
     end
 
     it "knife list /cookbooks returns the list of cookbooks" do
-      knife("list /cookbooks").should_succeed <<-EOM
-/cookbooks/cookbook1
-/cookbooks/cookbook2
+      knife("list /cookbooks").should_succeed <<~EOM
+        /cookbooks/cookbook1
+        /cookbooks/cookbook2
 EOM
     end
 
@@ -254,50 +254,50 @@ EOM
     end
 
     it "knife list /**.rb returns all ruby files" do
-      knife("list /**.rb").should_succeed <<-EOM
-/cookbooks/cookbook1/metadata.rb
-/cookbooks/cookbook2/metadata.rb
-/cookbooks/cookbook2/recipes/default.rb
+      knife("list /**.rb").should_succeed <<~EOM
+        /cookbooks/cookbook1/metadata.rb
+        /cookbooks/cookbook2/metadata.rb
+        /cookbooks/cookbook2/recipes/default.rb
 EOM
     end
 
     it "knife list /cookbooks/**.rb returns all ruby files" do
-      knife("list /cookbooks/**.rb").should_succeed <<-EOM
-/cookbooks/cookbook1/metadata.rb
-/cookbooks/cookbook2/metadata.rb
-/cookbooks/cookbook2/recipes/default.rb
+      knife("list /cookbooks/**.rb").should_succeed <<~EOM
+        /cookbooks/cookbook1/metadata.rb
+        /cookbooks/cookbook2/metadata.rb
+        /cookbooks/cookbook2/recipes/default.rb
 EOM
     end
 
     it "knife list /**.json returns all json files" do
-      knife("list /**.json").should_succeed <<-EOM
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/client1.json
-/clients/client2.json
-/data_bags/bag1/item1.json
-/data_bags/bag1/item2.json
-/data_bags/bag2/item1.json
-/data_bags/bag2/item2.json
-/environments/_default.json
-/environments/environment1.json
-/environments/environment2.json
-/nodes/node1.json
-/nodes/node2.json
-/roles/role1.json
-/roles/role2.json
-/users/admin.json
-/users/user1.json
-/users/user2.json
+      knife("list /**.json").should_succeed <<~EOM
+        /clients/chef-validator.json
+        /clients/chef-webui.json
+        /clients/client1.json
+        /clients/client2.json
+        /data_bags/bag1/item1.json
+        /data_bags/bag1/item2.json
+        /data_bags/bag2/item1.json
+        /data_bags/bag2/item2.json
+        /environments/_default.json
+        /environments/environment1.json
+        /environments/environment2.json
+        /nodes/node1.json
+        /nodes/node2.json
+        /roles/role1.json
+        /roles/role2.json
+        /users/admin.json
+        /users/user1.json
+        /users/user2.json
 EOM
     end
 
     it "knife list /data**.json returns all data bag json files" do
-      knife("list /data**.json").should_succeed <<-EOM
-/data_bags/bag1/item1.json
-/data_bags/bag1/item2.json
-/data_bags/bag2/item1.json
-/data_bags/bag2/item2.json
+      knife("list /data**.json").should_succeed <<~EOM
+        /data_bags/bag1/item1.json
+        /data_bags/bag1/item2.json
+        /data_bags/bag2/item1.json
+        /data_bags/bag2/item2.json
 EOM
     end
 
@@ -317,40 +317,40 @@ EOM
           before { cwd "." }
 
           it "knife list -Rfp returns everything" do
-            knife("list -Rfp").should_succeed <<-EOM
-clients/
-clients/chef-validator.json
-clients/chef-webui.json
-clients/client1.json
-clients/client2.json
-cookbooks/
-cookbooks/cookbook1/
-cookbooks/cookbook1/metadata.rb
-cookbooks/cookbook2/
-cookbooks/cookbook2/metadata.rb
-cookbooks/cookbook2/recipes/
-cookbooks/cookbook2/recipes/default.rb
-data_bags/
-data_bags/bag1/
-data_bags/bag1/item1.json
-data_bags/bag1/item2.json
-data_bags/bag2/
-data_bags/bag2/item1.json
-data_bags/bag2/item2.json
-environments/
-environments/_default.json
-environments/environment1.json
-environments/environment2.json
-nodes/
-nodes/node1.json
-nodes/node2.json
-roles/
-roles/role1.json
-roles/role2.json
-users/
-users/admin.json
-users/user1.json
-users/user2.json
+            knife("list -Rfp").should_succeed <<~EOM
+              clients/
+              clients/chef-validator.json
+              clients/chef-webui.json
+              clients/client1.json
+              clients/client2.json
+              cookbooks/
+              cookbooks/cookbook1/
+              cookbooks/cookbook1/metadata.rb
+              cookbooks/cookbook2/
+              cookbooks/cookbook2/metadata.rb
+              cookbooks/cookbook2/recipes/
+              cookbooks/cookbook2/recipes/default.rb
+              data_bags/
+              data_bags/bag1/
+              data_bags/bag1/item1.json
+              data_bags/bag1/item2.json
+              data_bags/bag2/
+              data_bags/bag2/item1.json
+              data_bags/bag2/item2.json
+              environments/
+              environments/_default.json
+              environments/environment1.json
+              environments/environment2.json
+              nodes/
+              nodes/node1.json
+              nodes/node2.json
+              roles/
+              roles/role1.json
+              roles/role2.json
+              users/
+              users/admin.json
+              users/user1.json
+              users/user2.json
 EOM
           end
         end
@@ -362,89 +362,89 @@ EOM
           before { cwd "cookbooks" }
 
           it "knife list -Rfp / returns everything" do
-            knife("list -Rfp /").should_succeed <<-EOM
-/clients/
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/client1.json
-/clients/client2.json
-./
-cookbook1/
-cookbook1/metadata.rb
-cookbook2/
-cookbook2/metadata.rb
-cookbook2/recipes/
-cookbook2/recipes/default.rb
-/data_bags/
-/data_bags/bag1/
-/data_bags/bag1/item1.json
-/data_bags/bag1/item2.json
-/data_bags/bag2/
-/data_bags/bag2/item1.json
-/data_bags/bag2/item2.json
-/environments/
-/environments/_default.json
-/environments/environment1.json
-/environments/environment2.json
-/nodes/
-/nodes/node1.json
-/nodes/node2.json
-/roles/
-/roles/role1.json
-/roles/role2.json
-/users/
-/users/admin.json
-/users/user1.json
-/users/user2.json
+            knife("list -Rfp /").should_succeed <<~EOM
+              /clients/
+              /clients/chef-validator.json
+              /clients/chef-webui.json
+              /clients/client1.json
+              /clients/client2.json
+              ./
+              cookbook1/
+              cookbook1/metadata.rb
+              cookbook2/
+              cookbook2/metadata.rb
+              cookbook2/recipes/
+              cookbook2/recipes/default.rb
+              /data_bags/
+              /data_bags/bag1/
+              /data_bags/bag1/item1.json
+              /data_bags/bag1/item2.json
+              /data_bags/bag2/
+              /data_bags/bag2/item1.json
+              /data_bags/bag2/item2.json
+              /environments/
+              /environments/_default.json
+              /environments/environment1.json
+              /environments/environment2.json
+              /nodes/
+              /nodes/node1.json
+              /nodes/node2.json
+              /roles/
+              /roles/role1.json
+              /roles/role2.json
+              /users/
+              /users/admin.json
+              /users/user1.json
+              /users/user2.json
 EOM
           end
 
           it "knife list -Rfp .. returns everything" do
-            knife("list -Rfp ..").should_succeed <<-EOM
-/clients/
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/client1.json
-/clients/client2.json
-./
-cookbook1/
-cookbook1/metadata.rb
-cookbook2/
-cookbook2/metadata.rb
-cookbook2/recipes/
-cookbook2/recipes/default.rb
-/data_bags/
-/data_bags/bag1/
-/data_bags/bag1/item1.json
-/data_bags/bag1/item2.json
-/data_bags/bag2/
-/data_bags/bag2/item1.json
-/data_bags/bag2/item2.json
-/environments/
-/environments/_default.json
-/environments/environment1.json
-/environments/environment2.json
-/nodes/
-/nodes/node1.json
-/nodes/node2.json
-/roles/
-/roles/role1.json
-/roles/role2.json
-/users/
-/users/admin.json
-/users/user1.json
-/users/user2.json
+            knife("list -Rfp ..").should_succeed <<~EOM
+              /clients/
+              /clients/chef-validator.json
+              /clients/chef-webui.json
+              /clients/client1.json
+              /clients/client2.json
+              ./
+              cookbook1/
+              cookbook1/metadata.rb
+              cookbook2/
+              cookbook2/metadata.rb
+              cookbook2/recipes/
+              cookbook2/recipes/default.rb
+              /data_bags/
+              /data_bags/bag1/
+              /data_bags/bag1/item1.json
+              /data_bags/bag1/item2.json
+              /data_bags/bag2/
+              /data_bags/bag2/item1.json
+              /data_bags/bag2/item2.json
+              /environments/
+              /environments/_default.json
+              /environments/environment1.json
+              /environments/environment2.json
+              /nodes/
+              /nodes/node1.json
+              /nodes/node2.json
+              /roles/
+              /roles/role1.json
+              /roles/role2.json
+              /users/
+              /users/admin.json
+              /users/user1.json
+              /users/user2.json
 EOM
           end
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp").should_succeed <<-EOM
-cookbook1/
-cookbook1/metadata.rb
-cookbook2/
-cookbook2/metadata.rb
-cookbook2/recipes/
-cookbook2/recipes/default.rb
+            knife("list -Rfp").should_succeed <<~EOM
+              cookbook1/
+              cookbook1/metadata.rb
+              cookbook2/
+              cookbook2/metadata.rb
+              cookbook2/recipes/
+              cookbook2/recipes/default.rb
 EOM
           end
         end
@@ -457,10 +457,10 @@ EOM
           before { cwd "cookbooks/cookbook2" }
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp").should_succeed <<-EOM
-metadata.rb
-recipes/
-recipes/default.rb
+            knife("list -Rfp").should_succeed <<~EOM
+              metadata.rb
+              recipes/
+              recipes/default.rb
 EOM
           end
         end
@@ -476,13 +476,13 @@ EOM
           before { cwd "cookbooks" }
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp").should_succeed <<-EOM
-cookbook1/
-cookbook1/metadata.rb
-cookbook2/
-cookbook2/metadata.rb
-cookbook2/recipes/
-cookbook2/recipes/default.rb
+            knife("list -Rfp").should_succeed <<~EOM
+              cookbook1/
+              cookbook1/metadata.rb
+              cookbook2/
+              cookbook2/metadata.rb
+              cookbook2/recipes/
+              cookbook2/recipes/default.rb
 EOM
           end
         end
@@ -491,13 +491,13 @@ EOM
           before { cwd "symlinked" }
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp").should_succeed <<-EOM
-cookbook1/
-cookbook1/metadata.rb
-cookbook2/
-cookbook2/metadata.rb
-cookbook2/recipes/
-cookbook2/recipes/default.rb
+            knife("list -Rfp").should_succeed <<~EOM
+              cookbook1/
+              cookbook1/metadata.rb
+              cookbook2/
+              cookbook2/metadata.rb
+              cookbook2/recipes/
+              cookbook2/recipes/default.rb
 EOM
           end
         end
@@ -513,13 +513,13 @@ EOM
           before { cwd "real_cookbooks" }
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp").should_succeed <<-EOM
-cookbook1/
-cookbook1/metadata.rb
-cookbook2/
-cookbook2/metadata.rb
-cookbook2/recipes/
-cookbook2/recipes/default.rb
+            knife("list -Rfp").should_succeed <<~EOM
+              cookbook1/
+              cookbook1/metadata.rb
+              cookbook2/
+              cookbook2/metadata.rb
+              cookbook2/recipes/
+              cookbook2/recipes/default.rb
 EOM
           end
         end
@@ -528,13 +528,13 @@ EOM
           before { cwd "cookbooks" }
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp").should_succeed <<-EOM
-cookbook1/
-cookbook1/metadata.rb
-cookbook2/
-cookbook2/metadata.rb
-cookbook2/recipes/
-cookbook2/recipes/default.rb
+            knife("list -Rfp").should_succeed <<~EOM
+              cookbook1/
+              cookbook1/metadata.rb
+              cookbook2/
+              cookbook2/metadata.rb
+              cookbook2/recipes/
+              cookbook2/recipes/default.rb
 EOM
           end
         end
@@ -589,36 +589,36 @@ EOM
       end
 
       it "knife list -Rfp / returns everything" do
-        knife("list -Rp --local --flat /").should_succeed <<-EOM
-/clients/
-/clients/client1.json
-/clients/client2.json
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/metadata.rb
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/metadata.rb
-/cookbooks/cookbook2/recipes/
-/cookbooks/cookbook2/recipes/default.rb
-/data_bags/
-/data_bags/bag1/
-/data_bags/bag1/item1.json
-/data_bags/bag1/item2.json
-/data_bags/bag2/
-/data_bags/bag2/item1.json
-/data_bags/bag2/item2.json
-/environments/
-/environments/environment1.json
-/environments/environment2.json
-/nodes/
-/nodes/node1.json
-/nodes/node2.json
-/roles/
-/roles/role1.json
-/roles/role2.json
-/users/
-/users/user1.json
-/users/user2.json
+        knife("list -Rp --local --flat /").should_succeed <<~EOM
+          /clients/
+          /clients/client1.json
+          /clients/client2.json
+          /cookbooks/
+          /cookbooks/cookbook1/
+          /cookbooks/cookbook1/metadata.rb
+          /cookbooks/cookbook2/
+          /cookbooks/cookbook2/metadata.rb
+          /cookbooks/cookbook2/recipes/
+          /cookbooks/cookbook2/recipes/default.rb
+          /data_bags/
+          /data_bags/bag1/
+          /data_bags/bag1/item1.json
+          /data_bags/bag1/item2.json
+          /data_bags/bag2/
+          /data_bags/bag2/item1.json
+          /data_bags/bag2/item2.json
+          /environments/
+          /environments/environment1.json
+          /environments/environment2.json
+          /nodes/
+          /nodes/node1.json
+          /nodes/node2.json
+          /roles/
+          /roles/role1.json
+          /roles/role2.json
+          /users/
+          /users/user1.json
+          /users/user2.json
 EOM
       end
 
@@ -649,253 +649,253 @@ EOM
 
     context "and is empty" do
       it "knife list / returns all top level directories" do
-        knife("list /").should_succeed <<-EOM
-/acls
-/clients
-/containers
-/cookbook_artifacts
-/cookbooks
-/data_bags
-/environments
-/groups
-/invitations.json
-/members.json
-/nodes
-/org.json
-/policies
-/policy_groups
-/roles
+        knife("list /").should_succeed <<~EOM
+          /acls
+          /clients
+          /containers
+          /cookbook_artifacts
+          /cookbooks
+          /data_bags
+          /environments
+          /groups
+          /invitations.json
+          /members.json
+          /nodes
+          /org.json
+          /policies
+          /policy_groups
+          /roles
 EOM
       end
 
       it "knife list -R / returns everything" do
-        knife("list -R /").should_succeed <<-EOM
-/:
-acls
-clients
-containers
-cookbook_artifacts
-cookbooks
-data_bags
-environments
-groups
-invitations.json
-members.json
-nodes
-org.json
-policies
-policy_groups
-roles
-
-/acls:
-clients
-containers
-cookbook_artifacts
-cookbooks
-data_bags
-environments
-groups
-nodes
-organization.json
-policies
-policy_groups
-roles
-
-/acls/clients:
-foo-validator.json
-
-/acls/containers:
-clients.json
-containers.json
-cookbook_artifacts.json
-cookbooks.json
-data.json
-environments.json
-groups.json
-nodes.json
-policies.json
-policy_groups.json
-roles.json
-sandboxes.json
-
-/acls/cookbook_artifacts:
-
-/acls/cookbooks:
-
-/acls/data_bags:
-
-/acls/environments:
-_default.json
-
-/acls/groups:
-admins.json
-billing-admins.json
-clients.json
-users.json
-
-/acls/nodes:
-
-/acls/policies:
-
-/acls/policy_groups:
-
-/acls/roles:
-
-/clients:
-foo-validator.json
-
-/containers:
-clients.json
-containers.json
-cookbook_artifacts.json
-cookbooks.json
-data.json
-environments.json
-groups.json
-nodes.json
-policies.json
-policy_groups.json
-roles.json
-sandboxes.json
-
-/cookbook_artifacts:
-
-/cookbooks:
-
-/data_bags:
-
-/environments:
-_default.json
-
-/groups:
-admins.json
-billing-admins.json
-clients.json
-users.json
-
-/nodes:
-
-/policies:
-
-/policy_groups:
-
-/roles:
+        knife("list -R /").should_succeed <<~EOM
+          /:
+          acls
+          clients
+          containers
+          cookbook_artifacts
+          cookbooks
+          data_bags
+          environments
+          groups
+          invitations.json
+          members.json
+          nodes
+          org.json
+          policies
+          policy_groups
+          roles
+          
+          /acls:
+          clients
+          containers
+          cookbook_artifacts
+          cookbooks
+          data_bags
+          environments
+          groups
+          nodes
+          organization.json
+          policies
+          policy_groups
+          roles
+          
+          /acls/clients:
+          foo-validator.json
+          
+          /acls/containers:
+          clients.json
+          containers.json
+          cookbook_artifacts.json
+          cookbooks.json
+          data.json
+          environments.json
+          groups.json
+          nodes.json
+          policies.json
+          policy_groups.json
+          roles.json
+          sandboxes.json
+          
+          /acls/cookbook_artifacts:
+          
+          /acls/cookbooks:
+          
+          /acls/data_bags:
+          
+          /acls/environments:
+          _default.json
+          
+          /acls/groups:
+          admins.json
+          billing-admins.json
+          clients.json
+          users.json
+          
+          /acls/nodes:
+          
+          /acls/policies:
+          
+          /acls/policy_groups:
+          
+          /acls/roles:
+          
+          /clients:
+          foo-validator.json
+          
+          /containers:
+          clients.json
+          containers.json
+          cookbook_artifacts.json
+          cookbooks.json
+          data.json
+          environments.json
+          groups.json
+          nodes.json
+          policies.json
+          policy_groups.json
+          roles.json
+          sandboxes.json
+          
+          /cookbook_artifacts:
+          
+          /cookbooks:
+          
+          /data_bags:
+          
+          /environments:
+          _default.json
+          
+          /groups:
+          admins.json
+          billing-admins.json
+          clients.json
+          users.json
+          
+          /nodes:
+          
+          /policies:
+          
+          /policy_groups:
+          
+          /roles:
 EOM
       end
     end
 
     it "knife list -R / returns everything" do
-      knife("list -R /").should_succeed <<-EOM
-/:
-acls
-clients
-containers
-cookbook_artifacts
-cookbooks
-data_bags
-environments
-groups
-invitations.json
-members.json
-nodes
-org.json
-policies
-policy_groups
-roles
-
-/acls:
-clients
-containers
-cookbook_artifacts
-cookbooks
-data_bags
-environments
-groups
-nodes
-organization.json
-policies
-policy_groups
-roles
-
-/acls/clients:
-foo-validator.json
-
-/acls/containers:
-clients.json
-containers.json
-cookbook_artifacts.json
-cookbooks.json
-data.json
-environments.json
-groups.json
-nodes.json
-policies.json
-policy_groups.json
-roles.json
-sandboxes.json
-
-/acls/cookbook_artifacts:
-
-/acls/cookbooks:
-
-/acls/data_bags:
-
-/acls/environments:
-_default.json
-
-/acls/groups:
-admins.json
-billing-admins.json
-clients.json
-users.json
-
-/acls/nodes:
-
-/acls/policies:
-
-/acls/policy_groups:
-
-/acls/roles:
-
-/clients:
-foo-validator.json
-
-/containers:
-clients.json
-containers.json
-cookbook_artifacts.json
-cookbooks.json
-data.json
-environments.json
-groups.json
-nodes.json
-policies.json
-policy_groups.json
-roles.json
-sandboxes.json
-
-/cookbook_artifacts:
-
-/cookbooks:
-
-/data_bags:
-
-/environments:
-_default.json
-
-/groups:
-admins.json
-billing-admins.json
-clients.json
-users.json
-
-/nodes:
-
-/policies:
-
-/policy_groups:
-
-/roles:
+      knife("list -R /").should_succeed <<~EOM
+        /:
+        acls
+        clients
+        containers
+        cookbook_artifacts
+        cookbooks
+        data_bags
+        environments
+        groups
+        invitations.json
+        members.json
+        nodes
+        org.json
+        policies
+        policy_groups
+        roles
+        
+        /acls:
+        clients
+        containers
+        cookbook_artifacts
+        cookbooks
+        data_bags
+        environments
+        groups
+        nodes
+        organization.json
+        policies
+        policy_groups
+        roles
+        
+        /acls/clients:
+        foo-validator.json
+        
+        /acls/containers:
+        clients.json
+        containers.json
+        cookbook_artifacts.json
+        cookbooks.json
+        data.json
+        environments.json
+        groups.json
+        nodes.json
+        policies.json
+        policy_groups.json
+        roles.json
+        sandboxes.json
+        
+        /acls/cookbook_artifacts:
+        
+        /acls/cookbooks:
+        
+        /acls/data_bags:
+        
+        /acls/environments:
+        _default.json
+        
+        /acls/groups:
+        admins.json
+        billing-admins.json
+        clients.json
+        users.json
+        
+        /acls/nodes:
+        
+        /acls/policies:
+        
+        /acls/policy_groups:
+        
+        /acls/roles:
+        
+        /clients:
+        foo-validator.json
+        
+        /containers:
+        clients.json
+        containers.json
+        cookbook_artifacts.json
+        cookbooks.json
+        data.json
+        environments.json
+        groups.json
+        nodes.json
+        policies.json
+        policy_groups.json
+        roles.json
+        sandboxes.json
+        
+        /cookbook_artifacts:
+        
+        /cookbooks:
+        
+        /data_bags:
+        
+        /environments:
+        _default.json
+        
+        /groups:
+        admins.json
+        billing-admins.json
+        clients.json
+        users.json
+        
+        /nodes:
+        
+        /policies:
+        
+        /policy_groups:
+        
+        /roles:
 EOM
     end
 
@@ -931,127 +931,127 @@ EOM
       end
 
       it "knife list -Rfp / returns everything" do
-        knife("list -Rfp /").should_succeed <<-EOM
-/acls/
-/acls/clients/
-/acls/clients/client1.json
-/acls/clients/client2.json
-/acls/clients/foo-validator.json
-/acls/containers/
-/acls/containers/clients.json
-/acls/containers/container1.json
-/acls/containers/container2.json
-/acls/containers/containers.json
-/acls/containers/cookbook_artifacts.json
-/acls/containers/cookbooks.json
-/acls/containers/data.json
-/acls/containers/environments.json
-/acls/containers/groups.json
-/acls/containers/nodes.json
-/acls/containers/policies.json
-/acls/containers/policy_groups.json
-/acls/containers/roles.json
-/acls/containers/sandboxes.json
-/acls/cookbook_artifacts/
-/acls/cookbook_artifacts/cookbook_artifact1.json
-/acls/cookbook_artifacts/cookbook_artifact2.json
-/acls/cookbooks/
-/acls/cookbooks/cookbook1.json
-/acls/cookbooks/cookbook2.json
-/acls/data_bags/
-/acls/data_bags/bag1.json
-/acls/data_bags/bag2.json
-/acls/environments/
-/acls/environments/_default.json
-/acls/environments/environment1.json
-/acls/environments/environment2.json
-/acls/groups/
-/acls/groups/admins.json
-/acls/groups/billing-admins.json
-/acls/groups/clients.json
-/acls/groups/group1.json
-/acls/groups/group2.json
-/acls/groups/users.json
-/acls/nodes/
-/acls/nodes/node1.json
-/acls/nodes/node2.json
-/acls/organization.json
-/acls/policies/
-/acls/policies/policy1.json
-/acls/policies/policy2.json
-/acls/policy_groups/
-/acls/policy_groups/policy_group1.json
-/acls/policy_groups/policy_group2.json
-/acls/roles/
-/acls/roles/role1.json
-/acls/roles/role2.json
-/clients/
-/clients/client1.json
-/clients/client2.json
-/clients/foo-validator.json
-/containers/
-/containers/clients.json
-/containers/container1.json
-/containers/container2.json
-/containers/containers.json
-/containers/cookbook_artifacts.json
-/containers/cookbooks.json
-/containers/data.json
-/containers/environments.json
-/containers/groups.json
-/containers/nodes.json
-/containers/policies.json
-/containers/policy_groups.json
-/containers/roles.json
-/containers/sandboxes.json
-/cookbook_artifacts/
-/cookbook_artifacts/cookbook_artifact1-1x1/
-/cookbook_artifacts/cookbook_artifact1-1x1/metadata.rb
-/cookbook_artifacts/cookbook_artifact2-2x2/
-/cookbook_artifacts/cookbook_artifact2-2x2/metadata.rb
-/cookbook_artifacts/cookbook_artifact2-2x2/recipes/
-/cookbook_artifacts/cookbook_artifact2-2x2/recipes/default.rb
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/metadata.rb
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/metadata.rb
-/cookbooks/cookbook2/recipes/
-/cookbooks/cookbook2/recipes/default.rb
-/data_bags/
-/data_bags/bag1/
-/data_bags/bag1/item1.json
-/data_bags/bag1/item2.json
-/data_bags/bag2/
-/data_bags/bag2/item1.json
-/data_bags/bag2/item2.json
-/environments/
-/environments/_default.json
-/environments/environment1.json
-/environments/environment2.json
-/groups/
-/groups/admins.json
-/groups/billing-admins.json
-/groups/clients.json
-/groups/group1.json
-/groups/group2.json
-/groups/users.json
-/invitations.json
-/members.json
-/nodes/
-/nodes/node1.json
-/nodes/node2.json
-/org.json
-/policies/
-/policies/policy1-1.2.3.json
-/policies/policy2-1.2.3.json
-/policies/policy2-1.3.5.json
-/policy_groups/
-/policy_groups/policy_group1.json
-/policy_groups/policy_group2.json
-/roles/
-/roles/role1.json
-/roles/role2.json
+        knife("list -Rfp /").should_succeed <<~EOM
+          /acls/
+          /acls/clients/
+          /acls/clients/client1.json
+          /acls/clients/client2.json
+          /acls/clients/foo-validator.json
+          /acls/containers/
+          /acls/containers/clients.json
+          /acls/containers/container1.json
+          /acls/containers/container2.json
+          /acls/containers/containers.json
+          /acls/containers/cookbook_artifacts.json
+          /acls/containers/cookbooks.json
+          /acls/containers/data.json
+          /acls/containers/environments.json
+          /acls/containers/groups.json
+          /acls/containers/nodes.json
+          /acls/containers/policies.json
+          /acls/containers/policy_groups.json
+          /acls/containers/roles.json
+          /acls/containers/sandboxes.json
+          /acls/cookbook_artifacts/
+          /acls/cookbook_artifacts/cookbook_artifact1.json
+          /acls/cookbook_artifacts/cookbook_artifact2.json
+          /acls/cookbooks/
+          /acls/cookbooks/cookbook1.json
+          /acls/cookbooks/cookbook2.json
+          /acls/data_bags/
+          /acls/data_bags/bag1.json
+          /acls/data_bags/bag2.json
+          /acls/environments/
+          /acls/environments/_default.json
+          /acls/environments/environment1.json
+          /acls/environments/environment2.json
+          /acls/groups/
+          /acls/groups/admins.json
+          /acls/groups/billing-admins.json
+          /acls/groups/clients.json
+          /acls/groups/group1.json
+          /acls/groups/group2.json
+          /acls/groups/users.json
+          /acls/nodes/
+          /acls/nodes/node1.json
+          /acls/nodes/node2.json
+          /acls/organization.json
+          /acls/policies/
+          /acls/policies/policy1.json
+          /acls/policies/policy2.json
+          /acls/policy_groups/
+          /acls/policy_groups/policy_group1.json
+          /acls/policy_groups/policy_group2.json
+          /acls/roles/
+          /acls/roles/role1.json
+          /acls/roles/role2.json
+          /clients/
+          /clients/client1.json
+          /clients/client2.json
+          /clients/foo-validator.json
+          /containers/
+          /containers/clients.json
+          /containers/container1.json
+          /containers/container2.json
+          /containers/containers.json
+          /containers/cookbook_artifacts.json
+          /containers/cookbooks.json
+          /containers/data.json
+          /containers/environments.json
+          /containers/groups.json
+          /containers/nodes.json
+          /containers/policies.json
+          /containers/policy_groups.json
+          /containers/roles.json
+          /containers/sandboxes.json
+          /cookbook_artifacts/
+          /cookbook_artifacts/cookbook_artifact1-1x1/
+          /cookbook_artifacts/cookbook_artifact1-1x1/metadata.rb
+          /cookbook_artifacts/cookbook_artifact2-2x2/
+          /cookbook_artifacts/cookbook_artifact2-2x2/metadata.rb
+          /cookbook_artifacts/cookbook_artifact2-2x2/recipes/
+          /cookbook_artifacts/cookbook_artifact2-2x2/recipes/default.rb
+          /cookbooks/
+          /cookbooks/cookbook1/
+          /cookbooks/cookbook1/metadata.rb
+          /cookbooks/cookbook2/
+          /cookbooks/cookbook2/metadata.rb
+          /cookbooks/cookbook2/recipes/
+          /cookbooks/cookbook2/recipes/default.rb
+          /data_bags/
+          /data_bags/bag1/
+          /data_bags/bag1/item1.json
+          /data_bags/bag1/item2.json
+          /data_bags/bag2/
+          /data_bags/bag2/item1.json
+          /data_bags/bag2/item2.json
+          /environments/
+          /environments/_default.json
+          /environments/environment1.json
+          /environments/environment2.json
+          /groups/
+          /groups/admins.json
+          /groups/billing-admins.json
+          /groups/clients.json
+          /groups/group1.json
+          /groups/group2.json
+          /groups/users.json
+          /invitations.json
+          /members.json
+          /nodes/
+          /nodes/node1.json
+          /nodes/node2.json
+          /org.json
+          /policies/
+          /policies/policy1-1.2.3.json
+          /policies/policy2-1.2.3.json
+          /policies/policy2-1.3.5.json
+          /policy_groups/
+          /policy_groups/policy_group1.json
+          /policy_groups/policy_group2.json
+          /roles/
+          /roles/role1.json
+          /roles/role2.json
 EOM
       end
     end

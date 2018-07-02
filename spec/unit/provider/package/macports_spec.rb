@@ -70,9 +70,9 @@ describe Chef::Provider::Package::Macports do
 
   describe "current_installed_version" do
     it "should return the current version if the package is installed" do
-      stdout = <<EOF
-The following ports are currently installed:
-  openssl @0.9.8k_0 (active)
+      stdout = <<~EOF
+        The following ports are currently installed:
+          openssl @0.9.8k_0 (active)
 EOF
 
       status = double(stdout: stdout, exitstatus: 0)

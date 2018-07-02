@@ -132,12 +132,12 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
       end
 
       it "should throw an exception if a category is not specified and there are duplicates" do
-        stderr_output = <<EOF
-You specified an unqualified atom that matched multiple packages:
-* app-misc/sphinx
-* dev-python/sphinx
-
-Please use a more specific atom.
+        stderr_output = <<~EOF
+          You specified an unqualified atom that matched multiple packages:
+          * app-misc/sphinx
+          * dev-python/sphinx
+          
+          Please use a more specific atom.
 EOF
         status = double(stdout: "", stderr: stderr_output, exitstatus: 1)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)

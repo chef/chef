@@ -211,9 +211,9 @@ describe Chef::Knife::UI do
 
     it "formats hashes appropriately" do
       @ui.output({ "hi" => "a", "lo" => "b" })
-      expect(@out.string).to eq <<EOM
-hi: a
-lo: b
+      expect(@out.string).to eq <<~EOM
+        hi: a
+        lo: b
 EOM
     end
 
@@ -224,9 +224,9 @@ EOM
 
     it "formats arrays appropriately" do
       @ui.output(%w{a b})
-      expect(@out.string).to eq <<EOM
-a
-b
+      expect(@out.string).to eq <<~EOM
+        a
+        b
 EOM
     end
 
@@ -247,74 +247,74 @@ EOM
 
     it "formats nested arrays appropriately" do
       @ui.output([ %w{a b}, %w{c d}])
-      expect(@out.string).to eq <<EOM
-a
-b
-
-c
-d
+      expect(@out.string).to eq <<~EOM
+        a
+        b
+        
+        c
+        d
 EOM
     end
 
     it "formats nested arrays with single- and empty subarrays appropriately" do
       @ui.output([ %w{a b}, [ "c" ], [], %w{d e}])
-      expect(@out.string).to eq <<EOM
-a
-b
-
-c
-
-
-d
-e
+      expect(@out.string).to eq <<~EOM
+        a
+        b
+        
+        c
+        
+        
+        d
+        e
 EOM
     end
 
     it "formats arrays of hashes with extra lines in between for readability" do
       @ui.output([ { "a" => "b", "c" => "d" }, { "x" => "y" }, { "m" => "n", "o" => "p" }])
-      expect(@out.string).to eq <<EOM
-a: b
-c: d
-
-x: y
-
-m: n
-o: p
+      expect(@out.string).to eq <<~EOM
+        a: b
+        c: d
+        
+        x: y
+        
+        m: n
+        o: p
 EOM
     end
 
     it "formats hashes with empty array members appropriately" do
       @ui.output({ "a" => [], "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-b: c
+      expect(@out.string).to eq <<~EOM
+        a:
+        b: c
 EOM
     end
 
     it "formats hashes with single-member array values appropriately" do
       @ui.output({ "a" => [ "foo" ], "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a: foo
-b: c
+      expect(@out.string).to eq <<~EOM
+        a: foo
+        b: c
 EOM
     end
 
     it "formats hashes with array members appropriately" do
       @ui.output({ "a" => %w{foo bar}, "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-  foo
-  bar
-b: c
+      expect(@out.string).to eq <<~EOM
+        a:
+          foo
+          bar
+        b: c
 EOM
     end
 
     it "formats hashes with single-member nested array values appropriately" do
       @ui.output({ "a" => [ [ "foo" ] ], "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-  foo
-b: c
+      expect(@out.string).to eq <<~EOM
+        a:
+          foo
+        b: c
 EOM
     end
 
@@ -327,19 +327,19 @@ EOM
 
     it "formats hashes with hash values appropriately" do
       @ui.output({ "a" => { "aa" => "bb", "cc" => "dd" }, "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-  aa: bb
-  cc: dd
-b: c
+      expect(@out.string).to eq <<~EOM
+        a:
+          aa: bb
+          cc: dd
+        b: c
 EOM
     end
 
     it "formats hashes with empty hash values appropriately" do
       @ui.output({ "a" => {}, "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-b: c
+      expect(@out.string).to eq <<~EOM
+        a:
+        b: c
 EOM
     end
   end
