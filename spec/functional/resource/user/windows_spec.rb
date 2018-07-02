@@ -50,23 +50,49 @@ describe Chef::Provider::User::Windows, :windows_only do
   end
 
   describe "action :create" do
-    it "creates a user when a username and password are given" do
-      new_resource.run_action(:create)
-      expect(new_resource).to be_updated_by_last_action
-      expect(shell_out("net user #{username}").exitstatus).to eq(0)
+    context "when a username and non-empty password are given" do
+      it "creates a user" do
+        new_resource.run_action(:create)
+        expect(new_resource).to be_updated_by_last_action
+        expect(shell_out("net user #{username}").exitstatus).to eq(0)
+      end
+
+      it "reports no changes if there are no changes needed" do
+        new_resource.run_action(:create)
+        new_resource.run_action(:create)
+        expect(new_resource).not_to be_updated_by_last_action
+      end
+
+      it "allows changing the password" do
+        new_resource.run_action(:create)
+        new_resource.password(SecureRandom.uuid)
+        new_resource.run_action(:create)
+        expect(new_resource).to be_updated_by_last_action
+      end
     end
 
-    it "reports no changes if there are no changes needed" do
-      new_resource.run_action(:create)
-      new_resource.run_action(:create)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
+    context "when a username and empty password are given" do
+      it "creates a user" do
+        new_resource.password("")
+        new_resource.run_action(:create)
+        expect(new_resource).to be_updated_by_last_action
+        expect(shell_out("net user #{username}").exitstatus).to eq(0)
+      end
 
-    it "allows chaning the password" do
-      new_resource.run_action(:create)
-      new_resource.password(SecureRandom.uuid)
-      new_resource.run_action(:create)
-      expect(new_resource).to be_updated_by_last_action
+      it "is idempotent" do
+        new_resource.password("")
+        new_resource.run_action(:create)
+        new_resource.run_action(:create)
+        expect(new_resource).not_to be_updated_by_last_action
+      end
+
+      it "allows changing the password from empty to a value" do
+        new_resource.password("")
+        new_resource.run_action(:create)
+        new_resource.password(SecureRandom.uuid)
+        new_resource.run_action(:create)
+        expect(new_resource).to be_updated_by_last_action
+      end
     end
 
     context "with a gid specified" do
