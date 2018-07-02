@@ -34,7 +34,7 @@ describe "knife environment from file", :workstation do
             "name": "cons",
             "description": "An environment",
             "cookbook_versions": {
-          
+
             },
             "json_class": "Chef::Environment",
             "chef_type": "environment",
@@ -42,7 +42,7 @@ describe "knife environment from file", :workstation do
               "hola": "Amigos!"
             },
             "override_attributes": {
-          
+
             }
           }
 EOM
@@ -52,7 +52,7 @@ EOM
             "name": "car",
             "description": "An environment for list nodes",
             "cookbook_versions": {
-          
+
             },
             "json_class": "Chef::Environment",
             "chef_type": "environment",
@@ -60,7 +60,7 @@ EOM
               "hola": "Amigos!"
             },
             "override_attributes": {
-          
+
             }
           }
 EOM
@@ -70,7 +70,7 @@ EOM
             "name": "cdr",
             "description": "An environment for last nodes",
             "cookbook_versions": {
-          
+
             },
             "json_class": "Chef::Environment",
             "chef_type": "environment",
@@ -78,7 +78,7 @@ EOM
               "hola": "Amigos!"
             },
             "override_attributes": {
-          
+
             }
           }
 EOM

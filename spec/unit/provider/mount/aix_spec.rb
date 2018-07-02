@@ -242,7 +242,7 @@ WRONG
           vol   = /opt
           free    = false
           quota   = no
-        
+
         /tmp/abc:
           dev   = /dev/sdz2
           vfs   = jfs2

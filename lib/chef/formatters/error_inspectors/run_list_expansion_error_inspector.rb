@@ -38,7 +38,7 @@ class Chef
           when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
             error_description.section("Networking Error:", <<~E)
               #{exception.message}
-              
+
               Your chef_server_url may be misconfigured, or the network could be down.
 E
           when Net::HTTPServerException, Net::HTTPFatalError
@@ -85,7 +85,7 @@ E
               chef_server_url   "#{server_url}"
               node_name         "#{username}"
               client_key        "#{api_key}"
-              
+
               If these settings are correct, your client_key may be invalid.
 E
           when Net::HTTPForbidden

@@ -126,7 +126,7 @@ describe Chef::Provider::Package::Apt do
       showpkg_out = <<~SHOWPKG_STDOUT
         Package: libmysqlclient15-dev
         Versions:
-        
+
         Reverse Depends:
           libmysqlclient-dev,libmysqlclient15-dev
           libmysqlclient-dev,libmysqlclient15-dev
@@ -186,7 +186,7 @@ describe Chef::Provider::Package::Apt do
       showpkg_out = <<~SHOWPKG_STDOUT
         Package: mp3-decoder
         Versions:
-        
+
         Reverse Depends:
           nautilus,mp3-decoder
           vux,mp3-decoder

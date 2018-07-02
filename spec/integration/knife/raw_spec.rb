@@ -46,21 +46,21 @@ describe "knife raw", :workstation do
           "chef_type": "node",
           "chef_environment": "_default",
           "override": {
-        
+
           },
           "normal": {
             "tags": [
-        
+
             ]
           },
           "default": {
-        
+
           },
           "automatic": {
-        
+
           },
           "run_list": [
-        
+
           ]
         }
 EOM
@@ -78,16 +78,16 @@ EOM
           "json_class": "Chef::Role",
           "chef_type": "role",
           "default_attributes": {
-        
+
           },
           "override_attributes": {
-        
+
           },
           "run_list": [
-        
+
           ],
           "env_run_lists": {
-        
+
           }
         }
 EOM
@@ -103,16 +103,16 @@ EOM
             "json_class": "Chef::Role",
             "chef_type": "role",
             "default_attributes": {
-          
+
             },
             "override_attributes": {
-          
+
             },
             "run_list": [
-          
+
             ],
             "env_run_lists": {
-          
+
             }
           }
 EOM
@@ -125,16 +125,16 @@ EOM
             "json_class": "Chef::Role",
             "chef_type": "role",
             "default_attributes": {
-          
+
             },
             "override_attributes": {
-          
+
             },
             "run_list": [
-          
+
             ],
             "env_run_lists": {
-          
+
             }
           }
 EOM
@@ -161,7 +161,7 @@ EOM
             "override_attributes": {
             },
             "run_list": [
-          
+
             ],
             "env_run_lists": {
             }

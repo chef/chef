@@ -136,7 +136,7 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
           You specified an unqualified atom that matched multiple packages:
           * app-misc/sphinx
           * dev-python/sphinx
-          
+
           Please use a more specific atom.
 EOF
         status = double(stdout: "", stderr: stderr_output, exitstatus: 1)

@@ -59,7 +59,7 @@ class Chef
             error_description.section("Authorization Error", <<~E)
               This client is not authorized to read some of the information required to
               access its cookbooks (HTTP 403).
-              
+
               To access its cookbooks, a client needs to be able to read its environment and
               all of the cookbooks in its expanded run list.
 E

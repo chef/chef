@@ -44,12 +44,12 @@ describe Chef::Provider::Cron do
       before :each do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           @reboot /bin/true param1 param2
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
 CRONTAB
       end
@@ -69,7 +69,7 @@ CRONTAB
       it "should pull env vars out" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           MAILTO=foo@example.com
           SHELL=/bin/foosh
@@ -78,7 +78,7 @@ CRONTAB
           @reboot /bin/true param1 param2
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
 CRONTAB
         cron = @provider.load_current_resource
@@ -170,10 +170,10 @@ CRONTAB
       before :each do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: something else
           * 5 * * * /bin/true
-          
+
           # Another comment
 CRONTAB
       end
@@ -204,12 +204,12 @@ CRONTAB
       before :each do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           * 5 * 1 * /bin/true param1 param2
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
 CRONTAB
       end
@@ -234,7 +234,7 @@ CRONTAB
       it "should pull env vars out" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           MAILTO=foo@example.com
           SHELL=/bin/foosh
@@ -243,7 +243,7 @@ CRONTAB
           * 5 * 1 * /bin/true param1 param2
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
 CRONTAB
         cron = @provider.load_current_resource
@@ -300,12 +300,12 @@ CRONTAB
       before :each do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           * 5 * Jan Mon /bin/true param1 param2
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
 CRONTAB
       end
@@ -336,7 +336,7 @@ CRONTAB
       it "should set cron_exists and leave current_resource values at defaults" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
 CRONTAB
         cron = @provider.load_current_resource
@@ -353,7 +353,7 @@ CRONTAB
       it "should not pick up a commented out crontab line" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           #* 5 * 1 * /bin/true param1 param2
 CRONTAB
@@ -371,12 +371,12 @@ CRONTAB
       it "should not pick up a later crontab entry" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           #* 5 * 1 * /bin/true param1 param2
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
 CRONTAB
         cron = @provider.load_current_resource
@@ -483,10 +483,10 @@ CRONTAB
         @provider.cron_exists = false
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         CRONTAB
       end
@@ -494,10 +494,10 @@ CRONTAB
       it "should add the entry to the crontab" do
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
           # Chef Name: cronhole some stuff
           30 * * * * /bin/true
@@ -513,10 +513,10 @@ CRONTAB
         @new_resource.environment "TEST" => "LOL"
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
           # Chef Name: cronhole some stuff
           MAILTO="foo@example.com"
@@ -546,12 +546,12 @@ CRONTAB
         allow(@provider).to receive(:cron_different?).and_return(true)
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           30 * * 3 * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         CRONTAB
       end
@@ -559,12 +559,12 @@ CRONTAB
       it "should update the crontab entry" do
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           30 * * * * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         ENDCRON
         @provider.run_action(:create)
@@ -578,7 +578,7 @@ CRONTAB
         @new_resource.environment "TEST" => "LOL"
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           MAILTO="foo@example.com"
           PATH="/usr/bin:/my/custom/path"
@@ -588,7 +588,7 @@ CRONTAB
           30 * * * * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         ENDCRON
         @provider.run_action(:create)
@@ -614,12 +614,12 @@ CRONTAB
       it "should add the crontab to the entry" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
         CRONTAB
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           30 * * * * /bin/true
         ENDCRON
@@ -629,23 +629,23 @@ CRONTAB
       it "should not blat any following entries" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           #30 * * * * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         CRONTAB
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           30 * * * * /bin/true
           #30 * * * * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         ENDCRON
         @provider.run_action(:create)
@@ -654,16 +654,16 @@ CRONTAB
       it "should handle env vars with no crontab" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           MAILTO=bar@example.com
           PATH=/usr/bin:/my/custom/path
           SHELL=/bin/barsh
           HOME=/home/foo
-          
+
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         CRONTAB
         @new_resource.mailto "foo@example.com"
@@ -672,17 +672,17 @@ CRONTAB
         @new_resource.home "/home/foo"
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           MAILTO="foo@example.com"
           PATH="/usr/bin:/my/custom/path"
           SHELL="/bin/foosh"
           HOME="/home/foo"
           30 * * * * /bin/true
-          
+
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         ENDCRON
         @provider.run_action(:create)
@@ -695,10 +695,10 @@ CRONTAB
         allow(@provider).to receive(:cron_different?).and_return(false)
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           * 5 * * * /bin/true
-          
+
           # Another comment
 CRONTAB
       end
@@ -749,12 +749,12 @@ CRONTAB
         @provider.cron_exists = true
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           30 * * 3 * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         CRONTAB
       end
@@ -762,10 +762,10 @@ CRONTAB
       it "should remove the entry" do
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         ENDCRON
         @provider.run_action(:delete)
@@ -774,22 +774,22 @@ CRONTAB
       it "should remove any env vars with the entry" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           MAILTO=foo@example.com
           FOO=test
           30 * * 3 * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         CRONTAB
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         ENDCRON
         @provider.run_action(:delete)
@@ -814,12 +814,12 @@ CRONTAB
       it "should remove the section" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
         CRONTAB
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
         ENDCRON
         @provider.run_action(:delete)
       end
@@ -827,21 +827,21 @@ CRONTAB
       it "should not blat following sections" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           #30 * * 3 * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         CRONTAB
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           #30 * * 3 * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         ENDCRON
         @provider.run_action(:delete)
@@ -850,22 +850,22 @@ CRONTAB
       it "should remove any envvars with the section" do
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
-          
+
           # Chef Name: cronhole some stuff
           MAILTO=foo@example.com
           #30 * * 3 * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         CRONTAB
         expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
           0 2 * * * /some/other/command
-          
+
           #30 * * 3 * /bin/true
           # Chef Name: something else
           2 * 1 * * /bin/false
-          
+
           # Another comment
         ENDCRON
         @provider.run_action(:delete)
@@ -877,10 +877,10 @@ CRONTAB
     before :each do
       @stdout = <<~CRONTAB
         0 2 * * * /some/other/command
-        
+
         # Chef Name: something else
         * 5 * * * /bin/true
-        
+
         # Another comment
       CRONTAB
       @status = double("Status", exitstatus: 0, stdout: @stdout)
@@ -896,10 +896,10 @@ CRONTAB
       crontab = @provider.send(:read_crontab)
       expect(crontab).to eq <<~CRONTAB
         0 2 * * * /some/other/command
-        
+
         # Chef Name: something else
         * 5 * * * /bin/true
-        
+
         # Another comment
       CRONTAB
     end

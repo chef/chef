@@ -106,16 +106,16 @@ PACMAN
         [options]
         HoldPkg      = pacman glibc
         Architecture = auto
-        
+
         [customrepo]
         Server = https://my.custom.repo
-        
+
         [core]
         Include = /etc/pacman.d/mirrorlist
-        
+
         [extra]
         Include = /etc/pacman.d/mirrorlist
-        
+
         [community]
         Include = /etc/pacman.d/mirrorlist
 PACMAN_CONF

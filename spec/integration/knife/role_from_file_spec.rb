@@ -39,7 +39,7 @@ describe "knife role from file", :workstation do
               "hola": "Amigos!"
             },
             "override_attributes": {
-          
+
             }
           }
 EOM
@@ -54,7 +54,7 @@ EOM
               "hola": "Amigos!"
             },
             "override_attributes": {
-          
+
             }
           }
 EOM
@@ -69,7 +69,7 @@ EOM
               "hola": "Amigos!"
             },
             "override_attributes": {
-          
+
             }
           }
 EOM

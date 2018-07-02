@@ -212,7 +212,7 @@ class Chef
           ui.warn(<<~WARNING)
             The cookbooks: #{cookbook_repo.merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path.
             A composite version of these cookbooks has been compiled for uploading.
-            
+
             #{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this behavior will be removed and you will no longer
             be able to have the same version of a cookbook in multiple places in your cookbook_path.
 WARNING

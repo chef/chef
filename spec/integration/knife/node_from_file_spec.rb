@@ -39,7 +39,7 @@ describe "knife node from file", :workstation do
           ,
             "normal": {
               "tags": [
-          
+
               ]
             }
           }

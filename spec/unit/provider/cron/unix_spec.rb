@@ -55,10 +55,10 @@ describe Chef::Provider::Cron::Unix do
     let(:stdout) do
       String.new(<<~CRONTAB)
         0 2 * * * /some/other/command
-        
+
         # Chef Name: something else
         * 5 * * * /bin/true
-        
+
         # Another comment
       CRONTAB
     end

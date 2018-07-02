@@ -154,7 +154,7 @@ EOH
       $testuser = #{dsc_user_code}
       $testpassword = ConvertTo-SecureString -String "jf9a8m49jrajf4#" -AsPlainText -Force
       $testcred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $testuser, $testpassword
-      
+
       User dsctestusercreate
       {
           UserName = $testuser
@@ -179,7 +179,7 @@ EOH
               }
           )
       }
-      
+
 EOH
   end
 
@@ -424,7 +424,7 @@ EOH
         $cert = ls Cert:\\LocalMachine\\My\\ |
           Where-Object {$_.Subject -match "ChefTest"} |
           Select -first 1
-        
+
         if($cert -eq $null) {
           $pfxpath = '#{self_signed_cert_path}'
           $password = ''
@@ -434,7 +434,7 @@ EOH
           $store.Add($cert)
           $store.Close()
         }
-        
+
         lcm -thumbprint $cert.thumbprint
         set-dsclocalconfigurationmanager -path ./LCM
         $ConfigurationData = @"

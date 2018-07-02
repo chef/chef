@@ -115,7 +115,7 @@ describe Chef::Knife::CookbookUpload do
         expected_message = <<~E
           WARNING: The cookbooks: test_cookbook exist in multiple places in your cookbook_path.
           A composite version of these cookbooks has been compiled for uploading.
-          
+
           IMPORTANT: In a future version of Chef, this behavior will be removed and you will no longer
           be able to have the same version of a cookbook in multiple places in your cookbook_path.
           WARNING: The affected cookbooks are located:

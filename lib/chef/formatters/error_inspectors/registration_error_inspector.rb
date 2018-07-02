@@ -32,7 +32,7 @@ class Chef
 E
             error_description.section("Relevant Config Settings:", <<~E)
               chef_server_url  "#{server_url}"
-              
+
               If your chef_server_url is correct, your network could be down.
 E
           when Chef::Exceptions::PrivateKeyMissing
@@ -74,7 +74,7 @@ E
                 chef_server_url         "#{server_url}"
                 validation_client_name  "#{username}"
                 validation_key          "#{api_key}"
-                
+
                 If these settings are correct, your validation_key may be invalid.
 E
             end

@@ -35,9 +35,9 @@ describe "knife client bulk delete", :workstation do
     it "deletes all matching clients" do
       knife("client bulk delete ^ca.*", input: "Y").should_succeed <<~EOM
         The following clients will be deleted:
-        
+
         car  cat
-        
+
         Are you sure you want to delete these clients? (Y/N) Deleted client car
         Deleted client cat
 EOM
@@ -54,9 +54,9 @@ EOM
     it "deletes all matching clients when unanchored" do
       knife("client bulk delete ca.*", input: "Y").should_succeed <<~EOM
         The following clients will be deleted:
-        
+
         car     cat     concat
-        
+
         Are you sure you want to delete these clients? (Y/N) Deleted client car
         Deleted client cat
         Deleted client concat
@@ -83,14 +83,14 @@ EOM
     it "refuses to delete a validator normally" do
       knife("client bulk delete ^ca.*", input: "Y").should_succeed <<~EOM
         The following clients are validators and will not be deleted:
-        
+
         car-validator
-        
+
         You must specify --delete-validators to delete the validator clients
         The following clients will be deleted:
-        
+
         car  cat
-        
+
         Are you sure you want to delete these clients? (Y/N) Deleted client car
         Deleted client cat
 EOM
@@ -107,14 +107,14 @@ EOM
     it "deletes a validator when told to" do
       knife("client bulk delete ^ca.* -D", input: "Y\nY").should_succeed <<~EOM
         The following validators will be deleted:
-        
+
         car-validator
-        
+
         Are you sure you want to delete these validators? (Y/N) Deleted client car-validator
         The following clients will be deleted:
-        
+
         car  cat
-        
+
         Are you sure you want to delete these clients? (Y/N) Deleted client car
         Deleted client cat
 EOM

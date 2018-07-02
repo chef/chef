@@ -47,7 +47,7 @@ EOM
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
-          
+
           action :run do
             log "bar" do
               notifies :write, 'log[foo]', :delayed
@@ -88,7 +88,7 @@ EOM
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
-          
+
           action :run do
             log "bar" do
               notifies :write, 'log[foo]', :delayed
@@ -133,7 +133,7 @@ EOM
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
-          
+
           action :run do
             log "bar" do
               notifies :write, 'log[foo]', :delayed
@@ -214,7 +214,7 @@ EOM
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
-          
+
           action :run do
             log "bar" do
               notifies :write, 'log[foo]', :immediately
@@ -254,7 +254,7 @@ EOM
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
-          
+
           action :run do
             log "bar" do
               notifies :write, resources(log: "foo"), :immediately
@@ -294,7 +294,7 @@ EOM
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
-          
+
           action :run do
             log "bar" do
               notifies :write, "log[foo]"
@@ -331,7 +331,7 @@ EOM
           default_action :run
           provides :cloning_test
           resource_name :cloning_test
-          
+
           action :run do
             log "bar" do
               level :info
@@ -343,7 +343,7 @@ EOM
           log "bar" do
             level :warn
           end
-          
+
           cloning_test "whatever"
 EOM
 

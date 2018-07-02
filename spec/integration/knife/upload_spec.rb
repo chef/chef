@@ -142,7 +142,7 @@ EOM
                 "override_attributes": {
                 },
                 "run_list": [
-              
+
                 ]
               }
 EOM
@@ -639,7 +639,7 @@ EOM
             WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF
                                                    {
                                  (right here) ------^
-            
+
             ERROR: /environments/x.json failed to write: Parse error reading JSON: parse error: premature EOF
                                                    {
                                  (right here) ------^
@@ -649,7 +649,7 @@ EOM
             WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF
                                                    {
                                  (right here) ------^
-            
+
           EOH
           knife("upload /environments/x.json").should_fail(error1)
           knife("diff --name-status /environments/x.json").should_succeed("M\t/environments/x.json\n", stderr: warn)
@@ -837,7 +837,7 @@ EOM
                 "override_attributes": {
                 },
                 "run_list": [
-              
+
                 ]
               }
 EOM

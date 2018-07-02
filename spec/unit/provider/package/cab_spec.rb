@@ -60,9 +60,9 @@ describe Chef::Provider::Package::Cab do
     get_package_info_stdout = <<~EOF
       Deployment Image Servicing and Management tool
       Version: 6.1.7600.16385
-      
+
       Image Version: 6.1.7600.16385
-      
+
       Package information:
       Package Identity : Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0
       Applicable : Yes
@@ -84,26 +84,26 @@ describe Chef::Provider::Package::Cab do
     get_packages_stdout = <<~EOF
       Deployment Image Servicing and Management tool
       Version: 6.1.7600.16385
-      
+
       Image Version: 6.1.7600.16385
-      
+
       Packages listing:
-      
+
       Package Identity : Package_for_KB2999486~31bf3856ad364e35~amd64~~6.1.9768.0
       State : Installed
       Release Type : Language Pack
       Install Time : 2/11/2015 11:33 PM
-      
+
       Package Identity : Package_for_KB2994825~31bf3856ad364e35~amd64~~6.1.7601.0
       State : Installed
       Release Type : Language Pack
       Install Time : 2/11/2015 11:33 PM
-      
+
       Package Identity : Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0
       State : Installed
       Release Type : Feature Pack
       Install Time : 11/21/2010 3:40 AM
-      
+
       The operation completed successfully.
     EOF
     get_packages_obj = double(stdout: get_packages_stdout)

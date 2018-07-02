@@ -73,14 +73,14 @@ describe Chef::Formatters::ErrorDescription do
           ================================================================================
           test title
           ================================================================================
-          
+
           System Info:
           ------------
           chef_version=1.2.3
           ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
           program_name=chef-client
           executable=/test/bin/chef-client
-          
+
         END
       end
     end
@@ -96,18 +96,18 @@ describe Chef::Formatters::ErrorDescription do
           ================================================================================
           test title
           ================================================================================
-          
+
           test heading
           ------------
           test text
-          
+
           System Info:
           ------------
           chef_version=1.2.3
           ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
           program_name=chef-client
           executable=/test/bin/chef-client
-          
+
         END
       end
 
@@ -123,7 +123,7 @@ describe Chef::Formatters::ErrorDescription do
           ================================================================================
           test title
           ================================================================================
-          
+
           System Info:
           ------------
           chef_version=1.2.3
@@ -132,7 +132,7 @@ describe Chef::Formatters::ErrorDescription do
           ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
           program_name=chef-client
           executable=/test/bin/chef-client
-          
+
         END
       end
 

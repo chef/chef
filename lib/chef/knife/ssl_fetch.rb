@@ -133,10 +133,10 @@ class Chef
         ui.warn(<<~TRUST_TRUST)
           Certificates from #{host} will be fetched and placed in your trusted_cert
           directory (#{trusted_certs_dir}).
-          
+
           Knife has no means to verify these are the correct certificates. You should
           verify the authenticity of these certificates after downloading.
-          
+
 TRUST_TRUST
         remote_cert_chain.each do |cert|
           write_cert(cert)

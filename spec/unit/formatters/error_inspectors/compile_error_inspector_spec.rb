@@ -27,8 +27,8 @@ BAD_RECIPE = <<~E
   #
   # All rights reserved - Do Not Redistribute
   #
-  
-  
+
+
   file "/tmp/explode-me" do
     mode 0655
     owner "root"

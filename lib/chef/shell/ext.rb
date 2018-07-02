@@ -306,9 +306,9 @@ module Shell
         ## SUMMARY ##
           +edit(object)+ allows you to edit any object that can be converted to JSON.
           When finished editing, this method will return the edited object:
-        
+
               new_node = edit(existing_node)
-        
+
         ## EDITOR SELECTION ##
           chef-shell looks for an editor using the following logic
           1. Looks for an EDITOR set by Shell.editor = "EDITOR"
@@ -344,44 +344,44 @@ module Shell
         ## SUMMARY ##
           +clients+ allows you to query you chef server for information about your api
           clients.
-        
+
         ## LIST ALL CLIENTS ##
           To see all clients on the system, use
-        
+
               clients.all #=> [<Chef::ApiClient...>, ...]
-        
+
           If the output from all is too verbose, or you're only interested in a specific
           value from each of the objects, you can give a code block to +all+:
-        
+
               clients.all { |client| client.name } #=> [CLIENT1_NAME, CLIENT2_NAME, ...]
-        
+
         ## SHOW ONE CLIENT ##
           To see a specific client, use
-        
+
               clients.show(CLIENT_NAME)
-        
+
         ## SEARCH FOR CLIENTS ##
           You can also search for clients using +find+ or +search+. You can use the
           familiar string search syntax:
-        
+
               clients.search("KEY:VALUE")
-        
+
           Just as the +all+ subcommand, the +search+ subcommand can use a code block to
           filter or transform the information returned from the search:
-        
+
               clients.search("KEY:VALUE") { |c| c.name }
-        
+
           You can also use a Hash based syntax, multiple search conditions will be
           joined with AND.
-        
+
               clients.find :KEY => :VALUE, :KEY2 => :VALUE2, ...
-        
+
         ## BULK-EDIT CLIENTS ##
                             **BE CAREFUL, THIS IS DESTRUCTIVE**
           You can bulk edit API Clients using the +transform+ subcommand, which requires
           a code block. Each client will be saved after the code block is run. If the
           code block returns +nil+ or +false+, that client will be skipped:
-        
+
               clients.transform("*:*") do |client|
                 if client.name =~ /borat/i
                   client.admin(false)
@@ -390,7 +390,7 @@ module Shell
                   nil
                 end
               end
-        
+
           This will strip the admin privileges from any client named after borat.
       E
       subcommands all: "list all api clients",
@@ -413,46 +413,46 @@ module Shell
       explain(<<~E)
         ## SUMMARY ##
           +nodes+ Allows you to query your chef server for information about your nodes.
-        
+
         ## LIST ALL NODES ##
           You can list all nodes using +all+ or +list+
-        
+
               nodes.all #=> [<Chef::Node...>, <Chef::Node...>, ...]
-        
+
           To limit the information returned for each node, pass a code block to the +all+
           subcommand:
-        
+
               nodes.all { |node| node.name } #=> [NODE1_NAME, NODE2_NAME, ...]
-        
+
         ## SHOW ONE NODE ##
           You can show the data for a single node using the +show+ subcommand:
-        
+
               nodes.show("NODE_NAME") => <Chef::Node @name="NODE_NAME" ...>
-        
+
         ## SEARCH FOR NODES ##
           You can search for nodes using the +search+ or +find+ subcommands:
-        
+
               nodes.find(:name => "app*") #=> [<Chef::Node @name="app1.example.com" ...>, ...]
-        
+
           Similarly to +all+, you can pass a code block to limit or transform the
           information returned:
-        
+
               nodes.find(:name => "app#") { |node| node.ec2 }
-        
+
         ## BULK EDIT NODES ##
                       **BE CAREFUL, THIS OPERATION IS DESTRUCTIVE**
-        
+
           Bulk edit nodes by passing a code block to the +transform+ or +bulk_edit+
           subcommand. The block will be applied to each matching node, and then the node
           will be saved. If the block returns +nil+ or +false+, that node will be
           skipped.
-        
+
               nodes.transform do |node|
                 if node.fqdn =~ /.*\\.preprod\\.example\\.com/
                   node.set[:environment] = "preprod"
                 end
               end
-        
+
           This will assign the attribute to every node with a FQDN matching the regex.
       E
       subcommands all: "list all nodes",
@@ -467,13 +467,13 @@ module Shell
       explain(<<~E)
         ## SUMMARY ##
           +roles+ allows you to query and edit roles on your Chef server.
-        
+
         ## SUBCOMMANDS ##
           * all       (list)
           * show      (load)
           * search    (find)
           * transform (bulk_edit)
-        
+
         ## SEE ALSO ##
           See the help for +nodes+ for more information about the subcommands.
       E
@@ -492,16 +492,16 @@ module Shell
           Chef server. Unlike other commands for working with data on the server,
           +databags+ requires the databag name as an argument, for example:
             databags(:users).all
-        
+
         ## SUBCOMMANDS ##
           * all       (list)
           * show      (load)
           * search    (find)
           * transform (bulk_edit)
-        
+
         ## SEE ALSO ##
           See the help for +nodes+ for more information about the subcommands.
-        
+
       E
       subcommands all: "list all items in the data bag",
                   show: "load a data bag item by id",
@@ -516,13 +516,13 @@ module Shell
       explain(<<~E)
         ## SUMMARY ##
           +environments+ allows you to query and edit environments on your Chef server.
-        
+
         ## SUBCOMMANDS ##
           * all       (list)
           * show      (load)
           * search    (find)
           * transform (bulk_edit)
-        
+
         ## SEE ALSO ##
           See the help for +nodes+ for more information about the subcommands.
       E

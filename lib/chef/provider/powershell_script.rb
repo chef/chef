@@ -148,7 +148,7 @@ EOH
       def wrapper_script
         <<~EOH
           # Chef Client wrapper for powershell_script resources
-          
+
           # In rare cases, such as when PowerShell is executed
           # as an alternate user, the new-variable cmdlet is not
           # available, so import it just in case
@@ -156,36 +156,36 @@ EOH
           {
               Import-Module Microsoft.PowerShell.Utility
           }
-          
+
           # LASTEXITCODE can be uninitialized -- make it explictly 0
           # to avoid incorrect detection of failure (non-zero) codes
           $global:LASTEXITCODE = 0
-          
+
           # Catch any exceptions -- without this, exceptions will result
           # In a zero return code instead of the desired non-zero code
           # that indicates a failure
           trap [Exception] {write-error ($_.Exception.Message);exit 1}
-          
+
           # Variable state that should not be accessible to the user code
           new-variable -name interpolatedexitcode -visibility private -value $#{new_resource.convert_boolean_return}
           new-variable -name chefscriptresult -visibility private
-          
+
           # Initialize a variable we use to capture $? inside a block
           $global:lastcmdlet = $null
-          
+
           # Execute the user's code in a script block --
           $chefscriptresult =
           {
            #{new_resource.code}
-          
+
            # This assignment doesn't affect the block's return value
            $global:lastcmdlet = $?
           }.invokereturnasis()
-          
+
           # Assume failure status of 1 -- success cases
           # will have to override this
           $exitstatus = 1
-          
+
           # If convert_boolean_return is enabled, the block's return value
           # gets precedence in determining our exit status
           if ($interpolatedexitcode -and $chefscriptresult -ne $null -and $chefscriptresult.gettype().name -eq 'boolean')
@@ -206,10 +206,10 @@ EOH
             # status.
             $exitstatus = $LASTEXITCODE
           }
-          
+
           # Print STDOUT for the script execution
           Write-Output $chefscriptresult
-          
+
           # If this script is launched with -File, the process exit
           # status of PowerShell.exe will be $exitstatus. If it was
           # launched with -Command, it will be 0 if $exitstatus was 0,

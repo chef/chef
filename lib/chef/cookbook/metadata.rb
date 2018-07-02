@@ -653,7 +653,7 @@ class Chef
             The dependency specification syntax you are using is no longer valid. You may not
             specify more than one version constraint for a particular cookbook.
             Consult https://docs.chef.io/config_rb_metadata.html for the updated syntax.
-            
+
             Called by: #{caller_name} '#{dep_name}', #{version_constraints.map { |vc| vc.inspect }.join(", ")}
             Called from:
             #{caller[0...5].map { |line| "  " + line }.join("\n")}
@@ -672,7 +672,7 @@ OBSOLETED
           upgraded to Chef 0.10.0, be aware that you no may longer use "<<" and ">>" for
           'less than' and 'greater than'; use '<' and '>' instead.
           Consult https://docs.chef.io/config_rb_metadata.html for more information.
-          
+
           Called by: #{caller_name} '#{dep_name}', '#{constraint_str}'
           Called from:
           #{caller[0...5].map { |line| "  " + line }.join("\n")}

@@ -618,7 +618,7 @@ describe Chef::ResourceReporter do
         @error = Net::HTTPServerException.new("404 message", @response)
         expect(@rest_client).to receive(:post)
           .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id,
-                                                start_time: @start_time.to_s },
+                                                 start_time: @start_time.to_s },
                { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
           .and_raise(@error)
       end

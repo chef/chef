@@ -34,9 +34,9 @@ describe "knife role bulk delete", :workstation do
     it "deletes all matching roles" do
       knife("role bulk delete ^ca.*", input: "Y").should_succeed <<~EOM
         The following roles will be deleted:
-        
+
         car  cat
-        
+
         Are you sure you want to delete these roles? (Y/N) Deleted role car
         Deleted role cat
 EOM

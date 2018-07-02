@@ -38,7 +38,7 @@ describe Chef::Provider::Package::Ips do
     stderr = <<~PKG_STATUS
       pkg: info: no packages matching the following patterns you specified are
       installed on the system.  Try specifying -r to query remotely:
-      
+
          crypto/gnupg
 PKG_STATUS
     OpenStruct.new(stdout: stdout, stdin: stdin, stderr: stderr, status: @status, exitstatus: 1)

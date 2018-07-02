@@ -250,7 +250,7 @@ EOM
       expect(@out.string).to eq <<~EOM
         a
         b
-        
+
         c
         d
 EOM
@@ -261,10 +261,10 @@ EOM
       expect(@out.string).to eq <<~EOM
         a
         b
-        
+
         c
-        
-        
+
+
         d
         e
 EOM
@@ -275,9 +275,9 @@ EOM
       expect(@out.string).to eq <<~EOM
         a: b
         c: d
-        
+
         x: y
-        
+
         m: n
         o: p
 EOM

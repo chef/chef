@@ -107,7 +107,7 @@ EOM
                 "override_attributes": {
                 },
                 "run_list": [
-              
+
                 ]
               }
 EOM
@@ -139,7 +139,7 @@ EOM
                 "override_attributes": {
                 },
                 "run_list": [
-              
+
                 ]
               }
 EOM
@@ -564,7 +564,7 @@ EOM
             WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF
                                                    {
                                  (right here) ------^
-            
+
 EOH
           knife("download /environments/x.json").should_succeed "Updated /environments/x.json\n", stderr: warning
           knife("diff --name-status /environments/x.json").should_succeed ""
@@ -687,7 +687,7 @@ EOM
                 "override_attributes": {
                 },
                 "run_list": [
-              
+
                 ]
               }
 EOM
