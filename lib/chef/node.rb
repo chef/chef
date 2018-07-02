@@ -117,8 +117,8 @@ class Chef
         validate(
                  { name: arg },
                  { name: { kind_of: String,
-                              cannot_be: :blank,
-                              regex: /^[\-[:alnum:]_:.]+$/ },
+                           cannot_be: :blank,
+                           regex: /^[\-[:alnum:]_:.]+$/ },
                  })
         @name = arg
       else

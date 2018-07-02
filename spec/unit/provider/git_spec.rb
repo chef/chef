@@ -367,7 +367,7 @@ SHAS
     expect(@provider).to receive(:shell_out!).with(expected_cmd, user: "deployNinja",
                                                                  log_tag: "git[web2.0 app]",
                                                                  environment: { "HOME" => "/home/deployNinja",
-                                                                                   "GIT_SSH" => "do_it_this_way.sh" })
+                                                                                "GIT_SSH" => "do_it_this_way.sh" })
     @provider.clone
   end
 
