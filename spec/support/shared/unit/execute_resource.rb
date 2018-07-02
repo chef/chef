@@ -57,7 +57,7 @@ shared_examples_for "an execute resource" do
   end
 
   it "should accept a hash for the environment" do
-    test_hash = { :one => :two }
+    test_hash = { one: :two }
     @resource.environment(test_hash)
     expect(@resource.environment).to eql(test_hash)
   end
@@ -155,7 +155,7 @@ shared_examples_for "an execute resource" do
     before do
       @resource.command("grep")
       @resource.cwd("/tmp/")
-      @resource.environment({ :one => :two })
+      @resource.environment({ one: :two })
       @resource.group("legos")
       @resource.returns(1)
       @resource.user("root")

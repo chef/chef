@@ -24,7 +24,7 @@ describe Chef::Knife::CookbookBulkDelete do
 
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::CookbookBulkDelete.new
-    @knife.config = { :print_after => nil }
+    @knife.config = { print_after: nil }
     @knife.name_args = ["."]
     @stdout = StringIO.new
     @stderr = StringIO.new

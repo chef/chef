@@ -42,19 +42,19 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations' do
       let(:reg_key) { 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager' }
-      let(:original_set) { registry.value_exists?(reg_key, { :name => "PendingFileRenameOperations" }) }
+      let(:original_set) { registry.value_exists?(reg_key, { name: "PendingFileRenameOperations" }) }
 
       it "returns true if the registry value exists" do
         skip "found existing registry key" if original_set
         registry.set_value(reg_key,
-            { :name => "PendingFileRenameOperations", :type => :multi_string, :data => ['\??\C:\foo.txt|\??\C:\bar.txt'] })
+            { name: "PendingFileRenameOperations", type: :multi_string, data: ['\??\C:\foo.txt|\??\C:\bar.txt'] })
 
         expect(recipe.reboot_pending?).to be_truthy
       end
 
       after do
         unless original_set
-          registry.delete_value(reg_key, { :name => "PendingFileRenameOperations" })
+          registry.delete_value(reg_key, { name: "PendingFileRenameOperations" })
         end
       end
     end

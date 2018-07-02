@@ -41,11 +41,11 @@ describe "knife deps", :workstation do
         file "cookbooks/soup/recipes/chicken.rb", ""
       end
       it "knife deps reports all dependencies" do
-        knife("deps /roles/starring.json").should_succeed <<EOM
-/roles/minor.json
-/cookbooks/quiche
-/cookbooks/soup
-/roles/starring.json
+        knife("deps /roles/starring.json").should_succeed <<~EOM
+          /roles/minor.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /roles/starring.json
 EOM
       end
     end
@@ -60,11 +60,11 @@ EOM
         file "cookbooks/soup/recipes/chicken.rb", ""
       end
       it "knife deps reports all dependencies" do
-        knife("deps /roles/starring.json").should_succeed <<EOM
-/roles/minor.json
-/cookbooks/quiche
-/cookbooks/soup
-/roles/starring.json
+        knife("deps /roles/starring.json").should_succeed <<~EOM
+          /roles/minor.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /roles/starring.json
 EOM
       end
     end
@@ -94,11 +94,11 @@ EOM
         file "nodes/mort.json", { "run_list" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} }
       end
       it "knife deps reports just the node" do
-        knife("deps /nodes/mort.json").should_succeed <<EOM
-/roles/minor.json
-/cookbooks/quiche
-/cookbooks/soup
-/nodes/mort.json
+        knife("deps /nodes/mort.json").should_succeed <<~EOM
+          /roles/minor.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /nodes/mort.json
 EOM
       end
     end
@@ -148,56 +148,56 @@ depends "kettle"'
       end
 
       it "knife deps reports all dependencies" do
-        knife("deps /nodes/mort.json").should_succeed <<EOM
-/environments/desert.json
-/roles/minor.json
-/cookbooks/quiche
-/cookbooks/soup
-/roles/starring.json
-/nodes/mort.json
+        knife("deps /nodes/mort.json").should_succeed <<~EOM
+          /environments/desert.json
+          /roles/minor.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /roles/starring.json
+          /nodes/mort.json
 EOM
       end
       it "knife deps * reports all dependencies of all things" do
-        knife("deps /nodes/*").should_succeed <<EOM
-/roles/minor.json
-/nodes/bart.json
-/environments/desert.json
-/cookbooks/quiche
-/cookbooks/soup
-/roles/starring.json
-/nodes/mort.json
+        knife("deps /nodes/*").should_succeed <<~EOM
+          /roles/minor.json
+          /nodes/bart.json
+          /environments/desert.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /roles/starring.json
+          /nodes/mort.json
 EOM
       end
       it "knife deps a b reports all dependencies of a and b" do
-        knife("deps /nodes/bart.json /nodes/mort.json").should_succeed <<EOM
-/roles/minor.json
-/nodes/bart.json
-/environments/desert.json
-/cookbooks/quiche
-/cookbooks/soup
-/roles/starring.json
-/nodes/mort.json
+        knife("deps /nodes/bart.json /nodes/mort.json").should_succeed <<~EOM
+          /roles/minor.json
+          /nodes/bart.json
+          /environments/desert.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /roles/starring.json
+          /nodes/mort.json
 EOM
       end
       it "knife deps --tree /* shows dependencies in a tree" do
-        knife("deps --tree /nodes/*").should_succeed <<EOM
-/nodes/bart.json
-  /roles/minor.json
-/nodes/mort.json
-  /environments/desert.json
-  /roles/starring.json
-    /roles/minor.json
-    /cookbooks/quiche
-    /cookbooks/soup
+        knife("deps --tree /nodes/*").should_succeed <<~EOM
+          /nodes/bart.json
+            /roles/minor.json
+          /nodes/mort.json
+            /environments/desert.json
+            /roles/starring.json
+              /roles/minor.json
+              /cookbooks/quiche
+              /cookbooks/soup
 EOM
       end
       it "knife deps --tree --no-recurse shows only the first level of dependencies" do
-        knife("deps --tree --no-recurse /nodes/*").should_succeed <<EOM
-/nodes/bart.json
-  /roles/minor.json
-/nodes/mort.json
-  /environments/desert.json
-  /roles/starring.json
+        knife("deps --tree --no-recurse /nodes/*").should_succeed <<~EOM
+          /nodes/bart.json
+            /roles/minor.json
+          /nodes/mort.json
+            /environments/desert.json
+            /roles/starring.json
 EOM
       end
     end
@@ -232,11 +232,11 @@ depends "foo"'
           file "roles/self.json", { "run_list" => [ "role[self]" ] }
         end
         it "knife deps prints each once" do
-          knife("deps /roles/foo.json /roles/self.json").should_succeed <<EOM
-/roles/baz.json
-/roles/bar.json
-/roles/foo.json
-/roles/self.json
+          knife("deps /roles/foo.json /roles/self.json").should_succeed <<~EOM
+            /roles/baz.json
+            /roles/bar.json
+            /roles/foo.json
+            /roles/self.json
 EOM
         end
         it "knife deps --tree prints each once" do
@@ -252,44 +252,44 @@ EOM
       when_the_repository "is empty" do
         it "knife deps /blah reports an error" do
           knife("deps /blah").should_fail(
-            :exit_code => 2,
-            :stdout => "/blah\n",
-            :stderr => "ERROR: /blah: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/blah\n",
+            stderr: "ERROR: /blah: No such file or directory\n"
           )
         end
         it "knife deps /roles/x.json reports an error" do
           knife("deps /roles/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/roles/x.json\n",
-            :stderr => "ERROR: /roles/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/roles/x.json\n",
+            stderr: "ERROR: /roles/x.json: No such file or directory\n"
           )
         end
         it "knife deps /nodes/x.json reports an error" do
           knife("deps /nodes/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/nodes/x.json\n",
-            :stderr => "ERROR: /nodes/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/nodes/x.json\n",
+            stderr: "ERROR: /nodes/x.json: No such file or directory\n"
           )
         end
         it "knife deps /environments/x.json reports an error" do
           knife("deps /environments/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/environments/x.json\n",
-            :stderr => "ERROR: /environments/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/environments/x.json\n",
+            stderr: "ERROR: /environments/x.json: No such file or directory\n"
           )
         end
         it "knife deps /cookbooks/x reports an error" do
           knife("deps /cookbooks/x").should_fail(
-            :exit_code => 2,
-            :stdout => "/cookbooks/x\n",
-            :stderr => "ERROR: /cookbooks/x: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/cookbooks/x\n",
+            stderr: "ERROR: /cookbooks/x: No such file or directory\n"
           )
         end
         it "knife deps /data_bags/bag/item.json reports an error" do
           knife("deps /data_bags/bag/item.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/data_bags/bag/item.json\n",
-            :stderr => "ERROR: /data_bags/bag/item.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/data_bags/bag/item.json\n",
+            stderr: "ERROR: /data_bags/bag/item.json: No such file or directory\n"
           )
         end
       end
@@ -299,9 +299,9 @@ EOM
         end
         it "knife deps reports the cookbook, along with an error" do
           knife("deps /roles/starring.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/cookbooks/quiche\n/roles/starring.json\n",
-            :stderr => "ERROR: /cookbooks/quiche: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/cookbooks/quiche\n/roles/starring.json\n",
+            stderr: "ERROR: /cookbooks/quiche: No such file or directory\n"
           )
         end
       end
@@ -311,9 +311,9 @@ EOM
         end
         it "knife deps reports the environment, along with an error" do
           knife("deps /nodes/mort.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/environments/desert.json\n/nodes/mort.json\n",
-            :stderr => "ERROR: /environments/desert.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/environments/desert.json\n/nodes/mort.json\n",
+            stderr: "ERROR: /environments/desert.json: No such file or directory\n"
           )
         end
       end
@@ -323,9 +323,9 @@ EOM
         end
         it "knife deps reports the role, along with an error" do
           knife("deps /roles/starring.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/roles/minor.json\n/roles/starring.json\n",
-            :stderr => "ERROR: /roles/minor.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/roles/minor.json\n/roles/starring.json\n",
+            stderr: "ERROR: /roles/minor.json: No such file or directory\n"
           )
         end
       end
@@ -337,9 +337,9 @@ EOM
         end
         it "knife deps /roles reports an error" do
           knife("deps /roles").should_fail(
-            :exit_code => 2,
-            :stderr => "ERROR: /roles: No such file or directory\n",
-            :stdout => "/roles\n"
+            exit_code: 2,
+            stderr: "ERROR: /roles: No such file or directory\n",
+            stdout: "/roles\n"
           )
         end
       end
@@ -378,11 +378,11 @@ EOM
         cookbook "soup", "1.0.0", { "metadata.rb" => %Q{name "soup"\nversion "1.0.0"\n}, "recipes" => { "chicken.rb" => "" } }
       end
       it "knife deps reports all dependencies" do
-        knife("deps --remote /roles/starring.json").should_succeed <<EOM
-/roles/minor.json
-/cookbooks/quiche
-/cookbooks/soup
-/roles/starring.json
+        knife("deps --remote /roles/starring.json").should_succeed <<~EOM
+          /roles/minor.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /roles/starring.json
 EOM
       end
     end
@@ -395,11 +395,11 @@ EOM
         cookbook "soup", "1.0.0", { "metadata.rb" =>   %Q{name "soup"\nversion "1.0.0"\n}, "recipes" => { "chicken.rb" => "" } }
       end
       it "knife deps reports all dependencies" do
-        knife("deps --remote /roles/starring.json").should_succeed <<EOM
-/roles/minor.json
-/cookbooks/quiche
-/cookbooks/soup
-/roles/starring.json
+        knife("deps --remote /roles/starring.json").should_succeed <<~EOM
+          /roles/minor.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /roles/starring.json
 EOM
       end
     end
@@ -427,11 +427,11 @@ EOM
         node "mort", { "run_list" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} }
       end
       it "knife deps reports just the node" do
-        knife("deps --remote /nodes/mort.json").should_succeed <<EOM
-/roles/minor.json
-/cookbooks/quiche
-/cookbooks/soup
-/nodes/mort.json
+        knife("deps --remote /nodes/mort.json").should_succeed <<~EOM
+          /roles/minor.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /nodes/mort.json
 EOM
       end
     end
@@ -477,56 +477,56 @@ depends "kettle"', "recipes" => { "default.rb" => "" } }
       end
 
       it "knife deps reports all dependencies" do
-        knife("deps --remote /nodes/mort.json").should_succeed <<EOM
-/environments/desert.json
-/roles/minor.json
-/cookbooks/quiche
-/cookbooks/soup
-/roles/starring.json
-/nodes/mort.json
+        knife("deps --remote /nodes/mort.json").should_succeed <<~EOM
+          /environments/desert.json
+          /roles/minor.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /roles/starring.json
+          /nodes/mort.json
 EOM
       end
       it "knife deps * reports all dependencies of all things" do
-        knife("deps --remote /nodes/*").should_succeed <<EOM
-/roles/minor.json
-/nodes/bart.json
-/environments/desert.json
-/cookbooks/quiche
-/cookbooks/soup
-/roles/starring.json
-/nodes/mort.json
+        knife("deps --remote /nodes/*").should_succeed <<~EOM
+          /roles/minor.json
+          /nodes/bart.json
+          /environments/desert.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /roles/starring.json
+          /nodes/mort.json
 EOM
       end
       it "knife deps a b reports all dependencies of a and b" do
-        knife("deps --remote /nodes/bart.json /nodes/mort.json").should_succeed <<EOM
-/roles/minor.json
-/nodes/bart.json
-/environments/desert.json
-/cookbooks/quiche
-/cookbooks/soup
-/roles/starring.json
-/nodes/mort.json
+        knife("deps --remote /nodes/bart.json /nodes/mort.json").should_succeed <<~EOM
+          /roles/minor.json
+          /nodes/bart.json
+          /environments/desert.json
+          /cookbooks/quiche
+          /cookbooks/soup
+          /roles/starring.json
+          /nodes/mort.json
 EOM
       end
       it "knife deps --tree /* shows dependencies in a tree" do
-        knife("deps --remote --tree /nodes/*").should_succeed <<EOM
-/nodes/bart.json
-  /roles/minor.json
-/nodes/mort.json
-  /environments/desert.json
-  /roles/starring.json
-    /roles/minor.json
-    /cookbooks/quiche
-    /cookbooks/soup
+        knife("deps --remote --tree /nodes/*").should_succeed <<~EOM
+          /nodes/bart.json
+            /roles/minor.json
+          /nodes/mort.json
+            /environments/desert.json
+            /roles/starring.json
+              /roles/minor.json
+              /cookbooks/quiche
+              /cookbooks/soup
 EOM
       end
       it "knife deps --tree --no-recurse shows only the first level of dependencies" do
-        knife("deps --remote --tree --no-recurse /nodes/*").should_succeed <<EOM
-/nodes/bart.json
-  /roles/minor.json
-/nodes/mort.json
-  /environments/desert.json
-  /roles/starring.json
+        knife("deps --remote --tree --no-recurse /nodes/*").should_succeed <<~EOM
+          /nodes/bart.json
+            /roles/minor.json
+          /nodes/mort.json
+            /environments/desert.json
+            /roles/starring.json
 EOM
       end
     end
@@ -544,21 +544,21 @@ depends "foo"' }
 depends "self"' }
         end
         it "knife deps prints each once" do
-          knife("deps --remote /cookbooks/foo /cookbooks/self").should_succeed <<EOM
-/cookbooks/baz
-/cookbooks/bar
-/cookbooks/foo
-/cookbooks/self
+          knife("deps --remote /cookbooks/foo /cookbooks/self").should_succeed <<~EOM
+            /cookbooks/baz
+            /cookbooks/bar
+            /cookbooks/foo
+            /cookbooks/self
 EOM
         end
         it "knife deps --tree prints each once" do
-          knife("deps --remote --tree /cookbooks/foo /cookbooks/self").should_succeed <<EOM
-/cookbooks/foo
-  /cookbooks/bar
-    /cookbooks/baz
-      /cookbooks/foo
-/cookbooks/self
-  /cookbooks/self
+          knife("deps --remote --tree /cookbooks/foo /cookbooks/self").should_succeed <<~EOM
+            /cookbooks/foo
+              /cookbooks/bar
+                /cookbooks/baz
+                  /cookbooks/foo
+            /cookbooks/self
+              /cookbooks/self
 EOM
         end
       end
@@ -570,11 +570,11 @@ EOM
           role "self", { "run_list" => [ "role[self]" ] }
         end
         it "knife deps prints each once" do
-          knife("deps --remote /roles/foo.json /roles/self.json").should_succeed <<EOM
-/roles/baz.json
-/roles/bar.json
-/roles/foo.json
-/roles/self.json
+          knife("deps --remote /roles/foo.json /roles/self.json").should_succeed <<~EOM
+            /roles/baz.json
+            /roles/bar.json
+            /roles/foo.json
+            /roles/self.json
 EOM
         end
         it "knife deps --tree prints each once" do
@@ -590,44 +590,44 @@ EOM
       when_the_chef_server "is empty" do
         it "knife deps /blah reports an error" do
           knife("deps --remote /blah").should_fail(
-            :exit_code => 2,
-            :stdout => "/blah\n",
-            :stderr => "ERROR: /blah: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/blah\n",
+            stderr: "ERROR: /blah: No such file or directory\n"
           )
         end
         it "knife deps /roles/x.json reports an error" do
           knife("deps --remote /roles/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/roles/x.json\n",
-            :stderr => "ERROR: /roles/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/roles/x.json\n",
+            stderr: "ERROR: /roles/x.json: No such file or directory\n"
           )
         end
         it "knife deps /nodes/x.json reports an error" do
           knife("deps --remote /nodes/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/nodes/x.json\n",
-            :stderr => "ERROR: /nodes/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/nodes/x.json\n",
+            stderr: "ERROR: /nodes/x.json: No such file or directory\n"
           )
         end
         it "knife deps /environments/x.json reports an error" do
           knife("deps --remote /environments/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/environments/x.json\n",
-            :stderr => "ERROR: /environments/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/environments/x.json\n",
+            stderr: "ERROR: /environments/x.json: No such file or directory\n"
           )
         end
         it "knife deps /cookbooks/x reports an error" do
           knife("deps --remote /cookbooks/x").should_fail(
-            :exit_code => 2,
-            :stdout => "/cookbooks/x\n",
-            :stderr => "ERROR: /cookbooks/x: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/cookbooks/x\n",
+            stderr: "ERROR: /cookbooks/x: No such file or directory\n"
           )
         end
         it "knife deps /data_bags/bag/item reports an error" do
           knife("deps --remote /data_bags/bag/item.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/data_bags/bag/item.json\n",
-            :stderr => "ERROR: /data_bags/bag/item.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/data_bags/bag/item.json\n",
+            stderr: "ERROR: /data_bags/bag/item.json: No such file or directory\n"
           )
         end
       end
@@ -637,9 +637,9 @@ EOM
         end
         it "knife deps reports the cookbook, along with an error" do
           knife("deps --remote /roles/starring.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/cookbooks/quiche\n/roles/starring.json\n",
-            :stderr => "ERROR: /cookbooks/quiche: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/cookbooks/quiche\n/roles/starring.json\n",
+            stderr: "ERROR: /cookbooks/quiche: No such file or directory\n"
           )
         end
       end
@@ -649,9 +649,9 @@ EOM
         end
         it "knife deps reports the environment, along with an error" do
           knife("deps --remote /nodes/mort.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/environments/desert.json\n/nodes/mort.json\n",
-            :stderr => "ERROR: /environments/desert.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/environments/desert.json\n/nodes/mort.json\n",
+            stderr: "ERROR: /environments/desert.json: No such file or directory\n"
           )
         end
       end
@@ -661,9 +661,9 @@ EOM
         end
         it "knife deps reports the role, along with an error" do
           knife("deps --remote /roles/starring.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/roles/minor.json\n/roles/starring.json\n",
-            :stderr => "ERROR: /roles/minor.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/roles/minor.json\n/roles/starring.json\n",
+            stderr: "ERROR: /roles/minor.json: No such file or directory\n"
           )
         end
       end

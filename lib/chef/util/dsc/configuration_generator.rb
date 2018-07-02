@@ -68,7 +68,7 @@ class Chef::Util::DSC
     end
 
     def get_merged_configuration_flags!(configuration_flags, configuration_name)
-      merged_configuration_flags = { :outputpath => configuration_document_directory(configuration_name) }
+      merged_configuration_flags = { outputpath: configuration_document_directory(configuration_name) }
       if configuration_flags
         configuration_flags.map do |switch, value|
           if merged_configuration_flags.key?(switch.to_s.downcase.to_sym)
@@ -81,16 +81,16 @@ class Chef::Util::DSC
     end
 
     def configuration_code(code, configuration_name, imports)
-      <<-EOF
-$ProgressPreference = 'SilentlyContinue';
-Configuration '#{configuration_name}'
-{
-  #{generate_import_resource_statements(imports).join("  \n")}
-  node 'localhost'
-  {
-    #{code}
-  }
-}
+      <<~EOF
+        $ProgressPreference = 'SilentlyContinue';
+        Configuration '#{configuration_name}'
+        {
+          #{generate_import_resource_statements(imports).join("  \n")}
+          node 'localhost'
+          {
+            #{code}
+          }
+        }
       EOF
     end
 

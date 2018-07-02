@@ -86,9 +86,9 @@ class Chef
         end
 
         def config_content
-          client_rb = <<-CONFIG
-chef_server_url  "#{@chef_config[:chef_server_url]}"
-validation_client_name "#{@chef_config[:validation_client_name]}"
+          client_rb = <<~CONFIG
+            chef_server_url  "#{@chef_config[:chef_server_url]}"
+            validation_client_name "#{@chef_config[:validation_client_name]}"
           CONFIG
 
           if !(@chef_config[:config_log_level].nil? || @chef_config[:config_log_level].empty?)
@@ -228,7 +228,7 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
             end
 
             attributes.delete(:run_list) if attributes[:policy_name] && !attributes[:policy_name].empty?
-            attributes.merge!(:tags => @config[:tags]) if @config[:tags] && !@config[:tags].empty?
+            attributes.merge!(tags: @config[:tags]) if @config[:tags] && !@config[:tags].empty?
           end
         end
 

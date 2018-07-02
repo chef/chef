@@ -36,7 +36,7 @@ describe Chef::Knife::CookbookUpload do
     cookbook_loader
   end
 
-  let(:cookbook_uploader) { double(:upload_cookbooks => nil) }
+  let(:cookbook_uploader) { double(upload_cookbooks: nil) }
 
   let(:output) { StringIO.new }
 
@@ -61,16 +61,16 @@ describe Chef::Knife::CookbookUpload do
       test_cookbook = Chef::CookbookVersion.new("test_cookbook", "/tmp/blah")
       allow(cookbook_loader).to receive(:each).and_yield("test_cookbook", test_cookbook)
       allow(cookbook_loader).to receive(:cookbook_names).and_return(["test_cookbook"])
-      expect(Chef::CookbookUploader).to receive(:new).
-        with( kind_of(Array), { :force => nil, :concurrency => 3 }).
-        and_return(double("Chef::CookbookUploader", :upload_cookbooks => true))
+      expect(Chef::CookbookUploader).to receive(:new)
+        .with( kind_of(Array), { force: nil, concurrency: 3 })
+        .and_return(double("Chef::CookbookUploader", upload_cookbooks: true))
       knife.run
     end
   end
 
   describe "run" do
     before(:each) do
-      allow(Chef::CookbookUploader).to receive_messages(:new => cookbook_uploader)
+      allow(Chef::CookbookUploader).to receive_messages(new: cookbook_uploader)
       allow(Chef::CookbookVersion).to receive(:list_all_versions).and_return({})
     end
 
@@ -106,22 +106,22 @@ describe Chef::Knife::CookbookUpload do
 
       before do
         allow(cookbook_loader).to receive(:merged_cookbooks).and_return(["test_cookbook"])
-        allow(cookbook_loader).to receive(:merged_cookbook_paths).
-          and_return({ "test_cookbook" => %w{/path/one/test_cookbook /path/two/test_cookbook} })
+        allow(cookbook_loader).to receive(:merged_cookbook_paths)
+          .and_return({ "test_cookbook" => %w{/path/one/test_cookbook /path/two/test_cookbook} })
       end
 
       it "emits a warning" do
         knife.run
-        expected_message = <<-E
-WARNING: The cookbooks: test_cookbook exist in multiple places in your cookbook_path.
-A composite version of these cookbooks has been compiled for uploading.
+        expected_message = <<~E
+          WARNING: The cookbooks: test_cookbook exist in multiple places in your cookbook_path.
+          A composite version of these cookbooks has been compiled for uploading.
 
-IMPORTANT: In a future version of Chef, this behavior will be removed and you will no longer
-be able to have the same version of a cookbook in multiple places in your cookbook_path.
-WARNING: The affected cookbooks are located:
-test_cookbook:
-  /path/one/test_cookbook
-  /path/two/test_cookbook
+          IMPORTANT: In a future version of Chef, this behavior will be removed and you will no longer
+          be able to have the same version of a cookbook in multiple places in your cookbook_path.
+          WARNING: The affected cookbooks are located:
+          test_cookbook:
+            /path/one/test_cookbook
+            /path/two/test_cookbook
 E
         expect(output.string).to include(expected_message)
       end
@@ -310,8 +310,8 @@ E
     describe "when a frozen cookbook exists on the server" do
       it "should fail to replace it" do
         exception = Chef::Exceptions::CookbookFrozen.new
-        expect(cookbook_uploader).to receive(:upload_cookbooks).
-          and_raise(exception)
+        expect(cookbook_uploader).to receive(:upload_cookbooks)
+          .and_raise(exception)
         allow(knife.ui).to receive(:error)
         expect(knife.ui).to receive(:error).with(exception)
         expect { knife.run }.to raise_error(SystemExit)

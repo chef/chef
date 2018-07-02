@@ -34,6 +34,6 @@ platforms:
   - name: ubuntu-18.04
 
 suites:
-  - name: base
+  - name: end-to-end
     run_list:
-      - recipe[base::default]
+      - recipe[end_to_end::default]

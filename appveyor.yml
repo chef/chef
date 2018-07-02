@@ -23,7 +23,6 @@ branches:
 install:
   - systeminfo
   - winrm quickconfig -q
-  - regedit /s c:\projects\chef\appveyor_registry.reg
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - echo %PATH%
   - appveyor DownloadFile http://curl.haxx.se/ca/cacert.pem -FileName C:\cacert.pem

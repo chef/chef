@@ -33,7 +33,7 @@ class Chef
         private
 
         def read_crontab
-          crontab = shell_out("/usr/bin/crontab -l", :user => @new_resource.user)
+          crontab = shell_out("/usr/bin/crontab -l", user: @new_resource.user)
           status = crontab.status.exitstatus
 
           logger.trace crontab.format_for_exception if status > 0
@@ -53,7 +53,7 @@ class Chef
           exit_status = 0
           error_message = ""
           begin
-            crontab_write = shell_out("/usr/bin/crontab #{tempcron.path}", :user => @new_resource.user)
+            crontab_write = shell_out("/usr/bin/crontab #{tempcron.path}", user: @new_resource.user)
             stderr = crontab_write.stderr
             exit_status = crontab_write.status.exitstatus
             # solaris9, 10 on some failures for example invalid 'mins' in crontab fails with exit code of zero :(

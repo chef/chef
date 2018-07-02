@@ -41,7 +41,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
   end
 
   context "#sanity_check!" do
-    let(:response_404) { OpenStruct.new(:code => "404") }
+    let(:response_404) { OpenStruct.new(code: "404") }
     let(:exception_404) { Net::HTTPServerException.new("404 not found", response_404) }
 
     context "in cases where the prompting fails" do
@@ -180,8 +180,8 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
     end
 
     it "builds a node with first_boot_attributes if they're given" do
-      knife_config[:first_boot_attributes] = { :baz => :quux }
-      expect(node).to receive(:normal_attrs=).with({ :baz => :quux })
+      knife_config[:first_boot_attributes] = { baz: :quux }
+      expect(node).to receive(:normal_attrs=).with({ baz: :quux })
       expect(node).to receive(:run_list).with([])
       client_builder.run
     end

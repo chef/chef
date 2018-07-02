@@ -36,17 +36,17 @@ describe "knife data bag show", :workstation do
     end
 
     it "with a bag with some items" do
-      knife("data bag show rocket").should_succeed <<EOM
-ariane
-atlas
-falcon9
+      knife("data bag show rocket").should_succeed <<~EOM
+        ariane
+        atlas
+        falcon9
 EOM
     end
 
     it "with a single item" do
-      knife("data bag show rocket falcon9").should_succeed <<EOM
-heavy: true
-id:    falcon9
+      knife("data bag show rocket falcon9").should_succeed <<~EOM
+        heavy: true
+        id:    falcon9
 EOM
     end
   end

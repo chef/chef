@@ -23,13 +23,13 @@ describe Chef::Provider::Service::Insserv do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @node.automatic_attrs[:command] = { :ps => "ps -ax" }
+    @node.automatic_attrs[:command] = { ps: "ps -ax" }
 
     @new_resource = Chef::Resource::Service.new("initgrediant")
     @current_resource = Chef::Resource::Service.new("initgrediant")
 
     @provider = Chef::Provider::Service::Insserv.new(@new_resource, @run_context)
-    @status = double("Process::Status mock", :exitstatus => 0, :stdout => "")
+    @status = double("Process::Status mock", exitstatus: 0, stdout: "")
     allow(@provider).to receive(:shell_out!).and_return(@status)
   end
 

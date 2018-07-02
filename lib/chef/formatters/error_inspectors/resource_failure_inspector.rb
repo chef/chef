@@ -43,7 +43,7 @@ class Chef
             error_description.section("Resource Declaration:", resource.sensitive ? "suppressed sensitive resource output" : recipe_snippet)
           end
 
-          error_description.section("Compiled Resource:", "#{resource.to_text}")
+          error_description.section("Compiled Resource:", (resource.to_text).to_s)
 
           # Template errors get wrapped in an exception class that can show the relevant template code,
           # so add them to the error output.

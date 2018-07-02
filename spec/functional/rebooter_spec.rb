@@ -22,9 +22,9 @@ describe Chef::Platform::Rebooter do
 
   let(:reboot_info) do
     {
-      :delay_mins => 5,
-      :requested_by => "reboot resource functional test",
-      :reason => "rebooter spec test",
+      delay_mins: 5,
+      requested_by: "reboot resource functional test",
+      reason: "rebooter spec test",
     }
   end
 
@@ -44,9 +44,9 @@ describe Chef::Platform::Rebooter do
 
   let(:expected) do
     {
-      :windows => "#{ENV['SYSTEMROOT']}/System32/shutdown.exe /r /t 300 /c \"rebooter spec test\"",
-      :linux => 'shutdown -r +5 "rebooter spec test" &',
-      :solaris => 'shutdown -i6 -g5 -y "rebooter spec test" &',
+      windows: "#{ENV['SYSTEMROOT']}/System32/shutdown.exe /r /t 300 /c \"rebooter spec test\"",
+      linux: 'shutdown -r +5 "rebooter spec test" &',
+      solaris: 'shutdown -i6 -g5 -y "rebooter spec test" &',
     }
   end
 

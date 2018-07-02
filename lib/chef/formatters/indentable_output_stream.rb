@@ -35,19 +35,19 @@ class Chef
       # cause indentation but will not move to the next line yet (future 'print'
       # and 'puts' statements will stay on this line).
       def start_line(string, *args)
-        print(string, from_args(args, :start_line => true))
+        print(string, from_args(args, start_line: true))
       end
 
       # Print a line.  This will continue from the last start_line or print,
       # or start a new line and indent if necessary.
       def puts(string, *args)
-        print(string, from_args(args, :end_line => true))
+        print(string, from_args(args, end_line: true))
       end
 
       # Print an entire line from start to end.  This will terminate any existing
       # lines and cause indentation.
       def puts_line(string, *args)
-        print(string, from_args(args, :start_line => true, :end_line => true))
+        print(string, from_args(args, start_line: true, end_line: true))
       end
 
       # Print a raw chunk
@@ -103,7 +103,7 @@ class Chef
         if colors.size == 1 && colors[0].kind_of?(Hash)
           merge_options.merge(colors[0])
         else
-          merge_options.merge({ :colors => colors })
+          merge_options.merge({ colors: colors })
         end
       end
 

@@ -258,11 +258,11 @@ shared_examples_for Chef::Provider::File do
         allow(ChefConfig).to receive(:windows?).and_return(false)
         # mock up the filesystem to behave like unix
         setup_normal_file
-        stat_struct = double("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
+        stat_struct = double("::File.stat", mode: 0600, uid: 0, gid: 0, mtime: 10000)
         resource_real_path = File.realpath(resource.path)
         expect(File).to receive(:stat).with(resource_real_path).at_least(:once).and_return(stat_struct)
-        allow(Etc).to receive(:getgrgid).with(0).and_return(double("Group Ent", :name => "wheel"))
-        allow(Etc).to receive(:getpwuid).with(0).and_return(double("User Ent", :name => "root"))
+        allow(Etc).to receive(:getgrgid).with(0).and_return(double("Group Ent", name: "wheel"))
+        allow(Etc).to receive(:getpwuid).with(0).and_return(double("User Ent", name: "root"))
       end
 
       context "when the new_resource does not specify any state" do
@@ -383,11 +383,11 @@ shared_examples_for Chef::Provider::File do
       allow(ChefConfig).to receive(:windows?).and_return(false)
       # mock up the filesystem to behave like unix
       setup_normal_file
-      stat_struct = double("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
+      stat_struct = double("::File.stat", mode: 0600, uid: 0, gid: 0, mtime: 10000)
       resource_real_path = File.realpath(resource.path)
       allow(File).to receive(:stat).with(resource_real_path).and_return(stat_struct)
-      allow(Etc).to receive(:getgrgid).with(0).and_return(double("Group Ent", :name => "wheel"))
-      allow(Etc).to receive(:getpwuid).with(0).and_return(double("User Ent", :name => "root"))
+      allow(Etc).to receive(:getgrgid).with(0).and_return(double("Group Ent", name: "wheel"))
+      allow(Etc).to receive(:getpwuid).with(0).and_return(double("User Ent", name: "root"))
       provider.send(:load_resource_attributes_from_file, resource)
     end
 
@@ -460,7 +460,7 @@ shared_examples_for Chef::Provider::File do
       before { setup_normal_file }
 
       let(:tempfile) do
-        t = double("Tempfile", :path => "/tmp/foo-bar-baz", :closed? => true)
+        t = double("Tempfile", path: "/tmp/foo-bar-baz", closed?: true)
         allow(content).to receive(:tempfile).and_return(t)
         t
       end
@@ -515,7 +515,7 @@ shared_examples_for Chef::Provider::File do
         before do
           setup_normal_file
           provider.load_current_resource
-          tempfile = double("Tempfile", :path => "/tmp/foo-bar-baz")
+          tempfile = double("Tempfile", path: "/tmp/foo-bar-baz")
           allow(content).to receive(:tempfile).and_return(tempfile)
           expect(File).to receive(:exists?).with("/tmp/foo-bar-baz").and_return(true)
           expect(tempfile).to receive(:close).once
@@ -528,8 +528,8 @@ shared_examples_for Chef::Provider::File do
           let(:diff_for_reporting) { "+++\n---\n+foo\n-bar\n" }
           before do
             allow(provider).to receive(:contents_changed?).and_return(true)
-            diff = double("Diff", :for_output => ["+++", "---", "+foo", "-bar"],
-                                  :for_reporting => diff_for_reporting )
+            diff = double("Diff", for_output: ["+++", "---", "+foo", "-bar"],
+                                  for_reporting: diff_for_reporting )
             allow(diff).to receive(:diff).with(resource_path, tempfile_path).and_return(true)
             expect(provider).to receive(:diff).at_least(:once).and_return(diff)
             expect(provider).to receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)
@@ -592,13 +592,13 @@ shared_examples_for Chef::Provider::File do
       end
 
       it "raises an exception when the content object returns a tempfile with a nil path" do
-        tempfile = double("Tempfile", :path => nil)
+        tempfile = double("Tempfile", path: nil)
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
         expect { provider.send(:do_contents_changes) }.to raise_error(RuntimeError)
       end
 
       it "raises an exception when the content object returns a tempfile that does not exist" do
-        tempfile = double("Tempfile", :path => "/tmp/foo-bar-baz")
+        tempfile = double("Tempfile", path: "/tmp/foo-bar-baz")
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
         expect(File).to receive(:exists?).with("/tmp/foo-bar-baz").and_return(false)
         expect { provider.send(:do_contents_changes) }.to raise_error(RuntimeError)

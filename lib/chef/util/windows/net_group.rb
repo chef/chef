@@ -19,7 +19,7 @@
 require "chef/util/windows"
 require "chef/win32/net"
 
-#wrapper around a subset of the NetGroup* APIs.
+# wrapper around a subset of the NetGroup* APIs.
 class Chef::Util::Windows::NetGroup
 
   private

@@ -44,9 +44,9 @@ describe "key show commands that inherit knife" do
 
       context "when the service object is called" do
         it "creates a new instance of Chef::Knife::KeyShow with the correct args" do
-          expect(Chef::Knife::KeyShow).to receive(:new).
-            with("charmander-key", "charmander", command.load_method, command.ui).
-            and_return(service_object)
+          expect(Chef::Knife::KeyShow).to receive(:new)
+            .with("charmander-key", "charmander", command.load_method, command.ui)
+            .and_return(service_object)
           command.service_object
         end
       end # when the service object is called

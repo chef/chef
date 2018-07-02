@@ -50,12 +50,12 @@ class Chef
       end
 
       def reregister_only_v0_supported_error_msg(max_version, min_version)
-        <<-EOH
-The reregister command only supports server API version 0.
-The server that received the request supports a min version of #{min_version} and a max version of #{max_version}.
-User keys are now managed via the key rotation commmands.
-Please refer to the documentation on how to manage your keys via the key rotation commands:
-https://docs.chef.io/server_security.html#key-rotation
+        <<~EOH
+          The reregister command only supports server API version 0.
+          The server that received the request supports a min version of #{min_version} and a max version of #{max_version}.
+          User keys are now managed via the key rotation commmands.
+          Please refer to the documentation on how to manage your keys via the key rotation commands:
+          https://docs.chef.io/server_security.html#key-rotation
 EOH
       end
 

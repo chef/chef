@@ -113,33 +113,33 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
       end
 
       it "should throw an exception if the exitstatus is not 0" do
-        status = double(:stdout => "", :stderr => "", :exitstatus => 1)
+        status = double(stdout: "", stderr: "", exitstatus: 1)
         allow(@provider).to receive(:shell_out_compacted).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
       end
 
       it "should find the candidate_version if a category is specifed and there are no duplicates" do
-        status = double(:stdout => "dev-vcs/git-2.16.2", :exitstatus => 0)
+        status = double(stdout: "dev-vcs/git-2.16.2", exitstatus: 0)
         expect(@provider).to receive(:shell_out_compacted).and_return(status)
         expect(@provider.candidate_version).to eq("2.16.2")
       end
 
       it "should find the candidate_version if a category is not specifed and there are no duplicates" do
-        status = double(:stdout => "dev-vcs/git-2.16.2", :exitstatus => 0)
+        status = double(stdout: "dev-vcs/git-2.16.2", exitstatus: 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
         expect(@provider).to receive(:shell_out_compacted).and_return(status)
         expect(@provider.candidate_version).to eq("2.16.2")
       end
 
       it "should throw an exception if a category is not specified and there are duplicates" do
-        stderr_output = <<EOF
-You specified an unqualified atom that matched multiple packages:
-* app-misc/sphinx
-* dev-python/sphinx
+        stderr_output = <<~EOF
+          You specified an unqualified atom that matched multiple packages:
+          * app-misc/sphinx
+          * dev-python/sphinx
 
-Please use a more specific atom.
+          Please use a more specific atom.
 EOF
-        status = double(:stdout => "", :stderr => stderr_output, :exitstatus => 1)
+        status = double(stdout: "", stderr: stderr_output, exitstatus: 1)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
         expect(@provider).to receive(:shell_out_compacted).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)

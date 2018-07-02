@@ -2,7 +2,7 @@
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
 # Copyright:: Copyright 2010-2017, Chef Software Inc.
-#p License:: Apache License, Version 2.0
+# p License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,8 +72,8 @@ describe Chef::Resource::CookbookFile do
       state = resource.state_for_resource_reporter
       if Chef::Platform.windows?
         puts state
-        expect(state[:rights]).to eq([{ :permissions => :read, :principals => "Everyone" }])
-        expect(state[:deny_rights]).to eq([{ :permissions => :full_control, :principals => "Clumsy_Sam" }])
+        expect(state[:rights]).to eq([{ permissions: :read, principals: "Everyone" }])
+        expect(state[:deny_rights]).to eq([{ permissions: :full_control, principals: "Clumsy_Sam" }])
       else
         expect(state[:group]).to eq("wheel")
         expect(state[:mode]).to eq("0664")

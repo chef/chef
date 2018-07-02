@@ -26,16 +26,16 @@ class Chef
       category "cookbook site"
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+        short: "-w",
+        long: "--with-uri",
+        description: "Show corresponding URIs"
 
       option :supermarket_site,
-        :short => "-m SUPERMARKET_SITE",
-        :long => "--supermarket-site SUPERMARKET_SITE",
-        :description => "Supermarket Site",
-        :default => "https://supermarket.chef.io",
-        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+        short: "-m SUPERMARKET_SITE",
+        long: "--supermarket-site SUPERMARKET_SITE",
+        description: "Supermarket Site",
+        default: "https://supermarket.chef.io",
+        proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 
       def run
         if config[:with_uri]

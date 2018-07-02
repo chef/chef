@@ -39,7 +39,7 @@ describe Chef::Knife::CookbookSiteShare do
     @noauth_rest = double(Chef::ServerAPI)
     allow(@knife).to receive(:noauth_rest).and_return(@noauth_rest)
 
-    @cookbook_uploader = Chef::CookbookUploader.new("herpderp", :rest => "norest")
+    @cookbook_uploader = Chef::CookbookUploader.new("herpderp", rest: "norest")
     allow(Chef::CookbookUploader).to receive(:new).and_return(@cookbook_uploader)
     allow(@cookbook_uploader).to receive(:validate_cookbooks).and_return(true)
     allow(Chef::CookbookSiteStreamingUploader).to receive(:create_build_dir).and_return(Dir.mktmpdir)
@@ -139,14 +139,14 @@ describe Chef::Knife::CookbookSiteShare do
     context "when the --dry-run flag is specified" do
       before do
         allow(Chef::CookbookSiteStreamingUploader).to receive(:create_build_dir).and_return("/var/tmp/dummy")
-        @knife.config = { :dry_run => true }
+        @knife.config = { dry_run: true }
         allow(@knife).to receive_message_chain(:shell_out!, :stdout).and_return("file")
       end
 
       it "should list files in the tarball" do
         allow(@knife).to receive(:tar_cmd).and_return("footar")
-        expect(@knife).to receive(:shell_out!).with("footar -czf #{@cookbook.name}.tgz #{@cookbook.name}", { :cwd => "/var/tmp/dummy" })
-        expect(@knife).to receive(:shell_out!).with("footar -tzf #{@cookbook.name}.tgz", { :cwd => "/var/tmp/dummy" })
+        expect(@knife).to receive(:shell_out!).with("footar -czf #{@cookbook.name}.tgz #{@cookbook.name}", { cwd: "/var/tmp/dummy" })
+        expect(@knife).to receive(:shell_out!).with("footar -tzf #{@cookbook.name}.tgz", { cwd: "/var/tmp/dummy" })
         @knife.run
       end
 
@@ -172,7 +172,7 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it 'should post the cookbook to "https://supermarket.chef.io"' do
-      response_text = Chef::JSONCompat.to_json({ :uri => "https://supermarket.chef.io/cookbooks/cookbook_name" })
+      response_text = Chef::JSONCompat.to_json({ uri: "https://supermarket.chef.io/cookbooks/cookbook_name" })
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(201)
       expect(Chef::CookbookSiteStreamingUploader).to receive(:post).with(/supermarket\.chef\.io/, anything(), anything(), anything())
@@ -180,7 +180,7 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it "should alert the user when a version already exists" do
-      response_text = Chef::JSONCompat.to_json({ :error_messages => ["Version already exists"] })
+      response_text = Chef::JSONCompat.to_json({ error_messages: ["Version already exists"] })
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(409)
       expect { @knife.run }.to raise_error(SystemExit)
@@ -188,7 +188,7 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it "should pass any errors on to the user" do
-      response_text = Chef::JSONCompat.to_json({ :error_messages => ["You're holding it wrong"] })
+      response_text = Chef::JSONCompat.to_json({ error_messages: ["You're holding it wrong"] })
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(403)
       expect { @knife.run }.to raise_error(SystemExit)
@@ -196,11 +196,11 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it "should print the body if no errors are exposed on failure" do
-      response_text = Chef::JSONCompat.to_json({ :system_error => "Your call was dropped", :reason => "There's a map for that" })
+      response_text = Chef::JSONCompat.to_json({ system_error: "Your call was dropped", reason: "There's a map for that" })
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(500)
-      expect(@knife.ui).to receive(:error).with(/#{Regexp.escape(response_text)}/) #.ordered
-      expect(@knife.ui).to receive(:error).with(/Unknown error/) #.ordered
+      expect(@knife.ui).to receive(:error).with(/#{Regexp.escape(response_text)}/) # .ordered
+      expect(@knife.ui).to receive(:error).with(/Unknown error/) # .ordered
       expect { @knife.run }.to raise_error(SystemExit)
     end
 

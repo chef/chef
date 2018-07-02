@@ -95,7 +95,7 @@ shared_context "use Windows permissions", :windows_only do
   def extract_ace_properties(aces)
     hashes = []
     aces.each do |ace|
-      hashes << { :mask => ace.mask, :type => ace.type, :flags => ace.flags }
+      hashes << { mask: ace.mask, type: ace.type, flags: ace.flags }
     end
     hashes
   end
@@ -103,36 +103,36 @@ shared_context "use Windows permissions", :windows_only do
   # Standard expected rights
   let(:expected_read_perms) do
     {
-      :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ,
+      generic: Chef::ReservedNames::Win32::API::Security::GENERIC_READ,
+      specific: Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ,
     }
   end
 
   let(:expected_read_execute_perms) do
     {
-      :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE,
+      generic: Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE,
+      specific: Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE,
     }
   end
 
   let(:expected_write_perms) do
     {
-      :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE,
+      generic: Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE,
+      specific: Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE,
     }
   end
 
   let(:expected_modify_perms) do
     {
-      :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE,
+      generic: Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE,
+      specific: Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE,
     }
   end
 
   let(:expected_full_control_perms) do
     {
-      :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_ALL,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_ALL_ACCESS,
+      generic: Chef::ReservedNames::Win32::API::Security::GENERIC_ALL,
+      specific: Chef::ReservedNames::Win32::API::Security::FILE_ALL_ACCESS,
     }
   end
 
@@ -443,8 +443,8 @@ shared_examples_for "a securable resource without existing target" do
       end
 
       it "respects mode in string form as an octal number" do
-        #on windows, mode cannot modify owner and/or group permissons
-        #unless the owner and/or group as appropriate is specified
+        # on windows, mode cannot modify owner and/or group permissons
+        # unless the owner and/or group as appropriate is specified
         resource.mode "400"
         resource.owner "Guest"
         resource.group "Everyone"

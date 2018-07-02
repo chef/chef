@@ -51,7 +51,7 @@ describe Chef::Resource::File do
   end
 
   let(:resource_with_relative_path) do
-    create_resource(:use_relative_path => true)
+    create_resource(use_relative_path: true)
   end
 
   let(:unmanaged_content) do

@@ -36,7 +36,7 @@ describe Chef::Provider::File::Content do
   end
 
   let(:new_resource) do
-    double("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
+    double("Chef::Provider::File::Resource (new)", name: "seattle.txt", path: resource_path)
   end
 
   let(:run_context) do

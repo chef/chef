@@ -60,7 +60,7 @@ describe Chef::Knife::DataBagCreate do
   context "when data_bag doesn't exist" do
     before do
       # Data bag doesn't exist by default so we mock the GET request to return 404
-      exception = double("404 error", :code => "404")
+      exception = double("404 error", code: "404")
       allow(rest).to receive(:get)
         .with("data/#{bag_name}")
         .and_raise(Net::HTTPServerException.new("404", exception))
@@ -82,7 +82,7 @@ describe Chef::Knife::DataBagCreate do
 
     context "when part of the name is a reserved name" do
       before do
-        exception = double("404 error", :code => "404")
+        exception = double("404 error", code: "404")
         %w{node role client environment}.each do |name|
           allow(rest).to receive(:get)
             .with("data/sudoing_#{name}_admins")

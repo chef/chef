@@ -41,7 +41,7 @@ class Chef
         set_or_return(
           :members,
           converted_members,
-          :kind_of => [ Array ]
+          kind_of: [ Array ]
         )
       end
 
@@ -52,7 +52,7 @@ class Chef
         set_or_return(
           :excluded_members,
           converted_members,
-          :kind_of => [ Array ]
+          kind_of: [ Array ]
         )
       end
 

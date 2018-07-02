@@ -25,10 +25,10 @@ describe Chef::Knife::UI do
   before do
     @out, @err, @in = StringIO.new, StringIO.new, StringIO.new
     @config = {
-      :verbosity => 0,
-      :yes => nil,
-      :format => "summary",
-      :field_separator => ".",
+      verbosity: 0,
+      yes: nil,
+      format: "summary",
+      field_separator: ".",
     }
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
   end
@@ -171,12 +171,12 @@ describe Chef::Knife::UI do
   describe "format_list_for_display" do
     it "should print the full hash if --with-uri is true" do
       @ui.config[:with_uri] = true
-      expect(@ui.format_list_for_display({ :marcy => :playground })).to eq({ :marcy => :playground })
+      expect(@ui.format_list_for_display({ marcy: :playground })).to eq({ marcy: :playground })
     end
 
     it "should print only the keys if --with-uri is false" do
       @ui.config[:with_uri] = false
-      expect(@ui.format_list_for_display({ :marcy => :playground })).to eq([ :marcy ])
+      expect(@ui.format_list_for_display({ marcy: :playground })).to eq([ :marcy ])
     end
   end
 
@@ -211,9 +211,9 @@ describe Chef::Knife::UI do
 
     it "formats hashes appropriately" do
       @ui.output({ "hi" => "a", "lo" => "b" })
-      expect(@out.string).to eq <<EOM
-hi: a
-lo: b
+      expect(@out.string).to eq <<~EOM
+        hi: a
+        lo: b
 EOM
     end
 
@@ -224,9 +224,9 @@ EOM
 
     it "formats arrays appropriately" do
       @ui.output(%w{a b})
-      expect(@out.string).to eq <<EOM
-a
-b
+      expect(@out.string).to eq <<~EOM
+        a
+        b
 EOM
     end
 
@@ -247,74 +247,74 @@ EOM
 
     it "formats nested arrays appropriately" do
       @ui.output([ %w{a b}, %w{c d}])
-      expect(@out.string).to eq <<EOM
-a
-b
+      expect(@out.string).to eq <<~EOM
+        a
+        b
 
-c
-d
+        c
+        d
 EOM
     end
 
     it "formats nested arrays with single- and empty subarrays appropriately" do
       @ui.output([ %w{a b}, [ "c" ], [], %w{d e}])
-      expect(@out.string).to eq <<EOM
-a
-b
+      expect(@out.string).to eq <<~EOM
+        a
+        b
 
-c
+        c
 
 
-d
-e
+        d
+        e
 EOM
     end
 
     it "formats arrays of hashes with extra lines in between for readability" do
       @ui.output([ { "a" => "b", "c" => "d" }, { "x" => "y" }, { "m" => "n", "o" => "p" }])
-      expect(@out.string).to eq <<EOM
-a: b
-c: d
+      expect(@out.string).to eq <<~EOM
+        a: b
+        c: d
 
-x: y
+        x: y
 
-m: n
-o: p
+        m: n
+        o: p
 EOM
     end
 
     it "formats hashes with empty array members appropriately" do
       @ui.output({ "a" => [], "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-b: c
+      expect(@out.string).to eq <<~EOM
+        a:
+        b: c
 EOM
     end
 
     it "formats hashes with single-member array values appropriately" do
       @ui.output({ "a" => [ "foo" ], "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a: foo
-b: c
+      expect(@out.string).to eq <<~EOM
+        a: foo
+        b: c
 EOM
     end
 
     it "formats hashes with array members appropriately" do
       @ui.output({ "a" => %w{foo bar}, "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-  foo
-  bar
-b: c
+      expect(@out.string).to eq <<~EOM
+        a:
+          foo
+          bar
+        b: c
 EOM
     end
 
     it "formats hashes with single-member nested array values appropriately" do
       @ui.output({ "a" => [ [ "foo" ] ], "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-  foo
-b: c
+      expect(@out.string).to eq <<~EOM
+        a:
+          foo
+        b: c
 EOM
     end
 
@@ -327,19 +327,19 @@ EOM
 
     it "formats hashes with hash values appropriately" do
       @ui.output({ "a" => { "aa" => "bb", "cc" => "dd" }, "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-  aa: bb
-  cc: dd
-b: c
+      expect(@out.string).to eq <<~EOM
+        a:
+          aa: bb
+          cc: dd
+        b: c
 EOM
     end
 
     it "formats hashes with empty hash values appropriately" do
       @ui.output({ "a" => {}, "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-b: c
+      expect(@out.string).to eq <<~EOM
+        a:
+        b: c
 EOM
     end
   end
@@ -358,7 +358,7 @@ EOM
 
   describe "format_for_display" do
     it "should return the raw data" do
-      input = { :gi => :go }
+      input = { gi: :go }
       expect(@ui.format_for_display(input)).to eq(input)
     end
 
@@ -480,7 +480,7 @@ EOM
 
     context "when running on Windows" do
       before(:each) do
-        stdout = double("StringIO", :tty? => true)
+        stdout = double("StringIO", tty?: true)
         allow(@ui).to receive(:stdout).and_return(stdout)
         allow(ChefConfig).to receive(:windows?) { true }
         Chef::Config.reset
@@ -631,7 +631,7 @@ EOM
       out = StringIO.new
       allow(@ui).to receive(:stdout).and_return(out)
       allow(@ui).to receive(:stdin).and_return(StringIO.new(" \n"))
-      expect(@ui.ask_question("your chef server URL? ", :default => "http://localhost:4000")).to eq("http://localhost:4000")
+      expect(@ui.ask_question("your chef server URL? ", default: "http://localhost:4000")).to eq("http://localhost:4000")
       expect(out.string).to eq("your chef server URL? [http://localhost:4000] ")
     end
   end

@@ -21,7 +21,7 @@ require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
 exclude_test = !(%w{rhel fedora}.include?(ohai[:platform_family]) && !File.exist?("/usr/bin/dnf"))
-describe Chef::Resource::YumPackage, :requires_root, :external => exclude_test do
+describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   include Chef::Mixin::ShellOut
 
   # NOTE: every single test here either needs to explicitly call flush_cache or needs to explicitly
@@ -45,12 +45,12 @@ describe Chef::Resource::YumPackage, :requires_root, :external => exclude_test d
 
   before(:each) do
     File.open("/etc/yum.repos.d/chef-yum-localtesting.repo", "w+") do |f|
-      f.write <<-EOF
-[chef-yum-localtesting]
-name=Chef DNF spec testing repo
-baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
-enable=1
-gpgcheck=0
+      f.write <<~EOF
+        [chef-yum-localtesting]
+        name=Chef DNF spec testing repo
+        baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
+        enable=1
+        gpgcheck=0
       EOF
     end
     shell_out!("rpm -qa --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | grep chef_rpm | xargs -r rpm -e")
@@ -289,7 +289,7 @@ gpgcheck=0
       it "installs with 64-bit arch in the property" do
         flush_cache
         yum_package.package_name("chef_rpm")
-        yum_package.arch("#{pkg_arch}")
+        yum_package.arch((pkg_arch).to_s)
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")

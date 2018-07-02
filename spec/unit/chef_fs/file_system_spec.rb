@@ -57,17 +57,17 @@ describe Chef::ChefFS::FileSystem do
   context "with a populated filesystem" do
     let(:fs) do
       memory_fs("", {
-        :a => {
-          :aa => {
-            :c => "",
-            :zz => "",
+        a: {
+          aa: {
+            c: "",
+            zz: "",
           },
-          :ab => {
-            :c => "",
+          ab: {
+            c: "",
           },
         },
-        :x => "",
-        :y => {},
+        x: "",
+        y: {},
       })
     end
     context "list" do

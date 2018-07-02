@@ -128,7 +128,7 @@ describe Chef::Knife::ClientBulkDelete do
       end
 
       describe "with --delete-validators" do
-        let(:option_args) { { :delete_validators => true } }
+        let(:option_args) { { delete_validators: true } }
 
         it "should mention that validator clients will be deleted" do
           knife.run

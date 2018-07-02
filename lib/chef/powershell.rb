@@ -15,18 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "ffi"
 require "chef/json_compat"
-require "win32ole" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 
 class Chef
   class PowerShell
+    extend FFI::Library
 
     attr_reader :result
     attr_reader :errors
 
-    # Run a command under PowerShell via a managed (.NET) COM interop API.
-    # This implementation requires the managed dll to be registered on the
-    # target machine.
+    # Run a command under PowerShell via FFI
+    # This implementation requires the managed dll and native wrapper to be in the library search
+    # path on Windows (i.e. c:\windows\system32 or in the same location as ruby.exe).
     #
     # Requires: .NET Framework 4.0 or higher on the target machine.
     #
@@ -45,9 +46,10 @@ class Chef
     private
 
     def exec(script)
-      ps = WIN32OLE.new("Chef.PowerShell")
-      outcome = ps.ExecuteScript(script)
-      hashed_outcome = Chef::JSONCompat.parse(outcome)
+      FFI.ffi_lib "Chef.PowerShell.Wrapper.dll"
+      FFI.attach_function :execute_powershell, :ExecuteScript, [:string], :pointer
+      execution = FFI.execute_powershell(script).read_utf16string
+      hashed_outcome = Chef::JSONCompat.parse(execution)
       @result = Chef::JSONCompat.parse(hashed_outcome["result"])
       @errors = hashed_outcome["errors"]
     end

@@ -147,38 +147,38 @@ EOH
   let(:dsc_user_suffix_code) { dsc_user_suffix }
   let(:dsc_script_environment_attribute) { nil }
   let(:dsc_user_resources_code) do
-    <<-EOH
-  #{config_param_section}
-node localhost
-{
-$testuser = #{dsc_user_code}
-$testpassword = ConvertTo-SecureString -String "jf9a8m49jrajf4#" -AsPlainText -Force
-$testcred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $testuser, $testpassword
+    <<~EOH
+        #{config_param_section}
+      node localhost
+      {
+      $testuser = #{dsc_user_code}
+      $testpassword = ConvertTo-SecureString -String "jf9a8m49jrajf4#" -AsPlainText -Force
+      $testcred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $testuser, $testpassword
 
-User dsctestusercreate
-{
-    UserName = $testuser
-    Password = $testcred
-    Description = "DSC test user"
-    Ensure = "Present"
-    Disabled = $false
-    PasswordNeverExpires = $true
-    PasswordChangeRequired = $false
-}
-}
+      User dsctestusercreate
+      {
+          UserName = $testuser
+          Password = $testcred
+          Description = "DSC test user"
+          Ensure = "Present"
+          Disabled = $false
+          PasswordNeverExpires = $true
+          PasswordChangeRequired = $false
+      }
+      }
 EOH
   end
 
   let(:dsc_user_config_data) do
-    <<-EOH
-@{
-    AllNodes = @(
-        @{
-            NodeName = "localhost";
-            PSDscAllowPlainTextPassword = $true
-        }
-    )
-}
+    <<~EOH
+      @{
+          AllNodes = @(
+              @{
+                  NodeName = "localhost";
+                  PSDscAllowPlainTextPassword = $true
+              }
+          )
+      }
 
 EOH
   end
@@ -188,17 +188,17 @@ EOH
   let(:dsc_environment_fail_etc_directory) { "#{ENV['systemroot']}\\system32\\drivers\\etc" }
   let(:exception_message_signature) { "LL927-LL928" }
   let(:dsc_environment_config) do
-    <<-EOH
-if (($pwd.path -eq '#{dsc_environment_fail_etc_directory}') -and (test-path('#{dsc_environment_fail_etc_directory}')))
-{
-    throw 'Signature #{exception_message_signature}: Purposefully failing because cwd == #{dsc_environment_fail_etc_directory}'
-}
-environment "whatsmydir"
-{
-    Name = '#{dsc_environment_env_var_name}'
-    Value = $pwd.path
-    Ensure = 'Present'
-}
+    <<~EOH
+      if (($pwd.path -eq '#{dsc_environment_fail_etc_directory}') -and (test-path('#{dsc_environment_fail_etc_directory}')))
+      {
+          throw 'Signature #{exception_message_signature}: Purposefully failing because cwd == #{dsc_environment_fail_etc_directory}'
+      }
+      environment "whatsmydir"
+      {
+          Name = '#{dsc_environment_env_var_name}'
+          Value = $pwd.path
+          Ensure = 'Present'
+      }
 EOH
   end
 
@@ -234,7 +234,7 @@ EOH
       expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(false)
       dsc_test_resource.run_action(:run)
       expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(true)
-      expect(dsc_test_resource.registry_value_exists?(test_registry_key, { :name => test_registry_value, :type => :string, :data => test_registry_data })).to eq(true)
+      expect(dsc_test_resource.registry_value_exists?(test_registry_key, { name: test_registry_value, type: :string, data: test_registry_data })).to eq(true)
     end
 
     it_should_behave_like "a dsc_script resource with configuration affected by cwd"
@@ -243,12 +243,12 @@ EOH
   shared_examples_for "a dsc_script resource with configuration affected by cwd" do
     after(:each) do
       removal_resource = Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
-      removal_resource.code <<-EOH
-environment 'removethis'
-{
-   Name = '#{dsc_environment_env_var_name}'
-   Ensure = 'Absent'
-}
+      removal_resource.code <<~EOH
+        environment 'removethis'
+        {
+           Name = '#{dsc_environment_env_var_name}'
+           Ensure = 'Absent'
+        }
 EOH
       removal_resource.run_action(:run)
     end
@@ -314,7 +314,7 @@ EOH
         expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(false)
         dsc_test_resource.run_action(:run)
         expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(true)
-        expect(dsc_test_resource.registry_value_exists?(test_registry_key, { :name => test_registry_value, :type => :string, :data => test_registry_data })).to eq(true)
+        expect(dsc_test_resource.registry_value_exists?(test_registry_key, { name: test_registry_value, type: :string, data: test_registry_data })).to eq(true)
       end
     end
   end
@@ -347,7 +347,7 @@ EOH
   shared_examples_for "a dsc_script with configuration data that takes parameters" do
     let(:dsc_user_code) { dsc_user_param_code }
     let(:config_param_section) { config_params }
-    let(:config_flags) { { :"#{dsc_user_prefix_param_name}" => "#{dsc_user_prefix}", :"#{dsc_user_suffix_param_name}" => "#{dsc_user_suffix}" } }
+    let(:config_flags) { { :"#{dsc_user_prefix_param_name}" => (dsc_user_prefix).to_s, :"#{dsc_user_suffix_param_name}" => (dsc_user_suffix).to_s } }
     it "does not directly contain the user name" do
       configuration_script_content = ::File.open(dsc_test_resource.command) do |file|
         file.read
@@ -409,45 +409,45 @@ EOH
     end
 
     let(:dsc_configuration_script) do
-      <<-MYCODE
-cd c:\\
-configuration LCM
-{
-  param ($thumbprint)
-  localconfigurationmanager
-  {
-    RebootNodeIfNeeded = $false
-    ConfigurationMode = 'ApplyOnly'
-    CertificateID = $thumbprint
-  }
-}
-$cert = ls Cert:\\LocalMachine\\My\\ |
-  Where-Object {$_.Subject -match "ChefTest"} |
-  Select -first 1
+      <<~MYCODE
+        cd c:\\
+        configuration LCM
+        {
+          param ($thumbprint)
+          localconfigurationmanager
+          {
+            RebootNodeIfNeeded = $false
+            ConfigurationMode = 'ApplyOnly'
+            CertificateID = $thumbprint
+          }
+        }
+        $cert = ls Cert:\\LocalMachine\\My\\ |
+          Where-Object {$_.Subject -match "ChefTest"} |
+          Select -first 1
 
-if($cert -eq $null) {
-  $pfxpath = '#{self_signed_cert_path}'
-  $password = ''
-  $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($pfxpath, $password, ([System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::PersistKeySet -bor [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::MachineKeyset))
-  $store = New-Object System.Security.Cryptography.X509Certificates.X509Store "My", ([System.Security.Cryptography.X509Certificates.StoreLocation]::LocalMachine)
-  $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite)
-  $store.Add($cert)
-  $store.Close()
-}
+        if($cert -eq $null) {
+          $pfxpath = '#{self_signed_cert_path}'
+          $password = ''
+          $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($pfxpath, $password, ([System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::PersistKeySet -bor [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::MachineKeyset))
+          $store = New-Object System.Security.Cryptography.X509Certificates.X509Store "My", ([System.Security.Cryptography.X509Certificates.StoreLocation]::LocalMachine)
+          $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite)
+          $store.Add($cert)
+          $store.Close()
+        }
 
-lcm -thumbprint $cert.thumbprint
-set-dsclocalconfigurationmanager -path ./LCM
-$ConfigurationData = @"
-@{
-AllNodes = @(
-  @{
-  NodeName = "localhost";
-  CertificateID = '$($cert.thumbprint)';
-  };
-);
-}
-"@
-$ConfigurationData | out-file '#{configuration_data_path}' -force
+        lcm -thumbprint $cert.thumbprint
+        set-dsclocalconfigurationmanager -path ./LCM
+        $ConfigurationData = @"
+        @{
+        AllNodes = @(
+          @{
+          NodeName = "localhost";
+          CertificateID = '$($cert.thumbprint)';
+          };
+        );
+        }
+        "@
+        $ConfigurationData | out-file '#{configuration_data_path}' -force
   MYCODE
     end
 
@@ -460,13 +460,13 @@ $ConfigurationData | out-file '#{configuration_data_path}' -force
 
     let(:dsc_script_resource) do
       dsc_test_resource_base.tap do |r|
-        r.code <<-EOF
-User dsctestusercreate
-{
-    UserName = '#{dsc_user}'
-    Password = #{r.ps_credential('jf9a8m49jrajf4#')}
-    Ensure = "Present"
-}
+        r.code <<~EOF
+          User dsctestusercreate
+          {
+              UserName = '#{dsc_user}'
+              Password = #{r.ps_credential('jf9a8m49jrajf4#')}
+              Ensure = "Present"
+          }
 EOF
         r.configuration_data_script(configuration_data_path)
       end

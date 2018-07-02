@@ -75,7 +75,7 @@ describe Chef::Util::Powershell::Cmdlet do
 
     it "does not allow invalid switch names" do
       expect do
-        @cmdlet.send(:command_switches_string, { :foo! => "bar" })
+        @cmdlet.send(:command_switches_string, { foo!: "bar" })
       end.to raise_error(ArgumentError)
     end
 

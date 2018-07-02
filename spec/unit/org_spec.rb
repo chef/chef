@@ -164,7 +164,7 @@ describe Chef::Org do
 
     describe "create" do
       it "creates a new org via the API" do
-        expect(rest).to receive(:post).with("organizations", { :name => "foobar", :full_name => "foo bar bat" }).and_return({})
+        expect(rest).to receive(:post).with("organizations", { name: "foobar", full_name: "foo bar bat" }).and_return({})
         org.create
       end
     end
@@ -181,7 +181,7 @@ describe Chef::Org do
 
     describe "update" do
       it "updates an existing org on via the API" do
-        expect(rest).to receive(:put).with("organizations/foobar", { :name => "foobar", :full_name => "foo bar bat" }).and_return({})
+        expect(rest).to receive(:put).with("organizations/foobar", { name: "foobar", full_name: "foo bar bat" }).and_return({})
         org.update
       end
     end

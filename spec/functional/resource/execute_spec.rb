@@ -106,7 +106,7 @@ describe Chef::Resource::Execute do
 
     it "guard adds additional values in its :environment and runs" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SGCE_SECRET"] != "regularsecret"'}, {
-        :environment => { "SGCE_SECRET" => "regularsecret" },
+        environment: { "SGCE_SECRET" => "regularsecret" },
       }
       resource.run_action(:run)
       expect(resource).to be_updated_by_last_action
@@ -114,7 +114,7 @@ describe Chef::Resource::Execute do
 
     it "guard adds additional values in its :environment and does not run" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SGCE_SECRET"] == "regularsecret"'}, {
-        :environment => { "SGCE_SECRET" => "regularsecret" },
+        environment: { "SGCE_SECRET" => "regularsecret" },
       }
       resource.run_action(:run)
       expect(resource).not_to be_updated_by_last_action
@@ -122,7 +122,7 @@ describe Chef::Resource::Execute do
 
     it "guard overwrites value with its :environment and runs" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SAWS_SECRET"] != "regularsecret"'}, {
-        :environment => { "SAWS_SECRET" => "regularsecret" },
+        environment: { "SAWS_SECRET" => "regularsecret" },
       }
       resource.run_action(:run)
       expect(resource).to be_updated_by_last_action
@@ -130,7 +130,7 @@ describe Chef::Resource::Execute do
 
     it "guard overwrites value with its :environment and does not runs" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SAWS_SECRET"] == "regularsecret"'}, {
-        :environment => { "SAWS_SECRET" => "regularsecret" },
+        environment: { "SAWS_SECRET" => "regularsecret" },
       }
       resource.run_action(:run)
       expect(resource).not_to be_updated_by_last_action

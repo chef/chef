@@ -21,8 +21,8 @@ require "chef/exceptions"
 require "chef/win32/net"
 require "chef/win32/security"
 
-#wrapper around a subset of the NetUser* APIs.
-#nothing Chef specific, but not complete enough to be its own gem, so util for now.
+# wrapper around a subset of the NetUser* APIs.
+# nothing Chef specific, but not complete enough to be its own gem, so util for now.
 class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   private
@@ -91,7 +91,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   LOGON32_PROVIDER_DEFAULT = Security::LOGON32_PROVIDER_DEFAULT
   LOGON32_LOGON_NETWORK = Security::LOGON32_LOGON_NETWORK
-  #XXX for an extra painful alternative, see: http://support.microsoft.com/kb/180548
+  # XXX for an extra painful alternative, see: http://support.microsoft.com/kb/180548
   def validate_credentials(passwd)
     token = Security.logon_user(@username, nil, passwd,
                LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
@@ -118,8 +118,8 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   # FIXME: yard with @yield
   def user_modify
     user = get_info
-    user[:last_logon] = user[:units_per_week] = 0 #ignored as per USER_INFO_3 doc
-    user[:logon_hours] = nil #PBYTE field; \0 == no changes
+    user[:last_logon] = user[:units_per_week] = 0 # ignored as per USER_INFO_3 doc
+    user[:logon_hours] = nil # PBYTE field; \0 == no changes
     yield(user)
     set_info(user)
   end
@@ -141,9 +141,9 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   def disable_account
     user_modify do |user|
       user[:flags] |= NetUser::UF_ACCOUNTDISABLE
-      #This does not set the password to nil. It (for some reason) means to ignore updating the field.
-      #See similar behavior for the logon_hours field documented at
-      #http://msdn.microsoft.com/en-us/library/windows/desktop/aa371338%28v=vs.85%29.aspx
+      # This does not set the password to nil. It (for some reason) means to ignore updating the field.
+      # See similar behavior for the logon_hours field documented at
+      # http://msdn.microsoft.com/en-us/library/windows/desktop/aa371338%28v=vs.85%29.aspx
       user[:password] = nil
     end
   end
@@ -151,9 +151,9 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   def enable_account
     user_modify do |user|
       user[:flags] &= ~NetUser::UF_ACCOUNTDISABLE
-      #This does not set the password to nil. It (for some reason) means to ignore updating the field.
-      #See similar behavior for the logon_hours field documented at
-      #http://msdn.microsoft.com/en-us/library/windows/desktop/aa371338%28v=vs.85%29.aspx
+      # This does not set the password to nil. It (for some reason) means to ignore updating the field.
+      # See similar behavior for the logon_hours field documented at
+      # http://msdn.microsoft.com/en-us/library/windows/desktop/aa371338%28v=vs.85%29.aspx
       user[:password] = nil
     end
   end

@@ -44,29 +44,29 @@ describe "knife environment compare", :workstation do
 
     # rubocop:disable Layout/TrailingWhitespace
     it "displays the cookbooks for a single environment" do
-      knife("environment compare x").should_succeed <<EOM
-      x       
-blah  = 1.0.0 
-krad  >= 1.0.0
-
+      knife("environment compare x").should_succeed <<~EOM
+              x       
+        blah  = 1.0.0 
+        krad  >= 1.0.0
+        
 EOM
     end
 
     it "compares the cookbooks for two environments" do
-      knife("environment compare x y").should_succeed <<EOM
-      x         y       
-blah  = 1.0.0   = 1.1.0 
-krad  >= 1.0.0  >= 1.0.0
-
+      knife("environment compare x y").should_succeed <<~EOM
+              x         y       
+        blah  = 1.0.0   = 1.1.0 
+        krad  >= 1.0.0  >= 1.0.0
+        
 EOM
     end
 
     it "compares the cookbooks for all environments" do
-      knife("environment compare --all").should_succeed <<EOM
-      x         y       
-blah  = 1.0.0   = 1.1.0 
-krad  >= 1.0.0  >= 1.0.0
-
+      knife("environment compare --all").should_succeed <<~EOM
+              x         y       
+        blah  = 1.0.0   = 1.1.0 
+        krad  >= 1.0.0  >= 1.0.0
+        
 EOM
     end
     # rubocop:enable Layout/TrailingWhitespace

@@ -19,8 +19,8 @@ chef/kitchen-tests$ bundle exec kitchen list
 You should see output similar to
 
 ```shell
-Instance               Driver   Provisioner  Verifier  Transport  Last Action    Last Error
-base-amazonlinux       Vagrant  ChefGithub   Inspec    Ssh        <Not Created>  <None>
+Instance                     Driver   Provisioner  Verifier  Transport  Last Action    Last Error
+end-to-end-amazonlinux       Vagrant  ChefGithub   Inspec    Ssh        <Not Created>  <None>
 ```
 
 ## Testing

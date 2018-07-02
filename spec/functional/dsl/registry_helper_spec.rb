@@ -42,7 +42,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
     it "returns true if registry has specified value" do
       values = @resource.registry_get_values("HKCU\\Software\\Root")
-      expect(values.include?({ :name => "RootType1", :type => :string, :data => "fibrous" })).to eq(true)
+      expect(values.include?({ name: "RootType1", type: :string, data: "fibrous" })).to eq(true)
     end
     it "returns true if specified registry_has_subkey" do
       expect(@resource.registry_has_subkeys?("HKCU\\Software\\Root")).to eq(true)
@@ -52,10 +52,10 @@ describe Chef::Resource::RegistryKey, :windows_only do
       expect(subkeys.include?("Branch")).to eq(true)
     end
     it "returns true if registry_value_exists" do
-      expect(@resource.registry_value_exists?("HKCU\\Software\\Root", { :name => "RootType1", :type => :string, :data => "fibrous" })).to eq(true)
+      expect(@resource.registry_value_exists?("HKCU\\Software\\Root", { name: "RootType1", type: :string, data: "fibrous" })).to eq(true)
     end
     it "returns true if data_value_exists" do
-      expect(@resource.registry_data_exists?("HKCU\\Software\\Root", { :name => "RootType1", :type => :string, :data => "fibrous" })).to eq(true)
+      expect(@resource.registry_data_exists?("HKCU\\Software\\Root", { name: "RootType1", type: :string, data: "fibrous" })).to eq(true)
     end
   end
 end

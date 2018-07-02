@@ -85,13 +85,13 @@ describe Chef::Provider::Package::Rpm do
   describe "when the package source is valid" do
 
     before do
-      expect(provider).to receive(:shell_out_compacted!).
-        with("rpm", "-qp", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", package_source, timeout: 900).
-        and_return(rpm_qp_status)
+      expect(provider).to receive(:shell_out_compacted!)
+        .with("rpm", "-qp", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", package_source, timeout: 900)
+        .and_return(rpm_qp_status)
 
-      expect(provider).to receive(:shell_out_compacted).
-        with("rpm", "-q", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", package_name, timeout: 900).
-        and_return(rpm_q_status)
+      expect(provider).to receive(:shell_out_compacted)
+        .with("rpm", "-q", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", package_name, timeout: 900)
+        .and_return(rpm_q_status)
     end
 
     context "when rpm fails when querying package installed state" do

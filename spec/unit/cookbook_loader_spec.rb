@@ -44,10 +44,10 @@ describe Chef::CookbookLoader do
     cookbook_paths.delete_if { |path| File.basename(path) == "chefignore" }
 
     cookbook_paths.each do |cookbook_path|
-      expect(Chef::Cookbook::CookbookVersionLoader).to receive(:new).
-        with(cookbook_path, anything).
-        once.
-        and_call_original
+      expect(Chef::Cookbook::CookbookVersionLoader).to receive(:new)
+        .with(cookbook_path, anything)
+        .once
+        .and_call_original
     end
     expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
     cookbook_loader.load_cookbooks
@@ -59,11 +59,16 @@ describe Chef::CookbookLoader do
       cookbook_loader.load_cookbooks
     end
 
-    it "should be possible to reload all the cookbooks without triggering deprecation warnings on all of them" do
+    it "should be possible to reload all the cookbooks without triggering deprecation warnings on all of them", chef: "< 15" do
       start_merged_cookbooks = cookbook_loader.merged_cookbooks
       expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
       cookbook_loader.load_cookbooks
       expect(cookbook_loader.merged_cookbooks).to eql(start_merged_cookbooks)
+    end
+
+    it "should not support multiple merged cookbooks in the cookbook path", chef: ">= 15" do
+      start_merged_cookbooks = cookbook_loader.merged_cookbooks
+      expect { cookbook_loader.load_cookbooks }.to raise_error("FIXME WITH THE CLASS YOU DECIDE TO USE HERE")
     end
 
     describe "[]" do

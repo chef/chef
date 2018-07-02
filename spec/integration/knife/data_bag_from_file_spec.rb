@@ -37,76 +37,76 @@ describe "knife data bag from file", :workstation do
         file "data_bags/foo/bzr.json", { "id" => "bzr", "foo" => "bar " }
         file "data_bags/foo/cat.json", { "id" => "cat", "foo" => "bar " }
         file "data_bags/foo/dog.json", { "id" => "dog", "foo" => "bar " }
-        file "data_bags/foo/encrypted.json", <<EOM
-{
-  "id": "encrypted",
-  "password": {
-    "encrypted_data": "H6ab5RY9a9JAkS8A0RCMspXtOJh0ai8cNeA4Q3gLO8s=\\n",
-    "iv": "uWKKKxrJgtELlGMCOLJdkA==\\n",
-    "version": 1,
-    "cipher": "aes-256-cbc"
-  }
-}
+        file "data_bags/foo/encrypted.json", <<~EOM
+          {
+            "id": "encrypted",
+            "password": {
+              "encrypted_data": "H6ab5RY9a9JAkS8A0RCMspXtOJh0ai8cNeA4Q3gLO8s=\\n",
+              "iv": "uWKKKxrJgtELlGMCOLJdkA==\\n",
+              "version": 1,
+              "cipher": "aes-256-cbc"
+            }
+          }
 EOM
-        file "data_bags/bar/round_trip.json", <<EOM
-{
-  "name": "data_bag_item_bar_round_trip",
-  "json_class": "Chef::DataBagItem",
-  "chef_type": "data_bag_item",
-  "data_bag": "bar",
-  "raw_data": {
-    "id": "round_trip",
-    "root_password": {
-      "encrypted_data": "noDOsTpsTAZlTU5sprhmYZzUDfr8du7hH/zRDOjRAmoTJHTZyfYoR221EOOW\\nXJ1D\\n",
-      "iv": "Bnqhfy6n0Hx1wCe9pxHLoA==\\n",
-      "version": 1,
-      "cipher": "aes-256-cbc"
-    },
-    "admin_password": {
-      "encrypted_data": "TcC7dU1gx6OnE5Ab4i/k42UEf0Nnr7cAyuTHId/LNjNOwpNf7XZc27DQSjuy\\nHPlt\\n",
-      "iv": "+TAWJuPWCI2+WB8lGJAyvw==\\n",
-      "version": 1,
-      "cipher": "aes-256-cbc"
-    }
-  }
-}
+        file "data_bags/bar/round_trip.json", <<~EOM
+          {
+            "name": "data_bag_item_bar_round_trip",
+            "json_class": "Chef::DataBagItem",
+            "chef_type": "data_bag_item",
+            "data_bag": "bar",
+            "raw_data": {
+              "id": "round_trip",
+              "root_password": {
+                "encrypted_data": "noDOsTpsTAZlTU5sprhmYZzUDfr8du7hH/zRDOjRAmoTJHTZyfYoR221EOOW\\nXJ1D\\n",
+                "iv": "Bnqhfy6n0Hx1wCe9pxHLoA==\\n",
+                "version": 1,
+                "cipher": "aes-256-cbc"
+              },
+              "admin_password": {
+                "encrypted_data": "TcC7dU1gx6OnE5Ab4i/k42UEf0Nnr7cAyuTHId/LNjNOwpNf7XZc27DQSjuy\\nHPlt\\n",
+                "iv": "+TAWJuPWCI2+WB8lGJAyvw==\\n",
+                "version": 1,
+                "cipher": "aes-256-cbc"
+              }
+            }
+          }
 EOM
       end
 
       it "uploads a single file" do
-        knife("data bag from file foo #{db_dir}/foo/bar.json").should_succeed stderr: <<EOM
-Updated data_bag_item[foo::bar]
+        knife("data bag from file foo #{db_dir}/foo/bar.json").should_succeed stderr: <<~EOM
+          Updated data_bag_item[foo::bar]
 EOM
       end
 
       it "uploads a single encrypted file" do
-        knife("data bag from file foo #{db_dir}/foo/encrypted.json").should_succeed stderr: <<EOM
-Updated data_bag_item[foo::encrypted]
+        knife("data bag from file foo #{db_dir}/foo/encrypted.json").should_succeed stderr: <<~EOM
+          Updated data_bag_item[foo::encrypted]
 EOM
       end
 
       it "uploads a file in chef's internal format" do
         pending "chef/chef#4815"
-        knife("data bag from file bar #{db_dir}/bar/round_trip.json").should_succeed stderr: <<EOM
-Updated data_bag_item[bar::round_trip]
+        knife("data bag from file bar #{db_dir}/bar/round_trip.json").should_succeed stderr: <<~EOM
+          Updated data_bag_item[bar::round_trip]
 EOM
       end
 
       it "uploads many files" do
-        knife("data bag from file foo #{db_dir}/foo/bar.json #{db_dir}/foo/bzr.json").should_succeed stderr: <<EOM
-Updated data_bag_item[foo::bar]
-Updated data_bag_item[foo::bzr]
+        knife("data bag from file foo #{db_dir}/foo/bar.json #{db_dir}/foo/bzr.json").should_succeed stderr: <<~EOM
+          Updated data_bag_item[foo::bar]
+          Updated data_bag_item[foo::bzr]
 EOM
       end
 
       it "uploads a whole directory" do
         knife("data bag from file foo #{db_dir}/foo")
-        knife("data bag show foo").should_succeed <<EOM
-bar
-bzr
-cat
-dog
-encrypted
+        knife("data bag show foo").should_succeed <<~EOM
+          bar
+          bzr
+          cat
+          dog
+          encrypted
 EOM
       end
 

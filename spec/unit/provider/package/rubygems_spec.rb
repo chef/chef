@@ -253,32 +253,32 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   end
 
   it "detects when the target gem environment is the jruby platform" do
-    gem_env_out = <<-JRUBY_GEM_ENV
-RubyGems Environment:
-  - RUBYGEMS VERSION: 1.3.6
-  - RUBY VERSION: 1.8.7 (2010-05-12 patchlevel 249) [java]
-  - INSTALLATION DIRECTORY: /Users/you/.rvm/gems/jruby-1.5.0
-  - RUBY EXECUTABLE: /Users/you/.rvm/rubies/jruby-1.5.0/bin/jruby
-  - EXECUTABLE DIRECTORY: /Users/you/.rvm/gems/jruby-1.5.0/bin
-  - RUBYGEMS PLATFORMS:
-    - ruby
-    - universal-java-1.6
-  - GEM PATHS:
-     - /Users/you/.rvm/gems/jruby-1.5.0
-     - /Users/you/.rvm/gems/jruby-1.5.0@global
-  - GEM CONFIGURATION:
-     - :update_sources => true
-     - :verbose => true
-     - :benchmark => false
-     - :backtrace => false
-     - :bulk_threshold => 1000
-     - "install" => "--env-shebang"
-     - "update" => "--env-shebang"
-     - "gem" => "--no-rdoc --no-ri"
-     - :sources => ["https://rubygems.org/", "http://gems.github.com/"]
-  - REMOTE SOURCES:
-     - https://rubygems.org/
-     - http://gems.github.com/
+    gem_env_out = <<~JRUBY_GEM_ENV
+      RubyGems Environment:
+        - RUBYGEMS VERSION: 1.3.6
+        - RUBY VERSION: 1.8.7 (2010-05-12 patchlevel 249) [java]
+        - INSTALLATION DIRECTORY: /Users/you/.rvm/gems/jruby-1.5.0
+        - RUBY EXECUTABLE: /Users/you/.rvm/rubies/jruby-1.5.0/bin/jruby
+        - EXECUTABLE DIRECTORY: /Users/you/.rvm/gems/jruby-1.5.0/bin
+        - RUBYGEMS PLATFORMS:
+          - ruby
+          - universal-java-1.6
+        - GEM PATHS:
+           - /Users/you/.rvm/gems/jruby-1.5.0
+           - /Users/you/.rvm/gems/jruby-1.5.0@global
+        - GEM CONFIGURATION:
+           - :update_sources => true
+           - :verbose => true
+           - :benchmark => false
+           - :backtrace => false
+           - :bulk_threshold => 1000
+           - "install" => "--env-shebang"
+           - "update" => "--env-shebang"
+           - "gem" => "--no-rdoc --no-ri"
+           - :sources => ["https://rubygems.org/", "http://gems.github.com/"]
+        - REMOTE SOURCES:
+           - https://rubygems.org/
+           - http://gems.github.com/
     JRUBY_GEM_ENV
     expect(@gem_env).to receive(:shell_out_compacted!).with("/usr/weird/bin/gem env").and_return(double("jruby_gem_env", stdout: gem_env_out))
     expected = ["ruby", Gem::Platform.new("universal-java-1.6")]
@@ -295,32 +295,32 @@ RubyGems Environment:
   end
 
   it "uses the current gem platforms when the target env is not jruby" do
-    gem_env_out = <<-RBX_GEM_ENV
-RubyGems Environment:
-  - RUBYGEMS VERSION: 1.3.6
-  - RUBY VERSION: 1.8.7 (2010-05-14 patchlevel 174) [x86_64-apple-darwin10.3.0]
-  - INSTALLATION DIRECTORY: /Users/ddeleo/.rvm/gems/rbx-1.0.0-20100514
-  - RUBYGEMS PREFIX: /Users/ddeleo/.rvm/rubies/rbx-1.0.0-20100514
-  - RUBY EXECUTABLE: /Users/ddeleo/.rvm/rubies/rbx-1.0.0-20100514/bin/rbx
-  - EXECUTABLE DIRECTORY: /Users/ddeleo/.rvm/gems/rbx-1.0.0-20100514/bin
-  - RUBYGEMS PLATFORMS:
-    - ruby
-    - x86_64-darwin-10
-    - x86_64-rubinius-1.0
-  - GEM PATHS:
-     - /Users/ddeleo/.rvm/gems/rbx-1.0.0-20100514
-     - /Users/ddeleo/.rvm/gems/rbx-1.0.0-20100514@global
-  - GEM CONFIGURATION:
-     - :update_sources => true
-     - :verbose => true
-     - :benchmark => false
-     - :backtrace => false
-     - :bulk_threshold => 1000
-     - :sources => ["https://rubygems.org/", "http://gems.github.com/"]
-     - "gem" => "--no-rdoc --no-ri"
-  - REMOTE SOURCES:
-     - https://rubygems.org/
-     - http://gems.github.com/
+    gem_env_out = <<~RBX_GEM_ENV
+      RubyGems Environment:
+        - RUBYGEMS VERSION: 1.3.6
+        - RUBY VERSION: 1.8.7 (2010-05-14 patchlevel 174) [x86_64-apple-darwin10.3.0]
+        - INSTALLATION DIRECTORY: /Users/ddeleo/.rvm/gems/rbx-1.0.0-20100514
+        - RUBYGEMS PREFIX: /Users/ddeleo/.rvm/rubies/rbx-1.0.0-20100514
+        - RUBY EXECUTABLE: /Users/ddeleo/.rvm/rubies/rbx-1.0.0-20100514/bin/rbx
+        - EXECUTABLE DIRECTORY: /Users/ddeleo/.rvm/gems/rbx-1.0.0-20100514/bin
+        - RUBYGEMS PLATFORMS:
+          - ruby
+          - x86_64-darwin-10
+          - x86_64-rubinius-1.0
+        - GEM PATHS:
+           - /Users/ddeleo/.rvm/gems/rbx-1.0.0-20100514
+           - /Users/ddeleo/.rvm/gems/rbx-1.0.0-20100514@global
+        - GEM CONFIGURATION:
+           - :update_sources => true
+           - :verbose => true
+           - :benchmark => false
+           - :backtrace => false
+           - :bulk_threshold => 1000
+           - :sources => ["https://rubygems.org/", "http://gems.github.com/"]
+           - "gem" => "--no-rdoc --no-ri"
+        - REMOTE SOURCES:
+           - https://rubygems.org/
+           - http://gems.github.com/
     RBX_GEM_ENV
     expect(@gem_env).to receive(:shell_out_compacted!).with("/usr/weird/bin/gem env").and_return(double("rbx_gem_env", stdout: gem_env_out))
     expect(@gem_env.gem_platforms).to eq(Gem.platforms)

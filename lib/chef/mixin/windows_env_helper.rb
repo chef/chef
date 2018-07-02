@@ -32,7 +32,7 @@ class Chef
         include Chef::ReservedNames::Win32::API::System
       end
 
-      #see: http://msdn.microsoft.com/en-us/library/ms682653%28VS.85%29.aspx
+      # see: http://msdn.microsoft.com/en-us/library/ms682653%28VS.85%29.aspx
       HWND_BROADCAST = 0xffff
       WM_SETTINGCHANGE = 0x001A
       SMTO_BLOCK = 0x0001

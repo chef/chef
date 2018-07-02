@@ -28,7 +28,7 @@ describe Chef::Knife::RoleEnvRunListClear do
 
     @knife = Chef::Knife::RoleEnvRunListClear.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = %w{will QA}
     allow(@knife).to receive(:output).and_return(true)

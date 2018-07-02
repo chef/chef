@@ -25,19 +25,19 @@ class Chef
       def self.included(includer)
         includer.class_eval do
           option :with_details,
-                 :short => "-w",
-                 :long => "--with-details",
-                 :description => "Show corresponding URIs and whether the key has expired or not."
+                 short: "-w",
+                 long: "--with-details",
+                 description: "Show corresponding URIs and whether the key has expired or not."
 
           option :only_expired,
-                 :short => "-e",
-                 :long => "--only-expired",
-                 :description => "Only show expired keys."
+                 short: "-e",
+                 long: "--only-expired",
+                 description: "Only show expired keys."
 
           option :only_non_expired,
-                 :short => "-n",
-                 :long => "--only-non-expired",
-                 :description => "Only show non-expired keys."
+                 short: "-n",
+                 long: "--only-non-expired",
+                 description: "Only show non-expired keys."
         end
       end
     end

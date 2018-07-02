@@ -93,7 +93,7 @@ shared_context Chef::Resource::WindowsScript do
       context "when the guard's architecture is specified as 64-bit" do
         let (:guard_architecture) { :x86_64 }
         it "executes a 64-bit guard", :windows64_only do
-          resource.only_if resource_guard_command, :architecture => guard_architecture
+          resource.only_if resource_guard_command, architecture: guard_architecture
           resource.run_action(:run)
           expect(get_guard_process_architecture).to eq("amd64")
         end
@@ -102,7 +102,7 @@ shared_context Chef::Resource::WindowsScript do
       context "when the guard's architecture is specified as 32-bit", :not_supported_on_nano do
         let (:guard_architecture) { :i386 }
         it "executes a 32-bit guard" do
-          resource.only_if resource_guard_command, :architecture => guard_architecture
+          resource.only_if resource_guard_command, architecture: guard_architecture
           resource.run_action(:run)
           expect(get_guard_process_architecture).to eq("x86")
         end
@@ -111,7 +111,7 @@ shared_context Chef::Resource::WindowsScript do
       context "when the guard's architecture is specified as 32-bit", :windows_nano_only do
         let (:guard_architecture) { :i386 }
         it "raises an error" do
-          resource.only_if resource_guard_command, :architecture => guard_architecture
+          resource.only_if resource_guard_command, architecture: guard_architecture
           expect { resource.run_action(:run) }.to raise_error(
             Chef::Exceptions::Win32ArchitectureIncorrect,
             /cannot execute script with requested architecture 'i386' on Windows Nano Server/)

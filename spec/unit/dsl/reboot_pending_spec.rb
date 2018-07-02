@@ -36,7 +36,7 @@ describe Chef::DSL::RebootPending do
         end
 
         it 'should return true if "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations" exists' do
-          allow(recipe).to receive(:registry_value_exists?).with('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { :name => "PendingFileRenameOperations" }).and_return(true)
+          allow(recipe).to receive(:registry_value_exists?).with('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { name: "PendingFileRenameOperations" }).and_return(true)
           expect(recipe.reboot_pending?).to be_truthy
         end
 

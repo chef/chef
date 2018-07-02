@@ -26,14 +26,14 @@ describe Chef::Provider::Package::Pacman do
     @new_resource = Chef::Resource::Package.new("nano")
     @current_resource = Chef::Resource::Package.new("nano")
 
-    @status = double(:stdout => "", :exitstatus => 0)
+    @status = double(stdout: "", exitstatus: 0)
     @provider = Chef::Provider::Package::Pacman.new(@new_resource, @run_context)
     allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
 
     allow(@provider).to receive(:shell_out_compacted).and_return(@status)
     @stdin = StringIO.new
-    @stdout = StringIO.new(<<-ERR)
-error: package "nano" not found
+    @stdout = StringIO.new(<<~ERR)
+      error: package "nano" not found
 ERR
     @stderr = StringIO.new
     @pid = 2342
@@ -66,61 +66,61 @@ ERR
     end
 
     it "should set the installed version if pacman has one" do
-      stdout = <<-PACMAN
-Name           : nano
-Version        : 2.2.2-1
-URL            : http://www.nano-editor.org
-Licenses       : GPL
-Groups         : base
-Provides       : None
-Depends On     : glibc  ncurses
-Optional Deps  : None
-Required By    : None
-Conflicts With : None
-Replaces       : None
-Installed Size : 1496.00 K
-Packager       : Andreas Radke <andyrtr@archlinux.org>
-Architecture   : i686
-Build Date     : Mon 18 Jan 2010 06:16:16 PM CET
-Install Date   : Mon 01 Feb 2010 10:06:30 PM CET
-Install Reason : Explicitly installed
-Install Script : Yes
-Description    : Pico editor clone with enhancements
+      stdout = <<~PACMAN
+        Name           : nano
+        Version        : 2.2.2-1
+        URL            : http://www.nano-editor.org
+        Licenses       : GPL
+        Groups         : base
+        Provides       : None
+        Depends On     : glibc  ncurses
+        Optional Deps  : None
+        Required By    : None
+        Conflicts With : None
+        Replaces       : None
+        Installed Size : 1496.00 K
+        Packager       : Andreas Radke <andyrtr@archlinux.org>
+        Architecture   : i686
+        Build Date     : Mon 18 Jan 2010 06:16:16 PM CET
+        Install Date   : Mon 01 Feb 2010 10:06:30 PM CET
+        Install Reason : Explicitly installed
+        Install Script : Yes
+        Description    : Pico editor clone with enhancements
 PACMAN
 
-      status = double(:stdout => stdout, :exitstatus => 0)
+      status = double(stdout: stdout, exitstatus: 0)
       allow(@provider).to receive(:shell_out_compacted).and_return(status)
       @provider.load_current_resource
       expect(@current_resource.version).to eq("2.2.2-1")
     end
 
     it "should set the candidate version if pacman has one" do
-      status = double(:stdout => "core nano 2.2.3-1", :exitstatus => 0)
+      status = double(stdout: "core nano 2.2.3-1", exitstatus: 0)
       allow(@provider).to receive(:shell_out_compacted).and_return(status)
       @provider.load_current_resource
       expect(@provider.candidate_version).to eql("2.2.3-1")
     end
 
     it "should use pacman.conf to determine valid repo names for package versions" do
-      @pacman_conf = <<-PACMAN_CONF
-[options]
-HoldPkg      = pacman glibc
-Architecture = auto
+      @pacman_conf = <<~PACMAN_CONF
+        [options]
+        HoldPkg      = pacman glibc
+        Architecture = auto
 
-[customrepo]
-Server = https://my.custom.repo
+        [customrepo]
+        Server = https://my.custom.repo
 
-[core]
-Include = /etc/pacman.d/mirrorlist
+        [core]
+        Include = /etc/pacman.d/mirrorlist
 
-[extra]
-Include = /etc/pacman.d/mirrorlist
+        [extra]
+        Include = /etc/pacman.d/mirrorlist
 
-[community]
-Include = /etc/pacman.d/mirrorlist
+        [community]
+        Include = /etc/pacman.d/mirrorlist
 PACMAN_CONF
 
-      status = double(:stdout => "customrepo nano 1.2.3-4", :exitstatus => 0)
+      status = double(stdout: "customrepo nano 1.2.3-4", exitstatus: 0)
       allow(::File).to receive(:exist?).with("/etc/pacman.conf").and_return(true)
       allow(::File).to receive(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
       allow(@provider).to receive(:shell_out_compacted).and_return(status)

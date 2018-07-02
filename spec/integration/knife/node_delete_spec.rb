@@ -32,14 +32,14 @@ describe "knife node delete", :workstation do
     end
 
     it "deletes a node" do
-      knife("node delete car", input: "Y").should_succeed <<EOM
-Do you really want to delete car? (Y/N) Deleted node[car]
+      knife("node delete car", input: "Y").should_succeed <<~EOM
+        Do you really want to delete car? (Y/N) Deleted node[car]
 EOM
 
-      knife("node list").should_succeed <<EOM
-cat
-cdr
-cons
+      knife("node list").should_succeed <<~EOM
+        cat
+        cdr
+        cons
 EOM
     end
 

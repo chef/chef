@@ -301,7 +301,7 @@ describe Chef::Knife::Ssh do
       end
 
       it "uses the ssh_gateway_identity file" do
-        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => File.expand_path("#{ENV['HOME']}/.ssh/aws-gateway.rsa").squeeze("/"), :keys_only => true })
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { keys: File.expand_path("#{ENV['HOME']}/.ssh/aws-gateway.rsa").squeeze("/"), keys_only: true })
         @knife.run
         expect(@knife.config[:ssh_gateway_identity]).to eq("~/.ssh/aws-gateway.rsa")
       end
@@ -315,7 +315,7 @@ describe Chef::Knife::Ssh do
       end
 
       it "uses the ssh_gateway_identity file" do
-        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => File.expand_path("#{ENV['HOME']}/.ssh/aws-gateway.rsa").squeeze("/"), :keys_only => true })
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { keys: File.expand_path("#{ENV['HOME']}/.ssh/aws-gateway.rsa").squeeze("/"), keys_only: true })
         @knife.run
         expect(@knife.config[:ssh_gateway_identity]).to eq("~/.ssh/aws-gateway.rsa")
       end

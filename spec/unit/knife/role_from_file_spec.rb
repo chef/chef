@@ -25,7 +25,7 @@ describe Chef::Knife::RoleFromFile do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleFromFile.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = [ "adam.rb" ]
     allow(@knife).to receive(:output).and_return(true)

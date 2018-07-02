@@ -28,7 +28,7 @@ describe Chef::Audit::Runner do
   include RSpec::Support::InSubProcess
 
   let(:events) { double("events") }
-  let(:run_context) { instance_double(Chef::RunContext, :events => events) }
+  let(:run_context) { instance_double(Chef::RunContext, events: events) }
   let(:runner) { Chef::Audit::Runner.new(run_context) }
 
   around(:each) do |ex|
@@ -89,7 +89,7 @@ describe Chef::Audit::Runner do
 
     describe "#register_control_groups" do
       let(:audits) { [] }
-      let(:run_context) { instance_double(Chef::RunContext, :audits => audits) }
+      let(:run_context) { instance_double(Chef::RunContext, audits: audits) }
 
       it "adds the control group aliases" do
         runner.send(:register_control_groups)

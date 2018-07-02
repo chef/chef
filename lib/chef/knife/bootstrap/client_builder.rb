@@ -194,7 +194,7 @@ class Chef
 
         # @return [Chef::ServerAPI] REST client using the client credentials
         def client_rest
-          @client_rest ||= Chef::ServerAPI.new(chef_server_url, :client_name => node_name, :signing_key_filename => client_path)
+          @client_rest ||= Chef::ServerAPI.new(chef_server_url, client_name: node_name, signing_key_filename: client_path)
         end
 
         # @return [Chef::ServerAPI] REST client using the cli user's knife credentials

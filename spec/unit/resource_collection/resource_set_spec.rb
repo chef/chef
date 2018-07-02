@@ -73,25 +73,25 @@ describe Chef::ResourceCollection::ResourceSet do
 
     it "should find a resource by type symbol and name" do
       collection.insert_as(zen_master)
-      expect(collection.find(:zen_master => zen_master_name)).to equal(zen_master)
+      expect(collection.find(zen_master: zen_master_name)).to equal(zen_master)
     end
 
     it "should find a resource by type symbol and array of names" do
       collection.insert_as(zen_master)
       collection.insert_as(zen_master2)
-      check_by_names(collection.find(:zen_master => [zen_master_name, zen_master2_name]), zen_master_name, zen_master2_name)
+      check_by_names(collection.find(zen_master: [zen_master_name, zen_master2_name]), zen_master_name, zen_master2_name)
     end
 
     it "should find a resource by type symbol and array of names with custom names" do
       collection.insert_as(zen_master, :zzz, "name1")
       collection.insert_as(zen_master2, :zzz, "name2")
-      check_by_names(collection.find( :zzz => %w{name1 name2}), zen_master_name, zen_master2_name)
+      check_by_names(collection.find( zzz: %w{name1 name2}), zen_master_name, zen_master2_name)
     end
 
     it "should find resources of multiple kinds (:zen_master => a, :zen_follower => b)" do
       collection.insert_as(zen_master)
       collection.insert_as(zen_follower)
-      check_by_names(collection.find(:zen_master => [zen_master_name], :zen_follower => [zen_follower_name]),
+      check_by_names(collection.find(zen_master: [zen_master_name], zen_follower: [zen_follower_name]),
                      zen_master_name, zen_follower_name)
     end
 
@@ -99,7 +99,7 @@ describe Chef::ResourceCollection::ResourceSet do
       collection.insert_as(zen_master, :zzz, "name1")
       collection.insert_as(zen_master2, :zzz, "name2")
       collection.insert_as(zen_follower, :yyy, "name3")
-      check_by_names(collection.find(:zzz => %w{name1 name2}, :yyy => ["name3"]),
+      check_by_names(collection.find(zzz: %w{name1 name2}, yyy: ["name3"]),
                      zen_master_name, zen_follower_name, zen_master2_name)
     end
 
@@ -215,7 +215,7 @@ describe Chef::ResourceCollection::ResourceSet do
     end
 
     it "accepts a single-element :resource_type => 'resource_name' Hash" do
-      expect(collection.validate_lookup_spec!(:service => "apache2")).to be_truthy
+      expect(collection.validate_lookup_spec!(service: "apache2")).to be_truthy
     end
 
     it "accepts a chef resource object" do

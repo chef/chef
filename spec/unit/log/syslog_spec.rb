@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe "Chef::Log::Syslog", :unix_only => true do
+describe "Chef::Log::Syslog", unix_only: true do
   let(:syslog) { Chef::Log::Syslog.new }
 
   before do

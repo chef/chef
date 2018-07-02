@@ -28,15 +28,15 @@ shared_examples_for "an api error inspector" do
   before do
     @node_name = "test-node.example.com"
     @config = {
-      :validation_client_name => "testorg-validator",
-      :validation_key => "/etc/chef/testorg-validator.pem",
-      :chef_server_url => "https://chef-api.example.com",
-      :node_name => "testnode-name",
-      :client_key => "/etc/chef/client.pem",
+      validation_client_name: "testorg-validator",
+      validation_key: "/etc/chef/testorg-validator.pem",
+      chef_server_url: "https://chef-api.example.com",
+      node_name: "testnode-name",
+      client_key: "/etc/chef/client.pem",
     }
     @description = Chef::Formatters::ErrorDescription.new("Error registering the node:")
     @outputter = Chef::Formatters::IndentableOutputStream.new(StringIO.new, STDERR)
-    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
 
   end
 

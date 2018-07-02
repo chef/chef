@@ -56,7 +56,7 @@ class Chef
       end
 
       checksums = checksum_files.inject({}) { |memo, elt| memo[elt.first] = nil; memo }
-      new_sandbox = rest.post("sandboxes", { :checksums => checksums })
+      new_sandbox = rest.post("sandboxes", { checksums: checksums })
 
       Chef::Log.info("Uploading files")
 
@@ -83,7 +83,7 @@ class Chef
       # in eventual consistency)
       retries = 0
       begin
-        rest.put(sandbox_url, { :is_completed => true })
+        rest.put(sandbox_url, { is_completed: true })
       rescue Net::HTTPServerException => e
         if e.message =~ /^400/ && (retries += 1) <= 5
           sleep 2

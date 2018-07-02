@@ -107,7 +107,7 @@ describe Chef::Application do
 
       it "should parse the commandline options" do
         expect(@app).to receive(:parse_options).and_return(true)
-        @app.config[:config_file] = "/etc/chef/default.rb" #have a config file set, to prevent triggering error block
+        @app.config[:config_file] = "/etc/chef/default.rb" # have a config file set, to prevent triggering error block
         @app.configure_chef
       end
 
@@ -127,9 +127,9 @@ describe Chef::Application do
           # force let binding to get evaluated or else we stub Pathname.new before we try to use it.
           config_location_pathname
           allow(Pathname).to receive(:new).with(config_location).and_return(config_location_pathname)
-          expect(File).to receive(:read).
-            with(config_location).
-            and_return(config_content)
+          expect(File).to receive(:read)
+            .with(config_location)
+            .and_return(config_content)
         end
 
         it "should configure chef::config from a file" do
@@ -138,7 +138,7 @@ describe Chef::Application do
         end
 
         it "should merge the local config hash into chef::config" do
-          #File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
+          # File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
           @app.configure_chef
           expect(Chef::Config.rspec_ran).to eq("true")
         end
@@ -393,11 +393,11 @@ describe Chef::Application do
 
     def raises_informative_fatals_on_configure_chef
       config_file_regexp = Regexp.new @app.config[:config_file]
-      expect(Chef::Log).to receive(:fatal).
-        with(/Configuration error/)
-      expect(Chef::Log).to receive(:fatal).
-        with(config_file_regexp).
-        at_least(1).times
+      expect(Chef::Log).to receive(:fatal)
+        .with(/Configuration error/)
+      expect(Chef::Log).to receive(:fatal)
+        .with(config_file_regexp)
+        .at_least(1).times
       @app.configure_chef
     end
 
@@ -447,7 +447,7 @@ describe Chef::Application do
       ARGV.replace(@original_argv)
     end
 
-    let(:fake_config_fetcher) { instance_double(Chef::ConfigFetcher, expanded_path: "/thisbetternotexist", :"config_missing?" => false, read_config: "" ) }
+    let(:fake_config_fetcher) { instance_double(Chef::ConfigFetcher, expanded_path: "/thisbetternotexist", "config_missing?": false, read_config: "" ) }
 
     it "reading a mixlib-config default works" do
       @app.parse_options

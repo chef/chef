@@ -45,17 +45,17 @@ describe "chefignore tests", :workstation do
       it "matching files and directories get ignored" do
         # NOTE: many of the "chefignore" files should probably not show up
         # themselves, but we have other tests that talk about that
-        knife("list --local -Rfp /").should_succeed <<EOM
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/chefignore
-/data_bags/
-/data_bags/bag1/
-/data_bags/bag1/x.json
-/environments/
-/environments/x.json
-/roles/
-/roles/x.json
+        knife("list --local -Rfp /").should_succeed <<~EOM
+          /cookbooks/
+          /cookbooks/cookbook1/
+          /cookbooks/cookbook1/chefignore
+          /data_bags/
+          /data_bags/bag1/
+          /data_bags/bag1/x.json
+          /environments/
+          /environments/x.json
+          /roles/
+          /roles/x.json
 EOM
       end
     end
@@ -69,8 +69,8 @@ EOM
     end
 
     it "the cookbook is not listed" do
-      knife("list --local -Rfp /").should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
-/cookbooks/
+      knife("list --local -Rfp /").should_succeed(<<~EOM, stderr: "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
+        /cookbooks/
 EOM
     end
   end
@@ -87,12 +87,12 @@ EOM
       before { file "cookbooks/chefignore", "x.json\n" }
 
       it "matching files and directories get ignored in all cookbooks" do
-        knife("list --local -Rfp /").should_succeed <<EOM
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/y.json
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/y.json
+        knife("list --local -Rfp /").should_succeed <<~EOM
+          /cookbooks/
+          /cookbooks/cookbook1/
+          /cookbooks/cookbook1/y.json
+          /cookbooks/cookbook2/
+          /cookbooks/cookbook2/y.json
 EOM
       end
     end
@@ -104,12 +104,12 @@ EOM
       end
 
       it "matching files and directories get ignored in all cookbooks" do
-        knife("list --local -Rfp /").should_succeed <<EOM
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/y.json
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/y.json
+        knife("list --local -Rfp /").should_succeed <<~EOM
+          /cookbooks/
+          /cookbooks/cookbook1/
+          /cookbooks/cookbook1/y.json
+          /cookbooks/cookbook2/
+          /cookbooks/cookbook2/y.json
 EOM
       end
     end
@@ -122,16 +122,16 @@ EOM
       end
 
       it "matching directories get ignored" do
-        knife("list --local -Rfp /").should_succeed <<EOM
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/x.json
-/cookbooks/cookbook1/y.json
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/recipes/
-/cookbooks/cookbook2/recipes/y.rb
-/cookbooks/cookbook2/x.json
-/cookbooks/cookbook2/y.json
+        knife("list --local -Rfp /").should_succeed <<~EOM
+          /cookbooks/
+          /cookbooks/cookbook1/
+          /cookbooks/cookbook1/x.json
+          /cookbooks/cookbook1/y.json
+          /cookbooks/cookbook2/
+          /cookbooks/cookbook2/recipes/
+          /cookbooks/cookbook2/recipes/y.rb
+          /cookbooks/cookbook2/x.json
+          /cookbooks/cookbook2/y.json
 EOM
       end
     end
@@ -143,16 +143,16 @@ EOM
       end
 
       it "matching directories do NOT get ignored" do
-        knife("list --local -Rfp /").should_succeed <<EOM
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/recipes/
-/cookbooks/cookbook1/recipes/y.rb
-/cookbooks/cookbook1/x.json
-/cookbooks/cookbook1/y.json
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/x.json
-/cookbooks/cookbook2/y.json
+        knife("list --local -Rfp /").should_succeed <<~EOM
+          /cookbooks/
+          /cookbooks/cookbook1/
+          /cookbooks/cookbook1/recipes/
+          /cookbooks/cookbook1/recipes/y.rb
+          /cookbooks/cookbook1/x.json
+          /cookbooks/cookbook1/y.json
+          /cookbooks/cookbook2/
+          /cookbooks/cookbook2/x.json
+          /cookbooks/cookbook2/y.json
 EOM
       end
     end
@@ -165,14 +165,14 @@ EOM
       end
 
       it "ignores the subdirectory entirely" do
-        knife("list --local -Rfp /").should_succeed <<EOM
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/x.json
-/cookbooks/cookbook1/y.json
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/x.json
-/cookbooks/cookbook2/y.json
+        knife("list --local -Rfp /").should_succeed <<~EOM
+          /cookbooks/
+          /cookbooks/cookbook1/
+          /cookbooks/cookbook1/x.json
+          /cookbooks/cookbook1/y.json
+          /cookbooks/cookbook2/
+          /cookbooks/cookbook2/x.json
+          /cookbooks/cookbook2/y.json
 EOM
       end
     end
@@ -183,14 +183,14 @@ EOM
       end
 
       it "nothing is ignored" do
-        knife("list --local -Rfp /").should_succeed <<EOM
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/x.json
-/cookbooks/cookbook1/y.json
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/x.json
-/cookbooks/cookbook2/y.json
+        knife("list --local -Rfp /").should_succeed <<~EOM
+          /cookbooks/
+          /cookbooks/cookbook1/
+          /cookbooks/cookbook1/x.json
+          /cookbooks/cookbook1/y.json
+          /cookbooks/cookbook2/
+          /cookbooks/cookbook2/x.json
+          /cookbooks/cookbook2/y.json
 EOM
       end
     end
@@ -201,12 +201,12 @@ EOM
       end
 
       it "matching files and directories get ignored in all cookbooks" do
-        knife("list --local -Rfp /").should_succeed <<EOM
-/cookbooks/
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/y.json
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/y.json
+        knife("list --local -Rfp /").should_succeed <<~EOM
+          /cookbooks/
+          /cookbooks/cookbook1/
+          /cookbooks/cookbook1/y.json
+          /cookbooks/cookbook2/
+          /cookbooks/cookbook2/y.json
 EOM
       end
     end
@@ -233,12 +233,12 @@ EOM
         file "cookbooks2/chefignore", "x.json\n"
       end
       it "chefignores apply only to the directories they are in" do
-        knife("list --local -Rfp /").should_succeed <<EOM
-/cookbooks/
-/cookbooks/mycookbook/
-/cookbooks/mycookbook/x.json
-/cookbooks/yourcookbook/
-/cookbooks/yourcookbook/metadata.rb
+        knife("list --local -Rfp /").should_succeed <<~EOM
+          /cookbooks/
+          /cookbooks/mycookbook/
+          /cookbooks/mycookbook/x.json
+          /cookbooks/yourcookbook/
+          /cookbooks/yourcookbook/metadata.rb
 EOM
       end
 
@@ -251,13 +251,13 @@ EOM
         end
 
         it "chefignores apply only to the winning cookbook" do
-          knife("list --local -Rfp /").should_succeed(<<EOM, :stderr => "WARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
-/cookbooks/
-/cookbooks/mycookbook/
-/cookbooks/mycookbook/x.json
-/cookbooks/yourcookbook/
-/cookbooks/yourcookbook/onlyincookbooks1.rb
-/cookbooks/yourcookbook/x.json
+          knife("list --local -Rfp /").should_succeed(<<~EOM, stderr: "WARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
+            /cookbooks/
+            /cookbooks/mycookbook/
+            /cookbooks/mycookbook/x.json
+            /cookbooks/yourcookbook/
+            /cookbooks/yourcookbook/onlyincookbooks1.rb
+            /cookbooks/yourcookbook/x.json
 EOM
         end
       end
@@ -269,9 +269,9 @@ EOM
       file "cookbooks/chefignore/metadata.rb", {}
     end
     it "knife list -Rfp /cookbooks shows it" do
-      knife("list --local -Rfp /cookbooks").should_succeed <<EOM
-/cookbooks/chefignore/
-/cookbooks/chefignore/metadata.rb
+      knife("list --local -Rfp /cookbooks").should_succeed <<~EOM
+        /cookbooks/chefignore/
+        /cookbooks/chefignore/metadata.rb
 EOM
     end
   end
@@ -289,11 +289,11 @@ EOM
       ]
     end
     it "knife list -Rfp /cookbooks shows the chefignore cookbook" do
-      knife("list --local -Rfp /cookbooks").should_succeed <<EOM
-/cookbooks/blah/
-/cookbooks/blah/metadata.rb
-/cookbooks/chefignore/
-/cookbooks/chefignore/metadata.rb
+      knife("list --local -Rfp /cookbooks").should_succeed <<~EOM
+        /cookbooks/blah/
+        /cookbooks/blah/metadata.rb
+        /cookbooks/chefignore/
+        /cookbooks/chefignore/metadata.rb
 EOM
     end
   end

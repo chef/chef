@@ -34,8 +34,8 @@ describe Chef::HTTP::Authenticator do
 
       it "merges the default version of X-Ops-Server-API-Version into the headers" do
         # headers returned
-        expect(class_instance.handle_request(method, url, headers, data)[2]).
-          to include({ "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION })
+        expect(class_instance.handle_request(method, url, headers, data)[2])
+          .to include({ "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION })
       end
 
       context "when version_class is provided" do
@@ -53,17 +53,17 @@ describe Chef::HTTP::Authenticator do
         it "uses it to select the correct http version" do
           Chef::ServerAPIVersions.instance.reset!
           expect(AuthFactoryClass).to receive(:best_request_version).and_call_original
-          expect(class_instance.handle_request(method, url, headers, data)[2]).
-            to include({ "X-Ops-Server-API-Version" => "2" })
+          expect(class_instance.handle_request(method, url, headers, data)[2])
+            .to include({ "X-Ops-Server-API-Version" => "2" })
         end
       end
 
       context "when api_version is set to something other than the default" do
-        let(:class_instance) { Chef::HTTP::Authenticator.new({ :api_version => "-10" }) }
+        let(:class_instance) { Chef::HTTP::Authenticator.new({ api_version: "-10" }) }
 
         it "merges the requested version of X-Ops-Server-API-Version into the headers" do
-          expect(class_instance.handle_request(method, url, headers, data)[2]).
-            to include({ "X-Ops-Server-API-Version" => "-10" })
+          expect(class_instance.handle_request(method, url, headers, data)[2])
+            .to include({ "X-Ops-Server-API-Version" => "-10" })
         end
       end
     end
@@ -98,16 +98,16 @@ describe Chef::HTTP::Authenticator do
     end
 
     context "when ssh_agent_signing" do
-      let(:public_key) { <<-EOH }
------BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA49TA0y81ps0zxkOpmf5V
-4/c4IeR5yVyQFpX3JpxO4TquwnRh8VSUhrw8kkTLmB3cS39Db+3HadvhoqCEbqPE
-6915kXSuk/cWIcNozujLK7tkuPEyYVsyTioQAddSdfe+8EhQVf3oHxaKmUd6waXr
-WqYCnhxgOjxocenREYNhZ/OETIeiPbOku47vB4nJK/0GhKBytL2XnsRgfKgDxf42
-BqAi1jglIdeq8lAWZNF9TbNBU21AO1iuT7Pm6LyQujhggPznR5FJhXKRUARXBJZa
-wxpGV4dGtdcahwXNE4601aXPra+xPcRd2puCNoEDBzgVuTSsLYeKBDMSfs173W1Q
-YwIDAQAB
------END PUBLIC KEY-----
+      let(:public_key) { <<~EOH }
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA49TA0y81ps0zxkOpmf5V
+        4/c4IeR5yVyQFpX3JpxO4TquwnRh8VSUhrw8kkTLmB3cS39Db+3HadvhoqCEbqPE
+        6915kXSuk/cWIcNozujLK7tkuPEyYVsyTioQAddSdfe+8EhQVf3oHxaKmUd6waXr
+        WqYCnhxgOjxocenREYNhZ/OETIeiPbOku47vB4nJK/0GhKBytL2XnsRgfKgDxf42
+        BqAi1jglIdeq8lAWZNF9TbNBU21AO1iuT7Pm6LyQujhggPznR5FJhXKRUARXBJZa
+        wxpGV4dGtdcahwXNE4601aXPra+xPcRd2puCNoEDBzgVuTSsLYeKBDMSfs173W1Q
+        YwIDAQAB
+        -----END PUBLIC KEY-----
 EOH
 
       let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: "test", raw_key: public_key, ssh_agent_signing: true) }

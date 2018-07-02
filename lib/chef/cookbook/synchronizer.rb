@@ -143,7 +143,7 @@ class Chef
     end
 
     # Synchronizes all the cookbooks from the chef-server.
-    #)
+    # )
     # === Returns
     # true:: Always returns true
     def sync_cookbooks

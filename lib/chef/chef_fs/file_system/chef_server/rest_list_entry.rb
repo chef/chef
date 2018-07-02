@@ -177,7 +177,7 @@ class Chef
             if data_handler
               object = data_handler.normalize_for_put(object, self)
               data_handler.verify_integrity(object, self) do |error|
-                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, nil, "#{error}")
+                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, nil, error.to_s)
               end
             end
 

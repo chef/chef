@@ -23,7 +23,7 @@ describe Chef::Knife::NodeDelete do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeDelete.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = %w{ adam ben }
     allow(@knife).to receive(:output).and_return(true)

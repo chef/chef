@@ -73,12 +73,12 @@ describe Chef::Environment do
 
   describe "default attributes" do
     it "should let you set the attributes hash explicitly" do
-      expect(@environment.default_attributes({ :one => "two" })).to eq({ :one => "two" })
+      expect(@environment.default_attributes({ one: "two" })).to eq({ one: "two" })
     end
 
     it "should let you return the attributes hash" do
-      @environment.default_attributes({ :one => "two" })
-      expect(@environment.default_attributes).to eq({ :one => "two" })
+      @environment.default_attributes({ one: "two" })
+      expect(@environment.default_attributes).to eq({ one: "two" })
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
@@ -88,12 +88,12 @@ describe Chef::Environment do
 
   describe "override attributes" do
     it "should let you set the attributes hash explicitly" do
-      expect(@environment.override_attributes({ :one => "two" })).to eq({ :one => "two" })
+      expect(@environment.override_attributes({ one: "two" })).to eq({ one: "two" })
     end
 
     it "should let you return the attributes hash" do
-      @environment.override_attributes({ :one => "two" })
-      expect(@environment.override_attributes).to eq({ :one => "two" })
+      @environment.override_attributes({ one: "two" })
+      expect(@environment.override_attributes).to eq({ one: "two" })
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
@@ -167,7 +167,7 @@ describe Chef::Environment do
     before(:each) do
       @environment.name("spec")
       @environment.description("Where we run the spec tests")
-      @environment.cookbook_versions({ :apt => "= 1.2.3" })
+      @environment.cookbook_versions({ apt: "= 1.2.3" })
       @hash = @environment.to_hash
     end
 
@@ -190,7 +190,7 @@ describe Chef::Environment do
     before(:each) do
       @environment.name("spec")
       @environment.description("Where we run the spec tests")
-      @environment.cookbook_versions({ :apt => "= 1.2.3" })
+      @environment.cookbook_versions({ apt: "= 1.2.3" })
       @json = @environment.to_json
     end
 
@@ -311,17 +311,17 @@ describe Chef::Environment do
     end
 
     it "updates the name from parameters[:name]" do
-      @environment.update_from_params(:name => "kurrupt")
+      @environment.update_from_params(name: "kurrupt")
       expect(@environment.name).to eq("kurrupt")
     end
 
     it "validates the name given in the params" do
-      expect(@environment.update_from_params(:name => "@$%^&*()")).to be_falsey
+      expect(@environment.update_from_params(name: "@$%^&*()")).to be_falsey
       expect(@environment.invalid_fields[:name]).to eq(%q{Option name's value @$%^&*() does not match regular expression /^[\-[:alnum:]_]+$/})
     end
 
     it "updates the description from parameters[:description]" do
-      @environment.update_from_params(:description => "wow, writing your own object mapper is kinda painful")
+      @environment.update_from_params(description: "wow, writing your own object mapper is kinda painful")
       expect(@environment.description).to eq("wow, writing your own object mapper is kinda painful")
     end
 
@@ -329,13 +329,13 @@ describe Chef::Environment do
       # NOTE: I'm only choosing this (admittedly weird) structure for the hash b/c the better more obvious
       # one, i.e, {:cookbook_version_constraints => {COOKBOOK_NAME => CONSTRAINT}} is difficult to implement
       # the way merb does params
-      params = { :name => "superbowl", :cookbook_version => { "0" => "apache2 ~> 1.0.0", "1" => "nginx < 2.0.0" } }
+      params = { name: "superbowl", cookbook_version: { "0" => "apache2 ~> 1.0.0", "1" => "nginx < 2.0.0" } }
       @environment.update_from_params(params)
       expect(@environment.cookbook_versions).to eq({ "apache2" => "~> 1.0.0", "nginx" => "< 2.0.0" })
     end
 
     it "validates the cookbook constraints" do
-      params = { :cookbook_version => { "0" => "apache2 >>> 1.0.0" } }
+      params = { cookbook_version: { "0" => "apache2 >>> 1.0.0" } }
       expect(@environment.update_from_params(params)).to be_falsey
       err_msg = @environment.invalid_fields[:cookbook_version]["0"]
       expect(err_msg).to eq("apache2 >>> 1.0.0 is not a valid cookbook constraint")
@@ -352,12 +352,12 @@ describe Chef::Environment do
     end
 
     it "updates default attributes from a JSON string in params[:attributes]" do
-      @environment.update_from_params(:name => "fuuu", :default_attributes => %q|{"fuuu":"RAGE"}|)
+      @environment.update_from_params(name: "fuuu", default_attributes: %q|{"fuuu":"RAGE"}|)
       expect(@environment.default_attributes).to eq({ "fuuu" => "RAGE" })
     end
 
     it "updates override attributes from a JSON string in params[:attributes]" do
-      @environment.update_from_params(:name => "fuuu", :override_attributes => %q|{"foo":"override"}|)
+      @environment.update_from_params(name: "fuuu", override_attributes: %q|{"foo":"override"}|)
       expect(@environment.override_attributes).to eq({ "foo" => "override" })
     end
 
@@ -374,7 +374,7 @@ describe Chef::Environment do
     describe "list" do
       describe "inflated" do
         it "should return a hash of environment names and objects" do
-          e1 = double("Chef::Environment", :name => "one")
+          e1 = double("Chef::Environment", name: "one")
           expect(@query).to receive(:search).with(:environment).and_yield(e1)
           r = Chef::Environment.list(true)
           expect(r["one"]).to eq(e1)

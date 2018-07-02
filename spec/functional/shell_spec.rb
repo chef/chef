@@ -26,7 +26,7 @@ describe Shell do
   # chef-shell's unit tests are by necessity very mock-heavy, and frequently do
   # not catch cases where chef-shell fails to boot because of changes in
   # chef/client.rb
-  describe "smoke tests", :unix_only => true do
+  describe "smoke tests", unix_only: true do
 
     TIMEOUT = 300
 

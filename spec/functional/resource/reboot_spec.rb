@@ -22,9 +22,9 @@ describe Chef::Resource::Reboot do
 
   let(:expected) do
     {
-      :delay_mins => 5,
-      :requested_by => "reboot resource functional test",
-      :reason => "reboot resource spec test",
+      delay_mins: 5,
+      requested_by: "reboot resource functional test",
+      reason: "reboot resource spec test",
     }
   end
 

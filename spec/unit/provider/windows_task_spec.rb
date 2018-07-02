@@ -70,20 +70,20 @@ describe Chef::Provider::WindowsTask, :windows_only do
       new_resource.frequency_modifier 15
       new_resource.random_delay 60
       result = {
-        :start_year => 2017,
-        :start_month => 12,
-        :start_day => 2,
-        :start_hour => 17,
-        :start_minute => 30,
-        :end_month => 0,
-        :end_day => 0,
-        :end_year => 0,
-        :trigger_type => 1,
-        :type => { :once => nil },
-        :random_minutes_interval => 60,
-        :minutes_interval => 15,
-        :run_on_last_day_of_month => false,
-        :run_on_last_week_of_month => false
+        start_year: 2017,
+        start_month: 12,
+        start_day: 2,
+        start_hour: 17,
+        start_minute: 30,
+        end_month: 0,
+        end_day: 0,
+        end_year: 0,
+        trigger_type: 1,
+        type: { once: nil },
+        random_minutes_interval: 60,
+        minutes_interval: 15,
+        run_on_last_day_of_month: false,
+        run_on_last_week_of_month: false,
 
       }
       expect(provider.send(:trigger)).to eq(result)
@@ -145,7 +145,7 @@ describe Chef::Provider::WindowsTask, :windows_only do
       new_resource.frequency_modifier 2
       result = provider.send(:type)
       expect(result).to include(:once)
-      expect(result).to eq({ :once => nil })
+      expect(result).to eq({ once: nil })
     end
 
     it "returns type hash when frequency :daily" do
@@ -286,7 +286,7 @@ describe Chef::Provider::WindowsTask, :windows_only do
     end
   end
 
-  #Ref : https://msdn.microsoft.com/en-us/library/windows/desktop/aa380729(v=vs.85).aspx
+  # Ref : https://msdn.microsoft.com/en-us/library/windows/desktop/aa380729(v=vs.85).aspx
   describe "#days_of_week" do
     it "returns the binary value 2 if day is set as 'Mon'" do
       new_resource.day "Mon"

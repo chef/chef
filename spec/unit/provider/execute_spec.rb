@@ -26,7 +26,7 @@ describe Chef::Provider::Execute do
   let(:provider) { Chef::Provider::Execute.new(new_resource, run_context) }
   let(:current_resource) { Chef::Resource::Ifconfig.new("foo_resource", run_context) }
   # You will be the same object, I promise.
-  @live_stream = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
+  @live_stream = Chef::EventDispatch::EventsOutputStream.new(run_context.events, name: :execute)
 
   let(:opts) do
     {

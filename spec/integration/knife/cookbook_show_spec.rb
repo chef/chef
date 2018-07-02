@@ -36,95 +36,95 @@ describe "knife cookbook show", :workstation do
 
     # rubocop:disable Layout/TrailingWhitespace
     it "knife cookbook show x 1.0.0 shows the correct version" do
-      knife("cookbook show x 1.0.0").should_succeed <<EOM
-cookbook_name: x
-frozen?:       false
-metadata:
-  attributes:
-  chef_versions:
-  dependencies:
-  description:      
-  gems:
-  issues_url:       
-  license:          All rights reserved
-  long_description: 
-  maintainer:       
-  maintainer_email: 
-  name:             x
-  ohai_versions:
-  platforms:
-  privacy:          false
-  providing:
-    x:    >= 0.0.0
-    x::x: >= 0.0.0
-  recipes:
-    x:    
-    x::x: 
-  source_url:       
-  version:          1.0.0
-name:          x-1.0.0
-recipes:
-  checksum:    4631b34cf58de10c5ef1304889941b2e
-  name:        recipes/default.rb
-  path:        recipes/default.rb
-  specificity: default
-  url:         http://127.0.0.1:8900/file_store/checksums/4631b34cf58de10c5ef1304889941b2e
-  
-  checksum:    d41d8cd98f00b204e9800998ecf8427e
-  name:        recipes/x.rb
-  path:        recipes/x.rb
-  specificity: default
-  url:         http://127.0.0.1:8900/file_store/checksums/d41d8cd98f00b204e9800998ecf8427e
-root_files:
-  checksum:    8226671f751ba102dea6a6b6bd32fa8d
-  name:        metadata.rb
-  path:        metadata.rb
-  specificity: default
-  url:         http://127.0.0.1:8900/file_store/checksums/8226671f751ba102dea6a6b6bd32fa8d
-version:       1.0.0
+      knife("cookbook show x 1.0.0").should_succeed <<~EOM
+        cookbook_name: x
+        frozen?:       false
+        metadata:
+          attributes:
+          chef_versions:
+          dependencies:
+          description:      
+          gems:
+          issues_url:       
+          license:          All rights reserved
+          long_description: 
+          maintainer:       
+          maintainer_email: 
+          name:             x
+          ohai_versions:
+          platforms:
+          privacy:          false
+          providing:
+            x:    >= 0.0.0
+            x::x: >= 0.0.0
+          recipes:
+            x:    
+            x::x: 
+          source_url:       
+          version:          1.0.0
+        name:          x-1.0.0
+        recipes:
+          checksum:    4631b34cf58de10c5ef1304889941b2e
+          name:        recipes/default.rb
+          path:        recipes/default.rb
+          specificity: default
+          url:         http://127.0.0.1:8900/file_store/checksums/4631b34cf58de10c5ef1304889941b2e
+          
+          checksum:    d41d8cd98f00b204e9800998ecf8427e
+          name:        recipes/x.rb
+          path:        recipes/x.rb
+          specificity: default
+          url:         http://127.0.0.1:8900/file_store/checksums/d41d8cd98f00b204e9800998ecf8427e
+        root_files:
+          checksum:    8226671f751ba102dea6a6b6bd32fa8d
+          name:        metadata.rb
+          path:        metadata.rb
+          specificity: default
+          url:         http://127.0.0.1:8900/file_store/checksums/8226671f751ba102dea6a6b6bd32fa8d
+        version:       1.0.0
 EOM
     end
 
     it "knife cookbook show x 1.0.0 metadata shows the metadata" do
-      knife("cookbook show x 1.0.0 metadata").should_succeed <<EOM
-attributes:
-chef_versions:
-dependencies:
-description:      
-gems:
-issues_url:       
-license:          All rights reserved
-long_description: 
-maintainer:       
-maintainer_email: 
-name:             x
-ohai_versions:
-platforms:
-privacy:          false
-providing:
-  x:    >= 0.0.0
-  x::x: >= 0.0.0
-recipes:
-  x:    
-  x::x: 
-source_url:       
-version:          1.0.0
+      knife("cookbook show x 1.0.0 metadata").should_succeed <<~EOM
+        attributes:
+        chef_versions:
+        dependencies:
+        description:      
+        gems:
+        issues_url:       
+        license:          All rights reserved
+        long_description: 
+        maintainer:       
+        maintainer_email: 
+        name:             x
+        ohai_versions:
+        platforms:
+        privacy:          false
+        providing:
+          x:    >= 0.0.0
+          x::x: >= 0.0.0
+        recipes:
+          x:    
+          x::x: 
+        source_url:       
+        version:          1.0.0
 EOM
     end
 
     it "knife cookbook show x 1.0.0 recipes shows all the recipes" do
-      knife("cookbook show x 1.0.0 recipes").should_succeed <<EOM
-checksum:    4631b34cf58de10c5ef1304889941b2e
-name:        recipes/default.rb
-path:        recipes/default.rb
-specificity: default
-url:         http://127.0.0.1:8900/file_store/checksums/4631b34cf58de10c5ef1304889941b2e
-
-checksum:    d41d8cd98f00b204e9800998ecf8427e
-name:        recipes/x.rb
-path:        recipes/x.rb
-specificity: default
-url:         http://127.0.0.1:8900/file_store/checksums/d41d8cd98f00b204e9800998ecf8427e
+      knife("cookbook show x 1.0.0 recipes").should_succeed <<~EOM
+        checksum:    4631b34cf58de10c5ef1304889941b2e
+        name:        recipes/default.rb
+        path:        recipes/default.rb
+        specificity: default
+        url:         http://127.0.0.1:8900/file_store/checksums/4631b34cf58de10c5ef1304889941b2e
+        
+        checksum:    d41d8cd98f00b204e9800998ecf8427e
+        name:        recipes/x.rb
+        path:        recipes/x.rb
+        specificity: default
+        url:         http://127.0.0.1:8900/file_store/checksums/d41d8cd98f00b204e9800998ecf8427e
 EOM
     end
     # rubocop:enable Layout/TrailingWhitespace

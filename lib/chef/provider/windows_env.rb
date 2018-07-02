@@ -63,7 +63,7 @@ class Chef
       # <false>:: If a change is not required
       def requires_modify_or_create?
         if new_resource.delim
-          #e.g. check for existing value within PATH
+          # e.g. check for existing value within PATH
           new_values.inject(0) do |index, val|
             next_index = current_values.find_index val
             return true if next_index.nil? || next_index < index
@@ -91,18 +91,18 @@ class Chef
         end
       end
 
-      #e.g. delete a PATH element
+      # e.g. delete a PATH element
       #
       # ==== Returns
       # <true>:: If we handled the element case and caller should not delete the key
       # <false>:: Caller should delete the key, either no :delim was specific or value was empty
       #           after we removed the element.
       def delete_element
-        return false unless new_resource.delim #no delim: delete the key
+        return false unless new_resource.delim # no delim: delete the key
         needs_delete = new_values.any? { |v| current_values.include?(v) }
         if !needs_delete
           logger.trace("#{new_resource} element '#{new_resource.value}' does not exist")
-          return true #do not delete the key
+          return true # do not delete the key
         else
           new_value =
             current_values.select do |item|
@@ -110,13 +110,13 @@ class Chef
             end.join(new_resource.delim)
 
           if new_value.empty?
-            return false #nothing left here, delete the key
+            return false # nothing left here, delete the key
           else
             old_value = new_resource.value(new_value)
             create_env
             logger.trace("#{new_resource} deleted #{old_value} element")
             new_resource.updated_by_last_action(true)
-            return true #we removed the element and updated; do not delete the key
+            return true # we removed the element and updated; do not delete the key
           end
         end
       end

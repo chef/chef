@@ -27,14 +27,14 @@ end
 describe Chef::Provider::Service::Freebsd do
   let(:node) do
     node = Chef::Node.new
-    node.automatic_attrs[:command] = { :ps => "ps -ax" }
+    node.automatic_attrs[:command] = { ps: "ps -ax" }
     node
   end
 
   let(:new_resource) do
     new_resource = Chef::Resource::Service.new("apache22")
     new_resource.pattern("httpd")
-    new_resource.supports({ :status => false })
+    new_resource.supports({ status: false })
     new_resource
   end
 
@@ -99,7 +99,7 @@ describe Chef::Provider::Service::Freebsd do
     end
 
     context "when a status command has been specified" do
-      let(:status) { double(:stdout => "", :exitstatus => 0) }
+      let(:status) { double(stdout: "", exitstatus: 0) }
 
       before do
         new_resource.status_command("/bin/chefhasmonkeypants status")
@@ -112,10 +112,10 @@ describe Chef::Provider::Service::Freebsd do
     end
 
     context "when the service supports status" do
-      let(:status) { double(:stdout => "", :exitstatus => 0) }
+      let(:status) { double(stdout: "", exitstatus: 0) }
 
       before do
-        new_resource.supports({ :status => true })
+        new_resource.supports({ status: true })
       end
 
       it "should run '/etc/init.d/service_name status'" do
@@ -138,16 +138,16 @@ describe Chef::Provider::Service::Freebsd do
 
     context "when we have a 'ps' attribute" do
       let(:stdout) do
-        StringIO.new(<<-PS_SAMPLE)
-413  ??  Ss     0:02.51 /usr/sbin/syslogd -s
-539  ??  Is     0:00.14 /usr/sbin/sshd
-545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
+        StringIO.new(<<~PS_SAMPLE)
+          413  ??  Ss     0:02.51 /usr/sbin/syslogd -s
+          539  ??  Is     0:00.14 /usr/sbin/sshd
+          545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
 PS_SAMPLE
       end
-      let(:status) { double(:stdout => stdout, :exitstatus => 0) }
+      let(:status) { double(stdout: stdout, exitstatus: 0) }
 
       before do
-        node.automatic_attrs[:command] = { :ps => "ps -ax" }
+        node.automatic_attrs[:command] = { ps: "ps -ax" }
       end
 
       it "should shell_out! the node's ps command" do
@@ -163,9 +163,9 @@ PS_SAMPLE
 
       context "when the regex matches the output" do
         let(:stdout) do
-          StringIO.new(<<-PS_SAMPLE)
-555  ??  Ss     0:05.16 /usr/sbin/cron -s
- 9881  ??  Ss     0:06.67 /usr/local/sbin/httpd -DNOHTTPACCEPT
+          StringIO.new(<<~PS_SAMPLE)
+            555  ??  Ss     0:05.16 /usr/sbin/cron -s
+             9881  ??  Ss     0:06.67 /usr/local/sbin/httpd -DNOHTTPACCEPT
           PS_SAMPLE
         end
 
@@ -191,7 +191,7 @@ PS_SAMPLE
 
       context "when ps is empty string" do
         before do
-          node.automatic_attrs[:command] = { :ps => "" }
+          node.automatic_attrs[:command] = { ps: "" }
         end
 
         it "should set running to nil" do
@@ -341,9 +341,9 @@ PS_SAMPLE
 
     context "when the rc script has a 'name' variable" do
       let(:rcscript) do
-        StringIO.new(<<-EOF)
-name="#{new_resource.service_name}"
-rcvar=`set_rcvar`
+        StringIO.new(<<~EOF)
+          name="#{new_resource.service_name}"
+          rcvar=`set_rcvar`
 EOF
       end
 
@@ -363,23 +363,23 @@ EOF
 
     describe "when the rcscript does not have a name variable" do
       let(:rcscript) do
-        StringIO.new <<-EOF
-rcvar=`set_rcvar`
+        StringIO.new <<~EOF
+          rcvar=`set_rcvar`
 EOF
       end
 
       before do
-        status = double(:stdout => rcvar_stdout, :exitstatus => 0)
+        status = double(stdout: rcvar_stdout, exitstatus: 0)
         allow(provider).to receive(:shell_out!).with("/usr/local/etc/rc.d/#{new_resource.service_name} rcvar").and_return(status)
       end
 
       describe "when rcvar returns foobar_enable" do
         let(:rcvar_stdout) do
-          rcvar_stdout = <<-EOF
-# apache22
-#
-# #{new_resource.service_name}_enable="YES"
-#   (default: "")
+          rcvar_stdout = <<~EOF
+            # apache22
+            #
+            # #{new_resource.service_name}_enable="YES"
+            #   (default: "")
 EOF
         end
 
@@ -394,9 +394,9 @@ EOF
 
       describe "when rcvar does not return foobar_enable" do
         let(:rcvar_stdout) do
-          rcvar_stdout = <<-EOF
-# service_with_noname
-#
+          rcvar_stdout = <<~EOF
+            # service_with_noname
+            #
 EOF
         end
 
@@ -469,7 +469,7 @@ EOF
 
     describe Chef::Provider::Service::Freebsd, "restart_service" do
       it "should call 'restart' on the service_name if the resource supports it" do
-        new_resource.supports({ :restart => true })
+        new_resource.supports({ restart: true })
         expect(provider).to receive(:shell_out!).with("/usr/local/etc/rc.d/#{new_resource.service_name} fastrestart", default_env: false)
         provider.restart_service()
       end

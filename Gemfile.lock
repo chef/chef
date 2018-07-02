@@ -9,10 +9,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (14.3.20)
+    chef (14.3.25)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.3.20)
+      chef-config (= 14.3.25)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -40,10 +40,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.3.20-universal-mingw32)
+    chef (14.3.25-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.3.20)
+      chef-config (= 14.3.25)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -78,7 +78,7 @@ PATH
       win32-mmap (~> 0.4.1)
       win32-mutex (~> 0.4.2)
       win32-process (~> 0.8.2)
-      win32-service (~> 0.8.7)
+      win32-service (~> 1.0)
       win32-taskscheduler (~> 1.0.0)
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
@@ -86,7 +86,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (14.3.20)
+    chef-config (14.3.25)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -149,7 +149,7 @@ GEM
     highline (1.7.10)
     htmlentities (4.3.4)
     iniparse (1.4.4)
-    inspec-core (2.2.10)
+    inspec-core (2.2.27)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
@@ -167,7 +167,7 @@ GEM
       sslshake (~> 1.2)
       thor (~> 0.20)
       tomlrb (~> 1.2)
-      train-core (~> 1.4)
+      train-core (~> 1.4, >= 1.4.15)
     ipaddress (0.8.3)
     iso8601 (0.9.1)
     json (2.1.0)
@@ -179,7 +179,7 @@ GEM
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.8)
+    mixlib-config (2.2.10)
       tomlrb
     mixlib-log (2.0.4)
     mixlib-shellout (2.3.2)
@@ -289,7 +289,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
     slop (3.6.0)
-    specinfra (2.73.3)
+    specinfra (2.73.4)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet
@@ -300,7 +300,7 @@ GEM
     systemu (2.6.5)
     thor (0.20.0)
     tomlrb (1.2.7)
-    train-core (1.4.11)
+    train-core (1.4.19)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
     travis (1.8.8)
@@ -336,7 +336,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    win32-service (0.8.10)
+    win32-service (1.0.1)
       ffi
       ffi-win32-extensions
     win32-taskscheduler (1.0.2)

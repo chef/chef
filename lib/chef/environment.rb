@@ -57,7 +57,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        { :regex => /^[\-[:alnum:]_]+$/, :kind_of => String }
+        { regex: /^[\-[:alnum:]_]+$/, kind_of: String }
       )
     end
 
@@ -65,7 +65,7 @@ class Chef
       set_or_return(
         :description,
         arg,
-        :kind_of => String
+        kind_of: String
       )
     end
 
@@ -73,7 +73,7 @@ class Chef
       set_or_return(
         :default_attributes,
         arg,
-        :kind_of => Hash
+        kind_of: Hash
       )
     end
 
@@ -85,7 +85,7 @@ class Chef
       set_or_return(
         :override_attributes,
         arg,
-        :kind_of => Hash
+        kind_of: Hash
       )
     end
 
@@ -98,8 +98,8 @@ class Chef
         :cookbook_versions,
         arg,
         {
-          :kind_of => Hash,
-          :callbacks => {
+          kind_of: Hash,
+          callbacks: {
             "should be a valid set of cookbook version requirements" => lambda { |cv| Chef::Environment.validate_cookbook_versions(cv) },
           },
         }
@@ -108,10 +108,10 @@ class Chef
 
     def cookbook(cookbook, version)
       validate({
-        :version => version,
+        version: version,
       }, {
-        :version => {
-          :callbacks => { "should be a valid version requirement" => lambda { |v| Chef::Environment.validate_cookbook_version(v) } },
+        version: {
+          callbacks: { "should be a valid version requirement" => lambda { |v| Chef::Environment.validate_cookbook_version(v) } },
         },
       })
       @cookbook_versions[cookbook] = version

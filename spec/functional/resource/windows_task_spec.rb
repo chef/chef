@@ -46,7 +46,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "creates scheduled task and sets command arguments" do
         subject.command "chef-client -W"
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         expect(current_resource.task.application_name).to eq("chef-client")
@@ -64,7 +64,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "creates scheduled task and sets command arguments" do
         subject.command "chef-client -W -L 'C:\\chef\\chef-ad-join.log'"
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         expect(current_resource.task.application_name).to eq("chef-client")
@@ -82,7 +82,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "creates scheduled task and sets command arguments" do
         subject.command '"C:\\Program Files\\example\program.exe" -arg1 --arg2'
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         expect(current_resource.task.application_name).to eq("C:\\Program Files\\example\\program.exe")
@@ -100,7 +100,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "creates scheduled task and sets command arguments" do
         subject.command "ping http://www.google.com"
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         expect(current_resource.task.application_name).to eq("ping")
@@ -129,7 +129,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       it "creates a scheduled task to run every 1 hr starting on 09/20/2017" do
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         expect(current_resource.task.application_name).to eq(task_name)
@@ -161,7 +161,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       it "creates a scheduled task that runs after every 15 minutes" do
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
@@ -209,7 +209,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       it "creates a scheduled task that runs after every 3 hrs" do
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
@@ -254,7 +254,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       it "creates a scheduled task to run daily" do
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
@@ -289,7 +289,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
         it "if day property is not set creates a scheduled task to run monthly on first day of the month" do
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -309,7 +309,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         it "creates a scheduled task to run monthly on first, second and third day of the month" do
           subject.day "1, 2, 3"
           call_for_create_action
-          #loading current resource again to check new task is created and it matches task parameters
+          # loading current resource again to check new task is created and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -330,15 +330,15 @@ describe Chef::Resource::WindowsTask, :windows_only do
         it "creates a scheduled task to run monthly on 1, 2, 3, 4, 8, 20, 21, 15, 28, 31 day of the month" do
           subject.day "1, 2, 3, 4, 8, 20, 21, 15, 28, 31"
           call_for_create_action
-          #loading current resource again to check new task is created and it matches task parameters
+          # loading current resource again to check new task is created and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
           expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
-          expect(trigger_details[:type][:days]).to eq(1209548943) #TODO:: windows_task_provider.send(:days_of_month)
-          expect(trigger_details[:type][:months]).to eq(4095) #windows_task_provider.send(:months_of_year)
+          expect(trigger_details[:type][:days]).to eq(1209548943) # TODO:: windows_task_provider.send(:days_of_month)
+          expect(trigger_details[:type][:months]).to eq(4095) # windows_task_provider.send(:months_of_year)
         end
 
         it "does not converge the resource if it is already converged" do
@@ -352,15 +352,15 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.day "1, 2, 3, 4, 8, 20, 21, 30"
           subject.months "Jan, Feb, May, Sep, Dec"
           call_for_create_action
-          #loading current resource again to check new task is created and it matches task parameters
+          # loading current resource again to check new task is created and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
           expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
-          expect(trigger_details[:type][:days]).to eq(538443919) #TODO:windows_task_provider.send(:days_of_month)
-          expect(trigger_details[:type][:months]).to eq(2323) #windows_task_provider.send(:months_of_year)
+          expect(trigger_details[:type][:days]).to eq(538443919) # TODO:windows_task_provider.send(:days_of_month)
+          expect(trigger_details[:type][:months]).to eq(2323) # windows_task_provider.send(:months_of_year)
         end
 
         it "does not converge the resource if it is already converged" do
@@ -375,7 +375,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.frequency_modifier "First"
           subject.day "Mon, Fri, Sun"
           call_for_create_action
-          #loading current resource again to check new task is created and it matches task parameters
+          # loading current resource again to check new task is created and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -384,7 +384,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days_of_week]).to eq(35)
           expect(trigger_details[:type][:weeks_of_month]).to eq(1)
-          expect(trigger_details[:type][:months]).to eq(4095) #windows_task_provider.send(:months_of_year)
+          expect(trigger_details[:type][:months]).to eq(4095) # windows_task_provider.send(:months_of_year)
         end
 
         it "does not converge the resource if it is already converged" do
@@ -606,7 +606,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.day "2"
           subject.start_day "03/07/2018"
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -628,7 +628,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         it "creates a scheduled task to run monthly on first, second and third day of the month" do
           subject.day "1,2,3"
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -649,7 +649,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         it "creates a scheduled task to run monthly on each wednesday of the month" do
           subject.frequency_modifier "1"
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -657,7 +657,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days]).to eq(1)
-          expect(trigger_details[:type][:months]).to eq(4095) #windows_task_provider.send(:months_of_year)
+          expect(trigger_details[:type][:months]).to eq(4095) # windows_task_provider.send(:months_of_year)
         end
 
         it "does not converge the resource if it is already converged" do
@@ -671,16 +671,16 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.frequency_modifier "2"
           subject.months = nil
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
-          #loading current resource
+          # loading current resource
           expect(current_resource.task.application_name).to eq(task_name)
           expect(trigger_details[:trigger_type]).to eq(4)
           expect(current_resource.task.principals[:run_level]).to eq(1)
           expect(trigger_details[:type][:days]).to eq(1)
-          expect(trigger_details[:type][:months]).to eq(2730) #windows_task_provider.send(:months_of_year)
+          expect(trigger_details[:type][:months]).to eq(2730) # windows_task_provider.send(:months_of_year)
         end
 
         it "does not converge the resource if it is already converged" do
@@ -714,7 +714,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         it "creates the scheduled task to run once at 5pm" do
           subject.start_time "17:00"
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -745,7 +745,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       it "creates the scheduled task to run weekly" do
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
@@ -765,7 +765,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         it "creates hte scheduled task for all days of week" do
           subject.day "*"
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -789,7 +789,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.day "Mon, Fri"
           subject.frequency_modifier 2
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -894,7 +894,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       it "creates the scheduled task to run at system start up" do
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
@@ -914,7 +914,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.start_day "09/10/2018"
           subject.start_time "15:00"
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -941,7 +941,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       it "creates the scheduled task to on logon" do
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
@@ -961,7 +961,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.start_day "09/10/2018"
           subject.start_time "15:00"
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -996,7 +996,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         it "creates the scheduled task to run when system is idle" do
           subject.idle_time 20
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -1021,7 +1021,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.start_day "09/10/2018"
           subject.start_time "15:00"
           call_for_create_action
-          #loading current resource again to check new task is creted and it matches task parameters
+          # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
           trigger_details = current_resource.task.trigger(0)
@@ -1049,7 +1049,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         subject.frequency :minute
         subject.random_delay "20"
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
         trigger_details = current_resource.task.trigger(0)
@@ -1092,7 +1092,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       it "creates the scheduled task to run on demand only" do
         call_for_create_action
-        #loading current resource again to check new task is creted and it matches task parameters
+        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
         expect(current_resource.exists).to eq(true)
 
@@ -1514,7 +1514,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       subject.run_action(:run)
       subject.run_action(:end)
       current_resource = call_for_load_current_resource
-      expect(current_resource.task.status).to eq("queued").or eq("ready") #queued or can be ready
+      expect(current_resource.task.status).to eq("queued").or eq("ready") # queued or can be ready
     end
   end
 

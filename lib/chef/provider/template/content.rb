@@ -29,7 +29,7 @@ class Chef
 
         def template_location
           @template_file_cache_location ||= begin
-            template_finder.find(new_resource.source, :local => new_resource.local, :cookbook => new_resource.cookbook)
+            template_finder.find(new_resource.source, local: new_resource.local, cookbook: new_resource.cookbook)
           end
         end
 

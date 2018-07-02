@@ -23,25 +23,25 @@ require "spec_helper"
 #
 # Output of the command:
 # => apt-key adv --list-public-keys --with-fingerprint --with-colons
-APT_KEY_FINGER = <<-EOF
-tru:t:1:1488924856:0:3:1:5
-pub:-:1024:17:40976EAF437D05B5:2004-09-12:::-:Ubuntu Archive Automatic Signing Key <ftpmaster@ubuntu.com>::scESC:
-fpr:::::::::630239CC130E1A7FD81A27B140976EAF437D05B5:
-sub:-:2048:16:251BEFF479164387:2004-09-12::::::e:
-pub:-:1024:17:46181433FBB75451:2004-12-30:::-:Ubuntu CD Image Automatic Signing Key <cdimage@ubuntu.com>::scSC:
-fpr:::::::::C5986B4F1257FFA86632CBA746181433FBB75451:
-pub:-:4096:1:3B4FE6ACC0B21F32:2012-05-11:::-:Ubuntu Archive Automatic Signing Key (2012) <ftpmaster@ubuntu.com>::scSC:
-fpr:::::::::790BC7277767219C42C86F933B4FE6ACC0B21F32:
-pub:-:4096:1:D94AA3F0EFE21092:2012-05-11:::-:Ubuntu CD Image Automatic Signing Key (2012) <cdimage@ubuntu.com>::scSC:
-fpr:::::::::843938DF228D22F7B3742BC0D94AA3F0EFE21092:
+APT_KEY_FINGER = <<~EOF
+  tru:t:1:1488924856:0:3:1:5
+  pub:-:1024:17:40976EAF437D05B5:2004-09-12:::-:Ubuntu Archive Automatic Signing Key <ftpmaster@ubuntu.com>::scESC:
+  fpr:::::::::630239CC130E1A7FD81A27B140976EAF437D05B5:
+  sub:-:2048:16:251BEFF479164387:2004-09-12::::::e:
+  pub:-:1024:17:46181433FBB75451:2004-12-30:::-:Ubuntu CD Image Automatic Signing Key <cdimage@ubuntu.com>::scSC:
+  fpr:::::::::C5986B4F1257FFA86632CBA746181433FBB75451:
+  pub:-:4096:1:3B4FE6ACC0B21F32:2012-05-11:::-:Ubuntu Archive Automatic Signing Key (2012) <ftpmaster@ubuntu.com>::scSC:
+  fpr:::::::::790BC7277767219C42C86F933B4FE6ACC0B21F32:
+  pub:-:4096:1:D94AA3F0EFE21092:2012-05-11:::-:Ubuntu CD Image Automatic Signing Key (2012) <cdimage@ubuntu.com>::scSC:
+  fpr:::::::::843938DF228D22F7B3742BC0D94AA3F0EFE21092:
 EOF
 
 # Output of the command:
 # => gpg --with-fingerprint --with-colons [FILE]
-GPG_FINGER = <<-EOF
-pub:-:1024:17:327574EE02A818DD:2009-04-22:::-:Cloudera Apt Repository:
-fpr:::::::::F36A89E33CC1BD0F71079007327574EE02A818DD:
-sub:-:2048:16:84080586D1CA74A1:2009-04-22::::
+GPG_FINGER = <<~EOF
+  pub:-:1024:17:327574EE02A818DD:2009-04-22:::-:Cloudera Apt Repository:
+  fpr:::::::::F36A89E33CC1BD0F71079007327574EE02A818DD:
+  sub:-:2048:16:84080586D1CA74A1:2009-04-22::::
 EOF
 
 describe Chef::Provider::AptRepository do
@@ -67,14 +67,14 @@ describe Chef::Provider::AptRepository do
   end
 
   let(:gpg_shell_out_success) do
-    double("shell_out", :stdout => "pub  2048R/7BD9BF62 2011-08-19 nginx signing key <signing-key@nginx.com>",
-                        :exitstatus => 0, :error? => false)
+    double("shell_out", stdout: "pub  2048R/7BD9BF62 2011-08-19 nginx signing key <signing-key@nginx.com>",
+                        exitstatus: 0, error?: false)
   end
 
   let(:gpg_shell_out_failure) do
-    double("shell_out", :stderr => "gpg: no valid OpenPGP data found.\n
+    double("shell_out", stderr: "gpg: no valid OpenPGP data found.\n
                                     gpg: processing message failed: eof",
-                        :exitstatus => 1, :error? => true)
+                        exitstatus: 1, error?: true)
   end
 
   let(:apt_fingerprints) do

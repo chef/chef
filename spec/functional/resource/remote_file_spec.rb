@@ -360,7 +360,7 @@ describe Chef::Resource::RemoteFile do
 
       it "should raise ContentLengthMismatch" do
         expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
-        #File.should_not exist(path) # XXX: CHEF-5081
+        # File.should_not exist(path) # XXX: CHEF-5081
       end
     end
 
@@ -373,7 +373,7 @@ describe Chef::Resource::RemoteFile do
 
       it "should raise ContentLengthMismatch" do
         expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
-        #File.should_not exist(path) # XXX: CHEF-5081
+        # File.should_not exist(path) # XXX: CHEF-5081
       end
     end
 

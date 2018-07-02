@@ -4,7 +4,7 @@ ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "ChefConfig", "che
   package.module_path = "chef-config"
 end
 
-task :default => :spec
+task default: :spec
 
 begin
   require "rspec/core/rake_task"

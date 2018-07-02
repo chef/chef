@@ -25,9 +25,9 @@ describe Chef::Knife::CookbookSiteInstall do
   let(:downloader) { Hash.new }
   let(:archive) { double(Mixlib::Archive, extract: true) }
   let(:repo) do
-    double(:sanity_check => true, :reset_to_default_state => true,
-           :prepare_to_import => true, :finalize_updates_to => true,
-           :merge_updates_from => true) end
+    double(sanity_check: true, reset_to_default_state: true,
+           prepare_to_import: true, finalize_updates_to: true,
+           merge_updates_from: true) end
   let(:install_path) do
     if Chef::Platform.windows?
       "C:/tmp/chef"
@@ -173,7 +173,7 @@ describe Chef::Knife::CookbookSiteInstall do
 
     it "returns a populated Metadata object if metadata.json exists" do
       allow(File).to receive(:exist?).with(json_metadata_path).and_return(true)
-      #expect(IO).to receive(:read).with(json_metadata_path)
+      # expect(IO).to receive(:read).with(json_metadata_path)
       allow(IO).to receive(:read)
       expect(metadata).to receive(:from_json)
       knife.preferred_metadata

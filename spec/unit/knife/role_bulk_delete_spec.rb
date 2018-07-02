@@ -23,7 +23,7 @@ describe Chef::Knife::RoleBulkDelete do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleBulkDelete.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = ["."]
     @stdout = StringIO.new

@@ -326,7 +326,7 @@ user password using shadow hash.")
         end
 
         def ditto_home
-          shell_out!("/usr/sbin/createhomedir", "-c", "-u", "#{new_resource.username}")
+          shell_out!("/usr/sbin/createhomedir", "-c", "-u", (new_resource.username).to_s)
         end
 
         def move_home

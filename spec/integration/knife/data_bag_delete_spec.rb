@@ -32,26 +32,26 @@ describe "knife data bag delete", :workstation do
     end
 
     it "with an empty data bag" do
-      knife("data bag delete canteloupe", input: "y").should_succeed <<EOM
-Do you really want to delete canteloupe? (Y/N) Deleted data_bag[canteloupe]
+      knife("data bag delete canteloupe", input: "y").should_succeed <<~EOM
+        Do you really want to delete canteloupe? (Y/N) Deleted data_bag[canteloupe]
 EOM
     end
 
     it "with a bag with some items" do
-      knife("data bag delete rocket", input: "y").should_succeed <<EOM
-Do you really want to delete rocket? (Y/N) Deleted data_bag[rocket]
+      knife("data bag delete rocket", input: "y").should_succeed <<~EOM
+        Do you really want to delete rocket? (Y/N) Deleted data_bag[rocket]
 EOM
     end
 
     it "with a single item" do
-      knife("data bag delete rocket falcon9", input: "y").should_succeed <<EOM
-Do you really want to delete falcon9? (Y/N) Deleted data_bag_item[falcon9]
+      knife("data bag delete rocket falcon9", input: "y").should_succeed <<~EOM
+        Do you really want to delete falcon9? (Y/N) Deleted data_bag_item[falcon9]
 EOM
     end
 
     it "choosing not to delete" do
-      knife("data bag delete rocket falcon9", input: "n").should_succeed <<EOM, exit_code: 3
-Do you really want to delete falcon9? (Y/N) You said no, so I'm done here.
+      knife("data bag delete rocket falcon9", input: "n").should_succeed <<~EOM, exit_code: 3
+        Do you really want to delete falcon9? (Y/N) You said no, so I'm done here.
 EOM
     end
   end

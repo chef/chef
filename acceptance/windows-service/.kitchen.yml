@@ -1,7 +1,0 @@
-verifier:
-  name: inspec
-
-suites:
-  - name: chef-windows-service
-    includes: [windows-2012r2]
-    run_list:

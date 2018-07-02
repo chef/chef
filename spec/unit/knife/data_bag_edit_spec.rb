@@ -74,7 +74,7 @@ describe Chef::Knife::DataBagEdit do
   end
 
   context "when config[:print_after] is set" do
-    let(:config) { { :print_after => true } }
+    let(:config) { { print_after: true } }
     before do
       expect(knife.ui).to receive(:output).with(raw_edited_hash)
     end

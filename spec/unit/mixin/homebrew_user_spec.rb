@@ -56,7 +56,7 @@ describe Chef::Mixin::HomebrewUser do
     context "debug statement prints owner name" do
 
       before do
-        expect(Etc).to receive(:getpwuid).with(brew_owner).and_return(OpenStruct.new(:name => "name"))
+        expect(Etc).to receive(:getpwuid).with(brew_owner).and_return(OpenStruct.new(name: "name"))
       end
 
       it "returns the owner of the brew executable when it is at a default location" do

@@ -35,23 +35,23 @@ class Chef
 
       def self.included(base)
         base.option :secret,
-               :short => "-s SECRET",
-               :long  => "--secret ",
-               :description => "The secret key to use to encrypt data bag item values. Can also be defaulted in your config with the key 'secret'",
+               short: "-s SECRET",
+               long: "--secret ",
+               description: "The secret key to use to encrypt data bag item values. Can also be defaulted in your config with the key 'secret'",
                # Need to store value from command line in separate variable - knife#merge_configs populates same keys
                # on config object from
-               :proc => Proc.new { |s| set_cl_secret(s) }
+               proc: Proc.new { |s| set_cl_secret(s) }
 
         base.option :secret_file,
-               :long => "--secret-file SECRET_FILE",
-               :description => "A file containing the secret key to use to encrypt data bag item values. Can also be defaulted in your config with the key 'secret_file'",
-               :proc => Proc.new { |sf| set_cl_secret_file(sf) }
+               long: "--secret-file SECRET_FILE",
+               description: "A file containing the secret key to use to encrypt data bag item values. Can also be defaulted in your config with the key 'secret_file'",
+               proc: Proc.new { |sf| set_cl_secret_file(sf) }
 
         base.option :encrypt,
-               :long => "--encrypt",
-               :description => "If 'secret' or 'secret_file' is present in your config, then encrypt data bags using it",
-               :boolean => true,
-               :default => false
+               long: "--encrypt",
+               description: "If 'secret' or 'secret_file' is present in your config, then encrypt data bags using it",
+               boolean: true,
+               default: false
       end
 
       def encryption_secret_provided?

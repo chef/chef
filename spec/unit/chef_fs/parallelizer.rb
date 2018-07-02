@@ -20,7 +20,7 @@ describe Chef::ChefFS::Parallelizer do
     end
 
     def parallelize(inputs, options = {}, &block)
-      parallelizer.parallelize(inputs, { :main_thread_processing => false }.merge(options), &block)
+      parallelizer.parallelize(inputs, { main_thread_processing: false }.merge(options), &block)
     end
 
     it "parallel_do creates unordered output as soon as it is available" do
@@ -35,14 +35,14 @@ describe Chef::ChefFS::Parallelizer do
 
     context "With :ordered => false (unordered output)" do
       it "An empty input produces an empty output" do
-        expect(parallelize([], :ordered => false) do
+        expect(parallelize([], ordered: false) do
           sleep 10
         end.to_a).to eql([])
         expect(elapsed_time).to be < 0.1
       end
 
       it "10 sleep(0.2)s complete within 0.5 seconds" do
-        expect(parallelize(1.upto(10), :ordered => false) do |i|
+        expect(parallelize(1.upto(10), ordered: false) do |i|
           sleep 0.2
           "x"
         end.to_a).to eq(%w{x x x x x x x x x x})
@@ -50,7 +50,7 @@ describe Chef::ChefFS::Parallelizer do
       end
 
       it "The output comes as soon as it is available" do
-        enum = parallelize([0.5, 0.3, 0.1], :ordered => false) do |val|
+        enum = parallelize([0.5, 0.3, 0.1], ordered: false) do |val|
           sleep val
           val
         end
@@ -64,7 +64,7 @@ describe Chef::ChefFS::Parallelizer do
         input = TestEnumerable.new(0.5, 0.3, 0.1) do
           raise "hi"
         end
-        enum = parallelize(input, :ordered => false) { |x| sleep(x); x }
+        enum = parallelize(input, ordered: false) { |x| sleep(x); x }
         results = []
         expect { enum.each { |value| results << value } }.to raise_error "hi"
         expect(results).to eq([ 0.1, 0.3, 0.5 ])
@@ -73,7 +73,7 @@ describe Chef::ChefFS::Parallelizer do
 
       it "Exceptions in output are raised after all processing is done" do
         processed = 0
-        enum = parallelize([1, 2, "x", 3], :ordered => false) do |x|
+        enum = parallelize([1, 2, "x", 3], ordered: false) do |x|
           if x == "x"
             sleep 0.1
             raise "hi"
@@ -91,7 +91,7 @@ describe Chef::ChefFS::Parallelizer do
 
       it "Exceptions with :stop_on_exception are raised after all processing is done" do
         processed = 0
-        parallelized = parallelize([0.3, 0.3, "x", 0.3, 0.3, 0.3, 0.3, 0.3], :ordered => false, :stop_on_exception => true) do |x|
+        parallelized = parallelize([0.3, 0.3, "x", 0.3, 0.3, 0.3, 0.3, 0.3], ordered: false, stop_on_exception: true) do |x|
           if x == "x"
             sleep(0.1)
             raise "hi"
@@ -114,7 +114,7 @@ describe Chef::ChefFS::Parallelizer do
       end
 
       it "10 sleep(0.2)s complete within 0.5 seconds" do
-        expect(parallelize(1.upto(10), :ordered => true) do |i|
+        expect(parallelize(1.upto(10), ordered: true) do |i|
           sleep 0.2
           "x"
         end.to_a).to eq(%w{x x x x x x x x x x})
@@ -163,7 +163,7 @@ describe Chef::ChefFS::Parallelizer do
 
       it "Exceptions with :stop_on_exception are raised after all processing is done" do
         processed = 0
-        parallelized = parallelize([0.3, 0.3, "x", 0.3, 0.3, 0.3, 0.3, 0.3], :ordered => false, :stop_on_exception => true) do |x|
+        parallelized = parallelize([0.3, 0.3, "x", 0.3, 0.3, 0.3, 0.3, 0.3], ordered: false, stop_on_exception: true) do |x|
           if x == "x"
             sleep(0.1)
             raise "hi"
@@ -205,7 +205,7 @@ describe Chef::ChefFS::Parallelizer do
         started = false
         @occupying_job_finished = occupying_job_finished = [ false ]
         @thread = Thread.new do
-          parallelizer.parallelize([0], :main_thread_processing => false) do |x|
+          parallelizer.parallelize([0], main_thread_processing: false) do |x|
             started = true
             sleep(0.3)
             occupying_job_finished[0] = true
@@ -229,7 +229,7 @@ describe Chef::ChefFS::Parallelizer do
       end
 
       it "parallelize with :main_thread_processing = false waits for the job to finish" do
-        expect(parallelizer.parallelize([1], :main_thread_processing => false) do |x|
+        expect(parallelizer.parallelize([1], main_thread_processing: false) do |x|
           sleep(0.1)
           x + 1
         end.to_a).to eq([ 2 ])
@@ -434,7 +434,7 @@ describe Chef::ChefFS::Parallelizer do
     end
 
     it "does not have contention issues with large numbers of inputs with ordering off" do
-      expect(parallelizer.parallelize(1.upto(500), :ordered => false) { |x| x + 1 }.to_a.sort).to eq(2.upto(501).to_a)
+      expect(parallelizer.parallelize(1.upto(500), ordered: false) { |x| x + 1 }.to_a.sort).to eq(2.upto(501).to_a)
     end
 
     it "does not have contention issues with large numbers of jobs and inputs with ordering off" do

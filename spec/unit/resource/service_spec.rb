@@ -168,19 +168,19 @@ describe Chef::Resource::Service do
     end
 
     it "defaults all the feature support to nil" do
-      support_hash = { :status => nil, :restart => nil, :reload => nil }
+      support_hash = { status: nil, restart: nil, reload: nil }
       expect(resource.supports).to eq(support_hash)
     end
 
     it "allows you to set what features this resource supports as a array" do
       support_array = [ :status, :restart ]
-      support_hash = { :status => true, :restart => true }
+      support_hash = { status: true, restart: true }
       resource.supports(support_array)
       expect(resource.supports).to eq(support_hash)
     end
 
     it "allows you to set what features this resource supports as a hash" do
-      support_hash = { :status => true, :restart => true }
+      support_hash = { status: true, restart: true }
       resource.supports(support_hash)
       expect(resource.supports).to eq(support_hash)
     end

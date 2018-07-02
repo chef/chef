@@ -50,7 +50,7 @@ describe Chef::Resource::RemoteDirectory do
              end
           EOM
         end
-        shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'test::default'", :cwd => chef_dir)
+        shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'test::default'", cwd: chef_dir)
       end
 
       def mode_of(path)

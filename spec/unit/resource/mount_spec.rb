@@ -144,19 +144,19 @@ describe Chef::Resource::Mount do
   end
 
   it "defaults all feature support to false" do
-    support_hash = { :remount => false }
+    support_hash = { remount: false }
     expect(resource.supports).to eq(support_hash)
   end
 
   it "allows you to set feature support as an array" do
     support_array = [ :remount ]
-    support_hash = { :remount => true }
+    support_hash = { remount: true }
     resource.supports(support_array)
     expect(resource.supports).to eq(support_hash)
   end
 
   it "allows you to set feature support as a hash" do
-    support_hash = { :remount => true }
+    support_hash = { remount: true }
     resource.supports(support_hash)
     expect(resource.supports).to eq(support_hash)
   end

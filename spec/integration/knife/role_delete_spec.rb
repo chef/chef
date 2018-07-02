@@ -32,14 +32,14 @@ describe "knife role delete", :workstation do
     end
 
     it "deletes a role" do
-      knife("role delete car", input: "Y").should_succeed <<EOM
-Do you really want to delete car? (Y/N) Deleted role[car]
+      knife("role delete car", input: "Y").should_succeed <<~EOM
+        Do you really want to delete car? (Y/N) Deleted role[car]
 EOM
 
-      knife("role list").should_succeed <<EOM
-cat
-cdr
-cons
+      knife("role list").should_succeed <<~EOM
+        cat
+        cdr
+        cons
 EOM
     end
 

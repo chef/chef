@@ -66,13 +66,13 @@ describe Chef::ResourceDefinition do
 
   it "should accept a new definition with a hash" do
     expect do
-      defn.define :smoke, :cigar => "cuban", :cigarette => "marlboro" do
+      defn.define :smoke, cigar: "cuban", cigarette: "marlboro" do
       end
     end.not_to raise_error
   end
 
   it "should expose the prototype hash params in the params hash" do
-    defn.define(:smoke, :cigar => "cuban", :cigarette => "marlboro") {}
+    defn.define(:smoke, cigar: "cuban", cigarette: "marlboro") {}
     expect(defn.params[:cigar]).to eql("cuban")
     expect(defn.params[:cigarette]).to eql("marlboro")
   end

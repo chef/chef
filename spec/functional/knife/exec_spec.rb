@@ -21,7 +21,7 @@ require "tiny_server"
 
 describe Chef::Knife::Exec do
   before(:each) do
-    @server = TinyServer::Manager.new #(:debug => true)
+    @server = TinyServer::Manager.new # (:debug => true)
     @server.start
   end
 

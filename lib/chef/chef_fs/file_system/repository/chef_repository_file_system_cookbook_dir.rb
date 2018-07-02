@@ -64,7 +64,7 @@ class Chef
           def write(cookbook_path, cookbook_version_json, from_fs)
             # Use the copy/diff algorithm to copy it down so we don't destroy
             # chefignored data.  This is terribly un-thread-safe.
-            Chef::ChefFS::FileSystem.copy_to(Chef::ChefFS::FilePattern.new("/#{cookbook_path}"), from_fs, self, nil, { :purge => true })
+            Chef::ChefFS::FileSystem.copy_to(Chef::ChefFS::FilePattern.new("/#{cookbook_path}"), from_fs, self, nil, { purge: true })
 
             # Write out .uploaded-cookbook-version.json
             # cookbook_file_path = File.join(file_path, cookbook_name) <- this should be the same as self.file_path

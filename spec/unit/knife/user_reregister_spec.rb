@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::UserReregister do
   let(:knife) { Chef::Knife::UserReregister.new }
-  let(:user_mock) { double("user_mock", :private_key => "private_key") }
+  let(:user_mock) { double("user_mock", private_key: "private_key") }
   let(:stdout) { StringIO.new }
 
   before do

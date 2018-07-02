@@ -36,8 +36,8 @@ describe Chef::Provider::WindowsEnv, :windows_only do
 
   describe "when loading the current status" do
     before do
-      #@current_resource = @new_resource.clone
-      #Chef::Resource::Env.stub(:new).and_return(@current_resource)
+      # @current_resource = @new_resource.clone
+      # Chef::Resource::Env.stub(:new).and_return(@current_resource)
       @provider.current_resource = @current_resource
       allow(@provider).to receive(:env_value).with("FOO").and_return("bar")
       allow(@provider).to receive(:env_key_exists).and_return(true)

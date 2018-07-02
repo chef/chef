@@ -25,22 +25,21 @@ namespace :dependencies do
   desc "Update all dependencies. dependencies:update to update as little as possible."
   task :update do |t, rake_args|
     # FIXME: probably broken, and needs less indirection
-    system("#{File.join(Dir.pwd, "ci", "dependency_update.sh")}")
+    system((File.join(Dir.pwd, "ci", "dependency_update.sh")).to_s)
   end
 
   desc "Force update (when adding new gems to Gemfiles)"
   task :force_update do |t, rake_args|
     # FIXME: probably broken, and needs less indirection
     FileUtils.rm_f(File.join(Dir.pwd, ".bundle", "config"))
-    system("#{File.join(Dir.pwd, "ci", "dependency_update.sh")}")
+    system((File.join(Dir.pwd, "ci", "dependency_update.sh")).to_s)
   end
 
   # Update all dependencies to the latest constraint-matching version
   desc "Update all dependencies. dependencies:update to update as little as possible (CI-only)."
-  task :update_ci => %w{
+  task update_ci: %w{
                     dependencies:update_gemfile_lock
                     dependencies:update_omnibus_gemfile_lock
-                    dependencies:update_acceptance_gemfile_lock
                     dependencies:update_audit_tests_berksfile_lock
                   }
 
@@ -83,12 +82,11 @@ namespace :dependencies do
 
   bundle_update_locked_multiplatform_task :update_gemfile_lock, "."
   bundle_update_locked_multiplatform_task :update_omnibus_gemfile_lock, "omnibus"
-  bundle_update_task :update_acceptance_gemfile_lock, "acceptance"
   berks_update_task :update_audit_tests_berksfile_lock, "kitchen-tests/cookbooks/audit_test"
 
 end
 
 desc "Update all dependencies and check for outdated gems."
-task :dependencies_ci => [ "dependencies:update_ci" ]
-task :dependencies => [ "dependencies:update" ]
-task :update => [ "dependencies:update" ]
+task dependencies_ci: [ "dependencies:update_ci" ]
+task dependencies: [ "dependencies:update" ]
+task update: [ "dependencies:update" ]

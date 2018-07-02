@@ -207,91 +207,91 @@ module Shell
 
     banner("chef-shell #{Chef::VERSION}\n\nUsage: chef-shell [NAMED_CONF] (OPTIONS)")
 
-    footer(<<-FOOTER)
-When no CONFIG is specified, chef-shell attempts to load a default configuration file:
-* If a NAMED_CONF is given, chef-shell will load ~/.chef/NAMED_CONF/chef_shell.rb
-* If no NAMED_CONF is given chef-shell will load ~/.chef/chef_shell.rb if it exists
-* If no chef_shell.rb can be found, chef-shell falls back to load:
-      /etc/chef/client.rb if -z option is given.
-      /etc/chef/solo.rb   if --solo-legacy-mode option is given.
-      .chef/knife.rb      if -s option is given.
+    footer(<<~FOOTER)
+      When no CONFIG is specified, chef-shell attempts to load a default configuration file:
+      * If a NAMED_CONF is given, chef-shell will load ~/.chef/NAMED_CONF/chef_shell.rb
+      * If no NAMED_CONF is given chef-shell will load ~/.chef/chef_shell.rb if it exists
+      * If no chef_shell.rb can be found, chef-shell falls back to load:
+            /etc/chef/client.rb if -z option is given.
+            /etc/chef/solo.rb   if --solo-legacy-mode option is given.
+            .chef/knife.rb      if -s option is given.
 FOOTER
 
     option :config_file,
-      :short => "-c CONFIG",
-      :long  => "--config CONFIG",
-      :description => "The configuration file to use"
+      short: "-c CONFIG",
+      long: "--config CONFIG",
+      description: "The configuration file to use"
 
     option :help,
-      :short        => "-h",
-      :long         => "--help",
-      :description  => "Show this message",
-      :on           => :tail,
-      :boolean      => true,
-      :proc         => proc { print_help }
+      short: "-h",
+      long: "--help",
+      description: "Show this message",
+      on: :tail,
+      boolean: true,
+      proc: proc { print_help }
 
     option :log_level,
-      :short  => "-l LOG_LEVEL",
-      :long   => "--log-level LOG_LEVEL",
-      :description => "Set the logging level",
-      :proc         => proc { |level| Chef::Config.log_level = level.to_sym; Shell.setup_logger }
+      short: "-l LOG_LEVEL",
+      long: "--log-level LOG_LEVEL",
+      description: "Set the logging level",
+      proc: proc { |level| Chef::Config.log_level = level.to_sym; Shell.setup_logger }
 
     option :standalone,
-      :short        => "-a",
-      :long         => "--standalone",
-      :description  => "standalone session",
-      :default      => true,
-      :boolean      => true
+      short: "-a",
+      long: "--standalone",
+      description: "standalone session",
+      default: true,
+      boolean: true
 
     option :solo_shell,
-      :short        => "-s",
-      :long         => "--solo",
-      :description  => "chef-solo session",
-      :boolean      => true,
-      :proc         => proc { Chef::Config[:solo] = true }
+      short: "-s",
+      long: "--solo",
+      description: "chef-solo session",
+      boolean: true,
+      proc: proc { Chef::Config[:solo] = true }
 
     option :client,
-      :short        => "-z",
-      :long         => "--client",
-      :description  => "chef-client session",
-      :boolean      => true
+      short: "-z",
+      long: "--client",
+      description: "chef-client session",
+      boolean: true
 
     option :solo_legacy_shell,
-      :long         => "--solo-legacy-mode",
-      :description  => "chef-solo legacy session",
-      :boolean      => true,
-      :proc         => proc { Chef::Config[:solo_legacy_mode] = true }
+      long: "--solo-legacy-mode",
+      description: "chef-solo legacy session",
+      boolean: true,
+      proc: proc { Chef::Config[:solo_legacy_mode] = true }
 
     option :json_attribs,
-      :short => "-j JSON_ATTRIBS",
-      :long => "--json-attributes JSON_ATTRIBS",
-      :description => "Load attributes from a JSON file or URL",
-      :proc => nil
+      short: "-j JSON_ATTRIBS",
+      long: "--json-attributes JSON_ATTRIBS",
+      description: "Load attributes from a JSON file or URL",
+      proc: nil
 
     option :chef_server_url,
-      :short => "-S CHEFSERVERURL",
-      :long => "--server CHEFSERVERURL",
-      :description => "The chef server URL",
-      :proc => nil
+      short: "-S CHEFSERVERURL",
+      long: "--server CHEFSERVERURL",
+      description: "The chef server URL",
+      proc: nil
 
     option :version,
-      :short        => "-v",
-      :long         => "--version",
-      :description  => "Show chef version",
-      :boolean      => true,
-      :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
-      :exit         => 0
+      short: "-v",
+      long: "--version",
+      description: "Show chef version",
+      boolean: true,
+      proc: lambda { |v| puts "Chef: #{::Chef::VERSION}" },
+      exit: 0
 
     option :override_runlist,
-      :short        => "-o RunlistItem,RunlistItem...",
-      :long         => "--override-runlist RunlistItem,RunlistItem...",
-      :description  => "Replace current run list with specified items",
-      :proc         => lambda { |items| items.split(",").map { |item| Chef::RunList::RunListItem.new(item) } }
+      short: "-o RunlistItem,RunlistItem...",
+      long: "--override-runlist RunlistItem,RunlistItem...",
+      description: "Replace current run list with specified items",
+      proc: lambda { |items| items.split(",").map { |item| Chef::RunList::RunListItem.new(item) } }
 
     option :skip_cookbook_sync,
-      :long           => "--[no-]skip-cookbook-sync",
-      :description    => "Use cached cookbooks without overwriting local differences from the server",
-      :boolean        => false
+      long: "--[no-]skip-cookbook-sync",
+      description: "Use cached cookbooks without overwriting local differences from the server",
+      boolean: false
 
     def self.print_help
       instance = new

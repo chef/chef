@@ -50,27 +50,27 @@ describe Chef::Provider::SystemdUnit do
 
   let(:user_cmd_opts) do
     {
-      :user => "joe",
-      :environment => {
+      user: "joe",
+      environment: {
         "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/1000/bus",
       },
     }
   end
 
   let(:shell_out_success) do
-    double("shell_out", :exitstatus => 0, :error? => false)
+    double("shell_out", exitstatus: 0, error?: false)
   end
 
   let(:shell_out_failure) do
-    double("shell_out", :exitstatus => 1, :error? => true)
+    double("shell_out", exitstatus: 1, error?: true)
   end
 
   let(:shell_out_masked) do
-    double("shell_out", :exit_status => 0, :error? => false, :stdout => "masked")
+    double("shell_out", exit_status: 0, error?: false, stdout: "masked")
   end
 
   let(:shell_out_static) do
-    double("shell_out", :exit_status => 0, :error? => false, :stdout => "static")
+    double("shell_out", exit_status: 0, error?: false, stdout: "static")
   end
 
   before(:each) do
@@ -803,7 +803,7 @@ describe Chef::Provider::SystemdUnit do
       describe "#active?" do
         before(:each) do
           provider.current_resource = current_resource
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         context "when a user is specified" do
@@ -844,7 +844,7 @@ describe Chef::Provider::SystemdUnit do
       describe "#enabled?" do
         before(:each) do
           provider.current_resource = current_resource
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         context "when a user is specified" do
@@ -885,7 +885,7 @@ describe Chef::Provider::SystemdUnit do
       describe "#masked?" do
         before(:each) do
           provider.current_resource = current_resource
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         context "when a user is specified" do
@@ -926,7 +926,7 @@ describe Chef::Provider::SystemdUnit do
       describe "#static?" do
         before(:each) do
           provider.current_resource = current_resource
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         context "when a user is specified" do

@@ -32,18 +32,18 @@ describe "knife role bulk delete", :workstation do
     end
 
     it "deletes all matching roles" do
-      knife("role bulk delete ^ca.*", input: "Y").should_succeed <<EOM
-The following roles will be deleted:
+      knife("role bulk delete ^ca.*", input: "Y").should_succeed <<~EOM
+        The following roles will be deleted:
 
-car  cat
+        car  cat
 
-Are you sure you want to delete these roles? (Y/N) Deleted role car
-Deleted role cat
+        Are you sure you want to delete these roles? (Y/N) Deleted role car
+        Deleted role cat
 EOM
 
-      knife("role list").should_succeed <<EOM
-cdr
-cons
+      knife("role list").should_succeed <<~EOM
+        cdr
+        cons
 EOM
     end
 

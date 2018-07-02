@@ -56,7 +56,7 @@ class Chef
         hive, key = get_hive_and_key(key_path)
         key_exists!(key_path)
         values = hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          reg.map { |name, type, data| { :name => name, :type => get_name_from_type(type), :data => data } }
+          reg.map { |name, type, data| { name: name, type: get_name_from_type(type), data: data } }
         end
       end
 
@@ -321,13 +321,13 @@ class Chef
 
       def _type_name_map
         {
-          :binary => ::Win32::Registry::REG_BINARY,
-          :string => ::Win32::Registry::REG_SZ,
-          :multi_string => ::Win32::Registry::REG_MULTI_SZ,
-          :expand_string => ::Win32::Registry::REG_EXPAND_SZ,
-          :dword => ::Win32::Registry::REG_DWORD,
-          :dword_big_endian => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          :qword => ::Win32::Registry::REG_QWORD,
+          binary: ::Win32::Registry::REG_BINARY,
+          string: ::Win32::Registry::REG_SZ,
+          multi_string: ::Win32::Registry::REG_MULTI_SZ,
+          expand_string: ::Win32::Registry::REG_EXPAND_SZ,
+          dword: ::Win32::Registry::REG_DWORD,
+          dword_big_endian: ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
+          qword: ::Win32::Registry::REG_QWORD,
         }
       end
 

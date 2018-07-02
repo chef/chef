@@ -170,12 +170,12 @@ describe Chef::RunList do
       @role = Chef::Role.new
       @role.name "stubby"
       @role.run_list "one", "two"
-      @role.default_attributes :one => :two
-      @role.override_attributes :three => :four
+      @role.default_attributes one: :two
+      @role.override_attributes three: :four
       @role.env_run_list["production"] = Chef::RunList.new( "one", "two", "five")
 
       allow(Chef::Role).to receive(:load).and_return(@role)
-      @rest = double("Chef::ServerAPI", { :get => @role.to_hash, :url => "/" })
+      @rest = double("Chef::ServerAPI", { get: @role.to_hash, url: "/" })
       allow(Chef::ServerAPI).to receive(:new).and_return(@rest)
 
       @run_list << "role[stubby]"
@@ -197,7 +197,7 @@ describe Chef::RunList do
 
     describe "from the chef server" do
       it "should load the role from the chef server" do
-        #@rest.should_receive(:get).with("roles/stubby")
+        # @rest.should_receive(:get).with("roles/stubby")
         expansion = @run_list.expand("_default", "server")
         expect(expansion.recipes).to eq(%w{one two kitty})
       end
@@ -263,7 +263,7 @@ describe Chef::RunList do
     it "should recurse into a child role" do
       dog = Chef::Role.new
       dog.name "dog"
-      dog.default_attributes :seven => :nine
+      dog.default_attributes seven: :nine
       dog.run_list "three"
       @role.run_list << "role[dog]"
       allow(Chef::Role).to receive(:from_disk).with("stubby").and_return(@role)
@@ -277,7 +277,7 @@ describe Chef::RunList do
     it "should not recurse infinitely" do
       dog = Chef::Role.new
       dog.name "dog"
-      dog.default_attributes :seven => :nine
+      dog.default_attributes seven: :nine
       dog.run_list "role[dog]", "three"
       @role.run_list << "role[dog]"
       allow(Chef::Role).to receive(:from_disk).with("stubby").and_return(@role)

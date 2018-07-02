@@ -247,8 +247,8 @@ class Chef
           if new_resource.user
             uid = Etc.getpwnam(new_resource.user).uid
             {
-              :user => new_resource.user,
-              :environment => {
+              user: new_resource.user,
+              environment: {
                 "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{uid}/bus",
               },
             }

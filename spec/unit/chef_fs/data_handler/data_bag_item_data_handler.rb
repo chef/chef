@@ -68,7 +68,7 @@ describe Chef::ChefFS::DataHandler::DataBagItemDataHandler do
 
     context "using a reserved word as part of the data bag name" do
       %w{xnode rolex xenvironmentx xclientx}.each do |bag_name|
-        let(:entry) { TestDataBagItem.new("#{bag_name}", "bag") }
+        let(:entry) { TestDataBagItem.new(bag_name.to_s, "bag") }
         let(:object) do
           { "raw_data" => { "id" => "bag" } }
         end

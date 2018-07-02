@@ -32,44 +32,44 @@ describe "knife environment show", :workstation do
 
     # rubocop:disable Layout/TrailingWhitespace
     it "shows an environment" do
-      knife("environment show b").should_succeed <<EOM
-chef_type:           environment
-cookbook_versions:
-default_attributes:
-  baz:
-    raz.my: mataz
-  foo: bar
-description:         
-json_class:          Chef::Environment
-name:                b
-override_attributes:
+      knife("environment show b").should_succeed <<~EOM
+        chef_type:           environment
+        cookbook_versions:
+        default_attributes:
+          baz:
+            raz.my: mataz
+          foo: bar
+        description:         
+        json_class:          Chef::Environment
+        name:                b
+        override_attributes:
 EOM
     end
     # rubocop:enable Layout/TrailingWhitespace
 
     it "shows the requested attribute of an environment" do
-      knife("environment show b -a default_attributes").should_succeed <<EOM
-b:
-  default_attributes:
-    baz:
-      raz.my: mataz
-    foo: bar
+      knife("environment show b -a default_attributes").should_succeed <<~EOM
+        b:
+          default_attributes:
+            baz:
+              raz.my: mataz
+            foo: bar
 EOM
     end
 
     it "shows the requested nested attribute of an environment" do
-      knife("environment show b -a default_attributes.baz").should_succeed <<EON
-b:
-  default_attributes.baz:
-    raz.my: mataz
+      knife("environment show b -a default_attributes.baz").should_succeed <<~EON
+        b:
+          default_attributes.baz:
+            raz.my: mataz
 EON
     end
 
     it "shows the requested attribute of an environment with custom field separator" do
-      knife("environment show b -S: -a default_attributes:baz").should_succeed <<EOT
-b:
-  default_attributes:baz:
-    raz.my: mataz
+      knife("environment show b -S: -a default_attributes:baz").should_succeed <<~EOT
+        b:
+          default_attributes:baz:
+            raz.my: mataz
 EOT
     end
   end

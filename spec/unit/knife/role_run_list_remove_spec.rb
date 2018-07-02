@@ -27,7 +27,7 @@ describe Chef::Knife::RoleRunListRemove do
 
     @knife = Chef::Knife::RoleRunListRemove.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = [ "will", "role[monkey]" ]
     allow(@knife).to receive(:output).and_return(true)

@@ -151,35 +151,6 @@
                 <Environment Id="ChefPSModulePathEnvironment"
                              Name="PSModulePath" Action="set" Part="last" System="yes" Value="[PSMODULES]" />
               </Component>
-              <Component Id="ChefPowerShellRegistryEntries" Guid="{3715B7AB-C3CA-4C69-8FAF-79C8CF58FD89}">
-                <RegistryKey Root="HKCR" Key="Chef.PowerShell">
-                  <RegistryValue Type="string" Value="Chef.PowerShell" />
-                </RegistryKey>
-                <RegistryKey Root="HKCR" Key="Chef.PowerShell\CLSID">
-                  <RegistryValue Type="string" Value="{9008CA83-83E4-41FF-9C07-696E2CC47B52}" />
-                </RegistryKey>
-                <RegistryKey Root="HKCR" Key="CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}">
-                  <RegistryValue Type="string" Value="Chef.PowerShell" />
-                </RegistryKey>
-                <RegistryKey Root="HKCR" Key="CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}\InprocServer32">
-                  <RegistryValue Type="string" Value="[System64Folder]mscoree.dll" />
-                  <RegistryValue Type="string" Name="ThreadingModel" Value="Both" />
-                  <RegistryValue Type="string" Name="Class" Value="Chef.PowerShell" />
-                  <RegistryValue Type="string" Name="Assembly" Value="Chef.PowerShell, Version=1.0.14.0, Culture=neutral, PublicKeyToken=7def9f799d039a95" />
-                  <RegistryValue Type="string" Name="RuntimeVersion" Value="v4.0.30319" />
-                  <RegistryValue Type="string" Name="CodeBase" Value="[PSMODULES]chef\Chef.PowerShell.dll" />
-                </RegistryKey>
-                <RegistryKey Root="HKCR" Key="CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}\InprocServer32\1.0.0.0">
-                  <RegistryValue Type="string" Name="Class" Value="Chef.PowerShell" />
-                  <RegistryValue Type="string" Name="Assembly" Value="Chef.PowerShell, Version=1.0.14.0, Culture=neutral, PublicKeyToken=7def9f799d039a95" />
-                  <RegistryValue Type="string" Name="RuntimeVersion" Value="v4.0.30319" />
-                  <RegistryValue Type="string" Name="CodeBase" Value="[PSMODULES]chef\Chef.PowerShell.dll" />
-                </RegistryKey>                  
-                <RegistryKey Root="HKCR" Key="CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}\ProgId">
-                  <RegistryValue Type="string" Value="Chef.PowerShell" />
-                </RegistryKey>
-                <RegistryKey Root="HKCR" Key="CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}\Implemented Categories\{62C8FE65-4EBB-45E7-B440-6E39B2CDBF29}" />
-              </Component>
             </Directory>
             <Directory Id="EMBEDDED" Name="embedded" >
               <Directory Id="EMBEDDEDBIN" Name="bin" >
@@ -226,7 +197,6 @@
       <ComponentRef Id="ChefClientPath" />
       <ComponentRef Id="CONFIGLOCATIONDIR" />
       <ComponentRef Id="ChefClientLog" />
-      <ComponentRef Id="ChefPowerShellRegistryEntries" />
     </Feature>
 
     <Feature Id="ChefPSModuleFeature" Title="!(loc.FeaturePSModuleName)" Level="1000" AllowAdvertise="no">

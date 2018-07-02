@@ -202,7 +202,7 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should run pw usermod with the username and the option -H 0" do
-        expect(@provider).to receive(:shell_out_compacted!).with( "pw usermod adam -H 0", { :input => "abracadabra" }).and_return(@status)
+        expect(@provider).to receive(:shell_out_compacted!).with( "pw usermod adam -H 0", { input: "abracadabra" }).and_return(@status)
         @provider.modify_password
       end
 

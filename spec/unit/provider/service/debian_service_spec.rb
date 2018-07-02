@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Provider::Service::Debian do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = { :ps => "fuuuu" }
+    @node.automatic_attrs[:command] = { ps: "fuuuu" }
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -88,7 +88,7 @@ describe Chef::Provider::Service::Debian do
             "5" => [:start, "20"],
             "0" => [:stop, "20"],
             "1" => [:stop, "20"],
-            "6" => [:stop, "20"]
+            "6" => [:stop, "20"],
           })
       end
     end

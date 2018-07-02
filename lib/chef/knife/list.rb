@@ -1,3 +1,19 @@
+#
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require "chef/chef_fs/knife"
 
 class Chef
@@ -13,30 +29,30 @@ class Chef
       end
 
       option :recursive,
-        :short => "-R",
-        :boolean => true,
-        :description => "List directories recursively"
+        short: "-R",
+        boolean: true,
+        description: "List directories recursively"
       option :bare_directories,
-        :short => "-d",
-        :boolean => true,
-        :description => "When directories match the pattern, do not show the directories' children"
+        short: "-d",
+        boolean: true,
+        description: "When directories match the pattern, do not show the directories' children"
       option :local,
-        :long => "--local",
-        :boolean => true,
-        :description => "List local directory instead of remote"
+        long: "--local",
+        boolean: true,
+        description: "List local directory instead of remote"
       option :flat,
-        :short => "-f",
-        :long => "--flat",
-        :boolean => true,
-        :description => "Show a list of filenames rather than the prettified ls-like output normally produced"
+        short: "-f",
+        long: "--flat",
+        boolean: true,
+        description: "Show a list of filenames rather than the prettified ls-like output normally produced"
       option :one_column,
-        :short => "-1",
-        :boolean => true,
-        :description => "Show only one column of results"
+        short: "-1",
+        boolean: true,
+        description: "Show only one column of results"
       option :trailing_slashes,
-        :short => "-p",
-        :boolean => true,
-        :description => "Show trailing slashes after directories"
+        short: "-p",
+        boolean: true,
+        description: "Show trailing slashes after directories"
 
       attr_accessor :exit_code
 

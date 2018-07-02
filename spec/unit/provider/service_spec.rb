@@ -99,7 +99,7 @@ describe Chef::Provider::Service do
 
   describe "action_restart" do
     before do
-      @current_resource.supports(:restart => true)
+      @current_resource.supports(restart: true)
     end
 
     it "should restart the service if it's supported and set the resource as updated" do
@@ -118,11 +118,11 @@ describe Chef::Provider::Service do
 
   describe "action_reload" do
     before do
-      @new_resource.supports(:reload => true)
+      @new_resource.supports(reload: true)
     end
 
     it "should raise an exception if reload isn't supported" do
-      @new_resource.supports(:reload => false)
+      @new_resource.supports(reload: false)
       @new_resource.reload_command(false)
       expect { @provider.run_action(:reload) }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end

@@ -47,13 +47,13 @@ describe Chef::Knife::CookbookDownload do
         @rest_mock = double("rest")
         allow(@knife).to receive(:rest).and_return(@rest_mock)
 
-        expect(Chef::CookbookVersion).to receive(:load).with("foobar", "1.0.0").
-          and_return(cookbook)
+        expect(Chef::CookbookVersion).to receive(:load).with("foobar", "1.0.0")
+          .and_return(cookbook)
       end
 
       let(:manifest_data) do
         {
-          :all_files => [
+          all_files: [
             {
               "path" => "recipes/foo.rb",
               "name" => "recipes/foo.rb",
@@ -119,18 +119,18 @@ describe Chef::Knife::CookbookDownload do
         describe "when downloading the cookbook" do
           before(:each) do
             @files.map { |f| File.dirname(f) }.flatten.uniq.each do |dir|
-              expect(FileUtils).to receive(:mkdir_p).with("/var/tmp/chef/foobar-1.0.0/#{dir}").
-                at_least(:once)
+              expect(FileUtils).to receive(:mkdir_p).with("/var/tmp/chef/foobar-1.0.0/#{dir}")
+                .at_least(:once)
             end
 
             @files_mocks.each_pair do |file, mock|
-              expect(@rest_mock).to receive(:streaming_request).with("http://example.org/files/#{file}").
-                and_return(mock)
+              expect(@rest_mock).to receive(:streaming_request).with("http://example.org/files/#{file}")
+                .and_return(mock)
             end
 
             @files.each do |f|
-              expect(FileUtils).to receive(:mv).
-                with("/var/tmp/#{File.basename(f)}", "/var/tmp/chef/foobar-1.0.0/#{f}")
+              expect(FileUtils).to receive(:mv)
+                .with("/var/tmp/#{File.basename(f)}", "/var/tmp/chef/foobar-1.0.0/#{f}")
             end
           end
 
@@ -182,8 +182,8 @@ describe Chef::Knife::CookbookDownload do
     describe "with -N or --latest" do
       it "should return and set the version to the latest version" do
         @knife.config[:latest] = true
-        expect(@knife).to receive(:available_versions).at_least(:once).
-          and_return(["1.0.0", "1.1.0", "2.0.0"])
+        expect(@knife).to receive(:available_versions).at_least(:once)
+          .and_return(["1.0.0", "1.1.0", "2.0.0"])
         @knife.determine_version
         expect(@knife.version.to_s).to eq("2.0.0")
       end
@@ -196,26 +196,26 @@ describe Chef::Knife::CookbookDownload do
     end
 
     it "should return nil if there are no versions" do
-      expect(Chef::CookbookVersion).to receive(:available_versions).
-        with("foobar").
-        and_return(nil)
+      expect(Chef::CookbookVersion).to receive(:available_versions)
+        .with("foobar")
+        .and_return(nil)
       expect(@knife.available_versions).to eq(nil)
     end
 
     it "should return the available versions" do
-      expect(Chef::CookbookVersion).to receive(:available_versions).
-        with("foobar").
-        and_return(["1.1.0", "2.0.0", "1.0.0"])
+      expect(Chef::CookbookVersion).to receive(:available_versions)
+        .with("foobar")
+        .and_return(["1.1.0", "2.0.0", "1.0.0"])
       expect(@knife.available_versions).to eq([Chef::Version.new("1.0.0"),
                                            Chef::Version.new("1.1.0"),
                                            Chef::Version.new("2.0.0")])
     end
 
     it "should avoid multiple API calls to the server" do
-      expect(Chef::CookbookVersion).to receive(:available_versions).
-        once.
-        with("foobar").
-        and_return(["1.1.0", "2.0.0", "1.0.0"])
+      expect(Chef::CookbookVersion).to receive(:available_versions)
+        .once
+        .with("foobar")
+        .and_return(["1.1.0", "2.0.0", "1.0.0"])
       @knife.available_versions
       @knife.available_versions
     end

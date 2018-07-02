@@ -48,15 +48,15 @@ describe Chef::Provider::Service::Macosx do
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
     let(:provider) { described_class.new(new_resource, run_context) }
     let(:launchctl_stdout) { StringIO.new }
-    let(:plutil_stdout) { String.new <<-XML }
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key>
-  <string>io.redis.redis-server</string>
-</dict>
-</plist>
+    let(:plutil_stdout) { String.new <<~XML }
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>Label</key>
+        <string>io.redis.redis-server</string>
+      </dict>
+      </plist>
 XML
 
     %w{Daemon Agent}.each do |service_type|
@@ -76,20 +76,20 @@ XML
           before do
             allow(run_context).to receive(:logger).and_return(logger)
             allow(Dir).to receive(:glob).and_return([plist], [])
-            @stat = double("File::Stat", { :uid => 501 })
+            @stat = double("File::Stat", { uid: 501 })
             allow(File).to receive(:stat).and_return(@stat)
-            @getpwuid = double("Etc::Passwd", { :name => "mikedodge04" })
+            @getpwuid = double("Etc::Passwd", { name: "mikedodge04" })
             allow(Etc).to receive(:getpwuid).and_return(@getpwuid)
             allow(node).to receive(:[]).with("platform_version").and_return(platform_version)
             cmd = "launchctl list #{service_label}"
-            allow(provider).to receive(:shell_out).
-              with(/(#{su_cmd} '#{cmd}'|#{cmd})/, default_env: false).
-              and_return(double("Status",
-                                    :stdout => launchctl_stdout, :exitstatus => 0))
+            allow(provider).to receive(:shell_out)
+              .with(/(#{su_cmd} '#{cmd}'|#{cmd})/, default_env: false)
+              .and_return(double("Status",
+                                    stdout: launchctl_stdout, exitstatus: 0))
             allow(File).to receive(:exists?).and_return([true], [])
-            allow(provider).to receive(:shell_out!).
-              with(/plutil -convert xml1 -o/, default_env: false).
-              and_return(double("Status", :stdout => plutil_stdout))
+            allow(provider).to receive(:shell_out!)
+              .with(/plutil -convert xml1 -o/, default_env: false)
+              .and_return(double("Status", stdout: plutil_stdout))
           end
 
           context "#{service_name} that is a #{service_type} running Osx #{platform_version}" do
@@ -113,9 +113,9 @@ XML
                 before do
                   allow(Dir).to receive(:glob).and_return([])
                   allow(File).to receive(:exists?).and_return([true], [])
-                  allow(provider).to receive(:shell_out!).
-                    with(/plutil -convert xml1 -o/).
-                    and_raise(Mixlib::ShellOut::ShellCommandFailed)
+                  allow(provider).to receive(:shell_out!)
+                    .with(/plutil -convert xml1 -o/)
+                    .and_raise(Mixlib::ShellOut::ShellCommandFailed)
                 end
 
                 it "works for action :nothing" do
@@ -136,20 +136,20 @@ XML
               end
 
               context "when launchctl returns pid in service list" do
-                let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-{
-  "LimitLoadToSessionType" = "System";
-  "Label" = "io.redis.redis-server";
-  "TimeOut" = 30;
-  "OnDemand" = false;
-  "LastExitStatus" = 0;
-  "PID" = 62803;
-  "Program" = "do_some.sh";
-  "ProgramArguments" = (
-    "path/to/do_something.sh";
-    "-f";
-  );
-};
+                let(:launchctl_stdout) { StringIO.new <<~SVC_LIST }
+                  {
+                    "LimitLoadToSessionType" = "System";
+                    "Label" = "io.redis.redis-server";
+                    "TimeOut" = 30;
+                    "OnDemand" = false;
+                    "LastExitStatus" = 0;
+                    "PID" = 62803;
+                    "Program" = "do_some.sh";
+                    "ProgramArguments" = (
+                      "path/to/do_something.sh";
+                      "-f";
+                    );
+                  };
 SVC_LIST
 
                 before do
@@ -167,7 +167,7 @@ SVC_LIST
 
               describe "running unsupported actions" do
                 before do
-                  allow(Dir).to receive(:glob).and_return(["#{plist}"], [])
+                  allow(Dir).to receive(:glob).and_return([(plist).to_s], [])
                   allow(File).to receive(:exists?).and_return([true], [])
                 end
                 it "should throw an exception when reload action is attempted" do
@@ -175,19 +175,19 @@ SVC_LIST
                 end
               end
               context "when launchctl returns empty service pid" do
-                let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-{
-  "LimitLoadToSessionType" = "System";
-  "Label" = "io.redis.redis-server";
-  "TimeOut" = 30;
-  "OnDemand" = false;
-  "LastExitStatus" = 0;
-  "Program" = "do_some.sh";
-  "ProgramArguments" = (
-    "path/to/do_something.sh";
-    "-f";
-  );
-};
+                let(:launchctl_stdout) { StringIO.new <<~SVC_LIST }
+                  {
+                    "LimitLoadToSessionType" = "System";
+                    "Label" = "io.redis.redis-server";
+                    "TimeOut" = 30;
+                    "OnDemand" = false;
+                    "LastExitStatus" = 0;
+                    "Program" = "do_some.sh";
+                    "ProgramArguments" = (
+                      "path/to/do_something.sh";
+                      "-f";
+                    );
+                  };
 SVC_LIST
 
                 before do
@@ -204,8 +204,8 @@ SVC_LIST
               end
 
               context "when launchctl doesn't return service entry at all" do
-                let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-Could not find service "io.redis.redis-server" in domain for system
+                let(:launchctl_stdout) { StringIO.new <<~SVC_LIST }
+                  Could not find service "io.redis.redis-server" in domain for system
 SVC_LIST
 
                 it "sets service running state to false" do
@@ -226,7 +226,7 @@ SVC_LIST
 
                 context "and plist for service is available" do
                   before do
-                    allow(Dir).to receive(:glob).and_return(["#{plist}"], [])
+                    allow(Dir).to receive(:glob).and_return([(plist).to_s], [])
                     provider.load_current_resource
                   end
 
@@ -237,7 +237,7 @@ SVC_LIST
 
                 describe "and several plists match service name" do
                   it "throws exception" do
-                    allow(Dir).to receive(:glob).and_return(["#{plist}",
+                    allow(Dir).to receive(:glob).and_return([(plist).to_s,
                                                 "/Users/wtf/something.plist"])
                     provider.load_current_resource
                     provider.define_resource_requirements
@@ -269,9 +269,9 @@ SVC_LIST
 
               it "starts service via launchctl if service found" do
                 cmd = "launchctl load -w " + session + plist
-                expect(provider).to receive(:shell_out).
-                  with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false).
-                  and_return(0)
+                expect(provider).to receive(:shell_out)
+                  .with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false)
+                  .and_return(0)
 
                 provider.start_service
               end
@@ -301,9 +301,9 @@ SVC_LIST
 
               it "stops the service via launchctl if service found" do
                 cmd = "launchctl unload -w " + plist
-                expect(provider).to receive(:shell_out).
-                  with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false).
-                  and_return(0)
+                expect(provider).to receive(:shell_out)
+                  .with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false)
+                  .and_return(0)
 
                 provider.stop_service
               end

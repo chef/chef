@@ -11,16 +11,16 @@ shared_context "client" do
 
   let(:ohai_data) do
     {
-      :fqdn =>             fqdn,
-      :hostname =>         hostname,
-      :machinename =>      machinename,
-      :platform =>         platform,
-      :platform_version => platform_version,
+      fqdn: fqdn,
+      hostname: hostname,
+      machinename: machinename,
+      platform: platform,
+      platform_version: platform_version,
     }
   end
 
   let(:ohai_system) do
-    ohai = instance_double("Ohai::System", :all_plugins => true, :data => ohai_data, logger: logger)
+    ohai = instance_double("Ohai::System", all_plugins: true, data: ohai_data, logger: logger)
     allow(ohai).to receive(:[]) do |k|
       ohai_data[k]
     end
@@ -80,17 +80,17 @@ shared_context "a client run" do
   let(:reporting_rest_client) { double("Chef::ServerAPI (reporting client)") }
 
   let(:runner)       { instance_double("Chef::Runner") }
-  let(:audit_runner) { instance_double("Chef::Audit::Runner", :failed? => false) }
+  let(:audit_runner) { instance_double("Chef::Audit::Runner", failed?: false) }
 
   def stub_for_register
     # --Client.register
     #   Make sure Client#register thinks the client key doesn't
     #   exist, so it tries to register and create one.
     allow(File).to receive(:exists?).and_call_original
-    expect(File).to receive(:exists?).
-      with(Chef::Config[:client_key]).
-      exactly(:once).
-      and_return(api_client_exists?)
+    expect(File).to receive(:exists?)
+      .with(Chef::Config[:client_key])
+      .exactly(:once)
+      .and_return(api_client_exists?)
 
     unless api_client_exists?
       #   Client.register will register with the validation client name.
@@ -99,21 +99,21 @@ shared_context "a client run" do
   end
 
   def stub_for_data_collector_init
-    expect(Chef::ServerAPI).to receive(:new).
-      with(Chef::Config[:data_collector][:server_url], validate_utf8: false).
-      exactly(:once).
-      and_return(http_data_collector)
+    expect(Chef::ServerAPI).to receive(:new)
+      .with(Chef::Config[:data_collector][:server_url], validate_utf8: false)
+      .exactly(:once)
+      .and_return(http_data_collector)
   end
 
   def stub_for_node_load
     #   Client.register will then turn around create another
     #   Chef::ServerAPI object, this time with the client key it got from the
     #   previous step.
-    expect(Chef::ServerAPI).to receive(:new).
-      with(Chef::Config[:chef_server_url], client_name: fqdn,
-                                           signing_key_filename: Chef::Config[:client_key]).
-      exactly(:once).
-      and_return(http_node_load)
+    expect(Chef::ServerAPI).to receive(:new)
+      .with(Chef::Config[:chef_server_url], client_name: fqdn,
+                                           signing_key_filename: Chef::Config[:client_key])
+      .exactly(:once)
+      .and_return(http_node_load)
 
     # --Client#build_node
     #   looks up the node, which we will return, then later saves it.
@@ -135,9 +135,9 @@ shared_context "a client run" do
     #
     expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
     expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
-    expect(http_cookbook_sync).to receive(:post).
-      with("environments/_default/cookbook_versions", { :run_list => [] }).
-      and_return({})
+    expect(http_cookbook_sync).to receive(:post)
+      .with("environments/_default/cookbook_versions", { run_list: [] })
+      .and_return({})
   end
 
   def stub_for_required_recipe
@@ -250,8 +250,8 @@ end
 
 shared_context "audit phase completed with failed controls" do
   let(:audit_runner) do
-    instance_double("Chef::Audit::Runner", :failed? => true,
-                                           :num_failed => 1, :num_total => 3) end
+    instance_double("Chef::Audit::Runner", failed?: true,
+                                           num_failed: 1, num_total: 3) end
 
   let(:audit_error) do
     err = Chef::Exceptions::AuditsFailed.new(audit_runner.num_failed, audit_runner.num_total)

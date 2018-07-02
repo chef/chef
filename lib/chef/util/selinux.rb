@@ -72,7 +72,7 @@ class Chef
 
       def check_selinux_enabled?
         if selinuxenabled_path
-          cmd = shell_out!(selinuxenabled_path, :returns => [0, 1])
+          cmd = shell_out!(selinuxenabled_path, returns: [0, 1])
           case cmd.exitstatus
           when 1
             return false

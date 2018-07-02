@@ -22,8 +22,8 @@ require "chef/node/attribute"
 
 describe Chef::Node::Attribute do
   let(:events) { instance_double(Chef::EventDispatch::Dispatcher) }
-  let(:run_context) { instance_double(Chef::RunContext, :events => events) }
-  let(:node) { instance_double(Chef::Node, :run_context => run_context) }
+  let(:run_context) { instance_double(Chef::RunContext, events: events) }
+  let(:node) { instance_double(Chef::Node, run_context: run_context) }
   before(:each) do
     allow(events).to receive(:attribute_changed)
     @attribute_hash =
@@ -184,7 +184,7 @@ describe Chef::Node::Attribute do
 
     [ :normal, :default, :override, :automatic ].each do |accessor|
       it "should set #{accessor}" do
-        na = Chef::Node::Attribute.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true })
+        na = Chef::Node::Attribute.new({ normal: true }, { default: true }, { override: true }, { automatic: true })
         expect(na.send(accessor)).to eq({ accessor.to_s => true })
       end
     end

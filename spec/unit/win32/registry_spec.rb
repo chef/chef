@@ -21,8 +21,8 @@ require "spec_helper"
 describe Chef::Win32::Registry do
   include_context "Win32"
 
-  let(:value1) { { :name => "one", :type => :string, :data => "1" } }
-  let(:value1_upcase_name) { { :name => "ONE", :type => :string, :data => "1" } }
+  let(:value1) { { name: "one", type: :string, data: "1" } }
+  let(:value1_upcase_name) { { name: "ONE", type: :string, data: "1" } }
   let(:key_path) { 'HKCU\Software\OpscodeNumbers' }
   let(:key) { 'Software\OpscodeNumbers' }
   let(:key_parent) { "Software" }
@@ -41,7 +41,7 @@ describe Chef::Win32::Registry do
   before(:each) do
     allow_any_instance_of(Chef::Win32::Registry).to receive(:machine_architecture).and_return(:x86_64)
 
-    #Making the values for registry constants available on unix
+    # Making the values for registry constants available on unix
     Win32::Registry::KEY_SET_VALUE = 0x0002
     Win32::Registry::KEY_QUERY_VALUE = 0x0001
     Win32::Registry::KEY_WRITE = 0x00020000 | 0x0002 | 0x0004

@@ -38,38 +38,38 @@ class Chef
       banner "knife search INDEX QUERY (options)"
 
       option :start,
-        :short => "-b ROW",
-        :long => "--start ROW",
-        :description => "The row to start returning results at",
-        :default => 0,
-        :proc => lambda { |i| i.to_i }
+        short: "-b ROW",
+        long: "--start ROW",
+        description: "The row to start returning results at",
+        default: 0,
+        proc: lambda { |i| i.to_i }
 
       option :rows,
-        :short => "-R INT",
-        :long => "--rows INT",
-        :description => "The number of rows to return",
-        :default => nil,
-        :proc => lambda { |i| i.to_i }
+        short: "-R INT",
+        long: "--rows INT",
+        description: "The number of rows to return",
+        default: nil,
+        proc: lambda { |i| i.to_i }
 
       option :run_list,
-        :short => "-r",
-        :long => "--run-list",
-        :description => "Show only the run list"
+        short: "-r",
+        long: "--run-list",
+        description: "Show only the run list"
 
       option :id_only,
-        :short => "-i",
-        :long => "--id-only",
-        :description => "Show only the ID of matching objects"
+        short: "-i",
+        long: "--id-only",
+        description: "Show only the ID of matching objects"
 
       option :query,
-        :short => "-q QUERY",
-        :long => "--query QUERY",
-        :description => "The search query; useful to protect queries starting with -"
+        short: "-q QUERY",
+        long: "--query QUERY",
+        description: "The search query; useful to protect queries starting with -"
 
       option :filter_result,
-        :short => "-f FILTER",
-        :long => "--filter-result FILTER",
-        :description => "Only return specific attributes of the matching objects; for example: \"ServerName=name, Kernel=kernel.version\""
+        short: "-f FILTER",
+        long: "--filter-result FILTER",
+        description: "Only return specific attributes of the matching objects; for example: \"ServerName=name, Kernel=kernel.version\""
 
       def run
         read_cli_args
@@ -116,7 +116,7 @@ class Chef
         end
 
         if ui.interchange?
-          output({ :results => result_count, :rows => result_items })
+          output({ results: result_count, rows: result_items })
         else
           ui.log "#{result_count} items found"
           ui.log("\n")

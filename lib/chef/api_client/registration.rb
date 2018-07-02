@@ -139,7 +139,7 @@ class Chef
       end
 
       def put_data
-        base_put_data = { :name => name, :admin => false }
+        base_put_data = { name: name, admin: false }
         if self_generate_keys?
           base_put_data[:public_key] = generated_public_key
         else
@@ -149,7 +149,7 @@ class Chef
       end
 
       def post_data
-        post_data = { :name => name, :admin => false }
+        post_data = { name: name, admin: false }
         post_data[:public_key] = generated_public_key if self_generate_keys?
         post_data
       end
@@ -157,9 +157,9 @@ class Chef
       def http_api
         @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url],
                                           {
-                                            :api_version => "0",
-                                            :client_name => Chef::Config[:validation_client_name],
-                                            :signing_key_filename => Chef::Config[:validation_key],
+                                            api_version: "0",
+                                            client_name: Chef::Config[:validation_client_name],
+                                            signing_key_filename: Chef::Config[:validation_key],
                                           }
                                          )
       end

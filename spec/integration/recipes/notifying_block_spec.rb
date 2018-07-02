@@ -55,7 +55,7 @@ describe "notifying_block" do
     #  2. delayed notifications are de-dup'd in the subcontext
     #  3. delayed notifications (to resources inside the subcontext) are run at the end of the subcontext
     it "should run alpha, beta, gamma, and delta in that order" do
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match(/\* log\[alpha\] action write\s+\* log\[beta\] action write\s+\* log\[gamma\] action write\s+Converging 1 resources\s+\* log\[delta\] action write/)
       result.error!
     end
@@ -103,7 +103,7 @@ describe "notifying_block" do
     #  1. notifying block will correctly update wrapping new_resource updated_by_last_action status
     #  2. delayed notifications from a subcontext inside a resource will notify resources in their outer run_context
     it "should run foo, quux, bar, and baz in that order" do
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match(/\* log\[foo\] action write\s+\* log\[quux\] action write\s+\* log\[bar\] action write\s+\* log\[baz\] action write/)
       result.error!
     end

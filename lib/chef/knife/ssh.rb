@@ -40,105 +40,105 @@ class Chef
       banner "knife ssh QUERY COMMAND (options)"
 
       option :concurrency,
-        :short => "-C NUM",
-        :long => "--concurrency NUM",
-        :description => "The number of concurrent connections",
-        :default => nil,
-        :proc => lambda { |o| o.to_i }
+        short: "-C NUM",
+        long: "--concurrency NUM",
+        description: "The number of concurrent connections",
+        default: nil,
+        proc: lambda { |o| o.to_i }
 
       option :ssh_attribute,
-        :short => "-a ATTR",
-        :long => "--attribute ATTR",
-        :description => "The attribute to use for opening the connection - default depends on the context"
+        short: "-a ATTR",
+        long: "--attribute ATTR",
+        description: "The attribute to use for opening the connection - default depends on the context"
 
       option :manual,
-        :short => "-m",
-        :long => "--manual-list",
-        :boolean => true,
-        :description => "QUERY is a space separated list of servers",
-        :default => false
+        short: "-m",
+        long: "--manual-list",
+        boolean: true,
+        description: "QUERY is a space separated list of servers",
+        default: false
 
       option :prefix_attribute,
-        :long => "--prefix-attribute ATTR",
-        :description => "The attribute to use for prefixing the ouput - default depends on the context"
+        long: "--prefix-attribute ATTR",
+        description: "The attribute to use for prefixing the ouput - default depends on the context"
 
       option :ssh_user,
-        :short => "-x USERNAME",
-        :long => "--ssh-user USERNAME",
-        :description => "The ssh username"
+        short: "-x USERNAME",
+        long: "--ssh-user USERNAME",
+        description: "The ssh username"
 
       option :ssh_password_ng,
-        :short => "-P [PASSWORD]",
-        :long => "--ssh-password [PASSWORD]",
-        :description => "The ssh password - will prompt if flag is specified but no password is given",
+        short: "-P [PASSWORD]",
+        long: "--ssh-password [PASSWORD]",
+        description: "The ssh password - will prompt if flag is specified but no password is given",
         # default to a value that can not be a password (boolean)
         # so we can effectively test if this parameter was specified
         # without a value
-        :default => false
+        default: false
 
       option :ssh_port,
-        :short => "-p PORT",
-        :long => "--ssh-port PORT",
-        :description => "The ssh port",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key.strip }
+        short: "-p PORT",
+        long: "--ssh-port PORT",
+        description: "The ssh port",
+        proc: Proc.new { |key| Chef::Config[:knife][:ssh_port] = key.strip }
 
       option :ssh_timeout,
-        :short => "-t SECONDS",
-        :long => "--ssh-timeout SECONDS",
-        :description => "The ssh connection timeout",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_timeout] = key.strip.to_i },
-        :default => 120
+        short: "-t SECONDS",
+        long: "--ssh-timeout SECONDS",
+        description: "The ssh connection timeout",
+        proc: Proc.new { |key| Chef::Config[:knife][:ssh_timeout] = key.strip.to_i },
+        default: 120
 
       option :ssh_gateway,
-        :short => "-G GATEWAY",
-        :long => "--ssh-gateway GATEWAY",
-        :description => "The ssh gateway",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
+        short: "-G GATEWAY",
+        long: "--ssh-gateway GATEWAY",
+        description: "The ssh gateway",
+        proc: Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
 
       option :ssh_gateway_identity,
-        :long => "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
-        :description => "The SSH identity file used for gateway authentication"
+        long: "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
+        description: "The SSH identity file used for gateway authentication"
 
       option :forward_agent,
-        :short => "-A",
-        :long => "--forward-agent",
-        :description => "Enable SSH agent forwarding",
-        :boolean => true
+        short: "-A",
+        long: "--forward-agent",
+        description: "Enable SSH agent forwarding",
+        boolean: true
 
       option :ssh_identity_file,
-        :short => "-i IDENTITY_FILE",
-        :long => "--ssh-identity-file IDENTITY_FILE",
-        :description => "The SSH identity file used for authentication"
+        short: "-i IDENTITY_FILE",
+        long: "--ssh-identity-file IDENTITY_FILE",
+        description: "The SSH identity file used for authentication"
 
       option :host_key_verify,
-        :long => "--[no-]host-key-verify",
-        :description => "Verify host key, enabled by default.",
-        :boolean => true,
-        :default => true
+        long: "--[no-]host-key-verify",
+        description: "Verify host key, enabled by default.",
+        boolean: true,
+        default: true
 
       option :on_error,
-        :short => "-e",
-        :long => "--exit-on-error",
-        :description => "Immediately exit if an error is encountered",
-        :boolean => true,
-        :default => false
+        short: "-e",
+        long: "--exit-on-error",
+        description: "Immediately exit if an error is encountered",
+        boolean: true,
+        default: false
 
       option :duplicated_fqdns,
-        :long => "--duplicated-fqdns",
-        :description => "Behavior if FQDNs are duplicated, ignored by default",
-        :proc => Proc.new { |key| Chef::Config[:knife][:duplicated_fqdns] = key.strip.to_sym },
-        :default => :ignore
+        long: "--duplicated-fqdns",
+        description: "Behavior if FQDNs are duplicated, ignored by default",
+        proc: Proc.new { |key| Chef::Config[:knife][:duplicated_fqdns] = key.strip.to_sym },
+        default: :ignore
 
       option :tmux_split,
-        :long => "--tmux-split",
-        :description => "Split tmux window.",
-        :boolean => true,
-        :default => false
+        long: "--tmux-split",
+        description: "Split tmux window.",
+        boolean: true,
+        default: false
 
       def session
         ssh_error_handler = Proc.new do |server|
           if config[:on_error]
-            #Net::SSH::Multi magic to force exception to be re-raised.
+            # Net::SSH::Multi magic to force exception to be re-raised.
             throw :go, :raise
           else
             ui.warn "Failed to connect to #{server.host} -- #{$!.class.name}: #{$!.message}"
@@ -146,7 +146,7 @@ class Chef
           end
         end
 
-        @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
+        @session ||= Net::SSH::Multi.start(concurrent_connections: config[:concurrency], on_error: ssh_error_handler)
       end
 
       def configure_gateway
@@ -505,18 +505,18 @@ class Chef
         end
 
         Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate
-        Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using => :command_down)
+        Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", using: :command_down)
         term = Appscript.app("Terminal")
         window = term.windows.first.get
 
         (session.servers_for.size - 1).times do |i|
           window.activate
-          Appscript.app("System Events").application_processes["Terminal.app"].keystroke("t", :using => :command_down)
+          Appscript.app("System Events").application_processes["Terminal.app"].keystroke("t", using: :command_down)
         end
 
         session.servers_for.each_with_index do |server, tab_number|
           cmd = "unset PROMPT_COMMAND; echo -e \"\\033]0;#{server.host}\\007\"; ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}"
-          Appscript.app("Terminal").do_script(cmd, :in => window.tabs[tab_number + 1].get)
+          Appscript.app("Terminal").do_script(cmd, in: window.tabs[tab_number + 1].get)
         end
       end
 
