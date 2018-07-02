@@ -2,13 +2,13 @@ This file holds "in progress" release notes for the current release under develo
 
 ## New `knife config` command
 
-The `knife config` command has been added to help with debugging configuration
+The `knife config get` command has been added to help with debugging configuration
 issues with `knife` and other tools that use the `knife.rb` file.
 
 With no arguments, it will display all options you've set:
 
 ```bash
-$ knife config
+$ knife config get
 Loading from configuration file /Users/.../.chef/knife.rb
 chef_server_url: https://...
 client_key:      /Users/.../.chef/user.pem
