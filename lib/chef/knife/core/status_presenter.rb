@@ -101,7 +101,7 @@ class Chef
             fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
             name = node["name"] || node.name
 
-            run_list = (node['run_list']).to_s if config[:run_list]
+            run_list = (node["run_list"]).to_s if config[:run_list]
             line_parts = Array.new
 
             if node["ohai_time"]

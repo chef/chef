@@ -49,7 +49,7 @@ describe Chef::Provider::Package::Cab do
   end
 
   before do
-    new_resource.source = File.join((ENV['TEMP']).to_s, "test6.1-kb2664825-v3-x64.cab")
+    new_resource.source = File.join((ENV["TEMP"]).to_s, "test6.1-kb2664825-v3-x64.cab")
     installed_package_list_obj = double(stdout: installed_package_list_stdout)
     allow(provider).to receive(:dism_command).with("/Get-Packages").and_return(installed_package_list_obj)
     package_version_obj = double(stdout: package_version_stdout)
@@ -151,9 +151,9 @@ describe Chef::Provider::Package::Cab do
       allow(Chef::FileCache).to receive(:create_cache_path).and_return(ENV["TEMP"])
       path = provider.default_download_cache_path
       if windows?
-        expect(path).to be == File.join((ENV['TEMP']).to_s, "\\", "Test6.1-KB2664825-v3-x64.cab")
+        expect(path).to be == File.join((ENV["TEMP"]).to_s, "\\", "Test6.1-KB2664825-v3-x64.cab")
       else
-        expect(path).to be == File.join((ENV['TEMP']).to_s, "Test6.1-KB2664825-v3-x64.cab")
+        expect(path).to be == File.join((ENV["TEMP"]).to_s, "Test6.1-KB2664825-v3-x64.cab")
       end
     end
   end
@@ -161,12 +161,12 @@ describe Chef::Provider::Package::Cab do
   describe "#cab_file_source" do
     context "when local file path is set" do
       it "returns local cab file source path" do
-        new_resource.source = File.join((ENV['TEMP']).to_s, "test6.1-kb2664825-v3-x64.cab")
+        new_resource.source = File.join((ENV["TEMP"]).to_s, "test6.1-kb2664825-v3-x64.cab")
         path = provider.cab_file_source
         if windows?
-          expect(path).to be == File.join((ENV['TEMP'].downcase).to_s, "\\", "test6.1-kb2664825-v3-x64.cab")
+          expect(path).to be == File.join((ENV["TEMP"].downcase).to_s, "\\", "test6.1-kb2664825-v3-x64.cab")
         else
-          expect(path).to be == File.join((ENV['TEMP']).to_s, "test6.1-kb2664825-v3-x64.cab")
+          expect(path).to be == File.join((ENV["TEMP"]).to_s, "test6.1-kb2664825-v3-x64.cab")
         end
       end
     end
@@ -174,9 +174,9 @@ describe Chef::Provider::Package::Cab do
       it "calls download_source_file method" do
         new_resource.source = "https://www.something.com/test6.1-kb2664825-v3-x64.cab"
         if windows?
-          expect(provider).to receive(:download_source_file).and_return(File.join((ENV['TEMP'].downcase).to_s, "\\", "test6.1-kb2664825-v3-x64.cab"))
+          expect(provider).to receive(:download_source_file).and_return(File.join((ENV["TEMP"].downcase).to_s, "\\", "test6.1-kb2664825-v3-x64.cab"))
         else
-          expect(provider).to receive(:download_source_file).and_return(File.join((ENV['TEMP']).to_s, "test6.1-kb2664825-v3-x64.cab"))
+          expect(provider).to receive(:download_source_file).and_return(File.join((ENV["TEMP"]).to_s, "test6.1-kb2664825-v3-x64.cab"))
         end
         provider.cab_file_source
       end
