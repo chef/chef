@@ -25,7 +25,7 @@ describe Chef::ChefFS::DataHandler::DataHandlerBase do
       { "name" => "grizzly",
         "gender" => "female",
         "age" => 3,
-        "food" => "honey"
+        "food" => "honey",
       }
     end
 
@@ -33,7 +33,7 @@ describe Chef::ChefFS::DataHandler::DataHandlerBase do
       { "family" => "ursidae",
         "hibernate" => true,
         "food" => "berries",
-        "avg_lifespan_years" => 22
+        "avg_lifespan_years" => 22,
       }
     end
 
@@ -44,7 +44,7 @@ describe Chef::ChefFS::DataHandler::DataHandlerBase do
         "hibernate" => true,
         "avg_lifespan_years" => 22,
         "age" => 3,
-        "food" => "honey"
+        "food" => "honey",
       }
     end
 

@@ -88,7 +88,7 @@ describe Chef::Provider::Service::Debian do
             "5" => [:start, "20"],
             "0" => [:stop, "20"],
             "1" => [:stop, "20"],
-            "6" => [:stop, "20"]
+            "6" => [:stop, "20"],
           })
       end
     end

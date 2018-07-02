@@ -83,7 +83,7 @@ describe Chef::Provider::WindowsTask, :windows_only do
         random_minutes_interval: 60,
         minutes_interval: 15,
         run_on_last_day_of_month: false,
-        run_on_last_week_of_month: false
+        run_on_last_week_of_month: false,
 
       }
       expect(provider.send(:trigger)).to eq(result)

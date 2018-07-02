@@ -46,7 +46,7 @@ class Chef
           SEP: TaskScheduler::SEPTEMBER,
           OCT: TaskScheduler::OCTOBER,
           NOV: TaskScheduler::NOVEMBER,
-          DEC: TaskScheduler::DECEMBER
+          DEC: TaskScheduler::DECEMBER,
         }
 
         DAYS_OF_WEEK = { MON: TaskScheduler::MONDAY,
@@ -61,7 +61,7 @@ class Chef
           FIRST: TaskScheduler::FIRST_WEEK,
           SECOND: TaskScheduler::SECOND_WEEK,
           THIRD: TaskScheduler::THIRD_WEEK,
-          FOURTH: TaskScheduler::FOURTH_WEEK
+          FOURTH: TaskScheduler::FOURTH_WEEK,
         }
 
         DAYS_OF_MONTH = {
@@ -95,7 +95,7 @@ class Chef
           28 => TaskScheduler::TASK_TWENTY_EIGHTH,
           29 => TaskScheduler::TASK_TWENTY_NINTH,
           30 => TaskScheduler::TASK_THIRTYETH,
-          31 => TaskScheduler::TASK_THIRTY_FIRST
+          31 => TaskScheduler::TASK_THIRTY_FIRST,
         }
 
         def load_current_resource
@@ -268,7 +268,7 @@ class Chef
             end_year: 0,
             trigger_type: trigger_type,
             type: type,
-            random_minutes_interval: new_resource.random_delay
+            random_minutes_interval: new_resource.random_delay,
           }
 
           if new_resource.frequency == :minute
@@ -543,7 +543,7 @@ class Chef
         def config_settings
           settings = {
             execution_time_limit: new_resource.execution_time_limit,
-            enabled: true
+            enabled: true,
           }
           settings[:idle_duration] = new_resource.idle_time if new_resource.idle_time
           settings[:run_only_if_idle] = true if new_resource.idle_time
