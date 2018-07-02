@@ -43,7 +43,7 @@ describe Chef::Provider::Service::Upstart do
 
     it "should return /etc/event.d as the upstart job directory when running on Ubuntu 9.04" do
       @node.automatic_attrs[:platform_version] = "9.04"
-      #Chef::Platform.stub(:find_platform_and_version).and_return([ "ubuntu", "9.04" ])
+      # Chef::Platform.stub(:find_platform_and_version).and_return([ "ubuntu", "9.04" ])
       @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
       expect(@provider.instance_variable_get(:@upstart_job_dir)).to eq("/etc/event.d")
       expect(@provider.instance_variable_get(:@upstart_conf_suffix)).to eq("")

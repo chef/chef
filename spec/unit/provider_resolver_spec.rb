@@ -27,7 +27,7 @@ require "fileutils"
 include Chef::Mixin::ConvertToClassName
 
 # Open up Provider so we can write things down easier in here
-#module Chef::Provider
+# module Chef::Provider
 
 describe Chef::ProviderResolver do
   include IntegrationSupport
@@ -428,7 +428,7 @@ describe Chef::ProviderResolver do
 
       # old debian uses the Debian provider (does not have insserv or upstart, or update-rc.d???)
       on_platform "debian", platform_version: "4.0", os: "linux" do
-        #it_behaves_like "a debian platform using the debian provider"
+        # it_behaves_like "a debian platform using the debian provider"
       end
 
       # Debian replaced the debian provider with insserv in the FIXME:VERSION distro

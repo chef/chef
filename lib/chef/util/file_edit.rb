@@ -40,38 +40,38 @@ class Chef
         @file_edited
       end
 
-      #search the file line by line and match each line with the given regex
-      #if matched, replace the whole line with newline.
+      # search the file line by line and match each line with the given regex
+      # if matched, replace the whole line with newline.
       def search_file_replace_line(regex, newline)
         @changes = (editor.replace_lines(regex, newline) > 0) || @changes
       end
 
-      #search the file line by line and match each line with the given regex
-      #if matched, replace the match (all occurrences)  with the replace parameter
+      # search the file line by line and match each line with the given regex
+      # if matched, replace the match (all occurrences)  with the replace parameter
       def search_file_replace(regex, replace)
         @changes = (editor.replace(regex, replace) > 0) || @changes
       end
 
-      #search the file line by line and match each line with the given regex
-      #if matched, delete the line
+      # search the file line by line and match each line with the given regex
+      # if matched, delete the line
       def search_file_delete_line(regex)
         @changes = (editor.remove_lines(regex) > 0) || @changes
       end
 
-      #search the file line by line and match each line with the given regex
-      #if matched, delete the match (all occurrences) from the line
+      # search the file line by line and match each line with the given regex
+      # if matched, delete the match (all occurrences) from the line
       def search_file_delete(regex)
         search_file_replace(regex, "")
       end
 
-      #search the file line by line and match each line with the given regex
-      #if matched, insert newline after each matching line
+      # search the file line by line and match each line with the given regex
+      # if matched, insert newline after each matching line
       def insert_line_after_match(regex, newline)
         @changes = (editor.append_line_after(regex, newline) > 0) || @changes
       end
 
-      #search the file line by line and match each line with the given regex
-      #if not matched, insert newline at the end of the file
+      # search the file line by line and match each line with the given regex
+      # if not matched, insert newline at the end of the file
       def insert_line_if_no_match(regex, newline)
         @changes = (editor.append_line_if_missing(regex, newline) > 0) || @changes
       end
@@ -80,7 +80,7 @@ class Chef
         !!@changes
       end
 
-      #Make a copy of old_file and write new file out (only if file changed)
+      # Make a copy of old_file and write new file out (only if file changed)
       def write_file
         if @changes
           backup_pathname = original_pathname + ".old"

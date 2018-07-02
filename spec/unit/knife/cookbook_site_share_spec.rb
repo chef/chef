@@ -199,8 +199,8 @@ describe Chef::Knife::CookbookSiteShare do
       response_text = Chef::JSONCompat.to_json({ system_error: "Your call was dropped", reason: "There's a map for that" })
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(500)
-      expect(@knife.ui).to receive(:error).with(/#{Regexp.escape(response_text)}/) #.ordered
-      expect(@knife.ui).to receive(:error).with(/Unknown error/) #.ordered
+      expect(@knife.ui).to receive(:error).with(/#{Regexp.escape(response_text)}/) # .ordered
+      expect(@knife.ui).to receive(:error).with(/Unknown error/) # .ordered
       expect { @knife.run }.to raise_error(SystemExit)
     end
 

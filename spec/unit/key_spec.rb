@@ -564,7 +564,7 @@ EOS
         end
       end
 
-    end #update
+    end # update
 
     describe "load" do
       shared_examples_for "load" do
@@ -592,7 +592,7 @@ EOS
         end
       end
 
-    end #load
+    end # load
 
     describe "destroy" do
       shared_examples_for "destroy key" do

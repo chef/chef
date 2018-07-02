@@ -33,12 +33,12 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   include Chef::ReservedNames::Win32::API::Error rescue LoadError
   include Chef::Win32ServiceConstants
 
-  #Win32::Service.get_start_type
+  # Win32::Service.get_start_type
   AUTO_START = "auto start"
   MANUAL = "demand start"
   DISABLED = "disabled"
 
-  #Win32::Service.get_current_state
+  # Win32::Service.get_current_state
   RUNNING = "running"
   STOPPED = "stopped"
   CONTINUE_PENDING = "continue pending"

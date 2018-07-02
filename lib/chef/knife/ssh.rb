@@ -138,7 +138,7 @@ class Chef
       def session
         ssh_error_handler = Proc.new do |server|
           if config[:on_error]
-            #Net::SSH::Multi magic to force exception to be re-raised.
+            # Net::SSH::Multi magic to force exception to be re-raised.
             throw :go, :raise
           else
             ui.warn "Failed to connect to #{server.host} -- #{$!.class.name}: #{$!.message}"

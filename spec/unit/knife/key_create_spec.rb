@@ -207,7 +207,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
         end
       end # when the server returns a private key
     end # when the command is run
-  end #key create run command"
+  end # key create run command"
 
   context "when actor_field_name is 'user'" do
     it_should_behave_like "key create run command" do

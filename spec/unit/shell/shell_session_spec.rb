@@ -214,7 +214,7 @@ describe Shell::SoloLegacySession do
   it "keeps json attribs and passes them to the node for consumption" do
     @session.node_attributes = { "besnard_lakes" => "are_the_dark_horse" }
     expect(@session.node["besnard_lakes"]).to eq("are_the_dark_horse")
-    #pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
+    # pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
   end
 
   it "generates its resource collection from the compiled cookbooks and the ad hoc recipe" do
@@ -223,7 +223,7 @@ describe Shell::SoloLegacySession do
     @run_context.resource_collection << kitteh_cat
     keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @recipe.run_context.resource_collection << keyboard_cat
-    #@session.rebuild_collection
+    # @session.rebuild_collection
     expect(@session.resource_collection).to include(kitteh_cat, keyboard_cat)
   end
 

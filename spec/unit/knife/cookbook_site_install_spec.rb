@@ -173,7 +173,7 @@ describe Chef::Knife::CookbookSiteInstall do
 
     it "returns a populated Metadata object if metadata.json exists" do
       allow(File).to receive(:exist?).with(json_metadata_path).and_return(true)
-      #expect(IO).to receive(:read).with(json_metadata_path)
+      # expect(IO).to receive(:read).with(json_metadata_path)
       allow(IO).to receive(:read)
       expect(metadata).to receive(:from_json)
       knife.preferred_metadata

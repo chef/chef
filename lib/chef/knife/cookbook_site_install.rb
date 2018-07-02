@@ -86,7 +86,7 @@ class Chef
         ui.info "Installing #{@cookbook_name} to #{@install_path}"
 
         @repo = CookbookSCMRepo.new(@install_path, ui, config)
-        #cookbook_path = File.join(vendor_path, name_args[0])
+        # cookbook_path = File.join(vendor_path, name_args[0])
         upstream_file = File.join(@install_path, "#{@cookbook_name}.tar.gz")
 
         @repo.sanity_check

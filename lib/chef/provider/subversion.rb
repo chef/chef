@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-#TODO subversion and git should both extend from a base SCM provider.
+# TODO subversion and git should both extend from a base SCM provider.
 
 require "chef/log"
 require "chef/provider"

@@ -2,7 +2,7 @@
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
 # Copyright:: Copyright 2010-2017, Chef Software Inc.
-#p License:: Apache License, Version 2.0
+# p License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

@@ -273,7 +273,7 @@ describe Chef::FileAccessControl do
 
     it "sets the file's mode as specified in the resource when the current modes are incorrect" do
       # stat returns modes like 0100644 (octal) => 33188 (decimal)
-      #@fac.stub(:stat).and_return(OpenStruct.new(:mode => 33188))
+      # @fac.stub(:stat).and_return(OpenStruct.new(:mode => 33188))
       @current_resource.mode("0644")
       expect(File).to receive(:chmod).with(256, "/tmp/different_file.txt")
       @fac.set_mode
@@ -286,7 +286,7 @@ describe Chef::FileAccessControl do
     end
 
     it "does not set the file's mode when the current modes are correct" do
-      #@fac.stub(:stat).and_return(OpenStruct.new(:mode => 0100400))
+      # @fac.stub(:stat).and_return(OpenStruct.new(:mode => 0100400))
       @current_resource.mode("0400")
       expect(File).not_to receive(:chmod)
       @fac.set_mode

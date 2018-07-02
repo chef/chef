@@ -42,10 +42,10 @@ class Chef
         # compare an existing ACE with one you want to create.
         def predict_rights_mask(generic_mask)
           mask = generic_mask
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_READ if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_READ) != 0
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_WRITE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE) != 0
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_EXECUTE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE) != 0
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_ALL if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_ALL) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_READ if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_READ) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_WRITE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_EXECUTE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_ALL if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_ALL) != 0
           if type == :SE_FILE_OBJECT
             mask |= Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ if (mask & Chef::ReservedNames::Win32::API::Security::GENERIC_READ) != 0
             mask |= Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE if (mask & Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE) != 0

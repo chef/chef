@@ -168,8 +168,8 @@ E
     def run
       ssl_check.run
     rescue Exception
-      #puts "OUT: #{stdout_io.string}"
-      #puts "ERR: #{stderr_io.string}"
+      # puts "OUT: #{stdout_io.string}"
+      # puts "ERR: #{stderr_io.string}"
       raise
     end
 

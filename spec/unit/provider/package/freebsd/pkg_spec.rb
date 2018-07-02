@@ -66,15 +66,15 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
 
   describe "when querying for package state and attributes" do
     before do
-      #@new_resource = Chef::Resource::Package.new("zsh")
+      # @new_resource = Chef::Resource::Package.new("zsh")
 
-      #@provider = Chef::Provider::Package::Freebsd::Pkg.new(@node, @new_resource)
+      # @provider = Chef::Provider::Package::Freebsd::Pkg.new(@node, @new_resource)
 
-      #@status = double("Status", :exitstatus => 0)
-      #@stdin = double("STDIN", :null_object => true)
-      #@stdout = double("STDOUT", :null_object => true)
-      #@stderr = double("STDERR", :null_object => true)
-      #@pid = double("PID", :null_object => true)
+      # @status = double("Status", :exitstatus => 0)
+      # @stdin = double("STDIN", :null_object => true)
+      # @stdout = double("STDOUT", :null_object => true)
+      # @stderr = double("STDERR", :null_object => true)
+      # @pid = double("PID", :null_object => true)
     end
 
     it "should return the version number when it is installed" do
@@ -111,7 +111,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
       allow(@provider).to receive(:port_path).and_return("/usr/ports/shells/zsh")
       make_v = OpenStruct.new(stdout: "zsh-4.3.6_7\n", exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with("make", "-V", "PKGNAME", { cwd: "/usr/ports/shells/zsh", env: nil, returns: [0, 1], timeout: 900 }).and_return(make_v)
-      #@provider.should_receive(:ports_makefile_variable_value).with("PKGNAME").and_return("zsh-4.3.6_7")
+      # @provider.should_receive(:ports_makefile_variable_value).with("PKGNAME").and_return("zsh-4.3.6_7")
       expect(@provider.package_name).to eq("zsh")
     end
   end
@@ -134,7 +134,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
 
   describe Chef::Provider::Package::Freebsd::Pkg, "port path" do
     before do
-      #@node = Chef::Node.new
+      # @node = Chef::Node.new
       @new_resource = Chef::Resource::Package.new("zsh")
       @new_resource.cookbook_name = "adventureclub"
       @provider = Chef::Provider::Package::Freebsd::Pkg.new(@new_resource, @run_context)

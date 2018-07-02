@@ -33,9 +33,9 @@ class Chef
         nlist = []
         role.run_list_for(environment).each do |entry|
           nlist << entry unless entry == item_to_remove
-          #unless entry == @name_args[2]
+          # unless entry == @name_args[2]
           #  nlist << entry
-          #end
+          # end
         end
         role.env_run_lists_add(environment => nlist)
       end

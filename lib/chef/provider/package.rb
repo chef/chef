@@ -307,7 +307,7 @@ class Chef
       # used by subclasses.  deprecated.  use #a_to_s instead.
       def expand_options(options)
         # its deprecated but still work to do to deprecate it fully
-        #Chef.deprecated(:package_misc, "expand_options is deprecated, use shell_out instead")
+        # Chef.deprecated(:package_misc, "expand_options is deprecated, use shell_out instead")
         if options
           " #{options.is_a?(Array) ? Shellwords.join(options) : options}"
         else

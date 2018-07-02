@@ -495,7 +495,7 @@ class Chef
         "chef_type" => "node",
         "default" => attributes.combined_default,
         "override" => attributes.combined_override,
-        #Render correctly for run_list items so malformed json does not result
+        # Render correctly for run_list items so malformed json does not result
         "run_list" => @primary_runlist.run_list.map { |item| item.to_s },
       }
       # Chef Server rejects node JSON with extra keys; prior to 12.3,

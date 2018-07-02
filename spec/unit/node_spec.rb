@@ -1282,8 +1282,8 @@ describe Chef::Node do
     end
 
     it "should serialize valid json with a run list", json: true do
-      #This test came about because activesupport mucks with Chef json serialization
-      #Test should pass with and without Activesupport
+      # This test came about because activesupport mucks with Chef json serialization
+      # Test should pass with and without Activesupport
       node.run_list << { "type" => "role", "name" => "Cthulu" }
       node.run_list << { "type" => "role", "name" => "Hastur" }
       json = Chef::JSONCompat.to_json(node)

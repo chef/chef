@@ -145,7 +145,7 @@ describe "HTTP SSL Policy" do
           # For whatever reason, OpenSSL errors out when adding a
           # cert you already have to the certificate store.
           ssl_policy.set_custom_certs
-          ssl_policy.set_custom_certs #should not raise an error
+          ssl_policy.set_custom_certs # should not raise an error
         end
       end
     end

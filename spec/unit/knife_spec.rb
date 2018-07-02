@@ -300,14 +300,14 @@ describe Chef::Knife do
       end
 
       it "prefers the default value if no config or command line value is present" do
-        knife_command = KnifeSpecs::TestYourself.new([]) #empty argv
+        knife_command = KnifeSpecs::TestYourself.new([]) # empty argv
         knife_command.configure_chef
         expect(knife_command.config[:opt_with_default]).to eq("default-value")
       end
 
       it "prefers a value in Chef::Config[:knife] to the default" do
         Chef::Config[:knife][:opt_with_default] = "from-knife-config"
-        knife_command = KnifeSpecs::TestYourself.new([]) #empty argv
+        knife_command = KnifeSpecs::TestYourself.new([]) # empty argv
         knife_command.configure_chef
         expect(knife_command.config[:opt_with_default]).to eq("from-knife-config")
       end

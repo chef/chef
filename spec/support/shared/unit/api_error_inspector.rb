@@ -36,7 +36,7 @@ shared_examples_for "an api error inspector" do
     }
     @description = Chef::Formatters::ErrorDescription.new("Error registering the node:")
     @outputter = Chef::Formatters::IndentableOutputStream.new(StringIO.new, STDERR)
-    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
 
   end
 

@@ -157,7 +157,7 @@ class Chef
       self
     end
 
-    #create a data bag via RESTful API
+    # create a data bag via RESTful API
     def create
       chef_server_rest.post("data", self)
       self

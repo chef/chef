@@ -114,13 +114,13 @@ E
         end
 
         def username
-          #config[:node_name]
+          # config[:node_name]
           config[:validation_client_name]
         end
 
         def api_key
           config[:validation_key]
-          #config[:client_key]
+          # config[:client_key]
         end
 
         def server_url

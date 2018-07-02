@@ -488,7 +488,7 @@ EOM
 
         context "fatal admin check is configured" do
           it "should not raise an exception" do
-            client.do_windows_admin_check #should not raise
+            client.do_windows_admin_check # should not raise
           end
         end
       end

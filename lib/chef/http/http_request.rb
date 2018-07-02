@@ -27,7 +27,7 @@ require "net/http"
 # However, in ohai before 0.6.0, the version is defined
 # in ohai, not ohai/version
 begin
-  require "ohai/version" #used in user agent string.
+  require "ohai/version" # used in user agent string.
 rescue LoadError
   require "ohai"
 end

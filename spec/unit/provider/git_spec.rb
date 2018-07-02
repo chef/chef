@@ -707,7 +707,7 @@ SHAS
     expect(@provider).to receive(:action_checkout)
     expect(@provider).not_to receive(:shell_out!).with("huzzah!", cwd: "/my/deploy/dir")
     @provider.run_action(:sync)
-    #@resource.should be_updated
+    # @resource.should be_updated
   end
 
   it "does an export by cloning the repo then removing the .git directory" do

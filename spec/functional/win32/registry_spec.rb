@@ -23,7 +23,7 @@ require "chef/win32/registry"
 describe "Chef::Win32::Registry", :windows_only do
 
   before(:all) do
-    #Create a registry item
+    # Create a registry item
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\B®anch"
@@ -39,17 +39,17 @@ describe "Chef::Win32::Registry", :windows_only do
       reg["Petals", Win32::Registry::REG_MULTI_SZ] = %w{Pink Delicate}
     end
 
-    #Create the node with ohai data
+    # Create the node with ohai data
     events = Chef::EventDispatch::Dispatcher.new
     @node = Chef::Node.new
     @node.consume_external_attrs(OHAI_SYSTEM.data, {})
     @run_context = Chef::RunContext.new(@node, {}, events)
 
-    #Create a registry object that has access ot the node previously created
+    # Create a registry object that has access ot the node previously created
     @registry = Chef::Win32::Registry.new(@run_context)
   end
 
-  #Delete what is left of the registry key-values previously created
+  # Delete what is left of the registry key-values previously created
   after(:all) do
     ::Win32::Registry::HKEY_CURRENT_USER.open("Software") do |reg|
       reg.delete_key("Root", true)

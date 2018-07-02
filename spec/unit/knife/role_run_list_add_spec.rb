@@ -74,14 +74,14 @@ describe Chef::Knife::RoleRunListAdd do
       end
 
       it "should add to the run list after the specified entries in the default run list" do
-        #Setup
+        # Setup
         @role.run_list_for("_default") << "role[acorns]"
         @role.run_list_for("_default") << "role[barn]"
-        #Configuration we are testing
+        # Configuration we are testing
         @knife.config[:after] = "role[acorns]"
         @knife.name_args = [ "will", "role[pad]", "role[whackadoo]" ]
         @knife.run
-        #The actual tests
+        # The actual tests
         expect(@role.run_list[0]).to eq("role[acorns]")
         expect(@role.run_list[1]).to eq("role[pad]")
         expect(@role.run_list[2]).to eq("role[whackadoo]")

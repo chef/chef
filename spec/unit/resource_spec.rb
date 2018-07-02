@@ -675,7 +675,7 @@ describe Chef::Resource do
       snitch_variable = nil
       resource.only_if { snitch_variable = true }
       expect(resource.only_if.first.positivity).to eq(:only_if)
-      #Chef::Mixin::Command.should_receive(:only_if).with(true, {}).and_return(false)
+      # Chef::Mixin::Command.should_receive(:only_if).with(true, {}).and_return(false)
       resource.run_action(:purr)
       expect(snitch_variable).to be_truthy
     end

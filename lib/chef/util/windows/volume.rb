@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-#simple wrapper around Volume APIs. might be possible with WMI, but possibly more complex.
+# simple wrapper around Volume APIs. might be possible with WMI, but possibly more complex.
 
 require "chef/win32/api/file"
 require "chef/util/windows"
@@ -25,7 +25,7 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
   attr_reader :mount_point
 
   def initialize(name)
-    name += "\\" unless name =~ /\\$/ #trailing slash required
+    name += "\\" unless name =~ /\\$/ # trailing slash required
     @mount_point = name
   end
 

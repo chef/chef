@@ -197,7 +197,7 @@ describe Chef::RunList do
 
     describe "from the chef server" do
       it "should load the role from the chef server" do
-        #@rest.should_receive(:get).with("roles/stubby")
+        # @rest.should_receive(:get).with("roles/stubby")
         expansion = @run_list.expand("_default", "server")
         expect(expansion.recipes).to eq(%w{one two kitty})
       end

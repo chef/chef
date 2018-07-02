@@ -48,7 +48,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
     it "implements a setup_run_context method that accepts a list of recipe files to run" do
       expect(policy_builder).to respond_to(:setup_run_context)
-      expect(policy_builder.method(:setup_run_context).arity).to eq(-1) #optional argument
+      expect(policy_builder.method(:setup_run_context).arity).to eq(-1) # optional argument
     end
 
     it "implements a run_context method" do

@@ -73,10 +73,10 @@ class Chef
         )
       end
 
-      #Failed chef-client run %1 in %2 seconds.
-      #Exception type: %3
-      #Exception message: %4
-      #Exception backtrace: %5
+      # Failed chef-client run %1 in %2 seconds.
+      # Exception type: %3
+      # Exception message: %4
+      # Exception backtrace: %5
       def run_failed(e)
         data =
           if @run_status

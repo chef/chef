@@ -189,8 +189,8 @@ describe Chef::Role do
     end
 
     it "should include 'run_list'" do
-      #Activesupport messes with Chef json formatting
-      #This test should pass with and without activesupport
+      # Activesupport messes with Chef json formatting
+      # This test should pass with and without activesupport
       expect(@serialized_role).to match(/"run_list":\["recipe\[one\]","recipe\[two\]","role\[a\]"\]/)
     end
 
@@ -201,8 +201,8 @@ describe Chef::Role do
       end
 
       it "includes the per-environment run lists" do
-        #Activesupport messes with Chef json formatting
-        #This test should pass with and without activesupport
+        # Activesupport messes with Chef json formatting
+        # This test should pass with and without activesupport
         expect(@serialized_role["env_run_lists"]["production"]).to eq(["role[monitoring]", "role[auditing]", "role[apache]"])
         expect(@serialized_role["env_run_lists"]["dev"]).to eq(["role[nginx]"])
       end

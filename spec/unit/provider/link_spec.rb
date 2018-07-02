@@ -22,7 +22,7 @@ require "ostruct"
 require "spec_helper"
 
 if Chef::Platform.windows?
-  require "chef/win32/file" #probably need this in spec_helper
+  require "chef/win32/file" # probably need this in spec_helper
 end
 
 describe Chef::Resource::Link do

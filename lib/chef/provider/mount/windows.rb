@@ -41,7 +41,7 @@ class Chef
         def load_current_resource
           if is_volume(@new_resource.device)
             @mount = Chef::Util::Windows::Volume.new(@new_resource.mount_point)
-          else #assume network drive
+          else # assume network drive
             @mount = Chef::Util::Windows::NetUse.new(@new_resource.mount_point)
           end
 

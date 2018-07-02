@@ -140,7 +140,7 @@ class Chef
       # defaults the key name to the fingerprint of the key
       if @name.nil?
         # if they didn't pass a public_key,
-        #then they must supply a name because we can't generate a fingerprint
+        # then they must supply a name because we can't generate a fingerprint
         unless @public_key.nil?
           @name = fingerprint
         else

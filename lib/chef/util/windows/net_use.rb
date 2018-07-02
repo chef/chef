@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-#the Win32 Volume APIs do not support mapping network drives. not supported by WMI either.
-#see also: WNetAddConnection2 and WNetAddConnection3
-#see also cmd.exe: net use /?
+# the Win32 Volume APIs do not support mapping network drives. not supported by WMI either.
+# see also: WNetAddConnection2 and WNetAddConnection3
+# see also cmd.exe: net use /?
 
 require "chef/util/windows"
 require "chef/win32/net"

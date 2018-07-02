@@ -195,7 +195,7 @@ class Chef
             logger.trace "#{new_resource} task exists"
             if current_resource.task.status == "not scheduled"
               converge_by("#{new_resource} task enabled") do
-                #TODO wind32-taskscheduler currently not having any method to handle this so using schtasks.exe here
+                # TODO wind32-taskscheduler currently not having any method to handle this so using schtasks.exe here
                 run_schtasks "CHANGE", "ENABLE" => ""
               end
             else
@@ -212,7 +212,7 @@ class Chef
             logger.info "#{new_resource} task exists"
             if %w{ready running}.include?(current_resource.task.status)
               converge_by("#{new_resource} task disabled") do
-                #TODO: in win32-taskscheduler there is no method whcih disbales the task so currently calling disable with schtasks.exe
+                # TODO: in win32-taskscheduler there is no method whcih disbales the task so currently calling disable with schtasks.exe
                 run_schtasks "CHANGE", "DISABLE" => ""
               end
             else
@@ -256,7 +256,7 @@ class Chef
         def trigger
           start_month, start_day, start_year = new_resource.start_day.to_s.split("/")
           start_hour, start_minute = new_resource.start_time.to_s.split(":")
-          #TODO currently end_month, end_year and end_year needs to be set to 0. If not set win32-taskscheduler throwing nil into integer error.
+          # TODO currently end_month, end_year and end_year needs to be set to 0. If not set win32-taskscheduler throwing nil into integer error.
           trigger_hash = {
             start_year: start_year.to_i,
             start_month: start_month.to_i,
@@ -318,7 +318,7 @@ class Chef
           hours.to_i * 60 if hours
         end
 
-        #TODO : Try to optimize this method
+        # TODO : Try to optimize this method
         # known issue : Since start_day and time is not mandatory while updating weekly frequency for which start_day is not mentioned by user idempotency
         # is not gettting maintained as new_resource.start_day is nil and we fetch the day of week from start_day to set and its currently coming as nil and don't match with current_task
         def task_needs_update?(task)
@@ -452,7 +452,7 @@ class Chef
 
         def days_of_week
           if new_resource.day
-            #this line of code is just to support backward compatibility of wild card *
+            # this line of code is just to support backward compatibility of wild card *
             new_resource.day = "mon, tue, wed, thu, fri, sat, sun" if new_resource.day == "*" && new_resource.frequency == :weekly
             days = new_resource.day.split(",")
             days.map! { |day| day.to_s.strip.upcase }
@@ -475,7 +475,7 @@ class Chef
           end
 
           if new_resource.months
-            #this line of code is just to support backward compatibility of wild card *
+            # this line of code is just to support backward compatibility of wild card *
             new_resource.months = "jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec" if new_resource.months == "*" && new_resource.frequency == :monthly
             months = new_resource.months.split(",")
             months.map! { |month| month.to_s.strip.upcase }
@@ -539,7 +539,7 @@ class Chef
           end
         end
 
-        #TODO: while creating the configuration settings win32-taskscheduler it accepts execution time limit values in ISO8601 formata
+        # TODO: while creating the configuration settings win32-taskscheduler it accepts execution time limit values in ISO8601 formata
         def config_settings
           settings = {
             execution_time_limit: new_resource.execution_time_limit,

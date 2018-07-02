@@ -461,7 +461,7 @@ describe Chef::RunLock do
       buffer << fd.read_nonblock(1) while buffer[-1] != "\n"
 
       buffer
-    #rescue IO::EAGAINUnreadable
+    # rescue IO::EAGAINUnreadable
     rescue IO::WaitReadable
       unless buffer == ""
         sleep 0.1

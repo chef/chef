@@ -19,7 +19,7 @@
 require "spec_helper"
 
 if windows?
-  require "chef/win32/file" #probably need this in spec_helper
+  require "chef/win32/file" # probably need this in spec_helper
   require "chef/win32/security"
 end
 

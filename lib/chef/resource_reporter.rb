@@ -72,7 +72,7 @@ class Chef
         as_hash["result"] = action.to_s
         if success?
         else
-          #as_hash["result"] = "failed"
+          # as_hash["result"] = "failed"
         end
         if new_resource.cookbook_name
           as_hash["cookbook_name"] = new_resource.cookbook_name

@@ -266,7 +266,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       #   :nil_object => true,
       #   :username => "adam"
       # )
-      #provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
+      # provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
       @stdout = "root P 09/02/2008 0 99999 7 -1"
       @stderr = ""
     end

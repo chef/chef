@@ -117,10 +117,10 @@ describe Chef::Mixin::Securable do
 
     it "should not accept group/owner names containing embedded carriage returns" do
       skip "XXX: params_validate needs to be extended to support multi-line regex"
-      #lambda { @securable.group "\ntest" }.should raise_error(ArgumentError)
-      #lambda { @securable.group "te\nst" }.should raise_error(ArgumentError)
-      #lambda { @securable.owner "\ntest" }.should raise_error(ArgumentError)
-      #lambda { @securable.owner "te\nst" }.should raise_error(ArgumentError)
+      # lambda { @securable.group "\ntest" }.should raise_error(ArgumentError)
+      # lambda { @securable.group "te\nst" }.should raise_error(ArgumentError)
+      # lambda { @securable.owner "\ntest" }.should raise_error(ArgumentError)
+      # lambda { @securable.owner "te\nst" }.should raise_error(ArgumentError)
     end
 
     it "should accept group/owner names in UTF-8" do

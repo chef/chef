@@ -96,7 +96,7 @@ class Chef
         if @output.indent < 0
           # This is left commented out for now.  We need to uncomment it and fix at least one bug in
           # the formatter, and then leave this line uncommented in the future.
-          #Chef::Log.warn "Internal Formatter Error -- Attempt to indent by negative number of spaces"
+          # Chef::Log.warn "Internal Formatter Error -- Attempt to indent by negative number of spaces"
           @output.indent = 0
         end
         @output.indent
@@ -110,7 +110,7 @@ class Chef
       end
 
       def registration_failed(node_name, exception, config)
-        #A Formatters::ErrorDescription object
+        # A Formatters::ErrorDescription object
         description = ErrorMapper.registration_failed(node_name, exception, config)
         display_error(description)
       end

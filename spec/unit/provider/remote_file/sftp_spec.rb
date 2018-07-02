@@ -19,7 +19,7 @@
 require "spec_helper"
 
 describe Chef::Provider::RemoteFile::SFTP do
-  #built out dependencies
+  # built out dependencies
   let(:enclosing_directory) do
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
   end

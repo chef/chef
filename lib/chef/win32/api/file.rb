@@ -461,22 +461,22 @@ BOOL WINAPI DeviceIoControl(
 =end
         safe_attach_function :DeviceIoControl, [:HANDLE, :DWORD, :LPVOID, :DWORD, :LPVOID, :DWORD, :LPDWORD, :pointer], :BOOL
 
-#BOOL WINAPI DeleteVolumeMountPoint(
-  #_In_ LPCTSTR lpszVolumeMountPoint
-#);
+# BOOL WINAPI DeleteVolumeMountPoint(
+  # _In_ LPCTSTR lpszVolumeMountPoint
+# );
         safe_attach_function :DeleteVolumeMountPointW, [:LPCTSTR], :BOOL
 
-#BOOL WINAPI SetVolumeMountPoint(
-  #_In_ LPCTSTR lpszVolumeMountPoint,
-  #_In_ LPCTSTR lpszVolumeName
-#);
+# BOOL WINAPI SetVolumeMountPoint(
+  # _In_ LPCTSTR lpszVolumeMountPoint,
+  # _In_ LPCTSTR lpszVolumeName
+# );
         safe_attach_function :SetVolumeMountPointW, [:LPCTSTR, :LPCTSTR], :BOOL
 
-#BOOL WINAPI GetVolumeNameForVolumeMountPoint(
-  #_In_  LPCTSTR lpszVolumeMountPoint,
-  #_Out_ LPTSTR  lpszVolumeName,
-  #_In_  DWORD   cchBufferLength
-#);
+# BOOL WINAPI GetVolumeNameForVolumeMountPoint(
+  # _In_  LPCTSTR lpszVolumeMountPoint,
+  # _Out_ LPTSTR  lpszVolumeName,
+  # _In_  DWORD   cchBufferLength
+# );
         safe_attach_function :GetVolumeNameForVolumeMountPointW, [:LPCTSTR, :LPTSTR, :DWORD], :BOOL
 
 =begin

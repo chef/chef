@@ -286,7 +286,7 @@ describe Chef::Provider::WindowsTask, :windows_only do
     end
   end
 
-  #Ref : https://msdn.microsoft.com/en-us/library/windows/desktop/aa380729(v=vs.85).aspx
+  # Ref : https://msdn.microsoft.com/en-us/library/windows/desktop/aa380729(v=vs.85).aspx
   describe "#days_of_week" do
     it "returns the binary value 2 if day is set as 'Mon'" do
       new_resource.day "Mon"

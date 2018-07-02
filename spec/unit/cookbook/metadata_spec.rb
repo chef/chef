@@ -558,14 +558,14 @@ describe Chef::Cookbook::Metadata do
       expect do
         metadata.attribute("db/mysql/databases", required: true)
       end.not_to raise_error
-      #attrib = metadata.attributes["db/mysql/databases"][:required].should == "required"
+      # attrib = metadata.attributes["db/mysql/databases"][:required].should == "required"
     end
 
     it "should convert required false to optional" do
       expect do
         metadata.attribute("db/mysql/databases", required: false)
       end.not_to raise_error
-      #attrib = metadata.attributes["db/mysql/databases"][:required].should == "optional"
+      # attrib = metadata.attributes["db/mysql/databases"][:required].should == "optional"
     end
 
     it "should set required to 'optional' by default" do

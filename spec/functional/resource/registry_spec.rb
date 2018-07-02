@@ -107,7 +107,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
     reset_registry
   end
 
-  #Reporting setup
+  # Reporting setup
   before do
     @node.name("windowsbox")
 
@@ -569,7 +569,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
       expect(@report["resources"][0]["id"]).to eq(reg_parent + '\ReportKey')
       expect(@report["resources"][0]["before"][:values]).to eq([{ name: "ReportVal4", type: :string, data: "report4" },
                                                             { name: "ReportVal5", type: :string, data: "report5" }])
-      #Not testing for after values to match since after -> new_resource values.
+      # Not testing for after values to match since after -> new_resource values.
       expect(@report["resources"][0]["result"]).to eq("delete")
       expect(@report["status"]).to eq("success")
       expect(@report["total_res_count"]).to eq("1")
@@ -622,7 +622,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
 
     it "ignores the values under a key" do
       @new_resource.key(reg_parent + '\OpscodeIgnoredValues')
-      #@new_resource.values([{:name=>"DontExist", :type=>:string, :data=>"These will be ignored anyways"}])
+      # @new_resource.values([{:name=>"DontExist", :type=>:string, :data=>"These will be ignored anyways"}])
       @new_resource.recursive(true)
       @new_resource.run_action(:delete_key)
     end
@@ -645,9 +645,9 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
       expect(@report["resources"][0]["type"]).to eq("registry_key")
       expect(@report["resources"][0]["name"]).to eq(resource_name)
       expect(@report["resources"][0]["id"]).to eq(reg_parent + '\ReportKey')
-      #Not testing for before or after values to match since
-      #after -> new_resource.values and
-      #before -> current_resource.values
+      # Not testing for before or after values to match since
+      # after -> new_resource.values and
+      # before -> current_resource.values
       expect(@report["resources"][0]["result"]).to eq("delete_key")
       expect(@report["status"]).to eq("success")
       expect(@report["total_res_count"]).to eq("1")

@@ -520,7 +520,7 @@ describe "LWRP" do
       resource.provider(get_dynamic_lwrp_provider(:lwrp_embedded_resource_accesses_providers_scope))
 
       provider = resource.provider_for_action(:twiddle_thumbs)
-      #provider = @runner.build_provider(resource)
+      # provider = @runner.build_provider(resource)
       provider.action_twiddle_thumbs
 
       expect(provider.enclosed_resource.monkey).to eq("bob, the monkey")
