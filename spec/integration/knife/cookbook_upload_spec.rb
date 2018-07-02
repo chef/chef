@@ -33,24 +33,24 @@ describe "knife cookbook upload", :workstation do
       end
 
       it "knife cookbook upload uploads the cookbook" do
-        knife("cookbook upload x -o #{cb_dir}").should_succeed stderr: <<EOM
-Uploading x            [1.0.0]
-Uploaded 1 cookbook.
+        knife("cookbook upload x -o #{cb_dir}").should_succeed stderr: <<~EOM
+          Uploading x            [1.0.0]
+          Uploaded 1 cookbook.
 EOM
       end
 
       it "knife cookbook upload --freeze uploads and freezes the cookbook" do
-        knife("cookbook upload x -o #{cb_dir} --freeze").should_succeed stderr: <<EOM
-Uploading x            [1.0.0]
-Uploaded 1 cookbook.
+        knife("cookbook upload x -o #{cb_dir} --freeze").should_succeed stderr: <<~EOM
+          Uploading x            [1.0.0]
+          Uploaded 1 cookbook.
 EOM
         # Modify the file, attempt to reupload
         file "cookbooks/x/metadata.rb", 'name "x"; version "1.0.0"#different'
-        knife("cookbook upload x -o #{cb_dir} --freeze").should_fail stderr: <<EOM
-Uploading x              [1.0.0]
-ERROR: Version 1.0.0 of cookbook x is frozen. Use --force to override.
-WARNING: Not updating version constraints for x in the environment as the cookbook is frozen.
-ERROR: Failed to upload 1 cookbook.
+        knife("cookbook upload x -o #{cb_dir} --freeze").should_fail stderr: <<~EOM
+          Uploading x              [1.0.0]
+          ERROR: Version 1.0.0 of cookbook x is frozen. Use --force to override.
+          WARNING: Not updating version constraints for x in the environment as the cookbook is frozen.
+          ERROR: Failed to upload 1 cookbook.
 EOM
       end
     end
@@ -62,27 +62,27 @@ EOM
       end
 
       it "knife cookbook upload --include-dependencies uploads both cookbooks" do
-        knife("cookbook upload --include-dependencies x -o #{cb_dir}").should_succeed stderr: <<EOM
-Uploading x            [1.0.0]
-Uploading y            [1.0.0]
-Uploaded 2 cookbooks.
+        knife("cookbook upload --include-dependencies x -o #{cb_dir}").should_succeed stderr: <<~EOM
+          Uploading x            [1.0.0]
+          Uploading y            [1.0.0]
+          Uploaded 2 cookbooks.
 EOM
       end
 
       it "knife cookbook upload fails due to missing dependencies" do
-        knife("cookbook upload x -o #{cb_dir}").should_fail stderr: <<EOM
-Uploading x            [1.0.0]
-ERROR: Cookbook x depends on cookbooks which are not currently
-ERROR: being uploaded and cannot be found on the server.
-ERROR: The missing cookbook(s) are: 'y' version '>= 0.0.0'
+        knife("cookbook upload x -o #{cb_dir}").should_fail stderr: <<~EOM
+          Uploading x            [1.0.0]
+          ERROR: Cookbook x depends on cookbooks which are not currently
+          ERROR: being uploaded and cannot be found on the server.
+          ERROR: The missing cookbook(s) are: 'y' version '>= 0.0.0'
 EOM
       end
 
       it "knife cookbook upload -a uploads both cookbooks" do
-        knife("cookbook upload -a -o #{cb_dir}").should_succeed stderr: <<EOM
-Uploading x            [1.0.0]
-Uploading y            [1.0.0]
-Uploaded all cookbooks.
+        knife("cookbook upload -a -o #{cb_dir}").should_succeed stderr: <<~EOM
+          Uploading x            [1.0.0]
+          Uploading y            [1.0.0]
+          Uploaded all cookbooks.
 EOM
       end
     end

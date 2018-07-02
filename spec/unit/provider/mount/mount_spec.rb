@@ -30,7 +30,7 @@ describe Chef::Provider::Mount::Mount do
     @new_resource.device_type :device
     @new_resource.fstype      "ext3"
 
-    @new_resource.supports :remount => false
+    @new_resource.supports remount: false
 
     @provider = Chef::Provider::Mount::Mount.new(@new_resource, @run_context)
 
@@ -42,7 +42,7 @@ describe Chef::Provider::Mount::Mount do
 
   describe "when discovering the current fs state" do
     before do
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => ""))
+      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: ""))
       allow(::File).to receive(:foreach).with("/etc/fstab")
     end
 
@@ -54,10 +54,10 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should accept device_type :uuid", :not_supported_on_solaris do
-      @status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
+      @status = double(stdout: "/dev/sdz1\n", exitstatus: 1)
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-      @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
+      @stdout_findfs = double("STDOUT", first: "/dev/sdz1")
       expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(@status)
       @provider.load_current_resource
       @provider.mountable?
@@ -73,7 +73,7 @@ describe Chef::Provider::Mount::Mount do
 
         it "should ignore trailing slash and set mounted to true for network mount (#{type})" do
           @new_resource.device fs_spec
-          allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "#{fs_spec}/ on /tmp/foo type #{type} (rw)\n"))
+          allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "#{fs_spec}/ on /tmp/foo type #{type} (rw)\n"))
           @provider.load_current_resource
           expect(@provider.current_resource.mounted).to be_truthy
         end
@@ -94,7 +94,7 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should raise an error if the mount device (uuid) does not exist", :not_supported_on_solaris do
-      status = double(:stdout => "", :exitstatus => 1)
+      status = double(stdout: "", exitstatus: 1)
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
@@ -121,13 +121,13 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should set mounted true if the mount point is found in the mounts list" do
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdz1 on /tmp/foo type ext3 (rw)\n"))
+      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "/dev/sdz1 on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
       expect(@provider.current_resource.mounted).to be_truthy
     end
 
     it "should set mounted false if another mount point beginning with the same path is found in the mounts list" do
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdz1 on /tmp/foobar type ext3 (rw)\n"))
+      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "/dev/sdz1 on /tmp/foobar type ext3 (rw)\n"))
       @provider.load_current_resource()
       expect(@provider.current_resource.mounted).to be_falsey
     end
@@ -136,10 +136,10 @@ describe Chef::Provider::Mount::Mount do
       # expand the target path to correct specs on Windows
       target = ::File.expand_path("/dev/mapper/target")
 
-      allow(::File).to receive(:symlink?).with("#{@new_resource.device}").and_return(true)
-      allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
+      allow(::File).to receive(:symlink?).with((@new_resource.device).to_s).and_return(true)
+      allow(::File).to receive(:readlink).with((@new_resource.device).to_s).and_return(target)
 
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "#{target} on /tmp/foo type ext3 (rw)\n"))
+      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "#{target} on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
       expect(@provider.current_resource.mounted).to be_truthy
     end
@@ -150,10 +150,10 @@ describe Chef::Provider::Mount::Mount do
       # expand the target path to correct specs on Windows
       absolute_target = ::File.expand_path("/dev/xsdz1")
 
-      allow(::File).to receive(:symlink?).with("#{@new_resource.device}").and_return(true)
-      allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
+      allow(::File).to receive(:symlink?).with((@new_resource.device).to_s).and_return(true)
+      allow(::File).to receive(:readlink).with((@new_resource.device).to_s).and_return(target)
 
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "#{absolute_target} on /tmp/foo type ext3 (rw)\n"))
+      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "#{absolute_target} on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
       expect(@provider.current_resource.mounted).to be_truthy
     end
@@ -162,7 +162,7 @@ describe Chef::Provider::Mount::Mount do
       mount = "/dev/sdy1 on #{@new_resource.mount_point} type ext3 (rw)\n"
       mount << "#{@new_resource.device} on #{@new_resource.mount_point} type ext3 (rw)\n"
 
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => mount))
+      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: mount))
       @provider.load_current_resource()
       expect(@provider.current_resource.mounted).to be_truthy
     end
@@ -171,13 +171,13 @@ describe Chef::Provider::Mount::Mount do
       mount = "#{@new_resource.device} on #{@new_resource.mount_point} type ext3 (rw)\n"
       mount << "/dev/sdy1 on #{@new_resource.mount_point} type ext3 (rw)\n"
 
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => mount))
+      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: mount))
       @provider.load_current_resource()
       expect(@provider.current_resource.mounted).to be_falsey
     end
 
     it "mounted should be false if the mount point is not found in the mounts list" do
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdy1 on /tmp/foo type ext3 (rw)\n"))
+      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "/dev/sdy1 on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
       expect(@provider.current_resource.mounted).to be_falsey
     end
@@ -205,8 +205,8 @@ describe Chef::Provider::Mount::Mount do
     it "should set enabled to true if the symlink target is in fstab" do
       target = "/dev/mapper/target"
 
-      allow(::File).to receive(:symlink?).with("#{@new_resource.device}").and_return(true)
-      allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
+      allow(::File).to receive(:symlink?).with((@new_resource.device).to_s).and_return(true)
+      allow(::File).to receive(:readlink).with((@new_resource.device).to_s).and_return(target)
 
       fstab = "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n"
 
@@ -219,8 +219,8 @@ describe Chef::Provider::Mount::Mount do
     it "should set enabled to true if the symlink target is relative and is in fstab - CHEF-4957" do
       target = "xsdz1"
 
-      allow(::File).to receive(:symlink?).with("#{@new_resource.device}").and_return(true)
-      allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
+      allow(::File).to receive(:symlink?).with((@new_resource.device).to_s).and_return(true)
+      allow(::File).to receive(:readlink).with((@new_resource.device).to_s).and_return(target)
 
       fstab = "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n"
 
@@ -307,7 +307,7 @@ describe Chef::Provider::Mount::Mount do
       end
 
       it "should mount the filesystem specified by uuid", :not_supported_on_solaris do
-        status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
+        status = double(stdout: "/dev/sdz1\n", exitstatus: 1)
         @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
         @new_resource.device_type :uuid
         allow(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
@@ -341,14 +341,14 @@ describe Chef::Provider::Mount::Mount do
 
     describe "remount_fs" do
       it "should use mount -o remount if remount is supported" do
-        @new_resource.supports({ :remount => true })
+        @new_resource.supports({ remount: true })
         @current_resource.mounted(true)
         expect(@provider).to receive(:shell_out!).with("mount -o remount,defaults #{@new_resource.mount_point}")
         @provider.remount_fs
       end
 
       it "should use mount -o remount with new mount options if remount is supported" do
-        @new_resource.supports({ :remount => true })
+        @new_resource.supports({ remount: true })
         options = "rw,noexec,noauto"
         @new_resource.options(%w{rw noexec noauto})
         @current_resource.mounted(true)
@@ -357,7 +357,7 @@ describe Chef::Provider::Mount::Mount do
       end
 
       it "should umount and mount if remount is not supported" do
-        @new_resource.supports({ :remount => false })
+        @new_resource.supports({ remount: false })
         @current_resource.mounted(true)
         expect(@provider).to receive(:umount_fs)
         expect(@provider).to receive(:sleep).with(1)
@@ -499,7 +499,7 @@ describe Chef::Provider::Mount::Mount do
     context "when the device is described differently", :not_supported_on_solaris do
       it "should update the existing line" do
         @current_resource.enabled(true)
-        status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
+        status = double(stdout: "/dev/sdz1\n", exitstatus: 1)
         expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
 
         filesystems = [%q{/dev/sdy1 /tmp/foo  ext3  defaults  1 2},

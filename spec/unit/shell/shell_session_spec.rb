@@ -53,16 +53,16 @@ describe Shell::ClientSession do
   let(:session) { Shell::ClientSession.instance }
   let(:client) do
     double("Chef::Client.new",
-      :run_ohai => true,
-      :load_node => true,
-      :build_node => true,
-      :register => true,
-      :sync_cookbooks => {}
+      run_ohai: true,
+      load_node: true,
+      build_node: true,
+      register: true,
+      sync_cookbooks: {}
     )
   end
 
   before do
-    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
+    Chef::Config[:shell_config] = { override_runlist: [Chef::RunList::RunListItem.new("shell::override")] }
     session.node = node
     session.json_configuration = json_attribs
   end
@@ -90,16 +90,16 @@ describe Shell::SoloSession do
   let(:session) { Shell::SoloSession.instance }
   let(:client) do
     double("Chef::Client.new",
-      :run_ohai => true,
-      :load_node => true,
-      :build_node => true,
-      :register => true,
-      :sync_cookbooks => {}
+      run_ohai: true,
+      load_node: true,
+      build_node: true,
+      register: true,
+      sync_cookbooks: {}
     )
   end
 
   before do
-    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
+    Chef::Config[:shell_config] = { override_runlist: [Chef::RunList::RunListItem.new("shell::override")] }
     session.node = node
     session.json_configuration = json_attribs
   end
@@ -128,18 +128,18 @@ describe Shell::StandAloneSession do
   let(:session) { Shell::StandAloneSession.instance }
   let(:client) do
     double("Chef::Client.new",
-      :run_ohai => true,
-      :load_node => true,
-      :build_node => true,
-      :register => true,
-      :sync_cookbooks => {}
+      run_ohai: true,
+      load_node: true,
+      build_node: true,
+      register: true,
+      sync_cookbooks: {}
     )
   end
   let(:recipe) { Chef::Recipe.new(nil, nil, run_context) }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
   before do
-    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
+    Chef::Config[:shell_config] = { override_runlist: [Chef::RunList::RunListItem.new("shell::override")] }
     session.node = node
     session.json_configuration = json_attribs
     session.run_context = run_context
@@ -166,7 +166,7 @@ describe Shell::StandAloneSession do
   it "runs chef with the standalone recipe" do
     allow(session).to receive(:node_built?).and_return(true)
     allow(Chef::Log).to receive(:level)
-    chef_runner = double("Chef::Runner.new", :converge => :converged)
+    chef_runner = double("Chef::Runner.new", converge: :converged)
     # pre-heat resource collection cache
     session.resource_collection
 
@@ -185,7 +185,7 @@ describe Shell::SoloLegacySession do
   let(:json_attribs) { { "a" => "b" } }
 
   before do
-    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
+    Chef::Config[:shell_config] = { override_runlist: [Chef::RunList::RunListItem.new("shell::override")] }
     Chef::Config[:shell_solo] = true
     @session = Shell::SoloLegacySession.instance
     @node = Chef::Node.new
@@ -214,7 +214,7 @@ describe Shell::SoloLegacySession do
   it "keeps json attribs and passes them to the node for consumption" do
     @session.node_attributes = { "besnard_lakes" => "are_the_dark_horse" }
     expect(@session.node["besnard_lakes"]).to eq("are_the_dark_horse")
-    #pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
+    # pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
   end
 
   it "generates its resource collection from the compiled cookbooks and the ad hoc recipe" do
@@ -223,13 +223,13 @@ describe Shell::SoloLegacySession do
     @run_context.resource_collection << kitteh_cat
     keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @recipe.run_context.resource_collection << keyboard_cat
-    #@session.rebuild_collection
+    # @session.rebuild_collection
     expect(@session.resource_collection).to include(kitteh_cat, keyboard_cat)
   end
 
   it "runs chef with a resource collection from the compiled cookbooks" do
     allow(@session).to receive(:node_built?).and_return(true)
-    chef_runner = double("Chef::Runner.new", :converge => :converged)
+    chef_runner = double("Chef::Runner.new", converge: :converged)
     expect(Chef::Runner).to receive(:new).with(an_instance_of(Chef::RunContext)).and_return(chef_runner)
 
     expect(@recipe.run_chef).to eq(:converged)
@@ -237,11 +237,11 @@ describe Shell::SoloLegacySession do
 
   it "passes the shell CLI args to the client" do
     @client = double("Chef::Client.new",
-                     :run_ohai => true,
-                     :load_node => true,
-                     :build_node => true,
-                     :register => true,
-                     :sync_cookbooks => {})
+                     run_ohai: true,
+                     load_node: true,
+                     build_node: true,
+                     register: true,
+                     sync_cookbooks: {})
     expect(Chef::Client).to receive(:new).with(json_attribs, Chef::Config[:shell_config]).and_return(@client)
     @session.json_configuration = json_attribs
     @session.send(:rebuild_node)

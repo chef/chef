@@ -31,9 +31,9 @@ class Chef
       banner "knife role env_run_list add [ROLE] [ENVIRONMENT] [ENTRY [ENTRY]] (options)"
 
       option :after,
-        :short => "-a ITEM",
-        :long  => "--after ITEM",
-        :description => "Place the ENTRY in the run list after ITEM"
+        short: "-a ITEM",
+        long: "--after ITEM",
+        description: "Place the ENTRY in the run list after ITEM"
 
       def add_to_env_run_list(role, environment, entries, after = nil)
         if after

@@ -52,7 +52,7 @@ class Chef
         set_or_return(
           :command,
           arg,
-          :kind_of => [ String, Array ]
+          kind_of: [ String, Array ]
         )
       end
       property :umask, [ String, Integer ]

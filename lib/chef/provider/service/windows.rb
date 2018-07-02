@@ -33,12 +33,12 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   include Chef::ReservedNames::Win32::API::Error rescue LoadError
   include Chef::Win32ServiceConstants
 
-  #Win32::Service.get_start_type
+  # Win32::Service.get_start_type
   AUTO_START = "auto start"
   MANUAL = "demand start"
   DISABLED = "disabled"
 
-  #Win32::Service.get_current_state
+  # Win32::Service.get_current_state
   RUNNING = "running"
   STOPPED = "stopped"
   CONTINUE_PENDING = "continue pending"
@@ -361,8 +361,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
     logger.trace "#{@new_resource.name} setting start_type to #{type}"
     Win32::Service.configure(
-      :service_name => @new_resource.service_name,
-      :start_type => startup_type
+      service_name: @new_resource.service_name,
+      start_type: startup_type
     )
     @new_resource.updated_by_last_action(true)
   end

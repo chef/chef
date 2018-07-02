@@ -48,7 +48,7 @@ describe Chef::Resource::File::Verification do
 
     it "accepts an options hash" do
       v = Chef::Resource::File::Verification.new(parent_resource, nil, {}) {}
-      expect { v.verify("/foo/bar", { :future => true }) }.to_not raise_error
+      expect { v.verify("/foo/bar", { future: true }) }.to_not raise_error
     end
 
     context "with a verification block" do

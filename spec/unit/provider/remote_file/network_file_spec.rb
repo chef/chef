@@ -28,9 +28,9 @@ describe Chef::Provider::RemoteFile::NetworkFile do
 
   describe "when fetching the object" do
 
-    let(:tempfile) { double("Tempfile", :path => "/tmp/foo/bar/Foo.tar.gz", :close => nil) }
-    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", :tempfile => tempfile) }
-    let(:source_file) { double("::File", :read => nil) }
+    let(:tempfile) { double("Tempfile", path: "/tmp/foo/bar/Foo.tar.gz", close: nil) }
+    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", tempfile: tempfile) }
+    let(:source_file) { double("::File", read: nil) }
 
     before do
       allow(Chef::Platform).to receive(:windows?).and_return(true)

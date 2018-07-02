@@ -56,8 +56,8 @@ describe Chef::Resource::Package do
   end
 
   it "accepts a hash for response file template variables" do
-    resource.response_file_variables({ :variables => true })
-    expect(resource.response_file_variables).to eql({ :variables => true })
+    resource.response_file_variables({ variables: true })
+    expect(resource.response_file_variables).to eql({ variables: true })
   end
 
   it "accepts a string for the source" do

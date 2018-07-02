@@ -32,8 +32,8 @@ describe "Chef::Application::WindowsService", :windows_only do
   let(:timeout) { 7200 }
   let(:shellout_options) do
     {
-      :timeout => timeout,
-      :logger => Chef::Log,
+      timeout: timeout,
+      logger: Chef::Log,
     }
   end
 

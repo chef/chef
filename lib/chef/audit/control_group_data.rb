@@ -37,11 +37,11 @@ class Chef
 
       def to_hash
         {
-            :node_name => node_name,
-            :run_id => run_id,
-            :start_time => start_time,
-            :end_time => end_time,
-            :control_groups => control_groups.collect { |c| c.to_hash },
+            node_name: node_name,
+            run_id: run_id,
+            start_time: start_time,
+            end_time: end_time,
+            control_groups: control_groups.collect { |c| c.to_hash },
         }
       end
     end
@@ -81,11 +81,11 @@ class Chef
         # they appeared in the recipe
         controls.sort! { |x, y| x.line_number <=> y.line_number }
         h = {
-              :name => name,
-              :status => status,
-              :number_succeeded => number_succeeded,
-              :number_failed => number_failed,
-              :controls => controls.collect { |c| c.to_hash },
+              name: name,
+              status: status,
+              number_succeeded: number_succeeded,
+              number_failed: number_failed,
+              controls: controls.collect { |c| c.to_hash },
         }
         # If there is a duplicate key, metadata will overwrite it
         add_display_only_data(h).merge(metadata)
@@ -124,11 +124,11 @@ class Chef
 
       def to_hash
         h = {
-            :name => name,
-            :status => status,
-            :details => details,
-            :resource_type => resource_type,
-            :resource_name => resource_name,
+            name: name,
+            status: status,
+            details: details,
+            resource_type: resource_type,
+            resource_name: resource_name,
         }
         h[:context] = context || []
         h

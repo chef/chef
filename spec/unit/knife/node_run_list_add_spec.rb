@@ -23,7 +23,7 @@ describe Chef::Knife::NodeRunListAdd do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeRunListAdd.new
     @knife.config = {
-      :after => nil,
+      after: nil,
     }
     @knife.name_args = [ "adam", "role[monkey]" ]
     allow(@knife).to receive(:output).and_return(true)

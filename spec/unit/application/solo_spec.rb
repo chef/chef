@@ -93,13 +93,13 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
       describe "when the json_attribs configuration option is specified" do
         let(:json_attribs) { { "a" => "b" } }
-        let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
+        let(:config_fetcher) { double(Chef::ConfigFetcher, fetch_json: json_attribs) }
         let(:json_source) { "https://foo.com/foo.json" }
 
         before do
           Chef::Config[:json_attribs] = json_source
-          expect(Chef::ConfigFetcher).to receive(:new).with(json_source).
-            and_return(config_fetcher)
+          expect(Chef::ConfigFetcher).to receive(:new).with(json_source)
+            .and_return(config_fetcher)
         end
 
         it "reads the JSON attributes from the specified source" do
@@ -130,7 +130,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
       it "fetches the recipe_url first when both json_attribs and recipe_url are specified" do
         json_attribs = { "a" => "b" }
-        config_fetcher = instance_double("Chef::ConfigFetcher", :fetch_json => json_attribs)
+        config_fetcher = instance_double("Chef::ConfigFetcher", fetch_json: json_attribs)
 
         Chef::Config[:json_attribs] = "https://foo.com/foo.json"
         Chef::Config[:recipe_url] = "http://icanhas.cheezburger.com/lolcats"

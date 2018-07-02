@@ -805,14 +805,14 @@ describe Chef::DataCollector::Reporter do
     context "when valid output_locations are provided" do
       it "does not raise an exception" do
         expect(reporter).to receive(:open).with("data_collection.json", "a")
-        Chef::Config[:data_collector][:output_locations] = { :urls => ["http://data_collector"], :files => ["data_collection.json"] }
+        Chef::Config[:data_collector][:output_locations] = { urls: ["http://data_collector"], files: ["data_collection.json"] }
         expect { reporter.send(:validate_data_collector_output_locations!) }.not_to raise_error(Chef::Exceptions::ConfigurationError)
       end
     end
 
     context "when output_locations contains an invalid URI" do
       it "raises an exception" do
-        Chef::Config[:data_collector][:output_locations] = { :urls => ["this is not a url"], :files => ["/tmp/data_collection.json"] }
+        Chef::Config[:data_collector][:output_locations] = { urls: ["this is not a url"], files: ["/tmp/data_collection.json"] }
         expect { reporter.send(:validate_data_collector_output_locations!) }.to raise_error(Chef::Exceptions::ConfigurationError)
       end
     end

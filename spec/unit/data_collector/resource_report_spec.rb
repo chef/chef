@@ -133,7 +133,7 @@ describe Chef::DataCollector::ResourceReport do
         }
       end
       let(:conditional) do
-        double("Chef::Resource::Conditional", :to_text => "because")
+        double("Chef::Resource::Conditional", to_text: "because")
       end
 
       it "should handle any Exception and throw a helpful message by mocking the identity" do

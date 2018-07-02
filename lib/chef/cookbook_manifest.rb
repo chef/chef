@@ -236,13 +236,13 @@ class Chef
         csum = checksum_cookbook_file(file)
         @checksums[csum] = file
         rs = Mash.new({
-          :name => name,
-          :path => path,
-          :checksum => csum,
-          :specificity => specificity,
+          name: name,
+          path: path,
+          checksum: csum,
+          specificity: specificity,
           # full_path is not a part of the normal manifest, but is very useful to keep around.
           # uploaders should strip this out.
-          :full_path => file,
+          full_path: file,
         })
 
         manifest[:all_files] << rs

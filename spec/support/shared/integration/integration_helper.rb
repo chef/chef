@@ -140,12 +140,12 @@ module IntegrationSupport
 
   # Versioned cookbooks
 
-  RSpec.shared_context "with versioned cookbooks", :versioned_cookbooks => true do
+  RSpec.shared_context "with versioned cookbooks", versioned_cookbooks: true do
     before(:each) { Chef::Config[:versioned_cookbooks] = true }
     after(:each)  { Chef::Config.delete(:versioned_cookbooks) }
   end
 
-  RSpec.shared_context "without versioned cookbooks", :versioned_cookbooks => false do
+  RSpec.shared_context "without versioned cookbooks", versioned_cookbooks: false do
     # Just make sure this goes back to default
     before(:each) { Chef::Config[:versioned_cookbooks] = false }
     after(:each)  { Chef::Config.delete(:versioned_cookbooks) }

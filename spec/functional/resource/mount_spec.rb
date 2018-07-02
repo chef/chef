@@ -24,7 +24,7 @@ require "tmpdir"
 # run this test only for following platforms.
 include_flag = !(%w{debian rhel amazon aix solaris2}.include?(ohai[:platform_family]))
 
-describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => include_flag do
+describe Chef::Resource::Mount, :requires_root, :skip_travis, external: include_flag do
   # Disabled in travis because it refuses to let us mount a ramdisk. /dev/ramX does not
   # exist even after loading the kernel module
 
@@ -161,7 +161,7 @@ describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => inclu
   # don't run the remount tests on solaris2 (tmpfs does not support remount)
   # Need to make sure the platforms we've already excluded are considered:
   skip_remount = include_flag || (ohai[:platform] == "solaris2")
-  describe "when the filesystem should be remounted and the resource supports remounting", :external => skip_remount do
+  describe "when the filesystem should be remounted and the resource supports remounting", external: skip_remount do
     it "should remount the filesystem if it is mounted" do
       new_resource.run_action(:mount)
       mount_should_exist(new_resource.mount_point, new_resource.device)

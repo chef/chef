@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Handler::JsonFile do
   before(:each) do
-    @handler = Chef::Handler::JsonFile.new(:the_sun => "will rise", :path => "/tmp/foobarbazqux")
+    @handler = Chef::Handler::JsonFile.new(the_sun: "will rise", path: "/tmp/foobarbazqux")
   end
 
   it "accepts arbitrary config options" do

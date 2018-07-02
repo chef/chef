@@ -109,7 +109,7 @@ describe Chef::Resource::Execute do
   shared_examples_for "a consumer of the Execute resource" do
     context "when running on Windows" do
       before do
-        allow(resource).to receive(:node).and_return({ :platform_family => "windows" })
+        allow(resource).to receive(:node).and_return({ platform_family: "windows" })
       end
 
       context "when no user, domain, or password is specified" do
@@ -211,7 +211,7 @@ describe Chef::Resource::Execute do
 
     context "when not running on Windows" do
       before do
-        allow(resource).to receive(:node).and_return({ :platform_family => "ubuntu" })
+        allow(resource).to receive(:node).and_return({ platform_family: "ubuntu" })
       end
 
       context "when no user, domain, or password is specified" do

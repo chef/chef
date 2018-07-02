@@ -53,7 +53,7 @@ class Chef
         set_or_return(
           :source,
           file,
-          :kind_of => [ String, Array ]
+          kind_of: [ String, Array ]
         )
       end
 

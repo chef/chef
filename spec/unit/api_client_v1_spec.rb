@@ -324,13 +324,13 @@ describe Chef::ApiClientV1 do
   end
 
   describe "Versioned API Interactions" do
-    let(:response_406) { OpenStruct.new(:code => "406") }
+    let(:response_406) { OpenStruct.new(code: "406") }
     let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
     let(:payload) do
       {
-        :name => "some_name",
-        :validator => true,
-        :admin => true,
+        name: "some_name",
+        validator: true,
+        admin: true,
       }
     end
 
@@ -389,7 +389,7 @@ describe Chef::ApiClientV1 do
             end
 
             it "updates the client with only the name" do
-              expect(rest). to receive(:put).with("clients/some_name", { :name => "some_name" }).and_return({ :name => "some_name" })
+              expect(rest). to receive(:put).with("clients/some_name", { name: "some_name" }).and_return({ name: "some_name" })
               @client.update
             end
           end
@@ -437,7 +437,7 @@ describe Chef::ApiClientV1 do
     describe "reregister" do
       context "when server API V0 is valid on the Chef Server receiving the request" do
         it "creates a new object via the API" do
-          expect(@client.chef_rest_v0).to receive(:put).with("clients/#{@client.name}", payload.merge({ :private_key => true })).and_return({})
+          expect(@client.chef_rest_v0).to receive(:put).with("clients/#{@client.name}", payload.merge({ private_key: true })).and_return({})
           @client.reregister
         end
       end # when server API V0 is valid on the Chef Server receiving the request

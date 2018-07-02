@@ -77,23 +77,23 @@ class Chef
 
     def actor(arg = nil)
       set_or_return(:actor, arg,
-                    :regex => /^[a-z0-9\-_]+$/)
+                    regex: /^[a-z0-9\-_]+$/)
     end
 
     def name(arg = nil)
       set_or_return(:name, arg,
-                    :kind_of => String)
+                    kind_of: String)
     end
 
     def public_key(arg = nil)
       raise Chef::Exceptions::InvalidKeyAttribute, "you cannot set the public_key if create_key is true" if !arg.nil? && @create_key
       set_or_return(:public_key, arg,
-                    :kind_of => String)
+                    kind_of: String)
     end
 
     def private_key(arg = nil)
       set_or_return(:private_key, arg,
-                    :kind_of => String)
+                    kind_of: String)
     end
 
     def delete_public_key
@@ -107,12 +107,12 @@ class Chef
     def create_key(arg = nil)
       raise Chef::Exceptions::InvalidKeyAttribute, "you cannot set create_key to true if the public_key field exists" if arg == true && !@public_key.nil?
       set_or_return(:create_key, arg,
-                    :kind_of => [TrueClass, FalseClass])
+                    kind_of: [TrueClass, FalseClass])
     end
 
     def expiration_date(arg = nil)
       set_or_return(:expiration_date, arg,
-                    :regex => /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|infinity)$/)
+                    regex: /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|infinity)$/)
     end
 
     def to_hash
@@ -140,7 +140,7 @@ class Chef
       # defaults the key name to the fingerprint of the key
       if @name.nil?
         # if they didn't pass a public_key,
-        #then they must supply a name because we can't generate a fingerprint
+        # then they must supply a name because we can't generate a fingerprint
         unless @public_key.nil?
           @name = fingerprint
         else

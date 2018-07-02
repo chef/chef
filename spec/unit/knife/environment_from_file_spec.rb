@@ -61,7 +61,7 @@ describe Chef::Knife::EnvironmentFromFile do
         allow(File).to receive(:expand_path).with("./environments/").and_return("/tmp/environments")
         allow(Dir).to receive(:glob).with("/tmp/environments/*.{json,rb}").and_return(["spec.rb", "apple.rb"])
         @knife.name_args = []
-        allow(@knife).to receive(:config).and_return({ :all => true })
+        allow(@knife).to receive(:config).and_return({ all: true })
         expect(@environment).to receive(:save).twice
         @knife.run
       end

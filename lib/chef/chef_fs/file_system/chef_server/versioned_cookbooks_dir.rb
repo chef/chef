@@ -78,7 +78,7 @@ class Chef
               cookbook_to_upload.freeze_version if options[:freeze]
 
               # Instantiate a new uploader based on the proxy loader
-              uploader = Chef::CookbookUploader.new(cookbook_to_upload, :force => options[:force], :rest => chef_rest)
+              uploader = Chef::CookbookUploader.new(cookbook_to_upload, force: options[:force], rest: chef_rest)
 
               with_actual_cookbooks_dir(temp_cookbooks_path) do
                 uploader.upload_cookbooks

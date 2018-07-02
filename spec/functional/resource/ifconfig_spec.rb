@@ -23,7 +23,7 @@ require "chef/mixin/shell_out"
 # run this test only for following platforms.
 include_flag = !(%w{amazon debian aix}.include?(ohai[:platform_family]) || (ohai[:platform_family] == "rhel" && ohai[:platform_version].to_i < 7))
 
-describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => include_flag do
+describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, external: include_flag do
   # This test does not work in travis because there is no eth0
 
   include Chef::Mixin::ShellOut
@@ -122,7 +122,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => in
   end
 
   exclude_test = ohai[:platform] != "ubuntu"
-  describe "#action_add", :external => exclude_test do
+  describe "#action_add", external: exclude_test do
     after do
       new_resource.run_action(:delete)
     end
@@ -134,7 +134,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => in
     end
   end
 
-  describe "#action_enable", :external => exclude_test do
+  describe "#action_enable", external: exclude_test do
     after do
       new_resource.run_action(:disable)
     end
@@ -145,7 +145,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => in
     end
   end
 
-  describe "#action_disable", :external => exclude_test do
+  describe "#action_disable", external: exclude_test do
     before do
       setup_enable_interface(new_resource)
       new_resource.run_action(:enable)
@@ -157,7 +157,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => in
     end
   end
 
-  describe "#action_delete", :external => exclude_test do
+  describe "#action_delete", external: exclude_test do
     before do
       setup_add_interface(new_resource)
       new_resource.run_action(:add)

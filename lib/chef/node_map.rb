@@ -37,20 +37,20 @@
 #
 class Chef
   class NodeMap
-    COLLISION_WARNING_14 = <<-EOH.gsub(/\s+/, " ").strip
-%{type_caps} %{key} has been loaded from a cookbook. The %{type} %{key} is now
-included in Chef and will take precedence over the existing cookbook %{type} in the
-next major release of Chef (15.0, April 2019). You may be able to remove this cookbook dependency from
-your runlist if you do not use other recipes/resources/libraries from the cookbook.
-Alternatively there may be a newer version of this cookbook without the %{key} %{type}.
+    COLLISION_WARNING_14 = <<~EOH.gsub(/\s+/, " ").strip
+      %{type_caps} %{key} has been loaded from a cookbook. The %{type} %{key} is now
+      included in Chef and will take precedence over the existing cookbook %{type} in the
+      next major release of Chef (15.0, April 2019). You may be able to remove this cookbook dependency from
+      your runlist if you do not use other recipes/resources/libraries from the cookbook.
+      Alternatively there may be a newer version of this cookbook without the %{key} %{type}.
 EOH
 
-    COLLISION_WARNING_15 = <<-EOH.gsub(/\s+/, " ").strip
-%{type_caps} %{key} attempted to load from a cookbook. The %{type} %{key} is now
-included in Chef and takes precedence over the existing cookbook %{type}
-which will be ignored. You may be able to remove this cookbook dependency from
-your runlist if you do not use other recipes/resources/libraries from the cookbook.
-Alternatively there may be a newer version of this cookbook without the %{key} %{type}.
+    COLLISION_WARNING_15 = <<~EOH.gsub(/\s+/, " ").strip
+      %{type_caps} %{key} attempted to load from a cookbook. The %{type} %{key} is now
+      included in Chef and takes precedence over the existing cookbook %{type}
+      which will be ignored. You may be able to remove this cookbook dependency from
+      your runlist if you do not use other recipes/resources/libraries from the cookbook.
+      Alternatively there may be a newer version of this cookbook without the %{key} %{type}.
 EOH
 
     #

@@ -37,9 +37,9 @@ describe Chef::Provider::User do
     @provider.current_resource = @current_resource
 
     @pw_group = double("Struct::Group",
-      :name => "wheel",
-      :gid => 20,
-      :mem => %w{root aj}
+      name: "wheel",
+      gid: 20,
+      mem: %w{root aj}
       )
     allow(Etc).to receive(:getgrnam).with("wheel").and_return(@pw_group)
   end

@@ -68,11 +68,11 @@ describe Chef::Knife::SslFetch do
 
     it "prints an error and exits" do
       expect { ssl_fetch.run }.to raise_error(SystemExit)
-      expected_stdout = <<-E
-USAGE: knife ssl fetch [URL] (options)
+      expected_stdout = <<~E
+        USAGE: knife ssl fetch [URL] (options)
 E
-      expected_stderr = <<-E
-ERROR: Given URI: `foo.test' is invalid
+      expected_stderr = <<~E
+        ERROR: Given URI: `foo.test' is invalid
 E
       expect(stdout_io.string).to eq(expected_stdout)
       expect(stderr_io.string).to eq(expected_stderr)
@@ -84,11 +84,11 @@ E
 
       it "prints an error and exits" do
         expect { ssl_fetch.run }.to raise_error(SystemExit)
-        expected_stdout = <<-E
-USAGE: knife ssl fetch [URL] (options)
+        expected_stdout = <<~E
+          USAGE: knife ssl fetch [URL] (options)
 E
-        expected_stderr = <<-E
-ERROR: Given URI: `#{name_args[0]}' is invalid
+        expected_stderr = <<~E
+          ERROR: Given URI: `#{name_args[0]}' is invalid
 E
         expect(stdout_io.string).to eq(expected_stdout)
         expect(stderr_io.string).to eq(expected_stderr)
@@ -187,9 +187,9 @@ E
       end
 
       it "tells the user their URL is for a non-ssl service" do
-        expected_error_text = <<-ERROR_TEXT
-ERROR: The service at the given URI (http://foo.example.com) does not accept SSL connections
-ERROR: Perhaps you meant to connect to 'https://foo.example.com'?
+        expected_error_text = <<~ERROR_TEXT
+          ERROR: The service at the given URI (http://foo.example.com) does not accept SSL connections
+          ERROR: Perhaps you meant to connect to 'https://foo.example.com'?
 ERROR_TEXT
 
         run

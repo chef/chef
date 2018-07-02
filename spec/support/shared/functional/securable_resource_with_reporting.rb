@@ -36,7 +36,7 @@ shared_examples_for "a securable resource with reporting" do
   # umask
   # let(:default_mode) { (0666 & ~File.umask).to_s(8) }
 
-  describe "reading file security metadata for reporting on unix", :unix_only => true do
+  describe "reading file security metadata for reporting on unix", unix_only: true do
     # According to POSIX standard created files get either the
     # effective gid of the process or inherits the gid of the parent
     # directory based on file system. Since it's hard to guess what
@@ -70,7 +70,7 @@ shared_examples_for "a securable resource with reporting" do
         end
       end
 
-      context "and owner is specified with a String (username) in new_resource", :requires_root => true do
+      context "and owner is specified with a String (username) in new_resource", requires_root: true do
 
         # TODO/bug: duplicated from the "securable resource" tests
 
@@ -91,7 +91,7 @@ shared_examples_for "a securable resource with reporting" do
 
       end
 
-      context "and owner is specified with an Integer (uid) in new_resource", :requires_root => true do
+      context "and owner is specified with an Integer (uid) in new_resource", requires_root: true do
 
         # TODO: duplicated from "securable resource"
         if ohai[:platform] == "aix"
@@ -113,7 +113,7 @@ shared_examples_for "a securable resource with reporting" do
         end
       end
 
-      context "and group is specified with a String (group name)", :requires_root => true do
+      context "and group is specified with a String (group name)", requires_root: true do
 
         let(:expected_group_name) { Etc.getgrent.name }
 
@@ -128,7 +128,7 @@ shared_examples_for "a securable resource with reporting" do
 
       end
 
-      context "and group is specified with an Integer (gid)", :requires_root => true do
+      context "and group is specified with an Integer (gid)", requires_root: true do
         let(:expected_gid) { Etc.getgrent.gid }
 
         before do

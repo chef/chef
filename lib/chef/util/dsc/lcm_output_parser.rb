@@ -128,7 +128,7 @@ class Chef
                   if current_resource[:name]
                     resources.push(current_resource)
                   end
-                  current_resource = { :name => info }
+                  current_resource = { name: info }
                 else
                   Chef::Log.trace("Ignoring op_action #{op_action}: Read line #{line}")
                 end

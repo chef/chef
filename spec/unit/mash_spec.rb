@@ -21,7 +21,7 @@ require "chef/mash"
 
 describe Mash do
   it "should duplicate a simple key/value mash to a new mash" do
-    data = { :x => "one", :y => "two", :z => "three" }
+    data = { x: "one", y: "two", z: "three" }
     @orig = Mash.new(data)
     @copy = @orig.dup
     expect(@copy.to_hash).to eq(Mash.new(data).to_hash)
@@ -30,7 +30,7 @@ describe Mash do
   end
 
   it "should duplicate a mash with an array to a new mash" do
-    data = { :x => "one", :y => "two", :z => [1, 2, 3] }
+    data = { x: "one", y: "two", z: [1, 2, 3] }
     @orig = Mash.new(data)
     @copy = @orig.dup
     expect(@copy.to_hash).to eq(Mash.new(data).to_hash)
@@ -39,7 +39,7 @@ describe Mash do
   end
 
   it "should duplicate a nested mash to a new mash" do
-    data = { :x => "one", :y => "two", :z => Mash.new({ :a => [1, 2, 3] }) }
+    data = { x: "one", y: "two", z: Mash.new({ a: [1, 2, 3] }) }
     @orig = Mash.new(data)
     @copy = @orig.dup
     expect(@copy.to_hash).to eq(Mash.new(data).to_hash)

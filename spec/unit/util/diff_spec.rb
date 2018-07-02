@@ -546,7 +546,7 @@ shared_examples_for "a diff util" do
 
 end
 
-describe Chef::Util::Diff, :uses_diff => true do
+describe Chef::Util::Diff, uses_diff: true do
   let!(:old_file) { old_tempfile.path }
   let!(:new_file) { new_tempfile.path }
 

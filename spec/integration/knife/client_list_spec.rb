@@ -33,14 +33,14 @@ describe "knife client list", :workstation do
     end
 
     it "lists the clients" do
-      knife("client list").should_succeed <<EOM
-car
-car-validator
-cat
-cdr
-chef-validator
-chef-webui
-cons
+      knife("client list").should_succeed <<~EOM
+        car
+        car-validator
+        cat
+        cdr
+        chef-validator
+        chef-webui
+        cons
 EOM
     end
 

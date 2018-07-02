@@ -80,7 +80,7 @@ class Chef
         end
 
         def service_status
-          cmd = shell_out!(@status_command, "-l", @current_resource.service_name, :returns => [0, 1])
+          cmd = shell_out!(@status_command, "-l", @current_resource.service_name, returns: [0, 1])
           # Example output
           # $ svcs -l rsyslog
           # fmri         svc:/application/rsyslog:default

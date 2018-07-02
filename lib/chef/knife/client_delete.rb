@@ -28,9 +28,9 @@ class Chef
       end
 
       option :delete_validators,
-       :short => "-D",
-       :long => "--delete-validators",
-       :description => "Force deletion of client if it's a validator"
+       short: "-D",
+       long: "--delete-validators",
+       description: "Force deletion of client if it's a validator"
 
       banner "knife client delete [CLIENT [CLIENT]] (options)"
 

@@ -37,27 +37,27 @@ class Chef
       include Chef::Mixin::ShellOut
 
       option :config_file,
-        :short => "-c CONFIG",
-        :long => "--config CONFIG",
-        :default => "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
-        :description => ""
+        short: "-c CONFIG",
+        long: "--config CONFIG",
+        default: "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
+        description: ""
 
       option :log_location,
-        :short        => "-L LOGLOCATION",
-        :long         => "--logfile LOGLOCATION",
-        :description  => "Set the log file location"
+        short: "-L LOGLOCATION",
+        long: "--logfile LOGLOCATION",
+        description: "Set the log file location"
 
       option :splay,
-        :short        => "-s SECONDS",
-        :long         => "--splay SECONDS",
-        :description  => "The splay time for running at intervals, in seconds",
-        :proc         => lambda { |s| s.to_i }
+        short: "-s SECONDS",
+        long: "--splay SECONDS",
+        description: "The splay time for running at intervals, in seconds",
+        proc: lambda { |s| s.to_i }
 
       option :interval,
-        :short        => "-i SECONDS",
-        :long         => "--interval SECONDS",
-        :description  => "Set the number of seconds to wait between chef-client runs",
-        :proc         => lambda { |s| s.to_i }
+        short: "-i SECONDS",
+        long: "--interval SECONDS",
+        description: "Set the number of seconds to wait between chef-client runs",
+        proc: lambda { |s| s.to_i }
 
       DEFAULT_LOG_LOCATION ||= "#{ENV['SYSTEMDRIVE']}/chef/client.log"
 
@@ -197,11 +197,11 @@ class Chef
 
         result = shell_out(
           "chef-client.bat #{config_params}",
-          :timeout => Chef::Config[:windows_service][:watchdog_timeout],
-          :logger => Chef::Log
+          timeout: Chef::Config[:windows_service][:watchdog_timeout],
+          logger: Chef::Log
         )
-        Chef::Log.trace "#{result.stdout}"
-        Chef::Log.trace "#{result.stderr}"
+        Chef::Log.trace (result.stdout).to_s
+        Chef::Log.trace (result.stderr).to_s
       rescue Mixlib::ShellOut::CommandTimeout => e
         Chef::Log.error "chef-client timed out\n(#{e})"
         Chef::Log.error(<<-EOF)

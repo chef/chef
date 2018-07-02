@@ -32,9 +32,9 @@ class Chef
       banner "knife user list (options)"
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+        short: "-w",
+        long: "--with-uri",
+        description: "Show corresponding URIs"
 
       def run
         output(format_list_for_display(Chef::UserV1.list))

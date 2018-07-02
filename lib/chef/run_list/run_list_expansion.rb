@@ -148,8 +148,8 @@ class Chef
       end
 
       def to_hash
-        seen_items = { :recipe => {}, :role => {} }
-        { :id => @environment, :run_list => convert_run_list_trace("top level", seen_items) }
+        seen_items = { recipe: {}, role: {} }
+        { id: @environment, run_list: convert_run_list_trace("top level", seen_items) }
       end
 
       private
@@ -185,12 +185,12 @@ class Chef
           seen_items[item.type][item.name] = true
           case item.type
             when :recipe
-              { :type => "recipe", :name => item.name, :version => item.version, :skipped => !!skipped }
+              { type: "recipe", name: item.name, version: item.version, skipped: !!skipped }
             when :role
               error = @role_errors[item.name]
               missing = @all_missing_roles[item.name]
-              { :type => :role, :name => item.name, :children => (missing || error || skipped) ? [] : convert_run_list_trace(item.to_s, seen_items),
-                :missing => missing, :error => error, :skipped => skipped }
+              { type: :role, name: item.name, children: (missing || error || skipped) ? [] : convert_run_list_trace(item.to_s, seen_items),
+                missing: missing, error: error, skipped: skipped }
           end
         end
       end

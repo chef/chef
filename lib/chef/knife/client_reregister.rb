@@ -30,9 +30,9 @@ class Chef
       banner "knife client reregister CLIENT (options)"
 
       option :file,
-        :short => "-f FILE",
-        :long  => "--file FILE",
-        :description => "Write the key to a file"
+        short: "-f FILE",
+        long: "--file FILE",
+        description: "Write the key to a file"
 
       def run
         @client_name = @name_args[0]

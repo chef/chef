@@ -58,7 +58,7 @@ class Chef
 
         def sftp
           host = port ? "#{hostname}:#{port}" : hostname
-          @sftp ||= Net::SFTP.start(host, user, :password => pass)
+          @sftp ||= Net::SFTP.start(host, user, password: pass)
         end
 
         def pass

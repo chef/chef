@@ -45,7 +45,7 @@ class Chef
         result = set_or_return(
           :architecture,
           arg,
-          :kind_of => Symbol
+          kind_of: Symbol
         )
       end
 

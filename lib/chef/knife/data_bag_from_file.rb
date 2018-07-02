@@ -38,9 +38,9 @@ class Chef
       category "data bag"
 
       option :all,
-        :short => "-a",
-        :long  => "--all",
-        :description => "Upload all data bags or all items for specified data bags"
+        short: "-a",
+        long: "--all",
+        description: "Upload all data bags or all items for specified data bags"
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(DataBagItem, ui)
@@ -84,7 +84,7 @@ class Chef
         items ||= find_all_data_bag_items(data_bag)
         item_paths = normalize_item_paths(items)
         item_paths.each do |item_path|
-          item = loader.load_from("#{data_bags_path}", data_bag, item_path)
+          item = loader.load_from((data_bags_path).to_s, data_bag, item_path)
           item = if encryption_secret_provided?
                    Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, read_secret)
                  else

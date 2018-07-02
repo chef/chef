@@ -38,31 +38,31 @@ describe "knife raw", :workstation do
       user "x", "{}"
     end
 
-    it "knife raw /nodes/x returns the node", :skip => (RUBY_VERSION < "1.9") do
-      knife("raw /nodes/x").should_succeed <<EOM
-{
-  "name": "x",
-  "json_class": "Chef::Node",
-  "chef_type": "node",
-  "chef_environment": "_default",
-  "override": {
+    it "knife raw /nodes/x returns the node", skip: (RUBY_VERSION < "1.9") do
+      knife("raw /nodes/x").should_succeed <<~EOM
+        {
+          "name": "x",
+          "json_class": "Chef::Node",
+          "chef_type": "node",
+          "chef_environment": "_default",
+          "override": {
 
-  },
-  "normal": {
-    "tags": [
+          },
+          "normal": {
+            "tags": [
 
-    ]
-  },
-  "default": {
+            ]
+          },
+          "default": {
 
-  },
-  "automatic": {
+          },
+          "automatic": {
 
-  },
-  "run_list": [
+          },
+          "run_list": [
 
-  ]
-}
+          ]
+        }
 EOM
     end
 
@@ -70,116 +70,116 @@ EOM
       knife("raw /blarghle").should_fail(/ERROR: Server responded with error 404 "Not Found\s*"/)
     end
 
-    it "knife raw -m DELETE /roles/x succeeds", :skip => (RUBY_VERSION < "1.9") do
-      knife("raw -m DELETE /roles/x").should_succeed <<EOM
-{
-  "name": "x",
-  "description": "",
-  "json_class": "Chef::Role",
-  "chef_type": "role",
-  "default_attributes": {
+    it "knife raw -m DELETE /roles/x succeeds", skip: (RUBY_VERSION < "1.9") do
+      knife("raw -m DELETE /roles/x").should_succeed <<~EOM
+        {
+          "name": "x",
+          "description": "",
+          "json_class": "Chef::Role",
+          "chef_type": "role",
+          "default_attributes": {
 
-  },
-  "override_attributes": {
+          },
+          "override_attributes": {
 
-  },
-  "run_list": [
+          },
+          "run_list": [
 
-  ],
-  "env_run_lists": {
+          ],
+          "env_run_lists": {
 
-  }
-}
+          }
+        }
 EOM
       knife("show /roles/x.json").should_fail "ERROR: /roles/x.json: No such file or directory\n"
     end
 
-    it "knife raw -m PUT -i blah.txt /roles/x succeeds", :skip => (RUBY_VERSION < "1.9") do
+    it "knife raw -m PUT -i blah.txt /roles/x succeeds", skip: (RUBY_VERSION < "1.9") do
       Tempfile.open("raw_put_input") do |file|
-        file.write <<EOM
-{
-  "name": "x",
-  "description": "eek",
-  "json_class": "Chef::Role",
-  "chef_type": "role",
-  "default_attributes": {
+        file.write <<~EOM
+          {
+            "name": "x",
+            "description": "eek",
+            "json_class": "Chef::Role",
+            "chef_type": "role",
+            "default_attributes": {
 
-  },
-  "override_attributes": {
+            },
+            "override_attributes": {
 
-  },
-  "run_list": [
+            },
+            "run_list": [
 
-  ],
-  "env_run_lists": {
+            ],
+            "env_run_lists": {
 
-  }
-}
+            }
+          }
 EOM
         file.close
 
-        knife("raw -m PUT -i #{file.path} /roles/x").should_succeed <<EOM
-{
-  "name": "x",
-  "description": "eek",
-  "json_class": "Chef::Role",
-  "chef_type": "role",
-  "default_attributes": {
+        knife("raw -m PUT -i #{file.path} /roles/x").should_succeed <<~EOM
+          {
+            "name": "x",
+            "description": "eek",
+            "json_class": "Chef::Role",
+            "chef_type": "role",
+            "default_attributes": {
 
-  },
-  "override_attributes": {
+            },
+            "override_attributes": {
 
-  },
-  "run_list": [
+            },
+            "run_list": [
 
-  ],
-  "env_run_lists": {
+            ],
+            "env_run_lists": {
 
-  }
-}
+            }
+          }
 EOM
-        knife("show /roles/x.json").should_succeed <<EOM
-/roles/x.json:
-{
-  "name": "x",
-  "description": "eek"
-}
+        knife("show /roles/x.json").should_succeed <<~EOM
+          /roles/x.json:
+          {
+            "name": "x",
+            "description": "eek"
+          }
 EOM
       end
     end
 
-    it "knife raw -m POST -i blah.txt /roles succeeds", :skip => (RUBY_VERSION < "1.9") do
+    it "knife raw -m POST -i blah.txt /roles succeeds", skip: (RUBY_VERSION < "1.9") do
       Tempfile.open("raw_put_input") do |file|
-        file.write <<EOM
-{
-  "name": "y",
-  "description": "eek",
-  "json_class": "Chef::Role",
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  },
-  "run_list": [
+        file.write <<~EOM
+          {
+            "name": "y",
+            "description": "eek",
+            "json_class": "Chef::Role",
+            "chef_type": "role",
+            "default_attributes": {
+            },
+            "override_attributes": {
+            },
+            "run_list": [
 
-  ],
-  "env_run_lists": {
-  }
-}
+            ],
+            "env_run_lists": {
+            }
+          }
 EOM
         file.close
 
-        knife("raw -m POST -i #{file.path} /roles").should_succeed <<EOM
-{
-  "uri": "#{Chef::Config.chef_server_url}/roles/y"
-}
+        knife("raw -m POST -i #{file.path} /roles").should_succeed <<~EOM
+          {
+            "uri": "#{Chef::Config.chef_server_url}/roles/y"
+          }
 EOM
-        knife("show /roles/y.json").should_succeed <<EOM
-/roles/y.json:
-{
-  "name": "y",
-  "description": "eek"
-}
+        knife("show /roles/y.json").should_succeed <<~EOM
+          /roles/y.json:
+          {
+            "name": "y",
+            "description": "eek"
+          }
 EOM
       end
     end
@@ -198,18 +198,18 @@ EOM
         @raw_server_thread.kill if @raw_server_thread
       end
 
-      it "knife raw /blah returns the prettified json", :skip => (RUBY_VERSION < "1.9") do
-        knife("raw /blah").should_succeed <<EOM
-{
-  "x": "y",
-  "a": "b"
-}
+      it "knife raw /blah returns the prettified json", skip: (RUBY_VERSION < "1.9") do
+        knife("raw /blah").should_succeed <<~EOM
+          {
+            "x": "y",
+            "a": "b"
+          }
 EOM
       end
 
       it "knife raw --no-pretty /blah returns the raw json" do
-        knife("raw --no-pretty /blah").should_succeed <<EOM
-{ "x": "y", "a": "b" }
+        knife("raw --no-pretty /blah").should_succeed <<~EOM
+          { "x": "y", "a": "b" }
 EOM
       end
     end
@@ -229,14 +229,14 @@ EOM
       end
 
       it "knife raw /blah returns the raw text" do
-        knife("raw /blah").should_succeed(<<EOM)
-{ "x": "y", "a": "b" }
+        knife("raw /blah").should_succeed(<<~EOM)
+          { "x": "y", "a": "b" }
 EOM
       end
 
       it "knife raw --no-pretty /blah returns the raw text" do
-        knife("raw --no-pretty /blah").should_succeed(<<EOM)
-{ "x": "y", "a": "b" }
+        knife("raw --no-pretty /blah").should_succeed(<<~EOM)
+          { "x": "y", "a": "b" }
 EOM
       end
     end

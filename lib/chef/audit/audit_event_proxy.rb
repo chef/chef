@@ -79,12 +79,12 @@ class Chef
         outermost_group_desc = describe_groups.shift
 
         [outermost_group_desc, {
-            :name => example.description,
-            :desc => example.full_description,
-            :resource_type => resource_type,
-            :resource_name => resource_name,
-            :context => describe_groups,
-            :line_number => example.metadata[:line_number],
+            name: example.description,
+            desc: example.full_description,
+            resource_type: resource_type,
+            resource_name: resource_name,
+            context: describe_groups,
+            line_number: example.metadata[:line_number],
         }]
       end
 

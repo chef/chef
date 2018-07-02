@@ -55,7 +55,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :regex => /^[\-[:alnum:]_]+$/
+        regex: /^[\-[:alnum:]_]+$/
       )
     end
 
@@ -63,7 +63,7 @@ class Chef
       set_or_return(
         :description,
         arg,
-        :kind_of => String
+        kind_of: String
       )
     end
 
@@ -118,7 +118,7 @@ class Chef
       set_or_return(
         :default_attributes,
         arg,
-        :kind_of => Hash
+        kind_of: Hash
       )
     end
 
@@ -126,7 +126,7 @@ class Chef
       set_or_return(
         :override_attributes,
         arg,
-        :kind_of => Hash
+        kind_of: Hash
       )
     end
 
@@ -141,8 +141,8 @@ class Chef
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
 
-        #Render to_json correctly for run_list items (both run_list and evn_run_lists)
-        #so malformed json does not result
+        # Render to_json correctly for run_list items (both run_list and evn_run_lists)
+        # so malformed json does not result
         "run_list" => run_list.run_list.map { |item| item.to_s },
         "env_run_lists" => env_run_lists_without_default.inject({}) do |accumulator, (k, v)|
           accumulator[k] = v.map { |x| x.to_s }

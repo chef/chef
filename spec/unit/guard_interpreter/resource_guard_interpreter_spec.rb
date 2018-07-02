@@ -106,7 +106,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
           end
 
           let(:shell_out) do
-            instance_double(Mixlib::ShellOut, :live_stream => true, :run_command => true, :error! => nil)
+            instance_double(Mixlib::ShellOut, live_stream: true, run_command: true, error!: nil)
           end
 
           before do
@@ -118,7 +118,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
           end
 
           it "merges to :code" do
-            expect(command_opts).to receive(:merge).with({ :code => "exit 0" }).and_call_original
+            expect(command_opts).to receive(:merge).with({ code: "exit 0" }).and_call_original
             expect(guard_interpreter.evaluate).to eq(true)
           end
         end
@@ -131,7 +131,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
           end
 
           it "merges to :code" do
-            expect(command_opts).to receive(:merge).with({ :command => "exit 0" }).and_call_original
+            expect(command_opts).to receive(:merge).with({ command: "exit 0" }).and_call_original
             expect(guard_interpreter.evaluate).to eq(true)
           end
         end
@@ -145,7 +145,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
         end
 
         it "merges to :command" do
-          expect(command_opts).to receive(:merge).with({ :command => "exit 0" }).and_call_original
+          expect(command_opts).to receive(:merge).with({ command: "exit 0" }).and_call_original
           expect(guard_interpreter.evaluate).to eq(true)
         end
       end

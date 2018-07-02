@@ -33,7 +33,7 @@ class Chef
     #     Chef::Mixin::RecipeDefinitionDSLCore is deprecated, use Chef::DSL::Recipe instead.
     #   EOM
     def self.deprecate_constant(name, replacement, message)
-      deprecated_constants[name] = { :replacement => replacement, :message => message }
+      deprecated_constants[name] = { replacement: replacement, message: message }
     end
 
     # Const missing hook to look up deprecated constants defined with

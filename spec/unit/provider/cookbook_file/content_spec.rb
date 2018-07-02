@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Provider::CookbookFile::Content do
 
-  let(:new_resource) { double("Chef::Resource::CookbookFile (new)", :cookbook_name => "apache2", :cookbook => "apache2") }
+  let(:new_resource) { double("Chef::Resource::CookbookFile (new)", cookbook_name: "apache2", cookbook: "apache2") }
   let(:content) do
     @run_context = double("Chef::RunContext")
     @current_resource = double("Chef::Resource::CookbookFile (current)")

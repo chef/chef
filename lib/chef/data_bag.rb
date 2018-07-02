@@ -54,7 +54,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :regex => VALID_NAME
+        regex: VALID_NAME
       )
     end
 
@@ -157,7 +157,7 @@ class Chef
       self
     end
 
-    #create a data bag via RESTful API
+    # create a data bag via RESTful API
     def create
       chef_server_rest.post("data", self)
       self

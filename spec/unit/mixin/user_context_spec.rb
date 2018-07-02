@@ -43,7 +43,7 @@ describe "a class that mixes in user_context" do
       allow(::Chef::Util::Windows::LogonSession).to receive(:new).and_return(logon_session)
     end
 
-    let(:logon_session) { instance_double("::Chef::Util::Windows::LogonSession", :set_user_context => nil, :open => nil, :close => nil) }
+    let(:logon_session) { instance_double("::Chef::Util::Windows::LogonSession", set_user_context: nil, open: nil, close: nil) }
 
     it "does not raise an exception when the user and all parameters are nil" do
       expect { instance_with_user_context.with_context(nil, nil, nil) {} }.not_to raise_error

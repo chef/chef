@@ -389,12 +389,12 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 
       context "and has a default profile" do
         let(:content) do
-          content = <<EOH
-[default]
-node_name = 'barney'
-client_key = "barney_rubble.pem"
-chef_server_url = "https://api.chef.io/organizations/bedrock"
-invalid_config_option1234 = "foobar"
+          content = <<~EOH
+            [default]
+            node_name = 'barney'
+            client_key = "barney_rubble.pem"
+            chef_server_url = "https://api.chef.io/organizations/bedrock"
+            invalid_config_option1234 = "foobar"
 EOH
           content
         end
@@ -410,16 +410,16 @@ EOH
 
       context "and has a default profile with knife settings" do
         let(:content) do
-          content = <<EOH
-[default]
-node_name = 'barney'
-client_key = "barney_rubble.pem"
-chef_server_url = "https://api.chef.io/organizations/bedrock"
-knife = {
-  secret_file = "/home/barney/.chef/encrypted_data_bag_secret.pem"
-}
-[default.knife]
-ssh_user = "knife_ssh_user"
+          content = <<~EOH
+            [default]
+            node_name = 'barney'
+            client_key = "barney_rubble.pem"
+            chef_server_url = "https://api.chef.io/organizations/bedrock"
+            knife = {
+              secret_file = "/home/barney/.chef/encrypted_data_bag_secret.pem"
+            }
+            [default.knife]
+            ssh_user = "knife_ssh_user"
 EOH
           content
         end
@@ -436,21 +436,21 @@ EOH
 
       context "and has a profile containing a full key" do
         let(:content) do
-          content = <<EOH
-[default]
-client_key = """
------BEGIN RSA PRIVATE KEY-----
-foo
-"""
+          content = <<~EOH
+            [default]
+            client_key = """
+            -----BEGIN RSA PRIVATE KEY-----
+            foo
+            """
 EOH
           content
         end
 
         it "applies the expected config" do
           expect { config_loader.load_credentials }.not_to raise_error
-          expect(ChefConfig::Config.client_key_contents).to eq(<<EOH
------BEGIN RSA PRIVATE KEY-----
-foo
+          expect(ChefConfig::Config.client_key_contents).to eq(<<~EOH
+            -----BEGIN RSA PRIVATE KEY-----
+            foo
 EOH
 )
         end
@@ -458,15 +458,15 @@ EOH
 
       context "and has several profiles" do
         let(:content) do
-          content = <<EOH
-[default]
-client_name = "default"
-[environment]
-client_name = "environment"
-[explicit]
-client_name = "explicit"
-[context]
-client_name = "context"
+          content = <<~EOH
+            [default]
+            client_name = "default"
+            [environment]
+            client_name = "environment"
+            [explicit]
+            client_name = "explicit"
+            [context]
+            client_name = "context"
 EOH
           content
         end
@@ -505,10 +505,10 @@ EOH
 
       context "and contains both node_name and client_name" do
         let(:content) do
-          content = <<EOH
-[default]
-node_name = 'barney'
-client_name = 'barney'
+          content = <<~EOH
+            [default]
+            node_name = 'barney'
+            client_name = 'barney'
 EOH
           content
         end

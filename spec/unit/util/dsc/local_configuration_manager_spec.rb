@@ -24,33 +24,33 @@ describe Chef::Util::DSC::LocalConfigurationManager do
   let(:lcm) { Chef::Util::DSC::LocalConfigurationManager.new(nil, "tmp") }
 
   let(:normal_lcm_output) do
-    <<-EOH
-logtype: [machinename]: LCM:  [ Start  Set      ]
-logtype: [machinename]: LCM:  [ Start  Resource ] [name]
-logtype: [machinename]: LCM:  [ End    Resource ] [name]
-logtype: [machinename]: LCM:  [ End    Set      ]
+    <<~EOH
+      logtype: [machinename]: LCM:  [ Start  Set      ]
+      logtype: [machinename]: LCM:  [ Start  Resource ] [name]
+      logtype: [machinename]: LCM:  [ End    Resource ] [name]
+      logtype: [machinename]: LCM:  [ End    Set      ]
 EOH
   end
 
   let(:no_whatif_lcm_output) do
-    <<-EOH
-Start-DscConfiguration : A parameter cannot be found\r\n that matches parameter name 'whatif'.
-At line:1 char:123
-+ run-somecommand -whatif
-+                        ~~~~~~~~
-    + CategoryInfo          : InvalidArgument: (:) [Start-DscConfiguration], ParameterBindingException
-    + FullyQualifiedErrorId : NamedParameterNotFound,SomeCompany.SomeAssembly.Commands.RunSomeCommand
+    <<~EOH
+      Start-DscConfiguration : A parameter cannot be found\r\n that matches parameter name 'whatif'.
+      At line:1 char:123
+      + run-somecommand -whatif
+      +                        ~~~~~~~~
+          + CategoryInfo          : InvalidArgument: (:) [Start-DscConfiguration], ParameterBindingException
+          + FullyQualifiedErrorId : NamedParameterNotFound,SomeCompany.SomeAssembly.Commands.RunSomeCommand
 EOH
   end
 
   let(:dsc_resource_import_failure_output) do
-    <<-EOH
-PowerShell provider MSFT_xWebsite failed to execute Test-TargetResource functionality with error message: Please ensure that WebAdministration module is installed. + CategoryInfo : InvalidOperation: (:) [], CimException + FullyQualifiedErrorId : ProviderOperationExecutionFailure + PSComputerName : . PowerShell provider MSFT_xWebsite failed to execute Test-TargetResource functionality with error message: Please ensure that WebAdministration module is installed. + CategoryInfo : InvalidOperation: (:) [], CimException + FullyQualifiedErrorId : ProviderOperationExecutionFailure + PSComputerName : . The SendConfigurationApply function did not succeed. + CategoryInfo : NotSpecified: (root/Microsoft/...gurationManager:String) [], CimException + FullyQualifiedErrorId : MI RESULT 1 + PSComputerName : .
+    <<~EOH
+      PowerShell provider MSFT_xWebsite failed to execute Test-TargetResource functionality with error message: Please ensure that WebAdministration module is installed. + CategoryInfo : InvalidOperation: (:) [], CimException + FullyQualifiedErrorId : ProviderOperationExecutionFailure + PSComputerName : . PowerShell provider MSFT_xWebsite failed to execute Test-TargetResource functionality with error message: Please ensure that WebAdministration module is installed. + CategoryInfo : InvalidOperation: (:) [], CimException + FullyQualifiedErrorId : ProviderOperationExecutionFailure + PSComputerName : . The SendConfigurationApply function did not succeed. + CategoryInfo : NotSpecified: (root/Microsoft/...gurationManager:String) [], CimException + FullyQualifiedErrorId : MI RESULT 1 + PSComputerName : .
 EOH
   end
 
   let(:lcm_status) do
-    double("LCM cmdlet status", :stderr => lcm_standard_error, :return_value => lcm_standard_output, :succeeded? => lcm_cmdlet_success)
+    double("LCM cmdlet status", stderr: lcm_standard_error, return_value: lcm_standard_output, succeeded?: lcm_cmdlet_success)
   end
 
   describe "test_configuration method invocation" do
@@ -192,7 +192,7 @@ EOH
     context "when invalid dsc script is given" do
       it "raises exception" do
         configuration_document = "invalid-config"
-        shellout_flags = { :cwd => nil, :environment => nil, :timeout => nil }
+        shellout_flags = { cwd: nil, environment: nil, timeout: nil }
         expect { lcm.send(:run_configuration_cmdlet, configuration_document, true, shellout_flags) }.to raise_error(Chef::Exceptions::PowershellCmdletException)
       end
     end

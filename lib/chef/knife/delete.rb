@@ -28,21 +28,21 @@ class Chef
       end
 
       option :recurse,
-        :short => "-r",
-        :long => "--[no-]recurse",
-        :boolean => true,
-        :default => false,
-        :description => "Delete directories recursively."
+        short: "-r",
+        long: "--[no-]recurse",
+        boolean: true,
+        default: false,
+        description: "Delete directories recursively."
       option :both,
-        :long => "--both",
-        :boolean => true,
-        :default => false,
-        :description => "Delete both the local and remote copies."
+        long: "--both",
+        boolean: true,
+        default: false,
+        description: "Delete both the local and remote copies."
       option :local,
-        :long => "--local",
-        :boolean => true,
-        :default => false,
-        :description => "Delete the local copy (leave the remote copy)."
+        long: "--local",
+        boolean: true,
+        default: false,
+        description: "Delete the local copy (leave the remote copy)."
 
       def run
         if name_args.length == 0

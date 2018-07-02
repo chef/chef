@@ -81,7 +81,7 @@ class Chef
       set_or_return(
         :data_bag,
         arg,
-        :regex => /^[\-[:alnum:]_]+$/
+        regex: /^[\-[:alnum:]_]+$/
       )
     end
 

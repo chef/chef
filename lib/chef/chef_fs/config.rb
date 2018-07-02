@@ -173,7 +173,7 @@ class Chef
 
       def create_chef_fs
         require "chef/chef_fs/file_system/chef_server/chef_server_root_dir"
-        Chef::ChefFS::FileSystem::ChefServer::ChefServerRootDir.new("remote", @chef_config, :cookbook_version => @cookbook_version)
+        Chef::ChefFS::FileSystem::ChefServer::ChefServerRootDir.new("remote", @chef_config, cookbook_version: @cookbook_version)
       end
 
       def local_fs

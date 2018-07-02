@@ -30,7 +30,7 @@ describe Chef::Provider::Package::Zypper do
     Chef::Provider::Package::Zypper.new(new_resource, run_context)
   end
 
-  let(:status) { double(:stdout => "\n", :exitstatus => 0) }
+  let(:status) { double(stdout: "\n", exitstatus: 0) }
 
   before(:each) do
     allow(Chef::Resource::Package).to receive(:new).and_return(current_resource)
@@ -73,7 +73,7 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should set the installed version if zypper info has one (zypper version < 1.13.0)" do
-      status = double(:stdout => "Version: 1.0\nInstalled: Yes\n", :exitstatus => 0)
+      status = double(stdout: "Version: 1.0\nInstalled: Yes\n", exitstatus: 0)
 
       allow(provider).to receive(:shell_out_compacted!).and_return(status)
       expect(current_resource).to receive(:version).with(["1.0"]).and_return(true)
@@ -81,7 +81,7 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should set the installed version if zypper info has one (zypper version >= 1.13.0)" do
-      status = double(:stdout => "Version        : 1.0                             \nInstalled      : Yes                             \n", :exitstatus => 0)
+      status = double(stdout: "Version        : 1.0                             \nInstalled      : Yes                             \n", exitstatus: 0)
 
       allow(provider).to receive(:shell_out_compacted!).and_return(status)
       expect(current_resource).to receive(:version).with(["1.0"]).and_return(true)
@@ -89,7 +89,7 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should set the installed version if zypper info has one (zypper version >= 1.13.17)" do
-      status = double(:stdout => "Version        : 1.0\nInstalled      : Yes (automatically)\n", :exitstatus => 0)
+      status = double(stdout: "Version        : 1.0\nInstalled      : Yes (automatically)\n", exitstatus: 0)
 
       allow(provider).to receive(:shell_out_compacted!).and_return(status)
       expect(current_resource).to receive(:version).with(["1.0"]).and_return(true)
@@ -97,7 +97,7 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should set the candidate version if zypper info has one (zypper version < 1.13.0)" do
-      status = double(:stdout => "Version: 1.0\nInstalled: No\nStatus: out-of-date (version 0.9 installed)", :exitstatus => 0)
+      status = double(stdout: "Version: 1.0\nInstalled: No\nStatus: out-of-date (version 0.9 installed)", exitstatus: 0)
 
       allow(provider).to receive(:shell_out_compacted!).and_return(status)
       provider.load_current_resource
@@ -105,7 +105,7 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should set the candidate version if zypper info has one (zypper version >= 1.13.0)" do
-      status = double(:stdout => "Version        : 1.0                             \nInstalled      : No                              \nStatus         : out-of-date (version 0.9 installed)", :exitstatus => 0)
+      status = double(stdout: "Version        : 1.0                             \nInstalled      : No                              \nStatus         : out-of-date (version 0.9 installed)", exitstatus: 0)
 
       allow(provider).to receive(:shell_out_compacted!).and_return(status)
       provider.load_current_resource

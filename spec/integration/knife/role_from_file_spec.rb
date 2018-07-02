@@ -29,64 +29,64 @@ describe "knife role from file", :workstation do
     when_the_repository "has some roles" do
       before do
 
-        file "roles/cons.json", <<EOM
-{
-  "name": "cons",
-  "description": "An role",
-  "json_class": "Chef::role",
-  "chef_type": "role",
-  "default_attributes": {
-    "hola": "Amigos!"
-  },
-  "override_attributes": {
+        file "roles/cons.json", <<~EOM
+          {
+            "name": "cons",
+            "description": "An role",
+            "json_class": "Chef::role",
+            "chef_type": "role",
+            "default_attributes": {
+              "hola": "Amigos!"
+            },
+            "override_attributes": {
 
-  }
-}
+            }
+          }
 EOM
 
-        file "roles/car.json", <<EOM
-{
-  "name": "car",
-  "description": "A role for list nodes",
-  "json_class": "Chef::Role",
-  "chef_type": "role",
-  "default_attributes": {
-    "hola": "Amigos!"
-  },
-  "override_attributes": {
+        file "roles/car.json", <<~EOM
+          {
+            "name": "car",
+            "description": "A role for list nodes",
+            "json_class": "Chef::Role",
+            "chef_type": "role",
+            "default_attributes": {
+              "hola": "Amigos!"
+            },
+            "override_attributes": {
 
-  }
-}
+            }
+          }
 EOM
 
-        file "roles/cdr.json", <<EOM
-{
-  "name": "cdr",
-  "description": "A role for last nodes",
-  "json_class": "Chef::Role",
-  "chef_type": "role",
-  "default_attributes": {
-    "hola": "Amigos!"
-  },
-  "override_attributes": {
+        file "roles/cdr.json", <<~EOM
+          {
+            "name": "cdr",
+            "description": "A role for last nodes",
+            "json_class": "Chef::Role",
+            "chef_type": "role",
+            "default_attributes": {
+              "hola": "Amigos!"
+            },
+            "override_attributes": {
 
-  }
-}
+            }
+          }
 EOM
 
       end
 
       it "uploads a single file" do
-        knife("role from file #{role_dir}/cons.json").should_succeed stderr: <<EOM
-Updated Role cons
+        knife("role from file #{role_dir}/cons.json").should_succeed stderr: <<~EOM
+          Updated Role cons
 EOM
       end
 
       it "uploads many files" do
-        knife("role from file #{role_dir}/cons.json #{role_dir}/car.json #{role_dir}/cdr.json").should_succeed stderr: <<EOM
-Updated Role cons
-Updated Role car
-Updated Role cdr
+        knife("role from file #{role_dir}/cons.json #{role_dir}/car.json #{role_dir}/cdr.json").should_succeed stderr: <<~EOM
+          Updated Role cons
+          Updated Role car
+          Updated Role cdr
 EOM
       end
 

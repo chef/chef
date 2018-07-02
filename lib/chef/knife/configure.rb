@@ -34,31 +34,31 @@ class Chef
       banner "knife configure (options)"
 
       option :repository,
-        :short => "-r REPO",
-        :long => "--repository REPO",
-        :description => "The path to the chef-repo"
+        short: "-r REPO",
+        long: "--repository REPO",
+        description: "The path to the chef-repo"
 
       option :initial,
-        :short => "-i",
-        :long => "--initial",
-        :boolean => true,
-        :description => "Use to create a API client, typically an administrator client on a freshly-installed server"
+        short: "-i",
+        long: "--initial",
+        boolean: true,
+        description: "Use to create a API client, typically an administrator client on a freshly-installed server"
 
       option :admin_client_name,
-        :long => "--admin-client-name NAME",
-        :description => "The name of the client, typically the name of the admin client"
+        long: "--admin-client-name NAME",
+        description: "The name of the client, typically the name of the admin client"
 
       option :admin_client_key,
-        :long => "--admin-client-key PATH",
-        :description => "The path to the private key used by the client, typically a file named admin.pem"
+        long: "--admin-client-key PATH",
+        description: "The path to the private key used by the client, typically a file named admin.pem"
 
       option :validation_client_name,
-        :long => "--validation-client-name NAME",
-        :description => "The name of the validation client, typically a client named chef-validator"
+        long: "--validation-client-name NAME",
+        description: "The name of the validation client, typically a client named chef-validator"
 
       option :validation_key,
-        :long => "--validation-key PATH",
-        :description => "The path to the validation key used by the client, typically a file named validation.pem"
+        long: "--validation-key PATH",
+        description: "The path to the validation key used by the client, typically a file named validation.pem"
 
       def configure_chef
         # We are just faking out the system so that you can do this without a key specified
@@ -75,11 +75,11 @@ class Chef
         confirm("Overwrite #{config_file_path}") if ::File.exist?(config_file_path)
 
         ::File.open(config_file_path, "w") do |f|
-          f.puts <<-EOH
-[default]
-client_name     = '#{new_client_name}'
-client_key      = '#{new_client_key}'
-chef_server_url = '#{chef_server}'
+          f.puts <<~EOH
+            [default]
+            client_name     = '#{new_client_name}'
+            client_key      = '#{new_client_key}'
+            chef_server_url = '#{chef_server}'
 EOH
         end
 
@@ -112,14 +112,14 @@ EOH
 
       def ask_user_for_config
         server_name = guess_servername
-        @chef_server = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => "https://#{server_name}/organizations/myorg")
+        @chef_server = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", default: "https://#{server_name}/organizations/myorg")
         if config[:initial]
-          @new_client_name        = config[:node_name] || ask_question("Please enter a name for the new user: ", :default => Etc.getlogin)
-          @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin name: ", :default => "admin")
-          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin's private key: ", :default => "/etc/chef-server/admin.pem")
+          @new_client_name        = config[:node_name] || ask_question("Please enter a name for the new user: ", default: Etc.getlogin)
+          @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin name: ", default: "admin")
+          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin's private key: ", default: "/etc/chef-server/admin.pem")
           @admin_client_key       = File.expand_path(@admin_client_key)
         else
-          @new_client_name        = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", :default => Etc.getlogin)
+          @new_client_name        = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", default: Etc.getlogin)
         end
 
         @new_client_key = config[:client_key] || File.join(chef_config_path, "#{@new_client_name}.pem")

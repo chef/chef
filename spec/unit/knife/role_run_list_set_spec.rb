@@ -27,7 +27,7 @@ describe Chef::Knife::RoleRunListSet do
 
     @knife = Chef::Knife::RoleRunListSet.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = [ "will", "role[owen]", "role[mauntel]" ]
     allow(@knife).to receive(:output).and_return(true)

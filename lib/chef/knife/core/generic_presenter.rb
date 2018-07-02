@@ -29,15 +29,15 @@ class Chef
         def self.included(includer)
           includer.class_eval do
             option :field_separator,
-              :short => "-S SEPARATOR",
-              :long => "--field-separator SEPARATOR",
-              :description => "Character separator used to delineate nesting in --attribute filters (default \".\")"
+              short: "-S SEPARATOR",
+              long: "--field-separator SEPARATOR",
+              description: "Character separator used to delineate nesting in --attribute filters (default \".\")"
 
             option :attribute,
-              :short => "-a ATTR1 [-a ATTR2]",
-              :long => "--attribute ATTR1 [--attribute ATTR2] ",
-              :description => "Show one or more attributes",
-              :proc => Proc.new { |a|
+              short: "-a ATTR1 [-a ATTR2]",
+              long: "--attribute ATTR1 [--attribute ATTR2] ",
+              description: "Show one or more attributes",
+              proc: Proc.new { |a|
                 Chef::Config[:knife][:attribute] ||= []
                 Chef::Config[:knife][:attribute].push(a)
               }

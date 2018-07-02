@@ -43,12 +43,12 @@ class Chef
           when Net::HTTPServerException, Net::HTTPFatalError
             humanize_http_exception(error_description)
           when Chef::Exceptions::PrivateKeyMissing
-            error_description.section("Private Key Not Found:", <<-E)
-Your private key could not be loaded. If the key file exists, ensure that it is
-readable by chef-client.
+            error_description.section("Private Key Not Found:", <<~E)
+              Your private key could not be loaded. If the key file exists, ensure that it is
+              readable by chef-client.
 E
-            error_description.section("Relevant Config Settings:", <<-E)
-client_key        "#{api_key}"
+            error_description.section("Relevant Config Settings:", <<~E)
+              client_key        "#{api_key}"
 E
           when EOFError
             describe_eof_error(error_description)
@@ -69,13 +69,13 @@ E
             # TODO: we're rescuing errors from Node.find_or_create
             # * could be no write on nodes container
             # * could be no read on the node
-            error_description.section("Authorization Error", <<-E)
-Your client is not authorized to load the node data (HTTP 403).
+            error_description.section("Authorization Error", <<~E)
+              Your client is not authorized to load the node data (HTTP 403).
 E
             error_description.section("Server Response:", format_rest_error)
 
-            error_description.section("Possible Causes:", <<-E)
-* Your client (#{username}) may have misconfigured authorization permissions.
+            error_description.section("Possible Causes:", <<~E)
+              * Your client (#{username}) may have misconfigured authorization permissions.
 E
           when Net::HTTPBadRequest
             describe_400_error(error_description)
@@ -97,11 +97,11 @@ E
         # one, e.g., PUT http://wrong.url/nodes/node-name becomes a GET after a
         # redirect.
         def describe_404_error(error_description)
-          error_description.section("Resource Not Found:", <<-E)
-The server returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
+          error_description.section("Resource Not Found:", <<~E)
+            The server returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
 E
-          error_description.section("Relevant Config Settings:", <<-E)
-chef_server_url "#{server_url}"
+          error_description.section("Relevant Config Settings:", <<~E)
+            chef_server_url "#{server_url}"
 E
         end
 

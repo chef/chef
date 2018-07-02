@@ -24,15 +24,15 @@ class Chef::Knife::Exec < Chef::Knife
   banner "knife exec [SCRIPT] (options)"
 
   option :exec,
-    :short => "-E CODE",
-    :long => "--exec CODE",
-    :description => "a string of Chef code to execute"
+    short: "-E CODE",
+    long: "--exec CODE",
+    description: "a string of Chef code to execute"
 
   option :script_path,
-    :short => "-p PATH:PATH",
-    :long => "--script-path PATH:PATH",
-    :description => "A colon-separated path to look for scripts in",
-    :proc => lambda { |o| o.split(":") }
+    short: "-p PATH:PATH",
+    long: "--script-path PATH:PATH",
+    description: "A colon-separated path to look for scripts in",
+    proc: lambda { |o| o.split(":") }
 
   deps do
     require "chef/shell/ext"

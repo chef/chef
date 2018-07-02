@@ -148,7 +148,7 @@ class Chef
       def configure_specinfra
         if Chef::Platform.windows?
           Specinfra.configuration.backend = :cmd
-          Specinfra.configuration.os = { :family => "windows" }
+          Specinfra.configuration.os = { family: "windows" }
         else
           Specinfra.configuration.backend = :exec
         end

@@ -264,8 +264,8 @@ module Shell
     end
 
     def register
-      @rest = Chef::ServerAPI.new(Chef::Config[:chef_server_url], :client_name => Chef::Config[:node_name],
-                                                                  :signing_key_filename => Chef::Config[:client_key])
+      @rest = Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: Chef::Config[:node_name],
+                                                                  signing_key_filename: Chef::Config[:client_key])
     end
 
   end

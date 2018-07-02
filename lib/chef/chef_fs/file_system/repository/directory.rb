@@ -71,9 +71,9 @@ class Chef
 
           def children
             return FileSystemCache.instance.children(file_path) if FileSystemCache.instance.exist?(file_path)
-            children = dir_ls.sort.
-              map { |child_name| make_child_entry(child_name) }.
-              select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?) }
+            children = dir_ls.sort
+              .map { |child_name| make_child_entry(child_name) }
+              .select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?) }
             FileSystemCache.instance.set_children(file_path, children)
           rescue Errno::ENOENT => e
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)

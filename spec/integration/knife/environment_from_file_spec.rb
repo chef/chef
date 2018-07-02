@@ -29,84 +29,84 @@ describe "knife environment from file", :workstation do
     when_the_repository "has some environments" do
       before do
 
-        file "environments/cons.json", <<EOM
-{
-  "name": "cons",
-  "description": "An environment",
-  "cookbook_versions": {
+        file "environments/cons.json", <<~EOM
+          {
+            "name": "cons",
+            "description": "An environment",
+            "cookbook_versions": {
 
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-    "hola": "Amigos!"
-  },
-  "override_attributes": {
+            },
+            "json_class": "Chef::Environment",
+            "chef_type": "environment",
+            "default_attributes": {
+              "hola": "Amigos!"
+            },
+            "override_attributes": {
 
-  }
-}
+            }
+          }
 EOM
 
-        file "environments/car.json", <<EOM
-{
-  "name": "car",
-  "description": "An environment for list nodes",
-  "cookbook_versions": {
+        file "environments/car.json", <<~EOM
+          {
+            "name": "car",
+            "description": "An environment for list nodes",
+            "cookbook_versions": {
 
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-    "hola": "Amigos!"
-  },
-  "override_attributes": {
+            },
+            "json_class": "Chef::Environment",
+            "chef_type": "environment",
+            "default_attributes": {
+              "hola": "Amigos!"
+            },
+            "override_attributes": {
 
-  }
-}
+            }
+          }
 EOM
 
-        file "environments/cdr.json", <<EOM
-{
-  "name": "cdr",
-  "description": "An environment for last nodes",
-  "cookbook_versions": {
+        file "environments/cdr.json", <<~EOM
+          {
+            "name": "cdr",
+            "description": "An environment for last nodes",
+            "cookbook_versions": {
 
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-    "hola": "Amigos!"
-  },
-  "override_attributes": {
+            },
+            "json_class": "Chef::Environment",
+            "chef_type": "environment",
+            "default_attributes": {
+              "hola": "Amigos!"
+            },
+            "override_attributes": {
 
-  }
-}
+            }
+          }
 EOM
 
       end
 
       it "uploads a single file" do
-        knife("environment from file #{env_dir}/cons.json").should_succeed stderr: <<EOM
-Updated Environment cons
+        knife("environment from file #{env_dir}/cons.json").should_succeed stderr: <<~EOM
+          Updated Environment cons
 EOM
       end
 
       it "uploads many files" do
-        knife("environment from file #{env_dir}/cons.json #{env_dir}/car.json #{env_dir}/cdr.json").should_succeed stderr: <<EOM
-Updated Environment cons
-Updated Environment car
-Updated Environment cdr
+        knife("environment from file #{env_dir}/cons.json #{env_dir}/car.json #{env_dir}/cdr.json").should_succeed stderr: <<~EOM
+          Updated Environment cons
+          Updated Environment car
+          Updated Environment cdr
 EOM
       end
 
       it "uploads all environments in the repository" do
         cwd(".")
         knife("environment from file --all")
-        knife("environment list").should_succeed <<EOM
-_default
-car
-cdr
-cons
+        knife("environment list").should_succeed <<~EOM
+          _default
+          car
+          cdr
+          cons
 EOM
       end
 

@@ -30,9 +30,9 @@ describe Chef::Knife::NodeEdit do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeEdit.new
     @knife.config = {
-      :editor => "cat",
-      :attribute => nil,
-      :print_after => nil,
+      editor: "cat",
+      attribute: nil,
+      print_after: nil,
     }
     @knife.name_args = [ "adam" ]
     @node = Chef::Node.new()
@@ -48,10 +48,10 @@ describe Chef::Knife::NodeEdit do
       @knife.config[:all_attributes] = false
 
       allow(@knife).to receive(:node).and_return(@node)
-      @node.automatic_attrs = { :go => :away }
-      @node.default_attrs = { :hide => :me }
-      @node.override_attrs = { :dont => :show }
-      @node.normal_attrs = { :do_show => :these }
+      @node.automatic_attrs = { go: :away }
+      @node.default_attrs = { hide: :me }
+      @node.override_attrs = { dont: :show }
+      @node.normal_attrs = { do_show: :these }
       @node.chef_environment("prod")
       @node.run_list("recipe[foo]")
     end

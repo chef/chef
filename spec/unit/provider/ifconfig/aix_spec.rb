@@ -22,16 +22,16 @@ require "chef/exceptions"
 describe Chef::Provider::Ifconfig::Aix do
 
   before(:all) do
-    @ifconfig_output = <<-IFCONFIG
-en1: flags=1e080863,480<UP,BROADCAST,NOTRAILERS,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,CHECKSUM_OFFLOAD(ACTIVE),CHAIN>
-        inet 10.153.11.59 netmask 0xffff0000 broadcast 10.153.255.255
-         tcp_sendspace 262144 tcp_recvspace 262144 rfc1323 1
-en0: flags=1e080863,480<UP,BROADCAST,NOTRAILERS,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,CHECKSUM_OFFLOAD(ACTIVE),CHAIN> metric 1
-        inet 172.29.174.58 netmask 0xffffc000 broadcast 172.29.191.255
-         tcp_sendspace 262144 tcp_recvspace 262144 rfc1323 1
-lo0: flags=e08084b,c0<UP,BROADCAST,LOOPBACK,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,LARGESEND,CHAIN>
-        inet 127.0.0.1 netmask 0xff000000 broadcast 127.255.255.255
-        inet6 ::1%1/0
+    @ifconfig_output = <<~IFCONFIG
+      en1: flags=1e080863,480<UP,BROADCAST,NOTRAILERS,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,CHECKSUM_OFFLOAD(ACTIVE),CHAIN>
+              inet 10.153.11.59 netmask 0xffff0000 broadcast 10.153.255.255
+               tcp_sendspace 262144 tcp_recvspace 262144 rfc1323 1
+      en0: flags=1e080863,480<UP,BROADCAST,NOTRAILERS,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,CHECKSUM_OFFLOAD(ACTIVE),CHAIN> metric 1
+              inet 172.29.174.58 netmask 0xffffc000 broadcast 172.29.191.255
+               tcp_sendspace 262144 tcp_recvspace 262144 rfc1323 1
+      lo0: flags=e08084b,c0<UP,BROADCAST,LOOPBACK,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,LARGESEND,CHAIN>
+              inet 127.0.0.1 netmask 0xff000000 broadcast 127.255.255.255
+              inet6 ::1%1/0
 IFCONFIG
   end
 

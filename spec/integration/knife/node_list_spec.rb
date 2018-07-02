@@ -32,11 +32,11 @@ describe "knife node list", :workstation do
     end
 
     it "lists all cookbooks" do
-      knife("node list").should_succeed <<EOM
-car
-cat
-cdr
-cons
+      knife("node list").should_succeed <<~EOM
+        car
+        cat
+        cdr
+        cons
 EOM
     end
 

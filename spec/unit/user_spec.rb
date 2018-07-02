@@ -243,7 +243,7 @@ describe Chef::User do
     describe "create" do
       it "creates a new user via the API" do
         @user.password "password"
-        expect(@http_client).to receive(:post).with("users", { :name => "foobar", :admin => false, :password => "password" }).and_return({})
+        expect(@http_client).to receive(:post).with("users", { name: "foobar", admin: false, password: "password" }).and_return({})
         @user.create
       end
     end
@@ -260,7 +260,7 @@ describe Chef::User do
 
     describe "update" do
       it "updates an existing user on via the API" do
-        expect(@http_client).to receive(:put).with("users/foobar", { :name => "foobar", :admin => false }).and_return({})
+        expect(@http_client).to receive(:put).with("users/foobar", { name: "foobar", admin: false }).and_return({})
         @user.update
       end
     end

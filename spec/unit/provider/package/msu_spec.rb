@@ -31,66 +31,66 @@ describe Chef::Provider::Package::Msu, :windows_only do
   end
 
   let(:installed_package_list_stdout) do
-    <<-EOF
-Packages listing:
-Package Identity : Package_for_KB2999486~31bf3856ad364e35~amd64~~6.1.9768.0
-Package Identity : Package_for_KB2994825~31bf3856ad364e35~amd64~~6.1.7601.0
+    <<~EOF
+      Packages listing:
+      Package Identity : Package_for_KB2999486~31bf3856ad364e35~amd64~~6.1.9768.0
+      Package Identity : Package_for_KB2994825~31bf3856ad364e35~amd64~~6.1.7601.0
     EOF
   end
 
   let(:package_version_stdout) do
-    <<-EOF
-Package information:
-Package Identity : Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0
-State : Installed
-Dependency : Language Pack
-The operation completed successfully
+    <<~EOF
+      Package information:
+      Package Identity : Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0
+      State : Installed
+      Dependency : Language Pack
+      The operation completed successfully
     EOF
   end
 
   let(:get_package_info_stdout) do
-    <<-EOF
-Deployment Image Servicing and Management tool
-Version: 6.1.7600.16385
+    <<~EOF
+      Deployment Image Servicing and Management tool
+      Version: 6.1.7600.16385
 
-Image Version: 6.1.7600.16385
+      Image Version: 6.1.7600.16385
 
-Package information:
-Package Identity : Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0
-Applicable : Yes
-Copyright : Microsoft Corporation
-Company : Microsoft Corporation
-State : Installed
-Dependency : Language Pack
-The operation completed successfully
+      Package information:
+      Package Identity : Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0
+      Applicable : Yes
+      Copyright : Microsoft Corporation
+      Company : Microsoft Corporation
+      State : Installed
+      Dependency : Language Pack
+      The operation completed successfully
     EOF
   end
 
   def allow_get_packages
-    get_packages_stdout = <<-EOF
-Deployment Image Servicing and Management tool
-Version: 6.1.7600.16385
+    get_packages_stdout = <<~EOF
+      Deployment Image Servicing and Management tool
+      Version: 6.1.7600.16385
 
-Image Version: 6.1.7600.16385
+      Image Version: 6.1.7600.16385
 
-Packages listing:
+      Packages listing:
 
-Package Identity : Package_for_KB2999486~31bf3856ad364e35~amd64~~6.1.9768.0
-State : Installed
-Release Type : Language Pack
-Install Time : 2/11/2015 11:33 PM
+      Package Identity : Package_for_KB2999486~31bf3856ad364e35~amd64~~6.1.9768.0
+      State : Installed
+      Release Type : Language Pack
+      Install Time : 2/11/2015 11:33 PM
 
-Package Identity : Package_for_KB2994825~31bf3856ad364e35~amd64~~6.1.7601.0
-State : Installed
-Release Type : Language Pack
-Install Time : 2/11/2015 11:33 PM
+      Package Identity : Package_for_KB2994825~31bf3856ad364e35~amd64~~6.1.7601.0
+      State : Installed
+      Release Type : Language Pack
+      Install Time : 2/11/2015 11:33 PM
 
-Package Identity : Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0
-State : Installed
-Release Type : Feature Pack
-Install Time : 11/21/2010 3:40 AM
+      Package Identity : Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0
+      State : Installed
+      Release Type : Feature Pack
+      Install Time : 11/21/2010 3:40 AM
 
-The operation completed successfully.
+      The operation completed successfully.
     EOF
     get_packages_obj = double(stdout: get_packages_stdout)
     allow_any_instance_of(Chef::Provider::Package::Cab).to receive(:dism_command).with("/Get-Packages").and_return(get_packages_obj)

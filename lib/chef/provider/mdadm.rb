@@ -31,7 +31,7 @@ class Chef
         logger.trace("#{new_resource} checking for software raid device #{current_resource.raid_device}")
 
         device_not_found = 4
-        mdadm = shell_out!("mdadm --detail --test #{new_resource.raid_device}", :returns => [0, device_not_found])
+        mdadm = shell_out!("mdadm --detail --test #{new_resource.raid_device}", returns: [0, device_not_found])
         exists = (mdadm.status == 0)
         current_resource.exists(exists)
       end

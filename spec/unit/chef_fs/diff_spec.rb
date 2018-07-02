@@ -28,62 +28,62 @@ def remove_os_differences(diff)
   diff.gsub(/^@@ -\d(,\d)? \+\d(,\d)? @@/, "CONTEXT_LINE_NUMBERS")
 end
 
-describe "diff", :uses_diff => true do
+describe "diff", uses_diff: true do
   include FileSystemSupport
 
   context "with two filesystems with all types of difference" do
     let(:a) do
       memory_fs("a", {
-        :both_dirs => {
-          :sub_both_dirs => { :subsub => nil },
-          :sub_both_files => nil,
-          :sub_both_files_different => "a\n",
-          :sub_both_dirs_empty => {},
-          :sub_dirs_empty_in_a_filled_in_b => {},
-          :sub_dirs_empty_in_b_filled_in_a => { :subsub => nil },
-          :sub_a_only_dir => { :subsub => nil },
-          :sub_a_only_file => nil,
-          :sub_dir_in_a_file_in_b => {},
-          :sub_file_in_a_dir_in_b => nil,
+        both_dirs: {
+          sub_both_dirs: { subsub: nil },
+          sub_both_files: nil,
+          sub_both_files_different: "a\n",
+          sub_both_dirs_empty: {},
+          sub_dirs_empty_in_a_filled_in_b: {},
+          sub_dirs_empty_in_b_filled_in_a: { subsub: nil },
+          sub_a_only_dir: { subsub: nil },
+          sub_a_only_file: nil,
+          sub_dir_in_a_file_in_b: {},
+          sub_file_in_a_dir_in_b: nil,
         },
-        :both_files => nil,
-        :both_files_different => "a\n",
-        :both_dirs_empty => {},
-        :dirs_empty_in_a_filled_in_b => {},
-        :dirs_empty_in_b_filled_in_a => { :subsub => nil },
-        :dirs_in_a_cannot_be_in_b => {},
-        :file_in_a_cannot_be_in_b => nil,
-        :a_only_dir => { :subsub => nil },
-        :a_only_file => nil,
-        :dir_in_a_file_in_b => {},
-        :file_in_a_dir_in_b => nil,
+        both_files: nil,
+        both_files_different: "a\n",
+        both_dirs_empty: {},
+        dirs_empty_in_a_filled_in_b: {},
+        dirs_empty_in_b_filled_in_a: { subsub: nil },
+        dirs_in_a_cannot_be_in_b: {},
+        file_in_a_cannot_be_in_b: nil,
+        a_only_dir: { subsub: nil },
+        a_only_file: nil,
+        dir_in_a_file_in_b: {},
+        file_in_a_dir_in_b: nil,
       }, /cannot_be_in_a/)
     end
     let(:b) do
       memory_fs("b", {
-        :both_dirs => {
-          :sub_both_dirs => { :subsub => nil },
-          :sub_both_files => nil,
-          :sub_both_files_different => "b\n",
-          :sub_both_dirs_empty => {},
-          :sub_dirs_empty_in_a_filled_in_b => { :subsub => nil },
-          :sub_dirs_empty_in_b_filled_in_a => {},
-          :sub_b_only_dir => { :subsub => nil },
-          :sub_b_only_file => nil,
-          :sub_dir_in_a_file_in_b => nil,
-          :sub_file_in_a_dir_in_b => {},
+        both_dirs: {
+          sub_both_dirs: { subsub: nil },
+          sub_both_files: nil,
+          sub_both_files_different: "b\n",
+          sub_both_dirs_empty: {},
+          sub_dirs_empty_in_a_filled_in_b: { subsub: nil },
+          sub_dirs_empty_in_b_filled_in_a: {},
+          sub_b_only_dir: { subsub: nil },
+          sub_b_only_file: nil,
+          sub_dir_in_a_file_in_b: nil,
+          sub_file_in_a_dir_in_b: {},
         },
-        :both_files => nil,
-        :both_files_different => "b\n",
-        :both_dirs_empty => {},
-        :dirs_empty_in_a_filled_in_b => { :subsub => nil },
-        :dirs_empty_in_b_filled_in_a => {},
-        :dirs_in_b_cannot_be_in_a => {},
-        :file_in_b_cannot_be_in_a => nil,
-        :b_only_dir => { :subsub => nil },
-        :b_only_file => nil,
-        :dir_in_a_file_in_b => nil,
-        :file_in_a_dir_in_b => {},
+        both_files: nil,
+        both_files_different: "b\n",
+        both_dirs_empty: {},
+        dirs_empty_in_a_filled_in_b: { subsub: nil },
+        dirs_empty_in_b_filled_in_a: {},
+        dirs_in_b_cannot_be_in_a: {},
+        file_in_b_cannot_be_in_a: nil,
+        b_only_dir: { subsub: nil },
+        b_only_file: nil,
+        dir_in_a_file_in_b: nil,
+        file_in_a_dir_in_b: {},
       }, /cannot_be_in_b/)
     end
     it "Chef::ChefFS::CommandLine.diff_print(/)" do

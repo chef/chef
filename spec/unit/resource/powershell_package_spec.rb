@@ -26,7 +26,7 @@ describe Chef::Resource::PowershellPackage do
     expect(resource).to be_a_kind_of(Chef::Resource::Package)
   end
 
-  #to check the value of resource.resource_name
+  # to check the value of resource.resource_name
   it "has a resource name of :powershell_package" do
     expect(resource.resource_name).to eql(:powershell_package)
   end

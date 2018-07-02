@@ -60,21 +60,21 @@ describe Chef::Mixin::ShellOut do
         describe "when the last argument is a Hash" do
           describe "and environment is an option" do
             it "should not change environment language settings when they are set to nil" do
-              options = { :environment => { "LC_ALL" => nil, "LANGUAGE" => nil, "LANG" => nil, env_path => nil } }
+              options = { environment: { "LC_ALL" => nil, "LANGUAGE" => nil, "LANG" => nil, env_path => nil } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
             end
 
             it "should not change environment language settings when they are set to non-nil" do
-              options = { :environment => { "LC_ALL" => "en_US.UTF-8", "LANGUAGE" => "en_US.UTF-8", "LANG" => "en_US.UTF-8", env_path => "foo:bar:baz" } }
+              options = { environment: { "LC_ALL" => "en_US.UTF-8", "LANGUAGE" => "en_US.UTF-8", "LANG" => "en_US.UTF-8", env_path => "foo:bar:baz" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
             end
 
             it "should set environment language settings to the configured internal locale when they are not present" do
-              options = { :environment => { "HOME" => "/Users/morty" } }
+              options = { environment: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
-                :environment => {
+                environment: {
                   "HOME"     => "/Users/morty",
                   "LC_ALL"   => Chef::Config[:internal_locale],
                   "LANG"     => Chef::Config[:internal_locale],
@@ -86,9 +86,9 @@ describe Chef::Mixin::ShellOut do
             end
 
             it "should not mutate the options hash when it adds language settings" do
-              options = { :environment => { "HOME" => "/Users/morty" } }
+              options = { environment: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
-                :environment => {
+                environment: {
                   "HOME"     => "/Users/morty",
                   "LC_ALL"   => Chef::Config[:internal_locale],
                   "LANG"     => Chef::Config[:internal_locale],
@@ -103,21 +103,21 @@ describe Chef::Mixin::ShellOut do
 
           describe "and env is an option" do
             it "should not change env when langauge options are set to nil" do
-              options = { :env => { "LC_ALL" => nil, "LANG" => nil, "LANGUAGE" => nil, env_path => nil } }
+              options = { env: { "LC_ALL" => nil, "LANG" => nil, "LANGUAGE" => nil, env_path => nil } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
             end
 
             it "should not change env when language options are set to non-nil" do
-              options = { :env => { "LC_ALL" => "de_DE.UTF-8", "LANG" => "de_DE.UTF-8", "LANGUAGE" => "de_DE.UTF-8", env_path => "foo:bar:baz" } }
+              options = { env: { "LC_ALL" => "de_DE.UTF-8", "LANG" => "de_DE.UTF-8", "LANGUAGE" => "de_DE.UTF-8", env_path => "foo:bar:baz" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
             end
 
             it "should set environment language settings to the configured internal locale when they are not present" do
-              options = { :env => { "HOME" => "/Users/morty" } }
+              options = { env: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
-                :env => {
+                env: {
                   "HOME"     => "/Users/morty",
                   "LC_ALL"   => Chef::Config[:internal_locale],
                   "LANG"     => Chef::Config[:internal_locale],
@@ -129,9 +129,9 @@ describe Chef::Mixin::ShellOut do
             end
 
             it "should not mutate the options hash when it adds language settings" do
-              options = { :env => { "HOME" => "/Users/morty" } }
+              options = { env: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
-                :env => {
+                env: {
                   "HOME"     => "/Users/morty",
                   "LC_ALL"   => Chef::Config[:internal_locale],
                   "LANG"     => Chef::Config[:internal_locale],
@@ -146,10 +146,10 @@ describe Chef::Mixin::ShellOut do
 
           describe "and no env/environment option is present" do
             it "should set environment language settings to the configured internal locale" do
-              options = { :user => "morty" }
+              options = { user: "morty" }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
-                :user => "morty",
-                :environment => {
+                user: "morty",
+                environment: {
                   "LC_ALL"   => Chef::Config[:internal_locale],
                   "LANG"     => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
@@ -164,7 +164,7 @@ describe Chef::Mixin::ShellOut do
         describe "when the last argument is not a Hash" do
           it "should set environment language settings to the configured internal locale" do
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
-              :environment => {
+              environment: {
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
@@ -185,19 +185,19 @@ describe Chef::Mixin::ShellOut do
       describe "when the last argument is a Hash" do
         describe "and environment is an option" do
           it "should not change environment['LC_ALL'] when set to nil" do
-            options = { :environment => { "LC_ALL" => nil } }
+            options = { environment: { "LC_ALL" => nil } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out_with_systems_locale(cmd, options)
           end
 
           it "should not change environment['LC_ALL'] when set to non-nil" do
-            options = { :environment => { "LC_ALL" => "en_US.UTF-8" } }
+            options = { environment: { "LC_ALL" => "en_US.UTF-8" } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out_with_systems_locale(cmd, options)
           end
 
           it "should no longer set environment['LC_ALL'] to nil when 'LC_ALL' not present" do
-            options = { :environment => { "HOME" => "/Users/morty" } }
+            options = { environment: { "HOME" => "/Users/morty" } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out_with_systems_locale(cmd, options)
           end
@@ -205,19 +205,19 @@ describe Chef::Mixin::ShellOut do
 
         describe "and env is an option" do
           it "should not change env when set to nil" do
-            options = { :env => { "LC_ALL" => nil } }
+            options = { env: { "LC_ALL" => nil } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out_with_systems_locale(cmd, options)
           end
 
           it "should not change env when set to non-nil" do
-            options = { :env => { "LC_ALL" => "en_US.UTF-8" } }
+            options = { env: { "LC_ALL" => "en_US.UTF-8" } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out_with_systems_locale(cmd, options)
           end
 
           it "should no longer set env['LC_ALL'] to nil when 'LC_ALL' not present" do
-            options = { :env => { "HOME" => "/Users/morty" } }
+            options = { env: { "HOME" => "/Users/morty" } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out_with_systems_locale(cmd, options)
           end
@@ -225,7 +225,7 @@ describe Chef::Mixin::ShellOut do
 
         describe "and no env/environment option is present" do
           it "should no longer add environment option and set environment['LC_ALL'] to nil" do
-            options = { :user => "morty" }
+            options = { user: "morty" }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out_with_systems_locale(cmd, options)
           end
@@ -245,19 +245,19 @@ describe Chef::Mixin::ShellOut do
       describe "when the last argument is a Hash" do
         describe "and environment is an option" do
           it "should not change environment['LC_ALL'] when set to nil" do
-            options = { :environment => { "LC_ALL" => nil } }
+            options = { environment: { "LC_ALL" => nil } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, **options, default_env: false)
           end
 
           it "should not change environment['LC_ALL'] when set to non-nil" do
-            options = { :environment => { "LC_ALL" => "en_US.UTF-8" } }
+            options = { environment: { "LC_ALL" => "en_US.UTF-8" } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, **options, default_env: false)
           end
 
           it "should no longer set environment['LC_ALL'] to nil when 'LC_ALL' not present" do
-            options = { :environment => { "HOME" => "/Users/morty" } }
+            options = { environment: { "HOME" => "/Users/morty" } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, **options, default_env: false)
           end
@@ -265,19 +265,19 @@ describe Chef::Mixin::ShellOut do
 
         describe "and env is an option" do
           it "should not change env when set to nil" do
-            options = { :env => { "LC_ALL" => nil } }
+            options = { env: { "LC_ALL" => nil } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, **options, default_env: false)
           end
 
           it "should not change env when set to non-nil" do
-            options = { :env => { "LC_ALL" => "en_US.UTF-8" } }
+            options = { env: { "LC_ALL" => "en_US.UTF-8" } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, **options, default_env: false)
           end
 
           it "should no longer set env['LC_ALL'] to nil when 'LC_ALL' not present" do
-            options = { :env => { "HOME" => "/Users/morty" } }
+            options = { env: { "HOME" => "/Users/morty" } }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, **options, default_env: false)
           end
@@ -285,7 +285,7 @@ describe Chef::Mixin::ShellOut do
 
         describe "and no env/environment option is present" do
           it "should no longer add environment option and set environment['LC_ALL'] to nil" do
-            options = { :user => "morty" }
+            options = { user: "morty" }
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, **options, default_env: false)
           end

@@ -40,7 +40,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
     @stdout = StringIO.new
     @outputter = Chef::Formatters::IndentableOutputStream.new(@stdout, STDERR)
-    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
 
     allow(Chef::Config).to receive(:cookbook_path).and_return([ "/var/chef/cache" ])
   end

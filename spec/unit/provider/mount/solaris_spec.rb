@@ -48,7 +48,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     new_resource.fsck_device fsck_device
     new_resource.fstype      fstype
     new_resource.options     options
-    new_resource.supports :remount => false
+    new_resource.supports remount: false
     new_resource
   end
 
@@ -92,7 +92,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
   before do
     stub_const("Chef::Provider::Mount::Solaris::VFSTAB", vfstab_file.path )
-    allow(provider).to receive(:shell_out!).with("mount -v").and_return(OpenStruct.new(:stdout => mount_output))
+    allow(provider).to receive(:shell_out!).with("mount -v").and_return(OpenStruct.new(stdout: mount_output))
     allow(File).to receive(:symlink?).with(device).and_return(false)
     allow(File).to receive(:exist?).and_call_original # Tempfile.open on ruby 1.8.7 calls File.exist?
     allow(File).to receive(:exist?).with(device).and_return(true)

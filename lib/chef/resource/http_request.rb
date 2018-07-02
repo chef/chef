@@ -48,7 +48,7 @@ class Chef
         set_or_return(
           :message,
           args,
-          :kind_of => Object
+          kind_of: Object
         )
       end
 

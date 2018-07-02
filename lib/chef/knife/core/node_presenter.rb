@@ -32,18 +32,18 @@ class Chef
         def self.included(includer)
           includer.class_eval do
             option :medium_output,
-              :short   => "-m",
-              :long    => "--medium",
-              :boolean => true,
-              :default => false,
-              :description => "Include normal attributes in the output"
+              short: "-m",
+              long: "--medium",
+              boolean: true,
+              default: false,
+              description: "Include normal attributes in the output"
 
             option :long_output,
-              :short   => "-l",
-              :long    => "--long",
-              :boolean => true,
-              :default => false,
-              :description => "Include all attributes in the output"
+              short: "-l",
+              long: "--long",
+              boolean: true,
+              default: false,
+              description: "Include all attributes in the output"
           end
         end
       end
@@ -98,49 +98,49 @@ class Chef
             # special case ec2 with their split horizon whatsis.
             ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
 
-            summarized = <<-SUMMARY
-#{ui.color('Node Name:', :bold)}   #{ui.color(node.name, :bold)}
+            summarized = <<~SUMMARY
+              #{ui.color('Node Name:', :bold)}   #{ui.color(node.name, :bold)}
 SUMMARY
             show_policy = !(node.policy_name.nil? && node.policy_group.nil?)
             if show_policy
-              summarized << <<-POLICY
-#{key('Policy Name:')}  #{node.policy_name}
-#{key('Policy Group:')} #{node.policy_group}
+              summarized << <<~POLICY
+                #{key('Policy Name:')}  #{node.policy_name}
+                #{key('Policy Group:')} #{node.policy_group}
 POLICY
             else
-              summarized << <<-ENV
-#{key('Environment:')} #{node.chef_environment}
+              summarized << <<~ENV
+                #{key('Environment:')} #{node.chef_environment}
 ENV
             end
-            summarized << <<-SUMMARY
-#{key('FQDN:')}        #{node[:fqdn]}
-#{key('IP:')}          #{ip}
-#{key('Run List:')}    #{node.run_list}
+            summarized << <<~SUMMARY
+              #{key('FQDN:')}        #{node[:fqdn]}
+              #{key('IP:')}          #{ip}
+              #{key('Run List:')}    #{node.run_list}
 SUMMARY
             unless show_policy
-              summarized << <<-ROLES
-#{key('Roles:')}       #{Array(node[:roles]).join(', ')}
+              summarized << <<~ROLES
+                #{key('Roles:')}       #{Array(node[:roles]).join(', ')}
 ROLES
             end
-            summarized << <<-SUMMARY
-#{key('Recipes:')}     #{Array(node[:recipes]).join(', ')}
-#{key('Platform:')}    #{node[:platform]} #{node[:platform_version]}
-#{key('Tags:')}        #{node.tags.join(', ')}
+            summarized << <<~SUMMARY
+              #{key('Recipes:')}     #{Array(node[:recipes]).join(', ')}
+              #{key('Platform:')}    #{node[:platform]} #{node[:platform_version]}
+              #{key('Tags:')}        #{node.tags.join(', ')}
 SUMMARY
             if config[:medium_output] || config[:long_output]
-              summarized += <<-MORE
-#{key('Attributes:')}
-#{text_format(node.normal_attrs)}
+              summarized += <<~MORE
+                #{key('Attributes:')}
+                #{text_format(node.normal_attrs)}
 MORE
             end
             if config[:long_output]
-              summarized += <<-MOST
-#{key('Default Attributes:')}
-#{text_format(node.default_attrs)}
-#{key('Override Attributes:')}
-#{text_format(node.override_attrs)}
-#{key('Automatic Attributes (Ohai Data):')}
-#{text_format(node.automatic_attrs)}
+              summarized += <<~MOST
+                #{key('Default Attributes:')}
+                #{text_format(node.default_attrs)}
+                #{key('Override Attributes:')}
+                #{text_format(node.override_attrs)}
+                #{key('Automatic Attributes (Ohai Data):')}
+                #{text_format(node.automatic_attrs)}
 MOST
             end
             summarized

@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_gem_only, :appveyor_only, :broken => true do
+describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_gem_only, :appveyor_only, broken: true do
   # Marking as broken. This test is causing appveyor tests to exit with 116.
 
   include_context "using Win32::Service"

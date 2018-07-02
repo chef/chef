@@ -31,7 +31,7 @@ class Chef
 
       attr_accessor :type
       attr_accessor :name
-      attr_accessor :duration #ms
+      attr_accessor :duration # ms
       attr_accessor :status
       attr_accessor :initial_state
       attr_accessor :final_state

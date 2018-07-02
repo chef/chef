@@ -40,7 +40,7 @@ class Chef
           end
 
           def write(contents)
-            desired_members = minimize_value(Chef::JSONCompat.parse(contents, :create_additions => false))
+            desired_members = minimize_value(Chef::JSONCompat.parse(contents, create_additions: false))
             members = minimize_value(_read_json)
             (desired_members - members).each do |member|
               begin

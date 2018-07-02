@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Provider::OsxProfile do
   let(:shell_out_success) do
-    double("shell_out", :exitstatus => 0, :error? => false)
+    double("shell_out", exitstatus: 0, error?: false)
   end
   describe "action_create" do
     let(:node) { Chef::Node.new }

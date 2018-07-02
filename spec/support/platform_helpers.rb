@@ -202,7 +202,7 @@ def selinux_enabled?
   # specs independent of product.
   selinuxenabled_path = which("selinuxenabled")
   if selinuxenabled_path
-    cmd = Mixlib::ShellOut.new(selinuxenabled_path, :returns => [0, 1])
+    cmd = Mixlib::ShellOut.new(selinuxenabled_path, returns: [0, 1])
     cmd_result = cmd.run_command
     case cmd_result.exitstatus
     when 1

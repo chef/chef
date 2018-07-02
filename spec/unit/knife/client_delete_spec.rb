@@ -23,7 +23,7 @@ describe Chef::Knife::ClientDelete do
     @knife = Chef::Knife::ClientDelete.new
     # defaults
     @knife.config = {
-      :delete_validators => false,
+      delete_validators: false,
     }
     @knife.name_args = [ "adam" ]
   end

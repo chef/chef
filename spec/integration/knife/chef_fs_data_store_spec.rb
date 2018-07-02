@@ -54,59 +54,59 @@ describe "ChefFSDataStore tests", :workstation do
 
       context "GET /TYPE" do
         it "knife list -z -R returns everything" do
-          knife("list -z -Rfp /").should_succeed <<EOM
-/acls/
-/acls/clients/
-/acls/clients/x.json
-/acls/containers/
-/acls/containers/x.json
-/acls/cookbook_artifacts/
-/acls/cookbook_artifacts/x.json
-/acls/cookbooks/
-/acls/cookbooks/x.json
-/acls/data_bags/
-/acls/data_bags/x.json
-/acls/environments/
-/acls/environments/x.json
-/acls/groups/
-/acls/groups/x.json
-/acls/nodes/
-/acls/nodes/x.json
-/acls/organization.json
-/acls/policies/
-/acls/policies/x.json
-/acls/policy_groups/
-/acls/policy_groups/x.json
-/acls/roles/
-/acls/roles/x.json
-/clients/
-/clients/x.json
-/containers/
-/containers/x.json
-/cookbook_artifacts/
-/cookbook_artifacts/x-111/
-/cookbook_artifacts/x-111/metadata.rb
-/cookbooks/
-/cookbooks/x/
-/cookbooks/x/metadata.rb
-/data_bags/
-/data_bags/x/
-/data_bags/x/y.json
-/environments/
-/environments/x.json
-/groups/
-/groups/x.json
-/invitations.json
-/members.json
-/nodes/
-/nodes/x.json
-/org.json
-/policies/
-/policies/x-111.json
-/policy_groups/
-/policy_groups/x.json
-/roles/
-/roles/x.json
+          knife("list -z -Rfp /").should_succeed <<~EOM
+            /acls/
+            /acls/clients/
+            /acls/clients/x.json
+            /acls/containers/
+            /acls/containers/x.json
+            /acls/cookbook_artifacts/
+            /acls/cookbook_artifacts/x.json
+            /acls/cookbooks/
+            /acls/cookbooks/x.json
+            /acls/data_bags/
+            /acls/data_bags/x.json
+            /acls/environments/
+            /acls/environments/x.json
+            /acls/groups/
+            /acls/groups/x.json
+            /acls/nodes/
+            /acls/nodes/x.json
+            /acls/organization.json
+            /acls/policies/
+            /acls/policies/x.json
+            /acls/policy_groups/
+            /acls/policy_groups/x.json
+            /acls/roles/
+            /acls/roles/x.json
+            /clients/
+            /clients/x.json
+            /containers/
+            /containers/x.json
+            /cookbook_artifacts/
+            /cookbook_artifacts/x-111/
+            /cookbook_artifacts/x-111/metadata.rb
+            /cookbooks/
+            /cookbooks/x/
+            /cookbooks/x/metadata.rb
+            /data_bags/
+            /data_bags/x/
+            /data_bags/x/y.json
+            /environments/
+            /environments/x.json
+            /groups/
+            /groups/x.json
+            /invitations.json
+            /members.json
+            /nodes/
+            /nodes/x.json
+            /org.json
+            /policies/
+            /policies/x-111.json
+            /policy_groups/
+            /policy_groups/x.json
+            /roles/
+            /roles/x.json
 EOM
         end
       end
@@ -190,9 +190,9 @@ EOM
         end
 
         it "knife cookbook upload works" do
-          knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} x").should_succeed :stderr => <<EOM
-Uploading x              [1.0.0]
-Uploaded 1 cookbook.
+          knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} x").should_succeed stderr: <<~EOM
+            Uploading x              [1.0.0]
+            Uploaded 1 cookbook.
 EOM
           knife("list --local -Rfp /cookbooks").should_succeed "/cookbooks/x/\n/cookbooks/x/metadata.rb\n"
         end
@@ -218,13 +218,13 @@ EOM
           knife("list --local /roles").should_succeed "/roles/x.json\n"
         end
 
-        it "After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty", :skip => (RUBY_VERSION < "1.9") do
+        it "After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty", skip: (RUBY_VERSION < "1.9") do
           knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed( /"x"/ )
-          expect(IO.read(path_to("roles/x.json"))).to eq <<EOM.strip
-{
-  "name": "x",
-  "description": "hi there"
-}
+          expect(IO.read(path_to("roles/x.json"))).to eq <<~EOM.strip
+            {
+              "name": "x",
+              "description": "hi there"
+            }
 EOM
         end
       end
@@ -247,9 +247,9 @@ EOM
         end
 
         it "knife cookbook upload works" do
-          knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} z").should_succeed :stderr => <<EOM
-Uploading z            [1.0.0]
-Uploaded 1 cookbook.
+          knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} z").should_succeed stderr: <<~EOM
+            Uploading z            [1.0.0]
+            Uploaded 1 cookbook.
 EOM
           knife("list --local -Rfp /cookbooks").should_succeed "/cookbooks/z/\n/cookbooks/z/metadata.rb\n"
         end
@@ -281,46 +281,46 @@ EOM
           knife("list --local /roles").should_succeed "/roles/z.json\n"
         end
 
-        it "After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty", :skip => (RUBY_VERSION < "1.9") do
+        it "After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty", skip: (RUBY_VERSION < "1.9") do
           knife("raw -z -i #{path_to('rolestuff.json')} -m POST /roles").should_succeed( /uri/ )
-          expect(IO.read(path_to("roles/x.json"))).to eq <<EOM.strip
-{
-  "name": "x",
-  "description": "hi there"
-}
+          expect(IO.read(path_to("roles/x.json"))).to eq <<~EOM.strip
+            {
+              "name": "x",
+              "description": "hi there"
+            }
 EOM
         end
       end
 
       it "knife list -z -R returns nothing" do
-        knife("list -z -Rfp /").should_succeed <<EOM
-/acls/
-/acls/clients/
-/acls/containers/
-/acls/cookbook_artifacts/
-/acls/cookbooks/
-/acls/data_bags/
-/acls/environments/
-/acls/groups/
-/acls/nodes/
-/acls/organization.json
-/acls/policies/
-/acls/policy_groups/
-/acls/roles/
-/clients/
-/containers/
-/cookbook_artifacts/
-/cookbooks/
-/data_bags/
-/environments/
-/groups/
-/invitations.json
-/members.json
-/nodes/
-/org.json
-/policies/
-/policy_groups/
-/roles/
+        knife("list -z -Rfp /").should_succeed <<~EOM
+          /acls/
+          /acls/clients/
+          /acls/containers/
+          /acls/cookbook_artifacts/
+          /acls/cookbooks/
+          /acls/data_bags/
+          /acls/environments/
+          /acls/groups/
+          /acls/nodes/
+          /acls/organization.json
+          /acls/policies/
+          /acls/policy_groups/
+          /acls/roles/
+          /clients/
+          /containers/
+          /cookbook_artifacts/
+          /cookbooks/
+          /data_bags/
+          /environments/
+          /groups/
+          /invitations.json
+          /members.json
+          /nodes/
+          /org.json
+          /policies/
+          /policy_groups/
+          /roles/
 EOM
       end
 
@@ -442,23 +442,23 @@ EOM
 
       context "GET /TYPE" do
         it "knife list -z -R returns everything" do
-          knife("list -z -Rfp /").should_succeed <<EOM
-/clients/
-/clients/x.json
-/cookbooks/
-/cookbooks/x/
-/cookbooks/x/metadata.rb
-/data_bags/
-/data_bags/x/
-/data_bags/x/y.json
-/environments/
-/environments/x.json
-/nodes/
-/nodes/x.json
-/roles/
-/roles/x.json
-/users/
-/users/x.json
+          knife("list -z -Rfp /").should_succeed <<~EOM
+            /clients/
+            /clients/x.json
+            /cookbooks/
+            /cookbooks/x/
+            /cookbooks/x/metadata.rb
+            /data_bags/
+            /data_bags/x/
+            /data_bags/x/y.json
+            /environments/
+            /environments/x.json
+            /nodes/
+            /nodes/x.json
+            /roles/
+            /roles/x.json
+            /users/
+            /users/x.json
 EOM
         end
       end
@@ -489,13 +489,13 @@ EOM
           knife("list --local /users").should_succeed "/users/x.json\n"
         end
 
-        it "After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty", :skip => (RUBY_VERSION < "1.9") do
+        it "After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty", skip: (RUBY_VERSION < "1.9") do
           knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed( /"x"/ )
-          expect(IO.read(path_to("roles/x.json"))).to eq <<EOM.strip
-{
-  "name": "x",
-  "description": "hi there"
-}
+          expect(IO.read(path_to("roles/x.json"))).to eq <<~EOM.strip
+            {
+              "name": "x",
+              "description": "hi there"
+            }
 EOM
         end
       end
@@ -519,14 +519,14 @@ EOM
       end
 
       it "knife list -z -R returns nothing" do
-        knife("list -z -Rfp /").should_succeed <<EOM
-/clients/
-/cookbooks/
-/data_bags/
-/environments/
-/nodes/
-/roles/
-/users/
+        knife("list -z -Rfp /").should_succeed <<~EOM
+          /clients/
+          /cookbooks/
+          /data_bags/
+          /environments/
+          /nodes/
+          /roles/
+          /users/
 EOM
       end
 

@@ -32,18 +32,18 @@ class Chef
         def self.included(includer)
           includer.class_eval do
             option :medium_output,
-              :short   => "-m",
-              :long    => "--medium",
-              :boolean => true,
-              :default => false,
-              :description => "Include normal attributes in the output"
+              short: "-m",
+              long: "--medium",
+              boolean: true,
+              default: false,
+              description: "Include normal attributes in the output"
 
             option :long_output,
-              :short   => "-l",
-              :long    => "--long",
-              :boolean => true,
-              :default => false,
-              :description => "Include all attributes in the output"
+              short: "-l",
+              long: "--long",
+              boolean: true,
+              default: false,
+              description: "Include all attributes in the output"
           end
         end
       end
@@ -101,7 +101,7 @@ class Chef
             fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
             name = node["name"] || node.name
 
-            run_list = "#{node['run_list']}" if config[:run_list]
+            run_list = (node["run_list"]).to_s if config[:run_list]
             line_parts = Array.new
 
             if node["ohai_time"]

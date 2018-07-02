@@ -179,12 +179,12 @@ describe Chef::Client do
 
     context "when an override run list is given" do
       it "permits spaces in overriding run list" do
-        Chef::Client.new(nil, :override_runlist => "role[a], role[b]")
+        Chef::Client.new(nil, override_runlist: "role[a], role[b]")
       end
 
       describe "calling run" do
         include_examples "a successful client run" do
-          let(:client_opts) { { :override_runlist => "recipe[override_recipe]" } }
+          let(:client_opts) { { override_runlist: "recipe[override_recipe]" } }
 
           def stub_for_sync_cookbooks
             # --Client#setup_run_context
@@ -192,9 +192,9 @@ describe Chef::Client do
             #
             expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
             expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
-            expect(http_cookbook_sync).to receive(:post).
-              with("environments/_default/cookbook_versions", { :run_list => ["override_recipe"] }).
-              and_return({})
+            expect(http_cookbook_sync).to receive(:post)
+              .with("environments/_default/cookbook_versions", { run_list: ["override_recipe"] })
+              .and_return({})
           end
 
           def stub_for_node_save
@@ -218,7 +218,7 @@ describe Chef::Client do
 
       include_examples "a successful client run" do
         let(:new_runlist) { "recipe[new_run_list_recipe]" }
-        let(:client_opts) { { :runlist => new_runlist } }
+        let(:client_opts) { { runlist: new_runlist } }
 
         def stub_for_sync_cookbooks
           # --Client#setup_run_context
@@ -226,9 +226,9 @@ describe Chef::Client do
           #
           expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
           expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
-          expect(http_cookbook_sync).to receive(:post).
-            with("environments/_default/cookbook_versions", { :run_list => ["new_run_list_recipe"] }).
-            and_return({})
+          expect(http_cookbook_sync).to receive(:post)
+            .with("environments/_default/cookbook_versions", { run_list: ["new_run_list_recipe"] })
+            .and_return({})
         end
 
         before do
@@ -293,7 +293,7 @@ describe Chef::Client do
 
   describe "when handling run failures" do
     it "should remove the run_lock on failure of #load_node" do
-      @run_lock = double("Chef::RunLock", :acquire => true)
+      @run_lock = double("Chef::RunLock", acquire: true)
       allow(Chef::RunLock).to receive(:new).and_return(@run_lock)
 
       @events = double("Chef::EventDispatch::Dispatcher").as_null_object
@@ -410,8 +410,8 @@ describe Chef::Client do
     let(:run_context) { double("Chef::RunContext") }
     let(:recipe)      { double("Chef::Recipe (required recipe)") }
     let(:required_recipe) do
-      <<EOM
-fake_recipe_variable = "for reals"
+      <<~EOM
+        fake_recipe_variable = "for reals"
 EOM
     end
 
@@ -429,8 +429,8 @@ EOM
 
       context "when the required_recipe has bad contents" do
         let(:required_recipe) do
-          <<EOM
-this is not a recipe
+          <<~EOM
+            this is not a recipe
 EOM
         end
         it "should not raise an error" do
@@ -488,7 +488,7 @@ EOM
 
         context "fatal admin check is configured" do
           it "should not raise an exception" do
-            client.do_windows_admin_check #should not raise
+            client.do_windows_admin_check # should not raise
           end
         end
       end

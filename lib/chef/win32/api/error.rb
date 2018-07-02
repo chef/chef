@@ -211,9 +211,9 @@ class Chef
         ERROR_META_EXPANSION_TOO_LONG   = 208 # if "*a" > 8.3
         ERROR_INVALID_SIGNAL_NUMBER     = 209
         ERROR_THREAD_1_INACTIVE         = 210
-        ERROR_INFO_NOT_AVAIL            = 211 #@@ PTM 5550
+        ERROR_INFO_NOT_AVAIL            = 211 # @@ PTM 5550
         ERROR_LOCKED                    = 212
-        ERROR_BAD_DYNALINK              = 213 #@@ PTM 5760
+        ERROR_BAD_DYNALINK              = 213 # @@ PTM 5760
         ERROR_TOO_MANY_MODULES          = 214
         ERROR_NESTING_NOT_ALLOWED       = 215
         ERROR_EXE_MACHINE_TYPE_MISMATCH = 216

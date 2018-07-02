@@ -33,16 +33,16 @@ describe Chef::Provider::Package::Paludis do
 
     @stdin = StringIO.new
     @stderr = StringIO.new
-    @stdout = <<-PKG_STATUS
-group/ntp 0 accounts
-group/ntp 0 installed-accounts
-net/ntp 4.2.6_p5-r2 arbor
-user/ntp 0 accounts
-user/ntp 0 installed-accounts
-net/ntp 4.2.6_p5-r1 installed
+    @stdout = <<~PKG_STATUS
+      group/ntp 0 accounts
+      group/ntp 0 installed-accounts
+      net/ntp 4.2.6_p5-r2 arbor
+      user/ntp 0 accounts
+      user/ntp 0 installed-accounts
+      net/ntp 4.2.6_p5-r1 installed
 PKG_STATUS
     @pid = 12345
-    @shell_out = OpenStruct.new(:stdout => @stdout, :stdin => @stdin, :stderr => @stderr, :status => @status, :exitstatus => 0)
+    @shell_out = OpenStruct.new(stdout: @stdout, stdin: @stdin, stderr: @stderr, status: @status, exitstatus: 0)
   end
 
   context "when loading current resource" do
@@ -64,13 +64,13 @@ PKG_STATUS
     end
 
     it "should return new version if package is installed" do
-      @stdout.replace(<<-INSTALLED)
-group/ntp 0 accounts
-group/ntp 0 installed-accounts
-net/ntp 4.2.6_p5-r2 arbor
-user/ntp 0 accounts
-user/ntp 0 installed-accounts
-net/ntp 4.2.6_p5-r1 installed
+      @stdout.replace(<<~INSTALLED)
+        group/ntp 0 accounts
+        group/ntp 0 installed-accounts
+        net/ntp 4.2.6_p5-r2 arbor
+        user/ntp 0 accounts
+        user/ntp 0 installed-accounts
+        net/ntp 4.2.6_p5-r1 installed
 INSTALLED
       expect(@provider).to receive(:shell_out_compacted!).and_return(@shell_out)
       @provider.load_current_resource
@@ -86,29 +86,29 @@ INSTALLED
 
   context "when installing a package" do
     it "should run pkg install with the package name and version" do
-      expect(@provider).to receive(:shell_out_compacted!).with("cave", "-L", "warning", "resolve", "-x", "=net/ntp-4.2.6_p5-r2", { :timeout => @new_resource.timeout || 900 })
+      expect(@provider).to receive(:shell_out_compacted!).with("cave", "-L", "warning", "resolve", "-x", "=net/ntp-4.2.6_p5-r2", { timeout: @new_resource.timeout || 900 })
       @provider.install_package("net/ntp", "4.2.6_p5-r2")
     end
 
     it "should run pkg install with the package name and version and options if specified" do
-      expect(@provider).to receive(:shell_out_compacted!).with("cave", "-L", "warning", "resolve", "-x", "--preserve-world", "=net/ntp-4.2.6_p5-r2", { :timeout => @new_resource.timeout || 900 })
+      expect(@provider).to receive(:shell_out_compacted!).with("cave", "-L", "warning", "resolve", "-x", "--preserve-world", "=net/ntp-4.2.6_p5-r2", { timeout: @new_resource.timeout || 900 })
       @new_resource.options "--preserve-world"
       @provider.install_package("net/ntp", "4.2.6_p5-r2")
     end
 
     it "should not contain invalid characters for the version string" do
-      @stdout.replace(<<-PKG_STATUS)
-sys-process/lsof 4.87 arbor
-sys-process/lsof 4.87 x86_64
+      @stdout.replace(<<~PKG_STATUS)
+        sys-process/lsof 4.87 arbor
+        sys-process/lsof 4.87 x86_64
 PKG_STATUS
-      expect(@provider).to receive(:shell_out_compacted!).with("cave", "-L", "warning", "resolve", "-x", "=sys-process/lsof-4.87", { :timeout => @new_resource.timeout || 900 })
+      expect(@provider).to receive(:shell_out_compacted!).with("cave", "-L", "warning", "resolve", "-x", "=sys-process/lsof-4.87", { timeout: @new_resource.timeout || 900 })
       @provider.install_package("sys-process/lsof", "4.87")
     end
 
     it "should not include the human-readable version in the candidate_version" do
-      @stdout.replace(<<-PKG_STATUS)
-sys-process/lsof 4.87 arbor
-sys-process/lsof 4.87 x86_64
+      @stdout.replace(<<~PKG_STATUS)
+        sys-process/lsof 4.87 arbor
+        sys-process/lsof 4.87 x86_64
 PKG_STATUS
       expect(@provider).to receive(:shell_out_compacted!).and_return(@shell_out)
       @provider.load_current_resource
@@ -119,7 +119,7 @@ PKG_STATUS
 
   context "when upgrading a package" do
     it "should run pkg install with the package name and version" do
-      expect(@provider).to receive(:shell_out_compacted!).with("cave", "-L", "warning", "resolve", "-x", "=net/ntp-4.2.6_p5-r2", { :timeout => @new_resource.timeout || 900 })
+      expect(@provider).to receive(:shell_out_compacted!).with("cave", "-L", "warning", "resolve", "-x", "=net/ntp-4.2.6_p5-r2", { timeout: @new_resource.timeout || 900 })
       @provider.upgrade_package("net/ntp", "4.2.6_p5-r2")
     end
   end

@@ -469,7 +469,7 @@ class Chef
       if arg.nil?
         @guard_interpreter || @default_guard_interpreter
       else
-        set_or_return(:guard_interpreter, arg, :kind_of => Symbol)
+        set_or_return(:guard_interpreter, arg, kind_of: Symbol)
       end
     end
 

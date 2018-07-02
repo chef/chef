@@ -34,7 +34,7 @@ describe Chef::Mixin::PowershellTypeCoercions do
 
     ["'", '"', "#", "`"].each do |c|
       it "base64 encodes a string that contains #{c}" do
-        expect(test_class.translate_type("#{c}")).to match(Base64.strict_encode64(c))
+        expect(test_class.translate_type(c.to_s)).to match(Base64.strict_encode64(c))
       end
     end
 

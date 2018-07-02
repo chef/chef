@@ -41,9 +41,9 @@ describe Chef::Provider::Ifconfig do
   end
 
   describe Chef::Provider::Ifconfig, "load_current_resource" do
-    let(:net_tools_version) { StringIO.new <<-EOS }
-net-tools 1.60
-ifconfig 1.42 (2001-04-13)
+    let(:net_tools_version) { StringIO.new <<~EOS }
+      net-tools 1.60
+      ifconfig 1.42 (2001-04-13)
 EOS
 
     before do

@@ -123,7 +123,7 @@ class Chef::EncryptedDataBagItem
       # Strings) that do not produce valid JSON when serialized without the
       # wrapper.
       def serialized_data
-        FFI_Yajl::Encoder.encode(:json_wrapper => plaintext_data)
+        FFI_Yajl::Encoder.encode(json_wrapper: plaintext_data)
       end
 
       def self.encryptor_keys

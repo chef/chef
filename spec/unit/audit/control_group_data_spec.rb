@@ -72,8 +72,8 @@ describe Chef::Audit::AuditData do
 
     describe ":control_groups" do
 
-      let(:control_hash_1) { { :name => "control group 1" } }
-      let(:control_hash_2) { { :name => "control group 2" } }
+      let(:control_hash_1) { { name: "control group 1" } }
+      let(:control_hash_2) { { name: "control group 2" } }
 
       let(:control_groups) { audit_data_hash[:control_groups] }
 
@@ -174,11 +174,11 @@ describe Chef::Audit::ControlGroupData do
 
     let(:control_data) do
       {
-        :name => name,
-        :resource_type => resource_type,
-        :resource_name => resource_name,
-        :context => context,
-        :line_number => line_number,
+        name: name,
+        resource_type: resource_type,
+        resource_name: resource_name,
+        context: context,
+        line_number: line_number,
       }
     end
 
@@ -193,11 +193,11 @@ describe Chef::Audit::ControlGroupData do
                                    context: context, line_number: line_number) end
 
     before do
-      allow(Chef::Audit::ControlData).to receive(:new).
-        with(name: name, resource_type: resource_type,
+      allow(Chef::Audit::ControlData).to receive(:new)
+        .with(name: name, resource_type: resource_type,
              resource_name: resource_name, context: context,
-             line_number: line_number).
-        and_return(control)
+             line_number: line_number)
+        .and_return(control)
     end
   end
 
@@ -434,22 +434,22 @@ describe Chef::Audit::ControlGroupData do
 
       context "with multiple controls added" do
 
-        let(:control_hash_1) { { :line_number => 27 } }
-        let(:control_hash_2) { { :line_number => 13 } }
-        let(:control_hash_3) { { :line_number => 35 } }
+        let(:control_hash_1) { { line_number: 27 } }
+        let(:control_hash_2) { { line_number: 13 } }
+        let(:control_hash_3) { { line_number: 35 } }
 
         let(:control_1) do
           double("control 1",
-          :line_number => control_hash_1[:line_number],
-          :to_hash => control_hash_1) end
+          line_number: control_hash_1[:line_number],
+          to_hash: control_hash_1) end
         let(:control_2) do
           double("control 2",
-          :line_number => control_hash_2[:line_number],
-          :to_hash => control_hash_2) end
+          line_number: control_hash_2[:line_number],
+          to_hash: control_hash_2) end
         let(:control_3) do
           double("control 3",
-          :line_number => control_hash_3[:line_number],
-          :to_hash => control_hash_3) end
+          line_number: control_hash_3[:line_number],
+          to_hash: control_hash_3) end
 
         let(:control_list) { [control_1, control_2, control_3] }
         let(:ordered_control_hashes) { [control_hash_2, control_hash_1, control_hash_3] }

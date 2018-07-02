@@ -22,29 +22,29 @@ require "tempfile"
 describe Chef::Util::FileEdit do
 
   let(:starting_content) do
-    <<-EOF
-127.0.0.1       localhost
-255.255.255.255 broadcasthost
-::1             localhost
-fe80::1%lo0     localhost
+    <<~EOF
+      127.0.0.1       localhost
+      255.255.255.255 broadcasthost
+      ::1             localhost
+      fe80::1%lo0     localhost
     EOF
   end
 
   let(:localhost_replaced) do
-    <<-EOF
-127.0.0.1       replacement
-255.255.255.255 broadcasthost
-::1             replacement
-fe80::1%lo0     replacement
+    <<~EOF
+      127.0.0.1       replacement
+      255.255.255.255 broadcasthost
+      ::1             replacement
+      fe80::1%lo0     replacement
     EOF
   end
 
   let(:localhost_line_replaced) do
-    <<-EOF
-replacement line
-255.255.255.255 broadcasthost
-replacement line
-replacement line
+    <<~EOF
+      replacement line
+      255.255.255.255 broadcasthost
+      replacement line
+      replacement line
     EOF
   end
 
@@ -54,41 +54,41 @@ replacement line
   end
 
   let(:localhost_line_deleted) do
-    <<-EOF
-255.255.255.255 broadcasthost
+    <<~EOF
+      255.255.255.255 broadcasthost
     EOF
   end
 
   let(:append_after_all_localhost) do
-    <<-EOF
-127.0.0.1       localhost
-new line inserted
-255.255.255.255 broadcasthost
-::1             localhost
-new line inserted
-fe80::1%lo0     localhost
-new line inserted
+    <<~EOF
+      127.0.0.1       localhost
+      new line inserted
+      255.255.255.255 broadcasthost
+      ::1             localhost
+      new line inserted
+      fe80::1%lo0     localhost
+      new line inserted
     EOF
   end
 
   let(:append_after_content) do
-    <<-EOF
-127.0.0.1       localhost
-255.255.255.255 broadcasthost
-::1             localhost
-fe80::1%lo0     localhost
-new line inserted
+    <<~EOF
+      127.0.0.1       localhost
+      255.255.255.255 broadcasthost
+      ::1             localhost
+      fe80::1%lo0     localhost
+      new line inserted
     EOF
   end
 
   let(:append_twice) do
-    <<-EOF
-127.0.0.1       localhost
-255.255.255.255 broadcasthost
-::1             localhost
-fe80::1%lo0     localhost
-once
-twice
+    <<~EOF
+      127.0.0.1       localhost
+      255.255.255.255 broadcasthost
+      ::1             localhost
+      fe80::1%lo0     localhost
+      once
+      twice
     EOF
   end
 

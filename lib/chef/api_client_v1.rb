@@ -57,15 +57,15 @@ class Chef
     end
 
     def chef_rest_v0
-      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0", :inflate_json_class => false })
+      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "0", inflate_json_class: false })
     end
 
     def chef_rest_v1
-      @chef_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "1", :inflate_json_class => false })
+      @chef_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "1", inflate_json_class: false })
     end
 
     def self.http_api
-      Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "1", :inflate_json_class => false })
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "1", inflate_json_class: false })
     end
 
     # Gets or sets the client name.
@@ -76,7 +76,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :regex => /^[\-[:alnum:]_\.]+$/
+        regex: /^[\-[:alnum:]_\.]+$/
       )
     end
 
@@ -88,7 +88,7 @@ class Chef
       set_or_return(
         :admin,
         arg,
-        :kind_of => [ TrueClass, FalseClass ]
+        kind_of: [ TrueClass, FalseClass ]
       )
     end
 
@@ -100,7 +100,7 @@ class Chef
       set_or_return(
         :public_key,
         arg,
-        :kind_of => String
+        kind_of: String
       )
     end
 
@@ -113,7 +113,7 @@ class Chef
       set_or_return(
         :validator,
         arg,
-        :kind_of => [TrueClass, FalseClass]
+        kind_of: [TrueClass, FalseClass]
       )
     end
 
@@ -126,7 +126,7 @@ class Chef
       set_or_return(
         :private_key,
         arg,
-        :kind_of => [String, TrueClass, FalseClass]
+        kind_of: [String, TrueClass, FalseClass]
       )
     end
 
@@ -138,7 +138,7 @@ class Chef
       set_or_return(
         :create_key,
         arg,
-        :kind_of => [ TrueClass, FalseClass ]
+        kind_of: [ TrueClass, FalseClass ]
       )
     end
 
@@ -226,7 +226,7 @@ class Chef
     def reregister
       # Try API V0 and if it fails due to V0 not being supported, raise the proper error message.
       # reregister only supported in API V0 or lesser.
-      reregistered_self = chef_rest_v0.put("clients/#{name}", { :name => name, :admin => admin, :validator => validator, :private_key => true })
+      reregistered_self = chef_rest_v0.put("clients/#{name}", { name: name, admin: admin, validator: validator, private_key: true })
       if reregistered_self.respond_to?(:[])
         private_key(reregistered_self["private_key"])
       else
@@ -254,7 +254,7 @@ class Chef
       # it was never implemented, we will simply ignore that functionality
       # as it is being deprecated.
       # Delete this comment after V0 support is dropped.
-      payload = { :name => name }
+      payload = { name: name }
       payload[:validator] = validator unless validator.nil?
 
       # DEPRECATION
@@ -277,11 +277,11 @@ class Chef
     # Create the client via the REST API
     def create
       payload = {
-        :name => name,
-        :validator => validator,
+        name: name,
+        validator: validator,
         # this field is ignored in API V1, but left for backwards-compat,
         # can remove after OSC 11 support is finished?
-        :admin => admin,
+        admin: admin,
       }
       begin
         # try API V1

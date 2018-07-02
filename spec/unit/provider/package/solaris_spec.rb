@@ -32,21 +32,21 @@ describe Chef::Provider::Package::Solaris do
 
   describe "assessing the current package status" do
     before do
-      @pkginfo = <<-PKGINFO
-PKGINST:  SUNWbash
-NAME:  GNU Bourne-Again shell (bash)
-CATEGORY:  system
-ARCH:  sparc
-VERSION:  11.10.0,REV=2005.01.08.05.16
-BASEDIR:  /
-VENDOR:  Sun Microsystems, Inc.
-DESC:  GNU Bourne-Again shell (bash) version 3.0
-PSTAMP:  sfw10-patch20070430084444
-INSTDATE:  Nov 04 2009 01:02
-HOTLINE:  Please contact your local service provider
+      @pkginfo = <<~PKGINFO
+        PKGINST:  SUNWbash
+        NAME:  GNU Bourne-Again shell (bash)
+        CATEGORY:  system
+        ARCH:  sparc
+        VERSION:  11.10.0,REV=2005.01.08.05.16
+        BASEDIR:  /
+        VENDOR:  Sun Microsystems, Inc.
+        DESC:  GNU Bourne-Again shell (bash) version 3.0
+        PSTAMP:  sfw10-patch20070430084444
+        INSTDATE:  Nov 04 2009 01:02
+        HOTLINE:  Please contact your local service provider
 PKGINFO
 
-      @status = double("Status", :stdout => "", :exitstatus => 0)
+      @status = double("Status", stdout: "", exitstatus: 0)
     end
 
     it "should create a current resource with the name of new_resource" do
@@ -70,7 +70,7 @@ PKGINFO
     end
 
     it "should get the source package version from pkginfo if provided" do
-      status = double(:stdout => @pkginfo, :exitstatus => 0)
+      status = double(stdout: @pkginfo, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).with("pkginfo", "-l", "-d", "/tmp/bash.pkg", "SUNWbash", { timeout: 900 }).and_return(status)
       expect(@provider).to receive(:shell_out_compacted).with("pkginfo", "-l", "SUNWbash", { timeout: 900 }).and_return(@status)
       @provider.load_current_resource
@@ -80,7 +80,7 @@ PKGINFO
     end
 
     it "should return the current version installed if found by pkginfo" do
-      status = double(:stdout => @pkginfo, :exitstatus => 0)
+      status = double(stdout: @pkginfo, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).with("pkginfo", "-l", "-d", "/tmp/bash.pkg", "SUNWbash", { timeout: 900 }).and_return(@status)
       expect(@provider).to receive(:shell_out_compacted).with("pkginfo", "-l", "SUNWbash", { timeout: 900 }).and_return(status)
       @provider.load_current_resource
@@ -95,7 +95,7 @@ PKGINFO
     end
 
     it "should raise an exception if pkginfo fails to run" do
-      status = double(:stdout => "", :exitstatus => -1)
+      status = double(stdout: "", exitstatus: -1)
       allow(@provider).to receive(:shell_out_compacted).and_return(status)
       expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
     end
@@ -116,14 +116,14 @@ PKGINFO
     end
 
     it "should lookup the candidate_version if the variable is not already set" do
-      status = double(:stdout => "", :exitstatus => 0)
+      status = double(stdout: "", exitstatus: 0)
       allow(@provider).to receive(:shell_out_compacted).and_return(status)
       expect(@provider).to receive(:shell_out_compacted)
       @provider.candidate_version
     end
 
     it "should throw and exception if the exitstatus is not 0" do
-      status = double(:stdout => "", :exitstatus => 1)
+      status = double(stdout: "", exitstatus: 1)
       allow(@provider).to receive(:shell_out_compacted).and_return(status)
       expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
     end

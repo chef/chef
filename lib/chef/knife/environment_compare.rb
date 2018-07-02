@@ -29,16 +29,16 @@ class Chef
       banner "knife environment compare [ENVIRONMENT..] (options)"
 
       option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Show all cookbooks",
-        :boolean => true
+        short: "-a",
+        long: "--all",
+        description: "Show all cookbooks",
+        boolean: true
 
       option :mismatch,
-        :short => "-m",
-        :long => "--mismatch",
-        :description => "Only show mismatching versions",
-        :boolean => true
+        short: "-m",
+        long: "--mismatch",
+        description: "Only show mismatching versions",
+        boolean: true
 
       def run
         # Get the commandline environments or all if none are provided.

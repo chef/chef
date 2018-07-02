@@ -21,7 +21,7 @@ require "chef/client"
 describe Chef::RunLock do
 
   # This behavior works on windows, but the tests use fork :(
-  describe "when locking the chef-client run", :unix_only => true do
+  describe "when locking the chef-client run", unix_only: true do
 
     ##
     # Lockfile location and helpers
@@ -150,7 +150,7 @@ describe Chef::RunLock do
           end
         end
 
-        it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
+        it "sets FD_CLOEXEC on the lockfile", supports_cloexec: true do
           run_lock = File.open(lockfile)
           expect(run_lock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).to eq(Fcntl::FD_CLOEXEC)
         end
@@ -197,7 +197,7 @@ describe Chef::RunLock do
           end
         end
 
-        it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
+        it "sets FD_CLOEXEC on the lockfile", supports_cloexec: true do
           run_lock = File.open(lockfile)
           expect(run_lock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).to eq(Fcntl::FD_CLOEXEC)
         end
@@ -461,7 +461,7 @@ describe Chef::RunLock do
       buffer << fd.read_nonblock(1) while buffer[-1] != "\n"
 
       buffer
-    #rescue IO::EAGAINUnreadable
+    # rescue IO::EAGAINUnreadable
     rescue IO::WaitReadable
       unless buffer == ""
         sleep 0.1

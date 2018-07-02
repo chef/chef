@@ -24,7 +24,7 @@ describe Chef::HTTP::Simple do
   include ChefHTTPShared
 
   let(:http_client) { described_class.new(source) }
-  let(:http_client_disable_gzip) { described_class.new(source, { :disable_gzip => true } ) }
+  let(:http_client_disable_gzip) { described_class.new(source, { disable_gzip: true } ) }
 
   before(:all) do
     start_tiny_server(RequestTimeout: 1)

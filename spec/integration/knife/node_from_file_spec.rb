@@ -29,27 +29,27 @@ describe "knife node from file", :workstation do
     when_the_repository "has some nodes" do
       before do
 
-        file "nodes/cons.json", <<EOM
-{
-  "name": "cons",
-  "chef_environment": "_default",
-  "run_list": [
-  "recipe[cons]"
-]
-,
-  "normal": {
-    "tags": [
+        file "nodes/cons.json", <<~EOM
+          {
+            "name": "cons",
+            "chef_environment": "_default",
+            "run_list": [
+            "recipe[cons]"
+          ]
+          ,
+            "normal": {
+              "tags": [
 
-    ]
-  }
-}
+              ]
+            }
+          }
 EOM
 
       end
 
       it "uploads a single file" do
-        knife("node from file #{node_dir}/cons.json").should_succeed stderr: <<EOM
-Updated Node cons
+        knife("node from file #{node_dir}/cons.json").should_succeed stderr: <<~EOM
+          Updated Node cons
 EOM
       end
 

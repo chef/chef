@@ -64,8 +64,8 @@ describe Chef::Resource::Template do
 
   describe "variables" do
     it "accepts a hash for the variable list" do
-      resource.variables({ :reluctance => :awkward })
-      expect(resource.variables).to eq({ :reluctance => :awkward })
+      resource.variables({ reluctance: :awkward })
+      expect(resource.variables).to eq({ reluctance: :awkward })
     end
   end
 

@@ -54,25 +54,25 @@ describe Chef::RunList::VersionedRecipeList do
     it "should allow you to specify a version" do
       list.add_recipe "rails", "1.0.0"
       expect(list).to eq(%w{apt god apache2 rails})
-      expect(list.with_versions).to include({ :name => "rails", :version => "1.0.0" })
+      expect(list.with_versions).to include({ name: "rails", version: "1.0.0" })
     end
 
     it "should allow you to specify a version for a recipe that already exists" do
       list.add_recipe "apt", "1.2.3"
       expect(list).to eq(%w{apt god apache2})
-      expect(list.with_versions).to include({ :name => "apt", :version => "1.2.3" })
+      expect(list.with_versions).to include({ name: "apt", version: "1.2.3" })
     end
 
     it "should allow you to specify the same version of a recipe twice" do
       list.add_recipe "rails", "1.0.0"
       list.add_recipe "rails", "1.0.0"
-      expect(list.with_versions).to include({ :name => "rails", :version => "1.0.0" })
+      expect(list.with_versions).to include({ name: "rails", version: "1.0.0" })
     end
 
     it "should allow you to spcify no version, even when a version already exists" do
       list.add_recipe "rails", "1.0.0"
       list.add_recipe "rails"
-      expect(list.with_versions).to include({ :name => "rails", :version => "1.0.0" })
+      expect(list.with_versions).to include({ name: "rails", version: "1.0.0" })
     end
 
     it "should not allow multiple versions of the same recipe" do
@@ -85,9 +85,9 @@ describe Chef::RunList::VersionedRecipeList do
 
     let(:versioned_recipes) do
       [
-        { :name => "apt", :version => "1.0.0" },
-        { :name => "god", :version => nil },
-        { :name => "apache2", :version => "0.0.1" },
+        { name: "apt", version: "1.0.0" },
+        { name: "god", version: nil },
+        { name: "apache2", version: "0.0.1" },
       ]
     end
     it "should return an array of hashes with :name and :version" do
@@ -106,9 +106,9 @@ describe Chef::RunList::VersionedRecipeList do
 
     let(:versioned_recipes) do
       [
-        { :name => "apt", :version => "~> 1.2.0" },
-        { :name => "god", :version => nil },
-        { :name => "apache2", :version => "0.0.1" },
+        { name: "apt", version: "~> 1.2.0" },
+        { name: "god", version: nil },
+        { name: "apache2", version: "0.0.1" },
       ]
     end
 
@@ -151,7 +151,7 @@ describe Chef::RunList::VersionedRecipeList do
 
       let(:versioned_recipes) do
         [
-          { :name => "apt", :version => "~> 1.2.0" },
+          { name: "apt", version: "~> 1.2.0" },
         ]
       end
 
@@ -170,7 +170,7 @@ describe Chef::RunList::VersionedRecipeList do
 
       let(:versioned_recipes) do
         [
-          { :name => "apt::cacher", :version => "~> 1.2.0" },
+          { name: "apt::cacher", version: "~> 1.2.0" },
         ]
       end
 

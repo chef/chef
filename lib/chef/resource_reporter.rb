@@ -72,7 +72,7 @@ class Chef
         as_hash["result"] = action.to_s
         if success?
         else
-          #as_hash["result"] = "failed"
+          # as_hash["result"] = "failed"
         end
         if new_resource.cookbook_name
           as_hash["cookbook_name"] = new_resource.cookbook_name
@@ -120,8 +120,8 @@ class Chef
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{node_name}/runs"
-          server_response = @rest_client.post(resource_history_url, { :action => :start, :run_id => run_id,
-                                                                      :start_time => start_time.to_s }, headers)
+          server_response = @rest_client.post(resource_history_url, { action: :start, run_id: run_id,
+                                                                      start_time: start_time.to_s }, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
           handle_error_starting_run(e, resource_history_url)
         end

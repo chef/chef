@@ -21,7 +21,7 @@ require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
 exclude_test = !(%w{rhel fedora}.include?(ohai[:platform_family]) && File.exist?("/usr/bin/dnf"))
-describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test do
+describe Chef::Resource::RpmPackage, :requires_root, external: exclude_test do
   include Chef::Mixin::ShellOut
 
   def flush_cache
@@ -39,12 +39,12 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
 
   before(:each) do
     File.open("/etc/yum.repos.d/chef-dnf-localtesting.repo", "w+") do |f|
-      f.write <<-EOF
-[chef-dnf-localtesting]
-name=Chef DNF spec testing repo
-baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
-enable=1
-gpgcheck=0
+      f.write <<~EOF
+        [chef-dnf-localtesting]
+        name=Chef DNF spec testing repo
+        baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
+        enable=1
+        gpgcheck=0
       EOF
     end
     shell_out!("rpm -qa | grep chef_rpm | xargs -r rpm -e")

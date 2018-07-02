@@ -31,12 +31,12 @@ class Chef
         use_multipackage_api
 
         PATHFINDING_POWERSHELL_COMMAND = "[System.Environment]::GetEnvironmentVariable('ChocolateyInstall', 'MACHINE')".freeze
-        CHOCO_MISSING_MSG = <<-EOS.freeze
-Could not locate your Chocolatey install. To install chocolatey, we recommend
-the 'chocolatey' cookbook (https://github.com/chocolatey/chocolatey-cookbook).
-If Chocolatey is installed, ensure that the 'ChocolateyInstall' environment
-variable is correctly set. You can verify this with the PowerShell command
-'#{PATHFINDING_POWERSHELL_COMMAND}'.
+        CHOCO_MISSING_MSG = <<~EOS.freeze
+          Could not locate your Chocolatey install. To install chocolatey, we recommend
+          the 'chocolatey' cookbook (https://github.com/chocolatey/chocolatey-cookbook).
+          If Chocolatey is installed, ensure that the 'ChocolateyInstall' environment
+          variable is correctly set. You can verify this with the PowerShell command
+          '#{PATHFINDING_POWERSHELL_COMMAND}'.
 EOS
 
         # Responsible for building the current_resource.

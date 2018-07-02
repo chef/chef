@@ -69,17 +69,17 @@ describe Chef::Formatters::ErrorDescription do
     context "when no sections have been added" do
       it "should output only the title and the Platform section" do
         subject.display(out)
-        expect(out.out.string).to eq <<-END
-================================================================================
-test title
-================================================================================
+        expect(out.out.string).to eq <<~END
+          ================================================================================
+          test title
+          ================================================================================
 
-System Info:
-------------
-chef_version=1.2.3
-ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
-program_name=chef-client
-executable=/test/bin/chef-client
+          System Info:
+          ------------
+          chef_version=1.2.3
+          ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
+          program_name=chef-client
+          executable=/test/bin/chef-client
 
         END
       end
@@ -92,21 +92,21 @@ executable=/test/bin/chef-client
 
       it "should output the expected sections" do
         subject.display(out)
-        expect(out.out.string).to eq <<-END
-================================================================================
-test title
-================================================================================
+        expect(out.out.string).to eq <<~END
+          ================================================================================
+          test title
+          ================================================================================
 
-test heading
-------------
-test text
+          test heading
+          ------------
+          test text
 
-System Info:
-------------
-chef_version=1.2.3
-ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
-program_name=chef-client
-executable=/test/bin/chef-client
+          System Info:
+          ------------
+          chef_version=1.2.3
+          ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
+          program_name=chef-client
+          executable=/test/bin/chef-client
 
         END
       end
@@ -119,19 +119,19 @@ executable=/test/bin/chef-client
         # reset on global values.
         Chef.set_node({ "platform" => "openvms", "platform_version" => "8.4-2L1" })
         subject.display(out)
-        expect(out.out.string).to eq <<-END
-================================================================================
-test title
-================================================================================
+        expect(out.out.string).to eq <<~END
+          ================================================================================
+          test title
+          ================================================================================
 
-System Info:
-------------
-chef_version=1.2.3
-platform=openvms
-platform_version=8.4-2L1
-ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
-program_name=chef-client
-executable=/test/bin/chef-client
+          System Info:
+          ------------
+          chef_version=1.2.3
+          platform=openvms
+          platform_version=8.4-2L1
+          ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
+          program_name=chef-client
+          executable=/test/bin/chef-client
 
         END
       end

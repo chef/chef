@@ -61,7 +61,7 @@ describe Chef::Node::VividMash do
 
     it "deep converts values through arrays" do
       expect(root).to receive(:reset_cache).with("foo")
-      vivid["foo"] = [ { :bar => true } ]
+      vivid["foo"] = [ { bar: true } ]
       expect(vivid["foo"].class).to eql(Chef::Node::AttrArray)
       expect(vivid["foo"][0].class).to eql(Chef::Node::VividMash)
       expect(vivid["foo"][0]["bar"]).to be true
@@ -69,7 +69,7 @@ describe Chef::Node::VividMash do
 
     it "deep converts values through nested arrays" do
       expect(root).to receive(:reset_cache).with("foo")
-      vivid["foo"] = [ [ { :bar => true } ] ]
+      vivid["foo"] = [ [ { bar: true } ] ]
       expect(vivid["foo"].class).to eql(Chef::Node::AttrArray)
       expect(vivid["foo"][0].class).to eql(Chef::Node::AttrArray)
       expect(vivid["foo"][0][0].class).to eql(Chef::Node::VividMash)
@@ -78,7 +78,7 @@ describe Chef::Node::VividMash do
 
     it "deep converts values through hashes" do
       expect(root).to receive(:reset_cache).with("foo")
-      vivid["foo"] = { baz: { :bar => true } }
+      vivid["foo"] = { baz: { bar: true } }
       expect(vivid["foo"]).to be_an_instance_of(Chef::Node::VividMash)
       expect(vivid["foo"]["baz"]).to be_an_instance_of(Chef::Node::VividMash)
       expect(vivid["foo"]["baz"]["bar"]).to be true

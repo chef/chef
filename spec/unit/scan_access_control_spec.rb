@@ -49,7 +49,7 @@ describe Chef::ScanAccessControl do
   describe "when the fs entity exists" do
 
     before do
-      @stat = double("File::Stat for #{@new_resource.path}", :uid => 0, :gid => 0, :mode => 00100644)
+      @stat = double("File::Stat for #{@new_resource.path}", uid: 0, gid: 0, mode: 00100644)
       expect(File).to receive(:realpath).with(@new_resource.path).and_return(@real_file)
       expect(File).to receive(:stat).with(@real_file).and_return(@stat)
       expect(File).to receive(:exist?).with(@new_resource.path).and_return(true)
@@ -128,7 +128,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the owner of current_resource to the username of the current owner" do
-        @root_passwd = double("Struct::Passwd for uid 0", :name => "root")
+        @root_passwd = double("Struct::Passwd for uid 0", name: "root")
         expect(Etc).to receive(:getpwuid).with(0).and_return(@root_passwd)
         @scanner.set_all!
 
@@ -163,7 +163,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the group of the current resource to the group name" do
-        @group_entry = double("Struct::Group for wheel", :name => "wheel")
+        @group_entry = double("Struct::Group for wheel", name: "wheel")
         expect(Etc).to receive(:getgrgid).with(0).and_return(@group_entry)
         @scanner.set_all!
 

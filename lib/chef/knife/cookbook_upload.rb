@@ -37,42 +37,42 @@ class Chef
       banner "knife cookbook upload [COOKBOOKS...] (options)"
 
       option :cookbook_path,
-        :short => "-o PATH:PATH",
-        :long => "--cookbook-path PATH:PATH",
-        :description => "A colon-separated path to look for cookbooks in",
-        :proc => lambda { |o| o.split(":") }
+        short: "-o PATH:PATH",
+        long: "--cookbook-path PATH:PATH",
+        description: "A colon-separated path to look for cookbooks in",
+        proc: lambda { |o| o.split(":") }
 
       option :freeze,
-        :long => "--freeze",
-        :description => "Freeze this version of the cookbook so that it cannot be overwritten",
-        :boolean => true
+        long: "--freeze",
+        description: "Freeze this version of the cookbook so that it cannot be overwritten",
+        boolean: true
 
       option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Upload all cookbooks, rather than just a single cookbook"
+        short: "-a",
+        long: "--all",
+        description: "Upload all cookbooks, rather than just a single cookbook"
 
       option :force,
-        :long => "--force",
-        :boolean => true,
-        :description => "Update cookbook versions even if they have been frozen"
+        long: "--force",
+        boolean: true,
+        description: "Update cookbook versions even if they have been frozen"
 
       option :concurrency,
-        :long => "--concurrency NUMBER_OF_THREADS",
-        :description => "How many concurrent threads will be used",
-        :default => 10,
-        :proc => lambda { |o| o.to_i }
+        long: "--concurrency NUMBER_OF_THREADS",
+        description: "How many concurrent threads will be used",
+        default: 10,
+        proc: lambda { |o| o.to_i }
 
       option :environment,
-        :short => "-E",
-        :long  => "--environment ENVIRONMENT",
-        :description => "Set ENVIRONMENT's version dependency match the version you're uploading.",
-        :default => nil
+        short: "-E",
+        long: "--environment ENVIRONMENT",
+        description: "Set ENVIRONMENT's version dependency match the version you're uploading.",
+        default: nil
 
       option :depends,
-        :short => "-d",
-        :long => "--include-dependencies",
-        :description => "Also upload cookbook dependencies"
+        short: "-d",
+        long: "--include-dependencies",
+        description: "Also upload cookbook dependencies"
 
       def run
         # Sanity check before we load anything from the server
@@ -209,12 +209,12 @@ class Chef
 
         unless cookbook_repo.merged_cookbooks.empty?
           ui.warn "* " * 40
-          ui.warn(<<-WARNING)
-The cookbooks: #{cookbook_repo.merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path.
-A composite version of these cookbooks has been compiled for uploading.
+          ui.warn(<<~WARNING)
+            The cookbooks: #{cookbook_repo.merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path.
+            A composite version of these cookbooks has been compiled for uploading.
 
-#{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this behavior will be removed and you will no longer
-be able to have the same version of a cookbook in multiple places in your cookbook_path.
+            #{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this behavior will be removed and you will no longer
+            be able to have the same version of a cookbook in multiple places in your cookbook_path.
 WARNING
           ui.warn "The affected cookbooks are located:"
           ui.output ui.format_for_display(cookbook_repo.merged_cookbook_paths)
@@ -242,7 +242,7 @@ WARNING
           check_for_broken_links!(cb)
           check_for_dependencies!(cb)
         end
-        Chef::CookbookUploader.new(cookbooks, :force => config[:force], :concurrency => config[:concurrency]).upload_cookbooks
+        Chef::CookbookUploader.new(cookbooks, force: config[:force], concurrency: config[:concurrency]).upload_cookbooks
       rescue Chef::Exceptions::CookbookFrozen => e
         ui.error e
         raise

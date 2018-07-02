@@ -43,7 +43,7 @@ describe Chef::HTTP::APIVersions do
   end
 
   let(:response) do
-    m = double("HttpResponse", :body => response_body)
+    m = double("HttpResponse", body: response_body)
     allow(m).to receive(:key?).with("x-ops-server-api-version").and_return(true)
     allow(m).to receive(:code).and_return(return_value)
     allow(m).to receive(:[]) do |key|

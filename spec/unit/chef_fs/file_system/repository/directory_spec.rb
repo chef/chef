@@ -88,7 +88,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
     end
 
     it "returns a non existent object otherwise" do
-      file_double = instance_double(TestFile, :name_valid? => false)
+      file_double = instance_double(TestFile, name_valid?: false)
       expect(TestFile).to receive(:new).with("test_child", test_directory).and_return(file_double)
       expect(test_directory.child("test_child")).to be_an_instance_of(Chef::ChefFS::FileSystem::NonexistentFSObject)
     end

@@ -93,7 +93,7 @@ describe Chef::Provider::Script, "action_run" do
       end
 
       context "when an alternate user is specified" do
-        let(:security_descriptor) { instance_double("Chef::ReservedNames::Win32::Security::SecurityDescriptor", :dacl => []) }
+        let(:security_descriptor) { instance_double("Chef::ReservedNames::Win32::Security::SecurityDescriptor", dacl: []) }
         let(:securable_object) { instance_double("Chef::ReservedNames::Win32::Security::SecurableObject", :security_descriptor => security_descriptor, :dacl= => nil) }
         it "sets the script file's security descriptor" do
           new_resource.user("toor")

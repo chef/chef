@@ -38,11 +38,11 @@ describe Chef::Provider::Package::Bff do
       @bffinfo = "/usr/lib/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:
   /etc/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:"
 
-      @empty_status = double("Status", :stdout => "", :exitstatus => 0)
+      @empty_status = double("Status", stdout: "", exitstatus: 0)
     end
 
     it "should create a current resource with the name of new_resource" do
-      status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
+      status = double("Status", stdout: @bffinfo, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).with("installp", "-L", "-d", "/tmp/samba.base", timeout: 900).and_return(status)
       expect(@provider).to receive(:shell_out_compacted).with("lslpp", "-lcq", "samba.base", timeout: 900).and_return(@empty_status)
       @provider.load_current_resource
@@ -50,7 +50,7 @@ describe Chef::Provider::Package::Bff do
     end
 
     it "should set the current resource bff package name to the new resource bff package name" do
-      status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
+      status = double("Status", stdout: @bffinfo, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).with("installp", "-L", "-d", "/tmp/samba.base", timeout: 900).and_return(status)
       expect(@provider).to receive(:shell_out_compacted).with("lslpp", "-lcq", "samba.base", timeout: 900).and_return(@empty_status)
       @provider.load_current_resource
@@ -66,7 +66,7 @@ describe Chef::Provider::Package::Bff do
     end
 
     it "should get the source package version from lslpp if provided" do
-      status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
+      status = double("Status", stdout: @bffinfo, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).with("installp", "-L", "-d", "/tmp/samba.base", timeout: 900).and_return(status)
       expect(@provider).to receive(:shell_out_compacted).with("lslpp", "-lcq", "samba.base", timeout: 900).and_return(@empty_status)
       @provider.load_current_resource
@@ -78,7 +78,7 @@ describe Chef::Provider::Package::Bff do
     it "should warn if the package is not a fileset" do
       info = "samba.base:samba.base.samples:3.3.12.0::COMMITTED:I:Samba for AIX:
   /etc/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:"
-      status = double("Status", :stdout => info, :exitstatus => 0)
+      status = double("Status", stdout: info, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).with("installp", "-L", "-d", "/tmp/samba.base", timeout: 900).and_return(status)
       expect(@provider).to receive(:shell_out_compacted).with("lslpp", "-lcq", "samba.base", timeout: 900).and_return(@empty_status)
       expect(logger).to receive(:warn).once.with(%r{bff package by product name})
@@ -89,7 +89,7 @@ describe Chef::Provider::Package::Bff do
     end
 
     it "should return the current version installed if found by lslpp" do
-      status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
+      status = double("Status", stdout: @bffinfo, exitstatus: 0)
       @stdout = StringIO.new(@bffinfo)
       @stdin, @stderr = StringIO.new, StringIO.new
       expect(@provider).to receive(:shell_out_compacted).with("installp", "-L", "-d", "/tmp/samba.base", timeout: 900).and_return(status)
@@ -99,7 +99,7 @@ describe Chef::Provider::Package::Bff do
     end
 
     it "should raise an exception if the source is not set but we are installing" do
-      status = double("Status", :stdout => "", :exitstatus => 1, :format_for_exception => "")
+      status = double("Status", stdout: "", exitstatus: 1, format_for_exception: "")
       @new_resource = Chef::Resource::Package.new("samba.base")
       @provider = Chef::Provider::Package::Bff.new(@new_resource, @run_context)
       allow(@provider).to receive(:shell_out_compacted).and_return(status)
@@ -107,13 +107,13 @@ describe Chef::Provider::Package::Bff do
     end
 
     it "should raise an exception if installp/lslpp fails to run" do
-      status = double(:stdout => "", :exitstatus => -1, :format_for_exception => "")
+      status = double(stdout: "", exitstatus: -1, format_for_exception: "")
       allow(@provider).to receive(:shell_out_compacted).and_return(status)
       expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
     end
 
     it "should return a current resource with a nil version if the package is not found" do
-      status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
+      status = double("Status", stdout: @bffinfo, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).with("installp", "-L", "-d", "/tmp/samba.base", timeout: 900).and_return(status)
       expect(@provider).to receive(:shell_out_compacted).with("lslpp", "-lcq", "samba.base", timeout: 900).and_return(@empty_status)
       @provider.load_current_resource
@@ -123,7 +123,7 @@ describe Chef::Provider::Package::Bff do
     it "should raise an exception if the source doesn't provide the requested package" do
       wrongbffinfo = "/usr/lib/objrepos:openssl.base:0.9.8.2400::COMMITTED:I:Open Secure Socket Layer:
 /etc/objrepos:openssl.base:0.9.8.2400::COMMITTED:I:Open Secure Socket Layer:"
-      status = double("Status", :stdout => wrongbffinfo, :exitstatus => 0)
+      status = double("Status", stdout: wrongbffinfo, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).with("installp", "-L", "-d", "/tmp/samba.base", timeout: 900).and_return(status)
       expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
     end
@@ -137,13 +137,13 @@ describe Chef::Provider::Package::Bff do
     end
 
     it "should lookup the candidate_version if the variable is not already set" do
-      status = double(:stdout => "", :exitstatus => 0)
+      status = double(stdout: "", exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).and_return(status)
       @provider.candidate_version
     end
 
     it "should throw and exception if the exitstatus is not 0" do
-      @status = double(:stdout => "", :exitstatus => 1, :format_for_exception => "")
+      @status = double(stdout: "", exitstatus: 1, format_for_exception: "")
       allow(@provider).to receive(:shell_out_compacted).and_return(@status)
       expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
     end
