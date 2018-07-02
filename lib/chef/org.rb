@@ -40,22 +40,22 @@ class Chef
 
     def name(arg = nil)
       set_or_return(:name, arg,
-                    :regex => /^[a-z0-9\-_]+$/)
+                    regex: /^[a-z0-9\-_]+$/)
     end
 
     def full_name(arg = nil)
       set_or_return(:full_name,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def private_key(arg = nil)
       set_or_return(:private_key,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def guid(arg = nil)
       set_or_return(:guid,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def to_hash
@@ -73,13 +73,13 @@ class Chef
     end
 
     def create
-      payload = { :name => name, :full_name => full_name }
+      payload = { name: name, full_name: full_name }
       new_org = chef_rest.post("organizations", payload)
       Chef::Org.from_hash(to_hash.merge(new_org))
     end
 
     def update
-      payload = { :name => name, :full_name => full_name }
+      payload = { name: name, full_name: full_name }
       new_org = chef_rest.put("organizations/#{name}", payload)
       Chef::Org.from_hash(to_hash.merge(new_org))
     end
@@ -99,10 +99,10 @@ class Chef
     end
 
     def associate_user(username)
-      request_body = { :user => username }
+      request_body = { user: username }
       response = chef_rest.post "organizations/#{@name}/association_requests", request_body
       association_id = response["uri"].split("/").last
-      chef_rest.put "users/#{username}/association_requests/#{association_id}", { :response => "accept" }
+      chef_rest.put "users/#{username}/association_requests/#{association_id}", { response: "accept" }
     end
 
     def dissociate_user(username)

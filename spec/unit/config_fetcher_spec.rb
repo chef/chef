@@ -2,7 +2,7 @@ require "spec_helper"
 require "chef/config_fetcher"
 
 describe Chef::ConfigFetcher do
-  let(:valid_json) { Chef::JSONCompat.to_json({ :a => "b" }) }
+  let(:valid_json) { Chef::JSONCompat.to_json({ a: "b" }) }
   let(:invalid_json) { %q[{"syntax-error": "missing quote}] }
   let(:http) { double("Chef::HTTP::Simple") }
 

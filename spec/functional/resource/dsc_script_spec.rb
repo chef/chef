@@ -234,7 +234,7 @@ EOH
       expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(false)
       dsc_test_resource.run_action(:run)
       expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(true)
-      expect(dsc_test_resource.registry_value_exists?(test_registry_key, { :name => test_registry_value, :type => :string, :data => test_registry_data })).to eq(true)
+      expect(dsc_test_resource.registry_value_exists?(test_registry_key, { name: test_registry_value, type: :string, data: test_registry_data })).to eq(true)
     end
 
     it_should_behave_like "a dsc_script resource with configuration affected by cwd"
@@ -314,7 +314,7 @@ EOH
         expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(false)
         dsc_test_resource.run_action(:run)
         expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(true)
-        expect(dsc_test_resource.registry_value_exists?(test_registry_key, { :name => test_registry_value, :type => :string, :data => test_registry_data })).to eq(true)
+        expect(dsc_test_resource.registry_value_exists?(test_registry_key, { name: test_registry_value, type: :string, data: test_registry_data })).to eq(true)
       end
     end
   end

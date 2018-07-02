@@ -23,7 +23,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
   include Chef::Mixin::ShellOut
 
   when_the_chef_server "is bound to IPv6" do
-    let(:chef_zero_opts) { { :host => "::1" } }
+    let(:chef_zero_opts) { { host: "::1" } }
 
     let(:client_key) do
       <<-END_VALIDATION_PEM
@@ -89,7 +89,7 @@ END_CLIENT_RB
         end
 
         it "successfully uploads a cookbook" do
-          shell_out!("#{knife} cookbook upload apache2 #{knife_config_flag}", :cwd => chef_dir)
+          shell_out!("#{knife} cookbook upload apache2 #{knife_config_flag}", cwd: chef_dir)
           versions_list_json = Chef::HTTP::Simple.new("http://[::1]:8900").get("/cookbooks/apache2", "accept" => "application/json")
           versions_list = Chef::JSONCompat.from_json(versions_list_json)
           expect(versions_list["apache2"]["versions"]).not_to be_empty
@@ -97,11 +97,11 @@ END_CLIENT_RB
 
         context "and the cookbook has been uploaded to the server" do
           before do
-            shell_out!("#{knife} cookbook upload apache2 #{knife_config_flag}", :cwd => chef_dir)
+            shell_out!("#{knife} cookbook upload apache2 #{knife_config_flag}", cwd: chef_dir)
           end
 
           it "downloads the cookbook" do
-            shell_out!("knife cookbook download apache2 #{knife_config_flag} -d #{cache_path}", :cwd => chef_dir)
+            shell_out!("knife cookbook download apache2 #{knife_config_flag} -d #{cache_path}", cwd: chef_dir)
             expect(Dir["#{cache_path}/*"].map { |entry| File.basename(entry) }).to include("apache2-0.0.1")
           end
         end

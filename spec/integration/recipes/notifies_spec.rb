@@ -32,7 +32,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # our delayed notification should run at the end of the parent run_context after the baz resource
       expect(result.stdout).to match(/\* apt_update\[\] action nothing \(skipped due to action :nothing\)\s+\* log\[foo\] action write\s+\* log\[bar\] action write\s+\* apt_update\[\] action nothing \(skipped due to action :nothing\)/)
       result.error!
@@ -73,7 +73,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # our delayed notification should run at the end of the parent run_context after the baz resource
       expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[baz\] action write\s+\* log\[foo\] action write/)
       result.error!
@@ -116,7 +116,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # our delayed notification should run at the end of the parent run_context after the baz resource
       expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[baz\] action write\s+\* log\[foo\] action write/)
       # and only run once
@@ -163,7 +163,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # the delayed notification from the sub-resource is de-duplicated by the notification already in the parent run_context
       expect(result.stdout).to match(/\* log\[quux\] action write\s+\* notifying_test\[whatever\] action run\s+\* log\[bar\] action write\s+\* log\[baz\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
       # and only run once
@@ -197,7 +197,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # the delayed notification from the sub-resource is de-duplicated by the notification already in the parent run_context
       expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[baz\] action write\s+\* log\[foo\] action write/)
       # and only run once
@@ -240,7 +240,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
       result.error!
     end
@@ -280,7 +280,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
       result.error!
     end
@@ -317,7 +317,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match(/Chef::Exceptions::ResourceNotFound/)
       expect(result.exitstatus).not_to eql(0)
     end
@@ -357,7 +357,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).not_to match(/CHEF-3694/)
       result.error!
     end
@@ -385,7 +385,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match /\* log\[a, b\] action write/
       result.error!
     end

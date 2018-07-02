@@ -30,20 +30,20 @@ class Chef
       category "cookbook site"
 
       option :file,
-        :short => "-f FILE",
-        :long => "--file FILE",
-        :description => "The filename to write to"
+        short: "-f FILE",
+        long: "--file FILE",
+        description: "The filename to write to"
 
       option :force,
-        :long => "--force",
-        :description => "Force download deprecated version"
+        long: "--force",
+        description: "Force download deprecated version"
 
       option :supermarket_site,
-        :short => "-m SUPERMARKET_SITE",
-        :long => "--supermarket-site SUPERMARKET_SITE",
-        :description => "Supermarket Site",
-        :default => "https://supermarket.chef.io",
-        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+        short: "-m SUPERMARKET_SITE",
+        long: "--supermarket-site SUPERMARKET_SITE",
+        description: "Supermarket Site",
+        default: "https://supermarket.chef.io",
+        proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 
       def run
         if current_cookbook_deprecated?

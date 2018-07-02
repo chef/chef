@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Resource::File::Verification::SystemdUnit do
   let(:command) { "#{systemd_analyze_path} verify %{path}" }
-  let(:opts) { { :future => true } }
+  let(:opts) { { future: true } }
   let(:parent_resource) { Chef::Resource.new("llama") }
   let(:systemd_analyze_path) { "/usr/bin/systemd-analyze" }
   let(:systemd_dir) { "/etc/systemd/system" }

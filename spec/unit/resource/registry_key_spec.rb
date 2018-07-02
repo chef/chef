@@ -72,7 +72,7 @@ describe Chef::Resource::RegistryKey, "key" do
   end
 
   it "does not allow a hash" do
-    expect { resource.send(:key, { :sonic => "screwdriver" }) }.to raise_error(ArgumentError)
+    expect { resource.send(:key, { sonic: "screwdriver" }) }.to raise_error(ArgumentError)
   end
 end
 
@@ -80,26 +80,26 @@ describe Chef::Resource::RegistryKey, "values" do
   let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
 
   it "allows a single proper hash of registry values" do
-    resource.values( { :name => "poosh", :type => :string, :data => "carmen" } )
-    expect(resource.values).to eql([ { :name => "poosh", :type => :string, :data => "carmen" } ])
+    resource.values( { name: "poosh", type: :string, data: "carmen" } )
+    expect(resource.values).to eql([ { name: "poosh", type: :string, data: "carmen" } ])
   end
 
   it "allows an array of proper hashes of registry values" do
-    resource.values [ { :name => "poosh", :type => :string, :data => "carmen" } ]
-    expect(resource.values).to eql([ { :name => "poosh", :type => :string, :data => "carmen" } ])
+    resource.values [ { name: "poosh", type: :string, data: "carmen" } ]
+    expect(resource.values).to eql([ { name: "poosh", type: :string, data: "carmen" } ])
   end
 
   it "returns checksummed data if the type is unsafe" do
-    resource.values( { :name => "poosh", :type => :binary, :data => 255.chr * 1 })
-    expect(resource.values).to eql([ { :name => "poosh", :type => :binary, :data => "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89" } ])
+    resource.values( { name: "poosh", type: :binary, data: 255.chr * 1 })
+    expect(resource.values).to eql([ { name: "poosh", type: :binary, data: "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89" } ])
   end
 
   it "raises an exception if the name field is missing" do
-    expect { resource.values [ { :type => :string, :data => "carmen" } ] }.to raise_error(ArgumentError)
+    expect { resource.values [ { type: :string, data: "carmen" } ] }.to raise_error(ArgumentError)
   end
 
   it "raises an exception if extra fields are present" do
-    expect { resource.values [ { :name => "poosh", :type => :string, :data => "carmen", :screwdriver => "sonic" } ] }.to raise_error(ArgumentError)
+    expect { resource.values [ { name: "poosh", type: :string, data: "carmen", screwdriver: "sonic" } ] }.to raise_error(ArgumentError)
   end
 
   it "does not allow a string" do
@@ -111,26 +111,26 @@ describe Chef::Resource::RegistryKey, "values" do
   end
 
   it "raises an exception if type of name is not string" do
-    expect { resource.values([ { :name => 123, :type => :string, :data => "carmen" } ]) }.to raise_error(ArgumentError)
+    expect { resource.values([ { name: 123, type: :string, data: "carmen" } ]) }.to raise_error(ArgumentError)
   end
 
   it "does not raise an exception if type of name is string" do
-    expect { resource.values([ { :name => "123", :type => :string, :data => "carmen" } ]) }.to_not raise_error
+    expect { resource.values([ { name: "123", type: :string, data: "carmen" } ]) }.to_not raise_error
   end
 
   context "type key not given" do
     it "does not raise an exception" do
-      expect { resource.values([ { :name => "123", :data => "carmen" } ]) }.to_not raise_error
+      expect { resource.values([ { name: "123", data: "carmen" } ]) }.to_not raise_error
     end
   end
 
   context "type key given" do
     it "raises an exception if type of type is not symbol" do
-      expect { resource.values([ { :name => "123", :type => "string", :data => "carmen" } ]) }.to raise_error(ArgumentError)
+      expect { resource.values([ { name: "123", type: "string", data: "carmen" } ]) }.to raise_error(ArgumentError)
     end
 
     it "does not raise an exception if type of type is symbol" do
-      expect { resource.values([ { :name => "123", :type => :string, :data => "carmen" } ]) }.to_not raise_error
+      expect { resource.values([ { name: "123", type: :string, data: "carmen" } ]) }.to_not raise_error
     end
   end
 end
@@ -144,7 +144,7 @@ describe Chef::Resource::RegistryKey, "recursive" do
   end
 
   it "does not allow a hash" do
-    expect { resource.recursive({ :sonic => :screwdriver }) }.to raise_error(ArgumentError)
+    expect { resource.recursive({ sonic: :screwdriver }) }.to raise_error(ArgumentError)
   end
 
   it "does not allow an array" do
@@ -175,7 +175,7 @@ describe Chef::Resource::RegistryKey, "architecture" do
   end
 
   it "does not allow a hash" do
-    expect { resource.architecture({ :sonic => :screwdriver }) }.to raise_error(ArgumentError)
+    expect { resource.architecture({ sonic: :screwdriver }) }.to raise_error(ArgumentError)
   end
 
   it "does not allow an array" do
@@ -195,7 +195,7 @@ describe Chef::Resource::RegistryKey, ":unscrubbed_values" do
   let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
 
   it "returns unsafe data as-is" do
-    key_values = [ { :name => "poosh", :type => :binary, :data => 255.chr * 1 } ]
+    key_values = [ { name: "poosh", type: :binary, data: 255.chr * 1 } ]
     resource.values(key_values)
     expect(resource.unscrubbed_values).to eql(key_values)
   end
@@ -205,7 +205,7 @@ describe Chef::Resource::RegistryKey, "state" do
   let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
 
   it "returns scrubbed values" do
-    resource.values([ { :name => "poosh", :type => :binary, :data => 255.chr * 1 } ])
-    expect(resource.state_for_resource_reporter[:values]).to eql( [{ :name => "poosh", :type => :binary, :data => "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89" }] )
+    resource.values([ { name: "poosh", type: :binary, data: 255.chr * 1 } ])
+    expect(resource.state_for_resource_reporter[:values]).to eql( [{ name: "poosh", type: :binary, data: "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89" }] )
   end
 end

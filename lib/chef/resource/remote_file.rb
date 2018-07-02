@@ -48,8 +48,8 @@ class Chef
         arg = parse_source_args(args)
         ret = set_or_return(:source,
                             arg,
-                            { :callbacks => {
-                                :validate_source => method(:validate_source),
+                            { callbacks: {
+                                validate_source: method(:validate_source),
                               } })
         if ret.is_a? String
           Array(ret)

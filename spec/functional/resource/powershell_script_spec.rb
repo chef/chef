@@ -474,13 +474,13 @@ configuration LCM
 
       it "evaluates a not_if block using the cwd guard parameter" do
         custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
-        resource.not_if "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", :cwd => custom_cwd
+        resource.not_if "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", cwd: custom_cwd
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates an only_if block using the cwd guard parameter" do
         custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
-        resource.only_if "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", :cwd => custom_cwd
+        resource.only_if "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", cwd: custom_cwd
         expect(resource.should_skip?(:run)).to be_falsey
       end
 
@@ -581,7 +581,7 @@ configuration LCM
       end
 
       it "raises an error when a 32-bit guard is used on Windows Nano Server", :windows_nano_only do
-        resource.only_if "$true", :architecture => :i386
+        resource.only_if "$true", architecture: :i386
         expect { resource.run_action(:run) }.to raise_error(
           Chef::Exceptions::Win32ArchitectureIncorrect,
           /cannot execute script with requested architecture 'i386' on Windows Nano Server/)

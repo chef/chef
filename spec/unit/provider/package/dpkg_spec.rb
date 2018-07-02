@@ -31,7 +31,7 @@ describe Chef::Provider::Package::Dpkg do
   let(:provider) { Chef::Provider::Package::Dpkg.new(new_resource, run_context) }
 
   let(:dpkg_deb_version) { "1.11.4" }
-  let(:dpkg_deb_status) { status = double(:stdout => "#{package}\t#{dpkg_deb_version}", :exitstatus => 0) }
+  let(:dpkg_deb_status) { status = double(stdout: "#{package}\t#{dpkg_deb_version}", exitstatus: 0) }
   let(:dpkg_s_version) { "1.11.4-1ubuntu1" }
   let(:dpkg_s_status) do
     stdout = <<-DPKG_S
@@ -47,7 +47,7 @@ Config-Version: #{dpkg_s_version}
 Depends: libc6 (>= 2.8~20080505), libssl0.9.8 (>= 0.9.8f-5)
 Conflicts: wget-ssl
     DPKG_S
-    status = double(:stdout => stdout, :exitstatus => 1)
+    status = double(stdout: stdout, exitstatus: 1)
   end
 
   before(:each) do
@@ -112,7 +112,7 @@ Conflicts: wget-ssl
 
     describe "gets the source package version from dpkg-deb" do
       def check_version(version)
-        status = double(:stdout => "wget\t#{version}", :exitstatus => 0)
+        status = double(stdout: "wget\t#{version}", exitstatus: 0)
         expect(provider).to receive(:shell_out_compacted!).with("dpkg-deb", "-W", source, timeout: 900).and_return(status)
         provider.load_current_resource
         expect(provider.current_resource.package_name).to eq(["wget"])
@@ -206,7 +206,7 @@ Section: ruby
     end
 
     it "should raise an exception if dpkg-deb -W fails to run" do
-      status = double(:stdout => "", :exitstatus => -1)
+      status = double(stdout: "", exitstatus: -1)
       expect(provider).to receive(:shell_out_compacted!).with("dpkg-deb", "-W", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb", timeout: 900).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       expect { provider.load_current_resource }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end

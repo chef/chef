@@ -40,7 +40,7 @@ class Chef
           end
 
           def write(contents)
-            desired_invites = minimize_value(Chef::JSONCompat.parse(contents, :create_additions => false))
+            desired_invites = minimize_value(Chef::JSONCompat.parse(contents, create_additions: false))
             actual_invites = _read_json.inject({}) { |h, val| h[val["username"]] = val["id"]; h }
             invites = actual_invites.keys
             (desired_invites - invites).each do |invite|

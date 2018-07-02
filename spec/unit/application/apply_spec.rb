@@ -37,7 +37,7 @@ describe Chef::Application::Apply do
     before do
       @recipe_file_name = "foo.rb"
       @recipe_path = File.expand_path(@recipe_file_name)
-      @recipe_file = double("Tempfile (mock)", :read => @recipe_text)
+      @recipe_file = double("Tempfile (mock)", read: @recipe_text)
       allow(@app).to receive(:open).with(@recipe_path).and_return(@recipe_file)
       allow(File).to receive(:exist?).with(@recipe_path).and_return(true)
       allow(Chef::Application).to receive(:fatal!).and_return(true)
@@ -96,7 +96,7 @@ describe Chef::Application::Apply do
   end
   describe "when the json_attribs configuration option is specified" do
     let(:json_attribs) { { "a" => "b" } }
-    let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
+    let(:config_fetcher) { double(Chef::ConfigFetcher, fetch_json: json_attribs) }
     let(:json_source) { "https://foo.com/foo.json" }
 
     before do

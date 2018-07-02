@@ -22,7 +22,7 @@ require "ostruct"
 describe Chef::Resource::Conditional do
   before do
     allow_any_instance_of(Mixlib::ShellOut).to receive(:run_command).and_return(nil)
-    @status = OpenStruct.new(:success? => true)
+    @status = OpenStruct.new(success?: true)
     allow_any_instance_of(Mixlib::ShellOut).to receive(:status).and_return(@status)
     @parent_resource = Chef::Resource.new("", Chef::Node.new)
   end

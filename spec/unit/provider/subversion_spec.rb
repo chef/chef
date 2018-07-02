@@ -46,7 +46,7 @@ describe Chef::Provider::Subversion do
   it "converts resource attributes to options for shell_out" do
     expect(@provider.run_options).to eq({})
     @resource.user "deployninja"
-    expect(@provider.run_options).to eq({ :user => "deployninja" })
+    expect(@provider.run_options).to eq({ user: "deployninja" })
   end
 
   context "determining the revision of the currently deployed code" do
@@ -73,18 +73,18 @@ describe Chef::Provider::Subversion do
         "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
         "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
       expect(::File).to receive(:exist?).at_least(1).times.with("/my/deploy/dir/.svn").and_return(true)
-      expected_command = ["svn info", { :cwd => "/my/deploy/dir", :returns => [0, 1] }]
+      expected_command = ["svn info", { cwd: "/my/deploy/dir", returns: [0, 1] }]
       expect(@provider).to receive(:shell_out!).with(*expected_command).
-        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
+        and_return(double("ShellOut result", stdout: example_svn_info, stderr: ""))
       expect(@provider.find_current_revision).to eql("11410")
     end
 
     it "gives nil as the current revision if the deploy dir isn't a SVN working copy" do
       example_svn_info = "svn: '/tmp/deploydir' is not a working copy\n"
       expect(::File).to receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
-      expected_command = ["svn info", { :cwd => "/my/deploy/dir", :returns => [0, 1] }]
+      expected_command = ["svn info", { cwd: "/my/deploy/dir", returns: [0, 1] }]
       expect(@provider).to receive(:shell_out!).with(*expected_command).
-        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
+        and_return(double("ShellOut result", stdout: example_svn_info, stderr: ""))
       expect(@provider.find_current_revision).to be_nil
     end
 
@@ -128,18 +128,18 @@ describe Chef::Provider::Subversion do
         "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
         "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
       @resource.revision "HEAD"
-      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", { :cwd => "/my/deploy/dir", :returns => [0, 1] }]
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", { cwd: "/my/deploy/dir", returns: [0, 1] }]
       expect(@provider).to receive(:shell_out!).with(*expected_command).
-        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
+        and_return(double("ShellOut result", stdout: example_svn_info, stderr: ""))
       expect(@provider.revision_int).to eql("11410")
     end
 
     it "returns a helpful message if data from `svn info` can't be parsed" do
       example_svn_info =  "some random text from an error message\n"
       @resource.revision "HEAD"
-      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", { :cwd => "/my/deploy/dir", :returns => [0, 1] }]
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", { cwd: "/my/deploy/dir", returns: [0, 1] }]
       expect(@provider).to receive(:shell_out!).with(*expected_command).
-        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
+        and_return(double("ShellOut result", stdout: example_svn_info, stderr: ""))
       expect { @provider.revision_int }.to raise_error(RuntimeError, "Could not parse `svn info` data: some random text from an error message\n")
 
     end

@@ -44,8 +44,8 @@ EOM
 
     def run_chef_client_and_expect_exit_code(exit_code)
       shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'",
-        :cwd => chef_dir,
-        :returns => [exit_code])
+        cwd: chef_dir,
+        returns: [exit_code])
     end
 
     context "has a cookbook" do

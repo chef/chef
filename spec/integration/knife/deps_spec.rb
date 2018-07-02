@@ -252,44 +252,44 @@ EOM
       when_the_repository "is empty" do
         it "knife deps /blah reports an error" do
           knife("deps /blah").should_fail(
-            :exit_code => 2,
-            :stdout => "/blah\n",
-            :stderr => "ERROR: /blah: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/blah\n",
+            stderr: "ERROR: /blah: No such file or directory\n"
           )
         end
         it "knife deps /roles/x.json reports an error" do
           knife("deps /roles/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/roles/x.json\n",
-            :stderr => "ERROR: /roles/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/roles/x.json\n",
+            stderr: "ERROR: /roles/x.json: No such file or directory\n"
           )
         end
         it "knife deps /nodes/x.json reports an error" do
           knife("deps /nodes/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/nodes/x.json\n",
-            :stderr => "ERROR: /nodes/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/nodes/x.json\n",
+            stderr: "ERROR: /nodes/x.json: No such file or directory\n"
           )
         end
         it "knife deps /environments/x.json reports an error" do
           knife("deps /environments/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/environments/x.json\n",
-            :stderr => "ERROR: /environments/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/environments/x.json\n",
+            stderr: "ERROR: /environments/x.json: No such file or directory\n"
           )
         end
         it "knife deps /cookbooks/x reports an error" do
           knife("deps /cookbooks/x").should_fail(
-            :exit_code => 2,
-            :stdout => "/cookbooks/x\n",
-            :stderr => "ERROR: /cookbooks/x: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/cookbooks/x\n",
+            stderr: "ERROR: /cookbooks/x: No such file or directory\n"
           )
         end
         it "knife deps /data_bags/bag/item.json reports an error" do
           knife("deps /data_bags/bag/item.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/data_bags/bag/item.json\n",
-            :stderr => "ERROR: /data_bags/bag/item.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/data_bags/bag/item.json\n",
+            stderr: "ERROR: /data_bags/bag/item.json: No such file or directory\n"
           )
         end
       end
@@ -299,9 +299,9 @@ EOM
         end
         it "knife deps reports the cookbook, along with an error" do
           knife("deps /roles/starring.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/cookbooks/quiche\n/roles/starring.json\n",
-            :stderr => "ERROR: /cookbooks/quiche: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/cookbooks/quiche\n/roles/starring.json\n",
+            stderr: "ERROR: /cookbooks/quiche: No such file or directory\n"
           )
         end
       end
@@ -311,9 +311,9 @@ EOM
         end
         it "knife deps reports the environment, along with an error" do
           knife("deps /nodes/mort.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/environments/desert.json\n/nodes/mort.json\n",
-            :stderr => "ERROR: /environments/desert.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/environments/desert.json\n/nodes/mort.json\n",
+            stderr: "ERROR: /environments/desert.json: No such file or directory\n"
           )
         end
       end
@@ -323,9 +323,9 @@ EOM
         end
         it "knife deps reports the role, along with an error" do
           knife("deps /roles/starring.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/roles/minor.json\n/roles/starring.json\n",
-            :stderr => "ERROR: /roles/minor.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/roles/minor.json\n/roles/starring.json\n",
+            stderr: "ERROR: /roles/minor.json: No such file or directory\n"
           )
         end
       end
@@ -337,9 +337,9 @@ EOM
         end
         it "knife deps /roles reports an error" do
           knife("deps /roles").should_fail(
-            :exit_code => 2,
-            :stderr => "ERROR: /roles: No such file or directory\n",
-            :stdout => "/roles\n"
+            exit_code: 2,
+            stderr: "ERROR: /roles: No such file or directory\n",
+            stdout: "/roles\n"
           )
         end
       end
@@ -590,44 +590,44 @@ EOM
       when_the_chef_server "is empty" do
         it "knife deps /blah reports an error" do
           knife("deps --remote /blah").should_fail(
-            :exit_code => 2,
-            :stdout => "/blah\n",
-            :stderr => "ERROR: /blah: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/blah\n",
+            stderr: "ERROR: /blah: No such file or directory\n"
           )
         end
         it "knife deps /roles/x.json reports an error" do
           knife("deps --remote /roles/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/roles/x.json\n",
-            :stderr => "ERROR: /roles/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/roles/x.json\n",
+            stderr: "ERROR: /roles/x.json: No such file or directory\n"
           )
         end
         it "knife deps /nodes/x.json reports an error" do
           knife("deps --remote /nodes/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/nodes/x.json\n",
-            :stderr => "ERROR: /nodes/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/nodes/x.json\n",
+            stderr: "ERROR: /nodes/x.json: No such file or directory\n"
           )
         end
         it "knife deps /environments/x.json reports an error" do
           knife("deps --remote /environments/x.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/environments/x.json\n",
-            :stderr => "ERROR: /environments/x.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/environments/x.json\n",
+            stderr: "ERROR: /environments/x.json: No such file or directory\n"
           )
         end
         it "knife deps /cookbooks/x reports an error" do
           knife("deps --remote /cookbooks/x").should_fail(
-            :exit_code => 2,
-            :stdout => "/cookbooks/x\n",
-            :stderr => "ERROR: /cookbooks/x: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/cookbooks/x\n",
+            stderr: "ERROR: /cookbooks/x: No such file or directory\n"
           )
         end
         it "knife deps /data_bags/bag/item reports an error" do
           knife("deps --remote /data_bags/bag/item.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/data_bags/bag/item.json\n",
-            :stderr => "ERROR: /data_bags/bag/item.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/data_bags/bag/item.json\n",
+            stderr: "ERROR: /data_bags/bag/item.json: No such file or directory\n"
           )
         end
       end
@@ -637,9 +637,9 @@ EOM
         end
         it "knife deps reports the cookbook, along with an error" do
           knife("deps --remote /roles/starring.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/cookbooks/quiche\n/roles/starring.json\n",
-            :stderr => "ERROR: /cookbooks/quiche: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/cookbooks/quiche\n/roles/starring.json\n",
+            stderr: "ERROR: /cookbooks/quiche: No such file or directory\n"
           )
         end
       end
@@ -649,9 +649,9 @@ EOM
         end
         it "knife deps reports the environment, along with an error" do
           knife("deps --remote /nodes/mort.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/environments/desert.json\n/nodes/mort.json\n",
-            :stderr => "ERROR: /environments/desert.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/environments/desert.json\n/nodes/mort.json\n",
+            stderr: "ERROR: /environments/desert.json: No such file or directory\n"
           )
         end
       end
@@ -661,9 +661,9 @@ EOM
         end
         it "knife deps reports the role, along with an error" do
           knife("deps --remote /roles/starring.json").should_fail(
-            :exit_code => 2,
-            :stdout => "/roles/minor.json\n/roles/starring.json\n",
-            :stderr => "ERROR: /roles/minor.json: No such file or directory\n"
+            exit_code: 2,
+            stdout: "/roles/minor.json\n/roles/starring.json\n",
+            stderr: "ERROR: /roles/minor.json: No such file or directory\n"
           )
         end
       end

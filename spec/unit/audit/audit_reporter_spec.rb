@@ -24,13 +24,13 @@ describe Chef::Audit::AuditReporter do
 
   let(:rest) { double("rest") }
   let(:reporter) { described_class.new(rest) }
-  let(:node) { double("node", :name => "sofreshsoclean") }
+  let(:node) { double("node", name: "sofreshsoclean") }
   let(:run_id) { 0 }
   let(:start_time) { Time.new(2014, 12, 3, 9, 31, 05, "-08:00") }
   let(:end_time) { Time.new(2014, 12, 3, 9, 36, 14, "-08:00") }
   let(:run_status) do
-    instance_double(Chef::RunStatus, :node => node, :run_id => run_id,
-                                     :start_time => start_time, :end_time => end_time) end
+    instance_double(Chef::RunStatus, node: node, run_id: run_id,
+                                     start_time: start_time, end_time: end_time) end
 
   describe "#audit_phase_start" do
 
@@ -87,9 +87,9 @@ describe Chef::Audit::AuditReporter do
       context "when audit phase failed" do
 
         let(:audit_error) do
-          double("AuditError", :class => "Chef::Exceptions::AuditError",
-                               :message => "Audit phase failed with error message: derpderpderp",
-                               :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) end
+          double("AuditError", class: "Chef::Exceptions::AuditError",
+                               message: "Audit phase failed with error message: derpderpderp",
+                               backtrace: ["/path/recipe.rb:57", "/path/library.rb:106"]) end
 
         before do
           reporter.instance_variable_set(:@audit_phase_error, audit_error)
@@ -123,7 +123,7 @@ EOM
 
         context "the error is an http error" do
 
-          let(:response) { double("response", :code => code) }
+          let(:response) { double("response", code: code) }
 
           before do
             expect(Chef::Log).to receive(:trace).with(/Sending audit report/)
@@ -236,14 +236,14 @@ EOM
     let(:run_data) { audit_data.to_hash }
 
     let(:audit_error) do
-      double("AuditError", :class => "Chef::Exceptions::AuditError",
-                           :message => "Audit phase failed with error message: derpderpderp",
-                           :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) end
+      double("AuditError", class: "Chef::Exceptions::AuditError",
+                           message: "Audit phase failed with error message: derpderpderp",
+                           backtrace: ["/path/recipe.rb:57", "/path/library.rb:106"]) end
 
     let(:run_error) do
-      double("RunError", :class => "Chef::Exceptions::RunError",
-                         :message => "This error shouldn't be reported.",
-                         :backtrace => ["fix it", "fix it", "fix it"]) end
+      double("RunError", class: "Chef::Exceptions::RunError",
+                         message: "This error shouldn't be reported.",
+                         backtrace: ["fix it", "fix it", "fix it"]) end
 
     before do
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
@@ -282,10 +282,10 @@ EOM
 
     let(:control_group_foo) do
       instance_double(Chef::Audit::ControlGroupData,
-      :metadata => double("foo metadata")) end
+      metadata: double("foo metadata")) end
     let(:control_group_bar) do
       instance_double(Chef::Audit::ControlGroupData,
-      :metadata => double("bar metadata")) end
+      metadata: double("bar metadata")) end
 
     let(:ordered_control_groups) do
       {
@@ -296,11 +296,11 @@ EOM
 
     let(:audit_data) do
       instance_double(Chef::Audit::AuditData,
-      :add_control_group => true) end
+      add_control_group: true) end
 
     let(:run_context) do
       instance_double(Chef::RunContext,
-      :audits => ordered_control_groups) end
+      audits: ordered_control_groups) end
 
     before do
       allow(reporter).to receive(:ordered_control_groups).and_return(ordered_control_groups)
@@ -350,7 +350,7 @@ EOM
     let(:name) { "bat" }
     let(:control_group) do
       instance_double(Chef::Audit::ControlGroupData,
-      :metadata => double("metadata")) end
+      metadata: double("metadata")) end
 
     before do
       allow(Chef::Audit::ControlGroupData).to receive(:new).
@@ -397,7 +397,7 @@ EOM
 
     let(:name) { "bar" }
     let(:example_data) { double("example data") }
-    let(:error) { double("Exception", :message => "oopsie") }
+    let(:error) { double("Exception", message: "oopsie") }
 
     it "notifies the control group the example failed" do
       expect(control_group_bar).to receive(:example_failure).

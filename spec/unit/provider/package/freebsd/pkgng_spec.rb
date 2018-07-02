@@ -63,7 +63,7 @@ describe Chef::Provider::Package::Freebsd::Port do
   describe "determining current installed version" do
     before(:each) do
       allow(@provider).to receive(:supports_pkgng?)
-      @pkg_info = OpenStruct.new(:stdout => "zsh-3.1.7\nVersion             : 3.1.7\n")
+      @pkg_info = OpenStruct.new(stdout: "zsh-3.1.7\nVersion             : 3.1.7\n")
     end
 
     it "should query pkg database" do
@@ -74,14 +74,14 @@ describe Chef::Provider::Package::Freebsd::Port do
 
   describe "determining candidate version" do
     it "should query repository" do
-      pkg_query = OpenStruct.new(:stdout => "5.0.5\n", :exitstatus => 0)
+      pkg_query = OpenStruct.new(stdout: "5.0.5\n", exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with("pkg", "rquery", "%v", "zsh", env: nil, timeout: 900).and_return(pkg_query)
       expect(@provider.candidate_version).to eq("5.0.5")
     end
 
     it "should query specified repository when given option" do
       @provider.new_resource.options("-r LocalMirror") # This requires LocalMirror repo configuration.
-      pkg_query = OpenStruct.new(:stdout => "5.0.3\n", :exitstatus => 0)
+      pkg_query = OpenStruct.new(stdout: "5.0.3\n", exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with("pkg", "rquery", "-r", "LocalMirror", "%v", "zsh", env: nil, timeout: 900).and_return(pkg_query)
       expect(@provider.candidate_version).to eq("5.0.3")
     end
@@ -94,7 +94,7 @@ describe Chef::Provider::Package::Freebsd::Port do
 
   describe "installing a binary package" do
     before(:each) do
-      @install_result = OpenStruct.new(:status => true)
+      @install_result = OpenStruct.new(status: true)
     end
 
     it "should handle package source from file" do
@@ -129,7 +129,7 @@ describe Chef::Provider::Package::Freebsd::Port do
 
   describe "removing a binary package" do
     before(:each) do
-      @install_result = OpenStruct.new(:status => true)
+      @install_result = OpenStruct.new(status: true)
     end
 
     it "should call pkg delete" do

@@ -31,11 +31,11 @@ end
 describe Chef::Provider::Service::Openbsd do
   let(:node) do
     node = Chef::Node.new
-    node.automatic_attrs[:command] = { :ps => "ps -ax" }
+    node.automatic_attrs[:command] = { ps: "ps -ax" }
     node
   end
 
-  let(:supports) { { :status => false } }
+  let(:supports) { { status: false } }
 
   let(:new_resource) do
     new_resource = Chef::Resource::Service.new("sndiod")
@@ -93,7 +93,7 @@ describe Chef::Provider::Service::Openbsd do
     end
 
     context "when a status command has been specified" do
-      let(:status) { double(:stdout => "", :exitstatus => 0) }
+      let(:status) { double(stdout: "", exitstatus: 0) }
 
       before do
         new_resource.status_command("/bin/chefhasmonkeypants status")
@@ -106,9 +106,9 @@ describe Chef::Provider::Service::Openbsd do
     end
 
     context "when the service supports status" do
-      let(:status) { double(:stdout => "", :exitstatus => 0) }
+      let(:status) { double(stdout: "", exitstatus: 0) }
 
-      let(:supports) { { :status => true } }
+      let(:supports) { { status: true } }
 
       it "should run '/etc/rc.d/service_name status'" do
         expect(provider).to receive(:shell_out).with("/etc/rc.d/#{new_resource.service_name} check").and_return(status)

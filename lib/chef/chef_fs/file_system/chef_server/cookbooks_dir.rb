@@ -74,7 +74,7 @@ class Chef
           def upload_cookbook(other, options)
             cookbook_to_upload = other.chef_object
             cookbook_to_upload.freeze_version if options[:freeze]
-            uploader = Chef::CookbookUploader.new(cookbook_to_upload, :force => options[:force], :rest => chef_rest)
+            uploader = Chef::CookbookUploader.new(cookbook_to_upload, force: options[:force], rest: chef_rest)
 
             with_actual_cookbooks_dir(other.parent.file_path) do
               uploader.upload_cookbooks

@@ -361,8 +361,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
     logger.trace "#{@new_resource.name} setting start_type to #{type}"
     Win32::Service.configure(
-      :service_name => @new_resource.service_name,
-      :start_type => startup_type
+      service_name: @new_resource.service_name,
+      start_type: startup_type
     )
     @new_resource.updated_by_last_action(true)
   end

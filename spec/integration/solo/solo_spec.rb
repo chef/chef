@@ -26,7 +26,7 @@ describe "chef-solo" do
       file "config/solo.rb", <<EOM
 chef_repo_path "#{@repository_dir}"
 EOM
-      result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -l debug", :cwd => chef_dir)
+      result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -l debug", cwd: chef_dir)
       result.error!
     end
 
@@ -78,7 +78,7 @@ EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
       result.error!
       expect(result.stdout).to include("ITWORKS")
     end
@@ -93,7 +93,7 @@ EOM
 {"run_list":["x::default"]}
 E
 
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -j '#{path_to('config/node.json')}' -l debug", :cwd => chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -j '#{path_to('config/node.json')}' -l debug", cwd: chef_dir)
       result.error!
       expect(result.stdout).to include("ITWORKS")
     end
@@ -114,7 +114,7 @@ E
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
       expect(result.exitstatus).to eq(0) # For CHEF-5120 this becomes 1
       expect(result.stdout).to include("WARN: MissingCookbookDependency")
     end
@@ -131,7 +131,7 @@ EOM
     end
 
     it "should exit with an error" do
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
       expect(result.exitstatus).to eq(1)
       expect(result.stdout).to include("Chef::Exceptions::CookbookChefVersionMismatch")
     end
@@ -148,7 +148,7 @@ EOM
     end
 
     it "should exit with an error" do
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
       expect(result.exitstatus).to eq(1)
       expect(result.stdout).to include("Chef::Exceptions::CookbookOhaiVersionMismatch")
     end
@@ -187,13 +187,13 @@ EOM
 
           # Instantiate the first chef-solo run
           threads << Thread.new do
-            s1 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+            s1 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", chdir: chef_dir)
             Process.waitpid(s1)
           end
 
           # Instantiate the second chef-solo run
           threads << Thread.new do
-            s2 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+            s2 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", chdir: chef_dir)
             Process.waitpid(s2)
           end
 

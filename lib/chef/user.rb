@@ -49,32 +49,32 @@ class Chef
     end
 
     def chef_rest_v0
-      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0" })
+      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "0" })
     end
 
     def name(arg = nil)
       set_or_return(:name, arg,
-                    :regex => /^[a-z0-9\-_]+$/)
+                    regex: /^[a-z0-9\-_]+$/)
     end
 
     def admin(arg = nil)
       set_or_return(:admin,
-                    arg, :kind_of => [TrueClass, FalseClass])
+                    arg, kind_of: [TrueClass, FalseClass])
     end
 
     def public_key(arg = nil)
       set_or_return(:public_key,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def private_key(arg = nil)
       set_or_return(:private_key,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def password(arg = nil)
       set_or_return(:password,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def to_hash
@@ -97,14 +97,14 @@ class Chef
     end
 
     def create
-      payload = { :name => name, :admin => admin, :password => password }
+      payload = { name: name, admin: admin, password: password }
       payload[:public_key] = public_key if public_key
       new_user = chef_rest_v0.post("users", payload)
       Chef::User.from_hash(to_hash.merge(new_user))
     end
 
     def update(new_key = false)
-      payload = { :name => name, :admin => admin }
+      payload = { name: name, admin: admin }
       payload[:private_key] = new_key if new_key
       payload[:password] = password if password
       updated_user = chef_rest_v0.put("users/#{name}", payload)
@@ -122,7 +122,7 @@ class Chef
     end
 
     def reregister
-      reregistered_self = chef_rest_v0.put("users/#{name}", { :name => name, :admin => admin, :private_key => true })
+      reregistered_self = chef_rest_v0.put("users/#{name}", { name: name, admin: admin, private_key: true })
       private_key(reregistered_self["private_key"])
       self
     end
@@ -153,7 +153,7 @@ class Chef
     end
 
     def self.list(inflate = false)
-      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0" }).get("users")
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "0" }).get("users")
       users = if response.is_a?(Array)
                 transform_ohc_list_response(response) # OHC/OPC
               else
@@ -170,7 +170,7 @@ class Chef
     end
 
     def self.load(name)
-      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0" }).get("users/#{name}")
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "0" }).get("users/#{name}")
       Chef::User.from_hash(response)
     end
 

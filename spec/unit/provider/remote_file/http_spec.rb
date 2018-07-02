@@ -292,7 +292,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       context "and the target file is a tarball [CHEF-3140]" do
 
         let(:uri) { URI.parse("http://opscode.com/tarball.tgz") }
-        let(:expected_http_opts) { { :disable_gzip => true } }
+        let(:expected_http_opts) { { disable_gzip: true } }
 
         # CHEF-3140
         # Some servers return tarballs as content type tar and encoding gzip, which

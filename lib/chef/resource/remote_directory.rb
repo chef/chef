@@ -63,7 +63,7 @@ class Chef
         set_or_return(
           :files_group,
           arg,
-          :regex => Chef::Config[:group_valid_regex]
+          regex: Chef::Config[:group_valid_regex]
         )
       end
 
@@ -71,7 +71,7 @@ class Chef
         set_or_return(
           :files_mode,
           arg,
-          :regex => /^\d{3,4}$/
+          regex: /^\d{3,4}$/
         )
       end
 
@@ -79,7 +79,7 @@ class Chef
         set_or_return(
           :files_owner,
           arg,
-          :regex => Chef::Config[:user_valid_regex]
+          regex: Chef::Config[:user_valid_regex]
         )
       end
     end

@@ -37,38 +37,38 @@ class Chef
       include Mixlib::CLI
 
       option :action,
-        :short => "-a ACTION",
-        :long  => "--action ACTION",
-        :default => "status",
-        :description => "Action to carry out on chef-service (install, uninstall, status, start, stop, pause, or resume)"
+        short: "-a ACTION",
+        long: "--action ACTION",
+        default: "status",
+        description: "Action to carry out on chef-service (install, uninstall, status, start, stop, pause, or resume)"
 
       option :config_file,
-        :short => "-c CONFIG",
-        :long  => "--config CONFIG",
-        :default => "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
-        :description => "The configuration file to use for chef runs"
+        short: "-c CONFIG",
+        long: "--config CONFIG",
+        default: "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
+        description: "The configuration file to use for chef runs"
 
       option :log_location,
-        :short        => "-L LOGLOCATION",
-        :long         => "--logfile LOGLOCATION",
-        :description  => "Set the log file location for chef-service"
+        short: "-L LOGLOCATION",
+        long: "--logfile LOGLOCATION",
+        description: "Set the log file location for chef-service"
 
       option :help,
-        :short        => "-h",
-        :long         => "--help",
-        :description  => "Show this message",
-        :on           => :tail,
-        :boolean      => true,
-        :show_options => true,
-        :exit         => 0
+        short: "-h",
+        long: "--help",
+        description: "Show this message",
+        on: :tail,
+        boolean: true,
+        show_options: true,
+        exit: 0
 
       option :version,
-        :short        => "-v",
-        :long         => "--version",
-        :description  => "Show chef version",
-        :boolean      => true,
-        :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
-        :exit         => 0
+        short: "-v",
+        long: "--version",
+        description: "Show chef version",
+        boolean: true,
+        proc: lambda { |v| puts "Chef: #{::Chef::VERSION}" },
+        exit: 0
 
       def initialize(service_options)
         # having to call super in initialize is the most annoying
@@ -114,22 +114,22 @@ class Chef
             cmd = "\"#{ruby}\" \"#{@service_file_path}\" #{opts}".gsub(File::SEPARATOR, File::ALT_SEPARATOR)
 
             ::Win32::Service.new(
-              :service_name       => @service_name,
-              :display_name       => @service_display_name,
-              :description        => @service_description,
+              service_name: @service_name,
+              display_name: @service_display_name,
+              description: @service_description,
               # Prior to 0.8.5, win32-service creates interactive services by default,
               # and we don't want that, so we need to override the service type.
-              :service_type       => ::Win32::Service::SERVICE_WIN32_OWN_PROCESS,
-              :start_type         => ::Win32::Service::SERVICE_AUTO_START,
-              :binary_path_name   => cmd,
-              :service_start_name => @service_start_name,
-              :password           => @password,
-              :dependencies       => @dependencies
+              service_type: ::Win32::Service::SERVICE_WIN32_OWN_PROCESS,
+              start_type: ::Win32::Service::SERVICE_AUTO_START,
+              binary_path_name: cmd,
+              service_start_name: @service_start_name,
+              password: @password,
+              dependencies: @dependencies
             )
             unless @delayed_start.nil?
               ::Win32::Service.configure(
-                :service_name     => @service_name,
-                :delayed_start    => @delayed_start
+                service_name: @service_name,
+                delayed_start: @delayed_start
               )
             end
             puts "Service '#{@service_name}' has successfully been installed."

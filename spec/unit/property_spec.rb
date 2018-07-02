@@ -1070,13 +1070,13 @@ describe "Chef::Resource.property" do
   end
 
   it "raises an error if both name_property and name_attribute are specified" do
-    expect { resource_class.property :x, :name_property => false, :name_attribute => 1 }.to raise_error ArgumentError,
+    expect { resource_class.property :x, name_property: false, name_attribute: 1 }.to raise_error ArgumentError,
       /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
-    expect { resource_class.property :x, :name_property => false, :name_attribute => nil }.to raise_error ArgumentError,
+    expect { resource_class.property :x, name_property: false, name_attribute: nil }.to raise_error ArgumentError,
       /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
-    expect { resource_class.property :x, :name_property => false, :name_attribute => false }.to raise_error ArgumentError,
+    expect { resource_class.property :x, name_property: false, name_attribute: false }.to raise_error ArgumentError,
       /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
-    expect { resource_class.property :x, :name_property => true, :name_attribute => true }.to raise_error ArgumentError,
+    expect { resource_class.property :x, name_property: true, name_attribute: true }.to raise_error ArgumentError,
       /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
   end
 

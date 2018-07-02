@@ -86,7 +86,7 @@ describe Chef::CookbookUploader do
 
     def expect_sandbox_create
       expect(http_client).to receive(:post).
-        with("sandboxes", { :checksums => checksums_set }).
+        with("sandboxes", { checksums: checksums_set }).
         and_return(sandbox_response)
     end
 
@@ -111,7 +111,7 @@ describe Chef::CookbookUploader do
     end
 
     def expect_sandbox_commit
-      expect(http_client).to receive(:put).with(sandbox_commit_uri, { :is_completed => true })
+      expect(http_client).to receive(:put).with(sandbox_commit_uri, { is_completed: true })
     end
 
     def expect_cookbook_create

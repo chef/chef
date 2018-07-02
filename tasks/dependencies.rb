@@ -37,7 +37,7 @@ namespace :dependencies do
 
   # Update all dependencies to the latest constraint-matching version
   desc "Update all dependencies. dependencies:update to update as little as possible (CI-only)."
-  task :update_ci => %w{
+  task update_ci: %w{
                     dependencies:update_gemfile_lock
                     dependencies:update_omnibus_gemfile_lock
                     dependencies:update_audit_tests_berksfile_lock
@@ -87,6 +87,6 @@ namespace :dependencies do
 end
 
 desc "Update all dependencies and check for outdated gems."
-task :dependencies_ci => [ "dependencies:update_ci" ]
-task :dependencies => [ "dependencies:update" ]
-task :update => [ "dependencies:update" ]
+task dependencies_ci: [ "dependencies:update_ci" ]
+task dependencies: [ "dependencies:update" ]
+task update: [ "dependencies:update" ]

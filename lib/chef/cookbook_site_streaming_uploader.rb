@@ -115,10 +115,10 @@ class Chef
         content_file.rewind if content_file # we consumed the file for the above operation, so rewind it.
 
         signing_options = {
-          :http_method => http_verb,
-          :path => url.path,
-          :user_id => user_id,
-          :timestamp => timestamp }
+          http_method: http_verb,
+          path: url.path,
+          user_id: user_id,
+          timestamp: timestamp }
         (content_file && signing_options[:file] = content_file) || (signing_options[:body] = (content_body || ""))
 
         headers.merge!(Mixlib::Authentication::SignedHeaderAuth.signing_object(signing_options).sign(secret_key))

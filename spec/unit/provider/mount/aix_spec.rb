@@ -61,7 +61,7 @@ WRONG
     @new_resource.device_type :device
     @new_resource.fstype      "jfs2"
 
-    @new_resource.supports :remount => false
+    @new_resource.supports remount: false
 
     @provider = Chef::Provider::Mount::Aix.new(@new_resource, @run_context)
 
@@ -70,12 +70,12 @@ WRONG
   end
 
   def stub_mounted(provider, mounted_output)
-    response = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => mounted_output, :stderr => "")
+    response = double("Mixlib::ShellOut command", exitstatus: 0, stdout: mounted_output, stderr: "")
     expect(provider).to receive(:shell_out!).with("mount").and_return(response)
   end
 
   def stub_enabled(provider, enabled_output)
-    response = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => enabled_output, :stderr => "")
+    response = double("Mixlib::ShellOut command", exitstatus: 0, stdout: enabled_output, stderr: "")
     expect(provider).to receive(:shell_out).with("lsfs -c #{@new_resource.mount_point}").and_return(response)
   end
 
@@ -179,7 +179,7 @@ WRONG
 
   describe "remount_fs" do
     it "should remount resource if it is already mounted and it supports remounting" do
-      @new_resource.supports({ :remount => true })
+      @new_resource.supports({ remount: true })
       stub_mounted_enabled(@provider, @mounted_output, "")
 
       expect(@provider).to receive(:shell_out!).with("mount -o remount #{@new_resource.device} #{@new_resource.mount_point}")
@@ -188,7 +188,7 @@ WRONG
     end
 
     it "should remount with new mount options if it is already mounted and it supports remounting" do
-      @new_resource.supports({ :remount => true })
+      @new_resource.supports({ remount: true })
       @new_resource.options("nodev,rw")
       stub_mounted_enabled(@provider, @mounted_output, "")
 

@@ -50,7 +50,7 @@ class Chef
         host = request_params.delete(:host) || "localhost"
 
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(request_params)
-        signed = sign_obj.sign(key, use_ssh_agent: @use_ssh_agent).merge({ :host => host })
+        signed = sign_obj.sign(key, use_ssh_agent: @use_ssh_agent).merge({ host: host })
         signed.inject({}) { |memo, kv| memo["#{kv[0].to_s.upcase}"] = kv[1]; memo }
       end
 

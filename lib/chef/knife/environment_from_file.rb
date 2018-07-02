@@ -30,9 +30,9 @@ class Chef
       banner "knife environment from file FILE [FILE..] (options)"
 
       option :all,
-      :short => "-a",
-      :long  => "--all",
-      :description => "Upload all environments"
+      short: "-a",
+      long: "--all",
+      description: "Upload all environments"
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(Chef::Environment, ui)

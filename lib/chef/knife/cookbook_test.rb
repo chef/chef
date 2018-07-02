@@ -32,15 +32,15 @@ class Chef
       banner "knife cookbook test [COOKBOOKS...] (options)"
 
       option :cookbook_path,
-        :short => "-o PATH:PATH",
-        :long => "--cookbook-path PATH:PATH",
-        :description => "A colon-separated path to look for cookbooks in",
-        :proc => lambda { |o| o.split(":") }
+        short: "-o PATH:PATH",
+        long: "--cookbook-path PATH:PATH",
+        description: "A colon-separated path to look for cookbooks in",
+        proc: lambda { |o| o.split(":") }
 
       option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Test all cookbooks, rather than just a single cookbook"
+        short: "-a",
+        long: "--all",
+        description: "Test all cookbooks, rather than just a single cookbook"
 
       def run
         ui.warn("DEPRECATED: Please use ChefSpec or Cookstyle to syntax-check cookbooks.")

@@ -27,7 +27,7 @@ describe Chef::Knife::RoleRunListReplace do
 
     @knife = Chef::Knife::RoleRunListReplace.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = [ "will", "role[dude]", "role[person]" ]
     allow(@knife).to receive(:output).and_return(true)

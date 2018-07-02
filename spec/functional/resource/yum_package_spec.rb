@@ -21,7 +21,7 @@ require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
 exclude_test = !(%w{rhel fedora}.include?(ohai[:platform_family]) && !File.exist?("/usr/bin/dnf"))
-describe Chef::Resource::YumPackage, :requires_root, :external => exclude_test do
+describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   include Chef::Mixin::ShellOut
 
   # NOTE: every single test here either needs to explicitly call flush_cache or needs to explicitly

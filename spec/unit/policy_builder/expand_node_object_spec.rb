@@ -176,7 +176,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       let(:expansion) do
         recipe_list = Chef::RunList::VersionedRecipeList.new
         recipe_list.add_recipe("recipe[from_role::default", "1.0.2")
-        double("RunListExpansion", :recipes => recipe_list)
+        double("RunListExpansion", recipes: recipe_list)
       end
 
       let(:node) do
@@ -268,13 +268,13 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     let(:chef_http) { double("Chef::ServerAPI") }
 
     let(:cookbook_resolve_url) { "environments/#{node.chef_environment}/cookbook_versions" }
-    let(:cookbook_resolve_post_data) { { :run_list => ["first::default", "second::default"] } }
+    let(:cookbook_resolve_post_data) { { run_list: ["first::default", "second::default"] } }
 
     # cookbook_hash is just a hash, but since we're passing it between mock
     # objects, we get a little better test strictness by using a double (which
     # will have object equality rather than semantic equality #== semantics).
     let(:cookbook_hash) { double("cookbook hash") }
-    let(:expanded_cookbook_hash) { double("expanded cookbook hash", :each => nil) }
+    let(:expanded_cookbook_hash) { double("expanded cookbook hash", each: nil) }
 
     let(:cookbook_synchronizer) { double("CookbookSynchronizer") }
 

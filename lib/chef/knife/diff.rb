@@ -28,29 +28,29 @@ class Chef
       end
 
       option :recurse,
-        :long => "--[no-]recurse",
-        :boolean => true,
-        :default => true,
-        :description => "List directories recursively."
+        long: "--[no-]recurse",
+        boolean: true,
+        default: true,
+        description: "List directories recursively."
 
       option :name_only,
-        :long => "--name-only",
-        :boolean => true,
-        :description => "Only show names of modified files."
+        long: "--name-only",
+        boolean: true,
+        description: "Only show names of modified files."
 
       option :name_status,
-        :long => "--name-status",
-        :boolean => true,
-        :description => "Only show names and statuses of modified files: Added, Deleted, Modified, and Type Changed."
+        long: "--name-status",
+        boolean: true,
+        description: "Only show names and statuses of modified files: Added, Deleted, Modified, and Type Changed."
 
       option :diff_filter,
-        :long => "--diff-filter=[(A|D|M|T)...[*]]",
-        :description => "Select only files that are Added (A), Deleted (D), Modified (M), or have their type (i.e. regular file, directory) changed (T). Any combination of the filter characters (including none) can be used. When * (All-or-none) is added to the combination, all paths are selected if
+        long: "--diff-filter=[(A|D|M|T)...[*]]",
+        description: "Select only files that are Added (A), Deleted (D), Modified (M), or have their type (i.e. regular file, directory) changed (T). Any combination of the filter characters (including none) can be used. When * (All-or-none) is added to the combination, all paths are selected if
            there is any file that matches other criteria in the comparison; if there is no file that matches other criteria, nothing is selected."
 
       option :cookbook_version,
-        :long => "--cookbook-version VERSION",
-        :description => "Version of cookbook to download (if there are multiple versions and cookbook_versions is false)"
+        long: "--cookbook-version VERSION",
+        description: "Version of cookbook to download (if there are multiple versions and cookbook_versions is false)"
 
       def run
         if config[:name_only]

@@ -32,25 +32,25 @@ class Chef
       end
 
       option :file,
-        :short => "-f FILE",
-        :long  => "--file FILE",
-        :description => "Write the private key to a file"
+        short: "-f FILE",
+        long: "--file FILE",
+        description: "Write the private key to a file"
 
       option :admin,
-        :short => "-a",
-        :long  => "--admin",
-        :description => "Create the user as an admin",
-        :boolean => true
+        short: "-a",
+        long: "--admin",
+        description: "Create the user as an admin",
+        boolean: true
 
       option :user_password,
-        :short => "-p PASSWORD",
-        :long => "--password PASSWORD",
-        :description => "Password for newly created user",
-        :default => ""
+        short: "-p PASSWORD",
+        long: "--password PASSWORD",
+        description: "Password for newly created user",
+        default: ""
 
       option :user_key,
-        :long => "--user-key FILENAME",
-        :description => "Public key for newly created user. By default a key will be created for you."
+        long: "--user-key FILENAME",
+        description: "Public key for newly created user. By default a key will be created for you."
 
       banner "knife osc_user create USER (options)"
 

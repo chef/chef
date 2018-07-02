@@ -25,7 +25,7 @@ describe Chef::Knife::RoleEnvRunListAdd do
 #    Chef::Config[:env_name]  = "QA"
     @knife = Chef::Knife::RoleEnvRunListAdd.new
     @knife.config = {
-      :after => nil,
+      after: nil,
     }
     @knife.name_args = [ "will", "QA", "role[monkey]" ]
     allow(@knife).to receive(:output).and_return(true)

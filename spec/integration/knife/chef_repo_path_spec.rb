@@ -391,7 +391,7 @@ EOM
             file "cookbooks2/blah/metadata.rb", ""
           end
           it "knife list -Rfp cookbooks shows files in blah" do
-            knife("list --local -Rfp /cookbooks").should_succeed(<<EOM, :stderr => "WARN: Cookbook 'blah' is empty or entirely chefignored at #{Chef::Config.cookbook_path[0]}/blah\n")
+            knife("list --local -Rfp /cookbooks").should_succeed(<<EOM, stderr: "WARN: Cookbook 'blah' is empty or entirely chefignored at #{Chef::Config.cookbook_path[0]}/blah\n")
 /cookbooks/blah/
 /cookbooks/blah/metadata.rb
 /cookbooks/cookbook1/
@@ -408,7 +408,7 @@ EOM
             file "cookbooks2/blah/metadata.rb", ""
           end
           it "knife list -Rfp cookbooks shows files in the first cookbook and not the second" do
-            knife("list --local -Rfp /cookbooks").should_succeed(<<EOM, :stderr => "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.cookbook_path[0]}/blah and #{Chef::Config.cookbook_path[1]}/blah\n")
+            knife("list --local -Rfp /cookbooks").should_succeed(<<EOM, stderr: "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.cookbook_path[0]}/blah and #{Chef::Config.cookbook_path[1]}/blah\n")
 /cookbooks/blah/
 /cookbooks/blah/metadata.json
 /cookbooks/cookbook1/
@@ -442,7 +442,7 @@ EOM
             file "data_bags2/blah/item2.json", ""
           end
           it "knife list -Rfp data_bags shows only items in data_bags1" do
-            knife("list --local -Rfp /data_bags").should_succeed(<<EOM, :stderr => "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.data_bag_path[0]}/blah and #{Chef::Config.data_bag_path[1]}/blah\n")
+            knife("list --local -Rfp /data_bags").should_succeed(<<EOM, stderr: "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.data_bag_path[0]}/blah and #{Chef::Config.data_bag_path[1]}/blah\n")
 /data_bags/bag/
 /data_bags/bag/item.json
 /data_bags/bag2/

@@ -102,7 +102,7 @@ class Chef
         opts[:log_tag]     = new_resource.to_s
         if (logger.info? || live_stream?) && !sensitive?
           if run_context.events.formatter?
-            opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
+            opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, name: :execute)
           elsif stream_to_stdout?
             opts[:live_stream] = STDOUT
           end

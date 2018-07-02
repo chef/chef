@@ -71,36 +71,36 @@ class Chef
         end
 
         def dacl=(val)
-          Security.set_named_security_info(path, type, :dacl => val)
+          Security.set_named_security_info(path, type, dacl: val)
         end
 
         # You don't set dacl_inherits without also setting dacl,
         # because Windows gets angry and denies you access.  So
         # if you want to do that, you may as well do both at once.
         def set_dacl(dacl, dacl_inherits)
-          Security.set_named_security_info(path, type, :dacl => dacl, :dacl_inherits => dacl_inherits)
+          Security.set_named_security_info(path, type, dacl: dacl, dacl_inherits: dacl_inherits)
         end
 
         def group=(val)
-          Security.set_named_security_info(path, type, :group => val)
+          Security.set_named_security_info(path, type, group: val)
         end
 
         def owner=(val)
           # TODO to fix serious permissions problems, we may need to enable SeBackupPrivilege.  But we might need it (almost) everywhere else, too.
           Security.with_privileges("SeTakeOwnershipPrivilege", "SeRestorePrivilege") do
-            Security.set_named_security_info(path, type, :owner => val)
+            Security.set_named_security_info(path, type, owner: val)
           end
         end
 
         def sacl=(val)
           Security.with_privileges("SeSecurityPrivilege") do
-            Security.set_named_security_info(path, type, :sacl => val)
+            Security.set_named_security_info(path, type, sacl: val)
           end
         end
 
         def set_sacl(sacl, sacl_inherits)
           Security.with_privileges("SeSecurityPrivilege") do
-            Security.set_named_security_info(path, type, :sacl => sacl, :sacl_inherits => sacl_inherits)
+            Security.set_named_security_info(path, type, sacl: sacl, sacl_inherits: sacl_inherits)
           end
         end
       end

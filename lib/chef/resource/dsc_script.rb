@@ -54,7 +54,7 @@ class Chef
         set_or_return(
           :code,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -65,7 +65,7 @@ class Chef
         set_or_return(
           :configuration_name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -76,7 +76,7 @@ class Chef
         set_or_return(
           :command,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -87,7 +87,7 @@ class Chef
         set_or_return(
           :configuration_data,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -98,7 +98,7 @@ class Chef
         set_or_return(
           :configuration_data_script,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 

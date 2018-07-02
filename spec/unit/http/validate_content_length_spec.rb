@@ -44,7 +44,7 @@ describe Chef::HTTP::ValidateContentLength do
   end
 
   let(:response) do
-    m = double("HttpResponse", :body => response_body)
+    m = double("HttpResponse", body: response_body)
     allow(m).to receive(:[]) do |key|
       response_headers[key]
     end
@@ -67,7 +67,7 @@ describe Chef::HTTP::ValidateContentLength do
       data_length = streaming_length
       while data_length > 0
         chunk_size = data_length > 10 ? 10 : data_length
-        stream_handler.handle_chunk(double("Chunk", :bytesize => chunk_size))
+        stream_handler.handle_chunk(double("Chunk", bytesize: chunk_size))
         data_length -= chunk_size
       end
 

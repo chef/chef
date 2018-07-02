@@ -75,13 +75,13 @@ The following ports are currently installed:
   openssl @0.9.8k_0 (active)
 EOF
 
-      status = double(:stdout => stdout, :exitstatus => 0)
+      status = double(stdout: stdout, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).and_return(status)
       expect(@provider.current_installed_version).to eq("0.9.8k_0")
     end
 
     it "should return nil if a package is not currently installed" do
-      status = double(:stdout => "       \n", :exitstatus => 0)
+      status = double(stdout: "       \n", exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).and_return(status)
       expect(@provider.current_installed_version).to be_nil
     end
@@ -89,13 +89,13 @@ EOF
 
   describe "macports_candidate_version" do
     it "should return the latest available version of a given package" do
-      status = double(:stdout => "version: 4.2.7\n", :exitstatus => 0)
+      status = double(stdout: "version: 4.2.7\n", exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).and_return(status)
       expect(@provider.macports_candidate_version).to eq("4.2.7")
     end
 
     it "should return nil if there is no version for a given package" do
-      status = double(:stdout => "Error: port fadsfadsfads not found\n", :exitstatus => 0)
+      status = double(stdout: "Error: port fadsfadsfads not found\n", exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).and_return(status)
       expect(@provider.macports_candidate_version).to be_nil
     end

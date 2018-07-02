@@ -30,15 +30,15 @@ class Chef
       banner "knife cookbook metadata COOKBOOK (options)"
 
       option :cookbook_path,
-        :short => "-o PATH:PATH",
-        :long => "--cookbook-path PATH:PATH",
-        :description => "A colon-separated path to look for cookbooks in",
-        :proc => lambda { |o| o.split(":") }
+        short: "-o PATH:PATH",
+        long: "--cookbook-path PATH:PATH",
+        description: "A colon-separated path to look for cookbooks in",
+        proc: lambda { |o| o.split(":") }
 
       option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Generate metadata for all cookbooks, rather than just a single cookbook"
+        short: "-a",
+        long: "--all",
+        description: "Generate metadata for all cookbooks, rather than just a single cookbook"
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]

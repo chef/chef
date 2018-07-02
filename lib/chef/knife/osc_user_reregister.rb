@@ -35,9 +35,9 @@ class Chef
       banner "knife osc_user reregister USER (options)"
 
       option :file,
-        :short => "-f FILE",
-        :long  => "--file FILE",
-        :description => "Write the private key to a file"
+        short: "-f FILE",
+        long: "--file FILE",
+        description: "Write the private key to a file"
 
       def run
         @user_name = @name_args[0]

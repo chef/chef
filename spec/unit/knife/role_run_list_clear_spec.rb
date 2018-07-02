@@ -27,7 +27,7 @@ describe Chef::Knife::RoleRunListClear do
 
     @knife = Chef::Knife::RoleRunListClear.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = [ "will" ]
     allow(@knife).to receive(:output).and_return(true)

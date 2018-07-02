@@ -30,9 +30,9 @@ class Chef
       banner "knife environment create ENVIRONMENT (options)"
 
       option :description,
-        :short => "-d DESCRIPTION",
-        :long => "--description DESCRIPTION",
-        :description => "The environment description"
+        short: "-d DESCRIPTION",
+        long: "--description DESCRIPTION",
+        description: "The environment description"
 
       def run
         env_name = @name_args[0]

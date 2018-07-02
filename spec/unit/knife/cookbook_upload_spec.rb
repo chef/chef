@@ -36,7 +36,7 @@ describe Chef::Knife::CookbookUpload do
     cookbook_loader
   end
 
-  let(:cookbook_uploader) { double(:upload_cookbooks => nil) }
+  let(:cookbook_uploader) { double(upload_cookbooks: nil) }
 
   let(:output) { StringIO.new }
 
@@ -62,15 +62,15 @@ describe Chef::Knife::CookbookUpload do
       allow(cookbook_loader).to receive(:each).and_yield("test_cookbook", test_cookbook)
       allow(cookbook_loader).to receive(:cookbook_names).and_return(["test_cookbook"])
       expect(Chef::CookbookUploader).to receive(:new).
-        with( kind_of(Array), { :force => nil, :concurrency => 3 }).
-        and_return(double("Chef::CookbookUploader", :upload_cookbooks => true))
+        with( kind_of(Array), { force: nil, concurrency: 3 }).
+        and_return(double("Chef::CookbookUploader", upload_cookbooks: true))
       knife.run
     end
   end
 
   describe "run" do
     before(:each) do
-      allow(Chef::CookbookUploader).to receive_messages(:new => cookbook_uploader)
+      allow(Chef::CookbookUploader).to receive_messages(new: cookbook_uploader)
       allow(Chef::CookbookVersion).to receive(:list_all_versions).and_return({})
     end
 

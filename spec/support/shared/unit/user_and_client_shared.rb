@@ -27,7 +27,7 @@ shared_examples_for "user or client create" do
 
     it "creates a new object via the API with a public_key when it exists" do
       object.public_key "some_public_key"
-      expect(rest_v1).to receive(:post).with(url, payload.merge({ :public_key => "some_public_key" })).and_return({})
+      expect(rest_v1).to receive(:post).with(url, payload.merge({ public_key: "some_public_key" })).and_return({})
       object.create
     end
 
@@ -49,7 +49,7 @@ shared_examples_for "user or client create" do
       end
 
       it "creates a new object via the API with create_key" do
-        expect(rest_v1).to receive(:post).with(url, payload.merge({ :create_key => true })).and_return({})
+        expect(rest_v1).to receive(:post).with(url, payload.merge({ create_key: true })).and_return({})
         object.create
       end
     end
@@ -104,7 +104,7 @@ shared_examples_for "user or client create" do
 
       it "creates a new object via the API with a public_key when it exists" do
         object.public_key "some_public_key"
-        expect(rest_v0).to receive(:post).with(url, payload.merge({ :public_key => "some_public_key" })).and_return({})
+        expect(rest_v0).to receive(:post).with(url, payload.merge({ public_key: "some_public_key" })).and_return({})
         object.create
       end
 

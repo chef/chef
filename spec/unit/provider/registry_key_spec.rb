@@ -275,20 +275,20 @@ describe Chef::Provider::RegistryKey do
 
   context "when the key data is safe" do
     let(:keyname) { 'HKLM\Software\Opscode\Testing\Safe' }
-    let(:testval1) { { :name => "one", :type => :string, :data => "1" } }
-    let(:testval1_wrong_type) { { :name => "one", :type => :multi_string, :data => "1" } }
-    let(:testval1_wrong_data) { { :name => "one", :type => :string, :data => "2" } }
-    let(:testval2) { { :name => "two", :type => :string, :data => "2" } }
+    let(:testval1) { { name: "one", type: :string, data: "1" } }
+    let(:testval1_wrong_type) { { name: "one", type: :multi_string, data: "1" } }
+    let(:testval1_wrong_data) { { name: "one", type: :string, data: "2" } }
+    let(:testval2) { { name: "two", type: :string, data: "2" } }
 
     it_should_behave_like "a registry key"
   end
 
   context "when the key data is unsafe" do
     let(:keyname) { 'HKLM\Software\Opscode\Testing\Unsafe' }
-    let(:testval1) { { :name => "one", :type => :binary, :data => 255.chr * 1 } }
-    let(:testval1_wrong_type) { { :name => "one", :type => :string, :data => 255.chr * 1 } }
-    let(:testval1_wrong_data) { { :name => "one", :type => :binary, :data => 254.chr * 1 } }
-    let(:testval2) { { :name => "two", :type => :binary, :data => 0.chr * 1 } }
+    let(:testval1) { { name: "one", type: :binary, data: 255.chr * 1 } }
+    let(:testval1_wrong_type) { { name: "one", type: :string, data: 255.chr * 1 } }
+    let(:testval1_wrong_data) { { name: "one", type: :binary, data: 254.chr * 1 } }
+    let(:testval2) { { name: "two", type: :binary, data: 0.chr * 1 } }
 
     it_should_behave_like "a registry key"
   end
@@ -296,8 +296,8 @@ describe Chef::Provider::RegistryKey do
   describe "action_create" do
     context "when key exists and type matches" do
       let(:keyname) { 'hklm\\software\\opscode\\testing\\dword' }
-      let(:dword_passed_as_integer) { { :name => "one", :type => :dword, :data => 12345 } }
-      let(:testval1) { { :name => "one", :type => :dword, :data => "12345" } }
+      let(:dword_passed_as_integer) { { name: "one", type: :dword, data: 12345 } }
+      let(:testval1) { { name: "one", type: :dword, data: "12345" } }
       before do
         expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)
       end
@@ -321,33 +321,33 @@ describe Chef::Provider::RegistryKey, "key_missing?" do
   let(:provider) { Chef::Provider::RegistryKey.new(new_resource, run_context) }
 
   let(:all_keys_present_in_all_hash) do
-    [ { :name => "input1_value1", :type => :string, :data => "my_value1" },
-      { :name => "input1_value2", :type => :string, :data => "my_value2" },
+    [ { name: "input1_value1", type: :string, data: "my_value1" },
+      { name: "input1_value2", type: :string, data: "my_value2" },
     ]
   end
   let(:type_key_not_present_in_any_hash) do
-    [ { :name => "input2_value1", :data => "my_value1" },
-      { :name => "input2_value2", :data => "my_value2" },
+    [ { name: "input2_value1", data: "my_value1" },
+      { name: "input2_value2", data: "my_value2" },
     ]
   end
   let(:type_key_not_present_in_some_hash) do
-    [ { :name => "input3_value1", :data => "my_value1" },
-      { :name => "input3_value2", :type => :string, :data => "my_value2" },
+    [ { name: "input3_value1", data: "my_value1" },
+      { name: "input3_value2", type: :string, data: "my_value2" },
     ]
   end
   let(:data_key_not_present_in_any_hash) do
-    [ { :name => "input4_value1", :type => :string },
-      { :name => "input4_value2", :type => :string },
+    [ { name: "input4_value1", type: :string },
+      { name: "input4_value2", type: :string },
     ]
   end
   let(:data_key_not_present_in_some_hash) do
-    [ { :name => "input5_value1", :type => :string, :data => "my_value1" },
-      { :name => "input5_value2", :type => :string },
+    [ { name: "input5_value1", type: :string, data: "my_value1" },
+      { name: "input5_value2", type: :string },
     ]
   end
   let(:only_name_key_present_in_all_hash) do
-    [ { :name => "input6_value1" },
-      { :name => "input6_value2" },
+    [ { name: "input6_value1" },
+      { name: "input6_value2" },
     ]
   end
 

@@ -50,7 +50,7 @@ EOH
   end
 
   let(:lcm_status) do
-    double("LCM cmdlet status", :stderr => lcm_standard_error, :return_value => lcm_standard_output, :succeeded? => lcm_cmdlet_success)
+    double("LCM cmdlet status", stderr: lcm_standard_error, return_value: lcm_standard_output, succeeded?: lcm_cmdlet_success)
   end
 
   describe "test_configuration method invocation" do
@@ -192,7 +192,7 @@ EOH
     context "when invalid dsc script is given" do
       it "raises exception" do
         configuration_document = "invalid-config"
-        shellout_flags = { :cwd => nil, :environment => nil, :timeout => nil }
+        shellout_flags = { cwd: nil, environment: nil, timeout: nil }
         expect { lcm.send(:run_configuration_cmdlet, configuration_document, true, shellout_flags) }.to raise_error(Chef::Exceptions::PowershellCmdletException)
       end
     end

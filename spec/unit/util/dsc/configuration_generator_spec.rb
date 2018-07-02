@@ -76,7 +76,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
 
     context "when symbols are used as switches" do
       it "should merge the hash if there are no restricted switches" do
-        merged = conf_man.send(:get_merged_configuration_flags!, { :flag => "a" }, "hello")
+        merged = conf_man.send(:get_merged_configuration_flags!, { flag: "a" }, "hello")
         expect(merged).to include(:flag)
         expect(merged[:flag]).to eql("a")
         expect(merged).to include(:outputpath)
@@ -84,18 +84,18 @@ describe Chef::Util::DSC::ConfigurationGenerator do
 
       it "should raise an ArgumentError if you try to override outputpath" do
         expect do
-          conf_man.send(:get_merged_configuration_flags!, { :outputpath => "a" }, "hello")
+          conf_man.send(:get_merged_configuration_flags!, { outputpath: "a" }, "hello")
         end.to raise_error(ArgumentError)
       end
 
       it "should be case insensitive for switches that are not allowed" do
         expect do
-          conf_man.send(:get_merged_configuration_flags!, { :OutputPath => "a" }, "hello")
+          conf_man.send(:get_merged_configuration_flags!, { OutputPath: "a" }, "hello")
         end.to raise_error(ArgumentError)
       end
 
       it "should be case insensitive to switches that are allowed" do
-        merged = conf_man.send(:get_merged_configuration_flags!, { :FLAG => "a" }, "hello")
+        merged = conf_man.send(:get_merged_configuration_flags!, { FLAG: "a" }, "hello")
         expect(merged).to include(:flag)
       end
     end

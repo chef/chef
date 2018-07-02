@@ -255,7 +255,7 @@ EOM
           end
 
           it "knife download with no parameters reports an error" do
-            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", :stdout => /USAGE/
+            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", stdout: /USAGE/
           end
         end
       end
@@ -383,7 +383,7 @@ EOM
             cwd "data_bags"
           end
           it "knife download fails" do
-            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", :stdout => /USAGE/
+            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", stdout: /USAGE/
           end
           it "knife download --purge . downloads everything" do
             knife("download --purge .").should_succeed <<EOM
@@ -545,7 +545,7 @@ EOM
         end
 
         it "knife download refuses to change the role" do
-          knife("download /roles/x.json").should_succeed "", :stderr => "WARNING: /roles/x.rb cannot be updated (can't safely update ruby files).\n"
+          knife("download /roles/x.json").should_succeed "", stderr: "WARNING: /roles/x.rb cannot be updated (can't safely update ruby files).\n"
           knife("diff --name-status /roles/x.json").should_succeed "M\t/roles/x.rb\n"
         end
       end
@@ -566,7 +566,7 @@ WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error
                      (right here) ------^
 
 EOH
-          knife("download /environments/x.json").should_succeed "Updated /environments/x.json\n", :stderr => warning
+          knife("download /environments/x.json").should_succeed "Updated /environments/x.json\n", stderr: warning
           knife("diff --name-status /environments/x.json").should_succeed ""
         end
       end
@@ -779,7 +779,7 @@ EOM
             cwd "."
           end
           it "knife download with no parameters reports an error" do
-            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", :stdout => /USAGE/
+            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", stdout: /USAGE/
           end
         end
       end
@@ -898,7 +898,7 @@ EOM
             cwd "data_bags"
           end
           it "knife download fails" do
-            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", :stdout => /USAGE/
+            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", stdout: /USAGE/
           end
           it "knife download --purge . downloads everything" do
             knife("download --purge .").should_succeed <<EOM
@@ -1111,7 +1111,7 @@ EOM
     end
   end
 
-  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+  when_the_chef_server "is in Enterprise mode", osc_compat: false, single_org: false do
     before do
       user "foo", {}
       user "bar", {}

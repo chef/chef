@@ -22,7 +22,7 @@ require "tmpdir"
 require "shellwords"
 
 # Deploy relies heavily on symlinks, so it doesn't work on windows.
-describe Chef::Resource::Git, :requires_git => true do
+describe Chef::Resource::Git, requires_git: true do
   include Chef::Mixin::ShellOut
   let(:file_cache_path) { Dir.mktmpdir }
   # Some versions of git complains when the deploy directory is
@@ -75,7 +75,7 @@ E
   before(:each) do
     Chef::Log.level = :warn # silence git command live streams
     @old_file_cache_path = Chef::Config[:file_cache_path]
-    shell_out!("git clone \"#{git_bundle_repo}\" example", :cwd => origin_repo_dir)
+    shell_out!("git clone \"#{git_bundle_repo}\" example", cwd: origin_repo_dir)
     File.open("#{origin_repo}/.git/config", "a+") { |f| f.print(git_user_config) }
     Chef::Config[:file_cache_path] = file_cache_path
   end
@@ -127,10 +127,10 @@ E
 
     it "checks out the revision pointed to by the tag commit, not the tag commit itself" do
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", cwd: deploy_directory, returns: [0]).stdout.strip
       expect(head_rev).to eq(v1_commit)
       # also verify the tag commit itself is what we expect as an extra sanity check
-      rev = shell_out!("git rev-parse v1.0.0", :cwd => deploy_directory, :returns => [0]).stdout.strip
+      rev = shell_out!("git rev-parse v1.0.0", cwd: deploy_directory, returns: [0]).stdout.strip
       expect(rev).to eq(v1_tag)
     end
 
@@ -138,7 +138,7 @@ E
       # this used to fail because we didn't resolve the annotated tag
       # properly to the pointed to commit.
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", cwd: deploy_directory, returns: [0]).stdout.strip
       expect(head_rev).to eq(v1_commit)
 
       copy_git_resource.run_action(:sync)
@@ -164,14 +164,14 @@ E
     it "checks out the expected revision ed18" do
       basic_git_resource.revision rev_foo
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", cwd: deploy_directory, returns: [0]).stdout.strip
       expect(head_rev).to eq(rev_foo)
     end
 
     it "doesn't update if up-to-date" do
       basic_git_resource.revision rev_foo
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", cwd: deploy_directory, returns: [0]).stdout.strip
       expect(head_rev).to eq(rev_foo)
 
       copy_git_resource.revision rev_foo
@@ -182,7 +182,7 @@ E
     it "checks out the expected revision 972d" do
       basic_git_resource.revision rev_testing
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", cwd: deploy_directory, returns: [0]).stdout.strip
       expect(head_rev).to eq(rev_testing)
     end
   end
@@ -197,7 +197,7 @@ E
 
     it "checks out the expected revision" do
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", cwd: deploy_directory, returns: [0]).stdout.strip
       expect(head_rev).to eq(rev_head)
     end
   end
@@ -212,7 +212,7 @@ E
 
     it "checks out HEAD as the default revision" do
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", cwd: deploy_directory, returns: [0]).stdout.strip
       expect(head_rev).to eq(rev_head)
     end
   end
@@ -220,7 +220,7 @@ E
   context "when dealing with a repo with a degenerate tag named 'HEAD'" do
     before do
       shell_out!("git tag -m\"degenerate tag\" HEAD ed181b3419b6f489bedab282348162a110d6d3a1",
-                 :cwd => origin_repo)
+                 cwd: origin_repo)
     end
 
     let(:basic_git_resource) do
@@ -240,16 +240,16 @@ E
     it "checks out the (master) HEAD revision and ignores the tag" do
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!("git rev-parse HEAD",
-                            :cwd => deploy_directory,
-                            :returns => [0]).stdout.strip
+                            cwd: deploy_directory,
+                            returns: [0]).stdout.strip
       expect(head_rev).to eq(rev_head)
     end
 
     it "checks out the (master) HEAD revision when no revision is specified (ignores tag)" do
       git_resource_default_rev.run_action(:sync)
       head_rev = shell_out!("git rev-parse HEAD",
-                            :cwd => deploy_directory,
-                            :returns => [0]).stdout.strip
+                            cwd: deploy_directory,
+                            returns: [0]).stdout.strip
       expect(head_rev).to eq(rev_head)
     end
 

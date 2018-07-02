@@ -59,7 +59,7 @@ describe Chef::HTTP::Authenticator do
       end
 
       context "when api_version is set to something other than the default" do
-        let(:class_instance) { Chef::HTTP::Authenticator.new({ :api_version => "-10" }) }
+        let(:class_instance) { Chef::HTTP::Authenticator.new({ api_version: "-10" }) }
 
         it "merges the requested version of X-Ops-Server-API-Version into the headers" do
           expect(class_instance.handle_request(method, url, headers, data)[2]).

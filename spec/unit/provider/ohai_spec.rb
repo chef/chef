@@ -29,16 +29,16 @@ describe Chef::Provider::Ohai do
     @platform_version = "example-platform"
     Chef::Config[:node_name] = @fqdn
     mock_ohai = {
-      :fqdn => @fqdn,
-      :hostname => @hostname,
-      :platform => @platform,
-      :platform_version => @platform_version,
-      :data => {
-        :origdata => "somevalue",
+      fqdn: @fqdn,
+      hostname: @hostname,
+      platform: @platform,
+      platform_version: @platform_version,
+      data: {
+        origdata: "somevalue",
       },
-      :data2 => {
-        :origdata => "somevalue",
-        :newdata => "somevalue",
+      data2: {
+        origdata: "somevalue",
+        newdata: "somevalue",
       },
     }
     allow(mock_ohai).to receive(:all_plugins).and_return(true)

@@ -413,7 +413,7 @@ EOM
       end
 
       it "knife delete --both /environments/_default.json fails but still deletes the local copy" do
-        knife("delete --both /environments/_default.json").should_fail :stderr => "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n", :stdout => "Deleted /environments/_default.json\n"
+        knife("delete --both /environments/_default.json").should_fail stderr: "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n", stdout: "Deleted /environments/_default.json\n"
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed <<EOM
 /clients
@@ -600,7 +600,7 @@ EOM
       end
 
       it "knife delete --both /environments/_default.json fails" do
-        knife("delete --both /environments/_default.json").should_fail "", :stderr => "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n"
+        knife("delete --both /environments/_default.json").should_fail "", stderr: "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n"
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed nothing
       end
@@ -643,7 +643,7 @@ EOM
       context "and cwd is at the top level" do
         before { cwd "." }
         it "knife delete fails" do
-          knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", :stdout => /USAGE/
+          knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", stdout: /USAGE/
           knife("list -Rf /").should_succeed <<EOM
 clients
 clients/chef-validator.json
@@ -796,7 +796,7 @@ EOM
       end
 
       it "knife delete --both /environments/_default.json fails but still deletes the local copy" do
-        knife("delete --both /environments/_default.json").should_fail :stderr => "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n", :stdout => "Deleted /environments/_default.json\n"
+        knife("delete --both /environments/_default.json").should_fail stderr: "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n", stdout: "Deleted /environments/_default.json\n"
         knife("list -Rf /").should_succeed server_nothing
         knife("list -Rf --local /").should_succeed <<EOM
 /clients
@@ -856,7 +856,7 @@ EOM
       context "and cwd is at the top level" do
         before { cwd "." }
         it "knife delete fails" do
-          knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", :stdout => /USAGE/
+          knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", stdout: /USAGE/
           knife("list -Rf /").should_succeed <<EOM
 clients
 clients/chef-validator.json
@@ -962,7 +962,7 @@ EOM
     end
   end
 
-  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+  when_the_chef_server "is in Enterprise mode", osc_compat: false, single_org: false do
     before do
       organization "foo" do
         container "x", {}

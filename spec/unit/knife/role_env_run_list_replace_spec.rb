@@ -28,7 +28,7 @@ describe Chef::Knife::RoleEnvRunListReplace do
 
     @knife = Chef::Knife::RoleEnvRunListReplace.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = [ "will", "QA", "role[dude]", "role[person]" ]
     allow(@knife).to receive(:output).and_return(true)

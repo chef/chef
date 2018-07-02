@@ -69,7 +69,7 @@ EOM
     end
 
     it "the cookbook is not listed" do
-      knife("list --local -Rfp /").should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
+      knife("list --local -Rfp /").should_succeed(<<EOM, stderr: "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
 /cookbooks/
 EOM
     end
@@ -251,7 +251,7 @@ EOM
         end
 
         it "chefignores apply only to the winning cookbook" do
-          knife("list --local -Rfp /").should_succeed(<<EOM, :stderr => "WARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
+          knife("list --local -Rfp /").should_succeed(<<EOM, stderr: "WARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
 /cookbooks/
 /cookbooks/mycookbook/
 /cookbooks/mycookbook/x.json

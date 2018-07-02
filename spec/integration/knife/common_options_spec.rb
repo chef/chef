@@ -125,7 +125,7 @@ EOM
     context "when the default port (8889) is already bound" do
       before :each do
         begin
-          @server = ChefZero::Server.new(:host => "localhost", :port => 8889)
+          @server = ChefZero::Server.new(host: "localhost", port: 8889)
           @server.start_background
         rescue Errno::EADDRINUSE
           # OK.  Don't care who has it in use, as long as *someone* does.
@@ -144,7 +144,7 @@ EOM
     context "when port 9999 is already bound" do
       before :each do
         begin
-          @server = ChefZero::Server.new(:host => "localhost", :port => 9999)
+          @server = ChefZero::Server.new(host: "localhost", port: 9999)
           @server.start_background
         rescue Errno::EADDRINUSE
           # OK.  Don't care who has it in use, as long as *someone* does.

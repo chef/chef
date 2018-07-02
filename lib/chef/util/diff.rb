@@ -176,7 +176,7 @@ class Chef
       end
 
       def encode_diff_for_json(diff_str)
-        diff_str.encode!("UTF-8", :invalid => :replace, :undef => :replace, :replace => "?")
+        diff_str.encode!("UTF-8", invalid: :replace, undef: :replace, replace: "?")
       end
 
     end

@@ -38,11 +38,11 @@ describe Chef::ApiClient::Registration do
   let(:http_mock) { double("Chef::ServerAPI mock") }
 
   let(:expected_post_data) do
-    { :name => client_name, :admin => false, :public_key => generated_public_key.to_pem }
+    { name: client_name, admin: false, public_key: generated_public_key.to_pem }
   end
 
   let(:expected_put_data) do
-    { :name => client_name, :admin => false, :public_key => generated_public_key.to_pem }
+    { name: client_name, admin: false, public_key: generated_public_key.to_pem }
   end
 
   let(:server_v10_response) do
@@ -148,11 +148,11 @@ describe Chef::ApiClient::Registration do
     context "when local key generation is disabled" do
 
       let(:expected_post_data) do
-        { :name => client_name, :admin => false }
+        { name: client_name, admin: false }
       end
 
       let(:expected_put_data) do
-        { :name => client_name, :admin => false, :private_key => true }
+        { name: client_name, admin: false, private_key: true }
       end
 
       before do

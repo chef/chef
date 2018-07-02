@@ -68,8 +68,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management" do
-        allow(@new_resource).to receive(:supports).and_return({ :manage_home => false,
-                                                                :non_unique => false })
+        allow(@new_resource).to receive(:supports).and_return({ manage_home: false,
+                                                                non_unique: false })
         allow(@new_resource).to receive(attribute).and_return("hola")
         expect(provider.universal_options).to eql([option, "hola"])
       end
@@ -257,7 +257,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
   describe "when checking the lock" do
     # lazy initialize so we can modify stdout and stderr strings
     let(:passwd_s_status) do
-      double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => @stdout, :stderr => @stderr, :error! => nil)
+      double("Mixlib::ShellOut command", exitstatus: 0, stdout: @stdout, stderr: @stderr, error!: nil)
     end
 
     before(:each) do
@@ -273,7 +273,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     it "should return false if status begins with P" do
       expect(provider).to receive(:shell_out).
-        with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
+        with("passwd", "-S", @new_resource.username, { returns: [0, 1] }).
         and_return(passwd_s_status)
       expect(provider.check_lock).to eql(false)
     end
@@ -281,7 +281,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     it "should return false if status begins with N" do
       @stdout = "root N"
       expect(provider).to receive(:shell_out).
-        with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
+        with("passwd", "-S", @new_resource.username, { returns: [0, 1] }).
         and_return(passwd_s_status)
       expect(provider.check_lock).to eql(false)
     end
@@ -289,7 +289,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     it "should return true if status begins with L" do
       @stdout = "root L"
       expect(provider).to receive(:shell_out).
-        with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
+        with("passwd", "-S", @new_resource.username, { returns: [0, 1] }).
         and_return(passwd_s_status)
       expect(provider.check_lock).to eql(true)
     end
@@ -297,7 +297,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     it "should raise a ShellCommandFailed exception if passwd -S exits with something other than 0 or 1" do
       expect(passwd_s_status).to receive(:error!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       expect(provider).to receive(:shell_out).
-        with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
+        with("passwd", "-S", @new_resource.username, { returns: [0, 1] }).
         and_return(passwd_s_status)
       expect { provider.check_lock }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
@@ -306,16 +306,16 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       expect(passwd_s_status).to receive(:stdout).and_return("")
       expect(passwd_s_status).to receive(:stderr).and_return("")
       expect(provider).to receive(:shell_out).
-        with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
+        with("passwd", "-S", @new_resource.username, { returns: [0, 1] }).
         and_return(passwd_s_status)
       expect { provider.check_lock }.to raise_error(Chef::Exceptions::User)
     end
 
     context "when in why run mode" do
       before do
-        passwd_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "", :stderr => "passwd: user 'chef-test' does not exist\n")
+        passwd_status = double("Mixlib::ShellOut command", exitstatus: 0, stdout: "", stderr: "passwd: user 'chef-test' does not exist\n")
         expect(provider).to receive(:shell_out).
-          with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
+          with("passwd", "-S", @new_resource.username, { returns: [0, 1] }).
           and_return(passwd_status)
         # ubuntu returns 252 on user-does-not-exist so will raise if #error! is called or if
         # shell_out! is used

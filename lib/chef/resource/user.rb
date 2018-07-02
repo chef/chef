@@ -51,7 +51,7 @@ class Chef
         set_or_return(
           :username,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -59,7 +59,7 @@ class Chef
         set_or_return(
           :comment,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -67,8 +67,8 @@ class Chef
         set_or_return(
           :uid,
           arg,
-          :kind_of => [ String, Integer, NilClass ],
-          :coerce => proc { |x| x || nil }
+          kind_of: [ String, Integer, NilClass ],
+          coerce: proc { |x| x || nil }
         )
       end
 
@@ -76,8 +76,8 @@ class Chef
         set_or_return(
           :gid,
           arg,
-          :kind_of => [ String, Integer, NilClass ],
-          :coerce => proc { |x| x || nil }
+          kind_of: [ String, Integer, NilClass ],
+          coerce: proc { |x| x || nil }
         )
       end
 
@@ -87,7 +87,7 @@ class Chef
         set_or_return(
           :home,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -95,7 +95,7 @@ class Chef
         set_or_return(
           :shell,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -103,7 +103,7 @@ class Chef
         set_or_return(
           :password,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -111,7 +111,7 @@ class Chef
         set_or_return(
           :salt,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -119,7 +119,7 @@ class Chef
         set_or_return(
           :iterations,
           arg,
-          :kind_of => [ Integer ]
+          kind_of: [ Integer ]
         )
       end
 
@@ -127,7 +127,7 @@ class Chef
         set_or_return(
           :system,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -135,7 +135,7 @@ class Chef
         set_or_return(
           :manage_home,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -143,7 +143,7 @@ class Chef
         set_or_return(
           :force,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -151,7 +151,7 @@ class Chef
         set_or_return(
           :non_unique,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
     end

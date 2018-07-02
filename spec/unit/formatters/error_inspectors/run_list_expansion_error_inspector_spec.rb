@@ -57,7 +57,7 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
       allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
-      allow(@inspector).to receive(:config).and_return(:node_name => "unit-test.example.com")
+      allow(@inspector).to receive(:config).and_return(node_name: "unit-test.example.com")
 
       @inspector.add_explanation(@description)
     end
@@ -76,9 +76,9 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
       @exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
-      allow(@inspector).to receive(:config).and_return(:node_name => "unit-test.example.com",
-                                                       :client_key => "/etc/chef/client.pem",
-                                                       :chef_server_url => "http://chef.example.com")
+      allow(@inspector).to receive(:config).and_return(node_name: "unit-test.example.com",
+                                                       client_key: "/etc/chef/client.pem",
+                                                       chef_server_url: "http://chef.example.com")
 
       @inspector.add_explanation(@description)
     end

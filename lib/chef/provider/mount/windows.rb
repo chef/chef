@@ -61,10 +61,10 @@ class Chef
 
         def mount_fs
           unless @current_resource.mounted
-            @mount.add(:remote => @new_resource.device,
-                       :username => @new_resource.username,
-                       :domainname => @new_resource.domain,
-                       :password => @new_resource.password)
+            @mount.add(remote: @new_resource.device,
+                       username: @new_resource.username,
+                       domainname: @new_resource.domain,
+                       password: @new_resource.password)
             logger.trace("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
             logger.trace("#{@new_resource} is already mounted at #{@new_resource.mount_point}")

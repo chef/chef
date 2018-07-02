@@ -113,15 +113,15 @@ describe Chef::Resource::File do
 
   end
 
-  describe "when access controls are set on windows", :windows_only => true do
+  describe "when access controls are set on windows", windows_only: true do
     before do
       resource.rights :read, "Everyone"
       resource.rights :full_control, "DOMAIN\User"
     end
     it "describes its state including windows ACL attributes" do
       state = resource.state_for_resource_reporter
-      expect(state[:rights]).to eq([ { :permissions => :read, :principals => "Everyone" },
-                               { :permissions => :full_control, :principals => "DOMAIN\User" } ])
+      expect(state[:rights]).to eq([ { permissions: :read, principals: "Everyone" },
+                               { permissions: :full_control, principals: "DOMAIN\User" } ])
     end
   end
 end

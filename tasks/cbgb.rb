@@ -25,7 +25,7 @@ CBGB_TARGET = File.join(File.dirname(__FILE__), "..", "CBGB.md")
 begin
   require "tomlrb"
 
-  task :default => :generate
+  task default: :generate
 
   namespace :cbgb do
     desc "Generate MarkDown version of CBGB file"

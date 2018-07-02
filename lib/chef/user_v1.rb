@@ -55,61 +55,61 @@ class Chef
     end
 
     def chef_root_rest_v0
-      @chef_root_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { :api_version => "0" })
+      @chef_root_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { api_version: "0" })
     end
 
     def chef_root_rest_v1
-      @chef_root_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { :api_version => "1" })
+      @chef_root_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { api_version: "1" })
     end
 
     def username(arg = nil)
       set_or_return(:username, arg,
-                    :regex => /^[a-z0-9\-_]+$/)
+                    regex: /^[a-z0-9\-_]+$/)
     end
 
     def display_name(arg = nil)
       set_or_return(:display_name,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def first_name(arg = nil)
       set_or_return(:first_name,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def middle_name(arg = nil)
       set_or_return(:middle_name,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def last_name(arg = nil)
       set_or_return(:last_name,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def email(arg = nil)
       set_or_return(:email,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def create_key(arg = nil)
       set_or_return(:create_key, arg,
-                    :kind_of => [TrueClass, FalseClass])
+                    kind_of: [TrueClass, FalseClass])
     end
 
     def public_key(arg = nil)
       set_or_return(:public_key,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def private_key(arg = nil)
       set_or_return(:private_key,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def password(arg = nil)
       set_or_return(:password,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def to_hash
@@ -141,12 +141,12 @@ class Chef
       # try v1, fail back to v0 if v1 not supported
       begin
         payload = {
-          :username => @username,
-          :display_name => @display_name,
-          :first_name => @first_name,
-          :last_name => @last_name,
-          :email => @email,
-          :password => @password,
+          username: @username,
+          display_name: @display_name,
+          first_name: @first_name,
+          last_name: @last_name,
+          email: @email,
+          password: @password,
         }
         payload[:public_key] = @public_key unless @public_key.nil?
         payload[:create_key] = @create_key unless @create_key.nil?
@@ -167,12 +167,12 @@ class Chef
         supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
         raise e unless supported_versions && supported_versions.include?(0)
         payload = {
-          :username => @username,
-          :display_name => @display_name,
-          :first_name => @first_name,
-          :last_name => @last_name,
-          :email => @email,
-          :password => @password,
+          username: @username,
+          display_name: @display_name,
+          first_name: @first_name,
+          last_name: @last_name,
+          email: @email,
+          password: @password,
         }
         payload[:middle_name] = @middle_name unless @middle_name.nil?
         payload[:public_key] = @public_key unless @public_key.nil?
@@ -185,7 +185,7 @@ class Chef
 
     def update(new_key = false)
       begin
-        payload = { :username => username }
+        payload = { username: username }
         payload[:display_name] = display_name unless display_name.nil?
         payload[:first_name] = first_name unless first_name.nil?
         payload[:middle_name] = middle_name unless middle_name.nil?

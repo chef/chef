@@ -393,10 +393,10 @@ describe Chef::PolicyBuilder::Policyfile do
 
           let(:run_list_for_data_collector) do
             {
-              :id => "_policy_node",
-              :run_list => [
-               { :type => "recipe", :name => "test::default", :skipped => false, :version => nil },
-               { :type => "recipe", :name => "test::other", :skipped => false, :version => nil },
+              id: "_policy_node",
+              run_list: [
+               { type: "recipe", name: "test::default", skipped: false, version: nil },
+               { type: "recipe", name: "test::other", skipped: false, version: nil },
               ],
             }
           end

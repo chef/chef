@@ -31,24 +31,24 @@ class Chef
       banner "knife cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"
 
       option :fqdn,
-       :short => "-f FQDN",
-       :long => "--fqdn FQDN",
-       :description => "The FQDN of the host to see the file for"
+       short: "-f FQDN",
+       long: "--fqdn FQDN",
+       description: "The FQDN of the host to see the file for"
 
       option :platform,
-       :short => "-p PLATFORM",
-       :long => "--platform PLATFORM",
-       :description => "The platform to see the file for"
+       short: "-p PLATFORM",
+       long: "--platform PLATFORM",
+       description: "The platform to see the file for"
 
       option :platform_version,
-       :short => "-V VERSION",
-       :long => "--platform-version VERSION",
-       :description => "The platform version to see the file for"
+       short: "-V VERSION",
+       long: "--platform-version VERSION",
+       description: "The platform version to see the file for"
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+        short: "-w",
+        long: "--with-uri",
+        description: "Show corresponding URIs"
 
       def run
         cookbook_name, cookbook_version, segment, filename = @name_args

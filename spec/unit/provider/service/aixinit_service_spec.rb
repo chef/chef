@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Provider::Service::AixInit do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = { :ps => "fuuuu" }
+    @node.automatic_attrs[:command] = { ps: "fuuuu" }
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 

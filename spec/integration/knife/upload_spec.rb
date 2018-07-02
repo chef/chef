@@ -68,7 +68,7 @@ EOM
         end
 
         it "knife upload --purge deletes everything" do
-          knife("upload --purge /").should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
+          knife("upload --purge /").should_succeed(<<EOM, stderr: "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
 Deleted extra entry /clients/chef-validator.json (purge is on)
 Deleted extra entry /clients/chef-webui.json (purge is on)
 Deleted extra entry /clients/x.json (purge is on)
@@ -271,7 +271,7 @@ EOM
           end
 
           it "knife upload with no parameters reports an error" do
-            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", :stdout => /USAGE/
+            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", stdout: /USAGE/
           end
         end
       end
@@ -291,7 +291,7 @@ Created /data_bags/x/y.json
 EOM
           knife("diff --name-status /data_bags").should_succeed <<EOM
 EOM
-          expect(Chef::JSONCompat.parse(knife("raw /data/x/y").stdout, :create_additions => false).keys.sort).to eq(%w{foo id})
+          expect(Chef::JSONCompat.parse(knife("raw /data/x/y").stdout, create_additions: false).keys.sort).to eq(%w{foo id})
         end
 
         it "knife upload /data_bags/x /data_bags/x/y.json uploads x once" do
@@ -314,7 +314,7 @@ Created /data_bags/x
 Created /data_bags/x/y.json
 EOM
           knife("diff --name-status /data_bags").should_succeed ""
-          result = Chef::JSONCompat.parse(knife("raw /data/x/y").stdout, :create_additions => false)
+          result = Chef::JSONCompat.parse(knife("raw /data/x/y").stdout, create_additions: false)
           expect(result.keys.sort).to eq(%w{chef_type data_bag id})
           expect(result["chef_type"]).to eq("aaa")
           expect(result["data_bag"]).to eq("bbb")
@@ -419,7 +419,7 @@ EOM
           end
 
           it "knife upload fails" do
-            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", :stdout => /USAGE/
+            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", stdout: /USAGE/
           end
 
           it "knife upload --purge . uploads everything" do
@@ -525,7 +525,7 @@ EOM
 
     when_the_chef_server "has a frozen cookbook" do
       before do
-        cookbook "frozencook", "1.0.0", {}, :frozen => true
+        cookbook "frozencook", "1.0.0", {}, frozen: true
       end
 
       when_the_repository "has an update to said cookbook" do
@@ -652,7 +652,7 @@ WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error
 
           EOH
           knife("upload /environments/x.json").should_fail(error1)
-          knife("diff --name-status /environments/x.json").should_succeed("M\t/environments/x.json\n", :stderr => warn)
+          knife("diff --name-status /environments/x.json").should_succeed("M\t/environments/x.json\n", stderr: warn)
         end
       end
 
@@ -767,7 +767,7 @@ EOM
         end
 
         it "knife upload --purge deletes everything" do
-          knife("upload --purge /").should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
+          knife("upload --purge /").should_succeed(<<EOM, stderr: "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
 Deleted extra entry /clients/chef-validator.json (purge is on)
 Deleted extra entry /clients/chef-webui.json (purge is on)
 Deleted extra entry /clients/x.json (purge is on)
@@ -922,7 +922,7 @@ EOM
             cwd "."
           end
           it "knife upload with no parameters reports an error" do
-            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", :stdout => /USAGE/
+            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", stdout: /USAGE/
           end
         end
       end
@@ -1024,7 +1024,7 @@ EOM
             cwd "data_bags"
           end
           it "knife upload fails" do
-            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", :stdout => /USAGE/
+            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", stdout: /USAGE/
           end
           it "knife upload --purge . uploads everything" do
             knife("upload --purge .").should_succeed <<EOM
@@ -1274,7 +1274,7 @@ EOM
     end
   end
 
-  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+  when_the_chef_server "is in Enterprise mode", osc_compat: false, single_org: false do
     before do
       user "foo", {}
       user "bar", {}
@@ -1472,7 +1472,7 @@ EOM
           end
 
           it "knife upload / emits a warning for bar and invites foobar" do
-            knife("upload /").should_succeed "Updated /invitations.json\n", :stderr => "WARN: Could not invite bar to organization foo: User bar is already in organization foo\n"
+            knife("upload /").should_succeed "Updated /invitations.json\n", stderr: "WARN: Could not invite bar to organization foo: User bar is already in organization foo\n"
             expect(api.get("association_requests").map { |a| a["username"] }).to eq(%w{foo foobar})
             expect(api.get("users").map { |a| a["user"]["username"] }).to eq([ "bar" ])
           end

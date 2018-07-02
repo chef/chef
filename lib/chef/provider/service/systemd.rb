@@ -79,10 +79,10 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if new_resource.user
       uid = Etc.getpwnam(new_resource.user).uid
       options = {
-        :environment => {
+        environment: {
           "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{uid}/bus",
         },
-        :user => new_resource.user,
+        user: new_resource.user,
       }
       args = "--user"
     else

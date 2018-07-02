@@ -53,7 +53,7 @@ describe Chef::Knife::CookbookDownload do
 
       let(:manifest_data) do
         {
-          :all_files => [
+          all_files: [
             {
               "path" => "recipes/foo.rb",
               "name" => "recipes/foo.rb",

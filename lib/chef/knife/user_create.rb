@@ -32,31 +32,31 @@ class Chef
       end
 
       option :file,
-        :short => "-f FILE",
-        :long  => "--file FILE",
-        :description => "Write the private key to a file if the server generated one."
+        short: "-f FILE",
+        long: "--file FILE",
+        description: "Write the private key to a file if the server generated one."
 
       option :user_key,
-        :long => "--user-key FILENAME",
-        :description => "Set the initial default key for the user from a file on disk (cannot pass with --prevent-keygen)."
+        long: "--user-key FILENAME",
+        description: "Set the initial default key for the user from a file on disk (cannot pass with --prevent-keygen)."
 
       option :prevent_keygen,
-        :short => "-k",
-        :long  => "--prevent-keygen",
-        :description => "API V1 (Chef Server 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --user-key.",
-        :boolean => true
+        short: "-k",
+        long: "--prevent-keygen",
+        description: "API V1 (Chef Server 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --user-key.",
+        boolean: true
 
       option :admin,
-        :short => "-a",
-        :long  => "--admin",
-        :description => "DEPRECATED: Open Source Chef 11 only. Create the user as an admin.",
-        :boolean => true
+        short: "-a",
+        long: "--admin",
+        description: "DEPRECATED: Open Source Chef 11 only. Create the user as an admin.",
+        boolean: true
 
       option :user_password,
-        :short => "-p PASSWORD",
-        :long => "--password PASSWORD",
-        :description => "DEPRECATED: Open Source Chef 11 only. Password for newly created user.",
-        :default => ""
+        short: "-p PASSWORD",
+        long: "--password PASSWORD",
+        description: "DEPRECATED: Open Source Chef 11 only. Password for newly created user.",
+        default: ""
 
       banner "knife user create USERNAME DISPLAY_NAME FIRST_NAME LAST_NAME EMAIL PASSWORD (options)"
 

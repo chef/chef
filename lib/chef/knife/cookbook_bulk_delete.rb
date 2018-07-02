@@ -28,7 +28,7 @@ class Chef
         require "chef/cookbook_version"
       end
 
-      option :purge, :short => "-p", :long => "--purge", :boolean => true, :description => "Permanently remove files from backing data store"
+      option :purge, short: "-p", long: "--purge", boolean: true, description: "Permanently remove files from backing data store"
 
       banner "knife cookbook bulk delete REGEX (options)"
 

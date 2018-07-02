@@ -84,8 +84,8 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
 
       let(:target_file_security_descriptor) do
         double "security descriptor for target file",
-             :group => original_target_file_group,
-             :owner => original_target_file_owner
+             group: original_target_file_group,
+             owner: original_target_file_owner
       end
 
       let(:updated_target_security_descriptor) do
@@ -171,13 +171,13 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
       end
 
       context "and the target has a dacl and sacl" do
-        let(:inherited_dacl_ace) { double("Windows dacl ace (inherited)", :inherited? => true) }
-        let(:not_inherited_dacl_ace) { double("Windows dacl ace (not inherited)", :inherited? => false) }
+        let(:inherited_dacl_ace) { double("Windows dacl ace (inherited)", inherited?: true) }
+        let(:not_inherited_dacl_ace) { double("Windows dacl ace (not inherited)", inherited?: false) }
 
         let(:original_target_file_dacl) { [inherited_dacl_ace, not_inherited_dacl_ace] }
 
-        let(:inherited_sacl_ace) { double("Windows sacl ace (inherited)", :inherited? => true) }
-        let(:not_inherited_sacl_ace) { double("Windows sacl ace (not inherited)", :inherited? => false) }
+        let(:inherited_sacl_ace) { double("Windows sacl ace (inherited)", inherited?: true) }
+        let(:not_inherited_sacl_ace) { double("Windows sacl ace (not inherited)", inherited?: false) }
         let(:original_target_file_sacl) { [inherited_sacl_ace, not_inherited_sacl_ace] }
 
         let(:custom_dacl) { double("Windows ACL for non-inherited dacl aces") }

@@ -22,7 +22,7 @@ require "chef/provider/package/windows/msi"
 describe Chef::Provider::Package::Windows::MSI do
   let(:node) { double("Chef::Node") }
   let(:events) { double("Chef::Events").as_null_object } # mock all the methods
-  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
+  let(:run_context) { double("Chef::RunContext", node: node, events: events) }
   let(:package_name) { "calculator" }
   let(:resource_source) { "calculator.msi" }
   let(:resource_version) { nil }

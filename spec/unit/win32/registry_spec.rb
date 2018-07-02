@@ -21,8 +21,8 @@ require "spec_helper"
 describe Chef::Win32::Registry do
   include_context "Win32"
 
-  let(:value1) { { :name => "one", :type => :string, :data => "1" } }
-  let(:value1_upcase_name) { { :name => "ONE", :type => :string, :data => "1" } }
+  let(:value1) { { name: "one", type: :string, data: "1" } }
+  let(:value1_upcase_name) { { name: "ONE", type: :string, data: "1" } }
   let(:key_path) { 'HKCU\Software\OpscodeNumbers' }
   let(:key) { 'Software\OpscodeNumbers' }
   let(:key_parent) { "Software" }

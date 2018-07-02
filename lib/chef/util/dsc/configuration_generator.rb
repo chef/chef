@@ -68,7 +68,7 @@ class Chef::Util::DSC
     end
 
     def get_merged_configuration_flags!(configuration_flags, configuration_name)
-      merged_configuration_flags = { :outputpath => configuration_document_directory(configuration_name) }
+      merged_configuration_flags = { outputpath: configuration_document_directory(configuration_name) }
       if configuration_flags
         configuration_flags.map do |switch, value|
           if merged_configuration_flags.key?(switch.to_s.downcase.to_sym)

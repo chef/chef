@@ -25,10 +25,10 @@ describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
     @node.consume_external_attrs(OHAI_SYSTEM.data, {})
   end
   let(:cmd_output_format) { :text }
-  let(:simple_cmdlet) { Chef::Util::Powershell::Cmdlet.new(@node, "get-childitem", cmd_output_format, { :depth => 2 }) }
+  let(:simple_cmdlet) { Chef::Util::Powershell::Cmdlet.new(@node, "get-childitem", cmd_output_format, { depth: 2 }) }
   let(:invalid_cmdlet) { Chef::Util::Powershell::Cmdlet.new(@node, "get-idontexist", cmd_output_format) }
-  let(:cmdlet_get_item_requires_switch_or_argument) { Chef::Util::Powershell::Cmdlet.new(@node, "get-item", cmd_output_format, { :depth => 2 }) }
-  let(:cmdlet_alias_requires_switch_or_argument) { Chef::Util::Powershell::Cmdlet.new(@node, "alias", cmd_output_format, { :depth => 2 }) }
+  let(:cmdlet_get_item_requires_switch_or_argument) { Chef::Util::Powershell::Cmdlet.new(@node, "get-item", cmd_output_format, { depth: 2 }) }
+  let(:cmdlet_alias_requires_switch_or_argument) { Chef::Util::Powershell::Cmdlet.new(@node, "alias", cmd_output_format, { depth: 2 }) }
   let(:etc_directory) { "#{ENV['systemroot']}\\system32\\drivers\\etc" }
   let(:architecture_cmdlet) { Chef::Util::Powershell::Cmdlet.new(@node, "$env:PROCESSOR_ARCHITECTURE") }
 
@@ -58,7 +58,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
   end
 
   it "passes command line switches to the command" do
-    result = cmdlet_alias_requires_switch_or_argument.run({ :name => "ls" })
+    result = cmdlet_alias_requires_switch_or_argument.run({ name: "ls" })
     expect(result.succeeded?).to eq(true)
   end
 
@@ -68,7 +68,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
   end
 
   it "passes command line arguments and switches to the command" do
-    result = cmdlet_get_item_requires_switch_or_argument.run({ :path => etc_directory }, {}, " | select-object -property fullname | format-table -hidetableheaders")
+    result = cmdlet_get_item_requires_switch_or_argument.run({ path: etc_directory }, {}, " | select-object -property fullname | format-table -hidetableheaders")
     expect(result.succeeded?).to eq(true)
     returned_directory = result.return_value
     returned_directory.strip!
@@ -76,7 +76,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
   end
 
   it "passes execution options to the command" do
-    result = cmdlet_get_item_requires_switch_or_argument.run({}, { :cwd => etc_directory }, ". | select-object -property fullname | format-table -hidetableheaders")
+    result = cmdlet_get_item_requires_switch_or_argument.run({}, { cwd: etc_directory }, ". | select-object -property fullname | format-table -hidetableheaders")
     expect(result.succeeded?).to eq(true)
     returned_directory = result.return_value
     returned_directory.strip!
@@ -95,7 +95,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
   context "when returning Ruby objects" do
     let(:cmd_output_format) { :object }
     it "returns object format data" do
-      result = simple_cmdlet.run({}, { :cwd => etc_directory }, "hosts")
+      result = simple_cmdlet.run({}, { cwd: etc_directory }, "hosts")
       expect(result.succeeded?).to eq(true)
       data = result.return_value
       expect(data["Name"]).to eq("hosts")

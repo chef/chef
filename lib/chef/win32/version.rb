@@ -50,21 +50,21 @@ class Chef
       private_class_method :method_name_from_marketing_name
 
       WIN_VERSIONS = {
-        "Windows 10" => { :major => 10, :minor => 0, :callable => lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
-        "Windows Server 2016" => { :major => 10, :minor => 0, :callable => lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
-        "Windows 8.1" => { :major => 6, :minor => 3, :callable => lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
-        "Windows Server 2012 R2" => { :major => 6, :minor => 3, :callable => lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
-        "Windows 8" => { :major => 6, :minor => 2, :callable => lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
-        "Windows Server 2012" => { :major => 6, :minor => 2, :callable => lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
-        "Windows 7" => { :major => 6, :minor => 1, :callable => lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
-        "Windows Server 2008 R2" => { :major => 6, :minor => 1, :callable => lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
-        "Windows Server 2008" => { :major => 6, :minor => 0, :callable => lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
-        "Windows Vista" => { :major => 6, :minor => 0, :callable => lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
-        "Windows Server 2003 R2" => { :major => 5, :minor => 2, :callable => lambda { |product_type, suite_mask| get_system_metrics(SM_SERVERR2) != 0 } },
-        "Windows Home Server" => { :major => 5, :minor => 2, :callable => lambda { |product_type, suite_mask| (suite_mask & VER_SUITE_WH_SERVER) == VER_SUITE_WH_SERVER } },
-        "Windows Server 2003" => { :major => 5, :minor => 2, :callable => lambda { |product_type, suite_mask| get_system_metrics(SM_SERVERR2) == 0 } },
-        "Windows XP" => { :major => 5, :minor => 1 },
-        "Windows 2000" => { :major => 5, :minor => 0 },
+        "Windows 10" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
+        "Windows Server 2016" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
+        "Windows 8.1" => { major: 6, minor: 3, callable: lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
+        "Windows Server 2012 R2" => { major: 6, minor: 3, callable: lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
+        "Windows 8" => { major: 6, minor: 2, callable: lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
+        "Windows Server 2012" => { major: 6, minor: 2, callable: lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
+        "Windows 7" => { major: 6, minor: 1, callable: lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
+        "Windows Server 2008 R2" => { major: 6, minor: 1, callable: lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
+        "Windows Server 2008" => { major: 6, minor: 0, callable: lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
+        "Windows Vista" => { major: 6, minor: 0, callable: lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
+        "Windows Server 2003 R2" => { major: 5, minor: 2, callable: lambda { |product_type, suite_mask| get_system_metrics(SM_SERVERR2) != 0 } },
+        "Windows Home Server" => { major: 5, minor: 2, callable: lambda { |product_type, suite_mask| (suite_mask & VER_SUITE_WH_SERVER) == VER_SUITE_WH_SERVER } },
+        "Windows Server 2003" => { major: 5, minor: 2, callable: lambda { |product_type, suite_mask| get_system_metrics(SM_SERVERR2) == 0 } },
+        "Windows XP" => { major: 5, minor: 1 },
+        "Windows 2000" => { major: 5, minor: 0 },
       }
 
       def initialize

@@ -26,14 +26,14 @@ require "ostruct"
 describe Chef::Provider::Service::Arch, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = { :ps => "ps -ef" }
+    @node.automatic_attrs[:command] = { ps: "ps -ef" }
 
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Service.new("chef")
     @new_resource.pattern("chef")
-    @new_resource.supports({ :status => false })
+    @new_resource.supports({ status: false })
 
     @provider = Chef::Provider::Service::Arch.new(@new_resource, @run_context)
 
@@ -43,7 +43,7 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
 
   describe "when first created" do
     it "should set the current resources service name to the new resources service name" do
-      allow(@provider).to receive(:shell_out).and_return(OpenStruct.new(:exitstatus => 0, :stdout => ""))
+      allow(@provider).to receive(:shell_out).and_return(OpenStruct.new(exitstatus: 0, stdout: ""))
       @provider.load_current_resource
       expect(@provider.current_resource.service_name).to eq("chef")
     end
@@ -51,22 +51,22 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
 
   describe "when the service supports status" do
     before do
-      @new_resource.supports({ :status => true })
+      @new_resource.supports({ status: true })
     end
 
     it "should run '/etc/rc.d/service_name status'" do
-      expect(@provider).to receive(:shell_out).with("/etc/rc.d/chef status").and_return(OpenStruct.new(:exitstatus => 0))
+      expect(@provider).to receive(:shell_out).with("/etc/rc.d/chef status").and_return(OpenStruct.new(exitstatus: 0))
       @provider.load_current_resource
     end
 
     it "should set running to true if the status command returns 0" do
-      allow(@provider).to receive(:shell_out).with("/etc/rc.d/chef status").and_return(OpenStruct.new(:exitstatus => 0))
+      allow(@provider).to receive(:shell_out).with("/etc/rc.d/chef status").and_return(OpenStruct.new(exitstatus: 0))
       @provider.load_current_resource
       expect(@provider.current_resource.running).to be_truthy
     end
 
     it "should set running to false if the status command returns anything except 0" do
-      allow(@provider).to receive(:shell_out).with("/etc/rc.d/chef status").and_return(OpenStruct.new(:exitstatus => 1))
+      allow(@provider).to receive(:shell_out).with("/etc/rc.d/chef status").and_return(OpenStruct.new(exitstatus: 1))
       @provider.load_current_resource
       expect(@provider.current_resource.running).to be_falsey
     end
@@ -85,21 +85,21 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
     end
 
     it "should run the services status command if one has been specified" do
-      expect(@provider).to receive(:shell_out).with("/etc/rc.d/chefhasmonkeypants status").and_return(OpenStruct.new(:exitstatus => 0))
+      expect(@provider).to receive(:shell_out).with("/etc/rc.d/chefhasmonkeypants status").and_return(OpenStruct.new(exitstatus: 0))
       @provider.load_current_resource
     end
 
   end
 
   it "should raise error if the node has a nil ps attribute and no other means to get status" do
-    @node.automatic_attrs[:command] = { :ps => nil }
+    @node.automatic_attrs[:command] = { ps: nil }
     @provider.define_resource_requirements
     @provider.action = :start
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
   end
 
   it "should raise error if the node has an empty ps attribute and no other means to get status" do
-    @node.automatic_attrs[:command] = { :ps => "" }
+    @node.automatic_attrs[:command] = { ps: "" }
     @provider.define_resource_requirements
     @provider.action = :start
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
@@ -122,10 +122,10 @@ aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
 aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
 aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
 DEFAULT_PS
-      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", exitstatus: 0, stdout: @stdout)
       allow(@provider).to receive(:shell_out!).and_return(@status)
 
-      @node.automatic_attrs[:command] = { :ps => "ps -ef" }
+      @node.automatic_attrs[:command] = { ps: "ps -ef" }
     end
 
     it "determines the service is running when it appears in ps" do
@@ -274,7 +274,7 @@ RUNNING_PS
       # end
 
       it "should call 'restart' on the service_name if the resource supports it" do
-        @new_resource.supports({ :restart => true })
+        @new_resource.supports({ restart: true })
         expect(@provider).to receive(:shell_out!).with("/etc/rc.d/#{@new_resource.service_name} restart", default_env: false)
         @provider.restart_service()
       end
@@ -309,7 +309,7 @@ RUNNING_PS
       # end
 
       it "should call 'reload' on the service if it supports it" do
-        @new_resource.supports({ :reload => true })
+        @new_resource.supports({ reload: true })
         expect(@provider).to receive(:shell_out!).with("/etc/rc.d/#{@new_resource.service_name} reload", default_env: false)
         @provider.reload_service()
       end

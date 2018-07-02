@@ -224,7 +224,7 @@ describe Chef::Knife::Ssh do
   describe "#session_from_list" do
     before :each do
       @knife.instance_variable_set(:@longest, 0)
-      ssh_config = { :timeout => 50, :user => "locutus", :port => 23, :keepalive => true, :keepalive_interval => 60 }
+      ssh_config = { timeout: 50, user: "locutus", port: 23, keepalive: true, keepalive_interval: 60 }
       allow(Net::SSH).to receive(:configuration_for).with("the.b.org", true).and_return(ssh_config)
     end
 
@@ -279,20 +279,20 @@ describe Chef::Knife::Ssh do
   end
 
   describe "#ssh_command" do
-    let(:execution_channel) { double(:execution_channel, :on_data => nil) }
-    let(:session_channel) { double(:session_channel, :request_pty => nil) }
+    let(:execution_channel) { double(:execution_channel, on_data: nil) }
+    let(:session_channel) { double(:session_channel, request_pty: nil) }
 
-    let(:execution_channel2) { double(:execution_channel, :on_data => nil) }
-    let(:session_channel2) { double(:session_channel, :request_pty => nil) }
+    let(:execution_channel2) { double(:execution_channel, on_data: nil) }
+    let(:session_channel2) { double(:session_channel, request_pty: nil) }
 
-    let(:session) { double(:session, :loop => nil) }
+    let(:session) { double(:session, loop: nil) }
 
     let(:command) { "false" }
 
     before do
       expect(execution_channel).
         to receive(:on_request).
-        and_yield(nil, double(:data_stream, :read_long => exit_status))
+        and_yield(nil, double(:data_stream, read_long: exit_status))
 
       expect(session_channel).
         to receive(:exec).
@@ -301,7 +301,7 @@ describe Chef::Knife::Ssh do
 
       expect(execution_channel2).
         to receive(:on_request).
-        and_yield(nil, double(:data_stream, :read_long => exit_status2))
+        and_yield(nil, double(:data_stream, read_long: exit_status2))
 
       expect(session_channel2).
         to receive(:exec).
@@ -344,7 +344,7 @@ describe Chef::Knife::Ssh do
 
   describe "#tmux" do
     before do
-      ssh_config = { :timeout => 50, :user => "locutus", :port => 23, :keepalive => true, :keepalive_interval => 60 }
+      ssh_config = { timeout: 50, user: "locutus", port: 23, keepalive: true, keepalive_interval: 60 }
       allow(Net::SSH).to receive(:configuration_for).with("foo.example.org", true).and_return(ssh_config)
       @query = Chef::Search::Query.new
       expect(@query).to receive(:search).and_yield(@node_foo)

@@ -258,23 +258,23 @@ describe Chef::Mixin::Securable do
     end
 
     it "should allow you to specify whether the permissions applies_to_children with true/false/:containers_only/:objects_only" do
-      expect { @securable.rights :read, "The Dude", :applies_to_children => false }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => true }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => :containers_only }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => :objects_only }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => "poop" }.to raise_error(ArgumentError)
+      expect { @securable.rights :read, "The Dude", applies_to_children: false }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: true }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: :containers_only }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: :objects_only }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: "poop" }.to raise_error(ArgumentError)
     end
 
     it "should allow you to specify whether the permissions applies_to_self with true/false" do
-      expect { @securable.rights :read, "The Dude", :applies_to_children => true, :applies_to_self => false }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_self => true }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_self => "poop" }.to raise_error(ArgumentError)
+      expect { @securable.rights :read, "The Dude", applies_to_children: true, applies_to_self: false }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_self: true }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_self: "poop" }.to raise_error(ArgumentError)
     end
 
     it "should allow you to specify whether the permissions applies one_level_deep with true/false" do
-      expect { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => false }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => true }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => "poop" }.to raise_error(ArgumentError)
+      expect { @securable.rights :read, "The Dude", applies_to_children: true, one_level_deep: false }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: true, one_level_deep: true }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: true, one_level_deep: "poop" }.to raise_error(ArgumentError)
     end
 
     it "should allow multiple rights and deny_rights declarations" do
@@ -288,21 +288,21 @@ describe Chef::Mixin::Securable do
     end
 
     it "should allow you to specify whether the permission applies_to_self only if you specified applies_to_children" do
-      expect { @securable.rights :read, "The Dude", :applies_to_children => true, :applies_to_self => true }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => true, :applies_to_self => false }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => false, :applies_to_self => true }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => false, :applies_to_self => false }.to raise_error(ArgumentError)
-      expect { @securable.rights :read, "The Dude", :applies_to_self => true }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_self => false }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: true, applies_to_self: true }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: true, applies_to_self: false }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: false, applies_to_self: true }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: false, applies_to_self: false }.to raise_error(ArgumentError)
+      expect { @securable.rights :read, "The Dude", applies_to_self: true }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_self: false }.not_to raise_error
     end
 
     it "should allow you to specify whether the permission applies one_level_deep only if you specified applies_to_children" do
-      expect { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => true }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => false }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => false, :one_level_deep => true }.to raise_error(ArgumentError)
-      expect { @securable.rights :read, "The Dude", :applies_to_children => false, :one_level_deep => false }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :one_level_deep => true }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :one_level_deep => false }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: true, one_level_deep: true }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: true, one_level_deep: false }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", applies_to_children: false, one_level_deep: true }.to raise_error(ArgumentError)
+      expect { @securable.rights :read, "The Dude", applies_to_children: false, one_level_deep: false }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", one_level_deep: true }.not_to raise_error
+      expect { @securable.rights :read, "The Dude", one_level_deep: false }.not_to raise_error
     end
 
     it "should allow you to specify whether the permissions inherit with true/false" do

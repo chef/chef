@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Provider::Service::Invokercd, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = { :ps => "ps -ef" }
+    @node.automatic_attrs[:command] = { ps: "ps -ef" }
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -37,7 +37,7 @@ aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
 aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
 aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
 PS
-    @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+    @status = double("Status", exitstatus: 0, stdout: @stdout)
     allow(@provider).to receive(:shell_out!).and_return(@status)
   end
 
@@ -53,7 +53,7 @@ PS
 
   describe "when the service supports status" do
     before do
-      @new_resource.supports({ :status => true })
+      @new_resource.supports({ status: true })
     end
 
     it "should run '/usr/sbin/invoke-rc.d service_name status'" do
@@ -95,14 +95,14 @@ PS
 
   describe "when the node has not specified a ps command" do
     it "should raise error if the node has a nil ps attribute and no other means to get status" do
-      @node.automatic_attrs[:command] = { :ps => nil }
+      @node.automatic_attrs[:command] = { ps: nil }
       @provider.action = :start
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
     end
 
     it "should raise error if the node has an empty ps attribute and no other means to get status" do
-      @node.automatic_attrs[:command] = { :ps => "" }
+      @node.automatic_attrs[:command] = { ps: "" }
       @provider.action = :start
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
@@ -112,7 +112,7 @@ PS
 
   describe "when we have a 'ps' attribute" do
     it "should shell_out! the node's ps command" do
-      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", exitstatus: 0, stdout: @stdout)
       expect(@provider).to receive(:shell_out!).with(@node[:command][:ps]).and_return(@status)
       @provider.load_current_resource
     end
@@ -122,14 +122,14 @@ PS
 aj        7842  5057  0 21:26 pts/2    00:00:06 chef
 aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 RUNNING_PS
-      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", exitstatus: 0, stdout: @stdout)
       expect(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
       expect(@current_resource.running).to be_truthy
     end
 
     it "should set running to false if the regex doesn't match" do
-      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", exitstatus: 0, stdout: @stdout)
       expect(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
       expect(@current_resource.running).to be_falsey
@@ -176,7 +176,7 @@ RUNNING_PS
 
   describe "when restarting a service" do
     it "should call 'restart' on the service_name if the resource supports it" do
-      @new_resource.supports({ :restart => true })
+      @new_resource.supports({ restart: true })
       expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restart", default_env: false)
       @provider.restart_service()
     end
@@ -197,7 +197,7 @@ RUNNING_PS
 
   describe "when reloading a service" do
     it "should call 'reload' on the service if it supports it" do
-      @new_resource.supports({ :reload => true })
+      @new_resource.supports({ reload: true })
       expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef reload", default_env: false)
       @provider.reload_service()
     end

@@ -27,14 +27,14 @@ end
 describe Chef::Provider::Service::Freebsd do
   let(:node) do
     node = Chef::Node.new
-    node.automatic_attrs[:command] = { :ps => "ps -ax" }
+    node.automatic_attrs[:command] = { ps: "ps -ax" }
     node
   end
 
   let(:new_resource) do
     new_resource = Chef::Resource::Service.new("apache22")
     new_resource.pattern("httpd")
-    new_resource.supports({ :status => false })
+    new_resource.supports({ status: false })
     new_resource
   end
 
@@ -99,7 +99,7 @@ describe Chef::Provider::Service::Freebsd do
     end
 
     context "when a status command has been specified" do
-      let(:status) { double(:stdout => "", :exitstatus => 0) }
+      let(:status) { double(stdout: "", exitstatus: 0) }
 
       before do
         new_resource.status_command("/bin/chefhasmonkeypants status")
@@ -112,10 +112,10 @@ describe Chef::Provider::Service::Freebsd do
     end
 
     context "when the service supports status" do
-      let(:status) { double(:stdout => "", :exitstatus => 0) }
+      let(:status) { double(stdout: "", exitstatus: 0) }
 
       before do
-        new_resource.supports({ :status => true })
+        new_resource.supports({ status: true })
       end
 
       it "should run '/etc/init.d/service_name status'" do
@@ -144,10 +144,10 @@ describe Chef::Provider::Service::Freebsd do
 545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
 PS_SAMPLE
       end
-      let(:status) { double(:stdout => stdout, :exitstatus => 0) }
+      let(:status) { double(stdout: stdout, exitstatus: 0) }
 
       before do
-        node.automatic_attrs[:command] = { :ps => "ps -ax" }
+        node.automatic_attrs[:command] = { ps: "ps -ax" }
       end
 
       it "should shell_out! the node's ps command" do
@@ -191,7 +191,7 @@ PS_SAMPLE
 
       context "when ps is empty string" do
         before do
-          node.automatic_attrs[:command] = { :ps => "" }
+          node.automatic_attrs[:command] = { ps: "" }
         end
 
         it "should set running to nil" do
@@ -369,7 +369,7 @@ EOF
       end
 
       before do
-        status = double(:stdout => rcvar_stdout, :exitstatus => 0)
+        status = double(stdout: rcvar_stdout, exitstatus: 0)
         allow(provider).to receive(:shell_out!).with("/usr/local/etc/rc.d/#{new_resource.service_name} rcvar").and_return(status)
       end
 
@@ -469,7 +469,7 @@ EOF
 
     describe Chef::Provider::Service::Freebsd, "restart_service" do
       it "should call 'restart' on the service_name if the resource supports it" do
-        new_resource.supports({ :restart => true })
+        new_resource.supports({ restart: true })
         expect(provider).to receive(:shell_out!).with("/usr/local/etc/rc.d/#{new_resource.service_name} fastrestart", default_env: false)
         provider.restart_service()
       end

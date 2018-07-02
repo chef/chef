@@ -104,7 +104,7 @@ describe Chef::Provider::DscResource do
     it "flags the resource as reboot required when required" do
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource).
-        and_return(double(:stdout => "", :return_value => nil))
+        and_return(double(stdout: "", return_value: nil))
       expect(provider).to receive(:add_dsc_verbose_log)
       expect(provider).to receive(:return_dsc_resource_result).and_return(true)
       expect(provider).to receive(:create_reboot_resource)
@@ -114,7 +114,7 @@ describe Chef::Provider::DscResource do
     it "does not flag the resource as reboot required when not required" do
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource).
-        and_return(double(:stdout => "", :return_value => nil))
+        and_return(double(stdout: "", return_value: nil))
       expect(provider).to receive(:add_dsc_verbose_log)
       expect(provider).to receive(:return_dsc_resource_result).and_return(false)
       expect(provider).to_not receive(:create_reboot_resource)
@@ -293,12 +293,12 @@ describe Chef::Provider::DscResource do
       set_node_object
     end
 
-    let(:cmdlet) { double(:run! => nil) }
+    let(:cmdlet) { double(run!: nil) }
 
     before(:each) do
       allow(provider).to receive(:translate_type).and_return("my_properties")
       provider.instance_variable_set(:@new_resource, double(
-        :properties => "my_properties", :resource => "my_resource", :timeout => 123
+        properties: "my_properties", resource: "my_resource", timeout: 123
       ))
     end
 

@@ -67,14 +67,14 @@ describe Chef::Provider::AptRepository do
   end
 
   let(:gpg_shell_out_success) do
-    double("shell_out", :stdout => "pub  2048R/7BD9BF62 2011-08-19 nginx signing key <signing-key@nginx.com>",
-                        :exitstatus => 0, :error? => false)
+    double("shell_out", stdout: "pub  2048R/7BD9BF62 2011-08-19 nginx signing key <signing-key@nginx.com>",
+                        exitstatus: 0, error?: false)
   end
 
   let(:gpg_shell_out_failure) do
-    double("shell_out", :stderr => "gpg: no valid OpenPGP data found.\n
+    double("shell_out", stderr: "gpg: no valid OpenPGP data found.\n
                                     gpg: processing message failed: eof",
-                        :exitstatus => 1, :error? => true)
+                        exitstatus: 1, error?: true)
   end
 
   let(:apt_fingerprints) do

@@ -131,10 +131,10 @@ module ChefConfig
         end
       end
 
-      task :package => :package_components
+      task package: :package_components
 
       desc "Build and install component dependencies"
-      task :install_components => :package_components do
+      task install_components: :package_components do
         component_full_paths.each do |component_path|
           Dir.chdir(component_path) do
             sh "rake install"
@@ -142,7 +142,7 @@ module ChefConfig
         end
       end
 
-      task :install => :install_components
+      task install: :install_components
 
       desc "Clean up builds of component dependencies"
       task :clobber_component_packages do
@@ -153,7 +153,7 @@ module ChefConfig
         end
       end
 
-      task :clobber_package => :clobber_component_packages
+      task clobber_package: :clobber_component_packages
 
       desc "Update the version number for component dependencies"
       task :update_components_versions do
@@ -166,12 +166,12 @@ module ChefConfig
 
       namespace :version do
         desc "Regenerate lib/#{module_path}/version.rb from VERSION file"
-        task :update => :update_components_versions do
+        task update: :update_components_versions do
           update_version_rb
           update_gemfile_lock
         end
 
-        task :bump => %w{version:bump_patch version:update}
+        task bump: %w{version:bump_patch version:update}
 
         task :show do
           puts version
@@ -252,7 +252,7 @@ end
         end
       end
 
-      task :version => "version:update"
+      task version: "version:update"
 
       gemspec_platform_to_install = ""
       Dir[File.expand_path("*.gemspec", root_path)].reverse_each do |gemspec_path|
@@ -264,7 +264,7 @@ end
       end
 
       desc "Build and install a #{module_path} gem"
-      task :install => [:package] do
+      task install: [:package] do
         with_clean_env do
           full_module_path = File.join(full_package_dir, module_path)
           sh %{gem install #{full_module_path}-#{version}#{gemspec_platform_to_install}.gem --no-rdoc --no-ri}
@@ -276,7 +276,7 @@ end
       end
 
       desc "Build it, tag it and ship it"
-      task :ship => [:clobber_package, :gem] do
+      task ship: [:clobber_package, :gem] do
         sh("git tag #{version}")
         sh("git push #{git_remote} --tags")
         Dir[File.expand_path("*.gem", full_package_dir)].reverse_each do |built_gem|

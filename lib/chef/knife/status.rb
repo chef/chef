@@ -32,23 +32,23 @@ class Chef
       banner "knife status QUERY (options)"
 
       option :run_list,
-        :short => "-r",
-        :long => "--run-list",
-        :description => "Show the run list"
+        short: "-r",
+        long: "--run-list",
+        description: "Show the run list"
 
       option :sort_reverse,
-        :short => "-s",
-        :long => "--sort-reverse",
-        :description => "Sort the status list by last run time descending"
+        short: "-s",
+        long: "--sort-reverse",
+        description: "Sort the status list by last run time descending"
 
       option :hide_healthy,
-        :short => "-H",
-        :long => "--hide-healthy",
-        :description => "Hide nodes that have run chef in the last hour. [DEPRECATED] Use --hide-by-mins MINS instead"
+        short: "-H",
+        long: "--hide-healthy",
+        description: "Hide nodes that have run chef in the last hour. [DEPRECATED] Use --hide-by-mins MINS instead"
 
       option :hide_by_mins,
-        :long => "--hide-by-mins MINS",
-        :description => "Hide nodes that have run chef in the last MINS minutes"
+        long: "--hide-by-mins MINS",
+        description: "Hide nodes that have run chef in the last MINS minutes"
 
       def append_to_query(term)
         @query << " AND " unless @query.empty?

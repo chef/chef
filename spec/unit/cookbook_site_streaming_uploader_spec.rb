@@ -102,22 +102,22 @@ describe Chef::CookbookSiteStreamingUploader do
 
     it "should be able to receive files to attach as argument" do
       Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
-        :myfile => File.new(File.join(CHEF_SPEC_DATA, "config.rb")), # a dummy file
+        myfile: File.new(File.join(CHEF_SPEC_DATA, "config.rb")), # a dummy file
       })
     end
 
     it "should be able to receive strings to attach as argument" do
       Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
-        :mystring => "Lorem ipsum",
+        mystring: "Lorem ipsum",
       })
     end
 
     it "should be able to receive strings and files as argument at the same time" do
       Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
-        :myfile1 => File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
-        :mystring1 => "Lorem ipsum",
-        :myfile2 => File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
-        :mystring2 => "Dummy text",
+        myfile1: File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
+        mystring1: "Lorem ipsum",
+        myfile2: File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
+        mystring2: "Dummy text",
       })
     end
 

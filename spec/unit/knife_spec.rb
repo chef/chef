@@ -37,7 +37,7 @@ describe Chef::Knife do
     instance_double("WorkstationConfigLoader",
                     load: nil, no_config_found?: false,
                     config_location: config_location,
-                    :chef_config_dir => "/etc/chef")
+                    chef_config_dir: "/etc/chef")
   end
 
   before(:each) do
@@ -225,10 +225,10 @@ describe Chef::Knife do
 
     it "merges the global knife CLI options" do
       extra_opts = {}
-      extra_opts[:editor] = { :long => "--editor EDITOR",
-                              :description => "Set the editor to use for interactive commands",
-                              :short => "-e EDITOR",
-                              :default => "/usr/bin/vim" }
+      extra_opts[:editor] = { long: "--editor EDITOR",
+                              description: "Set the editor to use for interactive commands",
+                              short: "-e EDITOR",
+                              default: "/usr/bin/vim" }
 
       # there is special hackery to return the subcommand instance going on here.
       command = Chef::Knife.run(%w{test yourself}, extra_opts)
@@ -283,8 +283,8 @@ describe Chef::Knife do
     describe "merging configuration options" do
       before do
         KnifeSpecs::TestYourself.option(:opt_with_default,
-                                        :short => "-D VALUE",
-                                        :default => "default-value")
+                                        short: "-D VALUE",
+                                        default: "default-value")
       end
 
       it "sets the default log_location to STDERR for Chef::Log warnings" do
@@ -330,7 +330,7 @@ describe Chef::Knife do
         before do
           knife.config[:verbosity] = 1
           knife.config[:config_file] = fake_config
-          config_loader = double("Chef::WorkstationConfigLoader", :load => true, :no_config_found? => false, :chef_config_dir => "/etc/chef", :config_location => fake_config)
+          config_loader = double("Chef::WorkstationConfigLoader", load: true, no_config_found?: false, chef_config_dir: "/etc/chef", config_location: fake_config)
           allow(config_loader).to receive(:explicit_config_file=).with(fake_config).and_return(fake_config)
           allow(config_loader).to receive(:profile=)
           allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
@@ -423,7 +423,7 @@ describe Chef::Knife do
     it "formats 401s nicely" do
       response = Net::HTTPUnauthorized.new("1.1", "401", "Unauthorized")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no syncronize your clock?"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u no syncronize your clock?"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("401 Unauthorized", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(/ERROR: Failed to authenticate to/)
@@ -433,7 +433,7 @@ describe Chef::Knife do
     it "formats 403s nicely" do
       response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no administrator"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u no administrator"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
       allow(knife).to receive(:username).and_return("sadpanda")
       knife.run_with_pretty_exceptions
@@ -453,7 +453,7 @@ describe Chef::Knife do
       it "formats proxy errors nicely" do
         response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
         response.instance_variable_set(:@read, true)
-        allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no administrator"))
+        allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u no administrator"))
         allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
         allow(knife).to receive(:username).and_return("sadpanda")
         knife.run_with_pretty_exceptions
@@ -466,7 +466,7 @@ describe Chef::Knife do
     it "formats 400s nicely" do
       response = Net::HTTPBadRequest.new("1.1", "400", "Bad Request")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u search wrong"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u search wrong"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("400 Bad Request", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: The data in your request was invalid})
@@ -476,7 +476,7 @@ describe Chef::Knife do
     it "formats 404s nicely" do
       response = Net::HTTPNotFound.new("1.1", "404", "Not Found")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "nothing to see here"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "nothing to see here"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("404 Not Found", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: The object you are looking for could not be found})
@@ -488,9 +488,9 @@ describe Chef::Knife do
       response.instance_variable_set(:@read, true) # I hate you, net/http.
 
       # set the header
-      response["x-ops-server-api-version"] = Chef::JSONCompat.to_json(:min_version => "0", :max_version => "1", :request_version => "10000000")
+      response["x-ops-server-api-version"] = Chef::JSONCompat.to_json(min_version: "0", max_version: "1", request_version: "10000000")
 
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "sad trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("406 Not Acceptable", response))
 
       knife.run_with_pretty_exceptions
@@ -502,7 +502,7 @@ describe Chef::Knife do
     it "formats 500s nicely" do
       response = Net::HTTPInternalServerError.new("1.1", "500", "Internal Server Error")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "sad trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("500 Internal Server Error", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: internal server error})
@@ -512,7 +512,7 @@ describe Chef::Knife do
     it "formats 502s nicely" do
       response = Net::HTTPBadGateway.new("1.1", "502", "Bad Gateway")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sadder trombone"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "sadder trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("502 Bad Gateway", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: bad gateway})
@@ -522,7 +522,7 @@ describe Chef::Knife do
     it "formats 503s nicely" do
       response = Net::HTTPServiceUnavailable.new("1.1", "503", "Service Unavailable")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "saddest trombone"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "saddest trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("503 Service Unavailable", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: Service temporarily unavailable})
@@ -532,7 +532,7 @@ describe Chef::Knife do
     it "formats other HTTP errors nicely" do
       response = Net::HTTPPaymentRequired.new("1.1", "402", "Payment Required")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "nobugfixtillyoubuy"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "nobugfixtillyoubuy"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("402 Payment Required", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: Payment Required})

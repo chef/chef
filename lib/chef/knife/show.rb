@@ -29,9 +29,9 @@ class Chef
       end
 
       option :local,
-        :long => "--local",
-        :boolean => true,
-        :description => "Show local files instead of remote"
+        long: "--local",
+        boolean: true,
+        description: "Show local files instead of remote"
 
       def run
         # Get the matches (recursively)

@@ -25,10 +25,10 @@ describe Chef::Knife::UI do
   before do
     @out, @err, @in = StringIO.new, StringIO.new, StringIO.new
     @config = {
-      :verbosity => 0,
-      :yes => nil,
-      :format => "summary",
-      :field_separator => ".",
+      verbosity: 0,
+      yes: nil,
+      format: "summary",
+      field_separator: ".",
     }
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
   end
@@ -171,12 +171,12 @@ describe Chef::Knife::UI do
   describe "format_list_for_display" do
     it "should print the full hash if --with-uri is true" do
       @ui.config[:with_uri] = true
-      expect(@ui.format_list_for_display({ :marcy => :playground })).to eq({ :marcy => :playground })
+      expect(@ui.format_list_for_display({ marcy: :playground })).to eq({ marcy: :playground })
     end
 
     it "should print only the keys if --with-uri is false" do
       @ui.config[:with_uri] = false
-      expect(@ui.format_list_for_display({ :marcy => :playground })).to eq([ :marcy ])
+      expect(@ui.format_list_for_display({ marcy: :playground })).to eq([ :marcy ])
     end
   end
 
@@ -358,7 +358,7 @@ EOM
 
   describe "format_for_display" do
     it "should return the raw data" do
-      input = { :gi => :go }
+      input = { gi: :go }
       expect(@ui.format_for_display(input)).to eq(input)
     end
 
@@ -480,7 +480,7 @@ EOM
 
     context "when running on Windows" do
       before(:each) do
-        stdout = double("StringIO", :tty? => true)
+        stdout = double("StringIO", tty?: true)
         allow(@ui).to receive(:stdout).and_return(stdout)
         allow(ChefConfig).to receive(:windows?) { true }
         Chef::Config.reset
@@ -631,7 +631,7 @@ EOM
       out = StringIO.new
       allow(@ui).to receive(:stdout).and_return(out)
       allow(@ui).to receive(:stdin).and_return(StringIO.new(" \n"))
-      expect(@ui.ask_question("your chef server URL? ", :default => "http://localhost:4000")).to eq("http://localhost:4000")
+      expect(@ui.ask_question("your chef server URL? ", default: "http://localhost:4000")).to eq("http://localhost:4000")
       expect(out.string).to eq("your chef server URL? [http://localhost:4000] ")
     end
   end

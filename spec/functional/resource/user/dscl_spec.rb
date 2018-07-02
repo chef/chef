@@ -19,9 +19,9 @@ require "spec_helper"
 require "chef/mixin/shell_out"
 
 metadata = {
-  :mac_osx_only => true,
-  :requires_root => true,
-  :not_supported_on_mac_osx_106 => true,
+  mac_osx_only: true,
+  requires_root: true,
+  not_supported_on_mac_osx_106: true,
 }
 
 describe "Chef::Resource::User with Chef::Provider::User::Dscl provider", metadata do

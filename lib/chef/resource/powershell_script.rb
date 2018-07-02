@@ -40,7 +40,7 @@ class Chef
         set_or_return(
           :convert_boolean_return,
           arg,
-          :kind_of => [ FalseClass, TrueClass ]
+          kind_of: [ FalseClass, TrueClass ]
         )
       end
 
@@ -52,7 +52,7 @@ class Chef
       # guard context and recipe resource context will have the
       # same behavior.
       def self.get_default_attributes(opts)
-        { :convert_boolean_return => true }
+        { convert_boolean_return: true }
       end
     end
   end

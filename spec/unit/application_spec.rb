@@ -447,7 +447,7 @@ describe Chef::Application do
       ARGV.replace(@original_argv)
     end
 
-    let(:fake_config_fetcher) { instance_double(Chef::ConfigFetcher, expanded_path: "/thisbetternotexist", :"config_missing?" => false, read_config: "" ) }
+    let(:fake_config_fetcher) { instance_double(Chef::ConfigFetcher, expanded_path: "/thisbetternotexist", "config_missing?": false, read_config: "" ) }
 
     it "reading a mixlib-config default works" do
       @app.parse_options

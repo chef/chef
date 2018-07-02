@@ -22,7 +22,7 @@ describe "chef-client" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_zero_opts) { { :host => "::1" } }
+  let(:chef_zero_opts) { { host: "::1" } }
 
   let(:validation_pem) do
     <<-END_VALIDATION_PEM
@@ -93,7 +93,7 @@ END_CLIENT_RB
       end
 
       it "should complete with success" do
-        result = shell_out("#{chef_client_cmd} -o 'noop::default'", :cwd => chef_dir)
+        result = shell_out("#{chef_client_cmd} -o 'noop::default'", cwd: chef_dir)
         result.error!
       end
 
@@ -125,7 +125,7 @@ END_CLIENT_RB
       end
 
       it "should complete with success" do
-        result = shell_out("#{chef_client_cmd} -o 'api-smoke-test::default'", :cwd => chef_dir)
+        result = shell_out("#{chef_client_cmd} -o 'api-smoke-test::default'", cwd: chef_dir)
         result.error!
       end
 

@@ -303,7 +303,7 @@ describe Chef::ApiClient do
           @api_client_with_key.name("lost-my-key")
           @api_client_with_key.private_key("the new private key")
           expect(@http_client).to receive(:put).
-            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
+            with("clients/lost-my-key", name: "lost-my-key", admin: false, validator: false, private_key: true).
             and_return(@api_client_with_key)
         end
 
@@ -321,7 +321,7 @@ describe Chef::ApiClient do
         before do
           @api_client_with_key = { "name" => "lost-my-key", "private_key" => "the new private key" }
           expect(@http_client).to receive(:put).
-            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
+            with("clients/lost-my-key", name: "lost-my-key", admin: false, validator: false, private_key: true).
             and_return(@api_client_with_key)
         end
 

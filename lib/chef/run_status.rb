@@ -104,16 +104,16 @@ class Chef::RunStatus
   # * :backtrace
   def to_hash
     # use a flat hash here so we can't errors from intermediate values being nil
-    { :node => node,
-      :success => success?,
-      :start_time => start_time,
-      :end_time => end_time,
-      :elapsed_time => elapsed_time,
-      :all_resources => all_resources,
-      :updated_resources => updated_resources,
-      :exception => formatted_exception,
-      :backtrace => backtrace,
-      :run_id => run_id }
+    { node: node,
+      success: success?,
+      start_time: start_time,
+      end_time: end_time,
+      elapsed_time: elapsed_time,
+      all_resources: all_resources,
+      updated_resources: updated_resources,
+      exception: formatted_exception,
+      backtrace: backtrace,
+      run_id: run_id }
   end
 
   # Returns a string of the format "ExceptionClass: message" or +nil+ if no

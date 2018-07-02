@@ -169,7 +169,7 @@ class Chef
           "Invoke-DscResource #{switches}",
           output_format
         )
-        cmdlet.run!({}, { :timeout => new_resource.timeout })
+        cmdlet.run!({}, { timeout: new_resource.timeout })
       end
 
       def return_dsc_resource_result(result, property_name)

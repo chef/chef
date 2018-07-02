@@ -38,7 +38,7 @@ describe "knife raw", :workstation do
       user "x", "{}"
     end
 
-    it "knife raw /nodes/x returns the node", :skip => (RUBY_VERSION < "1.9") do
+    it "knife raw /nodes/x returns the node", skip: (RUBY_VERSION < "1.9") do
       knife("raw /nodes/x").should_succeed <<EOM
 {
   "name": "x",
@@ -70,7 +70,7 @@ EOM
       knife("raw /blarghle").should_fail(/ERROR: Server responded with error 404 "Not Found\s*"/)
     end
 
-    it "knife raw -m DELETE /roles/x succeeds", :skip => (RUBY_VERSION < "1.9") do
+    it "knife raw -m DELETE /roles/x succeeds", skip: (RUBY_VERSION < "1.9") do
       knife("raw -m DELETE /roles/x").should_succeed <<EOM
 {
   "name": "x",
@@ -94,7 +94,7 @@ EOM
       knife("show /roles/x.json").should_fail "ERROR: /roles/x.json: No such file or directory\n"
     end
 
-    it "knife raw -m PUT -i blah.txt /roles/x succeeds", :skip => (RUBY_VERSION < "1.9") do
+    it "knife raw -m PUT -i blah.txt /roles/x succeeds", skip: (RUBY_VERSION < "1.9") do
       Tempfile.open("raw_put_input") do |file|
         file.write <<EOM
 {
@@ -148,7 +148,7 @@ EOM
       end
     end
 
-    it "knife raw -m POST -i blah.txt /roles succeeds", :skip => (RUBY_VERSION < "1.9") do
+    it "knife raw -m POST -i blah.txt /roles succeeds", skip: (RUBY_VERSION < "1.9") do
       Tempfile.open("raw_put_input") do |file|
         file.write <<EOM
 {
@@ -198,7 +198,7 @@ EOM
         @raw_server_thread.kill if @raw_server_thread
       end
 
-      it "knife raw /blah returns the prettified json", :skip => (RUBY_VERSION < "1.9") do
+      it "knife raw /blah returns the prettified json", skip: (RUBY_VERSION < "1.9") do
         knife("raw /blah").should_succeed <<EOM
 {
   "x": "y",

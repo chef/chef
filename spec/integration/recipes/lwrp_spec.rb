@@ -44,7 +44,7 @@ cookbook_path "#{path_to('cookbooks')}"
 log_level :warn
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'l-w-r-p::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'l-w-r-p::default'", cwd: chef_dir)
       expect(result.stdout).to match(/\* l_w_r_p_foo\[me\] action create \(up to date\)/)
       expect(result.stdout).not_to match(/WARN: You are overriding l_w_r_p_foo/)
       result.error!

@@ -76,20 +76,20 @@ XML
           before do
             allow(run_context).to receive(:logger).and_return(logger)
             allow(Dir).to receive(:glob).and_return([plist], [])
-            @stat = double("File::Stat", { :uid => 501 })
+            @stat = double("File::Stat", { uid: 501 })
             allow(File).to receive(:stat).and_return(@stat)
-            @getpwuid = double("Etc::Passwd", { :name => "mikedodge04" })
+            @getpwuid = double("Etc::Passwd", { name: "mikedodge04" })
             allow(Etc).to receive(:getpwuid).and_return(@getpwuid)
             allow(node).to receive(:[]).with("platform_version").and_return(platform_version)
             cmd = "launchctl list #{service_label}"
             allow(provider).to receive(:shell_out).
               with(/(#{su_cmd} '#{cmd}'|#{cmd})/, default_env: false).
               and_return(double("Status",
-                                    :stdout => launchctl_stdout, :exitstatus => 0))
+                                    stdout: launchctl_stdout, exitstatus: 0))
             allow(File).to receive(:exists?).and_return([true], [])
             allow(provider).to receive(:shell_out!).
               with(/plutil -convert xml1 -o/, default_env: false).
-              and_return(double("Status", :stdout => plutil_stdout))
+              and_return(double("Status", stdout: plutil_stdout))
           end
 
           context "#{service_name} that is a #{service_type} running Osx #{platform_version}" do

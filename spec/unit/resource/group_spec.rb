@@ -72,7 +72,7 @@ describe Chef::Resource::Group, "group_name" do
   end
 
   it "does not allow a hash" do
-    expect { resource.send(:group_name, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
+    expect { resource.send(:group_name, { aj: "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 end
 
@@ -85,7 +85,7 @@ describe Chef::Resource::Group, "gid" do
   end
 
   it "does not allow a hash" do
-    expect { resource.send(:gid, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
+    expect { resource.send(:gid, { aj: "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 end
 
@@ -109,7 +109,7 @@ describe Chef::Resource::Group, "members" do
     end
 
     it "(#{method}) does not allow a hash" do
-      expect { resource.send(method, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
+      expect { resource.send(method, { aj: "is freakin awesome" }) }.to raise_error(ArgumentError)
     end
   end
 end
@@ -127,7 +127,7 @@ describe Chef::Resource::Group, "append" do
   end
 
   it "does not allow a hash" do
-    expect { resource.send(:gid, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
+    expect { resource.send(:gid, { aj: "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 
   describe "when it has members" do

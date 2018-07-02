@@ -228,7 +228,7 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
             end
 
             attributes.delete(:run_list) if attributes[:policy_name] && !attributes[:policy_name].empty?
-            attributes.merge!(:tags => @config[:tags]) if @config[:tags] && !@config[:tags].empty?
+            attributes.merge!(tags: @config[:tags]) if @config[:tags] && !@config[:tags].empty?
           end
         end
 

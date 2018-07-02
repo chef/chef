@@ -36,11 +36,11 @@ describe Chef::Provider::Service::Systemd do
   let(:provider) { Chef::Provider::Service::Systemd.new(new_resource, run_context) }
 
   let(:shell_out_success) do
-    double("shell_out", :exitstatus => 0, :error? => false)
+    double("shell_out", exitstatus: 0, error?: false)
   end
 
   let(:shell_out_failure) do
-    double("shell_out", :exitstatus => 1, :error? => true)
+    double("shell_out", exitstatus: 1, error?: true)
   end
 
   let(:current_resource) { Chef::Resource::Service.new(service_name) }
@@ -190,14 +190,14 @@ describe Chef::Provider::Service::Systemd do
         context "when a user is specified" do
           it "should call '#{systemctl_path} --user start service_name' if no start command is specified" do
             current_resource.user("joe")
-            expect(provider).to receive(:shell_out!).with("#{systemctl_path} --user start #{service_name_escaped}", { :environment => { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, :user => "joe", default_env: false }).and_return(shell_out_success)
+            expect(provider).to receive(:shell_out!).with("#{systemctl_path} --user start #{service_name_escaped}", { environment: { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, user: "joe", default_env: false }).and_return(shell_out_success)
             provider.start_service
           end
 
           it "should not call '#{systemctl_path} --user start service_name' if it is already running" do
             current_resource.running(true)
             current_resource.user("joe")
-            expect(provider).not_to receive(:shell_out!).with("#{systemctl_path} --user start #{service_name_escaped}", { :environment => { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, :user => "joe" })
+            expect(provider).not_to receive(:shell_out!).with("#{systemctl_path} --user start #{service_name_escaped}", { environment: { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, user: "joe" })
             provider.start_service
           end
         end
@@ -340,22 +340,22 @@ describe Chef::Provider::Service::Systemd do
         end
 
         it "should return true if '#{systemctl_path} --system is-enabled service_name' returns 'masked' and returns anything except 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(:stdout => "masked", :exitstatus => shell_out_failure))
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "masked", exitstatus: shell_out_failure))
           expect(provider.is_masked?).to be true
         end
 
         it "should return true if '#{systemctl_path} --system is-enabled service_name' outputs 'masked-runtime' and returns anything except 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(:stdout => "masked-runtime", :exitstatus => shell_out_failure))
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "masked-runtime", exitstatus: shell_out_failure))
           expect(provider.is_masked?).to be true
         end
 
         it "should return false if '#{systemctl_path} --system is-enabled service_name' returns 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(:stdout => "enabled", :exitstatus => shell_out_success))
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "enabled", exitstatus: shell_out_success))
           expect(provider.is_masked?).to be false
         end
 
         it "should return false if '#{systemctl_path} --system is-enabled service_name' returns anything except 0 and outputs an error'" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(:stdout => "Failed to get unit file state for #{service_name}: No such file or directory", :exitstatus => shell_out_failure))
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "Failed to get unit file state for #{service_name}: No such file or directory", exitstatus: shell_out_failure))
           expect(provider.is_masked?).to be false
         end
       end

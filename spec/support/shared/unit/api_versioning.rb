@@ -19,7 +19,7 @@
 require "chef/exceptions"
 
 shared_examples_for "version handling" do
-  let(:response_406) { OpenStruct.new(:code => "406") }
+  let(:response_406) { OpenStruct.new(code: "406") }
   let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
 
   before do
@@ -38,7 +38,7 @@ shared_examples_for "version handling" do
 end # version handling
 
 shared_examples_for "user and client reregister" do
-  let(:response_406) { OpenStruct.new(:code => "406") }
+  let(:response_406) { OpenStruct.new(code: "406") }
   let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
   let(:generic_exception) { Exception.new }
   let(:min_version) { "2" }

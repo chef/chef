@@ -121,27 +121,27 @@ describe Chef::Application::Client, "reconfigure" do
     describe "--named-run-list" do
       it_behaves_like "sets the configuration",
                       "--named-run-list arglebargle-example",
-                      :named_run_list => "arglebargle-example"
+                      named_run_list: "arglebargle-example"
     end
 
     describe "--no-listen" do
-      it_behaves_like "sets the configuration", "--no-listen", :listen => false
+      it_behaves_like "sets the configuration", "--no-listen", listen: false
     end
 
     describe "--daemonize", :unix_only do
       context "with no value" do
         it_behaves_like "sets the configuration", "--daemonize",
-                        :daemonize => true
+                        daemonize: true
       end
 
       context "with an integer value" do
         it_behaves_like "sets the configuration", "--daemonize 5",
-                        :daemonize => 5
+                        daemonize: 5
       end
 
       context "with a non-integer value" do
         it_behaves_like "sets the configuration", "--daemonize foo",
-                        :daemonize => true
+                        daemonize: true
       end
     end
 
@@ -178,17 +178,17 @@ describe Chef::Application::Client, "reconfigure" do
     describe "--config-option" do
       context "with a single value" do
         it_behaves_like "sets the configuration", "--config-option chef_server_url=http://example",
-                        :chef_server_url => "http://example"
+                        chef_server_url: "http://example"
       end
 
       context "with two values" do
         it_behaves_like "sets the configuration", "--config-option chef_server_url=http://example --config-option policy_name=web",
-                        :chef_server_url => "http://example", :policy_name => "web"
+                        chef_server_url: "http://example", policy_name: "web"
       end
 
       context "with a boolean value" do
         it_behaves_like "sets the configuration", "--config-option minimal_ohai=true",
-                        :minimal_ohai => true
+                        minimal_ohai: true
       end
 
       context "with an empty value" do
@@ -321,7 +321,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
   describe "when the json_attribs configuration option is specified" do
 
     let(:json_attribs) { { "a" => "b" } }
-    let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
+    let(:config_fetcher) { double(Chef::ConfigFetcher, fetch_json: json_attribs) }
     let(:json_source) { "https://foo.com/foo.json" }
 
     before do

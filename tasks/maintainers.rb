@@ -33,7 +33,7 @@ begin
   require "pp"
 
   namespace :maintainers do
-    task :default => :generate
+    task default: :generate
 
     desc "Generate MarkDown version of MAINTAINERS file"
     task :generate do
@@ -63,7 +63,7 @@ begin
   end
 
   def github
-    @github ||= Octokit::Client.new(:netrc => true)
+    @github ||= Octokit::Client.new(netrc: true)
   end
 
   def source

@@ -50,7 +50,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       before(:each) do
         allow(Chef::Util::PathHelper).to receive(:validate_path)
         allow(provider).to receive(:package_provider).and_return(double("package_provider",
-          :installed_version => "1.0", :package_version => "2.0"))
+          installed_version: "1.0", package_version: "2.0"))
       end
 
       it "creates a current resource with the name of the new resource" do

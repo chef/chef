@@ -31,11 +31,11 @@ class Chef
       category "cookbook site"
 
       option :supermarket_site,
-        :short => "-m SUPERMARKET_SITE",
-        :long => "--supermarket-site SUPERMARKET_SITE",
-        :description => "Supermarket Site",
-        :default => "https://supermarket.chef.io",
-        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+        short: "-m SUPERMARKET_SITE",
+        long: "--supermarket-site SUPERMARKET_SITE",
+        description: "Supermarket Site",
+        default: "https://supermarket.chef.io",
+        proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 
       def run
         @cookbook_name = @name_args[0]
