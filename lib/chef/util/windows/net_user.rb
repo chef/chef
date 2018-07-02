@@ -96,7 +96,13 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     token = Security.logon_user(@username, nil, passwd,
                LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
     true
-  rescue Chef::Exceptions::Win32APIError
+  rescue Chef::Exceptions::Win32APIError => e
+    if e.to_s.include? "System Error Code: 1327"
+      # Error 1327 indicates we are unable to logon to validate the credentials due
+      # to a policy restriction on the machine.  Assume the credentials are valid.
+      Chef::Log.trace("Unable to login with the specified credentials due to an Account Restriction. Assuming the password is valid.")
+      return true
+    end
     false
   end
 
