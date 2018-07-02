@@ -96,7 +96,7 @@ class Chef
 
           def can_have_child?(name, is_dir)
             if is_dir
-              child_paths.has_key?(name)
+              child_paths.key?(name)
             elsif root_dir
               CHILDREN.include?(name)
             else

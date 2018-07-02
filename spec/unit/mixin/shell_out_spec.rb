@@ -97,7 +97,7 @@ describe Chef::Mixin::ShellOut do
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
-              expect(options[:environment].has_key?("LC_ALL")).to be false
+              expect(options[:environment].key?("LC_ALL")).to be false
             end
           end
 
@@ -140,7 +140,7 @@ describe Chef::Mixin::ShellOut do
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
-              expect(options[:env].has_key?("LC_ALL")).to be false
+              expect(options[:env].key?("LC_ALL")).to be false
             end
           end
 

@@ -126,7 +126,7 @@ class Chef
             item = Chef::JSONCompat.parse(IO.read(f))
 
             # Check if we have multiple items with similar names (ids) and raise if their content differs
-            if data_bag.has_key?(item["id"]) && data_bag[item["id"]] != item
+            if data_bag.key?(item["id"]) && data_bag[item["id"]] != item
               raise Chef::Exceptions::DuplicateDataBagItem, "Data bag '#{name}' has items with the same name '#{item["id"]}' but different content."
             else
               data_bag[item["id"]] = item

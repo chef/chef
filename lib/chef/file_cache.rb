@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -175,7 +175,7 @@ class Chef
       # === Returns
       # True:: If the file exists
       # False:: If it does not
-      def has_key?(path)
+      def key?(path)
         validate(
           {
             path: path,
@@ -191,6 +191,8 @@ class Chef
           false
         end
       end
+
+      alias_method :has_key?, :key?
 
       # Create a full path to a given file in the cache. By default,
       # also creates the path if it does not exist.

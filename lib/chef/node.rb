@@ -524,8 +524,8 @@ class Chef
       node = new
       node.name(o["name"])
 
-      node.policy_name = o["policy_name"] if o.has_key?("policy_name")
-      node.policy_group = o["policy_group"] if o.has_key?("policy_group")
+      node.policy_name = o["policy_name"] if o.key?("policy_name")
+      node.policy_group = o["policy_group"] if o.key?("policy_group")
 
       unless node.policy_group.nil?
         node.chef_environment(o["policy_group"])
@@ -533,17 +533,17 @@ class Chef
         node.chef_environment(o["chef_environment"])
       end
 
-      if o.has_key?("attributes")
+      if o.key?("attributes")
         node.normal_attrs = o["attributes"]
       end
-      node.automatic_attrs = Mash.new(o["automatic"]) if o.has_key?("automatic")
-      node.normal_attrs = Mash.new(o["normal"]) if o.has_key?("normal")
-      node.default_attrs = Mash.new(o["default"]) if o.has_key?("default")
-      node.override_attrs = Mash.new(o["override"]) if o.has_key?("override")
+      node.automatic_attrs = Mash.new(o["automatic"]) if o.key?("automatic")
+      node.normal_attrs = Mash.new(o["normal"]) if o.key?("normal")
+      node.default_attrs = Mash.new(o["default"]) if o.key?("default")
+      node.override_attrs = Mash.new(o["override"]) if o.key?("override")
 
-      if o.has_key?("run_list")
+      if o.key?("run_list")
         node.run_list.reset!(o["run_list"])
-      elsif o.has_key?("recipes")
+      elsif o.key?("recipes")
         o["recipes"].each { |r| node.recipes << r }
       end
 

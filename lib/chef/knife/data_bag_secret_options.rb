@@ -118,7 +118,7 @@ class Chef
       end
 
       def has_cl_secret?
-        Chef::Config[:knife].has_key?(:cl_secret)
+        Chef::Config[:knife].key?(:cl_secret)
       end
 
       def self.set_cl_secret(s)
@@ -126,7 +126,7 @@ class Chef
       end
 
       def has_cl_secret_file?
-        Chef::Config[:knife].has_key?(:cl_secret_file)
+        Chef::Config[:knife].key?(:cl_secret_file)
       end
 
       def self.set_cl_secret_file(sf)

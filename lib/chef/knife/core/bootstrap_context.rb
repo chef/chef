@@ -45,7 +45,7 @@ class Chef
         end
 
         def validation_key
-          if @chef_config.has_key?(:validation_key) &&
+          if @chef_config.key?(:validation_key) &&
               File.exist?(File.expand_path(@chef_config[:validation_key]))
             IO.read(File.expand_path(@chef_config[:validation_key]))
           else
@@ -105,14 +105,14 @@ class Chef
 
           # We configure :verify_api_cert only when it's overridden on the CLI
           # or when specified in the knife config.
-          if !@config[:node_verify_api_cert].nil? || knife_config.has_key?(:verify_api_cert)
+          if !@config[:node_verify_api_cert].nil? || knife_config.key?(:verify_api_cert)
             value = @config[:node_verify_api_cert].nil? ? knife_config[:verify_api_cert] : @config[:node_verify_api_cert]
             client_rb << %Q{verify_api_cert #{value}\n}
           end
 
           # We configure :ssl_verify_mode only when it's overridden on the CLI
           # or when specified in the knife config.
-          if @config[:node_ssl_verify_mode] || knife_config.has_key?(:ssl_verify_mode)
+          if @config[:node_ssl_verify_mode] || knife_config.key?(:ssl_verify_mode)
             value = case @config[:node_ssl_verify_mode]
                     when "peer"
                       :verify_peer

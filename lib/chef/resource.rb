@@ -691,7 +691,7 @@ class Chef
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       safe_ivars.each do |iv|
         key = iv.to_s.sub(/^@/, "").to_sym
-        next if result.has_key?(key)
+        next if result.key?(key)
         result[key] = instance_variable_get(iv)
       end
       result

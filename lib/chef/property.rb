@@ -121,9 +121,9 @@ class Chef
       options[:instance_variable_name] = options[:instance_variable_name].to_sym if options[:instance_variable_name]
 
       # Replace name_attribute with name_property
-      if options.has_key?(:name_attribute)
+      if options.key?(:name_attribute)
         # If we have both name_attribute and name_property and they differ, raise an error
-        if options.has_key?(:name_property)
+        if options.key?(:name_property)
           raise ArgumentError, "name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property #{self}"
         end
         # replace name_property with name_attribute in place
@@ -131,7 +131,7 @@ class Chef
         @options = options
       end
 
-      if options.has_key?(:default) && options.has_key?(:name_property)
+      if options.key?(:default) && options.key?(:name_property)
         raise ArgumentError, "A property cannot be both a name_property/name_attribute and have a default value. Use one or the other on property #{self}"
       end
 
@@ -208,7 +208,7 @@ class Chef
     # @return [Symbol]
     #
     def instance_variable_name
-      if options.has_key?(:instance_variable_name)
+      if options.key?(:instance_variable_name)
         options[:instance_variable_name]
       elsif name
         :"@#{name}"
@@ -224,7 +224,7 @@ class Chef
     # `nil`
     #
     def default
-      return options[:default] if options.has_key?(:default)
+      return options[:default] if options.key?(:default)
       return Chef::DelayedEvaluator.new { name } if name_property?
       nil
     end
@@ -246,7 +246,7 @@ class Chef
     # @return [Boolean]
     #
     def desired_state?
-      return true if !options.has_key?(:desired_state)
+      return true if !options.key?(:desired_state)
       options[:desired_state]
     end
 
@@ -265,7 +265,7 @@ class Chef
     # @return [Boolean]
     #
     def has_default?
-      options.has_key?(:default) || name_property?
+      options.key?(:default) || name_property?
     end
 
     #
@@ -403,7 +403,7 @@ class Chef
     def set(resource, value)
       value = set_value(resource, input_to_stored_value(resource, value))
 
-      if options.has_key?(:deprecated)
+      if options.key?(:deprecated)
         Chef.deprecated(:property, options[:deprecated])
       end
 
@@ -463,7 +463,7 @@ class Chef
     #   this property.
     #
     def coerce(resource, value)
-      if options.has_key?(:coerce)
+      if options.key?(:coerce)
         # nil is never coerced
         unless value.nil?
           value = exec_in_resource(resource, options[:coerce], value)
@@ -511,9 +511,9 @@ class Chef
       # if you specify one of them in modified_options it overrides anything in
       # the original options.
       options = self.options
-      if modified_options.has_key?(:name_property) ||
-          modified_options.has_key?(:name_attribute) ||
-          modified_options.has_key?(:default)
+      if modified_options.key?(:name_property) ||
+          modified_options.key?(:name_attribute) ||
+          modified_options.key?(:default)
         options = options.reject { |k, v| k == :name_attribute || k == :name_property || k == :default }
       end
       self.class.new(options.merge(modified_options))
@@ -599,8 +599,8 @@ class Chef
     #
     # @api private
     def explicitly_accepts_nil?(resource)
-      options.has_key?(:coerce) ||
-        (options.has_key?(:is) && Chef::Mixin::ParamsValidate.send(:_pv_is, { name => nil }, name, options[:is]))
+      options.key?(:coerce) ||
+        (options.key?(:is) && Chef::Mixin::ParamsValidate.send(:_pv_is, { name => nil }, name, options[:is]))
     rescue Chef::Exceptions::ValidationFailed, Chef::Exceptions::CannotValidateStaticallyError
       false
     end
