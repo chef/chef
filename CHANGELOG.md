@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 14.3.24 -->
+## [v14.3.24](https://github.com/chef/chef/tree/v14.3.24) (2018-07-02)
 
 #### Merged Pull Requests
+- Pull in new InSpec and win32-service [#7405](https://github.com/chef/chef/pull/7405) ([tas50](https://github.com/tas50))
 - Rename the kitchen base test suite to end-to-end [#7385](https://github.com/chef/chef/pull/7385) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Pull in new InSpec and win32-service [#7405](https://github.com/chef/chef/pull/7405) ([tas50](https://github.com/tas50)) <!-- 14.3.24 -->
 - Rename the kitchen base test suite to end-to-end [#7385](https://github.com/chef/chef/pull/7385) ([tas50](https://github.com/tas50)) <!-- 14.3.23 -->
 - Switch powershell_exec mixin to use FFI instead of COM [#7380](https://github.com/chef/chef/pull/7380) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.3.23 -->
 - Add missing require knife [#7400](https://github.com/chef/chef/pull/7400) ([tas50](https://github.com/tas50)) <!-- 14.3.22 -->
