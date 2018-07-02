@@ -508,7 +508,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     it "calls the start command if one is specified" do
       new_resource.start_command "sc start #{chef_service_name}"
-      expect(provider).to receive(:shell_out!).with("#{new_resource.start_command}").and_return("Starting custom service")
+      expect(provider).to receive(:shell_out!).with((new_resource.start_command).to_s).and_return("Starting custom service")
       provider.start_service
       expect(new_resource.updated_by_last_action?).to be_truthy
     end
@@ -603,7 +603,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     it "calls the stop command if one is specified" do
       new_resource.stop_command "sc stop #{chef_service_name}"
-      expect(provider).to receive(:shell_out!).with("#{new_resource.stop_command}").and_return("Stopping custom service")
+      expect(provider).to receive(:shell_out!).with((new_resource.stop_command).to_s).and_return("Stopping custom service")
       provider.stop_service
       expect(new_resource.updated_by_last_action?).to be_truthy
     end
@@ -676,7 +676,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     it "calls the restart command if one is specified" do
       new_resource.restart_command "sc restart"
-      expect(provider).to receive(:shell_out!).with("#{new_resource.restart_command}")
+      expect(provider).to receive(:shell_out!).with((new_resource.restart_command).to_s)
       provider.restart_service
       expect(new_resource.updated_by_last_action?).to be_truthy
     end

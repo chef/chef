@@ -140,7 +140,7 @@ class Chef
               ui.error "The same version of this cookbook already exists on Supermarket."
               exit(1)
             else
-              ui.error "#{res['error_messages'][0]}"
+              ui.error (res['error_messages'][0]).to_s
               exit(1)
             end
           else

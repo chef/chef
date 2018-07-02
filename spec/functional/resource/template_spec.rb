@@ -112,7 +112,7 @@ describe Chef::Resource::Template do
     context "using single helper syntax referencing @node" do
       before do
         node.normal[:helper_test_attr] = "value from helper method"
-        resource.helper(:helper_method) { "#{@node[:helper_test_attr]}" }
+        resource.helper(:helper_method) { (@node[:helper_test_attr]).to_s }
       end
 
       it_behaves_like "a template with helpers"

@@ -70,7 +70,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
   before(:all) do
     File.delete("/etc/rc.d/init.d/chefinittest") if File.exists?("/etc/rc.d/init.d/chefinittest")
-    FileUtils.cp("#{File.join(File.dirname(__FILE__), "/../assets/chefinittest")}", "/etc/rc.d/init.d/chefinittest")
+    FileUtils.cp((File.join(File.dirname(__FILE__), "/../assets/chefinittest")).to_s, "/etc/rc.d/init.d/chefinittest")
   end
 
   after(:all) do

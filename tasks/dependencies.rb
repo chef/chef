@@ -25,14 +25,14 @@ namespace :dependencies do
   desc "Update all dependencies. dependencies:update to update as little as possible."
   task :update do |t, rake_args|
     # FIXME: probably broken, and needs less indirection
-    system("#{File.join(Dir.pwd, "ci", "dependency_update.sh")}")
+    system((File.join(Dir.pwd, "ci", "dependency_update.sh")).to_s)
   end
 
   desc "Force update (when adding new gems to Gemfiles)"
   task :force_update do |t, rake_args|
     # FIXME: probably broken, and needs less indirection
     FileUtils.rm_f(File.join(Dir.pwd, ".bundle", "config"))
-    system("#{File.join(Dir.pwd, "ci", "dependency_update.sh")}")
+    system((File.join(Dir.pwd, "ci", "dependency_update.sh")).to_s)
   end
 
   # Update all dependencies to the latest constraint-matching version

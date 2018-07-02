@@ -289,7 +289,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "installs with 64-bit arch in the property" do
         flush_cache
         yum_package.package_name("chef_rpm")
-        yum_package.arch("#{pkg_arch}")
+        yum_package.arch((pkg_arch).to_s)
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")

@@ -803,7 +803,7 @@ describe Chef::Provider::SystemdUnit do
       describe "#active?" do
         before(:each) do
           provider.current_resource = current_resource
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         context "when a user is specified" do
@@ -844,7 +844,7 @@ describe Chef::Provider::SystemdUnit do
       describe "#enabled?" do
         before(:each) do
           provider.current_resource = current_resource
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         context "when a user is specified" do
@@ -885,7 +885,7 @@ describe Chef::Provider::SystemdUnit do
       describe "#masked?" do
         before(:each) do
           provider.current_resource = current_resource
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         context "when a user is specified" do
@@ -926,7 +926,7 @@ describe Chef::Provider::SystemdUnit do
       describe "#static?" do
         before(:each) do
           provider.current_resource = current_resource
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         context "when a user is specified" do

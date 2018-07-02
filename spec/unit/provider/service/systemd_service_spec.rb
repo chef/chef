@@ -264,7 +264,7 @@ describe Chef::Provider::Service::Systemd do
         before(:each) do
           provider.current_resource = current_resource
           current_resource.service_name(service_name)
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         it "should call '#{systemctl_path} --system enable service_name' to enable the service" do
@@ -282,7 +282,7 @@ describe Chef::Provider::Service::Systemd do
         before(:each) do
           provider.current_resource = current_resource
           current_resource.service_name(service_name)
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         it "should call '#{systemctl_path} --system mask service_name' to mask the service" do
@@ -300,7 +300,7 @@ describe Chef::Provider::Service::Systemd do
         before(:each) do
           provider.current_resource = current_resource
           current_resource.service_name(service_name)
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         it "should return true if '#{systemctl_path} --system is-active service_name' returns 0" do
@@ -318,7 +318,7 @@ describe Chef::Provider::Service::Systemd do
         before(:each) do
           provider.current_resource = current_resource
           current_resource.service_name(service_name)
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         it "should return true if '#{systemctl_path} --system is-enabled service_name' returns 0" do
@@ -336,7 +336,7 @@ describe Chef::Provider::Service::Systemd do
         before(:each) do
           provider.current_resource = current_resource
           current_resource.service_name(service_name)
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
         it "should return true if '#{systemctl_path} --system is-enabled service_name' returns 'masked' and returns anything except 0" do

@@ -116,7 +116,7 @@ class Chef
               old_list = rc_conf_local.match(/^pkg_scripts="(.*)"/)
               old_list = old_list ? old_list[1].split(" ") : []
               new_list = old_list - [new_resource.service_name]
-              update_rcl rc_conf_local.sub(/^pkg_scripts="(.*)"/, pkg_scripts = "#{new_list.join(' ')}")
+              update_rcl rc_conf_local.sub(/^pkg_scripts="(.*)"/, pkg_scripts = (new_list.join(' ')).to_s)
             end
           end
         end

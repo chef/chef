@@ -136,8 +136,8 @@ describe Chef::Provider::Mount::Mount do
       # expand the target path to correct specs on Windows
       target = ::File.expand_path("/dev/mapper/target")
 
-      allow(::File).to receive(:symlink?).with("#{@new_resource.device}").and_return(true)
-      allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
+      allow(::File).to receive(:symlink?).with((@new_resource.device).to_s).and_return(true)
+      allow(::File).to receive(:readlink).with((@new_resource.device).to_s).and_return(target)
 
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "#{target} on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
@@ -150,8 +150,8 @@ describe Chef::Provider::Mount::Mount do
       # expand the target path to correct specs on Windows
       absolute_target = ::File.expand_path("/dev/xsdz1")
 
-      allow(::File).to receive(:symlink?).with("#{@new_resource.device}").and_return(true)
-      allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
+      allow(::File).to receive(:symlink?).with((@new_resource.device).to_s).and_return(true)
+      allow(::File).to receive(:readlink).with((@new_resource.device).to_s).and_return(target)
 
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "#{absolute_target} on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
@@ -205,8 +205,8 @@ describe Chef::Provider::Mount::Mount do
     it "should set enabled to true if the symlink target is in fstab" do
       target = "/dev/mapper/target"
 
-      allow(::File).to receive(:symlink?).with("#{@new_resource.device}").and_return(true)
-      allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
+      allow(::File).to receive(:symlink?).with((@new_resource.device).to_s).and_return(true)
+      allow(::File).to receive(:readlink).with((@new_resource.device).to_s).and_return(target)
 
       fstab = "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n"
 
@@ -219,8 +219,8 @@ describe Chef::Provider::Mount::Mount do
     it "should set enabled to true if the symlink target is relative and is in fstab - CHEF-4957" do
       target = "xsdz1"
 
-      allow(::File).to receive(:symlink?).with("#{@new_resource.device}").and_return(true)
-      allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
+      allow(::File).to receive(:symlink?).with((@new_resource.device).to_s).and_return(true)
+      allow(::File).to receive(:readlink).with((@new_resource.device).to_s).and_return(target)
 
       fstab = "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n"
 

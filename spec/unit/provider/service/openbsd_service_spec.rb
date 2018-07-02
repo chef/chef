@@ -189,7 +189,7 @@ describe Chef::Provider::Service::Openbsd do
         let(:lines) do
           [
           %Q{#{provider.builtin_service_enable_variable_name}_thing="YES"},
-          %Q{#{provider.builtin_service_enable_variable_name}},
+          (provider.builtin_service_enable_variable_name).to_s,
         ] end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!

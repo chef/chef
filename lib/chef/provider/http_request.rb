@@ -37,7 +37,7 @@ class Chef
         # CHEF-4762: we expect a nil return value from Chef::HTTP for a "200 Success" response
         # and false for a "304 Not Modified" response
         modified = @http.head(
-          "#{new_resource.url}",
+          (new_resource.url).to_s,
           new_resource.headers
         )
         logger.info("#{new_resource} HEAD to #{new_resource.url} successful")
@@ -54,7 +54,7 @@ class Chef
 
           message = check_message(new_resource.message)
           body = @http.get(
-            "#{new_resource.url}",
+            (new_resource.url).to_s,
             new_resource.headers
           )
           logger.info("#{new_resource} GET to #{new_resource.url} successful")
@@ -67,7 +67,7 @@ class Chef
         converge_by("#{new_resource} PATCH to #{new_resource.url}") do
           message = check_message(new_resource.message)
           body = @http.patch(
-            "#{new_resource.url}",
+            (new_resource.url).to_s,
             message,
             new_resource.headers
           )
@@ -81,7 +81,7 @@ class Chef
         converge_by("#{new_resource} PUT to #{new_resource.url}") do
           message = check_message(new_resource.message)
           body = @http.put(
-            "#{new_resource.url}",
+            (new_resource.url).to_s,
             message,
             new_resource.headers
           )
@@ -95,7 +95,7 @@ class Chef
         converge_by("#{new_resource} POST to #{new_resource.url}") do
           message = check_message(new_resource.message)
           body = @http.post(
-            "#{new_resource.url}",
+            (new_resource.url).to_s,
             message,
             new_resource.headers
           )
@@ -108,7 +108,7 @@ class Chef
       def action_delete
         converge_by("#{new_resource} DELETE to #{new_resource.url}") do
           body = @http.delete(
-            "#{new_resource.url}",
+            (new_resource.url).to_s,
             new_resource.headers
           )
           new_resource.updated_by_last_action(true)

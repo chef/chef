@@ -200,8 +200,8 @@ class Chef
           timeout: Chef::Config[:windows_service][:watchdog_timeout],
           logger: Chef::Log
         )
-        Chef::Log.trace "#{result.stdout}"
-        Chef::Log.trace "#{result.stderr}"
+        Chef::Log.trace (result.stdout).to_s
+        Chef::Log.trace (result.stderr).to_s
       rescue Mixlib::ShellOut::CommandTimeout => e
         Chef::Log.error "chef-client timed out\n(#{e})"
         Chef::Log.error(<<-EOF)

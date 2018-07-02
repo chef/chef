@@ -517,7 +517,7 @@ class Chef::Application::Client < Chef::Application
   def unforked_interval_error_message
     "Unforked chef-client interval runs are disabled in Chef 12." +
       "\nConfiguration settings:" +
-      "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+      ("\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]).to_s +
       "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 

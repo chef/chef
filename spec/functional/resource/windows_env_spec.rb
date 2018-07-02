@@ -188,7 +188,7 @@ describe Chef::Resource::WindowsEnv, :windows_only do
           test_resource.value("#{path_before};#{env_val}")
           test_resource.run_action(:create)
           expect(ENV["PATH"]).not_to include(env_val)
-          expect(ENV["PATH"]).to include("#{random_name}")
+          expect(ENV["PATH"]).to include((random_name).to_s)
         end
 
         after(:each) do

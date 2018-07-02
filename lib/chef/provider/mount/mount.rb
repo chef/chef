@@ -232,7 +232,7 @@ class Chef
         def device_logstring
           case @new_resource.device_type
           when :device
-            "#{device_real}"
+            (device_real).to_s
           when :label
             "#{device_real} with label #{@new_resource.device}"
           when :uuid

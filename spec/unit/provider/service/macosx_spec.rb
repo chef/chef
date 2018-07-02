@@ -167,7 +167,7 @@ SVC_LIST
 
               describe "running unsupported actions" do
                 before do
-                  allow(Dir).to receive(:glob).and_return(["#{plist}"], [])
+                  allow(Dir).to receive(:glob).and_return([(plist).to_s], [])
                   allow(File).to receive(:exists?).and_return([true], [])
                 end
                 it "should throw an exception when reload action is attempted" do
@@ -226,7 +226,7 @@ SVC_LIST
 
                 context "and plist for service is available" do
                   before do
-                    allow(Dir).to receive(:glob).and_return(["#{plist}"], [])
+                    allow(Dir).to receive(:glob).and_return([(plist).to_s], [])
                     provider.load_current_resource
                   end
 
@@ -237,7 +237,7 @@ SVC_LIST
 
                 describe "and several plists match service name" do
                   it "throws exception" do
-                    allow(Dir).to receive(:glob).and_return(["#{plist}",
+                    allow(Dir).to receive(:glob).and_return([(plist).to_s,
                                                 "/Users/wtf/something.plist"])
                     provider.load_current_resource
                     provider.define_resource_requirements
