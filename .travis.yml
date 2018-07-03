@@ -116,23 +116,25 @@ matrix:
   #   rvm: 2.5.1
   ### START TEST KITCHEN ONLY ###
   #
-  - rvm: 2.4.4
-    services: docker
-    sudo: required
-    gemfile: kitchen-tests/Gemfile
-    before_install:
-      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
-    before_script:
-      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-      - cd kitchen-tests
-    script:
-      - bundle exec kitchen test end-to-end-amazonlinux-2
-    after_failure:
-      - cat .kitchen/logs/kitchen.log
-    env:
-      - AMAZON=2
-      - KITCHEN_YAML=kitchen.travis.yml
+  # Amazon Linux 2 disabled pending fixes in omnitruck/mixlib-install
+  #
+  # - rvm: 2.4.4
+  #   services: docker
+  #   sudo: required
+  #   gemfile: kitchen-tests/Gemfile
+  #   before_install:
+  #     - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+  #     - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+  #   before_script:
+  #     - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+  #     - cd kitchen-tests
+  #   script:
+  #     - bundle exec kitchen test end-to-end-amazonlinux-2
+  #   after_failure:
+  #     - cat .kitchen/logs/kitchen.log
+  #   env:
+  #     - AMAZON=2
+  #     - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.4.4
     services: docker
     sudo: required
