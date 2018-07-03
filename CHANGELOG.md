@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.27 -->
-## [v14.3.27](https://github.com/chef/chef/tree/v14.3.27) (2018-07-03)
+<!-- latest_release 14.3.28 -->
+## [v14.3.28](https://github.com/chef/chef/tree/v14.3.28) (2018-07-03)
 
 #### Merged Pull Requests
-- More chefstyle updates [#7415](https://github.com/chef/chef/pull/7415) ([lamont-granquist](https://github.com/lamont-granquist))
+- chefstyle: fix Style/MutableConstant [#7417](https://github.com/chef/chef/pull/7417) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- chefstyle: fix Style/MutableConstant [#7417](https://github.com/chef/chef/pull/7417) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.28 -->
 - More chefstyle updates [#7415](https://github.com/chef/chef/pull/7415) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.27 -->
 - Chefstyle fixes [#7414](https://github.com/chef/chef/pull/7414) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.25 -->
 - Pull in new InSpec and win32-service [#7405](https://github.com/chef/chef/pull/7405) ([tas50](https://github.com/tas50)) <!-- 14.3.24 -->
