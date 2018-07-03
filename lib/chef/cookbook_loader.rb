@@ -93,7 +93,7 @@ class Chef
     def load_cookbook(cookbook_name)
       preload_cookbooks
 
-      return @cookbooks_by_name[cookbook_name] if @cookbooks_by_name.has_key?(cookbook_name)
+      return @cookbooks_by_name[cookbook_name] if @cookbooks_by_name.key?(cookbook_name)
 
       return nil unless @loaders_by_name.key?(cookbook_name.to_s)
 
@@ -112,7 +112,7 @@ class Chef
         end
       end
 
-      if @loaded_cookbooks.has_key?(cookbook_name)
+      if @loaded_cookbooks.key?(cookbook_name)
         cookbook_version = @loaded_cookbooks[cookbook_name].cookbook_version
         @cookbooks_by_name[cookbook_name] = cookbook_version
         @metadata[cookbook_name] = cookbook_version.metadata
@@ -121,7 +121,7 @@ class Chef
     end
 
     def [](cookbook)
-      if @cookbooks_by_name.has_key?(cookbook.to_sym) || load_cookbook(cookbook.to_sym)
+      if @cookbooks_by_name.key?(cookbook.to_sym) || load_cookbook(cookbook.to_sym)
         @cookbooks_by_name[cookbook.to_sym]
       else
         raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook}; did you forget to add metadata to a cookbook? (https://docs.chef.io/config_rb_metadata.html)"

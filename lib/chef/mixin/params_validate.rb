@@ -106,7 +106,7 @@ class Chef
           when false
             true
           when Hash
-            @validation_message[key] = validation.delete(:validation_message) if validation.has_key?(:validation_message)
+            @validation_message[key] = validation.delete(:validation_message) if validation.key?(:validation_message)
             validation.each do |check, carg|
               check_method = "_pv_#{check}"
               if respond_to?(check_method, true)
@@ -132,14 +132,14 @@ class Chef
       private
 
       def _validation_message(key, default)
-        @validation_message.has_key?(key) ? @validation_message[key] : default
+        @validation_message.key?(key) ? @validation_message[key] : default
       end
 
       # Return the value of a parameter, or nil if it doesn't exist.
       def _pv_opts_lookup(opts, key)
-        if opts.has_key?(key.to_s)
+        if opts.key?(key.to_s)
           opts[key.to_s]
-        elsif opts.has_key?(key.to_sym)
+        elsif opts.key?(key.to_sym)
           opts[key.to_sym]
         else
           nil
@@ -149,8 +149,8 @@ class Chef
       # Raise an exception if the parameter is not found.
       def _pv_required(opts, key, is_required = true, explicitly_allows_nil = false)
         if is_required
-          return true if opts.has_key?(key.to_s) && (explicitly_allows_nil || !opts[key.to_s].nil?)
-          return true if opts.has_key?(key.to_sym) && (explicitly_allows_nil || !opts[key.to_sym].nil?)
+          return true if opts.key?(key.to_s) && (explicitly_allows_nil || !opts[key.to_s].nil?)
+          return true if opts.key?(key.to_sym) && (explicitly_allows_nil || !opts[key.to_sym].nil?)
           raise Exceptions::ValidationFailed, _validation_message(key, "Required argument #{key.inspect} is missing!")
         end
         true
@@ -404,7 +404,7 @@ class Chef
       #   ```
       #
       def _pv_is(opts, key, to_be)
-        return true if !opts.has_key?(key.to_s) && !opts.has_key?(key.to_sym)
+        return true if !opts.key?(key.to_s) && !opts.key?(key.to_sym)
         value = _pv_opts_lookup(opts, key)
         to_be = [ to_be ].flatten(1)
         errors = []
@@ -454,10 +454,10 @@ class Chef
       #   ```
       #
       def _pv_coerce(opts, key, coercer)
-        if opts.has_key?(key.to_s)
+        if opts.key?(key.to_s)
           raise Exceptions::CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
           opts[key.to_s] = instance_exec(opts[key], &coercer)
-        elsif opts.has_key?(key.to_sym)
+        elsif opts.key?(key.to_sym)
           raise Exceptions::CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
           opts[key.to_sym] = instance_exec(opts[key], &coercer)
         end

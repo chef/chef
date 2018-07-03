@@ -58,7 +58,7 @@ class Chef
 
           json_depth = 5
 
-          if @json_format && @output_format_options.has_key?(:depth)
+          if @json_format && @output_format_options.key?(:depth)
             json_depth = @output_format_options[:depth]
           end
 

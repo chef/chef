@@ -724,8 +724,8 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should automatically provide each recipe" do
-      expect(metadata.providing.has_key?("test_cookbook")).to eq(true)
-      expect(metadata.providing.has_key?("test_cookbook::enlighten")).to eq(true)
+      expect(metadata.providing.key?("test_cookbook")).to eq(true)
+      expect(metadata.providing.key?("test_cookbook::enlighten")).to eq(true)
     end
 
   end

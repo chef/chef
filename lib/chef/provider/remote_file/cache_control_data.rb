@@ -146,11 +146,11 @@ class Chef
 
         def load_json_data
           path = sanitized_cache_file_path(sanitized_cache_file_basename)
-          if Chef::FileCache.has_key?(path)
+          if Chef::FileCache.key?(path)
             Chef::FileCache.load(path)
           else
             old_path = sanitized_cache_file_path(sanitized_cache_file_basename_md5)
-            if Chef::FileCache.has_key?(old_path)
+            if Chef::FileCache.key?(old_path)
               # We found an old cache control data file. We started using sha256 instead of md5
               # to name these. Upgrade the file to the new name.
               Chef::Log.trace("Found old cache control data file at #{old_path}. Moving to #{path}.")

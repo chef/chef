@@ -89,7 +89,7 @@ PATH
     chef-config (14.3.25)
       addressable
       fuzzyurl
-      mixlib-config (~> 2.0)
+      mixlib-config (>= 2.2.11, < 3.0)
       mixlib-shellout (~> 2.0)
       tomlrb (~> 1.2)
 
@@ -179,7 +179,7 @@ GEM
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.10)
+    mixlib-config (2.2.11)
       tomlrb
     mixlib-log (2.0.4)
     mixlib-shellout (2.3.2)
