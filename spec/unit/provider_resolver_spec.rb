@@ -887,7 +887,7 @@ describe Chef::ProviderResolver do
             },
           },
         },
-      }
+      }.freeze
 
     def self.create_provider_tests(providers, test, expected, filter)
       expected = expected.merge(providers.select { |key, value| key.is_a?(Symbol) })

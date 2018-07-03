@@ -61,7 +61,7 @@ end
 
 begin
   require "yard"
-  DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ]
+  DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ].freeze
   namespace :yard do
     desc "Create YARD documentation"
 

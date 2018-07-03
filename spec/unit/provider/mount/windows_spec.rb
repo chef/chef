@@ -29,8 +29,8 @@ class Chef
   end
 end
 
-GUID = "\\\\?\\Volume{578e72b5-6e70-11df-b5c5-000c29d4a7d9}\\"
-REMOTE = "\\\\server-name\\path"
+GUID = "\\\\?\\Volume{578e72b5-6e70-11df-b5c5-000c29d4a7d9}\\".freeze
+REMOTE = "\\\\server-name\\path".freeze
 
 describe Chef::Provider::Mount::Windows do
   before(:each) do

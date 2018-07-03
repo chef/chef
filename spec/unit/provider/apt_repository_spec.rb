@@ -23,7 +23,7 @@ require "spec_helper"
 #
 # Output of the command:
 # => apt-key adv --list-public-keys --with-fingerprint --with-colons
-APT_KEY_FINGER = <<~EOF
+APT_KEY_FINGER = <<~EOF.freeze
   tru:t:1:1488924856:0:3:1:5
   pub:-:1024:17:40976EAF437D05B5:2004-09-12:::-:Ubuntu Archive Automatic Signing Key <ftpmaster@ubuntu.com>::scESC:
   fpr:::::::::630239CC130E1A7FD81A27B140976EAF437D05B5:
@@ -38,7 +38,7 @@ EOF
 
 # Output of the command:
 # => gpg --with-fingerprint --with-colons [FILE]
-GPG_FINGER = <<~EOF
+GPG_FINGER = <<~EOF.freeze
   pub:-:1024:17:327574EE02A818DD:2009-04-22:::-:Cloudera Apt Repository:
   fpr:::::::::F36A89E33CC1BD0F71079007327574EE02A818DD:
   sub:-:2048:16:84080586D1CA74A1:2009-04-22::::

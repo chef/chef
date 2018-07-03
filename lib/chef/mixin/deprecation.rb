@@ -54,7 +54,7 @@ class Chef
     module Deprecation
 
       class DeprecatedObjectProxyBase
-        KEEPERS = %w{__id__ __send__ instance_eval == equal? initialize object_id}
+        KEEPERS = %w{__id__ __send__ instance_eval == equal? initialize object_id}.freeze
         instance_methods.each { |method_name| undef_method(method_name) unless KEEPERS.include?(method_name.to_s) }
       end
 

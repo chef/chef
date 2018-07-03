@@ -22,7 +22,7 @@ require "chef/chef_fs/file_system/base_fs_object"
 require "chef/chef_fs/file_system/exceptions"
 require "chef/chef_fs/file_system/nonexistent_fs_object"
 
-CHILD_FILES = %w{ test1.json test2.json skip test3.json skip2 test4 }
+CHILD_FILES = %w{ test1.json test2.json skip test3.json skip2 test4 }.freeze
 
 class TestDirectory < Chef::ChefFS::FileSystem::Repository::Directory
   def make_child_entry(name)

@@ -59,12 +59,12 @@ class Chef
                             :maintainer_email, :license, :platforms, :dependencies,
                             :providing, :attributes, :recipes, :version,
                             :source_url, :issues_url, :privacy, :chef_versions, :ohai_versions,
-                            :gems ]
+                            :gems ].freeze
 
       VERSION_CONSTRAINTS = { depends: DEPENDENCIES,
                               provides: PROVIDING,
                               chef_version: CHEF_VERSIONS,
-                              ohai_version: OHAI_VERSIONS }
+                              ohai_version: OHAI_VERSIONS }.freeze
 
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile

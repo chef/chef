@@ -245,7 +245,7 @@ describe Chef::Role do
     end
   end
 
-  ROLE_DSL = <<~EOR
+  ROLE_DSL = <<~EOR.freeze
     name "ceiling_cat"
     description "like Aliens, but furry"
 EOR

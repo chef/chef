@@ -36,7 +36,7 @@ DEFAULT_OPTIONS = {
   Logger: LOGGER,
   DocumentRoot: File.expand_path("#{Dir.tmpdir}/chef-118-sampledata")
   #:AccessLog => [] # Remove this option to enable the access log when debugging.
-}
+}.freeze
 
 webrick_opts = DEFAULT_OPTIONS.merge(server_opts)
 pp webrick_opts: webrick_opts

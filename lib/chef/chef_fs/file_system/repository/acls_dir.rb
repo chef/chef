@@ -28,7 +28,7 @@ class Chef
       module Repository
         class AclsDir < Repository::Directory
 
-          BARE_FILES = %w{ organization.json root }
+          BARE_FILES = %w{ organization.json root }.freeze
 
           def can_have_child?(name, is_dir)
             is_dir ? Chef::ChefFS::FileSystem::ChefServer::AclsDir::ENTITY_TYPES.include?(name) : BARE_FILES.include?(name)

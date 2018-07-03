@@ -25,7 +25,7 @@ class Chef
   class Knife
     class CookbookUpload < Knife
 
-      CHECKSUM = "checksum"
+      CHECKSUM = "checksum".freeze
       MATCH_CHECKSUM = /[0-9a-f]{32,}/
 
       deps do

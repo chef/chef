@@ -31,8 +31,8 @@ class Chef
 
         attr_reader :init_command, :rc_conf, :rc_conf_local, :enabled_state_found
 
-        RC_CONF_PATH = "/etc/rc.conf"
-        RC_CONF_LOCAL_PATH = "/etc/rc.conf.local"
+        RC_CONF_PATH = "/etc/rc.conf".freeze
+        RC_CONF_LOCAL_PATH = "/etc/rc.conf.local".freeze
 
         def initialize(new_resource, run_context)
           super

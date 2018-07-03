@@ -30,7 +30,7 @@ class Chef
     end
 
     class Base
-      BASE_URL = "https://docs.chef.io/deprecations_"
+      BASE_URL = "https://docs.chef.io/deprecations_".freeze
 
       attr_reader :message, :location
 

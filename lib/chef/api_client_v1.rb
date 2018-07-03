@@ -44,7 +44,7 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::ApiVersionRequestHandling
 
-    SUPPORTED_API_VERSIONS = [0, 1]
+    SUPPORTED_API_VERSIONS = [0, 1].freeze
 
     # Create a new Chef::ApiClientV1 object.
     def initialize

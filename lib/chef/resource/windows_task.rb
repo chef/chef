@@ -63,10 +63,10 @@ class Chef
       attr_accessor :exists, :task, :command_arguments
 
       SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', "SYSTEM", 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', "USERS"].freeze
-      VALID_WEEK_DAYS = %w{ mon tue wed thu fri sat sun * }
+      VALID_WEEK_DAYS = %w{ mon tue wed thu fri sat sun * }.freeze
       VALID_DAYS_OF_MONTH = ("1".."31").to_a << "last" << "lastday"
-      VALID_MONTHS = %w{JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC *}
-      VALID_WEEKS = %w{FIRST SECOND THIRD FOURTH LAST LASTDAY}
+      VALID_MONTHS = %w{JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC *}.freeze
+      VALID_WEEKS = %w{FIRST SECOND THIRD FOURTH LAST LASTDAY}.freeze
 
       def after_created
         if random_delay

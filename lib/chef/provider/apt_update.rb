@@ -25,8 +25,8 @@ class Chef
     class AptUpdate < Chef::Provider
       provides :apt_update, platform_family: "debian"
 
-      APT_CONF_DIR = "/etc/apt/apt.conf.d"
-      STAMP_DIR = "/var/lib/apt/periodic"
+      APT_CONF_DIR = "/etc/apt/apt.conf.d".freeze
+      STAMP_DIR = "/var/lib/apt/periodic".freeze
 
       def load_current_resource
       end

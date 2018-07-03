@@ -96,7 +96,7 @@ class Chef
     attr_reader :exception
     attr_reader :error_descriptions
 
-    PROTOCOL_VERSION = "0.1.0"
+    PROTOCOL_VERSION = "0.1.0".freeze
 
     def initialize(rest_client)
       if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
