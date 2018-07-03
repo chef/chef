@@ -271,6 +271,70 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
           config_loader.load
           expect(ChefConfig::Config.config_file).to eq(explicit_config_location)
         end
+
+        it "loads a default value for node_name" do
+          allow(Etc).to receive(:getlogin).and_return("notauser")
+          config_loader.load
+          expect(ChefConfig::Config.node_name).to eq("notauser")
+        end
+
+        context "with a user.pem" do
+          before do
+            allow(Etc).to receive(:getlogin).and_return("notauser")
+            allow(FileTest).to receive(:exist?).and_call_original
+            allow(FileTest).to receive(:exist?).with(File.expand_path("../notauser.pem", explicit_config_location)).and_return(false)
+            allow(FileTest).to receive(:exist?).with(File.expand_path("../user.pem", explicit_config_location)).and_return(true)
+          end
+
+          it "loads a default value for client_key" do
+            config_loader.load
+            expect(ChefConfig::Config.client_key).to eq(File.expand_path("../user.pem", explicit_config_location))
+          end
+        end
+
+        context "with a notauser.pem" do
+          before do
+            allow(Etc).to receive(:getlogin).and_return("notauser")
+            allow(FileTest).to receive(:exist?).and_call_original
+            allow(FileTest).to receive(:exist?).with(File.expand_path("../notauser.pem", explicit_config_location)).and_return(true)
+            allow(FileTest).to receive(:exist?).with(File.expand_path("../user.pem", explicit_config_location)).and_return(false)
+          end
+
+          it "loads a default value for client_key" do
+            config_loader.load
+            expect(ChefConfig::Config.client_key).to eq(File.expand_path("../notauser.pem", explicit_config_location))
+          end
+        end
+
+        context "with a valclient.pem" do
+          before do
+            ChefConfig::Config.validation_client_name = "valclient"
+            allow(FileTest).to receive(:exist?).and_call_original
+            allow(FileTest).to receive(:exist?).with(File.expand_path("../valclient.pem", explicit_config_location)).and_return(true)
+            allow(FileTest).to receive(:exist?).with(File.expand_path("../validator.pem", explicit_config_location)).and_return(false)
+            allow(FileTest).to receive(:exist?).with(File.expand_path("../validation.pem", explicit_config_location)).and_return(false)
+          end
+
+          it "loads a default value for validation_key" do
+            config_loader.load
+            expect(ChefConfig::Config.validation_key).to eq(File.expand_path("../valclient.pem", explicit_config_location))
+          end
+        end
+
+        context "with a validator.pem" do
+          before do
+            ChefConfig::Config.validation_client_name = "valclient"
+            allow(FileTest).to receive(:exist?).and_call_original
+            allow(FileTest).to receive(:exist?).with(File.expand_path("../valclient.pem", explicit_config_location)).and_return(false)
+            allow(FileTest).to receive(:exist?).with(File.expand_path("../validator.pem", explicit_config_location)).and_return(true)
+            allow(FileTest).to receive(:exist?).with(File.expand_path("../validation.pem", explicit_config_location)).and_return(false)
+          end
+
+          it "loads a default value for validation_key" do
+            config_loader.load
+            expect(ChefConfig::Config.validation_key).to eq(File.expand_path("../validator.pem", explicit_config_location))
+          end
+        end
       end
 
       context "and has a syntax error" do

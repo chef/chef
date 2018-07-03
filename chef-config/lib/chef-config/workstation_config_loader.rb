@@ -83,6 +83,8 @@ module ChefConfig
       end
 
       load_dot_d(Config[:config_d_dir]) if Config[:config_d_dir]
+
+      apply_defaults
     end
 
     # (Private API, public for test purposes)
@@ -208,6 +210,54 @@ module ChefConfig
         message << highlight_config_error(config_file_path, line_nr.to_i)
       end
       raise ChefConfig::ConfigurationError, message
+    end
+
+    # Apply default configuration values for workstation-style tools.
+    #
+    # Global defaults should go in {ChefConfig::Config} instead, this is only
+    # for things like `knife` and `chef`.
+    #
+    # @api private
+    # @since 14.3
+    # @return [void]
+    def apply_defaults
+      # If we don't have a better guess use the username.
+      Config[:node_name] ||= Etc.getlogin
+      # If we don't have a key (path or inline) check user.pem and $node_name.pem.
+      unless Config.has_key?(:client_key) || Config.has_key?(:client_key_contents)
+        Config[:client_key] = find_default_key(["#{Config[:node_name]}.pem", "user.pem"])
+      end
+      # Similarly look for a validation key file, though this should be less
+      # common these days.
+      unless Config.has_key?(:validation_key) || Config.has_key?(:validation_key_contents)
+        Config[:validation_key] = find_default_key(["#{Config[:validation_client_name]}.pem", "validator.pem", "validation.pem"])
+      end
+    end
+
+    # Look for a default key file.
+    #
+    # This searches for any of a list of possible default keys, checking both
+    # the local `.chef/` folder and the home directory `~/.chef/`. Returns `nil`
+    # if no matching file is found.
+    #
+    # @api private
+    # @since 14.3
+    # @param key_names [Array<String>] A list of possible filenames to check for.
+    #   The first one found will be returned.
+    # @return [String, nil]
+    def find_default_key(key_names)
+      key_names.each do |filename|
+        path = Pathname.new(filename)
+        # If we have a config location (like ./.chef/), look there first.
+        if config_location
+          local_path = path.expand_path(File.dirname(config_location))
+          return local_path.to_s if local_path.exist?
+        end
+        # Then check ~/.chef.
+        home_path = path.expand_path(home_chef_dir)
+        return home_path.to_s if home_path.exist?
+      end
+      nil
     end
 
     def highlight_config_error(file, line)
