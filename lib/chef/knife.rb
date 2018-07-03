@@ -340,7 +340,7 @@ class Chef
     # overwrite.
     def config_file_settings
       cli_keys.each_with_object({}) do |key, memo|
-        memo[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
+        memo[key] = Chef::Config[:knife][key] if Chef::Config[:knife].key?(key)
       end
     end
 
@@ -380,11 +380,11 @@ class Chef
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
       Chef::Config[:environment]       = config[:environment]     if config[:environment]
 
-      Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+      Chef::Config.local_mode = config[:local_mode] if config.key?(:local_mode)
 
-      Chef::Config.listen = config[:listen] if config.has_key?(:listen)
+      Chef::Config.listen = config[:listen] if config.key?(:listen)
 
-      if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+      if Chef::Config.local_mode && !Chef::Config.key?(:cookbook_path) && !Chef::Config.key?(:chef_repo_path)
         Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
       end
       Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]

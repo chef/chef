@@ -210,7 +210,7 @@ class Chef
         elsif path[0] == "policy_groups" && path[2] == "policies"
           # Just set or create the proper entry in the hash
           update_json(to_chef_fs_path(path[0..1]), {}, *options) do |group|
-            if policies.has_key?(path[3])
+            if policies.key?(path[3])
               raise ChefZero::DataStore::DataAlreadyExistsError.new(path, group)
             end
 
@@ -319,7 +319,7 @@ class Chef
             result.each_pair do |key, value|
               if value.is_a?(Array)
                 value.each do |file|
-                  if file.is_a?(Hash) && file.has_key?("checksum")
+                  if file.is_a?(Hash) && file.key?("checksum")
                     relative = ["file_store", "repo", cookbook_type]
                     if chef_fs.versioned_cookbooks || cookbook_type == "cookbook_artifacts"
                       relative << "#{path[1]}-#{path[2]}"
@@ -398,7 +398,7 @@ class Chef
         # DELETE /policy_groups/GROUP/policies/POLICY
         elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 4
           update_json(to_chef_fs_path(path[0..1]), {}) do |group|
-            unless group["policies"] && group["policies"].has_key?(path[3])
+            unless group["policies"] && group["policies"].key?(path[3])
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
             group["policies"].delete(path[3])
@@ -581,7 +581,7 @@ class Chef
         # /policy_groups/NAME/policies/POLICYNAME
         elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 4
           group = get_json(to_chef_fs_path(path[0..1]), {})
-          group["policies"] && group["policies"].has_key?(path[3])
+          group["policies"] && group["policies"].key?(path[3])
 
         else
           path_always_exists?(path) || Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path)).exists?
@@ -628,7 +628,7 @@ class Chef
         cookbook.each_pair do |key, value|
           if value.is_a?(Array)
             value.each do |file|
-              if file.is_a?(Hash) && file.has_key?("checksum")
+              if file.is_a?(Hash) && file.key?("checksum")
                 file_data = @memory_store.get(["file_store", "checksums", file["checksum"]])
                 cookbook_fs.add_file(File.join(cookbook_path, file["path"]), file_data)
               end

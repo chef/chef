@@ -106,7 +106,7 @@ class Chef
         if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
           merge_with.each do |key, merge_with_value|
             value =
-              if merge_onto.has_key?(key)
+              if merge_onto.key?(key)
                 hash_only_merge(merge_onto[key], merge_with_value)
               else
                 merge_with_value

@@ -244,7 +244,7 @@ class Chef::Application::Solo < Chef::Application
       # For back compat reasons, we need to ensure that we try and use the cache_path as a repo first
       Chef::Log.trace "Current chef_repo_path is #{Chef::Config.chef_repo_path}"
 
-      if !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+      if !Chef::Config.key?(:cookbook_path) && !Chef::Config.key?(:chef_repo_path)
         Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Chef::Config[:cache_path])
       end
 

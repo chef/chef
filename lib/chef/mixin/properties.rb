@@ -102,14 +102,14 @@ class Chef
 
           options = options.inject({}) { |memo, (key, value)| memo[key.to_sym] = value; memo }
 
-          options[:instance_variable_name] = :"@#{name}" if !options.has_key?(:instance_variable_name)
+          options[:instance_variable_name] = :"@#{name}" if !options.key?(:instance_variable_name)
           options[:name] = name
           options[:declared_in] = self
 
           if type == NOT_PASSED
             # If a type is not passed, the property derives from the
             # superclass property (if any)
-            if properties.has_key?(name)
+            if properties.key?(name)
               property = properties[name].derive(**options)
             else
               property = property_type(**options)

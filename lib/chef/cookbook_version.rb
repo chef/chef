@@ -184,7 +184,7 @@ class Chef
 
     # called from DSL
     def load_recipe(recipe_name, run_context)
-      unless recipe_filenames_by_name.has_key?(recipe_name)
+      unless recipe_filenames_by_name.key?(recipe_name)
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
       end
 

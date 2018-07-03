@@ -359,22 +359,18 @@ EOM
     end
 
     it "stores the control group" do
-      expect(ordered_control_groups).to receive(:has_key?).with(name).and_return(false)
+      expect(ordered_control_groups).to receive(:key?).with(name).and_return(false)
       allow(run_context.audits).to receive(:[]).with(name).and_return(control_group)
       expect(ordered_control_groups).to receive(:store)
         .with(name, control_group)
         .and_call_original
       reporter.control_group_started(name)
-      # stubbed :has_key? above, which is used by the have_key matcher,
-      # so instead we check the response to Hash's #key? because luckily
-      # #key? does not call #has_key?
-      expect(ordered_control_groups.key?(name)).to be true
       expect(ordered_control_groups[name]).to eq control_group
     end
 
     context "when a control group with the same name has been seen" do
       it "raises an exception" do
-        expect(ordered_control_groups).to receive(:has_key?).with(name).and_return(true)
+        expect(ordered_control_groups).to receive(:key?).with(name).and_return(true)
         expect { reporter.control_group_started(name) }.to raise_error(Chef::Exceptions::AuditControlGroupDuplicate)
       end
     end

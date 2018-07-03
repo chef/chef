@@ -68,7 +68,7 @@ class Chef
 
       def key_missing?(values, name)
         values.each do |v|
-          return true unless v.has_key?(name)
+          return true unless v.key?(name)
         end
         false
       end
@@ -120,7 +120,7 @@ class Chef
           end
         end
         new_resource.unscrubbed_values.each do |value|
-          if @name_hash.has_key?(value[:name].downcase)
+          if @name_hash.key?(value[:name].downcase)
             current_value = @name_hash[value[:name].downcase]
             if [:dword, :dword_big_endian, :qword].include? value[:type]
               value[:data] = value[:data].to_i
@@ -151,7 +151,7 @@ class Chef
           end
         end
         new_resource.unscrubbed_values.each do |value|
-          unless @name_hash.has_key?(value[:name].downcase)
+          unless @name_hash.key?(value[:name].downcase)
             converge_by_value = value
             converge_by_value[:data] = "*sensitive value suppressed*" if new_resource.sensitive
 
@@ -165,7 +165,7 @@ class Chef
       def action_delete
         if registry.key_exists?(new_resource.key)
           new_resource.unscrubbed_values.each do |value|
-            if @name_hash.has_key?(value[:name].downcase)
+            if @name_hash.key?(value[:name].downcase)
               converge_by_value = value
               converge_by_value[:data] = "*sensitive value suppressed*" if new_resource.sensitive
 

@@ -39,7 +39,7 @@ class Chef::EncryptedDataBagItem
     # true only when there is an exact match between the VersionXEncryptor
     # keys and the hash's keys.
     def looks_like_encrypted?(data)
-      return false unless data.is_a?(Hash) && data.has_key?("version")
+      return false unless data.is_a?(Hash) && data.key?("version")
       case data["version"]
         when 1
           Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor.encryptor_keys.sort == data.keys.sort

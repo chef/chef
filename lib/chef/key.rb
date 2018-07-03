@@ -203,9 +203,9 @@ class Chef
 
     class << self
       def from_hash(key_hash)
-        if key_hash.has_key?("user")
+        if key_hash.key?("user")
           key = Chef::Key.new(key_hash["user"], "user")
-        elsif key_hash.has_key?("client")
+        elsif key_hash.key?("client")
           key = Chef::Key.new(key_hash["client"], "client")
         else
           raise Chef::Exceptions::MissingKeyAttribute, "The hash passed to from_hash does not contain the key 'user' or 'client'. Please pass a hash that defines one of those keys."

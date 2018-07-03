@@ -208,7 +208,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     it "sets the repo path" do
       expect(Chef::Config).to receive(:find_chef_repo_path).and_return("/var/chef")
       app.reconfigure
-      expect(Chef::Config.has_key?(:chef_repo_path)).to be_truthy
+      expect(Chef::Config.key?(:chef_repo_path)).to be_truthy
       expect(Chef::Config[:chef_repo_path]).to eq ("/var/chef")
     end
 
