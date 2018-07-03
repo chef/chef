@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.28 -->
-## [v14.3.28](https://github.com/chef/chef/tree/v14.3.28) (2018-07-03)
+<!-- latest_release 14.3.29 -->
+## [v14.3.29](https://github.com/chef/chef/tree/v14.3.29) (2018-07-03)
 
 #### Merged Pull Requests
-- chefstyle: fix Style/MutableConstant [#7417](https://github.com/chef/chef/pull/7417) ([lamont-granquist](https://github.com/lamont-granquist))
+- knife config and a bunch of UX improvements [#7390](https://github.com/chef/chef/pull/7390) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- knife config and a bunch of UX improvements [#7390](https://github.com/chef/chef/pull/7390) ([coderanger](https://github.com/coderanger)) <!-- 14.3.29 -->
 - chefstyle: fix Style/MutableConstant [#7417](https://github.com/chef/chef/pull/7417) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.28 -->
 - More chefstyle updates [#7415](https://github.com/chef/chef/pull/7415) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.27 -->
 - Chefstyle fixes [#7414](https://github.com/chef/chef/pull/7414) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.25 -->
