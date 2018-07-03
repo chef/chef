@@ -35,7 +35,7 @@ class Chef::Application::Client < Chef::Application
   include ChefConfig::Mixin::DotD
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
-  SELF_PIPE = []
+  SELF_PIPE = [] # rubocop:disable Style/MutableConstant
 
   option :config_file,
     short: "-c CONFIG",

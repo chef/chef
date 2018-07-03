@@ -234,7 +234,7 @@ class Chef
       end
     end
 
-    OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack azure google linode push vcenter lpar}
+    OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack azure google linode push vcenter lpar}.freeze
 
     class << self
       def list_commands(preferred_category = nil)

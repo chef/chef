@@ -31,7 +31,7 @@ class Chef
   # inspired by http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
   class CookbookSiteStreamingUploader
 
-    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION } # rubocop:disable Naming/ConstantName
+    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION }.freeze # rubocop:disable Naming/ConstantName
 
     class << self
 

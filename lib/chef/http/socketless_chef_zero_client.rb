@@ -131,7 +131,7 @@ class Chef
         505 => "HTTP Version Not Supported",
         507 => "Insufficient Storage",
         511 => "Network Authentication Required",
-      }
+      }.freeze
 
       STATUS_MESSAGE.each_value { |v| v.freeze }
       STATUS_MESSAGE.freeze

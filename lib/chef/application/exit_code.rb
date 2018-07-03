@@ -36,11 +36,11 @@ class Chef
         REBOOT_FAILED: 41,
         AUDIT_MODE_FAILURE: 42,
         CLIENT_UPGRADED: 213,
-      }
+      }.freeze
 
       DEPRECATED_RFC_062_EXIT_CODES = {
         DEPRECATED_FAILURE: -1,
-      }
+      }.freeze
 
       class << self
 

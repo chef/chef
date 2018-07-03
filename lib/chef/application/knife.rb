@@ -23,7 +23,7 @@ require "chef/monkey_patches/net_http.rb"
 
 class Chef::Application::Knife < Chef::Application
 
-  NO_COMMAND_GIVEN = "You need to pass a sub-command (e.g., knife SUB-COMMAND)\n"
+  NO_COMMAND_GIVEN = "You need to pass a sub-command (e.g., knife SUB-COMMAND)\n".freeze
 
   banner "Usage: knife sub-command (options)"
 

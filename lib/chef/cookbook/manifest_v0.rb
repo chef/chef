@@ -24,7 +24,7 @@ class Chef
 
       minimum_api_version 0
 
-      COOKBOOK_SEGMENTS = %w{ resources providers recipes definitions libraries attributes files templates root_files }
+      COOKBOOK_SEGMENTS = %w{ resources providers recipes definitions libraries attributes files templates root_files }.freeze
 
       def self.from_hash(hash)
         response = Mash.new(hash)

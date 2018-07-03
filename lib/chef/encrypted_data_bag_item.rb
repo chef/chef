@@ -47,8 +47,8 @@ require "open-uri"
 # such nodes in the infrastructure.
 #
 class Chef::EncryptedDataBagItem
-  ALGORITHM = "aes-256-cbc"
-  AEAD_ALGORITHM = "aes-256-gcm"
+  ALGORITHM = "aes-256-cbc".freeze
+  AEAD_ALGORITHM = "aes-256-gcm".freeze
 
   #
   # === Synopsis

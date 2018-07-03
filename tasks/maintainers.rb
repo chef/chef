@@ -25,7 +25,7 @@ REPOSITORIES = ["chef/chef", "chef/chef-dk", "chef/chef-census", "chef/chef-repo
                 "chef/client-docs", "chef/ffi-yajl", "chef/libyajl2-gem",
                 "chef/mixlib-authentication", "chef/mixlib-cli",
                 "chef/mixlib-config", "chef/mixlib-install", "chef/mixlib-log",
-                "chef/mixlib-shellout", "chef/ohai", "chef/omnibus-chef"]
+                "chef/mixlib-shellout", "chef/ohai", "chef/omnibus-chef"].freeze
 
 begin
   require "tomlrb"

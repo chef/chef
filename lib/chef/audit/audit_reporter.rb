@@ -28,7 +28,7 @@ class Chef
       attr_reader :rest_client, :audit_data, :ordered_control_groups, :run_status
       private :rest_client, :audit_data, :ordered_control_groups, :run_status
 
-      PROTOCOL_VERSION = "0.1.1"
+      PROTOCOL_VERSION = "0.1.1".freeze
 
       def initialize(rest_client)
         @rest_client = rest_client

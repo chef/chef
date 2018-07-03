@@ -28,7 +28,7 @@ class Chef
         automatic: SERVICE_AUTO_START,
         manual: SERVICE_DEMAND_START,
         disabled: SERVICE_DISABLED,
-      }
+      }.freeze
 
       # Until #1773 is resolved, you need to manually specify the windows_service resource
       # to use action :configure_startup and attribute startup_type

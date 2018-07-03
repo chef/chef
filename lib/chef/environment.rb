@@ -29,7 +29,7 @@ require "chef/server_api"
 class Chef
   class Environment
 
-    DEFAULT = "default"
+    DEFAULT = "default".freeze
 
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::FromFile

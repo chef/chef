@@ -38,7 +38,7 @@ module TinyServer
       # SSLEnable: options[:ssl],
       # SSLCertName: [ [ 'CN', WEBrick::Utils::getservername ] ],
       AccessLog: [], # Remove this option to enable the access log when debugging.
-    }
+    }.freeze
 
     def initialize(**options)
       @options = DEFAULT_OPTIONS.merge(options)
@@ -101,10 +101,10 @@ module TinyServer
   class API
     include Singleton
 
-    GET     = "GET"
-    PUT     = "PUT"
-    POST    = "POST"
-    DELETE  = "DELETE"
+    GET     = "GET".freeze
+    PUT     = "PUT".freeze
+    POST    = "POST".freeze
+    DELETE  = "DELETE".freeze
 
     attr_reader :routes
 
@@ -170,7 +170,7 @@ module TinyServer
   end
 
   class Response
-    HEADERS = { "Content-Type" => "application/json" }
+    HEADERS = { "Content-Type" => "application/json" }.freeze
 
     def initialize(response_code = 200, data = nil, headers = nil, &block)
       @response_code, @data = response_code, data

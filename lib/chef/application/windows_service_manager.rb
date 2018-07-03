@@ -163,9 +163,9 @@ class Chef
       private
 
       # Just some state constants
-      STOPPED = "stopped"
-      RUNNING = "running"
-      PAUSED = "paused"
+      STOPPED = "stopped".freeze
+      RUNNING = "running".freeze
+      PAUSED = "paused".freeze
 
       def service_exists?
         ::Win32::Service.exists?(@service_name)

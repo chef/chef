@@ -23,7 +23,7 @@ class Chef
 
     module APIErrorFormatting
 
-      NETWORK_ERROR_CLASSES = [Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError]
+      NETWORK_ERROR_CLASSES = [Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError].freeze
 
       def describe_network_errors(error_description)
         error_description.section("Networking Error:", <<~E)

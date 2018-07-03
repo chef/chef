@@ -19,7 +19,7 @@ ALL_EXPANDED_PERMISSIONS = ["generic read",
                             "execute / traverse",
                             "delete child",
                             "read attributes",
-                            "write attributes"]
+                            "write attributes"].freeze
 
 shared_examples_for "a securable resource with reporting" do
 

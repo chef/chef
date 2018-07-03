@@ -44,7 +44,7 @@ class Chef
         "users" => "user",
         "policies" => "policy",
         "policy_groups" => "policy_group",
-      }
+      }.freeze
       INFLECTIONS.each { |k, v| k.freeze; v.freeze }
       INFLECTIONS.freeze
 

@@ -42,7 +42,7 @@ class Chef
     def_delegator :@cookbook_manifest, :files_for
     def_delegator :@cookbook_manifest, :each_file
 
-    COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
+    COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ].freeze
 
     attr_reader :all_files
 

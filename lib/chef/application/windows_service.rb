@@ -59,7 +59,7 @@ class Chef
         description: "Set the number of seconds to wait between chef-client runs",
         proc: lambda { |s| s.to_i }
 
-      DEFAULT_LOG_LOCATION ||= "#{ENV['SYSTEMDRIVE']}/chef/client.log"
+      DEFAULT_LOG_LOCATION ||= "#{ENV['SYSTEMDRIVE']}/chef/client.log".freeze
 
       def service_init
         @service_action_mutex = Mutex.new

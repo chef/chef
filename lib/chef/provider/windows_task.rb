@@ -47,7 +47,7 @@ class Chef
           OCT: TaskScheduler::OCTOBER,
           NOV: TaskScheduler::NOVEMBER,
           DEC: TaskScheduler::DECEMBER,
-        }
+        }.freeze
 
         DAYS_OF_WEEK = { MON: TaskScheduler::MONDAY,
                          TUE: TaskScheduler::TUESDAY,
@@ -55,14 +55,14 @@ class Chef
                          THU: TaskScheduler::THURSDAY,
                          FRI: TaskScheduler::FRIDAY,
                          SAT: TaskScheduler::SATURDAY,
-                         SUN: TaskScheduler::SUNDAY }
+                         SUN: TaskScheduler::SUNDAY }.freeze
 
         WEEKS_OF_MONTH = {
           FIRST: TaskScheduler::FIRST_WEEK,
           SECOND: TaskScheduler::SECOND_WEEK,
           THIRD: TaskScheduler::THIRD_WEEK,
           FOURTH: TaskScheduler::FOURTH_WEEK,
-        }
+        }.freeze
 
         DAYS_OF_MONTH = {
           1 => TaskScheduler::TASK_FIRST,
@@ -96,7 +96,7 @@ class Chef
           29 => TaskScheduler::TASK_TWENTY_NINTH,
           30 => TaskScheduler::TASK_THIRTYETH,
           31 => TaskScheduler::TASK_THIRTY_FIRST,
-        }
+        }.freeze
 
         def load_current_resource
           @current_resource = Chef::Resource::WindowsTask.new(new_resource.name)

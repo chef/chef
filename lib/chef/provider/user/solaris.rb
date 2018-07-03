@@ -27,7 +27,7 @@ class Chef
         provides :solaris_user
         provides :user, os: %w{openindiana opensolaris illumos omnios solaris2 smartos}
 
-        PASSWORD_FILE = "/etc/shadow"
+        PASSWORD_FILE = "/etc/shadow".freeze
 
         def create_user
           shell_out!("useradd", universal_options, useradd_options, new_resource.username)
