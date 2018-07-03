@@ -1,15 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.25 -->
-## [v14.3.25](https://github.com/chef/chef/tree/v14.3.25) (2018-07-02)
+<!-- latest_release 14.3.29 -->
+## [v14.3.29](https://github.com/chef/chef/tree/v14.3.29) (2018-07-03)
 
 #### Merged Pull Requests
-- Chefstyle fixes [#7414](https://github.com/chef/chef/pull/7414) ([lamont-granquist](https://github.com/lamont-granquist))
+- knife config and a bunch of UX improvements [#7390](https://github.com/chef/chef/pull/7390) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- knife config and a bunch of UX improvements [#7390](https://github.com/chef/chef/pull/7390) ([coderanger](https://github.com/coderanger)) <!-- 14.3.29 -->
+- chefstyle: fix Style/MutableConstant [#7417](https://github.com/chef/chef/pull/7417) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.28 -->
+- More chefstyle updates [#7415](https://github.com/chef/chef/pull/7415) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.27 -->
 - Chefstyle fixes [#7414](https://github.com/chef/chef/pull/7414) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.25 -->
 - Pull in new InSpec and win32-service [#7405](https://github.com/chef/chef/pull/7405) ([tas50](https://github.com/tas50)) <!-- 14.3.24 -->
 - Rename the kitchen base test suite to end-to-end [#7385](https://github.com/chef/chef/pull/7385) ([tas50](https://github.com/tas50)) <!-- 14.3.23 -->

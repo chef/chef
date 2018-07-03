@@ -84,7 +84,7 @@ class Chef
           attr_reader :child_paths
           attr_reader :versioned_cookbooks
 
-          CHILDREN = %w{org.json invitations.json members.json}
+          CHILDREN = %w{org.json invitations.json members.json}.freeze
 
           def children
             @children ||= begin
@@ -96,7 +96,7 @@ class Chef
 
           def can_have_child?(name, is_dir)
             if is_dir
-              child_paths.has_key?(name)
+              child_paths.key?(name)
             elsif root_dir
               CHILDREN.include?(name)
             else

@@ -65,7 +65,7 @@ class Chef
         "Windows Server 2003" => { major: 5, minor: 2, callable: lambda { |product_type, suite_mask| get_system_metrics(SM_SERVERR2) == 0 } },
         "Windows XP" => { major: 5, minor: 1 },
         "Windows 2000" => { major: 5, minor: 0 },
-      }
+      }.freeze
 
       def initialize
         @major_version, @minor_version, @build_number = get_version

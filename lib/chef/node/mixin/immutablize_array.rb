@@ -121,7 +121,7 @@ class Chef
           :values_at,
           :zip,
           :|,
-        ]
+        ].freeze
         # A list of methods that mutate Array. Each of these is overridden to
         # raise an error, making this instances of this class more or less
         # immutable.
@@ -160,7 +160,7 @@ class Chef
           :uniq!,
           :unshift,
           :update,
-        ]
+        ].freeze
 
         # Redefine all of the methods that mutate a Hash to raise an error when called.
         # This is the magic that makes this object "Immutable"

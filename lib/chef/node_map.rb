@@ -138,7 +138,7 @@ EOH
     # @return [Object] Class
     #
     def get(node, key, canonical: nil)
-      return nil unless map.has_key?(key)
+      return nil unless map.key?(key)
       map[key].map do |matcher|
         return matcher[:klass] if node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
       end
@@ -158,7 +158,7 @@ EOH
     # @return [Object] Class
     #
     def list(node, key, canonical: nil)
-      return [] unless map.has_key?(key)
+      return [] unless map.key?(key)
       map[key].select do |matcher|
         node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
       end.map { |matcher| matcher[:klass] }

@@ -25,7 +25,7 @@ REPOSITORIES = ["chef/chef", "chef/chef-dk", "chef/chef-census", "chef/chef-repo
                 "chef/client-docs", "chef/ffi-yajl", "chef/libyajl2-gem",
                 "chef/mixlib-authentication", "chef/mixlib-cli",
                 "chef/mixlib-config", "chef/mixlib-install", "chef/mixlib-log",
-                "chef/mixlib-shellout", "chef/ohai", "chef/omnibus-chef"]
+                "chef/mixlib-shellout", "chef/ohai", "chef/omnibus-chef"].freeze
 
 begin
   require "tomlrb"
@@ -181,13 +181,13 @@ begin
 
   def format_components(cmp)
     out = "## " + cmp.delete("title") + "\n\n"
-    out << cmp.delete("text") + "\n" if cmp.has_key?("text")
-    out << "To mention the team, use @chef/#{cmp.delete("team")}\n\n" if cmp.has_key?("team")
-    if cmp.has_key?("lieutenant")
+    out << cmp.delete("text") + "\n" if cmp.key?("text")
+    out << "To mention the team, use @chef/#{cmp.delete("team")}\n\n" if cmp.key?("team")
+    if cmp.key?("lieutenant")
       out << "### Lieutenant\n\n"
       out << format_person(cmp.delete("lieutenant")) + "\n\n"
     end
-    out << format_maintainers(cmp.delete("maintainers")) + "\n" if cmp.has_key?("maintainers")
+    out << format_maintainers(cmp.delete("maintainers")) + "\n" if cmp.key?("maintainers")
     cmp.delete("paths")
     cmp.each_value { |v| out << format_components(v) }
     out

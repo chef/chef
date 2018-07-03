@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-BAD_RECIPE = <<~E
+BAD_RECIPE = <<~E.freeze
   #
   # Cookbook Name:: syntax-err
   # Recipe:: default

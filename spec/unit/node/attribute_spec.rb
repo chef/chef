@@ -522,20 +522,20 @@ describe Chef::Node::Attribute do
 
   describe "has_key?" do
     it "should return true if an attribute exists" do
-      expect(@attributes.has_key?("music")).to eq(true)
+      expect(@attributes.key?("music")).to eq(true)
     end
 
     it "should return false if an attribute does not exist" do
-      expect(@attributes.has_key?("ninja")).to eq(false)
+      expect(@attributes.key?("ninja")).to eq(false)
     end
 
     it "should return false if an attribute does not exist using dot notation" do
-      expect(@attributes.has_key?("does_not_exist_at_all")).to eq(false)
+      expect(@attributes.key?("does_not_exist_at_all")).to eq(false)
     end
 
     it "should return true if an attribute exists but is set to false" do
-      @attributes.has_key?("music")
-      expect(@attributes["music"].has_key?("apophis")).to eq(true)
+      @attributes.key?("music")
+      expect(@attributes["music"].key?("apophis")).to eq(true)
     end
 
     it "does not find keys above the current nesting level" do
@@ -886,11 +886,11 @@ describe Chef::Node::Attribute do
     end
 
     it "should return true if any key has the value supplied" do
-      expect(@attributes.has_value?("cookies")).to eq(true)
+      expect(@attributes.value?("cookies")).to eq(true)
     end
 
     it "should return false no key has the value supplied" do
-      expect(@attributes.has_value?("lololol")).to eq(false)
+      expect(@attributes.value?("lololol")).to eq(false)
     end
 
     it "should alias value?" do

@@ -218,10 +218,10 @@ describe Chef::CookbookSynchronizer do
 
   def setup_common_files_missing_expectations
     # Files are not in the cache:
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/recipes/default.rb")
       .and_return(false)
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/attributes/default.rb")
       .and_return(false)
 
@@ -247,10 +247,10 @@ describe Chef::CookbookSynchronizer do
   end
 
   def setup_no_lazy_files_and_templates_missing_expectations
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/files/default/megaman.conf")
       .and_return(false)
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/templates/default/apache2.conf.erb")
       .and_return(false)
 
@@ -275,10 +275,10 @@ describe Chef::CookbookSynchronizer do
 
   def setup_common_files_chksum_mismatch_expectations
     # Files are in the cache:
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/recipes/default.rb")
       .and_return(true)
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/attributes/default.rb")
       .and_return(true)
 
@@ -317,10 +317,10 @@ describe Chef::CookbookSynchronizer do
 
   def setup_no_lazy_files_and_templates_chksum_mismatch_expectations
     # Files are in the cache:
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/files/default/megaman.conf")
       .and_return(true)
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/templates/default/apache2.conf.erb")
       .and_return(true)
 
@@ -359,10 +359,10 @@ describe Chef::CookbookSynchronizer do
 
   def setup_common_files_present_expectations
     # Files are in the cache:
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/recipes/default.rb")
       .and_return(true)
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/attributes/default.rb")
       .and_return(true)
 
@@ -389,10 +389,10 @@ describe Chef::CookbookSynchronizer do
 
   def setup_no_lazy_files_and_templates_present_expectations
     # Files are in the cache:
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/files/default/megaman.conf")
       .and_return(true)
-    expect(file_cache).to receive(:has_key?)
+    expect(file_cache).to receive(:key?)
       .with("cookbooks/cookbook_a/templates/default/apache2.conf.erb")
       .and_return(true)
 

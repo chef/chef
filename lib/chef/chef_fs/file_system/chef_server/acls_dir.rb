@@ -28,7 +28,7 @@ class Chef
     module FileSystem
       module ChefServer
         class AclsDir < BaseFSDir
-          ENTITY_TYPES = %w{clients containers cookbook_artifacts cookbooks data_bags environments groups nodes policies policy_groups roles} # we don't read sandboxes, so we don't read their acls
+          ENTITY_TYPES = %w{clients containers cookbook_artifacts cookbooks data_bags environments groups nodes policies policy_groups roles}.freeze # we don't read sandboxes, so we don't read their acls
 
           def data_handler
             @data_handler ||= Chef::ChefFS::DataHandler::AclDataHandler.new

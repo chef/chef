@@ -286,7 +286,7 @@ module ChefConfig
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
           secondary_cache_path = PathHelper.join(user_home, ".chef")
-          ChefConfig.logger.info("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
+          ChefConfig.logger.trace("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
           secondary_cache_path
         else
           primary_cache_path
@@ -656,7 +656,15 @@ module ChefConfig
     #
     # If chef-zero is enabled, this defaults to nil (no authentication).
     default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/validation.pem") }
-    default :validation_client_name, "chef-validator"
+    default :validation_client_name do
+      # If the URL is set and looks like a normal Chef Server URL, extract the
+      # org name and use that as part of the default.
+      if chef_server_url.to_s =~ %r{/organizations/(.*)$}
+        "#{$1}-validator"
+      else
+        "chef-validator"
+      end
+    end
 
     default :validation_key_contents, nil
     # When creating a new client via the validation_client account, Chef 11
@@ -962,10 +970,10 @@ module ChefConfig
     # TODO add some post-file-parsing logic that automatically calls this so
     # users don't have to
     def self.export_proxies
-      export_proxy("http", http_proxy, http_proxy_user, http_proxy_pass) if http_proxy
-      export_proxy("https", https_proxy, https_proxy_user, https_proxy_pass) if https_proxy
-      export_proxy("ftp", ftp_proxy, ftp_proxy_user, ftp_proxy_pass) if ftp_proxy
-      export_no_proxy(no_proxy) if no_proxy
+      export_proxy("http", http_proxy, http_proxy_user, http_proxy_pass) if has_key?(:http_proxy) && http_proxy
+      export_proxy("https", https_proxy, https_proxy_user, https_proxy_pass) if has_key?(:https_proxy) && https_proxy
+      export_proxy("ftp", ftp_proxy, ftp_proxy_user, ftp_proxy_pass) if has_key?(:ftp_proxy) && ftp_proxy
+      export_no_proxy(no_proxy) if has_key?(:no_proxy) && no_proxy
     end
 
     # Character classes for Addressable

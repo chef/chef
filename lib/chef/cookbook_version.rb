@@ -42,7 +42,7 @@ class Chef
     def_delegator :@cookbook_manifest, :files_for
     def_delegator :@cookbook_manifest, :each_file
 
-    COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
+    COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ].freeze
 
     attr_reader :all_files
 
@@ -184,7 +184,7 @@ class Chef
 
     # called from DSL
     def load_recipe(recipe_name, run_context)
-      unless recipe_filenames_by_name.has_key?(recipe_name)
+      unless recipe_filenames_by_name.key?(recipe_name)
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
       end
 

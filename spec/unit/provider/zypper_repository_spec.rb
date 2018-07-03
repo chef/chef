@@ -20,14 +20,14 @@ require "spec_helper"
 
 # Output of the command:
 # => rpm -qa gpg-pubkey*
-RPM_KEYS = <<~EOF
+RPM_KEYS = <<~EOF.freeze
   gpg-pubkey-307e3d54-4be01a65
   gpg-pubkey-3dbdc284-53674dd4
 EOF
 
 # Output of the command:
 # => gpg --with-fingerprint [FILE]
-GPG_FINGER = <<~EOF
+GPG_FINGER = <<~EOF.freeze
   pub  2048R/3DBDC284 2011-08-19 [expires: 2024-06-14]
         Key fingerprint = 573B FD6B 3D8F BC64 1079  A6AB ABF5 BD82 7BD9 BF62
   uid                            nginx signing key <signing-key@nginx.com>

@@ -46,7 +46,7 @@ class Chef
         alias :reset :reset_cache
 
         def [](key)
-          if deep_merge_cache.has_key?(key.to_s)
+          if deep_merge_cache.key?(key.to_s)
             # return the cache of the deep merged values by top-level key
             deep_merge_cache[key.to_s]
           else

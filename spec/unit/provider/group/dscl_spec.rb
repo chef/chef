@@ -1,6 +1,6 @@
 #
 # Author:: Dreamcat4 (<dreamcat4@gmail.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -116,11 +116,11 @@ describe Chef::Provider::Group::Dscl do
 
   describe "gid_used?" do
     before do
-      allow(@provider).to receive(:safe_dscl).and_return(<<-eos
+      allow(@provider).to receive(:safe_dscl).and_return(<<-EOS
         someprogram		somethingElse:gid = (
             500
         )
-        eos
+        EOS
       )
     end
 

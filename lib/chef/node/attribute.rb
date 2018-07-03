@@ -69,14 +69,14 @@ class Chef
         :@env_default,
         :@role_default,
         :@force_default,
-      ]
+      ].freeze
 
       OVERRIDE_COMPONENTS = [
         :@override,
         :@role_override,
         :@env_override,
         :@force_override,
-      ]
+      ].freeze
 
       [:all?,
        :any?,
@@ -427,7 +427,7 @@ class Chef
 
       def has_key?(key)
         COMPONENTS.any? do |component_ivar|
-          instance_variable_get(component_ivar).has_key?(key)
+          instance_variable_get(component_ivar).key?(key)
         end
       end
        # method-style access to attributes (has to come after the prepended ImmutablizeHash)
@@ -497,7 +497,7 @@ class Chef
             if !val.respond_to?(:has_key?)
               # Have an Array-like thing
               val[path_arg]
-            elsif val.has_key?(path_arg)
+            elsif val.key?(path_arg)
               # Hash-like thing (must check has_key? first to protect against Autovivification)
               val[path_arg]
             else
@@ -578,7 +578,7 @@ class Chef
         if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
           merge_with.each do |key, merge_with_value|
             value =
-              if merge_onto.has_key?(key)
+              if merge_onto.key?(key)
                 deep_merge!(safe_dup(merge_onto[key]), merge_with_value)
               else
                 merge_with_value
@@ -614,7 +614,7 @@ class Chef
         if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
           merge_with.each do |key, merge_with_value|
             value =
-              if merge_onto.has_key?(key)
+              if merge_onto.key?(key)
                 hash_only_merge!(safe_dup(merge_onto[key]), merge_with_value)
               else
                 merge_with_value

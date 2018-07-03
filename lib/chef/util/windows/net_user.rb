@@ -60,7 +60,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     profile: :usri3_profile,
     home_dir_drive: :usri3_home_dir_drive,
     password_expired: :usri3_password_expired,
-  }
+  }.freeze
 
   def transform_usri3(args)
     args.inject({}) do |memo, (k, v)|

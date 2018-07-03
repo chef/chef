@@ -35,7 +35,7 @@ class Chef::Application::Client < Chef::Application
   include ChefConfig::Mixin::DotD
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
-  SELF_PIPE = []
+  SELF_PIPE = [] # rubocop:disable Style/MutableConstant
 
   option :config_file,
     short: "-c CONFIG",
@@ -316,18 +316,18 @@ class Chef::Application::Client < Chef::Application
 
     set_specific_recipes
 
-    Chef::Config[:fips] = config[:fips] if config.has_key? :fips
+    Chef::Config[:fips] = config[:fips] if config.key? :fips
 
-    Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
+    Chef::Config[:chef_server_url] = config[:chef_server_url] if config.key? :chef_server_url
 
-    Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+    Chef::Config.local_mode = config[:local_mode] if config.key?(:local_mode)
 
-    if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
+    if Chef::Config.key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
       Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
     end
 
-    if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+    if Chef::Config.local_mode && !Chef::Config.key?(:cookbook_path) && !Chef::Config.key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
 
@@ -384,7 +384,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def load_config_file
-    if !config.has_key?(:config_file) && !config[:disable_config]
+    if !config.key?(:config_file) && !config[:disable_config]
       if config[:local_mode]
         config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else

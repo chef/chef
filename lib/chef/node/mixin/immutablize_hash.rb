@@ -121,7 +121,7 @@ class Chef
           :values,
           :values_at,
           :zip,
-        ]
+        ].freeze
         DISALLOWED_MUTATOR_METHODS = [
           :[]=,
           :clear,
@@ -147,7 +147,7 @@ class Chef
           :update,
           :write!,
           :write,
-        ]
+        ].freeze
 
         # Redefine all of the methods that mutate a Hash to raise an error when called.
         # This is the magic that makes this object "Immutable"

@@ -55,7 +55,7 @@ class Chef
         :sort_by!,
         :uniq!,
         :unshift,
-      ]
+      ].freeze
 
       # For all of the methods that may mutate an Array, we override them to
       # also invalidate the cached merged_attributes on the root
@@ -140,7 +140,7 @@ class Chef
         :replace,
         :select!,
         :shift,
-      ]
+      ].freeze
 
       # For all of the mutating methods on Mash, override them so that they
       # also invalidate the cached `merged_attributes` on the root Attribute

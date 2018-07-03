@@ -36,7 +36,7 @@ class Chef
       FATAL_EVENT_ID = 10104
 
       # Since we must install the event logger, this is not really configurable
-      SOURCE = "Chef"
+      SOURCE = "Chef".freeze
 
       include Chef::Mixin::Unformatter
 

@@ -24,7 +24,7 @@ require "chef/chef_fs/file_system_cache"
 
 module KnifeSupport
   DEBUG = ENV["DEBUG"]
-  def knife(*args, input: nil)
+  def knife(*args, input: nil, instance_filter: nil)
     # Allow knife('role from file roles/blah.json') rather than requiring the
     # arguments to be split like knife('role', 'from', 'file', 'roles/blah.json')
     # If any argument will have actual spaces in it, the long form is required.
@@ -88,9 +88,15 @@ module KnifeSupport
         allow(File).to receive(:file?).and_call_original
         allow(File).to receive(:file?).with(File.expand_path("~/.chef/credentials")).and_return(false)
 
+        # Set a canary that is modified by the default null_config.rb config file.
         $__KNIFE_INTEGRATION_FAILSAFE_CHECK = "ole"
+
+        # Allow tweaking the knife instance before configuration.
+        instance_filter.call(instance) if instance_filter
+
         instance.configure_chef
 
+        # The canary is incorrect, meaning the normal null_config.rb didn't run. Something is wrong.
         unless $__KNIFE_INTEGRATION_FAILSAFE_CHECK == "ole ole"
           raise Exception, "Potential misconfiguration of integration tests detected. Aborting test."
         end

@@ -34,22 +34,22 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   include Chef::Win32ServiceConstants
 
   # Win32::Service.get_start_type
-  AUTO_START = "auto start"
-  MANUAL = "demand start"
-  DISABLED = "disabled"
+  AUTO_START = "auto start".freeze
+  MANUAL = "demand start".freeze
+  DISABLED = "disabled".freeze
 
   # Win32::Service.get_current_state
-  RUNNING = "running"
-  STOPPED = "stopped"
-  CONTINUE_PENDING = "continue pending"
-  PAUSE_PENDING = "pause pending"
-  PAUSED = "paused"
-  START_PENDING = "start pending"
-  STOP_PENDING  = "stop pending"
+  RUNNING = "running".freeze
+  STOPPED = "stopped".freeze
+  CONTINUE_PENDING = "continue pending".freeze
+  PAUSE_PENDING = "pause pending".freeze
+  PAUSED = "paused".freeze
+  START_PENDING = "start pending".freeze
+  STOP_PENDING  = "stop pending".freeze
 
   TIMEOUT = 60
 
-  SERVICE_RIGHT = "SeServiceLogonRight"
+  SERVICE_RIGHT = "SeServiceLogonRight".freeze
 
   def load_current_resource
     @current_resource = Chef::Resource::WindowsService.new(new_resource.name)
@@ -94,7 +94,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       logger.info "#{@new_resource} configured with #{new_config.inspect}"
 
       # LocalSystem is the default runas user, which is a special service account that should ultimately have the rights of BUILTIN\Administrators, but we wouldn't see that from get_account_right
-      if new_config.has_key?(:service_start_name) && new_config[:service_start_name].casecmp("localsystem") != 0
+      if new_config.key?(:service_start_name) && new_config[:service_start_name].casecmp("localsystem") != 0
         unless Chef::ReservedNames::Win32::Security.get_account_right(canonicalize_username(new_config[:service_start_name])).include?(SERVICE_RIGHT)
           grant_service_logon(new_config[:service_start_name])
         end

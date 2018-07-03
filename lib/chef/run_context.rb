@@ -433,7 +433,7 @@ ERROR_MESSAGE
     # @return [Boolean] `true` if the recipe has been loaded, `false` otherwise.
     #
     def loaded_fully_qualified_recipe?(cookbook, recipe)
-      loaded_recipes_hash.has_key?("#{cookbook}::#{recipe}")
+      loaded_recipes_hash.key?("#{cookbook}::#{recipe}")
     end
 
     #
@@ -468,7 +468,7 @@ ERROR_MESSAGE
     # @return [Boolean] `true` if the recipe has been loaded, `false` otherwise.
     #
     def loaded_fully_qualified_attribute?(cookbook, attribute_file)
-      loaded_attributes_hash.has_key?("#{cookbook}::#{attribute_file}")
+      loaded_attributes_hash.key?("#{cookbook}::#{attribute_file}")
     end
 
     #

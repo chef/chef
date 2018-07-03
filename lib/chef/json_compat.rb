@@ -59,7 +59,7 @@ class Chef
         opts ||= {}
         options_map = {}
         options_map[:pretty] = true
-        options_map[:indent] = opts[:indent] if opts.has_key?(:indent)
+        options_map[:indent] = opts[:indent] if opts.key?(:indent)
         to_json(obj, options_map).chomp
       end
 

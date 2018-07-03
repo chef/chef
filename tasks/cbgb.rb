@@ -68,12 +68,12 @@ begin
   end
 
   def person(list, person)
-    if list[person].has_key?("GitHub")
+    if list[person].key?("GitHub")
       out = "* [#{list[person]["Name"]}](https://github.com/#{list[person]["GitHub"]})"
     else
       out =  "* #{list[person]["Name"]}"
     end
-    if list[person].has_key?("Person")
+    if list[person].key?("Person")
       out << " - #{list[person]["Person"]}"
     end
     out

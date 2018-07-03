@@ -24,7 +24,7 @@ class Chef
     module FileSystem
       module ChefServer
         class AclEntry < RestListEntry
-          PERMISSIONS = %w{create read update delete grant}
+          PERMISSIONS = %w{create read update delete grant}.freeze
 
           def api_path
             "#{super}/_acl"

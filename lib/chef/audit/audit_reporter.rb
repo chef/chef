@@ -28,7 +28,7 @@ class Chef
       attr_reader :rest_client, :audit_data, :ordered_control_groups, :run_status
       private :rest_client, :audit_data, :ordered_control_groups, :run_status
 
-      PROTOCOL_VERSION = "0.1.1"
+      PROTOCOL_VERSION = "0.1.1".freeze
 
       def initialize(rest_client)
         @rest_client = rest_client
@@ -78,7 +78,7 @@ class Chef
       end
 
       def control_group_started(name)
-        if ordered_control_groups.has_key?(name)
+        if ordered_control_groups.key?(name)
           raise Chef::Exceptions::AuditControlGroupDuplicate.new(name)
         end
         metadata = run_context.audits[name].metadata

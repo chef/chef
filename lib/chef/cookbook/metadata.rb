@@ -59,12 +59,12 @@ class Chef
                             :maintainer_email, :license, :platforms, :dependencies,
                             :providing, :attributes, :recipes, :version,
                             :source_url, :issues_url, :privacy, :chef_versions, :ohai_versions,
-                            :gems ]
+                            :gems ].freeze
 
       VERSION_CONSTRAINTS = { depends: DEPENDENCIES,
                               provides: PROVIDING,
                               chef_version: CHEF_VERSIONS,
-                              ohai_version: OHAI_VERSIONS }
+                              ohai_version: OHAI_VERSIONS }.freeze
 
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
@@ -499,24 +499,24 @@ class Chef
       end
 
       def from_hash(o)
-        @name                         = o[NAME] if o.has_key?(NAME)
-        @description                  = o[DESCRIPTION] if o.has_key?(DESCRIPTION)
-        @long_description             = o[LONG_DESCRIPTION] if o.has_key?(LONG_DESCRIPTION)
-        @maintainer                   = o[MAINTAINER] if o.has_key?(MAINTAINER)
-        @maintainer_email             = o[MAINTAINER_EMAIL] if o.has_key?(MAINTAINER_EMAIL)
-        @license                      = o[LICENSE] if o.has_key?(LICENSE)
-        @platforms                    = o[PLATFORMS] if o.has_key?(PLATFORMS)
-        @dependencies                 = handle_deprecated_constraints(o[DEPENDENCIES]) if o.has_key?(DEPENDENCIES)
-        @providing                    = o[PROVIDING] if o.has_key?(PROVIDING)
-        @attributes                   = o[ATTRIBUTES] if o.has_key?(ATTRIBUTES)
-        @recipes                      = o[RECIPES] if o.has_key?(RECIPES)
-        @version                      = o[VERSION] if o.has_key?(VERSION)
-        @source_url                   = o[SOURCE_URL] if o.has_key?(SOURCE_URL)
-        @issues_url                   = o[ISSUES_URL] if o.has_key?(ISSUES_URL)
-        @privacy                      = o[PRIVACY] if o.has_key?(PRIVACY)
-        @chef_versions                = gem_requirements_from_array("chef", o[CHEF_VERSIONS]) if o.has_key?(CHEF_VERSIONS)
-        @ohai_versions                = gem_requirements_from_array("ohai", o[OHAI_VERSIONS]) if o.has_key?(OHAI_VERSIONS)
-        @gems                         = o[GEMS] if o.has_key?(GEMS)
+        @name                         = o[NAME] if o.key?(NAME)
+        @description                  = o[DESCRIPTION] if o.key?(DESCRIPTION)
+        @long_description             = o[LONG_DESCRIPTION] if o.key?(LONG_DESCRIPTION)
+        @maintainer                   = o[MAINTAINER] if o.key?(MAINTAINER)
+        @maintainer_email             = o[MAINTAINER_EMAIL] if o.key?(MAINTAINER_EMAIL)
+        @license                      = o[LICENSE] if o.key?(LICENSE)
+        @platforms                    = o[PLATFORMS] if o.key?(PLATFORMS)
+        @dependencies                 = handle_deprecated_constraints(o[DEPENDENCIES]) if o.key?(DEPENDENCIES)
+        @providing                    = o[PROVIDING] if o.key?(PROVIDING)
+        @attributes                   = o[ATTRIBUTES] if o.key?(ATTRIBUTES)
+        @recipes                      = o[RECIPES] if o.key?(RECIPES)
+        @version                      = o[VERSION] if o.key?(VERSION)
+        @source_url                   = o[SOURCE_URL] if o.key?(SOURCE_URL)
+        @issues_url                   = o[ISSUES_URL] if o.key?(ISSUES_URL)
+        @privacy                      = o[PRIVACY] if o.key?(PRIVACY)
+        @chef_versions                = gem_requirements_from_array("chef", o[CHEF_VERSIONS]) if o.key?(CHEF_VERSIONS)
+        @ohai_versions                = gem_requirements_from_array("ohai", o[OHAI_VERSIONS]) if o.key?(OHAI_VERSIONS)
+        @gems                         = o[GEMS] if o.key?(GEMS)
         self
       end
 
