@@ -76,7 +76,7 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
   instance_eval do
     ruby_exe_dir = RbConfig::CONFIG["bindir"]
     assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder", Dir.pwd) + "/*.dll")
-    FileUtils.cp_r assemblies, ruby_exe_dir, verbose: true unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
+    FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
     ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
   end
 end
