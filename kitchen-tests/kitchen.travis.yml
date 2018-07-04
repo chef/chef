@@ -12,7 +12,7 @@ provisioner:
   name: chef_github
   root_path: /opt/kitchen
   require_chef_omnibus: latest
-  chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
+  chef_omnibus_url: "https://omnitruck-acceptance.chef.io/install.sh"
   chef_omnibus_install_options: "-c current"
   github_owner: "chef"
   github_repo: "chef"
