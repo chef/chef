@@ -89,6 +89,7 @@ class Chef
        :count,
        :cycle,
        :detect,
+       :dig,
        :drop,
        :drop_while,
        :each,
