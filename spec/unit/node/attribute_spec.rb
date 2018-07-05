@@ -617,6 +617,46 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "dig" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  { "two" => "three" },
+          "hut" =>  { "two" => "three" },
+          "place" => {},
+        },
+        {
+          "one" => { "four" => "five" },
+          "hut" =>  { "two" => "masked" },
+          "snakes" => "on a plane",
+        },
+        {
+          "one" => { "six" => "seven" },
+          "snack" => "cookies",
+        },
+        {}
+      )
+    end
+
+    it "should return attribute if exists" do
+      expect(@attributes.dig("one", "two")).to eq("three")
+      expect(@attributes.dig("one", "four")).to eq("five")
+      expect(@attributes.dig("one", "six")).to eq("seven")
+      expect(@attributes.dig("hut", "two")).to eq("three")
+      expect(@attributes.dig("snakes")).to eq("on a plane")
+    end
+
+    it "should return nil if any key in chain is missing" do
+      expect(@attributes.dig("one", "ten")).to eq(nil)
+      expect(@attributes.dig("snacks", "are", "delicious")).to eq(nil)
+      expect(@attributes.dig("missing")).to eq(nil)
+    end
+
+    it "should raise a typeerror if chain contains incompatible type" do
+      expect { @attributes.dig("one", "two", "three") }.to raise_error(TypeError)
+    end
+  end
+
   describe "each" do
     before(:each) do
       @attributes = Chef::Node::Attribute.new(
