@@ -149,7 +149,7 @@ class Chef
         # @raise [RuntimeError] Raise if powershell is < 3.0
         def raise_on_old_powershell
           # be super defensive about the powershell lang plugin not being there
-          return if node["languages"] && node["languages"]["powershell"] && node["languages"]["powershell"]["version"].to_i > 3
+          return if node["languages"] && node["languages"]["powershell"] && node["languages"]["powershell"]["version"].to_i >= 3
           raise "The windows_feature_powershell resource requires PowerShell 3.0 or later. Please install PowerShell 3.0+ before running this resource." if powershell_version < 3
         end
 
