@@ -1,6 +1,6 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -102,18 +102,21 @@ class Chef
         def mount_fs
           unless @current_resource.mounted
             mountable?
-            command = "mount -t #{@new_resource.fstype}"
-            command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
+            command = [ "mount", "-t", @new_resource.fstype ]
+            unless @new_resource.options.nil? || @new_resource.options.empty?
+              command << "-o"
+              command << @new_resource.options.join(",")
+            end
             command << case @new_resource.device_type
                        when :device
-                         " #{device_real}"
+                         device_real
                        when :label
-                         " -L #{@new_resource.device}"
+                         [ "-L", @new_resource.device ]
                        when :uuid
-                         " -U #{@new_resource.device}"
+                         [ "-U", @new_resource.device ]
                        end
-            command << " #{@new_resource.mount_point}"
-            shell_out!(command)
+            command << @new_resource.mount_point
+            shell_out!(*command)
             logger.trace("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
             logger.trace("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
@@ -122,7 +125,7 @@ class Chef
 
         def umount_fs
           if @current_resource.mounted
-            shell_out!("umount #{@new_resource.mount_point}")
+            shell_out!("umount", @new_resource.mount_point)
             logger.trace("#{@new_resource} is no longer mounted at #{@new_resource.mount_point}")
           else
             logger.trace("#{@new_resource} is not mounted at #{@new_resource.mount_point}")
@@ -130,12 +133,12 @@ class Chef
         end
 
         def remount_command
-          "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.mount_point}"
+          [ "mount", "-o", "remount,#{@new_resource.options.join(',')}", @new_resource.mount_point ]
         end
 
         def remount_fs
           if @current_resource.mounted && @new_resource.supports[:remount]
-            shell_out!(remount_command)
+            shell_out!(*remount_command)
             @new_resource.updated_by_last_action(true)
             logger.trace("#{@new_resource} is remounted at #{@new_resource.mount_point}")
           elsif @current_resource.mounted
@@ -221,7 +224,7 @@ class Chef
               @real_device = @new_resource.device
             else
               @real_device = ""
-              ret = shell_out("/sbin/findfs #{device_fstab}")
+              ret = shell_out("/sbin/findfs", device_fstab)
               device_line = ret.stdout.lines.first # stdout.first consumes
               @real_device = device_line.chomp unless device_line.nil?
             end

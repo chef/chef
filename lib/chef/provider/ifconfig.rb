@@ -53,7 +53,7 @@ class Chef
 
         @ifconfig_version = nil
 
-        @net_tools_version = shell_out("ifconfig --version")
+        @net_tools_version = shell_out("ifconfig", "--version")
         @net_tools_version.stderr.each_line do |line|
           if line =~ /^net-tools (\d+.\d+)/
             @ifconfig_version = line.match(/^net-tools (\d+.\d+)/)[1]

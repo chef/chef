@@ -135,7 +135,7 @@ class Chef
       def action_start
         unless current_resource.active
           converge_by("starting unit: #{new_resource.unit_name}") do
-            systemctl_execute!(:start, new_resource.unit_name)
+            systemctl_execute!(:start, new_resource.unit_name, default_env: false)
           end
         end
       end
@@ -143,21 +143,21 @@ class Chef
       def action_stop
         if current_resource.active
           converge_by("stopping unit: #{new_resource.unit_name}") do
-            systemctl_execute!(:stop, new_resource.unit_name)
+            systemctl_execute!(:stop, new_resource.unit_name, default_env: false)
           end
         end
       end
 
       def action_restart
         converge_by("restarting unit: #{new_resource.unit_name}") do
-          systemctl_execute!(:restart, new_resource.unit_name)
+          systemctl_execute!(:restart, new_resource.unit_name, default_env: false)
         end
       end
 
       def action_reload
         if current_resource.active
           converge_by("reloading unit: #{new_resource.unit_name}") do
-            systemctl_execute!(:reload, new_resource.unit_name)
+            systemctl_execute!(:reload, new_resource.unit_name, default_env: false)
           end
         else
           logger.trace("#{new_resource.unit_name} is not active, skipping reload.")
@@ -166,19 +166,19 @@ class Chef
 
       def action_try_restart
         converge_by("try-restarting unit: #{new_resource.unit_name}") do
-          systemctl_execute!("try-restart", new_resource.unit_name)
+          systemctl_execute!("try-restart", new_resource.unit_name, default_env: false)
         end
       end
 
       def action_reload_or_restart
         converge_by("reload-or-restarting unit: #{new_resource.unit_name}") do
-          systemctl_execute!("reload-or-restart", new_resource.unit_name)
+          systemctl_execute!("reload-or-restart", new_resource.unit_name, default_env: false)
         end
       end
 
       def action_reload_or_try_restart
         converge_by("reload-or-try-restarting unit: #{new_resource.unit_name}") do
-          systemctl_execute!("reload-or-try-restart", new_resource.unit_name)
+          systemctl_execute!("reload-or-try-restart", new_resource.unit_name, default_env: false)
         end
       end
 
@@ -191,7 +191,7 @@ class Chef
       end
 
       def masked?
-        systemctl_execute(:status, new_resource.unit_name).stdout.include?("masked")
+        systemctl_execute("status", new_resource.unit_name).stdout.include?("masked")
       end
 
       def static?
@@ -219,19 +219,19 @@ class Chef
       end
 
       def daemon_reload
-        shell_out!("#{systemctl_cmd} daemon-reload", **systemctl_opts, default_env: false)
+        shell_out!(systemctl_cmd, "daemon-reload", **systemctl_opts, default_env: false)
       end
 
-      def systemctl_execute!(action, unit)
-        shell_out!("#{systemctl_cmd} #{action} #{Shellwords.escape(unit)}", **systemctl_opts, default_env: false)
+      def systemctl_execute!(action, unit, **options)
+        shell_out!(systemctl_cmd, action, unit, **systemctl_opts.merge(options))
       end
 
-      def systemctl_execute(action, unit)
-        shell_out("#{systemctl_cmd} #{action} #{Shellwords.escape(unit)}", **systemctl_opts)
+      def systemctl_execute(action, unit, **options)
+        shell_out(systemctl_cmd, action, unit, **systemctl_opts.merge(options))
       end
 
       def systemctl_cmd
-        @systemctl_cmd ||= "#{systemctl_path} #{systemctl_args}"
+        @systemctl_cmd ||= [ systemctl_path, systemctl_args ]
       end
 
       def systemctl_path

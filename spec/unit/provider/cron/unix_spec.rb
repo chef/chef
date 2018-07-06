@@ -66,12 +66,12 @@ describe Chef::Provider::Cron::Unix do
     before do
       allow(logger).to receive(:trace)
       allow(shell_out).to receive(:format_for_exception).and_return("formatted command output")
-      allow(provider).to receive(:shell_out).with("/usr/bin/crontab -l", user: username).and_return(shell_out)
+      allow(provider).to receive(:shell_out_compacted).with("/usr/bin/crontab", "-l", user: username).and_return(shell_out)
     end
 
     it "should call crontab -l with the user" do
       provider.send(:read_crontab)
-      expect(provider).to have_received(:shell_out).with("/usr/bin/crontab -l", user: username)
+      expect(provider).to have_received(:shell_out_compacted).with("/usr/bin/crontab", "-l", user: username)
     end
 
     it "should return the contents of the crontab" do
@@ -119,12 +119,12 @@ describe Chef::Provider::Cron::Unix do
       expect(tempfile).to receive(:chmod).with(420)
       expect(tempfile).to receive(:close!)
       allow(tempfile).to receive(:<<)
-      allow(provider).to receive(:shell_out).with("/usr/bin/crontab #{tempfile.path}", user: username).and_return(shell_out)
+      allow(provider).to receive(:shell_out_compacted).with("/usr/bin/crontab", tempfile.path, user: username).and_return(shell_out)
     end
 
     it "should call crontab for the user" do
       provider.send(:write_crontab, "Foo")
-      expect(provider).to have_received(:shell_out).with("/usr/bin/crontab #{tempfile.path}", user: username)
+      expect(provider).to have_received(:shell_out_compacted).with("/usr/bin/crontab", tempfile.path, user: username)
     end
 
     it "should call crontab with a file containing the crontab" do
