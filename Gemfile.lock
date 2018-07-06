@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: fac2105b132fddc5f671411b2b5f1cba7a2307c3
+  revision: c16b9ceab413259bda43a2d683f1f918c1be3db5
   branch: master
   specs:
     chefstyle (0.10.0)
@@ -89,7 +89,7 @@ PATH
     chef-config (14.3.29)
       addressable
       fuzzyurl
-      mixlib-config (>= 2.2.11, < 3.0)
+      mixlib-config (>= 2.2.12, < 3.0)
       mixlib-shellout (~> 2.0)
       tomlrb (~> 1.2)
 
@@ -149,7 +149,7 @@ GEM
     highline (1.7.10)
     htmlentities (4.3.4)
     iniparse (1.4.4)
-    inspec-core (2.2.27)
+    inspec-core (2.2.34)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
@@ -179,7 +179,7 @@ GEM
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.11)
+    mixlib-config (2.2.12)
       tomlrb
     mixlib-log (2.0.4)
     mixlib-shellout (2.3.2)
@@ -300,7 +300,7 @@ GEM
     systemu (2.6.5)
     thor (0.20.0)
     tomlrb (1.2.7)
-    train-core (1.4.19)
+    train-core (1.4.21)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
     travis (1.8.8)
