@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.31 -->
-## [v14.3.31](https://github.com/chef/chef/tree/v14.3.31) (2018-07-06)
+<!-- latest_release 14.3.32 -->
+## [v14.3.32](https://github.com/chef/chef/tree/v14.3.32) (2018-07-06)
 
 #### Merged Pull Requests
-- Don&#39;t require rubygems in our binaries [#7428](https://github.com/chef/chef/pull/7428) ([tas50](https://github.com/tas50))
+- bump chefstyle + inspec-core [#7431](https://github.com/chef/chef/pull/7431) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- bump chefstyle + inspec-core [#7431](https://github.com/chef/chef/pull/7431) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.32 -->
 - Don&#39;t require rubygems in our binaries [#7428](https://github.com/chef/chef/pull/7428) ([tas50](https://github.com/tas50)) <!-- 14.3.31 -->
 - fix some chefstyle offenses [#7427](https://github.com/chef/chef/pull/7427) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.30 -->
 - knife config and a bunch of UX improvements [#7390](https://github.com/chef/chef/pull/7390) ([coderanger](https://github.com/coderanger)) <!-- 14.3.29 -->
