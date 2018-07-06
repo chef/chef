@@ -553,6 +553,12 @@ EOM
       result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
       expect(result.exitstatus).not_to eq(0)
     end
+
+    it "should fail when passed --recipe-url with a file that doesn't exist" do
+      broken_path = File.join(CHEF_SPEC_DATA, "recipes_dont_exist.tgz")
+      result = shell_out("#{chef_client} --recipe-url=#{broken_path}", :cwd => tmp_dir)
+      expect(result.exitstatus).not_to eq(0)
+    end
   end
 
   when_the_repository "has a cookbook with broken metadata.rb, but has metadata.json" do
