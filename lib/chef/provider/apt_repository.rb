@@ -112,7 +112,7 @@ class Chef
       # run the specified command and extract the fingerprints from the output
       # accepts a command so it can be used to extract both the current key's fingerprints
       # and the fingerprint of the new key
-      # @param [String] cmd the command to run
+      # @param [Array<String>] cmd the command to run
       #
       # @return [Array] an array of fingerprints
       def extract_fingerprints_from_cmd(*cmd)
