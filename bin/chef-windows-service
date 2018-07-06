@@ -2,7 +2,7 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
 #
-# Copyright:: 2014, Chef Software, Inc.
+# Copyright:: 2014-2018, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@
 # generate will call that file, and will be registered as
 # a windows service.
 
-require "rubygems"
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 require "chef"
 require "chef/application/windows_service"
