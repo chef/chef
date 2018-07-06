@@ -139,6 +139,7 @@ describe Chef::Provider::OsxProfile do
       new_resource.profile test_profile
       allow(provider).to receive(:get_installed_profiles).and_return(no_profiles)
       provider.load_current_resource
+      expect(provider).to receive(:install_profile)
       expect { provider.run_action(:install) }.to_not raise_error
     end
 
@@ -154,6 +155,7 @@ describe Chef::Provider::OsxProfile do
       new_resource.profile test_profile
       all_profiles["_computerlevel"][1]["ProfileUUID"] = "1781fbec-3325-565f-9022-9bb39245d4dd"
       provider.load_current_resource
+      expect(provider).to receive(:install_profile)
       expect { provider.run_action(:install) }.to_not raise_error
     end
 
