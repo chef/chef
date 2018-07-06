@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 13.9.5 -->
+## [v13.9.5](https://github.com/chef/chef/tree/v13.9.5) (2018-07-06)
+
+#### Merged Pull Requests
+- Trying to use --recipe-url on Windows with local file fails [#7426](https://github.com/chef/chef/pull/7426) ([tyler-ball](https://github.com/tyler-ball))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=13.9.4 -->
+### Changes since 13.9.4 release
+
+#### Merged Pull Requests
+- Trying to use --recipe-url on Windows with local file fails [#7426](https://github.com/chef/chef/pull/7426) ([tyler-ball](https://github.com/tyler-ball)) <!-- 13.9.5 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->

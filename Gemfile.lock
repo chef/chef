@@ -9,10 +9,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (13.9.4)
+    chef (13.9.5)
       addressable
       bundler (>= 1.10)
-      chef-config (= 13.9.4)
+      chef-config (= 13.9.5)
       chef-zero (~> 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -39,10 +39,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (13.9.4-universal-mingw32)
+    chef (13.9.5-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 13.9.4)
+      chef-config (= 13.9.5)
       chef-zero (~> 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -84,7 +84,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (13.9.4)
+    chef-config (13.9.5)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -188,11 +188,11 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     method_source (0.9.0)
-    mixlib-archive (0.4.6)
+    mixlib-archive (0.4.8)
       mixlib-log
     mixlib-authentication (1.4.2)
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.6)
+    mixlib-config (2.2.12)
       tomlrb
     mixlib-log (1.7.1)
     mixlib-shellout (2.3.2)
@@ -305,7 +305,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
     slop (3.6.0)
-    specinfra (2.73.3)
+    specinfra (2.73.4)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet
@@ -314,7 +314,7 @@ GEM
     syslog-logger (1.6.8)
     systemu (2.6.5)
     thor (0.20.0)
-    tomlrb (1.2.6)
+    tomlrb (1.2.7)
     train (0.32.0)
       docker-api (~> 1.26)
       json (>= 1.8, < 3.0)
@@ -410,4 +410,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.16.1
+   1.16.2
