@@ -89,7 +89,7 @@ PATH
     chef-config (14.3.32)
       addressable
       fuzzyurl
-      mixlib-config (>= 2.2.11, < 3.0)
+      mixlib-config (>= 2.2.12, < 3.0)
       mixlib-shellout (~> 2.0)
       tomlrb (~> 1.2)
 
