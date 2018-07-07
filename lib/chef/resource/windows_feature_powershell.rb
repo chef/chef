@@ -61,7 +61,7 @@ class Chef
         x = x.split(/\s*,\s*/) if x.is_a?(String) # split multiple forms of a comma separated list
 
         # feature installs on windows < 8/2012 are case sensitive so only downcase when on 2012+
-        Chef::Platform.older_than_win_2012_or_8? ? x : x.map(&:downcase)
+        older_than_win_2012_or_8? ? x : x.map(&:downcase)
       end
 
       include Chef::Mixin::PowershellOut
@@ -78,7 +78,7 @@ class Chef
           converge_by("install Windows feature#{'s' if features_to_install.count > 1} #{features_to_install.join(',')}") do
             install_command = "#{install_feature_cmdlet} #{features_to_install.join(',')}"
             install_command << " -IncludeAllSubFeature"  if new_resource.all
-            if Chef::Platform.older_than_win_2012_or_8? && (new_resource.source || new_resource.management_tools)
+            if older_than_win_2012_or_8? && (new_resource.source || new_resource.management_tools)
               Chef::Log.warn("The 'source' and 'management_tools' properties are only available on Windows 8/2012 or greater. Skipping these properties!")
             else
               install_command << " -Source \"#{new_resource.source}\"" if new_resource.source
@@ -156,13 +156,13 @@ class Chef
         # The appropriate cmdlet to install a windows feature based on windows release
         # @return [String]
         def install_feature_cmdlet
-          Chef::Platform.older_than_win_2012_or_8? ? "Add-WindowsFeature" : "Install-WindowsFeature"
+          older_than_win_2012_or_8? ? "Add-WindowsFeature" : "Install-WindowsFeature"
         end
 
         # The appropriate cmdlet to remove a windows feature based on windows release
         # @return [String]
         def remove_feature_cmdlet
-          Chef::Platform.older_than_win_2012_or_8? ? "Remove-WindowsFeature" : "Uninstall-WindowsFeature"
+          older_than_win_2012_or_8? ? "Remove-WindowsFeature" : "Uninstall-WindowsFeature"
         end
 
         # @return [Array] features the user has requested to install which need installation
@@ -230,7 +230,7 @@ class Chef
         def parsed_feature_list
           # Grab raw feature information from dism command line
           # Windows < 2012 doesn't present a state value so we have to check if the feature is installed or not
-          raw_list_of_features = if Chef::Platform.older_than_win_2012_or_8? # make the older format look like the new format, warts and all
+          raw_list_of_features = if older_than_win_2012_or_8? # make the older format look like the new format, warts and all
                                    powershell_out!('Get-WindowsFeature | Select-Object -Property Name, @{Name=\"InstallState\"; Expression = {If ($_.Installed) { 1 } Else { 0 }}} | ConvertTo-Json -Compress', timeout: new_resource.timeout).stdout
                                  else
                                    powershell_out!("Get-WindowsFeature | Select-Object -Property Name,InstallState | ConvertTo-Json -Compress", timeout: new_resource.timeout).stdout
@@ -243,7 +243,7 @@ class Chef
         # @return [void]
         def add_to_feature_mash(feature_type, feature_details)
           # add the lowercase feature name to the mash unless we're on < 2012 where they're case sensitive
-          node.override["powershell_features_cache"][feature_type] << (Chef::Platform.older_than_win_2012_or_8? ? feature_details : feature_details.downcase)
+          node.override["powershell_features_cache"][feature_type] << (older_than_win_2012_or_8? ? feature_details : feature_details.downcase)
         end
 
         # Fail if any of the packages are in a removed state
@@ -259,7 +259,7 @@ class Chef
 
         # Fail unless we're on windows 8+ / 2012+ where deleting a feature is supported
         def raise_if_delete_unsupported
-          raise Chef::Exceptions::UnsupportedAction, "#{self} :delete action not supported on Windows releases before Windows 8/2012. Cannot continue!" if Chef::Platform.older_than_win_2012_or_8?
+          raise Chef::Exceptions::UnsupportedAction, "#{self} :delete action not supported on Windows releases before Windows 8/2012. Cannot continue!" if older_than_win_2012_or_8?
         end
       end
     end
