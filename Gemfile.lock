@@ -77,7 +77,7 @@ PATH
       win32-mmap (~> 0.4.1)
       win32-mutex (~> 0.4.2)
       win32-process (~> 0.8.2)
-      win32-service (~> 0.8.7)
+      win32-service (~> 1.0)
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
 
@@ -235,7 +235,7 @@ GEM
       ast (~> 2.4.0)
     parslet (1.8.2)
     plist (3.4.0)
-    powerpack (0.1.1)
+    powerpack (0.1.2)
     proxifier (1.0.3)
     pry (0.11.3)
       coderay (~> 1.1.0)
@@ -356,7 +356,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    win32-service (0.8.10)
+    win32-service (1.0.1)
       ffi
       ffi-win32-extensions
     windows-api (0.4.4)
