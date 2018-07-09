@@ -24,7 +24,7 @@ describe Chef::Provider::User::Windows, :windows_only do
   include Chef::Mixin::ShellOut
 
   let(:username) { "ChefFunctionalTest" }
-  let(:password) { SecureRandom.uuid }
+  let(:password) { "DummyP2ssw0rd!" }
 
   let(:node) do
     n = Chef::Node.new
