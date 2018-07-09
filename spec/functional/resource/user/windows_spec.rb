@@ -72,7 +72,7 @@ describe Chef::Provider::User::Windows, :windows_only do
     EOF
     windows_template_path = temp_security_template.path.gsub("/") { "\\" }
     security_command = "secedit /configure /db #{temp_security_database} /cfg #{windows_template_path} /areas SECURITYPOLICY"
-    temp_security_template.write(file_conte
+    temp_security_template.write(file_content)
     temp_security_template.close
     puts security_command
     system("#{security_command}")
