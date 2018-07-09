@@ -44,54 +44,135 @@ describe Chef::Provider::User::Windows, :windows_only do
     shell_out("net user #{u} /delete")
   end
 
-  before do
+  def backup_secedit_policy()
+    backup_command = "secedit /export /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY /quiet"
+    system(backup_command)
+  end
+
+  def restore_secedit_policy()
+    security_database = "C:\\windows\\security\\database\\seceditnew.sdb"
+    restore_command = "secedit /configure /db #{security_database} /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY /quiet"
+    system(restore_command)
+  end
+
+  def set_windows_minimum_password_length(minimum_password_length = 0)
+    require "tempfile"
+    temp_security_database = "C:\\windows\\security\\database\\seceditnew.sdb"
+    temp_security_template = Tempfile.new(["chefpolicy", ".inf"])
+    file_content = <<~EOF
+      [Unicode]
+      Unicode=yes
+      [System Access]
+      MinimumPasswordLength = #{minimum_password_length.to_s}
+      [Version]
+      signature="$CHICAGO$"
+      Revision=1
+    EOF
+    windows_template_path = temp_security_template.path.gsub("/") { "\\" }
+    security_command = "secedit /configure /db #{temp_security_database} /cfg #{windows_template_path} /areas SECURITYPOLICY /quiet"
+    temp_security_template.write(file_content)
+    temp_security_template.close
+    system("#{security_command}")
+  end
+
+  before(:all) do
+    backup_secedit_policy
+  end
+
+  before(:each) do
     delete_user(username)
     allow(run_context).to receive(:logger).and_return(logger)
   end
 
+  after(:all) do
+    restore_secedit_policy
+  end
+
   describe "action :create" do
-    context "when a username and non-empty password are given" do
-      it "creates a user" do
-        new_resource.run_action(:create)
-        expect(new_resource).to be_updated_by_last_action
-        expect(shell_out("net user #{username}").exitstatus).to eq(0)
+    context "on a Windows system with a policy that requires non-blank passwords and no complexity requirements" do
+
+      before(:all) do
+        set_windows_minimum_password_length(1)
       end
 
-      it "reports no changes if there are no changes needed" do
-        new_resource.run_action(:create)
-        new_resource.run_action(:create)
-        expect(new_resource).not_to be_updated_by_last_action
+      context "when a username and non-empty password are given" do
+        it "creates a user" do
+          new_resource.run_action(:create)
+          expect(new_resource).to be_updated_by_last_action
+          expect(shell_out("net user #{username}").exitstatus).to eq(0)
+        end
+
+        it "is idempotent" do
+          new_resource.run_action(:create)
+          new_resource.run_action(:create)
+          expect(new_resource).not_to be_updated_by_last_action
+        end
+
+        it "allows changing the password" do
+          new_resource.run_action(:create)
+          new_resource.password(SecureRandom.uuid)
+          new_resource.run_action(:create)
+          expect(new_resource).to be_updated_by_last_action
+        end
       end
 
-      it "allows changing the password" do
-        new_resource.run_action(:create)
-        new_resource.password(SecureRandom.uuid)
-        new_resource.run_action(:create)
-        expect(new_resource).to be_updated_by_last_action
+      context "when a username and empty password are given" do
+        it "does not create the specified user" do
+          new_resource.password("")
+          expect{ new_resource.run_action(:create) }.to raise_exception(Chef::Exceptions::Win32APIError, /The password does not meet the password policy requirements/)
+        end
       end
     end
 
-    context "when a username and empty password are given" do
-      it "creates a user" do
-        new_resource.password("")
-        new_resource.run_action(:create)
-        expect(new_resource).to be_updated_by_last_action
-        expect(shell_out("net user #{username}").exitstatus).to eq(0)
+    context "on a Windows system with a policy that allows blank passwords" do
+
+      before(:all) do
+        set_windows_minimum_password_length(0)
       end
 
-      it "is idempotent" do
-        new_resource.password("")
-        new_resource.run_action(:create)
-        new_resource.run_action(:create)
-        expect(new_resource).not_to be_updated_by_last_action
+      context "when a username and non-empty password are given" do
+        it "creates a user" do
+          new_resource.run_action(:create)
+          expect(new_resource).to be_updated_by_last_action
+          expect(shell_out("net user #{username}").exitstatus).to eq(0)
+        end
+
+        it "is idempotent" do
+          new_resource.run_action(:create)
+          new_resource.run_action(:create)
+          expect(new_resource).not_to be_updated_by_last_action
+        end
+
+        it "allows changing the password" do
+          new_resource.run_action(:create)
+          new_resource.password(SecureRandom.uuid)
+          new_resource.run_action(:create)
+          expect(new_resource).to be_updated_by_last_action
+        end
       end
 
-      it "allows changing the password from empty to a value" do
-        new_resource.password("")
-        new_resource.run_action(:create)
-        new_resource.password(SecureRandom.uuid)
-        new_resource.run_action(:create)
-        expect(new_resource).to be_updated_by_last_action
+      context "when a username and empty password are given" do
+        it "creates a user" do
+          new_resource.password("")
+          new_resource.run_action(:create)
+          expect(new_resource).to be_updated_by_last_action
+          expect(shell_out("net user #{username}").exitstatus).to eq(0)
+        end
+
+        it "is idempotent" do
+          new_resource.password("")
+          new_resource.run_action(:create)
+          new_resource.run_action(:create)
+          expect(new_resource).not_to be_updated_by_last_action
+        end
+
+        it "allows changing the password from empty to a value" do
+          new_resource.password("")
+          new_resource.run_action(:create)
+          new_resource.password(SecureRandom.uuid)
+          new_resource.run_action(:create)
+          expect(new_resource).to be_updated_by_last_action
+        end
       end
     end
 
