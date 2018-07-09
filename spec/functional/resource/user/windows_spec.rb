@@ -75,7 +75,7 @@ describe Chef::Provider::User::Windows, :windows_only do
     temp_security_template.write(file_content)
     temp_security_template.close
     puts security_command
-    system("#{security_command}")
+    system(security_command)
   end
 
   before(:all) do
