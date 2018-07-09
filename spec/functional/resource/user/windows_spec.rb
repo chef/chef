@@ -1,5 +1,7 @@
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software
+# Author:: Stuart Preston (<stuart@chef.io>)
+#
+# Copyright:: Copyright 2015-2018, Chef Software
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,12 +46,12 @@ describe Chef::Provider::User::Windows, :windows_only do
     shell_out("net user #{u} /delete")
   end
 
-  def backup_secedit_policy()
+  def backup_secedit_policy
     backup_command = "secedit /export /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY /quiet"
     system(backup_command)
   end
 
-  def restore_secedit_policy()
+  def restore_secedit_policy
     security_database = "C:\\windows\\security\\database\\seceditnew.sdb"
     restore_command = "secedit /configure /db #{security_database} /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY /quiet"
     system(restore_command)
@@ -63,7 +65,7 @@ describe Chef::Provider::User::Windows, :windows_only do
       [Unicode]
       Unicode=yes
       [System Access]
-      MinimumPasswordLength = #{minimum_password_length.to_s}
+      MinimumPasswordLength = #{minimum_password_length}
       [Version]
       signature="$CHICAGO$"
       Revision=1
@@ -119,7 +121,7 @@ describe Chef::Provider::User::Windows, :windows_only do
       context "when a username and empty password are given" do
         it "does not create the specified user" do
           new_resource.password("")
-          expect{ new_resource.run_action(:create) }.to raise_exception(Chef::Exceptions::Win32APIError, /The password does not meet the password policy requirements/)
+          expect { new_resource.run_action(:create) }.to raise_exception(Chef::Exceptions::Win32APIError, /The password does not meet the password policy requirements/)
         end
       end
     end
