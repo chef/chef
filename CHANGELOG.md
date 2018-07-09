@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.34 -->
-## [v14.3.34](https://github.com/chef/chef/tree/v14.3.34) (2018-07-07)
+<!-- latest_release 14.3.35 -->
+## [v14.3.35](https://github.com/chef/chef/tree/v14.3.35) (2018-07-09)
 
 #### Merged Pull Requests
-- Prevent failures using windows_feature due to the platform helper [#7433](https://github.com/chef/chef/pull/7433) ([tas50](https://github.com/tas50))
+- Bump Ohai to 14.3.0 [#7437](https://github.com/chef/chef/pull/7437) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Bump Ohai to 14.3.0 [#7437](https://github.com/chef/chef/pull/7437) ([tas50](https://github.com/tas50)) <!-- 14.3.35 -->
 - Prevent failures using windows_feature due to the platform helper [#7433](https://github.com/chef/chef/pull/7433) ([tas50](https://github.com/tas50)) <!-- 14.3.34 -->
 - Fix dupe stdout_logger [#7401](https://github.com/chef/chef/pull/7401) ([nsdavidson](https://github.com/nsdavidson)) <!-- 14.3.33 -->
 - bump chefstyle + inspec-core [#7431](https://github.com/chef/chef/pull/7431) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.32 -->
