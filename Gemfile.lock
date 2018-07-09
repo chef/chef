@@ -218,7 +218,7 @@ GEM
     nori (2.6.0)
     octokit (4.9.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (13.9.2)
+    ohai (13.10.0)
       chef-config (>= 12.5.0.alpha.1, < 14)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -305,7 +305,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
     slop (3.6.0)
-    specinfra (2.73.4)
+    specinfra (2.74.0)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet
