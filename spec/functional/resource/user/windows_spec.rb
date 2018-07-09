@@ -47,13 +47,13 @@ describe Chef::Provider::User::Windows, :windows_only do
   end
 
   def backup_secedit_policy
-    backup_command = "secedit /export /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY /quiet"
+    backup_command = "secedit /export /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY"
     system(backup_command)
   end
 
   def restore_secedit_policy
     security_database = "C:\\windows\\security\\database\\seceditnew.sdb"
-    restore_command = "secedit /configure /db #{security_database} /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY /quiet"
+    restore_command = "secedit /configure /db #{security_database} /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY"
     system(restore_command)
   end
 
@@ -71,9 +71,10 @@ describe Chef::Provider::User::Windows, :windows_only do
       Revision=1
     EOF
     windows_template_path = temp_security_template.path.gsub("/") { "\\" }
-    security_command = "secedit /configure /db #{temp_security_database} /cfg #{windows_template_path} /areas SECURITYPOLICY /quiet"
-    temp_security_template.write(file_content)
+    security_command = "secedit /configure /db #{temp_security_database} /cfg #{windows_template_path} /areas SECURITYPOLICY"
+    temp_security_template.write(file_conte
     temp_security_template.close
+    puts security_command
     system("#{security_command}")
   end
 
