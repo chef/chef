@@ -66,6 +66,7 @@ describe Chef::Provider::User::Windows, :windows_only do
       Unicode=yes
       [System Access]
       MinimumPasswordLength = #{minimum_password_length}
+      PasswordComplexity = 0
       [Version]
       signature="$CHICAGO$"
       Revision=1
