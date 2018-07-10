@@ -29,13 +29,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.11.83)
-      aws-sdk-resources (= 2.11.83)
-    aws-sdk-core (2.11.83)
+    aws-sdk (2.11.86)
+      aws-sdk-resources (= 2.11.86)
+    aws-sdk-core (2.11.86)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.83)
-      aws-sdk-core (= 2.11.83)
+    aws-sdk-resources (2.11.86)
+      aws-sdk-core (= 2.11.86)
     aws-sigv4 (1.0.3)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -128,7 +128,7 @@ GEM
     mixlib-cli (1.7.0)
     mixlib-config (2.2.12)
       tomlrb
-    mixlib-install (3.10.0)
+    mixlib-install (3.11.2)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -150,7 +150,7 @@ GEM
     nori (2.6.0)
     octokit (4.9.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (14.2.0)
+    ohai (14.3.0)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
