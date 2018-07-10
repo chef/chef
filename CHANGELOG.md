@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.36 -->
-## [v14.3.36](https://github.com/chef/chef/tree/v14.3.36) (2018-07-10)
+<!-- latest_release 14.3.37 -->
+## [v14.3.37](https://github.com/chef/chef/tree/v14.3.37) (2018-07-10)
 
 #### Merged Pull Requests
-- Add missing descriptions and add periods after resource the descriptions [#7444](https://github.com/chef/chef/pull/7444) ([tas50](https://github.com/tas50))
-- Enable Amazon Linux 2.0 tests again [#7442](https://github.com/chef/chef/pull/7442) ([tas50](https://github.com/tas50))
+- Attributes -&gt; Properties in a few more resources [#7448](https://github.com/chef/chef/pull/7448) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Attributes -&gt; Properties in a few more resources [#7448](https://github.com/chef/chef/pull/7448) ([tas50](https://github.com/tas50)) <!-- 14.3.37 -->
 - Add missing descriptions and add periods after resource the descriptions [#7444](https://github.com/chef/chef/pull/7444) ([tas50](https://github.com/tas50)) <!-- 14.3.36 -->
 - Enable Amazon Linux 2.0 tests again [#7442](https://github.com/chef/chef/pull/7442) ([tas50](https://github.com/tas50)) <!-- 14.3.35 -->
 - Bump Ohai to 14.3.0 [#7437](https://github.com/chef/chef/pull/7437) ([tas50](https://github.com/tas50)) <!-- 14.3.35 -->
