@@ -24,7 +24,7 @@ class Chef
       introduced "14.3"
 
       property :source_name, String, name_property: true,
-               description: "The name of the source to add. We'll use the resource's name if this isn't provided."
+               description: "The name of the source to add. The resource's name will be used if this isn't provided."
 
       property :source, String,
                description: "The source URL."

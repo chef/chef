@@ -31,7 +31,7 @@ class Chef
                name_property: true
 
       property :compile_time, [ TrueClass, FalseClass ],
-               description: "Should the resource run at compile time or not.",
+               description: "Whether the resource runs at compile time or not.",
                default: true
 
       property :ipaddress, String,
@@ -43,7 +43,7 @@ class Chef
                default: nil
 
       property :windows_reboot, [ TrueClass, FalseClass ],
-               description: "Should Windows nodes be rebooted upon changing the name so it can take effect.",
+               description: "Whether Windows nodes will be rebooted upon changing the name so changes can take effect.",
                default: true
 
       action_class do

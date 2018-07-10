@@ -40,7 +40,7 @@ class Chef
       # FIXME: remove this and use an execute sub-resource instead of inheriting from Execute
       def command(arg = nil)
         unless arg.nil?
-          raise Chef::Exceptions::Script, "Do not use the command attribute on a #{resource_name} resource, use the 'code' attribute instead."
+          raise Chef::Exceptions::Script, "Do not use the command attribute on a #{resource_name} resource, use the 'code' property instead."
         end
         super
       end
