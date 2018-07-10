@@ -36,10 +36,10 @@ class Chef
                description: "The FQDN of the Satellite host to register with. If not specified, the host will be registered with Red Hat's public RHSM service."
 
       property :organization, String,
-               description: "The organization to use when registering, required when using an activation key"
+               description: "The organization to use when registering, required when using an activation key."
 
       property :environment, String,
-               description: "The environment to use when registering, required when using username and password"
+               description: "The environment to use when registering, required when using username and password."
 
       property :username, String,
                description: "The username to use when registering. Not applicable if using an activation key. If specified, password and environment are also required."
@@ -61,7 +61,7 @@ class Chef
                default: false, desired_state: false
 
       action :register do
-        description "Register the node with RHSM"
+        description "Register the node with RHSM."
 
         package "subscription-manager"
 
@@ -98,7 +98,7 @@ class Chef
       end
 
       action :unregister do
-        description "Unregister the node from RHSM"
+        description "Unregister the node from RHSM."
 
         execute "Unregister from RHSM" do
           command "subscription-manager unregister"

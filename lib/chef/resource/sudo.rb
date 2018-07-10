@@ -37,7 +37,7 @@ class Chef
       # acording to the sudo man pages sudo will ignore files in an include dir that have a `.` or `~`
       # We convert either to `__`
       property :filename, String,
-               description: "The name of the sudoers.d file",
+               description: "The name of the sudoers.d file.",
                name_property: true,
                coerce: proc { |x| x.gsub(/[\.~]/, "__") }
 
@@ -60,11 +60,11 @@ class Chef
                default: "ALL"
 
       property :runas, String,
-               description: "User the command(s) can be run as",
+               description: "User the command(s) can be run as.",
                default: "ALL"
 
       property :nopasswd, [TrueClass, FalseClass],
-               description: "Allow running sudo without specifying a password sudo",
+               description: "Allow running sudo without specifying a password sudo.",
                default: false
 
       property :noexec, [TrueClass, FalseClass],
@@ -83,7 +83,7 @@ class Chef
                default: lazy { [] }
 
       property :command_aliases, Array,
-               description: "Command aliases that can be used as allowed commands later in the config",
+               description: "Command aliases that can be used as allowed commands later in the config.",
                default: lazy { [] }
 
       property :setenv, [TrueClass, FalseClass],

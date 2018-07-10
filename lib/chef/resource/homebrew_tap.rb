@@ -49,7 +49,7 @@ class Chef
                default: "/usr/local/bin/brew"
 
       property :owner, String,
-               description: "The owner of the homebrew installation",
+               description: "The owner of the homebrew installation.",
                default: lazy { find_homebrew_username }
 
       action :tap do

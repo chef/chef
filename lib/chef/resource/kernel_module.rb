@@ -30,7 +30,7 @@ class Chef
                default: "/etc/modprobe.d"
 
       action :install do
-        description "Load kernel module, and ensure it loads on reboot"
+        description "Load kernel module, and ensure it loads on reboot."
 
         # load the module first before installing
         new_resource.run_action(:load)
@@ -98,7 +98,7 @@ class Chef
       end
 
       action :unload do
-        description "Unload kernel module"
+        description "Unload kernel module."
 
         if module_loaded?
           converge_by("unload kernel module #{new_resource.modname}") do

@@ -59,7 +59,7 @@ class Chef
                default: "0640"
 
       action :create do
-        description "Create the dhparam file"
+        description "Create the dhparam file."
 
         unless dhparam_pem_valid?(new_resource.path)
           converge_by("Create a dhparam file #{new_resource.path}") do

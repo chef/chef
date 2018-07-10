@@ -79,11 +79,11 @@ class Chef
 
       property :ethtool_opts, String,
                introduced: "13.4",
-               description: "Options to be passed to ethtool(8). For example: -A eth0 autoneg off rx off tx off"
+               description: "Options to be passed to ethtool(8). For example: -A eth0 autoneg off rx off tx off."
 
       property :bonding_opts, String,
                introduced: "13.4",
-               description: "Bonding options to pass via BONDING_OPTS on RHEL and CentOS. For example: mode=active-backup miimon=100"
+               description: "Bonding options to pass via BONDING_OPTS on RHEL and CentOS. For example: mode=active-backup miimon=100."
 
       property :master, String,
                introduced: "13.4",

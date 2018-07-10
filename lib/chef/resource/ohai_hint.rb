@@ -34,11 +34,11 @@ class Chef
                description: "Values to include in the hint file."
 
       property :compile_time, [TrueClass, FalseClass],
-               description: "Should the resource execute during the compile time phase",
+               description: "Should the resource execute during the compile time phase.",
                default: true, desired_state: false
 
       action :create do
-        description "Create an Ohai hint file"
+        description "Create an Ohai hint file."
 
         declare_resource(:directory, ::Ohai::Config.ohai.hints_path.first) do
           action :create
@@ -52,7 +52,7 @@ class Chef
       end
 
       action :delete do
-        description "Delete an Ohai hint file"
+        description "Delete an Ohai hint file."
 
         declare_resource(:file, ohai_hint_file_path(new_resource.hint_name)) do
           action :delete
