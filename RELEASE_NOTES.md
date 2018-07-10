@@ -1,9 +1,109 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.3:
+
+## New Preview Resources Concept
+
+This release of Chef introduces the concept of Preview Resources. Preview resources behave the same as a standard resource built into Chef, except Chef will load a resource with the same name from a cookbook instead of the built-in preview resource.
+
+What does this mean for you? It means we can introduce new resources in Chef without breaking existing behavior in your infrastructure. For instance if you have a cookbook with a resource named `manage_everything` and a future version of Chef introduced a preview resource named `manage_everything` you will continue to receive the resource from your cookbook. That way outside of a major release your won't experience a potentially breaking behavior change from the newly included resource.
+
+Then when we perform our yearly major release we'll remove the preview designation from all resources, and the built in resources will take precedence over resources with the same names in cookbooks.
+
+## New Resources
+
+### chocolatey_config
+
+Use the chocolatey_config resource to add or remove Chocolatey configuration keys."
+
+#### Actions
+
+- `set` - Sets a Chocolatey config value.
+- `unset` - Unsets a Chocolatey config value.
+
+#### Properties
+
+- `config_key` - The name of the config. We'll use the resource's name if this isn't provided.
+- `value` - The value to set.
+
+### chocolatey_source
+
+Use the chocolatey_source resource to add or remove Chocolatey sources.
+
+#### Actions
+
+- `add` - Adds a Chocolatey source.
+- `remove` - Removes a Chocolatey source.
+
+#### Properties
+
+- `source_name` - The name of the source to add. We'll use the resource's name if this isn't provided.
+- `source` - The source URL.
+- `bypass_proxy` - Whether or not to bypass the system's proxy settings to access the source.
+- `priority` - The priority level of the source.
+
+### powershell_package_source
+
+Use the `powershell_package_source` resource to register a powershell package repository.
+
+### Actions
+
+- `register` - Registers and updates the powershell package source.
+- `unregister` - Unregisters the powershell package source.
+
+#### Properties
+
+- `source_name` - The name of the package source.
+- `url` - The url to the package source.
+- `trusted` - Whether or not to trust packages from this source.
+- `provider_name` - The package management provider for the source. It supports the following providers: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' and 'chocolatey'.
+- `publish_location` - The url where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'.
+- `script_source_location` - The url where scripts are located for this source. Only valid if the provider is 'PowerShellGet'.
+- `script_publish_location` - The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'.
+
+### kernel_module
+
+Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, install, and uninstall modules.
+
+#### Actions
+
+- `install` - Load kernel module, and ensure it loads on reboot.
+- `uninstall` - Unload a kernel module and remove module config, so it doesn't load on reboot.
+- `blacklist` - Blacklist a kernel module.
+- `load` - Load a kernel module.
+- `unload` - Unload kernel module
+
+#### Properties
+
+- `modname` - The name of the kernel module.
+- `load_dir` - The directory to load modules from.
+- `unload_dir` - The modprobe.d directory.
+
+### ssh_known_hosts_entry
+
+Use the ssh_known_hosts_entry resource to add an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified.
+
+#### Actions
+
+- `create` - Create an entry in the ssh_known_hosts file.
+- `flush` - Immediately flush the entries to the config file. Without this the actual writing of the file is delayed in the Chef run so all entries can be accumulated before writing the file out.
+
+#### Properties
+
+- `host` - The host to add to the known hosts file.
+- `key` - An optional key for the host. If not provided this will be automatically determined.
+- `key_type` - The type of key to store.
+- `port` - The server port that the ssh-keyscan command will use to gather the public key.
+- `timeout` - The timeout in seconds for ssh-keyscan.
+- `mode` - The file mode for the ssh_known_hosts file.
+- `owner`- The file owner for the ssh_known_hosts file.
+- `group` - The file group for the ssh_known_hosts file.
+- `hash_entries` - Hash the hostname and addresses in the ssh_known_hosts file for privacy.
+- `file_location` - The location of the ssh known hosts file. Change this to set a known host file for a particular user.
+
 ## New `knife config get` command
 
-The `knife config get` command has been added to help with debugging configuration
-issues with `knife` and other tools that use the `knife.rb` file.
+The `knife config get` command has been added to help with debugging configuration issues with `knife` and other tools that use the `knife.rb` file.
 
 With no arguments, it will display all options you've set:
 
@@ -19,12 +119,11 @@ node_name:       ...
 validation_key:
 ```
 
-You can also pass specific keys to only display those `knife config get node_name client_key`,
-or use `--all` to display everything (including options that are using the default value).
+You can also pass specific keys to only display those `knife config get node_name client_key`, or use `--all` to display everything (including options that are using the default value).
 
 ## Simplification of `shell_out` APIs
 
-The following methods are deprecated:
+The following helper methods have been deprecated in favor of the single shell_out helper:
 
 - `shell_out_with_systems_locale`
 - `shell_out_with_timeout`
@@ -35,40 +134,21 @@ The following methods are deprecated:
 - `shell_out_compact!`
 - `shell_out_compact_timeout!`
 
-The functionality of `shell_out_with_systems_locale` has been implemented using the `default_env: false`
-option that removes the PATH and locale mangling that has been the default behavior of `shell_out`.
+The functionality of `shell_out_with_systems_locale` has been implemented using the `default_env: false` option that removes the PATH and locale mangling that has been the default behavior of `shell_out`.
 
-The functionality of `shell_out_compact` has been folded into `shell_out`.  The `shell_out` API when called
-with varargs has its arguments flatted, compacted and coerced to strings.  This style of calling is encouraged
-over using strings and building up commands using `join(" ")` since it avoids shell interpolation and edge
-conditions in the construction of spaces between arguments.  The varargs form is still not supported on
-Windows.
+The functionality of `shell_out_compact` has been folded into `shell_out`. The `shell_out` API when called with varargs has its arguments flatted, compacted and coerced to strings. This style of calling is encouraged over using strings and building up commands using `join(" ")` since it avoids shell interpolation and edge conditions in the construction of spaces between arguments. The varargs form is still not supported on Windows.
 
-The functionality of `shell_out*timeout` has also been folded into `shell_out`.  Users writing Custom Resources
-should be explicit for Chef-14:  `shell_out!("whatever", timeout: new_resource.timeout)` which will become
-automatic in Chef-15.
+The functionality of `shell_out*timeout` has also been folded into `shell_out`. Users writing Custom Resources should be explicit for Chef-14: `shell_out!("whatever", timeout: new_resource.timeout)` which will become automatic in Chef-15.
 
 ## Silencing deprecation warnings
 
-While deprecation warnings have been great for the Chef community to ensure
-cookbooks are kept up-to-date and to prepare for major version upgrades, sometimes
-you just can't fix a deprecation right now. This is often compounded by the
-recommendation to enable `treat_deprecation_warnings_as_errors` mode in your
-Test Kitchen integration tests, which doesn't understand the difference between
-deprecations from community cookbooks and those from your own code.
+While deprecation warnings have been great for the Chef community to ensure cookbooks are kept up-to-date and to prepare for major version upgrades, sometimes you just can't fix a deprecation right now. This is often compounded by the recommendation to enable `treat_deprecation_warnings_as_errors` mode in your Test Kitchen integration tests, which doesn't understand the difference between deprecations from community cookbooks and those from your own code.
 
-Two new options are provided for silencing deprecation warnings: `silence_deprecation_warnings`
-and inline `chef:silence_deprecation` comments.
+Two new options are provided for silencing deprecation warnings: `silence_deprecation_warnings` and inline `chef:silence_deprecation` comments.
 
-The `silence_deprecation_warnings` configuration value can be set in your
-`client.rb` or `solo.rb` config file, either to `true` to silence all deprecation
-warnings or to an array of deprecations to silence. You can specify which to
-silence either by the deprecation key name (e.g. `"internal_api"`), the numeric
-deprecation ID (e.g. `25` or `"CHEF-25"`), or by specifying the filename and
-line number where the deprecation is being raised from (e.g. `"default.rb:67"`).
+The `silence_deprecation_warnings` configuration value can be set in your `client.rb` or `solo.rb` config file, either to `true` to silence all deprecation warnings or to an array of deprecations to silence. You can specify which to silence either by the deprecation key name (e.g. `"internal_api"`), the numeric deprecation ID (e.g. `25` or `"CHEF-25"`), or by specifying the filename and line number where the deprecation is being raised from (e.g. `"default.rb:67"`).
 
-An example of setting the `silence_deprecation_warnings` option in your `client.rb`
-or `solo.rb`:
+An example of setting the `silence_deprecation_warnings` option in your `client.rb` or `solo.rb`:
 
 ```ruby
 silence_deprecation_warnings %w{deploy_resource chef-23 recipes/install.rb:22}
@@ -87,15 +167,34 @@ provisioner:
     - recipes/install.rb:22
 ```
 
-You can also silence deprecations using a comment on the line that is raising
-the warning:
+You can also silence deprecations using a comment on the line that is raising the warning:
 
 ```ruby
 erl_call 'something' do # chef:silence_deprecation
 ```
 
-We advise caution in the use of this feature, as excessive or prolonged silencing
-can lead to difficulty upgrading when the next major release of Chef comes out.
+We advise caution in the use of this feature, as excessive or prolonged silencing can lead to difficulty upgrading when the next major release of Chef comes out.
+
+## Misc Windows improvements
+
+- A new `skip_publisher_check` property has been added to the `powershell_package` resource
+- `windows_feature_powershell` now supports Windows 2008 R2
+- The `mount` resource now supports the `mount_point` property on Windows
+- `windows_feature_dism` no longer errors when specifying the source
+- Resolved idempotency issues in the `windows_task` resource and prevented setting up a task with bad credentials
+- `windows_service` no longer throws Ruby deprecation warnings
+
+## Newly Introduced Deprecations
+
+### CHEF-26: Deprecation of old shell_out APIs
+
+As noted above, this release of Chef unifies our shell_out helpers into just shell_out and shell_out!. Previous helpers are now deprecated and will be removed in Chef 15.
+
+See [CHEF-26 Deprecation Page](https://docs.chef.io/deprecations_shell_out.html) for details.
+
+### Legacy FreeBSD pkg provider
+
+Chef 15 will remove support for the legacy FreeBSD pkg format. We will continue to support the pkgng format introduced in FreeBSD 10.
 
 # Chef Client Release Notes 14.2:
 
@@ -122,7 +221,7 @@ The execute resource has also been updated with a new property `default_env` tha
 
 ## Small Size on Disk
 
-Chef now bundles the inspec-core and train-core gems, which omit many cloud dependencies not needed within the Chef client. This change reduces the install size of a typical system by ~22% and the number of files within that installation by ~20% compared to Chef 14.1. Enjoy the extra disk space.
+Chef now bundles the inspec-core and train-core gems, which omit many cloud dependencies not needed within the Chef client. This change reduces the install size of a typical system by ~22% and the number of files within that installation by ~20% compared to Chef 14.1\. Enjoy the extra disk space.
 
 ## Virtualization detection on AWS
 
