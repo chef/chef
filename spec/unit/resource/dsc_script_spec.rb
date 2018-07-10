@@ -45,27 +45,27 @@ describe Chef::Resource::DscScript do
       expect { resource.action :run }.not_to raise_error
     end
 
-    it "allows the code attribute to be set" do
+    it "allows the code property to be set" do
       resource.code(configuration_code)
       expect(resource.code).to eq(configuration_code)
     end
 
-    it "allows the command attribute to be set" do
+    it "allows the command property to be set" do
       resource.command(configuration_path)
       expect(resource.command).to eq(configuration_path)
     end
 
-    it "allows the configuration_name attribute to be set" do
+    it "allows the configuration_name property to be set" do
       resource.configuration_name(configuration_name)
       expect(resource.configuration_name).to eq(configuration_name)
     end
 
-    it "allows the configuration_data attribute to be set" do
+    it "allows the configuration_data property to be set" do
       resource.configuration_data(configuration_data)
       expect(resource.configuration_data).to eq(configuration_data)
     end
 
-    it "allows the configuration_data_script attribute to be set" do
+    it "allows the configuration_data_script property to be set" do
       resource.configuration_data_script(configuration_data_script)
       expect(resource.configuration_data_script).to eq(configuration_data_script)
     end
@@ -106,27 +106,27 @@ describe Chef::Resource::DscScript do
       end
     end
 
-    it "raises an ArgumentError exception if an attempt is made to set the code attribute when the command attribute is already set" do
+    it "raises an ArgumentError exception if an attempt is made to set the code property when the command property is already set" do
       resource.command(configuration_path)
       expect { resource.code(configuration_code) }.to raise_error(ArgumentError)
     end
 
-    it "raises an ArgumentError exception if an attempt is made to set the command attribute when the code attribute is already set" do
+    it "raises an ArgumentError exception if an attempt is made to set the command property when the code property is already set" do
       resource.code(configuration_code)
       expect { resource.command(configuration_path) }.to raise_error(ArgumentError)
     end
 
-    it "raises an ArgumentError exception if an attempt is made to set the configuration_name attribute when the code attribute is already set" do
+    it "raises an ArgumentError exception if an attempt is made to set the configuration_name property when the code property is already set" do
       resource.code(configuration_code)
       expect { resource.configuration_name(configuration_name) }.to raise_error(ArgumentError)
     end
 
-    it "raises an ArgumentError exception if an attempt is made to set the configuration_data attribute when the configuration_data_script attribute is already set" do
+    it "raises an ArgumentError exception if an attempt is made to set the configuration_data property when the configuration_data_script property is already set" do
       resource.configuration_data_script(configuration_data_script)
       expect { resource.configuration_data(configuration_data) }.to raise_error(ArgumentError)
     end
 
-    it "raises an ArgumentError exception if an attempt is made to set the configuration_data_script attribute when the configuration_data attribute is already set" do
+    it "raises an ArgumentError exception if an attempt is made to set the configuration_data_script property when the configuration_data property is already set" do
       resource.configuration_data(configuration_data)
       expect { resource.configuration_data_script(configuration_data_script) }.to raise_error(ArgumentError)
     end

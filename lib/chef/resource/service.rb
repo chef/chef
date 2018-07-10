@@ -123,7 +123,7 @@ class Chef
       # distributions this is '/etc/init.d/SERVICE_NAME' by default. In
       # non-standard configurations setting this value will save having to
       # specify overrides for the start_command, stop_command and
-      # restart_command attributes.
+      # restart_command properties.
       def init_command(arg = nil)
         set_or_return(
           :init_command,

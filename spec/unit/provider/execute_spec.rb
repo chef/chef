@@ -102,7 +102,7 @@ describe Chef::Provider::Execute do
       expect(new_resource).to be_updated
     end
 
-    it "if you pass a command attribute, it runs the command" do
+    it "if you pass a command property, it runs the command" do
       new_resource.command "/usr/argelbargle/bin/oogachacka 12345"
       expect(provider).to receive(:shell_out!).with(new_resource.command, opts)
       expect(provider).to receive(:converge_by).with("execute #{new_resource.command}").and_call_original

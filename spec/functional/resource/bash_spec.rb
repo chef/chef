@@ -27,7 +27,7 @@ describe Chef::Resource::Bash, :unix_only do
     resource
   end
 
-  describe "when setting the command attribute" do
+  describe "when setting the command property" do
     let (:command) { "wizard racket" }
 
     it "should raise an exception when trying to set the command" do
