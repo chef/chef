@@ -31,7 +31,7 @@ class Chef
       }.freeze
 
       # Until #1773 is resolved, you need to manually specify the windows_service resource
-      # to use action :configure_startup and attribute startup_type
+      # to use action :configure_startup and properties startup_type
 
       provides(:windows_service) { true }
       provides :service, os: "windows"
