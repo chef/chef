@@ -68,6 +68,8 @@ class Chef
                default: false, desired_state: false
 
       action :create do
+        description "Create the RSA private key."
+
         return if new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
 
         converge_by("create #{new_resource.key_length} bit RSA key #{new_resource.path}") do
