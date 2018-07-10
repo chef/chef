@@ -446,6 +446,7 @@ class Chef
         safe_attach_function :LookupPrivilegeDisplayNameW, [ :LPCWSTR, :LPCWSTR, :LPWSTR, :LPDWORD, :LPDWORD ], :BOOL
         safe_attach_function :LookupPrivilegeValueW, [ :LPCWSTR, :LPCWSTR, :PLUID ], :BOOL
         safe_attach_function :LsaAddAccountRights, [ :pointer, :pointer, :pointer, :ULONG ], :NTSTATUS
+        safe_attach_function :LsaRemoveAccountRights, [ :pointer, :pointer, :BOOL, :pointer, :ULONG ], :NTSTATUS
         safe_attach_function :LsaClose, [ :LSA_HANDLE ], :NTSTATUS
         safe_attach_function :LsaEnumerateAccountRights, [ :LSA_HANDLE, :PSID, :PLSA_UNICODE_STRING, :PULONG ], :NTSTATUS
         safe_attach_function :LsaFreeMemory, [ :PVOID ], :NTSTATUS
