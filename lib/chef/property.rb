@@ -666,7 +666,7 @@ class Chef
 
     def exec_in_resource(resource, proc, *args)
       if resource
-        if proc.arity > args.size
+        if proc.arity > args.size || ~proc.arity > args.size
           value = proc.call(resource, *args)
         else
           value = resource.instance_exec(*args, &proc)

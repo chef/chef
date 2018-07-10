@@ -637,6 +637,16 @@ describe "Chef::Resource.property" do
           expect(resource_class.new("another").x).to eq "classanother2"
         end
       end
+
+      with_property ':x, default: lazy { |x, *a| "#{blah}#{x.blah}" }' do
+        it "x is run in context of the class (where it was defined) and passed the instance" do
+          expect(resource.x).to eq "classblah1"
+        end
+        it "x is passed the value of each instance it is run in" do
+          expect(resource.x).to eq "classblah1"
+          expect(resource_class.new("another").x).to eq "classanother2"
+        end
+      end
     end
 
     context "validation of defaults" do
@@ -746,6 +756,50 @@ describe "Chef::Resource.property" do
         it "when x is retrieved, coercion is run each time" do
           expect(resource.x).to eq "101"
           expect(resource.x).to eq "102"
+          expect(Namer.current_index).to eq 2
+        end
+      end
+
+      with_property ":x, coerce: proc { |v| v + 1 }, default: lazy { |r| r.value }" do
+        before do
+          resource_class.class_eval do
+            def value; Namer.next_index; end
+          end
+        end
+        it "when the resource is created, the proc is not yet run" do
+          resource
+          expect(Namer.current_index).to eq 0
+        end
+        it "when x is set, coercion is run" do
+          expect(resource.x 50).to eq 51
+          expect(resource.x).to eq 51
+          expect(Namer.current_index).to eq 0
+        end
+        it "when x is retrieved, coercion is run each time" do
+          expect(resource.x).to eq 2
+          expect(resource.x).to eq 3
+          expect(Namer.current_index).to eq 2
+        end
+      end
+
+      with_property ":x, coerce: proc { |v| v + 1 }, default: lazy { |r, *a| r.value }" do
+        before do
+          resource_class.class_eval do
+            def value; Namer.next_index; end
+          end
+        end
+        it "when the resource is created, the proc is not yet run" do
+          resource
+          expect(Namer.current_index).to eq 0
+        end
+        it "when x is set, coercion is run" do
+          expect(resource.x 50).to eq 51
+          expect(resource.x).to eq 51
+          expect(Namer.current_index).to eq 0
+        end
+        it "when x is retrieved, coercion is run each time" do
+          expect(resource.x).to eq 2
+          expect(resource.x).to eq 3
           expect(Namer.current_index).to eq 2
         end
       end
