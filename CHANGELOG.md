@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.35 -->
-## [v14.3.35](https://github.com/chef/chef/tree/v14.3.35) (2018-07-09)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Bump Ohai to 14.3.0 [#7437](https://github.com/chef/chef/pull/7437) ([tas50](https://github.com/tas50))
+- Enable Amazon Linux 2.0 tests again [#7442](https://github.com/chef/chef/pull/7442) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.2.0 -->
 ### Changes since 14.2.0 release
 
 #### Merged Pull Requests
+- Enable Amazon Linux 2.0 tests again [#7442](https://github.com/chef/chef/pull/7442) ([tas50](https://github.com/tas50)) <!-- 14.3.35 -->
 - Bump Ohai to 14.3.0 [#7437](https://github.com/chef/chef/pull/7437) ([tas50](https://github.com/tas50)) <!-- 14.3.35 -->
 - Prevent failures using windows_feature due to the platform helper [#7433](https://github.com/chef/chef/pull/7433) ([tas50](https://github.com/tas50)) <!-- 14.3.34 -->
 - Fix dupe stdout_logger [#7401](https://github.com/chef/chef/pull/7401) ([nsdavidson](https://github.com/nsdavidson)) <!-- 14.3.33 -->
