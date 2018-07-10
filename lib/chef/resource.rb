@@ -637,7 +637,7 @@ class Chef
       ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
       ivars.each do |ivar|
         iv = ivar.to_s.sub(/^@/, "")
-        if all_props.keys.include?(iv)
+        if all_props.key?(iv)
           text << "  #{iv} #{all_props[iv]}\n"
         elsif (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
           text << "  #{iv} #{value_to_text(value)}\n"
