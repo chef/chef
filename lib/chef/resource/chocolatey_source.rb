@@ -23,10 +23,17 @@ class Chef
       description "Use the chocolatey_source resource to add or remove Chocolatey sources."
       introduced "14.3"
 
-      property :source_name, String, name_property: true
-      property :source, String
-      property :bypass_proxy, [TrueClass, FalseClass], default: false
-      property :priority, Integer, default: 0
+      property :source_name, String, name_property: true,
+               description: "The name of the source to add. The resource's name will be used if this isn't provided."
+
+      property :source, String,
+               description: "The source URL."
+
+      property :bypass_proxy, [TrueClass, FalseClass], default: false,
+               description: "Whether or not to bypass the system's proxy settings to access the source."
+
+      property :priority, Integer, default: 0,
+               description: "The priority level of the source."
 
       load_current_value do
         element = fetch_source_element(source_name)

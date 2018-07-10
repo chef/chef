@@ -33,7 +33,7 @@ class Chef
                name_property: true
 
       action :install do
-        description "Installs a package for a specific errata ID"
+        description "Installs a package for a specific errata ID."
 
         execute "Install errata packages for #{new_resource.errata_id}" do
           command "yum update --advisory #{new_resource.errata_id} -y"

@@ -36,7 +36,7 @@ class Chef
         # Only execute and script resources and use guard attributes.
         # The command to be executed on them are passed via different attributes.
         # Script resources use code attribute and execute resources use
-        # command attribute. Moreover script resources are also execute
+        # command property. Moreover script resources are also execute
         # resources. Here we make sure @command is assigned to the right
         # attribute by checking the type of the resources.
         # We need to make sure we check for Script first because any resource

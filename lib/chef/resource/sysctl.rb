@@ -50,8 +50,8 @@ class Chef
                default: "/etc/sysctl.d"
 
       def after_created
-        raise "The systctl resource requires Linux as it needs sysctl and the systctl.d directory functionality." unless node["os"] == "linux"
-        raise "The systctl resource does not support SLES releases less than 12 as it requires a systctl.d directory" if platform_family?("suse") && node["platform_version"].to_i < 12
+        raise "The sysctl resource requires Linux as it needs sysctl and the sysctl.d directory functionality." unless node["os"] == "linux"
+        raise "The sysctl resource does not support SLES releases less than 12 as it requires a sysctl.d directory" if platform_family?("suse") && node["platform_version"].to_i < 12
       end
 
       def coerce_value(v)
@@ -63,15 +63,17 @@ class Chef
         end
       end
 
-      # shellout to systctl to get the current value
+      # shellout to sysctl to get the current value
       # ignore missing keys by using '-e'
-      # convert tabs to spaces since systctl tab deliminates multivalue parameters
+      # convert tabs to spaces since sysctl tab deliminates multivalue parameters
       # strip the newline off the end of the output as well
       load_current_value do
         value shell_out!("sysctl -n -e #{key}").stdout.tr("\t", " ").strip
       end
 
       action :apply do
+        description "Apply a sysctl value."
+
         converge_if_changed do
           # set it temporarily
           set_sysctl_param(new_resource.key, new_resource.value)
@@ -91,9 +93,11 @@ class Chef
       end
 
       action :remove do
+        description "Remove a sysctl value."
+
         # only converge the resource if the file actually exists to delete
         if ::File.exist?("#{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf")
-          converge_by "removing systctl config at #{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf" do
+          converge_by "removing sysctl config at #{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf" do
             file "#{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf" do
               action :delete
             end

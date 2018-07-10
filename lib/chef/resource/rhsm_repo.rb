@@ -32,7 +32,7 @@ class Chef
                name_property: true
 
       action :enable do
-        description "Enable a RHSM repository"
+        description "Enable a RHSM repository."
 
         execute "Enable repository #{new_resource.repo_name}" do
           command "subscription-manager repos --enable=#{new_resource.repo_name}"
@@ -42,7 +42,7 @@ class Chef
       end
 
       action :disable do
-        description "Disable a RHSM repository"
+        description "Disable a RHSM repository."
 
         execute "Enable repository #{new_resource.repo_name}" do
           command "subscription-manager repos --disable=#{new_resource.repo_name}"

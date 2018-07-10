@@ -33,7 +33,7 @@ class Chef
                name_property: true
 
       action :attach do
-        description "Attach the node to a subscription pool"
+        description "Attach the node to a subscription pool."
 
         execute "Attach subscription pool #{new_resource.pool_id}" do
           command "subscription-manager attach --pool=#{new_resource.pool_id}"
@@ -43,7 +43,7 @@ class Chef
       end
 
       action :remove do
-        description "Remove the node from a subscription pool"
+        description "Remove the node from a subscription pool."
 
         execute "Remove subscription pool #{new_resource.pool_id}" do
           command "subscription-manager remove --serial=#{pool_serial(new_resource.pool_id)}"

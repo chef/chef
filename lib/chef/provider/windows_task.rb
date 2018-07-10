@@ -563,7 +563,7 @@ class Chef
           new_resource.password.nil? ? TaskScheduler::TASK_LOGON_SERVICE_ACCOUNT : TaskScheduler::TASK_LOGON_PASSWORD
         end
 
-        # This method checks if task and command attributes exist since those two are mandatory attributes to create a schedules task.
+        # This method checks if task and command properties exist since those two are mandatory properties to create a schedules task.
         def basic_validation
           validate = []
           validate << "Command" if new_resource.command.nil? || new_resource.command.empty?
