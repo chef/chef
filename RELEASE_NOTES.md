@@ -44,7 +44,7 @@ Use the chocolatey_source resource to add or remove Chocolatey sources.
 
 ### powershell_package_source
 
-Use the `powershell_package_source` resource to register a powershell package repository
+Use the `powershell_package_source` resource to register a powershell package repository.
 
 ### Actions
 
@@ -53,8 +53,8 @@ Use the `powershell_package_source` resource to register a powershell package re
 
 #### Properties
 
-- `source_name` - The name of the package source
-- `url` - The url to the package source
+- `source_name` - The name of the package source.
+- `url` - The url to the package source.
 - `trusted` - Whether or not to trust packages from this source.
 - `provider_name` - The package management provider for the source. It supports the following providers: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' and 'chocolatey'.
 - `publish_location` - The url where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'.
@@ -81,7 +81,7 @@ Use the kernel_module resource to manage kernel modules on Linux systems. This r
 
 ### ssh_known_hosts_entry
 
-Use the ssh_known_hosts_entry resource to append an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified.
+Use the ssh_known_hosts_entry resource to add an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified.
 
 #### Actions
 
