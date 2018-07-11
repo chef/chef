@@ -42,7 +42,7 @@ describe "knife config get-profile", :workstation do
     ChefConfig::PathHelper.per_tool_home_environment = "KNIFE_HOME"
     # Clear these out because they are cached permanently.
     ChefConfig::PathHelper.class_exec { remove_class_variable(:@@home_dir) }
-    Chef::Knife::ConfigGet.reset_config_loader!
+    Chef::Knife::ConfigGetProfile.reset_config_loader!
     begin
       ex.run
     ensure
