@@ -18,7 +18,6 @@
 
 require "spec_helper"
 require "ostruct"
-require "mixlib/shellout"
 
 describe Chef::Provider::User::Dscl do
   before do

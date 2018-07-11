@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "mixlib/shellout"
+require "chef/mixin/shell_out"
 require "chef/provider/user"
 require "openssl"
 require "plist"
