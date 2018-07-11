@@ -274,6 +274,12 @@ The `ignore_failure` property takes a new argument, `:quiet`, to suppress the er
 - The sysctl resource correctly handles missing keys when used with `ignore_error`
 - --recipe-url apparently never worked on Windows. Now it does.
 
+## Security Updates
+
+### ffi Gem
+
+- CVE-2018-1000201: DLL loading issue which can be hijacked on Windows OS
+
 # Ohai Release Notes 14.1:
 
 ## Configurable DMI Whitelist
