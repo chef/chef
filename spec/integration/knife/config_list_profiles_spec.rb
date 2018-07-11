@@ -62,33 +62,33 @@ describe "knife config list-profiles", :workstation do
   # 2) Because of how the format strings are built, there is substantial trailing
   # whitespace in most cases which many editors "helpfully" remove.
 
-  context 'with no credentials file' do
+  context "with no credentials file" do
     subject { knife_list_profiles.stderr }
     it { is_expected.to eq "FATAL: No profiles found, #{path_to(".chef/credentials")} does not exist or is empty\n" }
   end
 
-  context 'with an empty credentials file' do
-    before { file('.chef/credentials', '') }
+  context "with an empty credentials file" do
+    before { file(".chef/credentials", "") }
     subject { knife_list_profiles.stderr }
     it { is_expected.to eq "FATAL: No profiles found, #{path_to(".chef/credentials")} does not exist or is empty\n" }
   end
 
-  context 'with a simple default profile' do
-    before { file('.chef/credentials', <<~EOH) }
+  context "with a simple default profile" do
+    before { file(".chef/credentials", <<~EOH) }
       [default]
       client_name = "testuser"
       client_key = "testkey.pem"
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
-    it { is_expected.to eq <<-EOH.gsub(/#/, '') }
+    it { is_expected.to eq <<-EOH.delete("#") }
  Profile  Client    Key                  Server                                   #
 ----------------------------------------------------------------------------------#
 *default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
 EOH
   end
 
-  context 'with multiple profiles' do
-    before { file('.chef/credentials', <<~EOH) }
+  context "with multiple profiles" do
+    before { file(".chef/credentials", <<~EOH) }
       [default]
       client_name = "testuser"
       client_key = "testkey.pem"
@@ -104,7 +104,7 @@ EOH
       client_key = "~/src/qauser.pem"
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
-    it { is_expected.to eq <<-EOH.gsub(/#/, '') }
+    it { is_expected.to eq <<-EOH.delete("#") }
  Profile  Client    Key                  Server                                   #
 ----------------------------------------------------------------------------------#
 *default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
@@ -113,9 +113,9 @@ EOH
 EOH
   end
 
-  context 'with a non-default active profile' do
+  context "with a non-default active profile" do
     let(:cmd_args) { %w{--profile prod} }
-    before { file('.chef/credentials', <<~EOH) }
+    before { file(".chef/credentials", <<~EOH) }
       [default]
       client_name = "testuser"
       client_key = "testkey.pem"
@@ -131,7 +131,7 @@ EOH
       client_key = "~/src/qauser.pem"
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
-    it { is_expected.to eq <<-EOH.gsub(/#/, '') }
+    it { is_expected.to eq <<-EOH.delete("#") }
  Profile  Client    Key                  Server                                   #
 ----------------------------------------------------------------------------------#
  default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
@@ -140,21 +140,21 @@ EOH
 EOH
   end
 
-  context 'with a minimal profile' do
-    before { file('.chef/credentials', <<~EOH) }
+  context "with a minimal profile" do
+    before { file(".chef/credentials", <<~EOH) }
       [default]
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
     it { is_expected.to match %r{^*default .*? https://example.com/organizations/testorg$} }
   end
 
-  context 'with -i' do
+  context "with -i" do
     let(:cmd_args) { %w{-i} }
-    before { file('.chef/credentials', <<~EOH) }
+    before { file(".chef/credentials", <<~EOH) }
       [default]
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
-    it { is_expected.to eq <<-EOH.gsub(/#/, '') }
+    it { is_expected.to eq <<-EOH.delete("#") }
  Profile  Client  Key  Server                                   #
 ----------------------------------------------------------------#
 *default               https://example.com/organizations/testorg#
@@ -163,7 +163,7 @@ EOH
 
   context "with --format=json" do
     let(:cmd_args) { %w{--format=json node_name} }
-    before { file('.chef/credentials', <<~EOH) }
+    before { file(".chef/credentials", <<~EOH) }
       [default]
       client_name = "testuser"
       client_key = "testkey.pem"
@@ -179,10 +179,11 @@ EOH
       client_key = "~/src/qauser.pem"
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
-    it { expect(JSON.parse(subject)).to eq [
-      {"profile" => "default", "active" => true, "client_name" => "testuser", "client_key" => path_to(".chef/testkey.pem"), "server_url" => "https://example.com/organizations/testorg"},
-      {"profile" => "prod", "active" => false, "client_name" => "testuser", "client_key" => path_to(".chef/testkey.pem"), "server_url" => "https://example.com/organizations/prod"},
-      {"profile" => "qa", "active" => false, "client_name" => "qauser", "client_key" => path_to("src/qauser.pem"), "server_url" => "https://example.com/organizations/testorg"},
+    it {
+      expect(JSON.parse(subject)).to eq [
+      { "profile" => "default", "active" => true, "client_name" => "testuser", "client_key" => path_to(".chef/testkey.pem"), "server_url" => "https://example.com/organizations/testorg" },
+      { "profile" => "prod", "active" => false, "client_name" => "testuser", "client_key" => path_to(".chef/testkey.pem"), "server_url" => "https://example.com/organizations/prod" },
+      { "profile" => "qa", "active" => false, "client_name" => "qauser", "client_key" => path_to("src/qauser.pem"), "server_url" => "https://example.com/organizations/testorg" },
     ] }
   end
 end

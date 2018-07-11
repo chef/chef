@@ -87,14 +87,14 @@ class Chef
       def render_table(profiles, padding: 2)
         # Replace the home dir in the client key path with ~.
         profiles.each do |profile|
-          profile[:client_key] = profile[:client_key].to_s.gsub(/^#{Regexp.escape(Dir.home)}/, '~') if profile[:client_key]
+          profile[:client_key] = profile[:client_key].to_s.gsub(/^#{Regexp.escape(Dir.home)}/, "~") if profile[:client_key]
         end
         # Render the data to a 2D array that will be used for the table.
-        table_data = [['', 'Profile', 'Client', 'Key', 'Server']] + profiles.map do |profile|
-          [profile[:active] ? '*' : ''] + profile.values_at(:profile, :client_name, :client_key, :server_url).map(&:to_s)
+        table_data = [["", "Profile", "Client", "Key", "Server"]] + profiles.map do |profile|
+          [profile[:active] ? "*" : ""] + profile.values_at(:profile, :client_name, :client_key, :server_url).map(&:to_s)
         end
         # Compute column widths.
-        column_widths = table_data.first.length.times.map do |i|
+        column_widths = Array.new(table_data.first.length) do |i|
           table_data.map { |row| row[i].length + padding }.max
         end
         # Special case, the first col gets no padding (because indicator) and last
@@ -102,7 +102,7 @@ class Chef
         column_widths[0] -= padding
         column_widths[-1] -= padding
         # Build the format string for each row.
-        format_string = column_widths.map { |w| "%-#{w}.#{w}s" }.join('')
+        format_string = column_widths.map { |w| "%-#{w}.#{w}s" }.join("")
         format_string << "\n"
         # Print the header row and a separator.
         table = ui.color(format_string % table_data.first, :green)
