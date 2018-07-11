@@ -57,10 +57,9 @@ describe "knife config list-profiles", :workstation do
     ENV["HOME"] = path_to(".")
   end
 
-  # NOTE: The funky formatting of some of the output examples are because
-  # 1) ~ mode heredocs get sad about the unequal leading whitespace.
-  # 2) Because of how the format strings are built, there is substantial trailing
-  # whitespace in most cases which many editors "helpfully" remove.
+  # NOTE: The funky formatting with # at the end of the line of some of the
+  # output examples are because of how the format strings are built, there is
+  # substantial trailing whitespace in most cases which many editors "helpfully" remove.
 
   context "with no credentials file" do
     subject { knife_list_profiles.stderr }
@@ -80,11 +79,11 @@ describe "knife config list-profiles", :workstation do
       client_key = "testkey.pem"
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
-    it { is_expected.to eq <<-EOH.delete("#") }
- Profile  Client    Key                  Server                                   #
-----------------------------------------------------------------------------------#
-*default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
-EOH
+    it { is_expected.to eq <<~EOH.delete("#") }
+       Profile  Client    Key                  Server                                   #
+      ----------------------------------------------------------------------------------#
+      *default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
+    EOH
   end
 
   context "with multiple profiles" do
@@ -104,13 +103,13 @@ EOH
       client_key = "~/src/qauser.pem"
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
-    it { is_expected.to eq <<-EOH.delete("#") }
- Profile  Client    Key                  Server                                   #
-----------------------------------------------------------------------------------#
-*default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
- prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod   #
- qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg#
-EOH
+    it { is_expected.to eq <<~EOH.delete("#") }
+       Profile  Client    Key                  Server                                   #
+      ----------------------------------------------------------------------------------#
+      *default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
+       prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod   #
+       qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg#
+    EOH
   end
 
   context "with a non-default active profile" do
@@ -131,13 +130,13 @@ EOH
       client_key = "~/src/qauser.pem"
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
-    it { is_expected.to eq <<-EOH.delete("#") }
- Profile  Client    Key                  Server                                   #
-----------------------------------------------------------------------------------#
- default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
-*prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod   #
- qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg#
-EOH
+    it { is_expected.to eq <<~EOH.delete("#") }
+       Profile  Client    Key                  Server                                   #
+      ----------------------------------------------------------------------------------#
+       default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
+      *prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod   #
+       qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg#
+    EOH
   end
 
   context "with a minimal profile" do
@@ -154,11 +153,11 @@ EOH
       [default]
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
-    it { is_expected.to eq <<-EOH.delete("#") }
- Profile  Client  Key  Server                                   #
-----------------------------------------------------------------#
-*default               https://example.com/organizations/testorg#
-EOH
+    it { is_expected.to eq <<~EOH.delete("#") }
+       Profile  Client  Key  Server                                   #
+      ----------------------------------------------------------------#
+      *default               https://example.com/organizations/testorg#
+    EOH
   end
 
   context "with --format=json" do
