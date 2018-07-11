@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.9.8 -->
-## [v13.9.8](https://github.com/chef/chef/tree/v13.9.8) (2018-07-10)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Backport duplicate logger fix [#7447](https://github.com/chef/chef/pull/7447) ([btm](https://github.com/btm))
+- Bump to 13.10 and add release notes [#7454](https://github.com/chef/chef/pull/7454) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.9.4 -->
 ### Changes since 13.9.4 release
 
 #### Merged Pull Requests
+- Bump to 13.10 and add release notes [#7454](https://github.com/chef/chef/pull/7454) ([tas50](https://github.com/tas50)) <!-- 13.10.0 -->
 - Backport duplicate logger fix [#7447](https://github.com/chef/chef/pull/7447) ([btm](https://github.com/btm)) <!-- 13.9.8 -->
 - Bump Ohai to 13.10.0 [#7438](https://github.com/chef/chef/pull/7438) ([tas50](https://github.com/tas50)) <!-- 13.9.7 -->
 - Pull in latest win32-service gem [#7432](https://github.com/chef/chef/pull/7432) ([tas50](https://github.com/tas50)) <!-- 13.9.6 -->

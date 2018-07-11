@@ -305,9 +305,9 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
     slop (3.6.0)
-    specinfra (2.74.0)
+    specinfra (2.75.0)
       net-scp
-      net-ssh (>= 2.7, < 5.0)
+      net-ssh (>= 2.7)
       net-telnet
       sfl
     sslshake (1.2.0)
