@@ -6,25 +6,27 @@
 - Bump to 13.10 and add release notes [#7454](https://github.com/chef/chef/pull/7454) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup since=13.9.4 -->
-### Changes since 13.9.4 release
-
-#### Merged Pull Requests
-- Bump to 13.10 and add release notes [#7454](https://github.com/chef/chef/pull/7454) ([tas50](https://github.com/tas50)) <!-- 13.10.0 -->
-- Backport duplicate logger fix [#7447](https://github.com/chef/chef/pull/7447) ([btm](https://github.com/btm)) <!-- 13.9.8 -->
-- Bump Ohai to 13.10.0 [#7438](https://github.com/chef/chef/pull/7438) ([tas50](https://github.com/tas50)) <!-- 13.9.7 -->
-- Pull in latest win32-service gem [#7432](https://github.com/chef/chef/pull/7432) ([tas50](https://github.com/tas50)) <!-- 13.9.6 -->
-- Trying to use --recipe-url on Windows with local file fails [#7426](https://github.com/chef/chef/pull/7426) ([tyler-ball](https://github.com/tyler-ball)) <!-- 13.9.5 -->
+<!-- release_rollup since=13.10.0 -->
+### Changes since 13.10.0 release
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.10.0](https://github.com/chef/chef/tree/v13.10.0) (2018-07-11)
+
+#### Merged Pull Requests
+- Trying to use --recipe-url on Windows with local file fails [#7426](https://github.com/chef/chef/pull/7426) ([tyler-ball](https://github.com/tyler-ball))
+- Pull in latest win32-service gem [#7432](https://github.com/chef/chef/pull/7432) ([tas50](https://github.com/tas50))
+- Bump Ohai to 13.10.0 [#7438](https://github.com/chef/chef/pull/7438) ([tas50](https://github.com/tas50))
+- Backport duplicate logger fix [#7447](https://github.com/chef/chef/pull/7447) ([btm](https://github.com/btm))
+- Bump to 13.10 and add release notes [#7454](https://github.com/chef/chef/pull/7454) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v13.9.4](https://github.com/chef/chef/tree/v13.9.4) (2018-06-07)
 
 #### Merged Pull Requests
 - Update nokogiri, ruby, and openssl for CVEs [#7232](https://github.com/chef/chef/pull/7232) ([tas50](https://github.com/tas50))
 - Backport Ubuntu 18.04 fixes [#7280](https://github.com/chef/chef/pull/7280) ([thommay](https://github.com/thommay))
 - Chef-13: Bump ffi to 1.9.25 along with the rest of things [#7337](https://github.com/chef/chef/pull/7337) ([lamont-granquist](https://github.com/lamont-granquist))
-<!-- latest_stable_release -->
 
 ## [v13.9.1](https://github.com/chef/chef/tree/v13.9.1) (2018-05-08)
 
