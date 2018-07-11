@@ -20,29 +20,51 @@ require "chef-config/path_helper"
 
 module ChefConfig
   module Mixin
+    # Helper methods for working with credentials files.
+    #
+    # @since 13.7
+    # @api internal
     module Credentials
+      # Compute the active credentials profile name.
+      #
+      # The lookup order is argument (from --profile), environment variable
+      # ($CHEF_PROFILE), context file (~/.chef/context), and then "default" as
+      # a fallback.
+      #
+      # @since 14.4
+      # @param profile [String, nil] Optional override for the active profile,
+      #   normally set via a command-line option.
+      # @return [String]
+      def credentials_profile(profile = nil)
+        context_file = PathHelper.home(".chef", "context").freeze
+        if !profile.nil?
+          profile
+        elsif ENV.include?("CHEF_PROFILE")
+          ENV["CHEF_PROFILE"]
+        elsif File.exist?(context_file)
+          File.read(context_file).strip
+        else
+          "default"
+        end
+      end
 
+      # Load and process the active credentials.
+      #
+      # @see WorkstationConfigLoader#apply_credentials
+      # @param profile [String, nil] Optional override for the active profile,
+      #   normally set via a command-line option.
+      # @return [void]
       def load_credentials(profile = nil)
         credentials_file = PathHelper.home(".chef", "credentials").freeze
-        context_file = PathHelper.home(".chef", "context").freeze
-
-        return unless File.file?(credentials_file)
-
-        context = File.read(context_file).strip if File.file?(context_file)
-
-        environment = ENV.fetch("CHEF_PROFILE", nil)
-
-        profile = if !profile.nil?
-                    profile
-                  elsif !environment.nil?
-                    environment
-                  elsif !context.nil?
-                    context
-                  else
-                    "default"
-                  end
-
+        return unless File.exist?(credentials_file)
+        profile = credentials_profile(profile)
         config = Tomlrb.load_file(credentials_file)
+        if config[profile].nil?
+          # Unknown profile name. For "default" just silently ignore, otherwise
+          # raise an error.
+          return if profile == "default"
+          raise ChefConfig::ConfigurationError, "Profile #{profile} doesn't exist. Please add it to #{credentials_file}."
+        end
         apply_credentials(config[profile], profile)
       rescue ChefConfig::ConfigurationError
         raise
