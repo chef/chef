@@ -1,5 +1,24 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 13.10
+
+## Bugfixes
+
+- Resolves a duplicate logging getting created when redirecting stdout
+- Using --recipe-url with a local file on Windows no longer fails
+- Service resource no longer throws Ruby deprecation warnings on Windows
+
+## Ohai 13.10 Improvements
+
+- Correctly identify the platform_version on the final release of Amazon Linux 2.0
+- Detect nodes with the DMI data of "OpenStack Compute" as being OpenStack nodes
+
+## Security Updates
+
+### ffi Gem
+
+- CVE-2018-1000201: DLL loading issue which can be hijacked on Windows OS
+
 # Chef Client Release Notes 13.9.X:
 
 ## Security Updates
