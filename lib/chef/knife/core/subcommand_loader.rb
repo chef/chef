@@ -142,7 +142,7 @@ class Chef
         words = words.dup
         match = nil
         until match || words.empty?
-          candidate = words.join(sep)
+          candidate = words.join(sep).tr("-", "_")
           if hash.key?(candidate)
             match = candidate
           else
