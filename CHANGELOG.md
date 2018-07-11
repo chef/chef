@@ -1,66 +1,64 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.37 -->
-## [v14.3.37](https://github.com/chef/chef/tree/v14.3.37) (2018-07-10)
-
-#### Merged Pull Requests
-- Attributes -&gt; Properties in a few more resources [#7448](https://github.com/chef/chef/pull/7448) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.2.0 -->
-### Changes since 14.2.0 release
-
-#### Merged Pull Requests
-- Attributes -&gt; Properties in a few more resources [#7448](https://github.com/chef/chef/pull/7448) ([tas50](https://github.com/tas50)) <!-- 14.3.37 -->
-- Add missing descriptions and add periods after resource the descriptions [#7444](https://github.com/chef/chef/pull/7444) ([tas50](https://github.com/tas50)) <!-- 14.3.36 -->
-- Enable Amazon Linux 2.0 tests again [#7442](https://github.com/chef/chef/pull/7442) ([tas50](https://github.com/tas50)) <!-- 14.3.35 -->
-- Bump Ohai to 14.3.0 [#7437](https://github.com/chef/chef/pull/7437) ([tas50](https://github.com/tas50)) <!-- 14.3.35 -->
-- Prevent failures using windows_feature due to the platform helper [#7433](https://github.com/chef/chef/pull/7433) ([tas50](https://github.com/tas50)) <!-- 14.3.34 -->
-- Fix dupe stdout_logger [#7401](https://github.com/chef/chef/pull/7401) ([nsdavidson](https://github.com/nsdavidson)) <!-- 14.3.33 -->
-- bump chefstyle + inspec-core [#7431](https://github.com/chef/chef/pull/7431) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.32 -->
-- Don&#39;t require rubygems in our binaries [#7428](https://github.com/chef/chef/pull/7428) ([tas50](https://github.com/tas50)) <!-- 14.3.31 -->
-- fix some chefstyle offenses [#7427](https://github.com/chef/chef/pull/7427) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.30 -->
-- knife config and a bunch of UX improvements [#7390](https://github.com/chef/chef/pull/7390) ([coderanger](https://github.com/coderanger)) <!-- 14.3.29 -->
-- chefstyle: fix Style/MutableConstant [#7417](https://github.com/chef/chef/pull/7417) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.28 -->
-- More chefstyle updates [#7415](https://github.com/chef/chef/pull/7415) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.27 -->
-- Chefstyle fixes [#7414](https://github.com/chef/chef/pull/7414) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.25 -->
-- Pull in new InSpec and win32-service [#7405](https://github.com/chef/chef/pull/7405) ([tas50](https://github.com/tas50)) <!-- 14.3.24 -->
-- Rename the kitchen base test suite to end-to-end [#7385](https://github.com/chef/chef/pull/7385) ([tas50](https://github.com/tas50)) <!-- 14.3.23 -->
-- Switch powershell_exec mixin to use FFI instead of COM [#7380](https://github.com/chef/chef/pull/7380) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.3.23 -->
-- Add missing require knife [#7400](https://github.com/chef/chef/pull/7400) ([tas50](https://github.com/tas50)) <!-- 14.3.22 -->
-- Remove sudo/gcc-c++ package installs from kitchen tests [#7398](https://github.com/chef/chef/pull/7398) ([tas50](https://github.com/tas50)) <!-- 14.3.21 -->
-- Remove the existing acceptance testing framework [#7399](https://github.com/chef/chef/pull/7399) ([tas50](https://github.com/tas50)) <!-- 14.3.21 -->
-- Add chocolatey_config and chocolatey_source resources [#7388](https://github.com/chef/chef/pull/7388) ([tas50](https://github.com/tas50)) <!-- 14.3.21 -->
-- Add missing knife license headers [#7397](https://github.com/chef/chef/pull/7397) ([tas50](https://github.com/tas50)) <!-- 14.3.20 -->
-- deprecate old shell_out APIs [#7382](https://github.com/chef/chef/pull/7382) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.20 -->
-- Rework the credentials file system to support any config keys. [#7387](https://github.com/chef/chef/pull/7387) ([coderanger](https://github.com/coderanger)) <!-- 14.3.19 -->
-- Unification of shell_out APIs [#7372](https://github.com/chef/chef/pull/7372) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.18 -->
-- Remove the unused audit test cookbook [#7378](https://github.com/chef/chef/pull/7378) ([tas50](https://github.com/tas50)) <!-- 14.3.17 -->
-- Silence deprecation warnings [#7375](https://github.com/chef/chef/pull/7375) ([coderanger](https://github.com/coderanger)) <!-- 14.3.17 -->
-- Remove awesome customers testing and update kitchen configs [#7377](https://github.com/chef/chef/pull/7377) ([tas50](https://github.com/tas50)) <!-- 14.3.16 -->
-- windows_task: Fix for task is not idempotent when task name includes parent folder [#7293](https://github.com/chef/chef/pull/7293) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.3.16 -->
-- windows_task: Don&#39;t allow bad username/password to be provided to a task which will fail later [#7288](https://github.com/chef/chef/pull/7288) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.3.15 -->
-- Pull in win32-taskscheduler 1.0.2 [#7371](https://github.com/chef/chef/pull/7371) ([tas50](https://github.com/tas50)) <!-- 14.3.14 -->
-- removing mwrock from client maintainers [#7369](https://github.com/chef/chef/pull/7369) ([mwrock](https://github.com/mwrock)) <!-- 14.3.13 -->
-- Add more property descriptions to resources [#7358](https://github.com/chef/chef/pull/7358) ([tas50](https://github.com/tas50)) <!-- 14.3.12 -->
-- windows_feature_dism: Fix errors when specifying the source [#7370](https://github.com/chef/chef/pull/7370) ([tas50](https://github.com/tas50)) <!-- 14.3.11 -->
-- package: Make sure to use the package_name name properties [#7365](https://github.com/chef/chef/pull/7365) ([tas50](https://github.com/tas50)) <!-- 14.3.10 -->
-- Add missing chef/resource requires in resource [#7364](https://github.com/chef/chef/pull/7364) ([tas50](https://github.com/tas50)) <!-- 14.3.9 -->
-- Update to the latest inspec and liblzma [#7355](https://github.com/chef/chef/pull/7355) ([tas50](https://github.com/tas50)) <!-- 14.3.8 -->
-- Mount: Fix errors on Windows when using the mount_point property [#7284](https://github.com/chef/chef/pull/7284) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.3.7 -->
-- Add kernel_module resource from the kernel_module cookbook [#7165](https://github.com/chef/chef/pull/7165) ([tas50](https://github.com/tas50)) <!-- 14.3.6 -->
-- Add ssh_known_hosts_entry resource from ssh_known_hosts cookbook [#7161](https://github.com/chef/chef/pull/7161) ([tas50](https://github.com/tas50)) <!-- 14.3.5 -->
-- Update help link in Add/Remove Programs on Windows [#7345](https://github.com/chef/chef/pull/7345) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.3.4 -->
-- Implement rfc107: NodeMap locking for resource and provider handlers [#7224](https://github.com/chef/chef/pull/7224) ([coderanger](https://github.com/coderanger)) <!-- 14.3.4 -->
-- Add whyrun message when installing a local file on Windows [#7351](https://github.com/chef/chef/pull/7351) ([josh-barker](https://github.com/josh-barker)) <!-- 14.3.3 -->
-- Make shell_out_compact automatically pull timeouts off the resource + remove uses of shell_out_compact_timeout [#7330](https://github.com/chef/chef/pull/7330) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.2 -->
-- Deprecated the Chef::Provider::Package::Freebsd::Pkg provider [#7350](https://github.com/chef/chef/pull/7350) ([tas50](https://github.com/tas50)) <!-- 14.3.1 -->
-- Bump the version to 14.3.0 [#7346](https://github.com/chef/chef/pull/7346) ([tas50](https://github.com/tas50)) <!-- 14.3.0 -->
-- Support windows_feature_powershell on Windows 2008 R2 [#7349](https://github.com/chef/chef/pull/7349) ([tas50](https://github.com/tas50)) <!-- 14.2.3 -->
-- Add skip_publisher_check property to powershell_package [#7259](https://github.com/chef/chef/pull/7259) ([Happycoil](https://github.com/Happycoil)) <!-- 14.2.1 -->
-- Expand development docs with branch/backport + more [#7343](https://github.com/chef/chef/pull/7343) ([tas50](https://github.com/tas50)) <!-- 14.2.2 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.3.37](https://github.com/chef/chef/tree/v14.3.37) (2018-07-11)
+
+#### Merged Pull Requests
+- Expand development docs with branch/backport + more [#7343](https://github.com/chef/chef/pull/7343) ([tas50](https://github.com/tas50))
+- Add skip_publisher_check property to powershell_package [#7259](https://github.com/chef/chef/pull/7259) ([Happycoil](https://github.com/Happycoil))
+- Support windows_feature_powershell on Windows 2008 R2 [#7349](https://github.com/chef/chef/pull/7349) ([tas50](https://github.com/tas50))
+- Bump the version to 14.3.0 [#7346](https://github.com/chef/chef/pull/7346) ([tas50](https://github.com/tas50))
+- Deprecated the Chef::Provider::Package::Freebsd::Pkg provider [#7350](https://github.com/chef/chef/pull/7350) ([tas50](https://github.com/tas50))
+- Make shell_out_compact automatically pull timeouts off the resource + remove uses of shell_out_compact_timeout [#7330](https://github.com/chef/chef/pull/7330) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add whyrun message when installing a local file on Windows [#7351](https://github.com/chef/chef/pull/7351) ([josh-barker](https://github.com/josh-barker))
+- Implement rfc107: NodeMap locking for resource and provider handlers [#7224](https://github.com/chef/chef/pull/7224) ([coderanger](https://github.com/coderanger))
+- Update help link in Add/Remove Programs on Windows [#7345](https://github.com/chef/chef/pull/7345) ([stuartpreston](https://github.com/stuartpreston))
+- Add ssh_known_hosts_entry resource from ssh_known_hosts cookbook [#7161](https://github.com/chef/chef/pull/7161) ([tas50](https://github.com/tas50))
+- Add kernel_module resource from the kernel_module cookbook [#7165](https://github.com/chef/chef/pull/7165) ([tas50](https://github.com/tas50))
+- Mount: Fix errors on Windows when using the mount_point property [#7284](https://github.com/chef/chef/pull/7284) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Update to the latest inspec and liblzma [#7355](https://github.com/chef/chef/pull/7355) ([tas50](https://github.com/tas50))
+- Add missing chef/resource requires in resource [#7364](https://github.com/chef/chef/pull/7364) ([tas50](https://github.com/tas50))
+- package: Make sure to use the package_name name properties [#7365](https://github.com/chef/chef/pull/7365) ([tas50](https://github.com/tas50))
+- windows_feature_dism: Fix errors when specifying the source [#7370](https://github.com/chef/chef/pull/7370) ([tas50](https://github.com/tas50))
+- Add more property descriptions to resources [#7358](https://github.com/chef/chef/pull/7358) ([tas50](https://github.com/tas50))
+- removing mwrock from client maintainers [#7369](https://github.com/chef/chef/pull/7369) ([mwrock](https://github.com/mwrock))
+- Pull in win32-taskscheduler 1.0.2 [#7371](https://github.com/chef/chef/pull/7371) ([tas50](https://github.com/tas50))
+- windows_task: Don&#39;t allow bad username/password to be provided to a task which will fail later [#7288](https://github.com/chef/chef/pull/7288) ([Vasu1105](https://github.com/Vasu1105))
+- windows_task: Fix for task is not idempotent when task name includes parent folder [#7293](https://github.com/chef/chef/pull/7293) ([Vasu1105](https://github.com/Vasu1105))
+- Remove awesome customers testing and update kitchen configs [#7377](https://github.com/chef/chef/pull/7377) ([tas50](https://github.com/tas50))
+- Silence deprecation warnings [#7375](https://github.com/chef/chef/pull/7375) ([coderanger](https://github.com/coderanger))
+- Remove the unused audit test cookbook [#7378](https://github.com/chef/chef/pull/7378) ([tas50](https://github.com/tas50))
+- Unification of shell_out APIs [#7372](https://github.com/chef/chef/pull/7372) ([lamont-granquist](https://github.com/lamont-granquist))
+- Rework the credentials file system to support any config keys. [#7387](https://github.com/chef/chef/pull/7387) ([coderanger](https://github.com/coderanger))
+- deprecate old shell_out APIs [#7382](https://github.com/chef/chef/pull/7382) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add missing knife license headers [#7397](https://github.com/chef/chef/pull/7397) ([tas50](https://github.com/tas50))
+- Add chocolatey_config and chocolatey_source resources [#7388](https://github.com/chef/chef/pull/7388) ([tas50](https://github.com/tas50))
+- Remove the existing acceptance testing framework [#7399](https://github.com/chef/chef/pull/7399) ([tas50](https://github.com/tas50))
+- Remove sudo/gcc-c++ package installs from kitchen tests [#7398](https://github.com/chef/chef/pull/7398) ([tas50](https://github.com/tas50))
+- Add missing require knife [#7400](https://github.com/chef/chef/pull/7400) ([tas50](https://github.com/tas50))
+- Switch powershell_exec mixin to use FFI instead of COM [#7380](https://github.com/chef/chef/pull/7380) ([stuartpreston](https://github.com/stuartpreston))
+- Rename the kitchen base test suite to end-to-end [#7385](https://github.com/chef/chef/pull/7385) ([tas50](https://github.com/tas50))
+- Pull in new InSpec and win32-service [#7405](https://github.com/chef/chef/pull/7405) ([tas50](https://github.com/tas50))
+- Chefstyle fixes [#7414](https://github.com/chef/chef/pull/7414) ([lamont-granquist](https://github.com/lamont-granquist))
+- More chefstyle updates [#7415](https://github.com/chef/chef/pull/7415) ([lamont-granquist](https://github.com/lamont-granquist))
+- chefstyle: fix Style/MutableConstant [#7417](https://github.com/chef/chef/pull/7417) ([lamont-granquist](https://github.com/lamont-granquist))
+- knife config and a bunch of UX improvements [#7390](https://github.com/chef/chef/pull/7390) ([coderanger](https://github.com/coderanger))
+- fix some chefstyle offenses [#7427](https://github.com/chef/chef/pull/7427) ([lamont-granquist](https://github.com/lamont-granquist))
+- Don&#39;t require rubygems in our binaries [#7428](https://github.com/chef/chef/pull/7428) ([tas50](https://github.com/tas50))
+- bump chefstyle + inspec-core [#7431](https://github.com/chef/chef/pull/7431) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix dupe stdout_logger [#7401](https://github.com/chef/chef/pull/7401) ([nsdavidson](https://github.com/nsdavidson))
+- Prevent failures using windows_feature due to the platform helper [#7433](https://github.com/chef/chef/pull/7433) ([tas50](https://github.com/tas50))
+- Bump Ohai to 14.3.0 [#7437](https://github.com/chef/chef/pull/7437) ([tas50](https://github.com/tas50))
+- Enable Amazon Linux 2.0 tests again [#7442](https://github.com/chef/chef/pull/7442) ([tas50](https://github.com/tas50))
+- Add missing descriptions and add periods after resource the descriptions [#7444](https://github.com/chef/chef/pull/7444) ([tas50](https://github.com/tas50))
+- Attributes -&gt; Properties in a few more resources [#7448](https://github.com/chef/chef/pull/7448) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v14.2.0](https://github.com/chef/chef/tree/v14.2.0) (2018-06-07)
 
 #### Merged Pull Requests
@@ -90,7 +88,6 @@
 - Quote git remote_url property (PR 6249 + chefstyle fix) [#7014](https://github.com/chef/chef/pull/7014) ([tas50](https://github.com/tas50))
 - Use inspec-core, new ffi gem, and bump deps [#7332](https://github.com/chef/chef/pull/7332) ([lamont-granquist](https://github.com/lamont-granquist))
 - bump ohai to 14.2.0 [#7333](https://github.com/chef/chef/pull/7333) ([lamont-granquist](https://github.com/lamont-granquist))
-<!-- latest_stable_release -->
 
 ## [v14.1.12](https://github.com/chef/chef/tree/v14.1.12) (2018-05-16)
 
