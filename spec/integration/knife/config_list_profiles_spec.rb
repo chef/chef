@@ -113,6 +113,33 @@ EOH
 EOH
   end
 
+  context 'with a non-default active profile' do
+    let(:cmd_args) { %w{--profile prod} }
+    before { file('.chef/credentials', <<~EOH) }
+      [default]
+      client_name = "testuser"
+      client_key = "testkey.pem"
+      chef_server_url = "https://example.com/organizations/testorg"
+
+      [prod]
+      client_name = "testuser"
+      client_key = "testkey.pem"
+      chef_server_url = "https://example.com/organizations/prod"
+
+      [qa]
+      client_name = "qauser"
+      client_key = "~/src/qauser.pem"
+      chef_server_url = "https://example.com/organizations/testorg"
+    EOH
+    it { is_expected.to eq <<-EOH.gsub(/#/, '') }
+ Profile  Client    Key                  Server                                   #
+----------------------------------------------------------------------------------#
+ default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
+*prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod   #
+ qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg#
+EOH
+  end
+
   context 'with a minimal profile' do
     before { file('.chef/credentials', <<~EOH) }
       [default]
@@ -132,5 +159,30 @@ EOH
 ----------------------------------------------------------------#
 *default               https://example.com/organizations/testorg#
 EOH
+  end
+
+  context "with --format=json" do
+    let(:cmd_args) { %w{--format=json node_name} }
+    before { file('.chef/credentials', <<~EOH) }
+      [default]
+      client_name = "testuser"
+      client_key = "testkey.pem"
+      chef_server_url = "https://example.com/organizations/testorg"
+
+      [prod]
+      client_name = "testuser"
+      client_key = "testkey.pem"
+      chef_server_url = "https://example.com/organizations/prod"
+
+      [qa]
+      client_name = "qauser"
+      client_key = "~/src/qauser.pem"
+      chef_server_url = "https://example.com/organizations/testorg"
+    EOH
+    it { expect(JSON.parse(subject)).to eq [
+      {"profile" => "default", "active" => true, "client_name" => "testuser", "client_key" => path_to(".chef/testkey.pem"), "server_url" => "https://example.com/organizations/testorg"},
+      {"profile" => "prod", "active" => false, "client_name" => "testuser", "client_key" => path_to(".chef/testkey.pem"), "server_url" => "https://example.com/organizations/prod"},
+      {"profile" => "qa", "active" => false, "client_name" => "qauser", "client_key" => path_to("src/qauser.pem"), "server_url" => "https://example.com/organizations/testorg"},
+    ] }
   end
 end
