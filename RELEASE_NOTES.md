@@ -1,5 +1,13 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+## New `knife config get-profile` and `knife config use-profile` commands
+
+Two new commands under `knife config` have been added, in addition to the previous
+`knife config get`. `get-profile` will display the active credentials profile
+name. `use-profile` will, conversely, set the default profile name. The default
+profile set via `use-profile` can still be overridden by the `--profile` command
+line option or the `$CHEF_PROFILE` environment variable.
+
 # Chef Client Release Notes 14.3:
 
 ## New Preview Resources Concept
