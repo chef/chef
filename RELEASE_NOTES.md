@@ -1,12 +1,30 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
-## New `knife config get-profile` and `knife config use-profile` commands
+## Knife configuration profile management commands
 
-Two new commands under `knife config` have been added, in addition to the previous
-`knife config get`. `get-profile` will display the active credentials profile
-name. `use-profile` will, conversely, set the default profile name. The default
-profile set via `use-profile` can still be overridden by the `--profile` command
-line option or the `$CHEF_PROFILE` environment variable.
+Several new commands have been added under `knife config` to help manage multiple
+profiles in your `credentials` file.
+
+`knife config get-profile` will display the active profile.
+
+`knife config use-profile PROFILE` will set the workstation-level default
+profile. That default can still be overridden by the `--profile` command line
+option or the `$CHEF_PROFILE` environment variable.
+
+`knife config list-profiles` will display all your available profiles along with
+summary information on each.
+
+```bash
+$ knife config get-profile
+staging
+$ knife config use-profile prod
+Set default profile to prod
+$ knife config list-profiles
+ Profile  Client  Key               Server
+-----------------------------------------------------------------------------
+ staging  myuser  ~/.chef/user.pem  https://example.com/organizations/staging
+*prod     myuser  ~/.chef/user.pem  https://example.com/organizations/prod
+```
 
 # Chef Client Release Notes 14.3:
 
