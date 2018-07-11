@@ -41,7 +41,7 @@ module ChefConfig
           profile
         elsif ENV.include?("CHEF_PROFILE")
           ENV["CHEF_PROFILE"]
-        elsif File.exist?(context_file)
+        elsif File.file?(context_file)
           File.read(context_file).strip
         else
           "default"
@@ -56,7 +56,7 @@ module ChefConfig
       # @return [void]
       def load_credentials(profile = nil)
         credentials_file = PathHelper.home(".chef", "credentials").freeze
-        return unless File.exist?(credentials_file)
+        return unless File.file?(credentials_file)
         profile = credentials_profile(profile)
         config = Tomlrb.load_file(credentials_file)
         if config[profile].nil?
