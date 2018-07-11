@@ -94,14 +94,14 @@ PS
   end
 
   describe "when the node has not specified a ps command" do
-    it "should raise error if the node has a nil ps attribute and no other means to get status" do
+    it "should raise error if the node has a nil ps property and no other means to get status" do
       @node.automatic_attrs[:command] = { ps: nil }
       @provider.action = :start
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
     end
 
-    it "should raise error if the node has an empty ps attribute and no other means to get status" do
+    it "should raise error if the node has an empty ps property and no other means to get status" do
       @node.automatic_attrs[:command] = { ps: "" }
       @provider.action = :start
       @provider.define_resource_requirements
@@ -110,7 +110,7 @@ PS
 
   end
 
-  describe "when we have a 'ps' attribute" do
+  describe "when we have a 'ps' property" do
     it "should shell_out! the node's ps command" do
       @status = double("Status", exitstatus: 0, stdout: @stdout)
       expect(@provider).to receive(:shell_out!).with(@node[:command][:ps]).and_return(@status)

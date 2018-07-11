@@ -111,7 +111,7 @@ describe Chef::Provider::Execute do
       expect(new_resource).to be_updated
     end
 
-    it "should honor sensitive attribute" do
+    it "should honor sensitive property" do
       new_resource.sensitive true
       # Since the resource is sensitive, it should not have :live_stream set
       opts.delete(:live_stream)

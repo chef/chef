@@ -91,14 +91,14 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
 
   end
 
-  it "should raise error if the node has a nil ps attribute and no other means to get status" do
+  it "should raise error if the node has a nil ps property and no other means to get status" do
     @node.automatic_attrs[:command] = { ps: nil }
     @provider.define_resource_requirements
     @provider.action = :start
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
   end
 
-  it "should raise error if the node has an empty ps attribute and no other means to get status" do
+  it "should raise error if the node has an empty ps property and no other means to get status" do
     @node.automatic_attrs[:command] = { ps: "" }
     @provider.define_resource_requirements
     @provider.action = :start

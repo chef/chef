@@ -72,7 +72,7 @@ describe Chef::Provider::Route do
         expect(provider.is_running).to be_falsey
       end
 
-      it "should detect existing routes and set is_running attribute correctly" do
+      it "should detect existing routes and set is_running property correctly" do
         resource = Chef::Resource::Route.new("192.168.100.0/24")
         allow(resource).to receive(:gateway).and_return("192.168.132.9")
         allow(resource).to receive(:device).and_return("eth0")

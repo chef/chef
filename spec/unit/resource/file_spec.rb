@@ -118,7 +118,7 @@ describe Chef::Resource::File do
       resource.rights :read, "Everyone"
       resource.rights :full_control, "DOMAIN\User"
     end
-    it "describes its state including windows ACL attributes" do
+    it "describes its state including windows ACL properties" do
       state = resource.state_for_resource_reporter
       expect(state[:rights]).to eq([ { permissions: :read, principals: "Everyone" },
                                { permissions: :full_control, principals: "DOMAIN\User" } ])

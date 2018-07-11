@@ -89,7 +89,7 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     expect(resource.source).to include("solitaire.msi")
   end
 
-  it "supports the checksum attribute" do
+  it "supports the checksum property" do
     resource.checksum("somechecksum")
     expect(resource.checksum).to eq("somechecksum")
   end

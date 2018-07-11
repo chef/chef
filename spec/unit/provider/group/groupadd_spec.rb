@@ -49,23 +49,23 @@ describe Chef::Provider::Group::Groupadd do
       gid: "-g",
     }
 
-    field_list.each do |attribute, option|
-      it "should check for differences in #{attribute} between the current and new resources" do
-        expect(new_resource).to receive(attribute)
-        expect(current_resource).to receive(attribute)
+    field_list.each do |property, option|
+      it "should check for differences in #{property} between the current and new resources" do
+        expect(new_resource).to receive(property)
+        expect(current_resource).to receive(property)
         provider.set_options
       end
 
-      it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
-        allow(new_resource).to receive(attribute).and_return("wowaweea")
-        expect(provider.set_options).to eql([ option, new_resource.send(attribute), new_resource.group_name])
+      it "should set the option for #{property} if the new resources #{property} is not null" do
+        allow(new_resource).to receive(property).and_return("wowaweea")
+        expect(provider.set_options).to eql([ option, new_resource.send(property), new_resource.group_name])
       end
     end
 
     it "should combine all the possible options" do
       match_array = []
-      field_list.sort_by { |a| a[0] }.each do |attribute, option|
-        allow(new_resource).to receive(attribute).and_return("hola")
+      field_list.sort_by { |a| a[0] }.each do |property, option|
+        allow(new_resource).to receive(property).and_return("hola")
         match_array << option
         match_array << "hola"
       end

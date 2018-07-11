@@ -64,7 +64,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     end
   end
 
-  describe "when querying for package state and attributes" do
+  describe "when querying for package state and properties" do
     before do
       # @new_resource = Chef::Resource::Package.new("zsh")
 

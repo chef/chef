@@ -51,7 +51,7 @@ describe Chef::Provider::User::Windows do
     @provider = Chef::Provider::User::Windows.new(@new_resource, @run_context)
   end
 
-  describe "when comparing the user's current attributes to the desired attributes" do
+  describe "when comparing the user's current properties to the desired properties" do
     before do
       @new_resource.comment   "Adam Jacob"
       @new_resource.uid       1000
@@ -63,7 +63,7 @@ describe Chef::Provider::User::Windows do
       @provider.current_resource = @new_resource.clone
     end
 
-    describe "and the attributes match" do
+    describe "and the properties match" do
       it "doesn't set the comment field to be updated" do
         expect(@provider.set_options).not_to have_key(:full_name)
       end
@@ -90,7 +90,7 @@ describe Chef::Provider::User::Windows do
 
     end
 
-    describe "and the attributes do not match" do
+    describe "and the properties do not match" do
       before do
         @current_resource = Chef::Resource::User::WindowsUser.new("adam")
         @current_resource.comment   "Adam Jacob-foo"
@@ -106,23 +106,23 @@ describe Chef::Provider::User::Windows do
         expect(@provider.set_options[:full_name]).to eq("Adam Jacob")
       end
 
-      it "marks the home_dir attribute to be updated" do
+      it "marks the home_dir property to be updated" do
         expect(@provider.set_options[:home_dir]).to eq("/home/adam")
       end
 
-      it "ignores the primary_group_id attribute" do
+      it "ignores the primary_group_id property" do
         expect(@provider.set_options[:primary_group_id]).to eq(nil)
       end
 
-      it "marks the user_id attribute to be updated" do
+      it "marks the user_id property to be updated" do
         expect(@provider.set_options[:user_id]).to eq(1000)
       end
 
-      it "marks the script_path attribute to be updated" do
+      it "marks the script_path property to be updated" do
         expect(@provider.set_options[:script_path]).to eq("/usr/bin/zsh")
       end
 
-      it "marks the password attribute to be updated" do
+      it "marks the password property to be updated" do
         expect(@provider.set_options[:password]).to eq("abracadabra")
       end
     end

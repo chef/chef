@@ -111,7 +111,7 @@ describe Chef::Resource::Template do
     end
 
     context "on windows", :windows_only do
-      # according to Chef::Resource::File, windows state attributes are rights + deny_rights
+      # according to Chef::Resource::File, windows state properties are rights + deny_rights
       skip "it describes its state"
     end
 

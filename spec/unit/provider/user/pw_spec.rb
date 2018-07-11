@@ -54,23 +54,23 @@ describe Chef::Provider::User::Pw do
       "uid" => "-u",
       "shell" => "-s",
     }
-    field_list.each do |attribute, option|
-      it "should check for differences in #{attribute} between the new and current resources" do
-        expect(@current_resource).to receive(attribute)
-        expect(@new_resource).to receive(attribute)
+    field_list.each do |property, option|
+      it "should check for differences in #{property} between the new and current resources" do
+        expect(@current_resource).to receive(property)
+        expect(@new_resource).to receive(property)
         @provider.set_options
       end
 
-      it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
-        allow(@new_resource).to receive(attribute).and_return("hola")
-        expect(@provider.set_options).to eql([ @new_resource.username, option, @new_resource.send(attribute), "-m"])
+      it "should set the option for #{property} if the new resources #{property} is not null" do
+        allow(@new_resource).to receive(property).and_return("hola")
+        expect(@provider.set_options).to eql([ @new_resource.username, option, @new_resource.send(property), "-m"])
       end
     end
 
     it "should combine all the possible options" do
       match_array = [ "adam" ]
-      field_list.sort_by { |a| a[0] }.each do |attribute, option|
-        allow(@new_resource).to receive(attribute).and_return("hola")
+      field_list.sort_by { |a| a[0] }.each do |property, option|
+        allow(@new_resource).to receive(property).and_return("hola")
         match_array << option
         match_array << "hola"
       end

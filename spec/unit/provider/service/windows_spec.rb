@@ -382,7 +382,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
         provider.action_configure
       end
 
-      # Attributes that are Strings
+      # properties that are Strings
       %i{binary_path_name load_order_group dependencies run_as_user
          display_name description}.each do |attr|
         it "configures service if #{attr} has changed" do
@@ -394,7 +394,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
         end
       end
 
-      # Attributes that are Integers
+      # properties that are Integers
       %i{service_type error_control}.each do |attr|
         it "configures service if #{attr} has changed" do
           provider.current_resource.send("#{attr}=", 1)
@@ -570,7 +570,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
         new_resource.run_as_password("Wensleydale")
       end
 
-      it "calls #grant_service_logon if the :run_as_user and :run_as_password attributes are present" do
+      it "calls #grant_service_logon if the :run_as_user and :run_as_password properties are present" do
         expect(Win32::Service).to receive(:start)
         expect(provider).to receive(:grant_service_logon).and_return(true)
         provider.start_service

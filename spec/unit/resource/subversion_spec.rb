@@ -71,13 +71,13 @@ describe Chef::Resource::Subversion do
     expect(resource.svn_arguments).to be_nil
   end
 
-  it "has a svn_arguments String attribute" do
+  it "has a svn_arguments String property" do
     expect(resource.svn_arguments).to eq("--no-auth-cache") # the default
     resource.svn_arguments "--more-taft plz"
     expect(resource.svn_arguments).to eql("--more-taft plz")
   end
 
-  it "has a svn_info_args String attribute" do
+  it "has a svn_info_args String property" do
     expect(resource.svn_info_args).to eq("--no-auth-cache") # the default
     resource.svn_info_args("--no-moar-plaintext-creds yep")
     expect(resource.svn_info_args).to eq("--no-moar-plaintext-creds yep")
