@@ -48,6 +48,33 @@ module ChefConfig
         end
       end
 
+      # Compute the path to the credentials file.
+      #
+      # @since 14.4
+      # @return [String]
+      def credentials_file_path
+        PathHelper.home(".chef", "credentials").freeze
+      end
+
+      # Load and parse the credentials file.
+      #
+      # Returns `nil` if the credentials file is unavailable.
+      #
+      # @since 14.4
+      # @return [String, nil]
+      def parse_credentials_file
+        credentials_file = credentials_file_path
+        return nil unless File.file?(credentials_file)
+        begin
+          Tomlrb.load_file(credentials_file)
+        rescue => e
+          # TOML's error messages are mostly rubbish, so we'll just give a generic one
+          message = "Unable to parse Credentials file: #{credentials_file}\n"
+          message << e.message
+          raise ChefConfig::ConfigurationError, message
+        end
+      end
+
       # Load and process the active credentials.
       #
       # @see WorkstationConfigLoader#apply_credentials
@@ -55,10 +82,9 @@ module ChefConfig
       #   normally set via a command-line option.
       # @return [void]
       def load_credentials(profile = nil)
-        credentials_file = PathHelper.home(".chef", "credentials").freeze
-        return unless File.file?(credentials_file)
         profile = credentials_profile(profile)
-        config = Tomlrb.load_file(credentials_file)
+        config = parse_credentials_file
+        return if config.nil? # No credentials, nothing to do here.
         if config[profile].nil?
           # Unknown profile name. For "default" just silently ignore, otherwise
           # raise an error.
@@ -66,13 +92,6 @@ module ChefConfig
           raise ChefConfig::ConfigurationError, "Profile #{profile} doesn't exist. Please add it to #{credentials_file}."
         end
         apply_credentials(config[profile], profile)
-      rescue ChefConfig::ConfigurationError
-        raise
-      rescue => e
-        # TOML's error messages are mostly rubbish, so we'll just give a generic one
-        message = "Unable to parse Credentials file: #{credentials_file}\n"
-        message << e.message
-        raise ChefConfig::ConfigurationError, message
       end
     end
   end
