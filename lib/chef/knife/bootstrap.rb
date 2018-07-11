@@ -18,7 +18,6 @@
 
 require "chef/knife"
 require "chef/knife/data_bag_secret_options"
-require "erubis"
 require "chef/knife/bootstrap/chef_vault_handler"
 require "chef/knife/bootstrap/client_builder"
 require "chef/util/path_helper"
@@ -32,6 +31,7 @@ class Chef
       attr_accessor :chef_vault_handler
 
       deps do
+        require "erubis"
         require "chef/knife/core/bootstrap_context"
         require "chef/json_compat"
         require "tempfile"

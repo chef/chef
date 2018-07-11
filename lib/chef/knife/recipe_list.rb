@@ -17,6 +17,7 @@
 #
 
 require "chef/knife"
+
 class Chef::Knife::RecipeList < Chef::Knife
 
   banner "knife recipe list [PATTERN]"
