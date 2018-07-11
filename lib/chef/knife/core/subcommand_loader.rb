@@ -139,6 +139,7 @@ class Chef
       # hash composed of the given words joined by the separator.
       #
       def find_longest_key(hash, words, sep = "_")
+        words = words.dup
         match = nil
         until match || words.empty?
           candidate = words.join(sep)
