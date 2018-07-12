@@ -45,7 +45,6 @@ Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, ch
         "jonlives",
         "jtimberman",
         "lamont-granquist",
-        "mcquin",
         "ranjib",
         "smurawski",
         "stevendanna",
@@ -272,17 +271,9 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Aaron Kalin"
     GitHub = "martinisoft"
 
-  [people.mcquin]
-    Name = "Claire McQuin"
-    GitHub = "mcquin"
-
   [people.ranjib]
     Name = "Ranjib Dey"
     GitHub = "ranjib"
-
-  [people.sethvargo]
-    Name = "Seth Vargo"
-    GitHub = "sethvargo"
 
   [people.smurawski]
     Name = "Steven Murawski"
