@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.3.38 -->
+## [v14.3.38](https://github.com/chef/chef/tree/v14.3.38) (2018-07-12)
+
+#### Merged Pull Requests
+- [MSYS-843] - Add remove_account_right function to win32/security [#7445](https://github.com/chef/chef/pull/7445) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.3.37 -->
+### Changes since 14.3.37 release
+
+#### Merged Pull Requests
+- [MSYS-843] - Add remove_account_right function to win32/security [#7445](https://github.com/chef/chef/pull/7445) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 14.3.38 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
