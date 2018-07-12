@@ -117,6 +117,19 @@ class Chef
         end
       end
 
+      def self.remove_account_right(name, privilege)
+        privilege_pointer = FFI::MemoryPointer.new LSA_UNICODE_STRING, 1
+        privilege_lsa_string = LSA_UNICODE_STRING.new(privilege_pointer)
+        privilege_lsa_string[:Buffer] = FFI::MemoryPointer.from_string(privilege.to_wstring)
+        privilege_lsa_string[:Length] = privilege.length * 2
+        privilege_lsa_string[:MaximumLength] = (privilege.length + 1) * 2
+
+        with_lsa_policy(name) do |policy_handle, sid|
+          result = LsaRemoveAccountRights(policy_handle.read_pointer, sid, false, privilege_pointer, 1)
+          test_and_raise_lsa_nt_status(result)
+        end
+      end
+
       def self.adjust_token_privileges(token, privileges)
         token = token.handle if token.respond_to?(:handle)
         old_privileges_size = FFI::Buffer.new(:long).write_long(privileges.size_with_privileges)
