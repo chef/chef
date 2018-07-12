@@ -43,6 +43,12 @@ module ChefConfig
                   end
 
         config = Tomlrb.load_file(credentials_file)
+
+        if config[profile].nil?
+          return if profile == 'default'
+          raise ChefConfig::ConfigurationError, "Profile #{profile} doesn't exist. Please add it to #{credentials_file}."
+        end
+
         apply_credentials(config[profile], profile)
       rescue ChefConfig::ConfigurationError
         raise
