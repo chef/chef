@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-require "mixlib/shellout"
 require "spec_helper"
 
 describe Chef::Provider::User::Aix do
