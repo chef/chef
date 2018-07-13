@@ -60,7 +60,7 @@ class Chef
           if errors.empty?
             commands
           else
-            Chef::Log.error "There are files specified in the manifest that are missing. Please rehash to update the subcommands cache. If you see this error after rehashing delete the cache at #{Chef::Knife::SubcommandLoader.plugin_manifest_path}"
+            Chef::Log.error "There are plugin files specified in the knife cache that cannot be found. Please run knife rehash to update the subcommands cache. If you see this error after rehashing delete the cache at #{Chef::Knife::SubcommandLoader.plugin_manifest_path}"
             Chef::Log.error "Missing files:\n\t#{errors.values.flatten.join("\n\t")}"
             {}
           end
