@@ -153,6 +153,20 @@ describe Chef::Resource::WindowsTask, :windows_only do
     end
   end
 
+  context "priority" do
+    it "default value is 7" do
+      expect(resource.priority).to eq(7)
+    end
+
+    it "raise error when priority value less than 0" do
+      expect { resource.priority (-1) }.to raise_error(Chef::Exceptions::ValidationFailed, "Option priority's value -1 should be in range of 0 to 10!")
+    end
+
+    it "raise error when priority values is greater than 10" do
+      expect { resource.priority 11 }.to raise_error(Chef::Exceptions::ValidationFailed, "Option priority's value 11 should be in range of 0 to 10!")
+    end
+  end
+
   context "#validate_start_time" do
     it "raises error if start_time is nil when frequency `:once`" do
       resource.frequency :once

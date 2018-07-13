@@ -99,6 +99,9 @@ class Chef
           31 => TaskScheduler::TASK_THIRTY_FIRST,
         }.freeze
 
+        PRIORITY = { "critical" => 0, "highest" => 1,  "above_normal_2" => 2 , "above_normal_3" => 3, "normal_4" => 4,
+                     "normal_5" => 5, "normal_6" => 6, "below_normal_7" => 7, "below_normal_8" => 8, "lowest" => 9, "idle" => 10 }.freeze
+
         def load_current_resource
           @current_resource = Chef::Resource::WindowsTask.new(new_resource.name)
           task = TaskScheduler.new(new_resource.task_name, nil, "\\", false)
@@ -349,7 +352,8 @@ class Chef
                   task.parameters != new_resource.command_arguments.to_s ||
                   task.working_directory != new_resource.cwd.to_s ||
                   task.principals[:logon_type] != logon_type ||
-                  task.principals[:run_level] != run_level
+                  task.principals[:run_level] != run_level ||
+                  PRIORITY[task.priority] != new_resource.priority
 
               if trigger_type == TaskScheduler::MONTHLYDATE
                 flag = true if current_task_trigger[:run_on_last_day_of_month] != new_task_trigger[:run_on_last_day_of_month]
@@ -547,6 +551,7 @@ class Chef
           }
           settings[:idle_duration] = new_resource.idle_time if new_resource.idle_time
           settings[:run_only_if_idle] = true if new_resource.idle_time
+          settings[:priority] = new_resource.priority
           settings
         end
 

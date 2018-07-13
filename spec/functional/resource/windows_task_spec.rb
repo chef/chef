@@ -1179,6 +1179,108 @@ describe Chef::Resource::WindowsTask, :windows_only do
     end
   end
 
+  describe "priority" do
+    after { delete_task }
+    subject do
+      new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
+      new_resource.command task_name
+      new_resource.frequency :once
+      new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+      new_resource
+    end
+
+    it "default sets to 7" do
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("below_normal_7")
+    end
+
+    it "0 sets priority level to critical" do
+      subject.priority = 0
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("critical")
+    end
+
+    it "2 sets priority level to highest" do
+      subject.priority = 1
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("highest")
+    end
+
+    it "2 sets priority level to above_normal" do
+      subject.priority = 2
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("above_normal_2")
+    end
+
+    it "3 sets priority level to above_normal" do
+      subject.priority = 3
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("above_normal_3")
+    end
+
+    it "4 sets priority level to normal" do
+      subject.priority = 4
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("normal_4")
+    end
+
+    it "5 sets priority level to normal" do
+      subject.priority = 5
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("normal_5")
+    end
+
+    it "6 sets priority level to normal" do
+      subject.priority = 6
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("normal_6")
+    end
+
+    it "7 sets priority level to below_normal" do
+      subject.priority = 7
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("below_normal_7")
+    end
+
+    it "8 sets priority level to below_normal" do
+      subject.priority = 8
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("below_normal_8")
+    end
+
+    it "9 sets priority level to lowest" do
+      subject.priority = 9
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("lowest")
+    end
+
+    it "10 sets priority level to idle" do
+      subject.priority = 10
+      call_for_create_action
+      current_resource = call_for_load_current_resource
+      expect(current_resource.task.priority).to eq("idle")
+    end
+
+    it "is idempotent" do
+      subject.priority 8
+      subject.run_action(:create)
+      subject.run_action(:create)
+      expect(subject).not_to be_updated_by_last_action
+    end
+
+  end
+
   describe "Examples of idempotent checks for each frequency" do
     after { delete_task }
     context "For frequency :once" do
