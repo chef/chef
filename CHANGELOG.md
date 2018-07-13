@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.40 -->
-## [v14.3.40](https://github.com/chef/chef/tree/v14.3.40) (2018-07-13)
+<!-- latest_release 14.3.41 -->
+## [v14.3.41](https://github.com/chef/chef/tree/v14.3.41) (2018-07-13)
 
 #### Merged Pull Requests
-- Add knife config get/use-profile commands [#7455](https://github.com/chef/chef/pull/7455) ([coderanger](https://github.com/coderanger))
+- Fixing array args in some unix providers [#7379](https://github.com/chef/chef/pull/7379) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Fixing array args in some unix providers [#7379](https://github.com/chef/chef/pull/7379) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.41 -->
 - Add knife config get/use-profile commands [#7455](https://github.com/chef/chef/pull/7455) ([coderanger](https://github.com/coderanger)) <!-- 14.3.40 -->
 - Remove require mixlib/shellouts where not necessary [#7457](https://github.com/chef/chef/pull/7457) ([tas50](https://github.com/tas50)) <!-- 14.3.39 -->
 - Add proper yard deprecated tags on methods [#7452](https://github.com/chef/chef/pull/7452) ([tas50](https://github.com/tas50)) <!-- 14.3.38 -->
