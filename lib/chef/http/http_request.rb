@@ -152,7 +152,7 @@ class Chef
       end
 
       def configure_http_request(request_body = nil)
-        req_path = (path).to_s
+        req_path = path.to_s.dup
         req_path << "?#{query}" if query
 
         @http_request = case method.to_s.downcase
