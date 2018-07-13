@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 14.3.39 -->
+## [v14.3.39](https://github.com/chef/chef/tree/v14.3.39) (2018-07-13)
 
 #### Merged Pull Requests
+- Remove require mixlib/shellouts where not necessary [#7457](https://github.com/chef/chef/pull/7457) ([tas50](https://github.com/tas50))
 - Add proper yard deprecated tags on methods [#7452](https://github.com/chef/chef/pull/7452) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Remove require mixlib/shellouts where not necessary [#7457](https://github.com/chef/chef/pull/7457) ([tas50](https://github.com/tas50)) <!-- 14.3.39 -->
 - Add proper yard deprecated tags on methods [#7452](https://github.com/chef/chef/pull/7452) ([tas50](https://github.com/tas50)) <!-- 14.3.38 -->
 - [MSYS-843] - Add remove_account_right function to win32/security [#7445](https://github.com/chef/chef/pull/7445) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 14.3.38 -->
 <!-- release_rollup -->
