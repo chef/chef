@@ -17,16 +17,17 @@
 #
 
 require "chef/knife"
-require "chef/knife/core/status_presenter"
-require "chef/knife/core/node_presenter"
 
 class Chef
   class Knife
     class Status < Knife
-      include Knife::Core::NodeFormattingOptions
 
       deps do
+        require "chef/knife/core/status_presenter"
+        require "chef/knife/core/node_presenter"
         require "chef/search/query"
+
+        include Knife::Core::NodeFormattingOptions
       end
 
       banner "knife status QUERY (options)"

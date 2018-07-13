@@ -17,9 +17,6 @@
 #
 
 require "chef/knife"
-require "chef/exceptions"
-require "shellwords"
-require "mixlib/archive"
 
 class Chef
   class Knife
@@ -29,6 +26,9 @@ class Chef
         require "chef/mixin/shell_out"
         require "chef/knife/core/cookbook_scm_repo"
         require "chef/cookbook/metadata"
+        require "chef/exceptions"
+        require "shellwords"
+        require "mixlib/archive"
       end
 
       banner "knife cookbook site install COOKBOOK [VERSION] (options)"

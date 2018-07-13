@@ -17,7 +17,6 @@
 #
 
 require "chef/knife"
-require "chef/knife/core/node_presenter"
 
 class Chef
   class Knife
@@ -27,6 +26,7 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
+        require "chef/knife/core/node_presenter"
         require "chef/node"
         require "chef/json_compat"
       end

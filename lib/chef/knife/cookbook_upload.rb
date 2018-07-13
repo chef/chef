@@ -19,7 +19,6 @@
 #
 
 require "chef/knife"
-require "chef/cookbook_uploader"
 
 class Chef
   class Knife

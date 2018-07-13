@@ -15,13 +15,16 @@
 #
 
 require "chef/knife"
-require "chef/local_mode"
 
 class Chef
   class Knife
     class Serve < Knife
 
       banner "knife serve (options)"
+
+      deps do
+        require "chef/local_mode"
+      end
 
       option :repo_mode,
         long: "--repo-mode MODE",

@@ -18,22 +18,19 @@
 #
 
 require "chef/knife"
-require "chef/mixin/shell_out"
 
 class Chef
   class Knife
     class CookbookSiteShare < Knife
 
-      include Chef::Mixin::ShellOut
-
       deps do
         require "chef/cookbook_loader"
         require "chef/cookbook_uploader"
         require "chef/cookbook_site_streaming_uploader"
-        require "mixlib/shellout"
-      end
+        require "chef/mixin/shell_out"
 
-      include Chef::Mixin::ShellOut
+        include Chef::Mixin::ShellOut
+      end
 
       banner "knife cookbook site share COOKBOOK [CATEGORY] (options)"
       category "cookbook site"

@@ -17,6 +17,7 @@
 #
 
 require "spec_helper"
+require "chef/cookbook_uploader"
 
 describe Chef::CookbookUploader do
 

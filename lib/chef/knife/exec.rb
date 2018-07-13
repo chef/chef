@@ -17,11 +17,14 @@
 #
 
 require "chef/knife"
-require "chef/util/path_helper"
 
 class Chef::Knife::Exec < Chef::Knife
 
   banner "knife exec [SCRIPT] (options)"
+
+  deps do
+    require "chef/util/path_helper"
+  end
 
   option :exec,
     short: "-E CODE",

@@ -18,7 +18,6 @@
 #
 
 require "chef/knife"
-require "chef/util/path_helper"
 require "chef/knife/data_bag_secret_options"
 
 class Chef
@@ -27,6 +26,7 @@ class Chef
       include DataBagSecretOptions
 
       deps do
+        require "chef/util/path_helper"
         require "chef/data_bag"
         require "chef/data_bag_item"
         require "chef/knife/core/object_loader"

@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require "chef/mixin/shell_out"
 require "chef/knife"
 
 class Chef
@@ -30,7 +29,7 @@ class Chef
         require "chef/exceptions"
         require "chef/search/query"
         require "chef/util/path_helper"
-        require "mixlib/shellout"
+        require "chef/mixin/shell_out"
       end
 
       include Chef::Mixin::ShellOut
