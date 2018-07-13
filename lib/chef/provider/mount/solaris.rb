@@ -76,14 +76,17 @@ class Chef
         def mount_fs
           actual_options = native_options(options)
           actual_options.delete("-")
-          command = "mount -F #{fstype}"
-          command << " -o #{actual_options.join(',')}" unless actual_options.empty?
-          command << " #{device} #{mount_point}"
+          command = [ "mount", "-F", fstype ]
+          unless actual_options.empty?
+            command << "-o"
+            command << actual_options.join(",")
+          end
+          command << [ device, mount_point ]
           shell_out!(command)
         end
 
         def umount_fs
-          shell_out!("umount #{mount_point}")
+          shell_out!("umount", mount_point)
         end
 
         def remount_fs
@@ -91,7 +94,7 @@ class Chef
           actual_options = native_options(options)
           actual_options.delete("-")
           mount_options = actual_options.empty? ? "" : ",#{actual_options.join(',')}"
-          shell_out!("mount -o remount#{mount_options} #{mount_point}")
+          shell_out!("mount", "-o", "remount#{mount_options}", mount_point)
         end
 
         def enable_fs
@@ -150,7 +153,7 @@ class Chef
         # /dev/dsk/c1t0d0s0 on / type ufs read/write/setuid/devices/intr/largefiles/logging/xattr/onerror=panic/dev=700040 on Tue May  1 11:33:55 2012
         def mounted?
           mounted = false
-          shell_out!("mount -v").stdout.each_line do |line|
+          shell_out!("mount", "-v").stdout.each_line do |line|
             case line
             when /^#{device_regex}\s+on\s+#{Regexp.escape(mount_point)}\s+/
               logger.trace("Special device #{device} is mounted as #{mount_point}")

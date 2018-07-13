@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: 2016-2017, Chef Software, Inc.
+# Copyright:: 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +55,7 @@ describe Chef::Provider::AptRepository do
   end
 
   let(:apt_key_finger_cmd) do
-    "apt-key adv --list-public-keys --with-fingerprint --with-colons"
+    %w{apt-key adv --list-public-keys --with-fingerprint --with-colons}
   end
 
   let(:apt_key_finger) do
@@ -106,12 +106,12 @@ C5986B4F1257FFA86632CBA746181433FBB75451
   describe "#extract_fingerprints_from_cmd" do
     it "runs the desired command" do
       expect(provider).to receive(:shell_out).and_return(apt_key_finger)
-      provider.extract_fingerprints_from_cmd(apt_key_finger_cmd)
+      provider.extract_fingerprints_from_cmd(*apt_key_finger_cmd)
     end
 
     it "returns a list of key fingerprints" do
       expect(provider).to receive(:shell_out).and_return(apt_key_finger)
-      expect(provider.extract_fingerprints_from_cmd(apt_key_finger_cmd)).to eql(apt_fingerprints)
+      expect(provider.extract_fingerprints_from_cmd(*apt_key_finger_cmd)).to eql(apt_fingerprints)
     end
   end
 
@@ -124,21 +124,21 @@ C5986B4F1257FFA86632CBA746181433FBB75451
 
   describe "#no_new_keys?" do
     before do
-      allow(provider).to receive(:extract_fingerprints_from_cmd).with(apt_key_finger_cmd).and_return(apt_fingerprints)
+      allow(provider).to receive(:extract_fingerprints_from_cmd).with(*apt_key_finger_cmd).and_return(apt_fingerprints)
     end
 
     let(:file) { "/tmp/remote-gpg-keyfile" }
 
     it "matches a set of keys" do
       allow(provider).to receive(:extract_fingerprints_from_cmd)
-        .with("gpg --with-fingerprint --with-colons #{file}")
+        .with("gpg", "--with-fingerprint", "--with-colons", file)
         .and_return(Array(apt_fingerprints.first))
       expect(provider.no_new_keys?(file)).to be_truthy
     end
 
     it "notices missing keys" do
       allow(provider).to receive(:extract_fingerprints_from_cmd)
-        .with("gpg --with-fingerprint --with-colons #{file}")
+        .with("gpg", "--with-fingerprint", "--with-colons", file)
         .and_return(%w{ F36A89E33CC1BD0F71079007327574EE02A818DD })
       expect(provider.no_new_keys?(file)).to be_falsey
     end

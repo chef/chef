@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016-2017, Chef Software Inc.
+# Copyright:: Copyright (c) 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,7 @@ class Chef
 
       provides :apt_repository, platform_family: "debian"
 
-      LIST_APT_KEY_FINGERPRINTS = "apt-key adv --list-public-keys --with-fingerprint --with-colons".freeze
+      LIST_APT_KEY_FINGERPRINTS = %w{apt-key adv --list-public-keys --with-fingerprint --with-colons}.freeze
 
       def load_current_resource
       end
@@ -48,6 +48,8 @@ class Chef
         end
 
         declare_resource(:execute, "apt-cache gencaches") do
+          command %w{apt-cache gencaches}
+          default_env true
           ignore_failure true
           action :nothing
         end
@@ -110,11 +112,11 @@ class Chef
       # run the specified command and extract the fingerprints from the output
       # accepts a command so it can be used to extract both the current key's fingerprints
       # and the fingerprint of the new key
-      # @param [String] cmd the command to run
+      # @param [Array<String>] cmd the command to run
       #
       # @return [Array] an array of fingerprints
-      def extract_fingerprints_from_cmd(cmd)
-        so = shell_out(cmd)
+      def extract_fingerprints_from_cmd(*cmd)
+        so = shell_out(*cmd)
         so.stdout.split(/\n/).map do |t|
           if z = t.match(/^fpr:+([0-9A-F]+):/)
             z[1].split.join
@@ -129,7 +131,7 @@ class Chef
       def key_is_valid?(key)
         valid = true
 
-        so = shell_out("apt-key list")
+        so = shell_out("apt-key", "list")
         so.stdout.split(/\n/).map do |t|
           if t =~ %r{^\/#{key}.*\[expired: .*\]$}
             logger.debug "Found expired key: #{t}"
@@ -166,8 +168,8 @@ class Chef
       def no_new_keys?(file)
         # Now we are using the option --with-colons that works across old os versions
         # as well as the latest (16.10). This for both `apt-key` and `gpg` commands
-        installed_keys = extract_fingerprints_from_cmd(LIST_APT_KEY_FINGERPRINTS)
-        proposed_keys = extract_fingerprints_from_cmd("gpg --with-fingerprint --with-colons #{file}")
+        installed_keys = extract_fingerprints_from_cmd(*LIST_APT_KEY_FINGERPRINTS)
+        proposed_keys = extract_fingerprints_from_cmd("gpg", "--with-fingerprint", "--with-colons", file)
         (installed_keys & proposed_keys).sort == proposed_keys.sort
       end
 
@@ -208,6 +210,8 @@ class Chef
         end
 
         declare_resource(:execute, "apt-key add #{cached_keyfile}") do
+          command [ "apt-key", "add", cached_keyfile ]
+          default_env true
           sensitive new_resource.sensitive
           action :run
           not_if { no_new_keys?(cached_keyfile) }
@@ -243,9 +247,10 @@ class Chef
       def install_key_from_keyserver(key, keyserver = new_resource.keyserver)
         declare_resource(:execute, "install-key #{key}") do
           command keyserver_install_cmd(key, keyserver)
+          default_env true
           sensitive new_resource.sensitive
           not_if do
-            present = extract_fingerprints_from_cmd(LIST_APT_KEY_FINGERPRINTS).any? do |fp|
+            present = extract_fingerprints_from_cmd(*LIST_APT_KEY_FINGERPRINTS).any? do |fp|
               fp.end_with? key.upcase
             end
             present && key_is_valid?(key.upcase)

@@ -1,6 +1,6 @@
 #
 # Author:: Prajakta Purohit (prajakta@chef.io)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,7 +50,7 @@ EOS
       ifconfig = double(stdout: "", exitstatus: 1)
       allow(@provider).to receive(:shell_out_compacted).and_return(ifconfig)
       ifconfig_version = double(stdout: "", stderr: net_tools_version, exitstatus: 4)
-      allow(@provider).to receive(:shell_out_compacted).with("ifconfig --version").and_return(ifconfig_version)
+      allow(@provider).to receive(:shell_out_compacted).with("ifconfig", "--version").and_return(ifconfig_version)
       @provider.load_current_resource
     end
     it "should track state of ifconfig failure" do

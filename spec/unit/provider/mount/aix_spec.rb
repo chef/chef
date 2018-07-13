@@ -1,6 +1,6 @@
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,12 +71,12 @@ WRONG
 
   def stub_mounted(provider, mounted_output)
     response = double("Mixlib::ShellOut command", exitstatus: 0, stdout: mounted_output, stderr: "")
-    expect(provider).to receive(:shell_out!).with("mount").and_return(response)
+    expect(provider).to receive(:shell_out_compacted!).with("mount").and_return(response)
   end
 
   def stub_enabled(provider, enabled_output)
     response = double("Mixlib::ShellOut command", exitstatus: 0, stdout: enabled_output, stderr: "")
-    expect(provider).to receive(:shell_out).with("lsfs -c #{@new_resource.mount_point}").and_return(response)
+    expect(provider).to receive(:shell_out_compacted).with("lsfs", "-c", @new_resource.mount_point).and_return(response)
   end
 
   def stub_mounted_enabled(provider, mounted_output, enabled_output)
@@ -145,7 +145,7 @@ WRONG
     it "should mount resource if it is not mounted" do
       stub_mounted_enabled(@provider, @unmounted_output, "")
 
-      expect(@provider).to receive(:shell_out!).with("mount -v #{@new_resource.fstype} #{@new_resource.device} #{@new_resource.mount_point}")
+      expect(@provider).to receive(:shell_out_compacted!).with("mount", "-v", @new_resource.fstype, @new_resource.device, @new_resource.mount_point)
 
       @provider.run_action(:mount)
     end
@@ -163,7 +163,7 @@ WRONG
     it "should umount resource if it is already mounted" do
       stub_mounted_enabled(@provider, @mounted_output, "")
 
-      expect(@provider).to receive(:shell_out!).with("umount #{@new_resource.mount_point}")
+      expect(@provider).to receive(:shell_out_compacted!).with("umount", @new_resource.mount_point)
 
       @provider.run_action(:umount)
     end
@@ -182,7 +182,7 @@ WRONG
       @new_resource.supports({ remount: true })
       stub_mounted_enabled(@provider, @mounted_output, "")
 
-      expect(@provider).to receive(:shell_out!).with("mount -o remount #{@new_resource.device} #{@new_resource.mount_point}")
+      expect(@provider).to receive(:shell_out_compacted!).with("mount", "-o", "remount", @new_resource.device, @new_resource.mount_point)
 
       @provider.run_action(:remount)
     end
@@ -192,7 +192,7 @@ WRONG
       @new_resource.options("nodev,rw")
       stub_mounted_enabled(@provider, @mounted_output, "")
 
-      expect(@provider).to receive(:shell_out!).with("mount -o remount,nodev,rw #{@new_resource.device} #{@new_resource.mount_point}")
+      expect(@provider).to receive(:shell_out_compacted!).with("mount", "-o", "remount,nodev,rw", @new_resource.device, @new_resource.mount_point)
 
       @provider.run_action(:remount)
     end

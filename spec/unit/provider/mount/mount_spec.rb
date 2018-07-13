@@ -1,6 +1,6 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ describe Chef::Provider::Mount::Mount do
 
   describe "when discovering the current fs state" do
     before do
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: ""))
+      allow(@provider).to receive(:shell_out_compacted!).and_return(OpenStruct.new(stdout: ""))
       allow(::File).to receive(:foreach).with("/etc/fstab")
     end
 
@@ -58,7 +58,7 @@ describe Chef::Provider::Mount::Mount do
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       @stdout_findfs = double("STDOUT", first: "/dev/sdz1")
-      expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(@status)
+      expect(@provider).to receive(:shell_out_compacted).with("/sbin/findfs", "UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(@status)
       @provider.load_current_resource
       @provider.mountable?
     end
@@ -97,7 +97,7 @@ describe Chef::Provider::Mount::Mount do
       status = double(stdout: "", exitstatus: 1)
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-      expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
+      expect(@provider).to receive(:shell_out_compacted).with("/sbin/findfs", "UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
       expect(::File).to receive(:exists?).with("").and_return(false)
       expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
@@ -295,14 +295,14 @@ describe Chef::Provider::Mount::Mount do
 
     describe "mount_fs" do
       it "should mount the filesystem if it is not mounted" do
-        expect(@provider).to receive(:shell_out!).with("mount -t ext3 -o defaults /dev/sdz1 /tmp/foo")
+        expect(@provider).to receive(:shell_out_compacted!).with("mount", "-t", "ext3", "-o", "defaults", "/dev/sdz1", "/tmp/foo")
         @provider.mount_fs()
       end
 
       it "should mount the filesystem with options if options were passed" do
         options = "rw,noexec,noauto"
         @new_resource.options(%w{rw noexec noauto})
-        expect(@provider).to receive(:shell_out!).with("mount -t ext3 -o rw,noexec,noauto /dev/sdz1 /tmp/foo")
+        expect(@provider).to receive(:shell_out_compacted!).with("mount", "-t", "ext3", "-o", "rw,noexec,noauto", "/dev/sdz1", "/tmp/foo")
         @provider.mount_fs()
       end
 
@@ -310,10 +310,10 @@ describe Chef::Provider::Mount::Mount do
         status = double(stdout: "/dev/sdz1\n", exitstatus: 1)
         @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
         @new_resource.device_type :uuid
-        allow(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
+        allow(@provider).to receive(:shell_out_compacted).with("/sbin/findfs", "UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
         @stdout_mock = double("stdout mock")
         allow(@stdout_mock).to receive(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
-        expect(@provider).to receive(:shell_out!).with("mount -t #{@new_resource.fstype} -o defaults -U #{@new_resource.device} #{@new_resource.mount_point}").and_return(@stdout_mock)
+        expect(@provider).to receive(:shell_out_compacted!).with("mount", "-t", @new_resource.fstype, "-o", "defaults", "-U", @new_resource.device, @new_resource.mount_point).and_return(@stdout_mock)
         @provider.mount_fs()
       end
 
@@ -328,7 +328,7 @@ describe Chef::Provider::Mount::Mount do
     describe "umount_fs" do
       it "should umount the filesystem if it is mounted" do
         @current_resource.mounted(true)
-        expect(@provider).to receive(:shell_out!).with("umount /tmp/foo")
+        expect(@provider).to receive(:shell_out!).with("umount", "/tmp/foo")
         @provider.umount_fs()
       end
 
@@ -343,7 +343,7 @@ describe Chef::Provider::Mount::Mount do
       it "should use mount -o remount if remount is supported" do
         @new_resource.supports({ remount: true })
         @current_resource.mounted(true)
-        expect(@provider).to receive(:shell_out!).with("mount -o remount,defaults #{@new_resource.mount_point}")
+        expect(@provider).to receive(:shell_out_compacted!).with("mount", "-o", "remount,defaults", @new_resource.mount_point)
         @provider.remount_fs
       end
 
@@ -352,7 +352,7 @@ describe Chef::Provider::Mount::Mount do
         options = "rw,noexec,noauto"
         @new_resource.options(%w{rw noexec noauto})
         @current_resource.mounted(true)
-        expect(@provider).to receive(:shell_out!).with("mount -o remount,rw,noexec,noauto #{@new_resource.mount_point}")
+        expect(@provider).to receive(:shell_out_compacted!).with("mount", "-o", "remount,rw,noexec,noauto", @new_resource.mount_point)
         @provider.remount_fs
       end
 
@@ -500,7 +500,7 @@ describe Chef::Provider::Mount::Mount do
       it "should update the existing line" do
         @current_resource.enabled(true)
         status = double(stdout: "/dev/sdz1\n", exitstatus: 1)
-        expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
+        expect(@provider).to receive(:shell_out_compacted).with("/sbin/findfs", "UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
 
         filesystems = [%q{/dev/sdy1 /tmp/foo  ext3  defaults  1 2},
                       %q{/dev/sdz1 /tmp/foo  ext3  defaults  1 2}].join("\n")

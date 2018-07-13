@@ -188,16 +188,16 @@ class Chef
       end
 
       def install_profile(profile_path)
-        cmd = "profiles -I -F '#{profile_path}'"
-        logger.trace("cmd: #{cmd}")
-        shellout_results = shell_out(cmd)
+        cmd = [ "profiles", "-I", "-F", profile_path ]
+        logger.trace("cmd: #{cmd.join(" ")}")
+        shellout_results = shell_out(*cmd)
         shellout_results.exitstatus
       end
 
       def remove_profile
-        cmd = "profiles -R -p '#{@new_profile_identifier}'"
-        logger.trace("cmd: #{cmd}")
-        shellout_results = shell_out(cmd)
+        cmd = [ "profiles", "-R", "-p", @new_profile_identifier ]
+        logger.trace("cmd: #{cmd.join(" ")}")
+        shellout_results = shell_out(*cmd)
         shellout_results.exitstatus
       end
 
@@ -225,8 +225,7 @@ class Chef
       end
 
       def write_installed_profiles(tempfile)
-        cmd = "profiles -P -o '#{tempfile}'"
-        shell_out!(cmd)
+        shell_out!( "profiles", "-P", "-o", tempfile )
       end
 
       def read_plist(xml_file)

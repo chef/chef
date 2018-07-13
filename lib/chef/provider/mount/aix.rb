@@ -48,7 +48,7 @@ class Chef
           end
           # lsfs o/p = #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
           # search only for current mount point
-          shell_out("lsfs -c #{@new_resource.mount_point}").stdout.each_line do |line|
+          shell_out("lsfs", "-c", @new_resource.mount_point).stdout.each_line do |line|
             case line
             when /^#\s/
               next
@@ -121,21 +121,22 @@ class Chef
         def mount_fs
           unless @current_resource.mounted
             mountable?
-            command = "mount -v #{@new_resource.fstype}"
+            command = [ "mount", "-v", @new_resource.fstype ]
 
             if !(@new_resource.options.nil? || @new_resource.options.empty?)
-              command << " -o #{@new_resource.options.join(',')}"
+              command << "-o"
+              command << @new_resource.options.join(",")
             end
 
             command << case @new_resource.device_type
                        when :device
-                         " #{device_real}"
+                         device_real
                        when :label
-                         " -L #{@new_resource.device}"
+                         [ "-L", @new_resource.device ]
                        when :uuid
-                         " -U #{@new_resource.device}"
+                         [ "-U", @new_resource.device ]
                        end
-            command << " #{@new_resource.mount_point}"
+            command << @new_resource.mount_point
             shell_out!(command)
             logger.trace("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
@@ -145,9 +146,9 @@ class Chef
 
         def remount_command
           if !(@new_resource.options.nil? || @new_resource.options.empty?)
-            "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.device} #{@new_resource.mount_point}"
+            [ "mount", "-o", "remount,#{@new_resource.options.join(',')}", @new_resource.device, @new_resource.mount_point ]
           else
-            "mount -o remount #{@new_resource.device} #{@new_resource.mount_point}"
+            [ "mount", "-o", "remount", @new_resource.device, @new_resource.mount_point ]
           end
         end
 
