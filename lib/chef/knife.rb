@@ -304,8 +304,12 @@ class Chef
 
       # knife node run_list add requires that we have extra logic to handle
       # the case that command name words could be joined by an underscore :/
-      command_name_words = command_name_words.join("_")
-      @name_args.reject! { |name_arg| command_name_words == name_arg }
+      command_name_joined = command_name_words.join("_")
+      @name_args.reject! { |name_arg| command_name_joined == name_arg }
+
+      # Similar handling for hyphens.
+      command_name_joined = command_name_words.join("-")
+      @name_args.reject! { |name_arg| command_name_joined == name_arg }
 
       if config[:help]
         msg opt_parser
