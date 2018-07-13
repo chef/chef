@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright 2011-2018, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,11 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require "spec_helper"
+require "chef/knife/supermarket_install"
 
-describe Chef::Knife::CookbookSiteInstall do
-  let(:knife) { Chef::Knife::CookbookSiteInstall.new }
+describe Chef::Knife::SupermarketInstall do
+  let(:knife) { Chef::Knife::SupermarketInstall.new }
   let(:stdout) { StringIO.new }
   let(:stderr) { StringIO.new }
   let(:downloader) { Hash.new }
@@ -52,7 +53,7 @@ describe Chef::Knife::CookbookSiteInstall do
     allow(knife).to receive(:shell_out!).and_return(true)
     allow(Mixlib::Archive).to receive(:new).and_return(archive)
 
-    # CookbookSiteDownload Stup
+    # SupermarketDownload Setup
     allow(knife).to receive(:download_cookbook_to).and_return(downloader)
     allow(downloader).to receive(:version) do
       if knife.name_args.size == 2

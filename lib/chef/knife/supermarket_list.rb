@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Webber (<cwebber@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright (c) 2014-2018 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +17,49 @@
 #
 
 require "chef/knife"
-require "chef/knife/cookbook_site_list"
 
 class Chef
   class Knife
-    class SupermarketList < Knife::CookbookSiteList
-      # Handle the subclassing (knife doesn't do this :()
-      dependency_loaders.concat(superclass.dependency_loaders)
-      options.merge!(superclass.options)
+    class SupermarketList < Knife
 
       banner "knife supermarket list (options)"
       category "supermarket"
+
+      option :with_uri,
+        short: "-w",
+        long: "--with-uri",
+        description: "Show corresponding URIs"
+
+      option :supermarket_site,
+        short: "-m SUPERMARKET_SITE",
+        long: "--supermarket-site SUPERMARKET_SITE",
+        description: "Supermarket Site",
+        default: "https://supermarket.chef.io",
+        proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+
+      def run
+        if config[:with_uri]
+          cookbooks = Hash.new
+          get_cookbook_list.each { |k, v| cookbooks[k] = v["cookbook"] }
+          ui.output(format_for_display(cookbooks))
+        else
+          ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))
+        end
+      end
+
+      def get_cookbook_list(items = 10, start = 0, cookbook_collection = {})
+        cookbooks_url = "#{config[:supermarket_site]}/api/v1/cookbooks?items=#{items}&start=#{start}"
+        cr = noauth_rest.get(cookbooks_url)
+        cr["items"].each do |cookbook|
+          cookbook_collection[cookbook["cookbook_name"]] = cookbook
+        end
+        new_start = start + cr["items"].length
+        if new_start < cr["total"]
+          get_cookbook_list(items, new_start, cookbook_collection)
+        else
+          cookbook_collection
+        end
+      end
     end
   end
 end

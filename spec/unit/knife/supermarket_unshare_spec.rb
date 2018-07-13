@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,11 +18,12 @@
 #
 
 require "spec_helper"
+require "chef/knife/supermarket_unshare"
 
-describe Chef::Knife::CookbookSiteUnshare do
+describe Chef::Knife::SupermarketUnshare do
 
   before(:each) do
-    @knife = Chef::Knife::CookbookSiteUnshare.new
+    @knife = Chef::Knife::SupermarketUnshare.new
     @knife.name_args = ["cookbook_name"]
     allow(@knife).to receive(:confirm).and_return(true)
 
