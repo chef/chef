@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Delano (<stephen@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +17,14 @@
 #
 
 require "spec_helper"
-
+require "chef/knife/supermarket_share"
 require "chef/cookbook_uploader"
 require "chef/cookbook_site_streaming_uploader"
 
-describe Chef::Knife::CookbookSiteShare do
+describe Chef::Knife::SupermarketShare do
 
   before(:each) do
-    @knife = Chef::Knife::CookbookSiteShare.new
+    @knife = Chef::Knife::SupermarketShare.new
     # Merge default settings in.
     @knife.merge_configs
     @knife.name_args = %w{cookbook_name AwesomeSausage}

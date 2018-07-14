@@ -1,6 +1,7 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
 # Copyright:: Copyright 2012-2016, Thomas Bishop
+# Copyright:: Copyright 2018, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +17,14 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
+require "chef/knife/supermarket_download"
+require "spec_helper"
 
-describe Chef::Knife::CookbookSiteDownload do
+describe Chef::Knife::SupermarketDownload do
 
   describe "run" do
     before do
-      @knife            = Chef::Knife::CookbookSiteDownload.new
+      @knife            = Chef::Knife::SupermarketDownload.new
       @knife.name_args  = ["apache2"]
       @noauth_rest      = double("no auth rest")
       @stderr           = StringIO.new

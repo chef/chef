@@ -17,38 +17,19 @@
 #
 
 require "chef/knife"
+require "chef/knife/supermarket_search"
 
 class Chef
   class Knife
-    class CookbookSiteSearch < Knife
+    class CookbookSiteSearch < Knife::SupermarketSearch
+
+    # Handle the subclassing (knife doesn't do this :()
+      dependency_loaders.concat(superclass.dependency_loaders)
+      options.merge!(superclass.options)
 
       banner "knife cookbook site search QUERY (options)"
       category "cookbook site"
 
-      option :supermarket_site,
-        short: "-m SUPERMARKET_SITE",
-        long: "--supermarket-site SUPERMARKET_SITE",
-        description: "Supermarket Site",
-        default: "https://supermarket.chef.io",
-        proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
-
-      def run
-        output(search_cookbook(name_args[0]))
-      end
-
-      def search_cookbook(query, items = 10, start = 0, cookbook_collection = {})
-        cookbooks_url = "#{config[:supermarket_site]}/api/v1/search?q=#{query}&items=#{items}&start=#{start}"
-        cr = noauth_rest.get(cookbooks_url)
-        cr["items"].each do |cookbook|
-          cookbook_collection[cookbook["cookbook_name"]] = cookbook
-        end
-        new_start = start + cr["items"].length
-        if new_start < cr["total"]
-          search_cookbook(query, items, new_start, cookbook_collection)
-        else
-          cookbook_collection
-        end
-      end
     end
   end
 end
