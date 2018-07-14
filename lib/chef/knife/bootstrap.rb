@@ -420,7 +420,7 @@ class Chef
           exit 1
         elsif server_name == "windows"
           # catches "knife bootstrap windows" when that command is not installed
-          ui.warn("Hostname containing 'windows' specified. Please install 'knife-windows' if you are attempting to bootstrap a Windows node via WinRM.")
+          ui.warn("'knife bootstrap windows' specified, but the knife-windows plugin is not installed. Please install 'knife-windows' if you are attempting to bootstrap a Windows node via WinRM.")
         end
       end
 
