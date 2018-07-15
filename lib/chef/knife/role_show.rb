@@ -25,7 +25,7 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require "chef/node"
+        require "chef/role"
       end
 
       banner "knife role show ROLE (options)"
