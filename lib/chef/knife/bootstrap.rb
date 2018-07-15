@@ -405,10 +405,11 @@ class Chef
           exit 1
         elsif server_name == "windows"
           # catches "knife bootstrap windows" when that command is not installed
-          ui.warn("Hostname containing 'windows' specified. Please install 'knife-windows' if you are attempting to bootstrap a Windows node via WinRM.")
+          ui.warn("'knife bootstrap windows' specified, but the knife-windows plugin is not installed. Please install 'knife-windows' if you are attempting to bootstrap a Windows node via WinRM.")
         end
       end
 
+      # make sure policyfile values are set correctly
       def validate_options!
         if incomplete_policyfile_options?
           ui.error("--policy-name and --policy-group must be specified together")
@@ -420,6 +421,9 @@ class Chef
         true
       end
 
+      # setup a Chef::Knife::Ssh object using the passed config options
+      #
+      # @return Chef::Knife::Ssh
       def knife_ssh
         ssh = Chef::Knife::Ssh.new
         ssh.ui = ui
@@ -437,6 +441,10 @@ class Chef
         ssh
       end
 
+      # prompt for a password then return a knife ssh object with that password set
+      # and with ssh_identity_file set to nil
+      #
+      # @return Chef::Knife::Ssh
       def knife_ssh_with_password_auth
         ssh = knife_ssh
         ssh.config[:ssh_identity_file] = nil
@@ -444,6 +452,8 @@ class Chef
         ssh
       end
 
+      # build the ssh dommand for bootrapping
+      # @return String
       def ssh_command
         command = render_template
 
