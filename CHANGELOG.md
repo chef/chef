@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.44 -->
-## [v14.3.44](https://github.com/chef/chef/tree/v14.3.44) (2018-07-15)
+<!-- latest_release 14.3.45 -->
+## [v14.3.45](https://github.com/chef/chef/tree/v14.3.45) (2018-07-15)
 
 #### Merged Pull Requests
-- Improve the error message when knife bootstrap windows isn&#39;t installed  [#7470](https://github.com/chef/chef/pull/7470) ([tas50](https://github.com/tas50))
+- Remove require json_compat where not used [#7472](https://github.com/chef/chef/pull/7472) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Remove require json_compat where not used [#7472](https://github.com/chef/chef/pull/7472) ([tas50](https://github.com/tas50)) <!-- 14.3.45 -->
 - Improve the error message when knife bootstrap windows isn&#39;t installed  [#7470](https://github.com/chef/chef/pull/7470) ([tas50](https://github.com/tas50)) <!-- 14.3.44 -->
 - Move all knife cookbook site plugin logic into knife supermarket [#7466](https://github.com/chef/chef/pull/7466) ([tas50](https://github.com/tas50)) <!-- 14.3.43 -->
 - Fix duplicated query parameters to resolve Chef::HTTP::Simple regression [#7465](https://github.com/chef/chef/pull/7465) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.3.42 -->
