@@ -26,7 +26,6 @@ class Chef
 
       deps do
         require "chef/node"
-        require "chef/json_compat"
       end
 
       banner "knife role show ROLE (options)"

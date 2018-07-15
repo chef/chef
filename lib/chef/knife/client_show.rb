@@ -26,7 +26,6 @@ class Chef
 
       deps do
         require "chef/api_client_v1"
-        require "chef/json_compat"
       end
 
       banner "knife client show CLIENT (options)"

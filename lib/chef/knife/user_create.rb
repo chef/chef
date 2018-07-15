@@ -28,7 +28,6 @@ class Chef
 
       deps do
         require "chef/user_v1"
-        require "chef/json_compat"
       end
 
       option :file,
