@@ -26,7 +26,6 @@ class Chef
 
       deps do
         require "chef/environment"
-        require "chef/json_compat"
       end
 
       banner "knife environment show ENVIRONMENT (options)"

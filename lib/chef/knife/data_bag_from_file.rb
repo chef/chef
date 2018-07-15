@@ -30,7 +30,6 @@ class Chef
         require "chef/data_bag"
         require "chef/data_bag_item"
         require "chef/knife/core/object_loader"
-        require "chef/json_compat"
         require "chef/encrypted_data_bag_item"
       end
 

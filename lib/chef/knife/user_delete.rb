@@ -24,7 +24,6 @@ class Chef
 
       deps do
         require "chef/user_v1"
-        require "chef/json_compat"
       end
 
       banner "knife user delete USER (options)"

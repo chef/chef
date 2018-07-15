@@ -25,7 +25,6 @@ class Chef
 
       deps do
         require "chef/role"
-        require "chef/json_compat"
       end
 
       banner "knife role run_list set [ROLE] [ENTRIES]"
