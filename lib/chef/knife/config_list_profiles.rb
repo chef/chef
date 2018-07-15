@@ -26,7 +26,7 @@ class Chef
       option :ignore_knife_rb,
              short: "-i",
              long: "--ignore-knife-rb",
-             description: "Ignore the current knife.rb configuration",
+             description: "Ignore the current knife.rb configuration.",
              default: false
 
       def run

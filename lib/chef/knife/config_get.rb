@@ -27,13 +27,13 @@ class Chef
       option :all,
              short: "-a",
              long: "--all",
-             description: "Include options that are not set in the configuration",
+             description: "Include options that are not set in the configuration.",
              default: false
 
       option :raw,
               short: "-r",
               long: "--raw",
-              description: "Display a each value with no formatting",
+              description: "Display a each value with no formatting.",
               default: false
 
       def run

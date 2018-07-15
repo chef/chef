@@ -44,26 +44,26 @@ class Chef
       option :cookbook_path,
         short: "-o PATH:PATH",
         long: "--cookbook-path PATH:PATH",
-        description: "A colon-separated path to look for cookbooks in",
+        description: "A colon-separated path to look for cookbooks in.",
         proc: lambda { |o| o.split(":") }
 
       option :default_branch,
         short: "-B BRANCH",
         long: "--branch BRANCH",
-        description: "Default branch to work with",
+        description: "Default branch to work with.",
         default: "master"
 
       option :use_current_branch,
         short: "-b",
         long: "--use-current-branch",
-        description: "Use the current branch",
+        description: "Use the current branch.",
         boolean: true,
         default: false
 
       option :supermarket_site,
         short: "-m SUPERMARKET_SITE",
         long: "--supermarket-site SUPERMARKET_SITE",
-        description: "Supermarket Site",
+        description: "The URL of the Supermarket site.",
         default: "https://supermarket.chef.io",
         proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 

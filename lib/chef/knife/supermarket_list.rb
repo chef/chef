@@ -28,12 +28,12 @@ class Chef
       option :with_uri,
         short: "-w",
         long: "--with-uri",
-        description: "Show corresponding URIs"
+        description: "Show corresponding URIs."
 
       option :supermarket_site,
         short: "-m SUPERMARKET_SITE",
         long: "--supermarket-site SUPERMARKET_SITE",
-        description: "Supermarket Site",
+        description: "The URL of the Supermarket site.",
         default: "https://supermarket.chef.io",
         proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 

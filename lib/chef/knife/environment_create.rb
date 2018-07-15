@@ -32,7 +32,7 @@ class Chef
       option :description,
         short: "-d DESCRIPTION",
         long: "--description DESCRIPTION",
-        description: "The environment description"
+        description: "The environment description."
 
       def run
         env_name = @name_args[0]

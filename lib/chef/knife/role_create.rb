@@ -32,7 +32,7 @@ class Chef
       option :description,
         short: "-d DESC",
         long: "--description DESC",
-        description: "The role description"
+        description: "The role description."
 
       def run
         @role_name = @name_args[0]

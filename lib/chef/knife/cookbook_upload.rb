@@ -39,27 +39,27 @@ class Chef
       option :cookbook_path,
         short: "-o PATH:PATH",
         long: "--cookbook-path PATH:PATH",
-        description: "A colon-separated path to look for cookbooks in",
+        description: "A colon-separated path to look for cookbooks in.",
         proc: lambda { |o| o.split(":") }
 
       option :freeze,
         long: "--freeze",
-        description: "Freeze this version of the cookbook so that it cannot be overwritten",
+        description: "Freeze this version of the cookbook so that it cannot be overwritten.",
         boolean: true
 
       option :all,
         short: "-a",
         long: "--all",
-        description: "Upload all cookbooks, rather than just a single cookbook"
+        description: "Upload all cookbooks, rather than just a single cookbook."
 
       option :force,
         long: "--force",
         boolean: true,
-        description: "Update cookbook versions even if they have been frozen"
+        description: "Update cookbook versions even if they have been frozen."
 
       option :concurrency,
         long: "--concurrency NUMBER_OF_THREADS",
-        description: "How many concurrent threads will be used",
+        description: "How many concurrent threads will be used.",
         default: 10,
         proc: lambda { |o| o.to_i }
 
@@ -72,7 +72,7 @@ class Chef
       option :depends,
         short: "-d",
         long: "--include-dependencies",
-        description: "Also upload cookbook dependencies"
+        description: "Also upload cookbook dependencies."
 
       def run
         # Sanity check before we load anything from the server

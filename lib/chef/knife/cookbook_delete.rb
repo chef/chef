@@ -28,9 +28,9 @@ class Chef
         require "chef/cookbook_version"
       end
 
-      option :all, short: "-a", long: "--all", boolean: true, description: "delete all versions"
+      option :all, short: "-a", long: "--all", boolean: true, description: "Delete all versions of the cookbook."
 
-      option :purge, short: "-p", long: "--purge", boolean: true, description: "Permanently remove files from backing data store"
+      option :purge, short: "-p", long: "--purge", boolean: true, description: "Permanently remove files from backing data store."
 
       banner "knife cookbook delete COOKBOOK VERSION (options)"
 
@@ -45,7 +45,7 @@ class Chef
           delete_without_explicit_version
         elsif @cookbook_name.nil?
           show_usage
-          ui.fatal("You must provide the name of the cookbook to delete")
+          ui.fatal("You must provide the name of the cookbook to delete.")
           exit(1)
         end
       end
@@ -90,7 +90,7 @@ class Chef
         end.flatten
       rescue Net::HTTPServerException => e
         if e.to_s =~ /^404/
-          ui.error("Cannot find a cookbook named #{@cookbook_name} to delete")
+          ui.error("Cannot find a cookbook named #{@cookbook_name} to delete.")
           nil
         else
           raise

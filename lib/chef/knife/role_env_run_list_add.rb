@@ -33,7 +33,7 @@ class Chef
       option :after,
         short: "-a ITEM",
         long: "--after ITEM",
-        description: "Place the ENTRY in the run list after ITEM"
+        description: "Place the ENTRY in the run list after ITEM."
 
       def add_to_env_run_list(role, environment, entries, after = nil)
         if after

@@ -43,24 +43,24 @@ class Chef
         long: "--[no-]force",
         boolean: true,
         default: false,
-        description: "Force upload of files even if they match (quicker and harmless, but doesn't print out what it changed)"
+        description: "Force upload of files even if they match (quicker and harmless, but doesn't print out what it changed)."
 
       option :dry_run,
         long: "--dry-run",
         short: "-n",
         boolean: true,
         default: false,
-        description: "Don't take action, only print what would happen"
+        description: "Don't take action, only print what would happen."
 
       option :diff,
         long: "--[no-]diff",
         boolean: true,
         default: true,
-        description: "Turn off to avoid uploading existing files; only new (and possibly deleted) files with --no-diff"
+        description: "Turn off to avoid uploading existing files; only new (and possibly deleted) files with --no-diff."
 
       option :cookbook_version,
         long: "--cookbook-version VERSION",
-        description: "Version of cookbook to download (if there are multiple versions and cookbook_versions is false)"
+        description: "Version of cookbook to download (if there are multiple versions and cookbook_versions is false)."
 
       def run
         if name_args.length == 0
