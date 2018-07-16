@@ -45,8 +45,8 @@ class Chef
       property :mask, String,
                description: "The decimal representation of the network mask. For example: 255.255.255.0."
 
-      property :family, String,
-               default: "inet", introduced: "14.0",
+      property :family, String, default: "inet",
+               introduced: "14.0",
                description: "Networking family option for Debian-based systems. For example: inet or inet6."
 
       property :inet_addr, String,
@@ -96,6 +96,10 @@ class Chef
       property :vlan, String,
                introduced: "14.4",
                description: "The VLAN to assign the interface to."
+
+      property :gateway, String,
+               introduced: "14.4",
+               description: "The gateway to use for the interface."
     end
   end
 end
