@@ -38,6 +38,11 @@ describe Chef::Resource::Conditional do
     Chef::Resource::Conditional.only_if(@parent_resource, "true")
   end
 
+  it "uses a detailed short_description if a :desc is provided" do
+    @parent_resource_guard = Chef::Resource::Conditional.only_if(@parent_resource, "true", :desc => "my guard desc")
+    expect(@parent_resource_guard.short_description).to be == "only_if (my guard desc)"
+  end
+
   describe "configure" do
     it "raises an exception when a guard_interpreter is specified and a block is given" do
       @parent_resource.guard_interpreter :canadian_mounties

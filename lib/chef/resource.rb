@@ -376,6 +376,10 @@ class Chef
     # @param block [Proc] A ruby block to run. Ignored if a command is given.
     #
     def only_if(command = nil, opts = {}, &block)
+      if command.is_a?(Hash) && opts.empty?
+        opts = command
+        command = nil
+      end
       if command || block_given?
         @only_if << Conditional.only_if(self, command, opts, &block)
       end
@@ -406,6 +410,10 @@ class Chef
     # @param block [Proc] A ruby block to run. Ignored if a command is given.
     #
     def not_if(command = nil, opts = {}, &block)
+      if command.is_a?(Hash) && opts.empty?
+        opts = command
+        command = nil
+      end
       if command || block_given?
         @not_if << Conditional.not_if(self, command, opts, &block)
       end

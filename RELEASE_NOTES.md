@@ -1622,3 +1622,11 @@ The implementation switched to `shell_out_with_systems_locale` to match `execute
 Chef Client will only exit with exit codes defined in RFC 062\. This allows other tooling to respond to how a Chef run completes. Attempting to exit Chef Client with an unsupported exit code (either via `Chef::Application.fatal!` or `Chef::Application.exit!`) will result in an exit code of 1 (GENERIC_FAILURE) and a warning in the event log.
 
 When Chef Client is running as a forked process on unix systems, the standardized exit codes are used by the child process. To actually have Chef Client return the standard exit code, `client_fork false` will need to be set in Chef Client's configuration file.
+
+## Guard clauses can now accept options without a shell command
+
+The only_if/not_if guards can be passed a single options hash with no command argument.
+
+### Guard clauses now accept :desc option
+
+Conditional guards can be passed a :desc option for better identification when a resource is skipped.
