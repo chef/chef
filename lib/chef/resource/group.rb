@@ -27,38 +27,31 @@ class Chef
       allowed_actions :create, :remove, :modify, :manage
       default_action :create
 
-      def initialize(name, run_context = nil)
-        super
-        @members = []
-        @excluded_members = []
-      end
+      property :group_name, String,
+               name_property: true, identity: true,
+               description: "The name of the group."
 
-      property :group_name, String, name_property: true, identity: true
-      property :gid, [ String, Integer ]
+      property :gid, [ String, Integer ],
+               description: "The identifier for the group."
 
-      def members(arg = nil)
-        converted_members = arg.is_a?(String) ? arg.split(",") : arg
-        set_or_return(
-          :members,
-          converted_members,
-          kind_of: [ Array ]
-        )
-      end
+      property :members, [String, Array], default: lazy { [] },
+               coerce: proc { |x| x.kind_of?(String) ? x.split(",") : x },
+               description: "Which users should be set or appended to a group. This can be either an array or a comma separated list."
+
+      property :excluded_members, [String, Array], default: lazy { [] },
+               coerce: proc { |x| x.kind_of?(String) ? x.split(",") : x },
+               description: "Remove users from a group. May only be used when append is set to true."
+
+      property :append, [ TrueClass, FalseClass ], default: false,
+               description: "How members should be appended and/or removed from a group. When true, members are appended and excluded_members are removed. When false, group members are reset to the value of the members property."
+
+      property :system, [ TrueClass, FalseClass ], default: false,
+               description: "Sets the group to belong to the system group."
+
+      property :non_unique, [ TrueClass, FalseClass ], default: false,
+               description: "Allow gid duplication. May only be used with the Groupadd provider."
 
       alias_method :users, :members
-
-      def excluded_members(arg = nil)
-        converted_members = arg.is_a?(String) ? arg.split(",") : arg
-        set_or_return(
-          :excluded_members,
-          converted_members,
-          kind_of: [ Array ]
-        )
-      end
-
-      property :append, [ TrueClass, FalseClass ], default: false
-      property :system, [ TrueClass, FalseClass ], default: false
-      property :non_unique, [ TrueClass, FalseClass ], default: false
     end
   end
 end
