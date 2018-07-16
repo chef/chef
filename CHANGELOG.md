@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.45 -->
-## [v14.3.45](https://github.com/chef/chef/tree/v14.3.45) (2018-07-15)
+<!-- latest_release 14.3.46 -->
+## [v14.3.46](https://github.com/chef/chef/tree/v14.3.46) (2018-07-16)
 
 #### Merged Pull Requests
-- Remove require json_compat where not used [#7472](https://github.com/chef/chef/pull/7472) ([tas50](https://github.com/tas50))
+- Make gem_installer generate a valid Gemfile [#6168](https://github.com/chef/chef/pull/6168) ([oclaussen](https://github.com/oclaussen))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Make gem_installer generate a valid Gemfile [#6168](https://github.com/chef/chef/pull/6168) ([oclaussen](https://github.com/oclaussen)) <!-- 14.3.46 -->
 - Remove require json_compat where not used [#7472](https://github.com/chef/chef/pull/7472) ([tas50](https://github.com/tas50)) <!-- 14.3.45 -->
 - Improve the error message when knife bootstrap windows isn&#39;t installed  [#7470](https://github.com/chef/chef/pull/7470) ([tas50](https://github.com/tas50)) <!-- 14.3.44 -->
 - Move all knife cookbook site plugin logic into knife supermarket [#7466](https://github.com/chef/chef/pull/7466) ([tas50](https://github.com/tas50)) <!-- 14.3.43 -->
