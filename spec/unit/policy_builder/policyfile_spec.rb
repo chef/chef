@@ -674,6 +674,10 @@ describe Chef::PolicyBuilder::Policyfile do
               expect(Chef::CookbookCacheCleaner.instance.skip_removal).to be(true)
             end
 
+            it "gives `true` for #temporary_policy?" do
+              expect(policy_builder.temporary_policy?).to be(true)
+            end
+
           end
 
         end

@@ -226,12 +226,13 @@ class Chef
         cookbooks_to_sync
       end
 
-      # Whether or not this is a temporary policy. Since PolicyBuilder doesn't
-      # support override_runlist, this is always false.
+      # Whether or not this is a temporary policy, which means a
+      # named_run_list was provided. Chef::Client uses this to decide whether
+      # to do the final node save at the end of the run or not.
       #
       # @return [false]
       def temporary_policy?
-        false
+        named_run_list_requested?
       end
 
       ## Internal Public API ##
