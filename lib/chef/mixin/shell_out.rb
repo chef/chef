@@ -168,6 +168,11 @@ class Chef
         options
       end
 
+      def clean_array(*args)
+        Chef.deprecated(:shell_out, "do not call clean_array directly, just use shell_out with splat args or an array")
+        Chef::Mixin::ShellOut.clean_array(*args)
+      end
+
       private
 
       # this SHOULD be used for setting up expectations in rspec, see banner comment at top.
