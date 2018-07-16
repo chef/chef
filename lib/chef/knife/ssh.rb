@@ -359,7 +359,9 @@ class Chef
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
         subsession.open_channel do |chan|
           if config[:on_error] && exit_status != 0
-            chan.close()
+            chan.exec "true" do |ch, success|
+              raise ArgumentError, "Cannot execute #{command}" unless success
+            end
           else
             chan.request_pty
             chan.exec command do |ch, success|
