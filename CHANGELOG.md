@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.3.46 -->
-## [v14.3.46](https://github.com/chef/chef/tree/v14.3.46) (2018-07-16)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Make gem_installer generate a valid Gemfile [#6168](https://github.com/chef/chef/pull/6168) ([oclaussen](https://github.com/oclaussen))
+- Bump version to 14.4.0 [#7476](https://github.com/chef/chef/pull/7476) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Bump version to 14.4.0 [#7476](https://github.com/chef/chef/pull/7476) ([tas50](https://github.com/tas50)) <!-- 14.4.0 -->
 - Make gem_installer generate a valid Gemfile [#6168](https://github.com/chef/chef/pull/6168) ([oclaussen](https://github.com/oclaussen)) <!-- 14.3.46 -->
 - Remove require json_compat where not used [#7472](https://github.com/chef/chef/pull/7472) ([tas50](https://github.com/tas50)) <!-- 14.3.45 -->
 - Improve the error message when knife bootstrap windows isn&#39;t installed  [#7470](https://github.com/chef/chef/pull/7470) ([tas50](https://github.com/tas50)) <!-- 14.3.44 -->
