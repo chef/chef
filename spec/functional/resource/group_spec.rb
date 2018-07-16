@@ -1,7 +1,7 @@
 #
 # Author:: Chirag Jog (<chirag@clogeny.com>)
 # Author:: Siddheshwar More (<siddheshwar.more@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +25,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   include Chef::Mixin::ShellOut
 
   def group_should_exist(group)
-    case ohai[:platform_family]
-    when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
+    case ohai[:os]
+    when "linux"
       expect { Etc.getgrnam(group) }.not_to raise_error
       expect(group).to eq(Etc.getgrnam(group).name)
     when "windows"
@@ -50,8 +50,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def group_should_not_exist(group)
-    case ohai[:platform_family]
-    when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
+    case ohai[:os]
+    when "linux"
       expect { Etc.getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to raise_error(ArgumentError, /The group name could not be found./)
