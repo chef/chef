@@ -521,5 +521,11 @@ class Chef
 
     # exception specific to invalid usage of 'dsc_resource' resource
     class DSCModuleNameMissing < ArgumentError; end
+
+    class GemRequirementConflict < RuntimeError
+      def initialize(gem_name, option, value1, value2)
+        super "Conflicting requirements for gem '#{gem_name}': Both #{value1.inspect} and #{value2.inspect} given for option #{option.inspect}"
+      end
+    end
   end
 end
