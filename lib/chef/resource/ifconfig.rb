@@ -96,10 +96,6 @@ class Chef
       property :vlan, String,
                introduced: "14.4",
                description: "The VLAN to assign the interface to."
-
-      property :gateways, String,
-               introduced: "14.4",
-               description: "The gateway to assign the interface to."
     end
   end
 end
