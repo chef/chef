@@ -167,7 +167,7 @@ describe Chef::Provider::Route do
       expect(@provider.generate_command(:add).join(" ")).not_to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}/)
     end
 
-    it "should use the gatway when target is default" do
+    it "should use the gateway when target is default" do
       @default_resource.gateway("10.0.0.10")
       expect(@default_provider.generate_command(:add).join(" ")).to match(/10.0.0.10/)
     end

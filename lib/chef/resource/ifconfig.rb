@@ -92,6 +92,10 @@ class Chef
       property :slave, String,
                introduced: "13.4",
                description: "When set to yes, this device is controlled by the channel bonding interface that is specified via the master property."
+
+      property :vlan, String,
+               introduced: "14.4",
+               description: "The VLAN to assign the interface to."
     end
   end
 end
