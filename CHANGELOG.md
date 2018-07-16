@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.2 -->
-## [v14.4.2](https://github.com/chef/chef/tree/v14.4.2) (2018-07-16)
+<!-- latest_release 14.4.3 -->
+## [v14.4.3](https://github.com/chef/chef/tree/v14.4.3) (2018-07-16)
 
 #### Merged Pull Requests
-- ifconfig: Allow specifying VLAN on RHEL/Centos [#7478](https://github.com/chef/chef/pull/7478) ([tas50](https://github.com/tas50))
+- Allow specifying VLAN &amp; Gateway on RHEL/Centos [#6400](https://github.com/chef/chef/pull/6400) ([tomdoherty](https://github.com/tomdoherty))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Allow specifying VLAN &amp; Gateway on RHEL/Centos [#6400](https://github.com/chef/chef/pull/6400) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.4.3 -->
 - ifconfig: Allow specifying VLAN on RHEL/Centos [#7478](https://github.com/chef/chef/pull/7478) ([tas50](https://github.com/tas50)) <!-- 14.4.2 -->
 - add back clean_array API [#7477](https://github.com/chef/chef/pull/7477) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.4.1 -->
 - Bump version to 14.4.0 [#7476](https://github.com/chef/chef/pull/7476) ([tas50](https://github.com/tas50)) <!-- 14.4.0 -->
