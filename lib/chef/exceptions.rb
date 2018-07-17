@@ -154,6 +154,9 @@ class Chef
         @code = error_code
         super(msg)
       end
+      def initialize
+        super
+      end
     end
 
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
