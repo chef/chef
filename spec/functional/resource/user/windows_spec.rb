@@ -48,7 +48,7 @@ describe Chef::Provider::User::Windows, :windows_only do
 
   def backup_secedit_policy
     backup_command = "secedit /export /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY"
-    system(backup_command)
+    shell_out(backup_command)
   end
 
   def restore_secedit_policy
