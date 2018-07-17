@@ -78,12 +78,12 @@ describe Chef::Resource::Scm do
     expect(resource.group).to eq(23)
   end
 
-  it "has a svn_username String attribute" do
+  it "has a svn_username String property" do
     resource.svn_username "moartestsplz"
     expect(resource.svn_username).to eql("moartestsplz")
   end
 
-  it "has a svn_password String attribute" do
+  it "has a svn_password String property" do
     resource.svn_password "taftplz"
     expect(resource.svn_password).to eql("taftplz")
   end
@@ -141,14 +141,14 @@ describe Chef::Resource::Scm do
     expect(resource.environment).to be_nil
   end
 
-  describe "when it has a timeout attribute" do
+  describe "when it has a timeout property" do
     let(:ten_seconds) { 10 }
     before { resource.timeout(ten_seconds) }
     it "stores this timeout" do
       expect(resource.timeout).to eq(ten_seconds)
     end
   end
-  describe "when it has no timeout attribute" do
+  describe "when it has no timeout property" do
     it "has no default timeout" do
       expect(resource.timeout).to be_nil
     end
@@ -173,7 +173,7 @@ describe Chef::Resource::Scm do
     end
   end
 
-  describe "when it has a environment attribute" do
+  describe "when it has a environment property" do
     let(:test_environment) { { "CHEF_ENV" => "/tmp" } }
     before { resource.environment(test_environment) }
     it "stores this environment" do

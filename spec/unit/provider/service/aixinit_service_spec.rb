@@ -35,7 +35,7 @@ describe Chef::Provider::Service::AixInit do
   end
 
   describe "load_current_resource" do
-    it "sets current resource attributes" do
+    it "sets current resource properties" do
       expect(@provider).to receive(:set_current_resource_attributes)
 
       @provider.load_current_resource

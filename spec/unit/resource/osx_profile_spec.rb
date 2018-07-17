@@ -41,18 +41,18 @@ describe Chef::Resource::OsxProfile do
     expect { resource.action :remove }.not_to raise_error
   end
 
-  it "allows you to set the profile attribute" do
+  it "allows you to set the profile property" do
     resource.profile "com.testprofile.screensaver"
     expect(resource.profile).to eql("com.testprofile.screensaver")
   end
 
-  it "allows you to set the profile attribute to a string" do
+  it "allows you to set the profile property to a string" do
     resource.profile "com.testprofile.screensaver"
     expect(resource.profile).to be_a(String)
     expect(resource.profile).to eql("com.testprofile.screensaver")
   end
 
-  it "allows you to set the profile attribute to a hash" do
+  it "allows you to set the profile property to a hash" do
     test_profile = { "profile" => false }
     resource.profile test_profile
     expect(resource.profile).to be_a(Hash)

@@ -85,9 +85,9 @@ describe Chef::Provider::User do
   end
 
   describe "when determining if the system is already in the target state" do
-    [ :gid, :members ].each do |attribute|
-      it "should return true if #{attribute} doesn't match" do
-        allow(@current_resource).to receive(attribute).and_return("looooooooooooooooooool")
+    [ :gid, :members ].each do |property|
+      it "should return true if #{property} doesn't match" do
+        allow(@current_resource).to receive(property).and_return("looooooooooooooooooool")
         expect(@provider.compare_group).to be_truthy
       end
     end
@@ -142,7 +142,7 @@ describe Chef::Provider::User do
       expect(@provider.new_resource).to be_updated
     end
 
-    it "should check to see if the group has mismatched attributes if the group exists" do
+    it "should check to see if the group has mismatched properties if the group exists" do
       @provider.group_exists = true
       allow(@provider).to receive(:compare_group).and_return(false)
       allow(@provider).to receive(:change_desc).and_return([ ])
@@ -150,7 +150,7 @@ describe Chef::Provider::User do
       expect(@provider.new_resource).not_to be_updated
     end
 
-    it "should call manage_group if the group exists and has mismatched attributes" do
+    it "should call manage_group if the group exists and has mismatched properties" do
       @provider.group_exists = true
       allow(@provider).to receive(:compare_group).and_return(true)
       allow(@provider).to receive(:change_desc).and_return([ ])
@@ -191,7 +191,7 @@ describe Chef::Provider::User do
       allow(@provider).to receive(:manage_group).and_return(true)
     end
 
-    it "should run manage_group if the group exists and has mismatched attributes" do
+    it "should run manage_group if the group exists and has mismatched properties" do
       expect(@provider).to receive(:compare_group).and_return(true)
       allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
       expect(@provider).to receive(:manage_group).and_return(true)
@@ -212,7 +212,7 @@ describe Chef::Provider::User do
       @provider.run_action(:manage)
     end
 
-    it "should not run manage_group if the group exists but has no differing attributes" do
+    it "should not run manage_group if the group exists but has no differing properties" do
       expect(@provider).to receive(:compare_group).and_return(false)
       allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
       expect(@provider).not_to receive(:manage_group)
@@ -226,7 +226,7 @@ describe Chef::Provider::User do
       allow(@provider).to receive(:manage_group).and_return(true)
     end
 
-    it "should run manage_group if the group exists and has mismatched attributes" do
+    it "should run manage_group if the group exists and has mismatched properties" do
       expect(@provider).to receive(:compare_group).and_return(true)
       allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
       expect(@provider).to receive(:manage_group).and_return(true)
@@ -241,7 +241,7 @@ describe Chef::Provider::User do
       expect(@new_resource).to be_updated
     end
 
-    it "should not run manage_group if the group exists but has no differing attributes" do
+    it "should not run manage_group if the group exists but has no differing properties" do
       expect(@provider).to receive(:compare_group).and_return(false)
       allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
       expect(@provider).not_to receive(:manage_group)

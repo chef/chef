@@ -136,7 +136,7 @@ describe Chef::Provider::Service::Freebsd do
       end
     end
 
-    context "when we have a 'ps' attribute" do
+    context "when we have a 'ps' property" do
       let(:stdout) do
         StringIO.new(<<~PS_SAMPLE)
           413  ??  Ss     0:02.51 /usr/sbin/syslogd -s

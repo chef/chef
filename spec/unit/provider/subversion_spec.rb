@@ -43,7 +43,7 @@ describe Chef::Provider::Subversion do
     ENV.update(@original_env)
   end
 
-  it "converts resource attributes to options for shell_out" do
+  it "converts resource properties to options for shell_out" do
     expect(@provider.run_options).to eq({})
     @resource.user "deployninja"
     expect(@provider.run_options).to eq({ user: "deployninja" })

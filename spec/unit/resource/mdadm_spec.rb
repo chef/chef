@@ -41,42 +41,42 @@ describe Chef::Resource::Mdadm do
     expect { resource.action :stop }.not_to raise_error
   end
 
-  it "allows you to set the raid_device attribute" do
+  it "allows you to set the raid_device property" do
     resource.raid_device "/dev/md3"
     expect(resource.raid_device).to eql("/dev/md3")
   end
 
-  it "allows you to set the chunk attribute" do
+  it "allows you to set the chunk property" do
     resource.chunk 256
     expect(resource.chunk).to eql(256)
   end
 
-  it "allows you to set the level attribute" do
+  it "allows you to set the level property" do
     resource.level 1
     expect(resource.level).to eql(1)
   end
 
-  it "allows you to set the metadata attribute" do
+  it "allows you to set the metadata property" do
     resource.metadata "1.2"
     expect(resource.metadata).to eql("1.2")
   end
 
-  it "allows you to set the bitmap attribute" do
+  it "allows you to set the bitmap property" do
     resource.bitmap "internal"
     expect(resource.bitmap).to eql("internal")
   end
 
-  it "allows you to set the layout attribute" do
+  it "allows you to set the layout property" do
     resource.layout "f2"
     expect(resource.layout).to eql("f2")
   end
 
-  it "allows you to set the devices attribute" do
+  it "allows you to set the devices property" do
     resource.devices ["/dev/sda", "/dev/sdb"]
     expect(resource.devices).to eql(["/dev/sda", "/dev/sdb"])
   end
 
-  it "allows you to set the exists attribute" do
+  it "allows you to set the exists property" do
     resource.exists true
     expect(resource.exists).to eql(true)
   end

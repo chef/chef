@@ -182,7 +182,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       cache_control_data.checksum = fetched_file_checksum
     end
 
-    it "serializes its attributes to JSON" do
+    it "serializes its properties to JSON" do
       # we have to test this separately because ruby 1.8 hash order is unstable
       # so we can't count on the order of the keys in the json format.
 

@@ -410,7 +410,7 @@ describe Chef::ResourceReporter do
         expect(@first_update_report["name"]).to eq(new_resource.name)
       end
 
-      it "includes the resource's id attribute" do
+      it "includes the resource's id property" do
         expect(@first_update_report["id"]).to eq(new_resource.identity)
       end
 
@@ -551,7 +551,7 @@ describe Chef::ResourceReporter do
         expect(@first_update_report["name"]).to eq(@new_resource.name)
       end
 
-      it "includes the resource's id attribute" do
+      it "includes the resource's id property" do
         expect(@first_update_report["id"]).to eq(@new_resource.identity)
       end
 

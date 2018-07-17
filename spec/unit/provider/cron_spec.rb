@@ -401,9 +401,9 @@ CRONTAB
       @provider.current_resource = @current_resource
     end
 
-    [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home].each do |attribute|
-      it "should return true if #{attribute} doesn't match" do
-        @new_resource.send(attribute, "something_else")
+    [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home].each do |property|
+      it "should return true if #{property} doesn't match" do
+        @new_resource.send(property, "something_else")
         expect(@provider.cron_different?).to eql(true)
       end
     end

@@ -200,18 +200,18 @@ describe Chef::Provider::User do
       }
     end
 
-    %w{uid gid comment home shell password}.each do |attribute|
-      it "should return true if #{attribute} doesn't match" do
-        @new_resource.send(attribute, mapping[attribute][0])
-        @current_resource.send(attribute, mapping[attribute][1])
+    %w{uid gid comment home shell password}.each do |property|
+      it "should return true if #{property} doesn't match" do
+        @new_resource.send(property, mapping[property][0])
+        @current_resource.send(property, mapping[property][1])
         expect(@provider.compare_user).to eql(true)
       end
     end
 
-    %w{uid gid}.each do |attribute|
-      it "should return false if string #{attribute} matches fixnum" do
-        @new_resource.send(attribute, "100")
-        @current_resource.send(attribute, 100)
+    %w{uid gid}.each do |property|
+      it "should return false if string #{property} matches fixnum" do
+        @new_resource.send(property, "100")
+        @current_resource.send(property, 100)
         expect(@provider.compare_user).to eql(false)
       end
     end
@@ -256,7 +256,7 @@ describe Chef::Provider::User do
       expect(@new_resource).to be_updated
     end
 
-    it "should call manage_user if the user exists and has mismatched attributes" do
+    it "should call manage_user if the user exists and has mismatched properties" do
       @provider.user_exists = true
       allow(@provider).to receive(:compare_user).and_return(true)
       expect(@provider).to receive(:manage_user).and_return(true)
@@ -315,7 +315,7 @@ describe Chef::Provider::User do
       # @provider.stub(:manage_user).and_return(true)
     end
 
-    it "should run manage_user if the user exists and has mismatched attributes" do
+    it "should run manage_user if the user exists and has mismatched properties" do
       expect(@provider).to receive(:compare_user).and_return(true)
       expect(@provider).to receive(:manage_user).and_return(true)
       @provider.action_manage
@@ -335,7 +335,7 @@ describe Chef::Provider::User do
       @provider.action_manage
     end
 
-    it "should not run manage_user if the user exists but has no differing attributes" do
+    it "should not run manage_user if the user exists but has no differing properties" do
       expect(@provider).to receive(:compare_user).and_return(false)
       expect(@provider).not_to receive(:manage_user)
       @provider.action_manage
@@ -358,7 +358,7 @@ describe Chef::Provider::User do
       # @provider.stub(:manage_user).and_return(true)
     end
 
-    it "should run manage_user if the user exists and has mismatched attributes" do
+    it "should run manage_user if the user exists and has mismatched properties" do
       expect(@provider).to receive(:compare_user).and_return(true)
       expect(@provider).to receive(:manage_user).and_return(true)
       @provider.action_modify
@@ -372,7 +372,7 @@ describe Chef::Provider::User do
       expect(@new_resource).to be_updated
     end
 
-    it "should not run manage_user if the user exists but has no differing attributes" do
+    it "should not run manage_user if the user exists but has no differing properties" do
       expect(@provider).to receive(:compare_user).and_return(false)
       expect(@provider).not_to receive(:manage_user)
       @provider.action_modify

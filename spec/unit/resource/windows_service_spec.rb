@@ -66,7 +66,7 @@ describe Chef::Resource::WindowsService, "initialize" do
     expect(resource.action).to eq([:configure_startup])
   end
 
-  # Attributes that are Strings
+  # Properties that are Strings
   %i{description service_name binary_path_name load_order_group dependencies
      run_as_user run_as_password display_name}.each do |prop|
     it "support setting #{prop}" do
@@ -75,7 +75,7 @@ describe Chef::Resource::WindowsService, "initialize" do
     end
   end
 
-  # Attributes that are Integers
+  # Properties that are Integers
   %i{desired_access error_control service_type}.each do |prop|
     it "support setting #{prop}" do
       resource.send("#{prop}=", 1)
@@ -83,7 +83,7 @@ describe Chef::Resource::WindowsService, "initialize" do
     end
   end
 
-  # Attributes that are Booleans
+  # Properties that are Booleans
   %i{delayed_start}.each do |prop|
     it "support setting #{prop}" do
       resource.send("#{prop}=", true)

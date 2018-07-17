@@ -53,7 +53,7 @@ IFCONFIG
       @new_resource.device "en0"
     end
 
-    it "should load given interface with attributes." do
+    it "should load given interface with properties." do
       current_resource = @provider.load_current_resource
       expect(current_resource.inet_addr).to eq("172.29.174.58")
       expect(current_resource.target).to eq(@new_resource.target)
@@ -78,7 +78,7 @@ IFCONFIG
       expect(@new_resource).to be_updated
     end
 
-    it "should raise exception if metric attribute is set" do
+    it "should raise exception if metric property is set" do
       @new_resource.device "en0"
       @new_resource.metric "1"
       allow(@provider).to receive(:load_current_resource) do
@@ -86,7 +86,7 @@ IFCONFIG
         @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
 
-      expect { @provider.run_action(:add) }.to raise_error(Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action")
+      expect { @provider.run_action(:add) }.to raise_error(Chef::Exceptions::Ifconfig, "interface metric property cannot be set for :add action")
     end
   end
 

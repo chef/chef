@@ -41,8 +41,8 @@ describe Chef::Resource::YumPackage do
   # the new_resource.package_named/version/arch properties.  until that is fixed properly
   # we need to coerce and dup those properties into normal arrays.  this does not affect
   # strings because those are not mutated in place and they are not (currently) frozen
-  # in immutable attributes (even though they really, really should be).
-  context "when passed immutable node attribute arrays" do
+  # in immutable properties (even though they really, really should be).
+  context "when passed immutable node property arrays" do
     let(:node) { Chef::Node.new }
 
     before do

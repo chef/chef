@@ -99,7 +99,7 @@ describe Chef::Provider::Package::Windows::Exe do
       end
     end
 
-    it "returns the version attribute if given" do
+    it "returns the version property if given" do
       new_resource.version("v55555")
       expect(provider.package_version).to eql("v55555")
     end

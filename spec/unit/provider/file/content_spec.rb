@@ -50,7 +50,7 @@ describe Chef::Provider::File::Content do
     Chef::Provider::File::Content.new(new_resource, current_resource, run_context)
   end
 
-  describe "when the resource has a content attribute set" do
+  describe "when the resource has a content property set" do
 
     before do
       allow(new_resource).to receive(:content).and_return("Do do do do, do do do do, do do do do, do do do do")
@@ -100,7 +100,7 @@ describe Chef::Provider::File::Content do
 
   end
 
-  describe "when the resource does not have a content attribute set" do
+  describe "when the resource does not have a content property set" do
 
     before do
       allow(new_resource).to receive(:content).and_return(nil)

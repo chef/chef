@@ -65,7 +65,7 @@ class Chef
 
         def add_command
           # ifconfig changes are temporary, chdev persist across reboots.
-          raise Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action" if new_resource.metric
+          raise Chef::Exceptions::Ifconfig, "interface metric property cannot be set for :add action" if new_resource.metric
           command = [ "chdev", "-l", new_resource.device, "-a", "netaddr=#{new_resource.name}" ]
           command += [ "-a", "netmask=#{new_resource.mask}" ] if new_resource.mask
           command += [ "-a", "mtu=#{new_resource.mtu}" ] if new_resource.mtu
