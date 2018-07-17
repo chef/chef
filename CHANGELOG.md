@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.3 -->
-## [v14.4.3](https://github.com/chef/chef/tree/v14.4.3) (2018-07-16)
+<!-- latest_release 14.4.5 -->
+## [v14.4.5](https://github.com/chef/chef/tree/v14.4.5) (2018-07-17)
 
 #### Merged Pull Requests
-- Allow specifying VLAN &amp; Gateway on RHEL/Centos [#6400](https://github.com/chef/chef/pull/6400) ([tomdoherty](https://github.com/tomdoherty))
+- group: convert to properties with descriptions and improve comma separated parsing [#7474](https://github.com/chef/chef/pull/7474) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- group: convert to properties with descriptions and improve comma separated parsing [#7474](https://github.com/chef/chef/pull/7474) ([tas50](https://github.com/tas50)) <!-- 14.4.5 -->
 - Allow specifying VLAN &amp; Gateway on RHEL/Centos [#6400](https://github.com/chef/chef/pull/6400) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.4.3 -->
 - ifconfig: Allow specifying VLAN on RHEL/Centos [#7478](https://github.com/chef/chef/pull/7478) ([tas50](https://github.com/tas50)) <!-- 14.4.2 -->
 - add back clean_array API [#7477](https://github.com/chef/chef/pull/7477) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.4.1 -->
