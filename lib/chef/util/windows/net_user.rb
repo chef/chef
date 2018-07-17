@@ -99,7 +99,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     true
   rescue Chef::Exceptions::Win32APIError => e
     # we're only interested in the password failures
-    if e.code == Win32APIError::ERROR_LOGON_FAILURE
+    if FFI::LastError.error == Win32APIError::ERROR_LOGON_FAILURE
       return false
     end
     # all other exceptions will assume we cannot logon for a different reason

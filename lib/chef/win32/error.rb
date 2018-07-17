@@ -78,7 +78,7 @@ class Chef
           formatted_message << "System Error Code: #{code}\n"
           formatted_message << "System Error Message: #{msg}\n"
           formatted_message << "---- End Win32 API output ----\n"
-          raise Chef::Exceptions::Win32APIError.new(msg + "\n" + formatted_message, code)
+          raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
         end
       end
     end

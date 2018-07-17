@@ -41,10 +41,7 @@ describe "Chef::Win32::Error", :windows_only do
             Chef::ReservedNames::Win32::API::Error::ERROR_BAD_USERNAME
           )
           expect(Chef::ReservedNames::Win32::Error).to receive_message_chain(:format_message, :strip).and_return("Bad Username")
-          expect { Chef::ReservedNames::Win32::Error.raise! }.to raise_error { |error|
-            expect(error).to be_a(Chef::Exceptions::Win32APIError)
-            expect(error.code).to eq(2202)
-          }
+          expect { Chef::ReservedNames::Win32::Error.raise! }.to raise_error(Chef::Exceptions::Win32APIError)
         end
       end
     end
@@ -70,7 +67,8 @@ describe "Chef::Win32::Error", :windows_only do
         it "raises a Win32ApiError exception with code 1326" do
           expect { Chef::ReservedNames::Win32::Error.raise! nil, Chef::ReservedNames::Win32::API::Error::ERROR_LOGON_FAILURE }.to raise_error { |error|
             expect(error).to be_a(Chef::Exceptions::Win32APIError)
-            expect(error.code).to eq(1326)
+            # This is not localized but neither is the exception.
+            expect(error.to_s).to match(/System Error Code: 1326/)
           }
         end
       end
