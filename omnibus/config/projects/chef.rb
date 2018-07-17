@@ -70,11 +70,8 @@ end
 
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
-
-  unless rhel? && platform_version.satisfies?("< 6")
-    compression_level 1
-    compression_type :xz
-  end
+  compression_level 1
+  compression_type :xz
 end
 
 package :deb do
