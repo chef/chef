@@ -466,7 +466,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" end
     end
 
     describe "when append is not set" do
-      let(:included_members) { %w{gordon eric} }
+      let(:included_members) { %w{dfgdf4ds sadfsdfs} }
 
       before(:each) do
         group_resource.append(false)
