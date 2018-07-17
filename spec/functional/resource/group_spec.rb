@@ -293,8 +293,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   let(:group_name) { "group#{SecureRandom.random_number(9999)}" }
-  let(:included_members) { nil }
-  let(:excluded_members) { nil }
+  let(:included_members) { [] }
+  let(:excluded_members) { [] }
   let(:group_resource) do
     group = Chef::Resource::Group.new(group_name, run_context)
     group.members(included_members)
