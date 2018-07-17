@@ -1,0 +1,90 @@
+<% if !first_boot['vserver_name'].nil? -%>
+vserver <%= first_boot['vserver_name'] %> exec \
+<% end -%>
+sh -c '
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
+dist=$(rpm -E "%{pld_release}")
+arch=$(rpm --qf "%{ARCH}" -q rpm)
+
+# be sure gpg keys are present
+case "$dist" in
+ac)
+	rpm -q gpg-pubkey-1bbd5459-461e5d1e || rpm --import /etc/pki/rpm-gpg/PLD-2.0-Ac-GPG-key.asc
+	;;
+th)
+	rpm -q gpg-pubkey-e64e7bf7-47b35206 || rpm --import /etc/pki/rpm-gpg/PLD-3.0-Th-GPG-key.asc
+	;;
+esac
+
+# some cookbook requires which
+rpm -q which || poldek -u which
+
+# motd cookbook needs bash
+rpm -q bash || poldek -u bash
+
+# chef 11.6 needs diff to show diffs (newer does it in ruby)
+rpm -q diffutils || poldek -u diffutils
+
+# networking is not inited properly
+# /sbin/ip is missing. Cant continue.
+# ERROR: Networking is down. OpenSSH cant be run.
+test -x /sbin/ip || poldek -u iproute2 --noask
+
+if [ ! -f /usr/bin/chef-client ]; then
+	poldek --up --noask -u chef
+fi
+
+awk NF > /etc/chef/validation.pem <<EOP
+<%= validation_key %>
+EOP
+chmod 0600 /etc/chef/validation.pem
+
+<% if @chef_config[:encrypted_data_bag_secret] -%>
+awk NF > /etc/chef/encrypted_data_bag_secret <<EOP
+<%= encrypted_data_bag_secret %>
+EOP
+chmod 0600 /etc/chef/encrypted_data_bag_secret
+<% end -%>
+
+<%# Generate Ohai Hints -%>
+<% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
+mkdir -p /etc/chef/ohai/hints
+
+<% @chef_config[:knife][:hints].each do |name, hash| -%>
+cat > /etc/chef/ohai/hints/<%= name %>.json <<EOP
+<%= hash.to_json %>
+EOP
+<% end -%>
+<% end -%>
+
+# create client if none present
+if [ ! -e /etc/chef/client.rb ]; then
+cat > /etc/chef/client.rb <<EOP
+<%= config_content %>
+EOP
+fi
+
+# update existing config
+<% unless @chef_config[:validation_client_name] == "chef-validator" -%>
+[  `grep -qx "validation_client_name \"<%= @chef_config[:validation_client_name] %>\"" /etc/chef/client.rb` ] || echo "validation_client_name \"<%= @chef_config[:validation_client_name] %>\"" >> /etc/chef/client.rb
+<% end -%>
+
+<% if @config[:chef_node_name] %>
+[ `grep -qx "node_name \"<%= @config[:chef_node_name] %>\"" /etc/chef/client.rb` ] || echo "node_name \"<%= @config[:chef_node_name] %>\"" >> /etc/chef/client.rb
+<% end -%>
+
+<% if knife_config[:bootstrap_proxy] %>
+echo http_proxy  "knife_config[:bootstrap_proxy]" >> /etc/chef/client.rb
+echo https_proxy "knife_config[:bootstrap_proxy]" >> /etc/chef/client.rb
+<% end -%>
+
+cat > /etc/chef/first-boot.json <<EOP
+<%= first_boot.to_json %>
+EOP
+
+# fix for locale issues
+# also http://tickets.opscode.com/browse/OHAI-245
+export LC_ALL=en_US.utf8
+
+<%= start_chef %>'
