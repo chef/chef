@@ -131,7 +131,7 @@ class Chef
         #
         # @param vault [String] name of the chef-vault encrypted data bag
         # @param item [String] name of the chef-vault encrypted item
-        # @returns [ChefVault::Item] ChefVault::Item object
+        # @return [ChefVault::Item] ChefVault::Item object
         def load_chef_bootstrap_vault_item(vault, item)
           ChefVault::Item.load(vault, item)
         end
