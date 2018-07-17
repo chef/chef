@@ -1,6 +1,6 @@
 #
 # Author:: Elan Ruusamäe (glen@pld-linux.org)
-# Copyright:: Copyright (c) 2013 Elan Ruusamäe
+# Copyright:: Copyright (c) 2013,2018 Elan Ruusamäe
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,8 @@ class Chef
       class Poldek < Chef::Provider::Package
         include Chef::Mixin::ShellOut
         attr_accessor :is_virtual_package
+
+        provides :package, platform_family: "pld"
 
         def load_current_resource
             Chef::Log.debug("#{@new_resource} loading current resource")
