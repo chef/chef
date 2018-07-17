@@ -148,7 +148,13 @@ class Chef
     class InvalidDataBagName < ArgumentError; end
     class EnclosingDirectoryDoesNotExist < ArgumentError; end
     # Errors originating from calls to the Win32 API
-    class Win32APIError < RuntimeError; end
+    class Win32APIError < RuntimeError
+      attr_reader :code
+      def initialize(msg, error_code = -1)
+        @code = error_code
+        super(msg)
+      end
+    end
 
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
     # when older versions of Windows don't support newer Win32 API functions.

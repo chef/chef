@@ -54,7 +54,7 @@ describe Chef::Provider::User::Windows, :windows_only do
   def restore_secedit_policy
     security_database = "C:\\windows\\security\\database\\seceditnew.sdb"
     restore_command = "secedit /configure /db #{security_database} /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY"
-    system(restore_command)
+    shell_out(restore_command)
   end
 
   def set_windows_minimum_password_length(minimum_password_length = 0)
@@ -75,8 +75,7 @@ describe Chef::Provider::User::Windows, :windows_only do
     security_command = "secedit /configure /db #{temp_security_database} /cfg #{windows_template_path} /areas SECURITYPOLICY"
     temp_security_template.write(file_content)
     temp_security_template.close
-    puts security_command
-    system(security_command)
+    shell_out(security_command)
   end
 
   before(:all) do

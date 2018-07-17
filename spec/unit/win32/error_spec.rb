@@ -36,12 +36,15 @@ describe "Chef::Win32::Error", :windows_only do
       end
 
       context "last error received is not user_not_found" do
-        it "raises Win32APIError exception" do
+        it "raises Win32APIError exception with code 2202" do
           expect(Chef::ReservedNames::Win32::Error).to receive(:get_last_error).and_return(
             Chef::ReservedNames::Win32::API::Error::ERROR_BAD_USERNAME
           )
           expect(Chef::ReservedNames::Win32::Error).to receive_message_chain(:format_message, :strip).and_return("Bad Username")
-          expect { Chef::ReservedNames::Win32::Error.raise! }.to raise_error Chef::Exceptions::Win32APIError
+          expect { Chef::ReservedNames::Win32::Error.raise! }.to raise_error { |error|
+            expect(error).to be_a(Chef::Exceptions::Win32APIError)
+            expect(error.code).to eq(2202)
+          }
         end
       end
     end
@@ -60,6 +63,15 @@ describe "Chef::Win32::Error", :windows_only do
           expect(Chef::ReservedNames::Win32::Error).to_not receive(:get_last_error)
           expect(Chef::ReservedNames::Win32::Error).to receive_message_chain(:format_message, :strip).and_return("Bad Username")
           expect { Chef::ReservedNames::Win32::Error.raise! nil, Chef::ReservedNames::Win32::API::Error::ERROR_BAD_USERNAME }.to raise_error Chef::Exceptions::Win32APIError
+        end
+      end
+
+      context "last error received is logon failure" do
+        it "raises a Win32ApiError exception with code 1326" do
+          expect { Chef::ReservedNames::Win32::Error.raise! nil, Chef::ReservedNames::Win32::API::Error::ERROR_LOGON_FAILURE }.to raise_error { |error|
+            expect(error).to be_a(Chef::Exceptions::Win32APIError)
+            expect(error.code).to eq(1326)
+          }
         end
       end
     end

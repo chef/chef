@@ -29,6 +29,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   NetUser = Chef::ReservedNames::Win32::NetUser
   Security = Chef::ReservedNames::Win32::Security
+  Win32APIError = Chef::ReservedNames::Win32::API::Error
 
   USER_INFO_3_TRANSFORM = {
     name: :usri3_name,
@@ -97,11 +98,13 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
                LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
     true
   rescue Chef::Exceptions::Win32APIError => e
-    if e.to_s.include? "The user name or password is incorrect"
+    # we're only interested in the password failures
+    if e.code == Win32APIError::ERROR_LOGON_FAILURE
       return false
     end
-    # all other exceptions will assume we cannot logon for a different reason (e.g. an Account Restriction)
+    # all other exceptions will assume we cannot logon for a different reason
     Chef::Log.trace("Unable to login with the specified credentials. Assuming the credentials are valid.")
+    Chef::Log.trace(e)
     true
   end
 
