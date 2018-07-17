@@ -190,7 +190,6 @@ RSpec.configure do |config|
   config.filter_run_excluding rhel7: true unless rhel7?
   config.filter_run_excluding intel_64bit: true unless intel_64bit?
   config.filter_run_excluding not_rhel: true if rhel?
-  config.filter_run_excluding not_rhel5: true if rhel5?
   config.filter_run_excluding not_rhel6: true if rhel6?
   config.filter_run_excluding not_rhel7: true if rhel7?
   config.filter_run_excluding not_intel_64bit: true if intel_64bit?
