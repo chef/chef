@@ -143,7 +143,6 @@ RSpec.configure do |config|
   config.filter_run_excluding skip_travis: true if ENV["TRAVIS"]
 
   config.filter_run_excluding windows_only: true unless windows?
-  config.filter_run_excluding not_supported_on_mac_osx_106: true if mac_osx_106?
   config.filter_run_excluding not_supported_on_mac_osx: true if mac_osx?
   config.filter_run_excluding mac_osx_only: true if !mac_osx?
   config.filter_run_excluding not_supported_on_aix: true if aix?
