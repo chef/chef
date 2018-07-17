@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,11 +35,11 @@ class Chef
                description: "The identifier for the group."
 
       property :members, [String, Array], default: lazy { [] },
-               coerce: proc { |x| x.kind_of?(String) ? x.split(",") : x },
+               coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
                description: "Which users should be set or appended to a group. This can be either an array or a comma separated list."
 
       property :excluded_members, [String, Array], default: lazy { [] },
-               coerce: proc { |x| x.kind_of?(String) ? x.split(",") : x },
+               coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
                description: "Remove users from a group. May only be used when append is set to true."
 
       property :append, [ TrueClass, FalseClass ], default: false,
