@@ -70,7 +70,7 @@ class Chef
             end
           end
 
-          # @returns Array<Version>
+          # @return Array<Version>
           def query(action, provides, version = nil, arch = nil)
             with_helper do
               json = build_query(action, provides, version, arch)
