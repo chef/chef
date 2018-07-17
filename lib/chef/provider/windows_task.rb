@@ -552,6 +552,8 @@ class Chef
           settings[:idle_duration] = new_resource.idle_time if new_resource.idle_time
           settings[:run_only_if_idle] = true if new_resource.idle_time
           settings[:priority] = new_resource.priority
+          settings[:disallow_start_if_on_batteries] = new_resource.disallow_start_on_battery
+          settings[:stop_if_going_on_batteries] = new_resource.stop_on_battery
           settings
         end
 
