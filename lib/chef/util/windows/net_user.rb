@@ -98,13 +98,13 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
                LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
     true
   rescue Chef::Exceptions::Win32APIError => e
-    # we're only interested in the password failures
-    if FFI::LastError.error == Win32APIError::ERROR_LOGON_FAILURE
+    Chef::Log.trace(e)
+    # we're only interested in the incorrect password failures
+    if e.to_s =~ /System Error Code: 1326/
       return false
     end
     # all other exceptions will assume we cannot logon for a different reason
     Chef::Log.trace("Unable to login with the specified credentials. Assuming the credentials are valid.")
-    Chef::Log.trace(e)
     true
   end
 
