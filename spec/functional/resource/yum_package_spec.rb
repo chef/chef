@@ -20,7 +20,7 @@ require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
-exclude_test = !(%w{rhel fedora}.include?(ohai[:platform_family]) && !File.exist?("/usr/bin/dnf"))
+exclude_test = !(%w{rhel fedora amazon}.include?(ohai[:platform_family]) && !File.exist?("/usr/bin/dnf"))
 describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   include Chef::Mixin::ShellOut
 
@@ -306,7 +306,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     context "with constraints" do
-      it "with nothing installed, it installs the latest version", not_rhel5: true do
+      it "with nothing installed, it installs the latest version" do
         flush_cache
         yum_package.package_name("chef_rpm >= 1.2")
         yum_package.run_action(:install)
@@ -314,7 +314,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "when it is met, it does nothing", not_rhel5: true do
+      it "when it is met, it does nothing" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm >= 1.2")
         yum_package.run_action(:install)
@@ -322,7 +322,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
-      it "when it is met, it does nothing", not_rhel5: true do
+      it "when it is met, it does nothing" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm >= 1.2")
         yum_package.run_action(:install)
@@ -330,7 +330,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "with nothing intalled, it installs the latest version", not_rhel5: true do
+      it "with nothing intalled, it installs the latest version" do
         flush_cache
         yum_package.package_name("chef_rpm > 1.2")
         yum_package.run_action(:install)
@@ -338,7 +338,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "when it is not met by an installed rpm, it upgrades", not_rhel5: true do
+      it "when it is not met by an installed rpm, it upgrades" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm > 1.2")
         yum_package.run_action(:install)
@@ -346,7 +346,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "with an equality constraint, when it is not met by an installed rpm, it upgrades", not_rhel5: true do
+      it "with an equality constraint, when it is not met by an installed rpm, it upgrades" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm = 1.10")
         yum_package.run_action(:install)
@@ -354,7 +354,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "with an equality constraint, when it is met by an installed rpm, it does nothing", not_rhel5: true do
+      it "with an equality constraint, when it is met by an installed rpm, it does nothing" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm = 1.2")
         yum_package.run_action(:install)
@@ -362,7 +362,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
-      it "when it is met by an installed rpm, it does nothing", not_rhel5: true do
+      it "when it is met by an installed rpm, it does nothing" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm > 1.2")
         yum_package.run_action(:install)
@@ -370,19 +370,19 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "when there is no solution to the contraint", not_rhel5: true do
+      it "when there is no solution to the contraint" do
         flush_cache
         yum_package.package_name("chef_rpm > 2.0")
         expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
-      it "when there is no solution to the contraint but an rpm is preinstalled", not_rhel5: true do
+      it "when there is no solution to the contraint but an rpm is preinstalled" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm > 2.0")
         expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
-      it "with a less than constraint, when nothing is installed, it installs", not_rhel5: true do
+      it "with a less than constraint, when nothing is installed, it installs" do
         flush_cache
         yum_package.allow_downgrade true
         yum_package.package_name("chef_rpm < 1.10")
@@ -391,7 +391,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
-      it "with a less than constraint, when the install version matches, it does nothing", not_rhel5: true do
+      it "with a less than constraint, when the install version matches, it does nothing" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.allow_downgrade true
         yum_package.package_name("chef_rpm < 1.10")
@@ -400,7 +400,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
-      it "with a less than constraint, when the install version fails, it should downgrade", not_rhel5: true do
+      it "with a less than constraint, when the install version fails, it should downgrade" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.allow_downgrade true
         yum_package.package_name("chef_rpm < 1.10")
@@ -443,7 +443,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
-      it "downgrade on a local file raises an error", not_rhel5: true do
+      it "downgrade on a local file raises an error" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.version "1.2-1"
         yum_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
@@ -598,7 +598,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "should work to enable a disabled repo", not_rhel5: true do
+      it "should work to enable a disabled repo" do
         shell_out!("yum-config-manager --disable chef-yum-localtesting")
         flush_cache
         expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
@@ -707,7 +707,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "with a prco equality pin in the name it upgrades a prior package", not_rhel5: true do
+      it "with a prco equality pin in the name it upgrades a prior package" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm == 1.10")
         yum_package.run_action(:upgrade)
@@ -724,7 +724,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
-      it "with a prco equality pin in the name it downgrades a later package", not_rhel5: true do
+      it "with a prco equality pin in the name it downgrades a later package" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.allow_downgrade true
         yum_package.package_name("chef_rpm == 1.2")
@@ -733,7 +733,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
-      it "with a > pin in the name and no rpm installed it installs", not_rhel5: true do
+      it "with a > pin in the name and no rpm installed it installs" do
         flush_cache
         yum_package.package_name("chef_rpm > 1.2")
         yum_package.run_action(:upgrade)
@@ -741,7 +741,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "with a < pin in the name and no rpm installed it installs", not_rhel5: true do
+      it "with a < pin in the name and no rpm installed it installs" do
         flush_cache
         yum_package.package_name("chef_rpm < 1.10")
         yum_package.run_action(:upgrade)
@@ -749,7 +749,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
-      it "with a > pin in the name and matching rpm installed it does nothing", not_rhel5: true do
+      it "with a > pin in the name and matching rpm installed it does nothing" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm > 1.2")
         yum_package.run_action(:upgrade)
@@ -757,7 +757,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "with a < pin in the name and no rpm installed it installs", not_rhel5: true do
+      it "with a < pin in the name and no rpm installed it installs" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm < 1.10")
         yum_package.run_action(:upgrade)
@@ -765,7 +765,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
-      it "with a > pin in the name and non-matching rpm installed it upgrades", not_rhel5: true do
+      it "with a > pin in the name and non-matching rpm installed it upgrades" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.package_name("chef_rpm > 1.2")
         yum_package.run_action(:upgrade)
@@ -773,7 +773,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "with a < pin in the name and non-matching rpm installed it downgrades", not_rhel5: true do
+      it "with a < pin in the name and non-matching rpm installed it downgrades" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.allow_downgrade true
         yum_package.package_name("chef_rpm < 1.10")
