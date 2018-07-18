@@ -48,6 +48,7 @@ iface <%= new_resource.device %> <%= new_resource.family %> static
     <% if new_resource.metric %>metric <%= new_resource.metric %><% end %>
     <% if new_resource.hwaddr %>hwaddress <%= new_resource.hwaddr %><% end %>
     <% if new_resource.mtu %>mtu <%= new_resource.mtu %><% end %>
+    <% if new_resource.gateway %>gateway <%= new_resource.gateway %><% end %>
 <% end %>
 <% end %>
           }

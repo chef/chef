@@ -43,6 +43,7 @@ class Chef
 <% if new_resource.master %>MASTER=<%= new_resource.master %><% end %>
 <% if new_resource.slave %>SLAVE=<%= new_resource.slave %><% end %>
 <% if new_resource.vlan %>VLAN=<%= new_resource.vlan %><% end %>
+<% if new_resource.gateway %>GATEWAY=<%= new_resource.gateway %><% end %>
           }
           @config_path = "/etc/sysconfig/network-scripts/ifcfg-#{new_resource.device}"
         end
