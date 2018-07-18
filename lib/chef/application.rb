@@ -202,10 +202,12 @@ class Chef
         end
     end
 
-    # Based on config and whether or not STDOUT is a tty, should we setup a
-    # secondary logger for stdout?
+    # we do NOT want an addition logger if:
+    #  - log_location is the default (nobody has redirected to logfile or syslogd or whatevs)
+    #  - STDOUT is closed
+    #  - we are running explicitly daemonized
     def want_additional_logger?
-      Chef::Config.is_default?(:log_location) && Chef::Config[:log_location].tty? && !Chef::Config[:daemonize]
+      !(Chef::Config.is_default?(:log_location) || STDOUT.closed? || Chef::Config[:daemonize])
     end
 
     def configure_stdout_logger
