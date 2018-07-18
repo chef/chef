@@ -114,7 +114,7 @@ describe Chef::Provider::Route do
     end
 
     it "should not delete config file for :add action (CHEF-3332)" do
-      @node.automatic_attrs[:platform] = "centos"
+      @node.automatic_attrs[:platform_family] = "rhel"
 
       route_file = StringIO.new
       expect(File).to receive(:new).and_return(route_file)
@@ -220,9 +220,9 @@ describe Chef::Provider::Route do
   end
 
   describe Chef::Provider::Route, "generate_config method" do
-    %w{ centos redhat fedora }.each do |platform|
-      it "should write a route file on #{platform} platform" do
-        @node.automatic_attrs[:platform] = platform
+    %w{ rhel fedora amazon }.each do |platform_family|
+      it "should write a route file on #{platform_family} platform family" do
+        @node.automatic_attrs[:platform_family] = platform_family
 
         route_file = StringIO.new
         expect(File).to receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
@@ -231,9 +231,9 @@ describe Chef::Provider::Route do
       end
 
     end
-    %w{ centos redhat fedora }.each do |platform|
-      it "should write a default route file on #{platform} platform" do
-        @node.automatic_attrs[:platform] = platform
+    %w{ rhel fedora amazon }.each do |platform_family|
+      it "should write a default route file on #{platform_family} platform family" do
+        @node.automatic_attrs[:platform_family] = platform_family
 
         route_file = StringIO.new
         allow(File).to receive(:exist?).with("/etc/sysconfig/network").and_return(false)
@@ -245,7 +245,7 @@ describe Chef::Provider::Route do
     end
 
     it "should put all routes for a device in a route config file" do
-      @node.automatic_attrs[:platform] = "centos"
+      @node.automatic_attrs[:platform_family] = "rhel"
 
       route_file = StringIO.new
       expect(File).to receive(:new).and_return(route_file)
