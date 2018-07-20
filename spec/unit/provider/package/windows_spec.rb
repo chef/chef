@@ -360,6 +360,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
         before do
           new_resource.version("5.5.5")
           allow(provider).to receive(:current_version_array).and_return([ ["5.5.0", "4.3.0", "1.1.1"] ])
+          allow(provider).to receive(:version_compare).and_return(false)
         end
 
         it "installs given version" do

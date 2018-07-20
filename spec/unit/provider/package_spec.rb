@@ -702,7 +702,7 @@ describe "Chef::Provider::Package - Multi" do
 
     it "installs the specified version when some are out of date" do
       current_resource.version(["1.0", "6.2"])
-      new_resource.version(["1.0", "6.1"])
+      new_resource.version(["1.0", "6.3"])
       provider.run_action(:install)
       expect(new_resource).to be_updated
     end
@@ -710,6 +710,13 @@ describe "Chef::Provider::Package - Multi" do
     it "does not install any version if all are installed at the right version" do
       current_resource.version(["1.0", "6.2"])
       new_resource.version(["1.0", "6.2"])
+      provider.run_action(:install)
+      expect(new_resource).not_to be_updated_by_last_action
+    end
+
+    it "does not install older version" do
+      current_resource.version(["1.1", "6.2"])
+      new_resource.version(["1.0", "6.1"])
       provider.run_action(:install)
       expect(new_resource).not_to be_updated_by_last_action
     end
