@@ -327,10 +327,14 @@ class Chef
         def task_needs_update?(task)
           flag = false
           if new_resource.frequency == :none
+            # require "byebug"
+            # byebug
             flag = (task.account_information != new_resource.user ||
             task.application_name != new_resource.command ||
             task.parameters != new_resource.command_arguments.to_s ||
-            task.principals[:run_level] != run_level)
+            task.principals[:run_level] != run_level ||
+            task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_on_battery ||
+            task.settings[:stop_if_going_on_batteries] != new_resource.stop_on_battery)
           else
             current_task_trigger = task.trigger(0)
             new_task_trigger = trigger
@@ -353,8 +357,9 @@ class Chef
                   task.working_directory != new_resource.cwd.to_s ||
                   task.principals[:logon_type] != logon_type ||
                   task.principals[:run_level] != run_level ||
-                  PRIORITY[task.priority] != new_resource.priority
-
+                  PRIORITY[task.priority] != new_resource.priority ||
+                  task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_on_battery ||
+                  task.settings[:stop_if_going_on_batteries] != new_resource.stop_on_battery
               if trigger_type == TaskScheduler::MONTHLYDATE
                 flag = true if current_task_trigger[:run_on_last_day_of_month] != new_task_trigger[:run_on_last_day_of_month]
               end
