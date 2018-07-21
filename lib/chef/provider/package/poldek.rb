@@ -67,7 +67,7 @@ class Chef
         def install_package(names, versions)
           logger.trace("#{new_resource} installing package #{names} version #{versions}")
           update_indexes
-          poldek(options, "-u", names)
+          poldek("-u", names)
         end
 
         def upgrade_package(names, versions)
@@ -77,22 +77,22 @@ class Chef
 
         def remove_package(names, versions)
           logger.trace("#{new_resource} removing package #{names} version #{versions}")
-          poldek(options, "-e", names)
+          poldek("-e", names)
         end
 
         private
         @@updated = Hash.new
 
         def update_indexes()
-            checksum = Digest::MD5.hexdigest(opts).to_s
+          checksum = Digest::MD5.hexdigest(opts).to_s
 
-            if @@updated[checksum]
-                return
-            end
+          if @@updated[checksum]
+              return
+          end
 
-            logger.debug("#{@new_resource} updating package indexe")
-            poldek("--up", options, :env => nil)
-            @@updated[checksum] = true
+          logger.debug("#{new_resource} updating package indexes")
+          poldek("--up")
+          @@updated[checksum] = true
         end
 
         def opts
@@ -129,7 +129,7 @@ class Chef
         end
 
         def poldek(*args)
-          shell_out_compact_timeout!(%w{poldek -q --noask}, *args, env: nil, returns: [0, 1, 255])
+          shell_out_compact_timeout!(%w{poldek -q --noask}, options, *args, env: nil, returns: [0, 1, 255])
         end
       end
     end
