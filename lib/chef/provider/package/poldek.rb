@@ -20,104 +20,116 @@ require 'digest/md5'
 require 'chef/provider/package'
 require 'chef/mixin/shell_out'
 require 'chef/resource/package'
-require 'chef/mixin/get_source_from_package'
 
 class Chef
   class Provider
     class Package
       class Poldek < Chef::Provider::Package
         include Chef::Mixin::ShellOut
-        attr_accessor :is_virtual_package
+
+        allow_nils
+        use_multipackage_api
 
         provides :package, platform_family: "pld"
 
         def load_current_resource
-            Chef::Log.debug("#{@new_resource} loading current resource")
-            @current_resource = Chef::Resource::Package.new(@new_resource.name)
-            @current_resource.package_name(@new_resource.package_name)
-            @current_resource.version(nil)
-            check_package_state
-            @current_resource # modified by check_package_state
-        end
-
-        def check_package_state()
-            Chef::Log.debug("#{@new_resource} checking package #{@new_resource.package_name}")
-
-            installed = false
-            @current_resource.version(nil)
-
-            out = shell_out!("rpm -q #{@new_resource.package_name}", :env => nil, :returns => [0,1])
-            if out.stdout
-                Chef::Log.debug("rpm STDOUT: #{out.stdout}");
-                version = version_from_nvra(out.stdout)
-                if version
-                    @current_resource.version(version)
-                    installed = true
-                end
-            end
-
-            return installed
+          logger.debug("#{new_resource} loading current resource")
+          @current_resource = Chef::Resource::Package.new(new_resource.name)
+          current_resource.package_name(new_resource.package_name)
+          current_resource.version(get_current_versions)
+          current_resource
         end
 
         def candidate_version
-            Chef::Log.debug("poldek check candidate version for #{@new_resource.package_name}");
-            return @candidate_version if @candidate_version
-
-            update_indexes
-            cmd = "poldek -q --uniq --skip-installed #{expand_options(@new_resource.options)} --cmd 'ls #{@new_resource.package_name}'"
-            out = shell_out!(cmd, :env => nil, :returns => [0,1,255])
-            if out.stdout
-                Chef::Log.debug("poldek STDOUT: #{out.stdout}");
-                version = version_from_nvra(out.stdout)
-                if version
-                    @candidate_version = version
-                end
-            end
-            unless @candidate_version
-                raise Chef::Exceptions::Package, "poldek does not have a version of package #{@new_resource.package_name}"
-            end
-            @candidate_version
+          @candidate_version ||= get_candidate_versions
         end
 
-        def install_package(name, version)
-            Chef::Log.debug("#{@new_resource} installing package #{name}-#{version}")
-            package = "#{name}-#{version}"
-            update_indexes
-            out = shell_out!("poldek --noask #{expand_options(@new_resource.options)} -u #{package}", :env => nil)
+        def get_current_versions
+          names = package_name_array
+          logger.debug("#{new_resource} checking current version: #{names}")
+
+          # rpm works as expected: output is returned in order as input given, even duplicates
+          cmd = rpm("-q", "--qf", "%{NAME} %{VERSION}\n", names)
+          versions_from_name_list(cmd.stdout, names)
         end
 
-        def upgrade_package(name, version)
-            Chef::Log.debug("#{@new_resource} upgrading package #{name}-#{version}")
-            install_package(name, version)
+        def get_candidate_versions
+          names = package_name_array
+          logger.debug("#{new_resource} check candidate version");
+
+          update_indexes
+
+          # poldek works unexpectedly: packages that don't exist are printed as errors first, and names are de-duplicated
+          cmd = poldek(%w{--uniq --skip-installed} + options.to_a + ["--cmd", "ls --qf '%{NAME} %{VERSION}\n'", names])
+          versions_from_name_list(cmd.stdout, names)
         end
 
-        def remove_package(name, version)
-            Chef::Log.debug("#{@new_resource} removing package #{name}-#{version}")
-            package = "#{name}-#{version}"
-            out = shell_out!("poldek --noask #{expand_options(@new_resource.options)} -e #{package}", :env => nil)
+        def install_package(names, versions)
+          logger.trace("#{new_resource} installing package #{names} version #{versions}")
+          update_indexes
+          poldek(options, "-u", names)
         end
 
-        def purge_package(name, version)
-            remove_package(name, version)
+        def upgrade_package(names, versions)
+          logger.trace("#{new_resource} upgrading package #{names} version #{versions}")
+          install_package(names, versions)
+        end
+
+        def remove_package(names, versions)
+          logger.trace("#{new_resource} removing package #{names} version #{versions}")
+          poldek(options, "-e", names)
         end
 
         private
         @@updated = Hash.new
 
-        def version_from_nvra(stdout)
-            stdout[/^#{Regexp.escape(@new_resource.package_name)}-([^-]+)/, 1]
-        end
-
         def update_indexes()
-            Chef::Log.debug("#{@new_resource} call update indexes #{expand_options(@new_resource.options)}")
-            checksum = Digest::MD5.hexdigest(@new_resource.options || '').to_s
+            checksum = Digest::MD5.hexdigest(opts).to_s
 
             if @@updated[checksum]
                 return
             end
-            Chef::Log.debug("#{@new_resource} updating package indexes: #{expand_options(@new_resource.options)}")
-            shell_out!("poldek --up #{expand_options(@new_resource.options)}", :env => nil)
+
+            logger.debug("#{@new_resource} updating package indexe")
+            poldek("--up", options, :env => nil)
             @@updated[checksum] = true
+        end
+
+        def opts
+          expand_options(options)
+        end
+
+        def versions_from_name_list(input, names)
+          packages = extract_packages(input)
+          versions = match_versions(names, packages)
+          versions
+        end
+
+        def extract_packages(output)
+          packages = {}
+          output.each_line do |line|
+            case line.rstrip
+            when /^package (.+) is not installed$/
+            when /(.+): no such package or directory$/
+            when /^(.+?) (.+)$/
+              packages[$1] = $2
+            end
+          end
+          packages
+        end
+
+        def match_versions(names, packages)
+          names.map do |name|
+            packages[name]
+          end
+        end
+
+        def rpm(*args)
+          shell_out_compact_timeout!("rpm", *args, env: nil, returns: [0, 1])
+        end
+
+        def poldek(*args)
+          shell_out_compact_timeout!(%w{poldek -q --noask}, *args, env: nil, returns: [0, 1, 255])
         end
       end
     end

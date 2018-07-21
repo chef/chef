@@ -1,6 +1,6 @@
 #
 # Author:: Elan Ruusamäe (glen@pld-linux.org)
-# Copyright:: Copyright (c) 2013 Elan Ruusamäe
+# Copyright:: Copyright (c) 2013,2018 Elan Ruusamäe
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,13 +22,20 @@ require 'chef/provider/package/poldek'
 class Chef
   class Resource
     class PoldekPackage < Chef::Resource::Package
+      extend Chef::Mixin::Which
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :poldek_package
-        @provider = Chef::Provider::Package::Poldek
+      resource_name :poldek_package
+
+      provides :package do
+        which("poldek")
       end
 
+      provides :poldek_package
+
+      description "Use the poldek_package resource to install, upgrade, and remove packages with poldek."
+      introduced "14.3"
+
+      allowed_actions :install, :upgrade, :remove
     end
   end
 end
