@@ -105,7 +105,7 @@ class Chef
         @@updated = Hash.new
 
         def version_from_nvra(stdout)
-            stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+)/, 1]
+            stdout[/^#{Regexp.escape(@new_resource.package_name)}-([^-]+)/, 1]
         end
 
         def update_indexes()
