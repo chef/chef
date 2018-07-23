@@ -33,11 +33,13 @@ class Chef
         boolean: true,
         default: false,
         description: "Delete directories recursively."
+
       option :both,
         long: "--both",
         boolean: true,
         default: false,
         description: "Delete both the local and remote copies."
+
       option :local,
         long: "--local",
         boolean: true,

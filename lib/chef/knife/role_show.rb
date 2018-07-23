@@ -35,7 +35,7 @@ class Chef
 
         if @role_name.nil?
           show_usage
-          ui.fatal("You must specify a role name")
+          ui.fatal("You must specify a role name.")
           exit 1
         end
 

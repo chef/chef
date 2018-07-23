@@ -34,18 +34,18 @@ class Chef
       option :file,
         short: "-f FILE",
         long: "--file FILE",
-        description: "Write the private key to a file"
+        description: "Write the private key to a file."
 
       option :admin,
         short: "-a",
         long: "--admin",
-        description: "Create the user as an admin",
+        description: "Create the user as an admin.",
         boolean: true
 
       option :user_password,
         short: "-p PASSWORD",
         long: "--password PASSWORD",
-        description: "Password for newly created user",
+        description: "Password for newly created user.",
         default: ""
 
       option :user_key,

@@ -28,7 +28,7 @@ class Chef
       option :supermarket_site,
         short: "-m SUPERMARKET_SITE",
         long: "--supermarket-site SUPERMARKET_SITE",
-        description: "Supermarket Site",
+        description: "The URL of the Supermarket site.",
         default: "https://supermarket.chef.io",
         proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 

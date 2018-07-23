@@ -36,18 +36,18 @@ class Chef
         long: "--method METHOD",
         short: "-m METHOD",
         default: "GET",
-        description: "Request method (GET, POST, PUT or DELETE). Default: GET"
+        description: "Request method (GET, POST, PUT or DELETE). Default: GET."
 
       option :pretty,
         long: "--[no-]pretty",
         boolean: true,
         default: true,
-        description: "Pretty-print JSON output. Default: true"
+        description: "Pretty-print JSON output. Default: true."
 
       option :input,
         long: "--input FILE",
         short: "-i FILE",
-        description: "Name of file to use for PUT or POST"
+        description: "Name of file to use for PUT or POST."
 
       option :proxy_auth,
         long: "--proxy-auth",

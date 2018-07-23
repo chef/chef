@@ -36,29 +36,29 @@ class Chef
       option :repository,
         short: "-r REPO",
         long: "--repository REPO",
-        description: "The path to the chef-repo"
+        description: "The path to the chef-repo."
 
       option :initial,
         short: "-i",
         long: "--initial",
         boolean: true,
-        description: "Use to create a API client, typically an administrator client on a freshly-installed server"
+        description: "Use to create a API client, typically an administrator client on a freshly-installed server."
 
       option :admin_client_name,
         long: "--admin-client-name NAME",
-        description: "The name of the client, typically the name of the admin client"
+        description: "The name of the client, typically the name of the admin client."
 
       option :admin_client_key,
         long: "--admin-client-key PATH",
-        description: "The path to the private key used by the client, typically a file named admin.pem"
+        description: "The path to the private key used by the client, typically a file named admin.pem."
 
       option :validation_client_name,
         long: "--validation-client-name NAME",
-        description: "The name of the validation client, typically a client named chef-validator"
+        description: "The name of the validation client, typically a client named chef-validator."
 
       option :validation_key,
         long: "--validation-key PATH",
-        description: "The path to the validation key used by the client, typically a file named validation.pem"
+        description: "The path to the validation key used by the client, typically a file named validation.pem."
 
       def configure_chef
         # We are just faking out the system so that you can do this without a key specified

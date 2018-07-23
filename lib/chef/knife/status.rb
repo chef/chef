@@ -72,7 +72,7 @@ class Chef
         append_to_query("chef_environment:#{config[:environment]}") if config[:environment]
 
         if config[:hide_healthy]
-          ui.warn("-H / --hide-healthy is deprecated. Use --hide-by-mins MINS instead")
+          ui.warn("-H / --hide-healthy is deprecated and will be removed in Chef 15. Use --hide-by-mins MINS instead")
           time = Time.now.to_i
           # AND NOT is not valid lucene syntax, so don't use append_to_query
           @query << " " unless @query.empty?

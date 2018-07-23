@@ -40,7 +40,7 @@ class Chef
       option :cookbook_path,
         short: "-o PATH:PATH",
         long: "--cookbook-path PATH:PATH",
-        description: "A colon-separated path to look for cookbooks in",
+        description: "A colon-separated path to look for cookbooks in.",
         proc: lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
       option :dry_run,
@@ -53,7 +53,7 @@ class Chef
       option :supermarket_site,
         short: "-m SUPERMARKET_SITE",
         long: "--supermarket-site SUPERMARKET_SITE",
-        description: "Supermarket Site",
+        description: "The URL of the Supermarket site.",
         default: "https://supermarket.chef.io",
         proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 

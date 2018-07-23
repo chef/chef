@@ -37,7 +37,7 @@ class Chef
       option :with_uri,
         short: "-w",
         long: "--with-uri",
-        description: "Show corresponding URIs"
+        description: "Show corresponding URIs."
 
       def run
         output(format_list_for_display(Chef::User.list))

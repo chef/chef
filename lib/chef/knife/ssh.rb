@@ -42,35 +42,35 @@ class Chef
       option :concurrency,
         short: "-C NUM",
         long: "--concurrency NUM",
-        description: "The number of concurrent connections",
+        description: "The number of concurrent connections.",
         default: nil,
         proc: lambda { |o| o.to_i }
 
       option :ssh_attribute,
         short: "-a ATTR",
         long: "--attribute ATTR",
-        description: "The attribute to use for opening the connection - default depends on the context"
+        description: "The attribute to use for opening the connection - default depends on the context."
 
       option :manual,
         short: "-m",
         long: "--manual-list",
         boolean: true,
-        description: "QUERY is a space separated list of servers",
+        description: "QUERY is a space separated list of servers.",
         default: false
 
       option :prefix_attribute,
         long: "--prefix-attribute ATTR",
-        description: "The attribute to use for prefixing the ouput - default depends on the context"
+        description: "The attribute to use for prefixing the ouput - default depends on the context."
 
       option :ssh_user,
         short: "-x USERNAME",
         long: "--ssh-user USERNAME",
-        description: "The ssh username"
+        description: "The ssh username."
 
       option :ssh_password_ng,
         short: "-P [PASSWORD]",
         long: "--ssh-password [PASSWORD]",
-        description: "The ssh password - will prompt if flag is specified but no password is given",
+        description: "The ssh password - will prompt if flag is specified but no password is given.",
         # default to a value that can not be a password (boolean)
         # so we can effectively test if this parameter was specified
         # without a value
@@ -79,36 +79,36 @@ class Chef
       option :ssh_port,
         short: "-p PORT",
         long: "--ssh-port PORT",
-        description: "The ssh port",
+        description: "The ssh port.",
         proc: Proc.new { |key| Chef::Config[:knife][:ssh_port] = key.strip }
 
       option :ssh_timeout,
         short: "-t SECONDS",
         long: "--ssh-timeout SECONDS",
-        description: "The ssh connection timeout",
+        description: "The ssh connection timeout.",
         proc: Proc.new { |key| Chef::Config[:knife][:ssh_timeout] = key.strip.to_i },
         default: 120
 
       option :ssh_gateway,
         short: "-G GATEWAY",
         long: "--ssh-gateway GATEWAY",
-        description: "The ssh gateway",
+        description: "The ssh gateway.",
         proc: Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
 
       option :ssh_gateway_identity,
         long: "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
-        description: "The SSH identity file used for gateway authentication"
+        description: "The SSH identity file used for gateway authentication."
 
       option :forward_agent,
         short: "-A",
         long: "--forward-agent",
-        description: "Enable SSH agent forwarding",
+        description: "Enable SSH agent forwarding.",
         boolean: true
 
       option :ssh_identity_file,
         short: "-i IDENTITY_FILE",
         long: "--ssh-identity-file IDENTITY_FILE",
-        description: "The SSH identity file used for authentication"
+        description: "The SSH identity file used for authentication."
 
       option :host_key_verify,
         long: "--[no-]host-key-verify",
@@ -119,13 +119,13 @@ class Chef
       option :on_error,
         short: "-e",
         long: "--exit-on-error",
-        description: "Immediately exit if an error is encountered",
+        description: "Immediately exit if an error is encountered.",
         boolean: true,
         default: false
 
       option :duplicated_fqdns,
         long: "--duplicated-fqdns",
-        description: "Behavior if FQDNs are duplicated, ignored by default",
+        description: "Behavior if FQDNs are duplicated, ignored by default.",
         proc: Proc.new { |key| Chef::Config[:knife][:duplicated_fqdns] = key.strip.to_sym },
         default: :ignore
 

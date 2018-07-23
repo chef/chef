@@ -44,7 +44,7 @@ class Chef
         long: "--[no-]diff",
         default: true,
         boolean: true,
-        description: "Whether to show a diff when files change (default: true)"
+        description: "Whether to show a diff when files change (default: true)."
 
       option :dry_run,
         long: "--dry-run",
@@ -55,7 +55,7 @@ class Chef
         long: "--[no-]force",
         boolean: true,
         default: false,
-        description: "Force upload of files even if they are not changed (quicker and harmless, but doesn't print out what it changed)"
+        description: "Force upload of files even if they are not changed (quicker and harmless, but doesn't print out what it changed)."
 
       option :replace_first,
         long: "--replace-first REPLACESTR",
@@ -75,16 +75,16 @@ class Chef
       option :max_command_line,
         long: "--max-chars LENGTH",
         short: "-s LENGTH",
-        description: "Maximum size of command line, in characters"
+        description: "Maximum size of command line, in characters."
 
       option :verbose_commands,
         short: "-t",
-        description: "Print command to be run on the command line"
+        description: "Print command to be run on the command line."
 
       option :null_separator,
         short: "-0",
         boolean: true,
-        description: "Use the NULL character (\0) as a separator, instead of whitespace"
+        description: "Use the NULL character (\0) as a separator, instead of whitespace."
 
       def run
         error = false

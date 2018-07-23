@@ -32,7 +32,7 @@ class Chef
       option :all,
       short: "-a",
       long: "--all",
-      description: "Upload all environments"
+      description: "Upload all environments."
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(Chef::Environment, ui)

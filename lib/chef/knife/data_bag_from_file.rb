@@ -39,7 +39,7 @@ class Chef
       option :all,
         short: "-a",
         long: "--all",
-        description: "Upload all data bags or all items for specified data bags"
+        description: "Upload all data bags or all items for specified data bags."
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(DataBagItem, ui)
