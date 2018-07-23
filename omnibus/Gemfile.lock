@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 836bd650d49e6350dfa40b43a1398c5847a6fd42
+  revision: d48afdf29dd9c9d0562656675d1036cd035c2a46
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -31,13 +31,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.11.90)
-      aws-sdk-resources (= 2.11.90)
-    aws-sdk-core (2.11.90)
+    aws-sdk (2.11.93)
+      aws-sdk-resources (= 2.11.93)
+    aws-sdk-core (2.11.93)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.90)
-      aws-sdk-core (= 2.11.90)
+    aws-sdk-resources (2.11.93)
+      aws-sdk-core (= 2.11.93)
     aws-sigv4 (1.0.3)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
