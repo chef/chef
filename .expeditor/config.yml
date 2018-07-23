@@ -1,4 +1,4 @@
-# Documentation available at https://expeditor.chef.io
+# Documentation available at https://expeditor.chef.io/docs/getting-started/
 
 # The name of the product keys for this product (from mixlib-install)
 product_key:
@@ -34,6 +34,9 @@ github:
   version_tag_format: "v{{version}}"
   # The Github Team primarily responsible for handling incoming Pull Requests.
   maintainer_group: chef/client-core
+  # allow bumping the minor release via label
+  minor_bump_labels:
+    - "Expeditor: Bump Minor Version"
   # Which Github branches to build Omnibus releases from, and what versions
   # (as determined by the value in the VERSION file) those branches are responsible
   # for building.
