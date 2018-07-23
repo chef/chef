@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.12 -->
-## [v14.4.12](https://github.com/chef/chef/tree/v14.4.12) (2018-07-23)
+<!-- latest_release 14.4.13 -->
+## [v14.4.13](https://github.com/chef/chef/tree/v14.4.13) (2018-07-23)
 
 #### Merged Pull Requests
-- Functional tests: Ensure we logon with the local security_user account [#7498](https://github.com/chef/chef/pull/7498) ([stuartpreston](https://github.com/stuartpreston))
+- Make sure knife descriptions all have periods [#7473](https://github.com/chef/chef/pull/7473) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Make sure knife descriptions all have periods [#7473](https://github.com/chef/chef/pull/7473) ([tas50](https://github.com/tas50)) <!-- 14.4.13 -->
 - Functional tests: Ensure we logon with the local security_user account [#7498](https://github.com/chef/chef/pull/7498) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.4.12 -->
 - Handling Quotes in Windows Task Commands and Arguments [#7497](https://github.com/chef/chef/pull/7497) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 14.4.11 -->
 - Expand platform support for the route resource [#7480](https://github.com/chef/chef/pull/7480) ([tas50](https://github.com/tas50)) <!-- 14.4.10 -->
