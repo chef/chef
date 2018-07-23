@@ -34,7 +34,7 @@ describe "Chef::Win32::Security", :windows_only do
     let(:password) { "Security@123" }
 
     let(:domain) do
-      ENV['COMPUTERNAME']
+      ENV["COMPUTERNAME"]
     end
 
     before do
