@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.10 -->
-## [v14.4.10](https://github.com/chef/chef/tree/v14.4.10) (2018-07-18)
+<!-- latest_release 14.4.11 -->
+## [v14.4.11](https://github.com/chef/chef/tree/v14.4.11) (2018-07-23)
 
 #### Merged Pull Requests
-- Expand platform support for the route resource [#7480](https://github.com/chef/chef/pull/7480) ([tas50](https://github.com/tas50))
+- Handling Quotes in Windows Task Commands and Arguments [#7497](https://github.com/chef/chef/pull/7497) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Handling Quotes in Windows Task Commands and Arguments [#7497](https://github.com/chef/chef/pull/7497) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 14.4.11 -->
 - Expand platform support for the route resource [#7480](https://github.com/chef/chef/pull/7480) ([tas50](https://github.com/tas50)) <!-- 14.4.10 -->
 - ifconfig: Add gateway property on RHEL/Debian based systems [#7475](https://github.com/chef/chef/pull/7475) ([tas50](https://github.com/tas50)) <!-- 14.4.9 -->
 - Pull in the latest inspec-core and train-core [#7487](https://github.com/chef/chef/pull/7487) ([tas50](https://github.com/tas50)) <!-- 14.4.7 -->
