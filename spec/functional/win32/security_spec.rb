@@ -34,10 +34,7 @@ describe "Chef::Win32::Security", :windows_only do
     let(:password) { "Security@123" }
 
     let(:domain) do
-      whoami = Mixlib::ShellOut.new("whoami")
-      whoami.run_command
-      whoami.error!
-      whoami.stdout.split("\\")[0]
+      ENV["COMPUTERNAME"]
     end
 
     before do
