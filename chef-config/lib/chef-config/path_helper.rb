@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -306,7 +306,7 @@ module ChefConfig
       field = ""
       line.scan(/\s*(?>([^\s\\"]+|"([^"]*)"|'([^']*)')|(\S))(\s|\z)?/m) do |word, within_dq, within_sq, esc, sep|
 
-        # Appand the string with Word & Escape Character
+        # Append the string with Word & Escape Character
         field << (word || esc.gsub(/\\(.)/, '\\1'))
 
         # Re-build the field when any whitespace character or
