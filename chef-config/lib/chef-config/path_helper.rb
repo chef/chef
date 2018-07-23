@@ -295,5 +295,28 @@ module ChefConfig
       ChefConfig.logger.error("Cannot write to a SIP Path on OS X 10.11+")
       false
     end
+
+    # Splits a string into an array of tokens as commands and arguments
+    #
+    # str = 'command with "some arguments"'
+    # split_args(str) => ["command", "with", "\"some arguments\""]
+    #
+    def self.split_args(line)
+      cmd_args = []
+      field = ""
+      line.scan(/\s*(?>([^\s\\"]+|"([^"]*)"|'([^']*)')|(\S))(\s|\z)?/m) do |word, within_dq, within_sq, esc, sep|
+
+        # Appand the string with Word & Escape Character
+        field << (word || esc.gsub(/\\(.)/, '\\1'))
+
+        # Re-build the field when any whitespace character or
+        # End of string is encountered
+        if sep
+          cmd_args << field
+          field = ""
+        end
+      end
+      cmd_args
+    end
   end
 end

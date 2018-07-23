@@ -21,6 +21,7 @@ require "rexml/document"
 require "iso8601"
 require "chef/mixin/powershell_out"
 require "chef/provider"
+require "chef/util/path_helper"
 require "win32/taskscheduler" if Chef::Platform.windows?
 
 class Chef
@@ -229,8 +230,7 @@ class Chef
 
         # seprated command arguments from :command property
         def set_command_and_arguments
-          new_resource.command = new_resource.command.gsub(/\\/, '\&\&')
-          cmd, *args = Shellwords.split(new_resource.command)
+          cmd, *args = Chef::Util::PathHelper.split_args(new_resource.command)
           new_resource.command = cmd
           new_resource.command_arguments = args.join(" ")
         end
