@@ -1,13 +1,17 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 13.10.1 -->
+## [v13.10.1](https://github.com/chef/chef/tree/v13.10.1) (2018-07-23)
 
 #### Merged Pull Requests
+- Check local file exists before installing a windows package [#7341](https://github.com/chef/chef/pull/7341) ([josh-barker](https://github.com/josh-barker))
 - Bump to 13.10 and add release notes [#7454](https://github.com/chef/chef/pull/7454) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.10.0 -->
 ### Changes since 13.10.0 release
+
+#### Merged Pull Requests
+- Check local file exists before installing a windows package [#7341](https://github.com/chef/chef/pull/7341) ([josh-barker](https://github.com/josh-barker)) <!-- 13.10.1 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
