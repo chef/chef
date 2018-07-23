@@ -40,7 +40,6 @@ namespace :dependencies do
   task update_ci: %w{
                     dependencies:update_gemfile_lock
                     dependencies:update_omnibus_gemfile_lock
-                    dependencies:update_audit_tests_berksfile_lock
                   }
 
   def bundle_update_locked_multiplatform_task(task_name, dir)
@@ -68,21 +67,8 @@ namespace :dependencies do
     end
   end
 
-  def berks_update_task(task_name, dir)
-    desc "Update #{dir}/Berksfile.lock."
-    task task_name do
-      FileUtils.rm_f("#{dir}/Berksfile.lock")
-      Dir.chdir(dir) do
-        Bundler.with_clean_env do
-          sh "bundle exec berks install"
-        end
-      end
-    end
-  end
-
   bundle_update_locked_multiplatform_task :update_gemfile_lock, "."
   bundle_update_locked_multiplatform_task :update_omnibus_gemfile_lock, "omnibus"
-  berks_update_task :update_audit_tests_berksfile_lock, "kitchen-tests/cookbooks/audit_test"
 
 end
 
