@@ -53,12 +53,12 @@ describe Chef::Resource::WindowsTask, :windows_only do
     expect(resource.frequency_modifier).to eql(1)
   end
 
-  it "sets the default value for disallow_start_on_battery as false" do
-    expect(resource.disallow_start_on_battery).to eql(false)
+  it "sets the default value for disallow_start_if_on_batteries as false" do
+    expect(resource.disallow_start_if_on_batteries).to eql(false)
   end
 
-  it "sets the default value for stop_on_battery as false" do
-    expect(resource.stop_on_battery).to eql(false)
+  it "sets the default value for stop_if_going_on_batteries as false" do
+    expect(resource.stop_if_going_on_batteries).to eql(false)
   end
 
   context "when frequency is not provided" do

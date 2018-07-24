@@ -327,14 +327,12 @@ class Chef
         def task_needs_update?(task)
           flag = false
           if new_resource.frequency == :none
-            # require "byebug"
-            # byebug
             flag = (task.account_information != new_resource.user ||
             task.application_name != new_resource.command ||
             task.parameters != new_resource.command_arguments.to_s ||
             task.principals[:run_level] != run_level ||
-            task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_on_battery ||
-            task.settings[:stop_if_going_on_batteries] != new_resource.stop_on_battery)
+            task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_if_on_batteries ||
+            task.settings[:stop_if_going_on_batteries] != new_resource.stop_if_going_on_batteries)
           else
             current_task_trigger = task.trigger(0)
             new_task_trigger = trigger
@@ -358,8 +356,8 @@ class Chef
                   task.principals[:logon_type] != logon_type ||
                   task.principals[:run_level] != run_level ||
                   PRIORITY[task.priority] != new_resource.priority ||
-                  task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_on_battery ||
-                  task.settings[:stop_if_going_on_batteries] != new_resource.stop_on_battery
+                  task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_if_on_batteries ||
+                  task.settings[:stop_if_going_on_batteries] != new_resource.stop_if_going_on_batteries
               if trigger_type == TaskScheduler::MONTHLYDATE
                 flag = true if current_task_trigger[:run_on_last_day_of_month] != new_task_trigger[:run_on_last_day_of_month]
               end
@@ -557,8 +555,8 @@ class Chef
           settings[:idle_duration] = new_resource.idle_time if new_resource.idle_time
           settings[:run_only_if_idle] = true if new_resource.idle_time
           settings[:priority] = new_resource.priority
-          settings[:disallow_start_if_on_batteries] = new_resource.disallow_start_on_battery
-          settings[:stop_if_going_on_batteries] = new_resource.stop_on_battery
+          settings[:disallow_start_if_on_batteries] = new_resource.disallow_start_if_on_batteries
+          settings[:stop_if_going_on_batteries] = new_resource.stop_if_going_on_batteries
           settings
         end
 

@@ -61,10 +61,10 @@ class Chef
       property :minutes_interval, [String, Integer]
       property :priority, Integer, description: "Use to set Priority Levels range from 0 to 10.", default: 7,
                callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
-      property :disallow_start_on_battery, [TrueClass, FalseClass], default: false,
+      property :disallow_start_if_on_batteries, [TrueClass, FalseClass], default: false,
                introduced: "14.4",
-               description: "Scheduled task option when system is on AC power."
-      property :stop_on_battery, [TrueClass, FalseClass], default: false,
+               description: "Disallow start of the task if the system is running on battery power."
+      property :stop_if_going_on_batteries, [TrueClass, FalseClass], default: false,
                introduced: "14.4",
                description: "Scheduled task option when system is switching on battery."
 
