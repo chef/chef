@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.14 -->
-## [v14.4.14](https://github.com/chef/chef/tree/v14.4.14) (2018-07-23)
+<!-- latest_release 14.4.15 -->
+## [v14.4.15](https://github.com/chef/chef/tree/v14.4.15) (2018-07-24)
 
 #### Merged Pull Requests
-- Add minor version bumping to Expeditor config [#7501](https://github.com/chef/chef/pull/7501) ([tas50](https://github.com/tas50))
+- Bump version of ISO8601 to latest (0.11.0) [#7505](https://github.com/chef/chef/pull/7505) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Bump version of ISO8601 to latest (0.11.0) [#7505](https://github.com/chef/chef/pull/7505) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 14.4.15 -->
 - Add minor version bumping to Expeditor config [#7501](https://github.com/chef/chef/pull/7501) ([tas50](https://github.com/tas50)) <!-- 14.4.14 -->
 - Make sure knife descriptions all have periods [#7473](https://github.com/chef/chef/pull/7473) ([tas50](https://github.com/tas50)) <!-- 14.4.13 -->
 - Functional tests: Ensure we logon with the local security_user account [#7498](https://github.com/chef/chef/pull/7498) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.4.12 -->

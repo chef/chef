@@ -267,8 +267,8 @@ class Chef
       # Converts the number of seconds to an ISO8601 duration format and returns it.
       # Ref : https://github.com/arnau/ISO8601/blob/master/lib/iso8601/duration.rb#L18-L23
       # e.g.
-      # ISO8601::Duration.new(65707200)
-      # returns 'P65707200S'
+      # ISO8601::Duration.new(65707200).to_s
+      # returns 'PT65707200S'
       def sec_to_dur(seconds)
         ISO8601::Duration.new(seconds.to_i).to_s
       end
