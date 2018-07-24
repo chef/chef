@@ -20,7 +20,7 @@ PATH
       ffi-yajl (~> 2.2)
       highline (~> 1.6, >= 1.6.9)
       iniparse (~> 1.4)
-      iso8601 (~> 0.9.1)
+      iso8601 (~> 0.11.0)
       mixlib-archive (~> 0.4)
       mixlib-authentication (~> 2.1)
       mixlib-cli (~> 1.7)
@@ -51,7 +51,7 @@ PATH
       ffi-yajl (~> 2.2)
       highline (~> 1.6, >= 1.6.9)
       iniparse (~> 1.4)
-      iso8601 (~> 0.9.1)
+      iso8601 (~> 0.11.0)
       mixlib-archive (~> 0.4)
       mixlib-authentication (~> 2.1)
       mixlib-cli (~> 1.7)
@@ -169,7 +169,7 @@ GEM
       tomlrb (~> 1.2)
       train-core (~> 1.4, >= 1.4.15)
     ipaddress (0.8.3)
-    iso8601 (0.9.1)
+    iso8601 (0.11.0)
     json (2.1.0)
     launchy (2.4.3)
       addressable (~> 2.3)
@@ -339,7 +339,7 @@ GEM
     win32-service (1.0.1)
       ffi
       ffi-win32-extensions
-    win32-taskscheduler (1.0.9)
+    win32-taskscheduler (1.0.10)
       ffi
       structured_warnings
     windows-api (0.4.4)
