@@ -72,7 +72,7 @@ class Chef
                description: "How the chef-client handles certain situations when the target file turns out not to be a file. For example, when a target file is actually a symlink. Set to true for the chef-client delete the non-file target and replace it with the specified file. Set to false for the chef-client to raise an error."
 
       property :manage_symlink_source, [ TrueClass, FalseClass ], desired_state: false,
-               description: "Change the behavior of the file resource if it is pointed at a symlink. When this value is set to true, the Chef client will manage the symlink’s permissions or will replace the symlink with a normal file if the resource has content. When this value is set to false, Chef will follow the symlink and will manage the permissions and content of symlink’s target file. The default behavior is true but emits a warning that the default value will be changed to false in a future version; setting this explicitly to true or false suppresses this warning."
+               description: "Change the behavior of the file resource if it is pointed at a symlink. When this value is set to true, the Chef client will manage the symlink's permissions or will replace the symlink with a normal file if the resource has content. When this value is set to false, Chef will follow the symlink and will manage the permissions and content of symlink's target file. The default behavior is true but emits a warning that the default value will be changed to false in a future version; setting this explicitly to true or false suppresses this warning."
 
       property :verifications, Array, default: lazy { [] }
 
