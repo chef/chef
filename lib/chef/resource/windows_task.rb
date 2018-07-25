@@ -59,6 +59,8 @@ class Chef
       property :execution_time_limit, [String, Integer], default: "PT72H" # 72 hours in ISO8601 duration format
       property :minutes_duration, [String, Integer]
       property :minutes_interval, [String, Integer]
+      property :priority, Integer, description: "Use to set Priority Levels range from 0 to 10.", default: 7,
+               callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
 
       attr_accessor :exists, :task, :command_arguments
 
