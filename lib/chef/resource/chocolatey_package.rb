@@ -34,7 +34,7 @@ class Chef
                 description: "One (or more) additional options that are passed to the command."
 
       property :package_name, [String, Array],
-                description: "The name of the package. Default value: the name of the resource block See “Syntax” section above for more information.",
+                description: "The name of the package. Default value: the name of the resource block.",
                 coerce: proc { |x| [x].flatten }
 
       property :version, [String, Array],

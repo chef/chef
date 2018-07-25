@@ -115,10 +115,17 @@ class Chef
         end
       end
 
-      property :flags, Hash
-      property :cwd, String
-      property :environment, Hash
-      property :timeout, Integer
+      property :flags, Hash,
+               description: "Pass parameters to the DSC script that is specified by the command property. Parameters are defined as key-value pairs, where the value of each key is the parameter to pass. This property may not be used in the same recipe as the code property."
+
+      property :cwd, String,
+               description: "The current working directory."
+
+      property :environment, Hash,
+               description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}). (These variables must exist for a command to be run successfully)."
+
+      property :timeout, Integer,
+               description: "The amount of time (in seconds) a command is to wait before timing out."
     end
   end
 end

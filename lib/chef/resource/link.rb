@@ -48,7 +48,7 @@ class Chef
       end
 
       property :target_file, String,
-               description: "The name of the link. Default value: the name of the resource block See “Syntax” section above for more information.",
+               description: "The name of the link. Default value: the name of the resource block.",
                name_property: true, identity: true
 
       property :to, String,
