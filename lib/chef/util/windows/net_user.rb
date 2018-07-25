@@ -29,6 +29,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   NetUser = Chef::ReservedNames::Win32::NetUser
   Security = Chef::ReservedNames::Win32::Security
+  Win32APIError = Chef::ReservedNames::Win32::API::Error
 
   USER_INFO_3_TRANSFORM = {
     name: :usri3_name,
@@ -96,8 +97,15 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     token = Security.logon_user(@username, nil, passwd,
                LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
     true
-  rescue Chef::Exceptions::Win32APIError
-    false
+  rescue Chef::Exceptions::Win32APIError => e
+    Chef::Log.trace(e)
+    # we're only interested in the incorrect password failures
+    if e.to_s =~ /System Error Code: 1326/
+      return false
+    end
+    # all other exceptions will assume we cannot logon for a different reason
+    Chef::Log.trace("Unable to login with the specified credentials. Assuming the credentials are valid.")
+    true
   end
 
   def get_info
