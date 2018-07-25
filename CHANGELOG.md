@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.16 -->
-## [v14.4.16](https://github.com/chef/chef/tree/v14.4.16) (2018-07-25)
+<!-- latest_release 14.4.17 -->
+## [v14.4.17](https://github.com/chef/chef/tree/v14.4.17) (2018-07-25)
 
 #### Merged Pull Requests
-- Assume credentials supplied are still valid if they cannot be validated due to a Windows account restriction [#7416](https://github.com/chef/chef/pull/7416) ([stuartpreston](https://github.com/stuartpreston))
+- Add support for setting task priority [#7464](https://github.com/chef/chef/pull/7464) ([Vasu1105](https://github.com/Vasu1105))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Add support for setting task priority [#7464](https://github.com/chef/chef/pull/7464) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.4.17 -->
 - Assume credentials supplied are still valid if they cannot be validated due to a Windows account restriction [#7416](https://github.com/chef/chef/pull/7416) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.4.16 -->
 - Bump version of ISO8601 to latest (0.11.0) [#7505](https://github.com/chef/chef/pull/7505) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 14.4.15 -->
 - Add minor version bumping to Expeditor config [#7501](https://github.com/chef/chef/pull/7501) ([tas50](https://github.com/tas50)) <!-- 14.4.14 -->
