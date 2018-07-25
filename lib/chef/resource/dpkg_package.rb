@@ -28,7 +28,8 @@ class Chef
                   " When a package is installed from a local file, it must be added to the"\
                   " node using the remote_file or cookbook_file resources."
 
-      property :source, [ String, Array, nil ]
+      property :source, [ String, Array, nil ],
+               description: "The path to a package in the local file system."
     end
   end
 end
