@@ -170,6 +170,7 @@ class Chef
       end
 
       def removing_package?
+        validate_package(new_resource.package_name)
         if !current_version_array.any?
           # ! any? means it's all nil's, which means nothing is installed
           false
@@ -302,6 +303,14 @@ class Chef
 
       def unlock_package(name, version)
         raise( Chef::Exceptions::UnsupportedAction, "#{self} does not support :unlock" )
+      end
+
+      def validate_package(name)
+        raise( Chef::Exceptions::Package, "package name not allowed spaces, tabs, newlines, etc." ) if invalid_name?(name)
+      end
+
+      def invalid_name?(x)
+        ( x.is_a?(Array) && x.any? { |name| name.strip.index(/\s/) } ) || ( x.is_a?(String) && x.strip.index(/\s/) )
       end
 
       # used by subclasses.  deprecated.  use #a_to_s instead.
