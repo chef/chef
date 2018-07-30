@@ -80,7 +80,7 @@ class Chef
             rsa_key_content = gen_rsa_priv_key(new_resource.key_length).to_pem
           end
 
-          declare_resource(:file, new_resource.path) do
+          file new_resource.path do
             action :create
             owner new_resource.owner unless new_resource.owner.nil?
             group new_resource.group unless new_resource.group.nil?

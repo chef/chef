@@ -61,7 +61,7 @@ class Chef
 
         rsa_key_content = gen_rsa_pub_key((new_resource.private_key_path || new_resource.private_key_content), new_resource.private_key_pass)
 
-        declare_resource(:file, new_resource.path) do
+        file new_resource.path do
           action :create
           owner new_resource.owner unless new_resource.owner.nil?
           group new_resource.group unless new_resource.group.nil?
