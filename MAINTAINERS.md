@@ -42,6 +42,7 @@ To mention the team, use @chef/client-core
 * [Ranjib Dey](https://github.com/ranjib)
 * [Steven Murawski](https://github.com/smurawski)
 * [Steven Danna](https://github.com/stevendanna)
+* [Stuart Preston](https://github.com/stuartpreston)
 * [Tim Smith](https://github.com/tas50)
 * [Tom Duffield](https://github.com/tduffield)
 * [Tyler Ball](https://github.com/tyler-ball)
@@ -108,6 +109,7 @@ To mention the team, use @chef/client-windows
 * [Jay Mundrawala](https://github.com/jaym)
 * [Kartik Cating-Subramanian](https://github.com/ksubrama)
 * [Steven Murawski](https://github.com/smurawski)
+* [Stuart Preston](https://github.com/stuartpreston)
 * [Salim Alam](https://github.com/chefsalim)
 * [Matt Wrock](https://github.com/mwrock)
 
