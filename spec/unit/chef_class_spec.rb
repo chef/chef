@@ -143,6 +143,16 @@ describe "Chef class" do
         Chef.deprecated(:generic, "This is my handle.")
       end
 
+      it "allows silencing specific IDs without matching the line number" do
+        Chef::Config[:silence_deprecation_warnings] = [__LINE__ + 4]
+        expect(Chef::Log).to receive(:warn).with(/I'm a little teapot/).once
+        expect(Chef::Log).to receive(:warn).with(/Short and stout/).once
+        expect(Chef::Log).to receive(:warn).with(/This is my handle/).once
+        Chef.deprecated(:generic, "I'm a little teapot.")
+        Chef.deprecated(:internal_api, "Short and stout.")
+        Chef.deprecated(:generic, "This is my handle.")
+      end
+
       it "allows silencing specific IDs using the CHEF- syntax" do
         Chef::Config[:silence_deprecation_warnings] = ["CHEF-0"]
         expect(Chef::Log).to receive(:warn).with(/I'm a little teapot/).once

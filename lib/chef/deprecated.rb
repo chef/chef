@@ -65,8 +65,13 @@ class Chef
         return true if Chef::Config[:silence_deprecation_warnings] == true
         # Check if this warning has been silenced by the config.
         return true if Chef::Config[:silence_deprecation_warnings].any? do |silence_spec|
-          # Just in case someone uses a symbol in the config by mistake.
-          silence_spec = silence_spec.to_s
+          if silence_spec.is_a? Integer
+            # Integers can end up matching the line number in the `location` string
+            silence_spec = "CHEF-#{silence_spec}"
+          else
+            # Just in case someone uses a symbol in the config by mistake.
+            silence_spec = silence_spec.to_s
+          end
            # Check for a silence by deprecation name, or by location.
           self.class.deprecation_key == silence_spec || self.class.deprecation_id.to_s == silence_spec || "chef-#{self.class.deprecation_id}" == silence_spec.downcase || location.include?(silence_spec)
         end
