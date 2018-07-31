@@ -133,6 +133,10 @@ describe Chef::Resource::RegistryKey, "values" do
       expect { resource.values([ { name: "123", type: :string, data: "carmen" } ]) }.to_not raise_error
     end
   end
+
+  it "does not raise an exception if keys are in string format" do
+    expect { resource.values([ { "name" => "123", "type" => :string, "data" => "carmen" } ]) }.to_not raise_error
+  end
 end
 
 describe Chef::Resource::RegistryKey, "recursive" do
