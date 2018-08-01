@@ -31,6 +31,7 @@ To mention the team, use @chef/client-core
 * [Adam Leff](https://github.com/adamleff)
 * [Bryan McLellan](https://github.com/btm)
 * [Noah Kantrowitz](https://github.com/coderanger)
+* [Seth Thomas](https://github.com/cheeseplus)
 * [Daniel DeLeo](https://github.com/danielsdeleo)
 * [AJ Christensen](https://github.com/fujin)
 * [Phil Dibowitz](https://github.com/jaymzh)
