@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -116,6 +116,23 @@ class Chef
       result = resource_priority_map.set_priority_array(resource_name.to_sym, priority_array, *filter, &block)
       result = result.dup if result
       result
+    end
+
+    #
+    # Useful to call from library files in order to skip loading resources based on the chef_version that is running.
+    #
+    # Chef.skip_resources_on_chef_version(cookbook_name: "test", chef_version: ">= 14.0", skip_resources: [ "stuff.rb" ])
+    #
+    # @param cookbook_name [String] name of the cookbook to skip resources in (difficult for us to get this from introspection so caller has to provide it)
+    # @param chef_version [String] constraint of the form ">= 14.0.0"
+    # @param skip_resources [Array<String>] list of files in the :resources segment to skip parsing
+    #
+    def skip_resources_on_chef_version(cookbook_name:, chef_version:, skip_resources:)
+      if Gem::Requirement.new(chef_version).satisfied_by?(Gem::Version.new(Chef::VERSION))
+        Chef.run_context.cookbook_collection[cookbook_name].files_for(:resources).select { |x| skip_resources.include? x["name"].split("/").last }.map { |x| x["full_path"] }.each do |x|
+          Chef::Resource::LWRPBase.send(:loaded_lwrps)[x] = true
+        end
+      end
     end
 
     #
