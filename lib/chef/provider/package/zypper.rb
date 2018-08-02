@@ -109,7 +109,7 @@ class Chef
         end
 
         def install_package(name, version)
-          zypper_package("install", *options, "--auto-agree-with-licenses", allow_downgrade, name, version)
+          zypper_package("install", *options, allow_downgrade, name, version)
         end
 
         def upgrade_package(name, version)
@@ -146,7 +146,7 @@ class Chef
           if zypper_version < 1.0
             shell_out!("zypper", gpg_checks, command, *options, "-y", names)
           else
-            shell_out!("zypper", "--non-interactive", gpg_checks, command, *options, zipped_names)
+            shell_out!("zypper", *options,"--non-interactive", gpg_checks, command, "--auto-agree-with-licenses", zipped_names)
           end
         end
 
