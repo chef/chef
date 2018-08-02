@@ -37,6 +37,7 @@ Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, ch
         "adamleff",
         "btm",
         "coderanger",
+        "cheeseplus",
         "danielsdeleo",
         "fujin",
         "jaymzh",
@@ -364,3 +365,7 @@ The specific components of Chef related to a given platform - including (but not
     GitHub = "itmustbejj"
     Twitter = "itmustbejj"
     IRC = "itmustbejj"
+
+  [people.cheeseplus]
+    Name = "Seth Thomas"
+    GitHub = "cheeseplus"
