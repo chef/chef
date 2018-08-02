@@ -36,6 +36,7 @@ class Chef
 
         execute "Enable repository #{new_resource.repo_name}" do
           command "subscription-manager repos --enable=#{new_resource.repo_name}"
+          default_env true
           action :run
           not_if { repo_enabled?(new_resource.repo_name) }
         end
@@ -46,6 +47,7 @@ class Chef
 
         execute "Enable repository #{new_resource.repo_name}" do
           command "subscription-manager repos --disable=#{new_resource.repo_name}"
+          default_env true
           action :run
           only_if { repo_enabled?(new_resource.repo_name) }
         end
