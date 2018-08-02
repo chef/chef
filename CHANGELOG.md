@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.20 -->
-## [v14.4.20](https://github.com/chef/chef/tree/v14.4.20) (2018-07-31)
+<!-- latest_release 14.4.21 -->
+## [v14.4.21](https://github.com/chef/chef/tree/v14.4.21) (2018-08-02)
 
 #### Merged Pull Requests
-- MSYS-858 : added warning if allow_downgrade set to be false and tried to install older version [#7495](https://github.com/chef/chef/pull/7495) ([piyushawasthi](https://github.com/piyushawasthi))
+- Always update both the loaded sysctl value and the sysctl.d value on disk [#7519](https://github.com/chef/chef/pull/7519) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Always update both the loaded sysctl value and the sysctl.d value on disk [#7519](https://github.com/chef/chef/pull/7519) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 14.4.21 -->
 - MSYS-858 : added warning if allow_downgrade set to be false and tried to install older version [#7495](https://github.com/chef/chef/pull/7495) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 14.4.20 -->
 - [SHACK-304] Deprecation checking turns up false positive [#7515](https://github.com/chef/chef/pull/7515) ([tyler-ball](https://github.com/tyler-ball)) <!-- 14.4.19 -->
 - Add additional resource descriptions [#7506](https://github.com/chef/chef/pull/7506) ([tas50](https://github.com/tas50)) <!-- 14.4.18 -->
