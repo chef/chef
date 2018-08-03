@@ -529,14 +529,14 @@ class Chef::Application::Client < Chef::Application
 
   def fetch_recipe_tarball(url, path)
     Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
-    if url =~ URI.regexp
+    if File.exist?(url)
+      FileUtils.cp(url, path)
+    elsif url =~ URI.regexp
       File.open(path, "wb") do |f|
         open(url) do |r|
           f.write(r.read)
         end
       end
-    elsif File.exist?(url)
-      FileUtils.cp(url, path)
     else
       Chef::Application.fatal! "You specified --recipe-url but the value is neither a valid URL nor a path to a file that exists on disk." +
         "Please confirm the location of the tarball and try again."
