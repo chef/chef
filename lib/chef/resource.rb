@@ -1305,6 +1305,28 @@ class Chef
     end
 
     #
+    # This API can be used for backcompat to do:
+    #
+    # chef_version_for_provides "< 14.0" if defined?(:chef_version_for_provides)
+    #
+    # For core chef versions that do not support chef_version: in provides lines.
+    #
+    # Since resource_name calls provides the generally correct way of doing this is
+    # to do `chef_version_for_provides` first, then `resource_name` and then
+    # any additional options `provides` lines.  Calling `resource_name` is somewhat
+    # important to have the canonical_dsl removed or else that'll stick around
+    # and chef_version won't get applied to it.
+    #
+    # Once we no longer care about supporting chef < 14.4 then we can deprecate
+    # this API.
+    #
+    # @param arg [String] version constrant to match against (e.g. "> 14")
+    #
+    def self.chef_version_for_provides(constraint)
+      @chef_version_for_provides = constraint
+    end
+
+    #
     # Mark this resource as providing particular DSL.
     #
     # Resources have an automatic DSL based on their resource_name, equivalent to
@@ -1325,6 +1347,10 @@ class Chef
       # mappings by default.
       if preview_resource && !options.include?(:allow_cookbook_override)
         options[:allow_cookbook_override] = true
+      end
+
+      if @chef_version_for_provides && !options.include?(:chef_version)
+        options[:chef_version] = @chef_version_for_provides
       end
 
       result = Chef.resource_handler_map.set(name, self, options, &block)

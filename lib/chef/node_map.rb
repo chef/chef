@@ -66,12 +66,13 @@ EOH
     #   override from cookbooks is allowed.
     # @param __core_override__ [Boolean] Advanced-mode override to add to a key
     #   even in locked mode.
+    # @param chef_version [String] version constraint to match against the running Chef::VERSION
     #
     # @yield [node] Arbitrary node filter as a block which takes a node argument
     #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, allow_cookbook_override: false, __core_override__: false, &block) # rubocop:disable Lint/UnderscorePrefixedVariableName
+    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, allow_cookbook_override: false, __core_override__: false, chef_version: nil, &block) # rubocop:disable Lint/UnderscorePrefixedVariableName
       new_matcher = { klass: klass }
       new_matcher[:platform] = platform if platform
       new_matcher[:platform_version] = platform_version if platform_version
@@ -82,6 +83,10 @@ EOH
       new_matcher[:override] = override if override
       new_matcher[:cookbook_override] = allow_cookbook_override
       new_matcher[:core_override] = __core_override__
+
+      if chef_version && Chef::VERSION !~ chef_version
+        return map
+      end
 
       # Check if the key is already present and locked, unless the override is allowed.
       # The checks to see if we should reject, in order:
