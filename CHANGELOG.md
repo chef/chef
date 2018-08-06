@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.22 -->
-## [v14.4.22](https://github.com/chef/chef/tree/v14.4.22) (2018-08-06)
+<!-- latest_release 14.4.23 -->
+## [v14.4.23](https://github.com/chef/chef/tree/v14.4.23) (2018-08-06)
 
 #### Merged Pull Requests
-- [SHACK-290] Unpacking tarball paths suffer from URI error [#7523](https://github.com/chef/chef/pull/7523) ([tyler-ball](https://github.com/tyler-ball))
+- Prevent failures RHSM resources by using default_env in execute resources [#7520](https://github.com/chef/chef/pull/7520) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Prevent failures RHSM resources by using default_env in execute resources [#7520](https://github.com/chef/chef/pull/7520) ([tas50](https://github.com/tas50)) <!-- 14.4.23 -->
 - [SHACK-290] Unpacking tarball paths suffer from URI error [#7523](https://github.com/chef/chef/pull/7523) ([tyler-ball](https://github.com/tyler-ball)) <!-- 14.4.22 -->
 - Always update both the loaded sysctl value and the sysctl.d value on disk [#7519](https://github.com/chef/chef/pull/7519) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 14.4.21 -->
 - MSYS-858 : added warning if allow_downgrade set to be false and tried to install older version [#7495](https://github.com/chef/chef/pull/7495) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 14.4.20 -->
