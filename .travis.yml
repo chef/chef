@@ -6,7 +6,10 @@ dist: trusty
 before_install:
   - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
   - gem --version
-  - rvm @global do gem uninstall bundler -a -x
+    # travis may preinstall a bundler gem which is later than the one which we pin, which may totally hose us, so we preemtively
+    # uninstall anything they may have installed here.  if they haven't installed anything then we have to ignore the failure
+    # to uninstall the default bundler that ships embedded in ruby itself.
+  - rvm @global do gem uninstall bundler -a -x || true
   - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
   - bundle --version
   - rm -f .bundle/config
