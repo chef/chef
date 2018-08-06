@@ -87,6 +87,7 @@ class Chef
         execute "Register to RHSM" do
           sensitive new_resource.sensitive
           command register_command
+          default_env true
           action :run
           not_if { registered_with_rhsm? } unless new_resource.force
         end
@@ -102,6 +103,7 @@ class Chef
 
         execute "Unregister from RHSM" do
           command "subscription-manager unregister"
+          default_env true
           action :run
           only_if { registered_with_rhsm? }
           notifies :run, "execute[Clean RHSM Config]", :immediately
@@ -109,6 +111,7 @@ class Chef
 
         execute "Clean RHSM Config" do
           command "subscription-manager clean"
+          default_env true
           action :nothing
         end
       end
