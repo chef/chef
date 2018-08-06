@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -68,7 +68,7 @@ class Chef
         # the leading "[.]chef-" here should be considered a public API and should not be changed
         basename.insert 0, "chef-"
         basename.insert 0, "." unless Chef::Platform.windows? # dotfile if we're not on windows
-        basename
+        basename.scrub
       end
 
       # this is similar to File.extname() but greedy about the extension (from the first dot, not the last dot)
@@ -76,7 +76,7 @@ class Chef
         # complexity here is due to supporting mangling non-UTF8 strings (e.g. latin-1 filenames with characters that are illegal in UTF-8)
         b = File.basename(@new_resource.path)
         i = b.index(".")
-        i.nil? ? "" : b[i..-1]
+        i.nil? ? "" : b[i..-1].scrub
       end
 
       # Returns the possible directories for the tempfile to be created in.
