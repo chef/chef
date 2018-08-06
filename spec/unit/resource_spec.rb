@@ -966,6 +966,32 @@ describe Chef::Resource do
       end
     end
 
+    describe "chef_version constraints and the platform map" do
+      let(:klz3) { Class.new(Chef::Resource) }
+
+      it "doesn't wire up the provides when chef_version is < 1" do
+        klz3.provides :bulbasaur, chef_version: "< 1.0"  # this should be false
+        expect { Chef::Resource.resource_for_node(:bulbasaur, node) }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+      end
+
+      it "wires up the provides when chef_version is > 1" do
+        klz3.provides :bulbasaur, chef_version: "> 1.0"  # this should be true
+        expect(Chef::Resource.resource_for_node(:bulbasaur, node)).to eql(klz3)
+      end
+
+      it "wires up the default when chef_version is < 1" do
+        klz3.chef_version_for_provides("< 1.0")  # this should be false
+        klz3.provides :bulbasaur
+        expect { Chef::Resource.resource_for_node(:bulbasaur, node) }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+      end
+
+      it "wires up the default when chef_version is > 1" do
+        klz3.chef_version_for_provides("> 1.0")  # this should be true
+        klz3.provides :bulbasaur
+        expect(Chef::Resource.resource_for_node(:bulbasaur, node)).to eql(klz3)
+      end
+    end
+
   end
 
   describe "when creating notifications" do

@@ -66,6 +66,7 @@ EOH
     #   override from cookbooks is allowed.
     # @param __core_override__ [Boolean] Advanced-mode override to add to a key
     #   even in locked mode.
+    # @param chef_version [String] version constraint to match against the running Chef::VERSION
     #
     # @yield [node] Arbitrary node filter as a block which takes a node argument
     #

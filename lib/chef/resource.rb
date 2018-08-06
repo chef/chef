@@ -1320,8 +1320,10 @@ class Chef
     # Once we no longer care about supporting chef < 14.4 then we can deprecate
     # this API.
     #
-    def self.chef_version_for_provides(arg)
-      @chef_version_for_provides = arg
+    # @param arg [String] version constrant to match against (e.g. "> 14")
+    #
+    def self.chef_version_for_provides(constraint)
+      @chef_version_for_provides = constraint
     end
 
     #
