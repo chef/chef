@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.25 -->
-## [v14.4.25](https://github.com/chef/chef/tree/v14.4.25) (2018-08-07)
+<!-- latest_release 14.4.26 -->
+## [v14.4.26](https://github.com/chef/chef/tree/v14.4.26) (2018-08-07)
 
 #### Merged Pull Requests
-- Maybe hold off on rspec 3.8 [#7527](https://github.com/chef/chef/pull/7527) ([cheeseplus](https://github.com/cheeseplus))
+- stop parsing init script at the &quot;### END INIT INFO&quot; marker. [#7525](https://github.com/chef/chef/pull/7525) ([goblin23](https://github.com/goblin23))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- stop parsing init script at the &quot;### END INIT INFO&quot; marker. [#7525](https://github.com/chef/chef/pull/7525) ([goblin23](https://github.com/goblin23)) <!-- 14.4.26 -->
 - Maybe hold off on rspec 3.8 [#7527](https://github.com/chef/chef/pull/7527) ([cheeseplus](https://github.com/cheeseplus)) <!-- 14.4.25 -->
 - add chef_version API to provides lines [#7524](https://github.com/chef/chef/pull/7524) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.4.24 -->
 - Prevent failures RHSM resources by using default_env in execute resources [#7520](https://github.com/chef/chef/pull/7520) ([tas50](https://github.com/tas50)) <!-- 14.4.23 -->
