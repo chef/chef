@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.24 -->
-## [v14.4.24](https://github.com/chef/chef/tree/v14.4.24) (2018-08-06)
+<!-- latest_release 14.4.25 -->
+## [v14.4.25](https://github.com/chef/chef/tree/v14.4.25) (2018-08-07)
 
 #### Merged Pull Requests
-- add chef_version API to provides lines [#7524](https://github.com/chef/chef/pull/7524) ([lamont-granquist](https://github.com/lamont-granquist))
+- Maybe hold off on rspec 3.8 [#7527](https://github.com/chef/chef/pull/7527) ([cheeseplus](https://github.com/cheeseplus))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Maybe hold off on rspec 3.8 [#7527](https://github.com/chef/chef/pull/7527) ([cheeseplus](https://github.com/cheeseplus)) <!-- 14.4.25 -->
 - add chef_version API to provides lines [#7524](https://github.com/chef/chef/pull/7524) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.4.24 -->
 - Prevent failures RHSM resources by using default_env in execute resources [#7520](https://github.com/chef/chef/pull/7520) ([tas50](https://github.com/tas50)) <!-- 14.4.23 -->
 - [SHACK-290] Unpacking tarball paths suffer from URI error [#7523](https://github.com/chef/chef/pull/7523) ([tyler-ball](https://github.com/tyler-ball)) <!-- 14.4.22 -->
