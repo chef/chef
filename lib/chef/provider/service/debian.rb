@@ -78,7 +78,7 @@ class Chef
             if line =~ /^### BEGIN INIT INFO/
               in_info = true
             elsif line =~ /^### END INIT INFO/
-              in_info = false
+              break acc
             elsif in_info
               if line =~ /Default-(Start|Stop):\s+(\d.*)/
                 acc << $2.split(" ")
