@@ -13,6 +13,7 @@ before_install:
   - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
   - bundle --version
   - rm -f .bundle/config
+  - gem uninstall rspec -v 3.8.0
 
 before_script:
  # force all .rspec tests into progress display to reduce line count
