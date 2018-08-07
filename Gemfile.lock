@@ -9,10 +9,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (13.10.1)
+    chef (13.10.2)
       addressable
       bundler (>= 1.10)
-      chef-config (= 13.10.1)
+      chef-config (= 13.10.2)
       chef-zero (~> 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -39,10 +39,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (13.10.1-universal-mingw32)
+    chef (13.10.2-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 13.10.1)
+      chef-config (= 13.10.2)
       chef-zero (~> 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -84,7 +84,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (13.10.1)
+    chef-config (13.10.2)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -188,15 +188,15 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     method_source (0.9.0)
-    mixlib-archive (0.4.8)
+    mixlib-archive (0.4.13)
       mixlib-log
     mixlib-authentication (1.4.2)
     mixlib-cli (1.7.0)
     mixlib-config (2.2.13)
       tomlrb
     mixlib-log (1.7.1)
-    mixlib-shellout (2.3.2)
-    mixlib-shellout (2.3.2-universal-mingw32)
+    mixlib-shellout (2.4.0)
+    mixlib-shellout (2.4.0-universal-mingw32)
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     multi_json (1.13.1)
@@ -213,7 +213,7 @@ GEM
     net-ssh-multi (1.2.1)
       net-ssh (>= 2.6.5)
       net-ssh-gateway (>= 1.2.0)
-    net-telnet (0.1.1)
+    net-telnet (0.2.0)
     netrc (0.11.0)
     nori (2.6.0)
     octokit (4.9.0)
@@ -257,22 +257,22 @@ GEM
       rake
     rake (12.3.1)
     rb-readline (0.5.5)
-    rspec (3.7.0)
-      rspec-core (~> 3.7.0)
-      rspec-expectations (~> 3.7.0)
-      rspec-mocks (~> 3.7.0)
-    rspec-core (3.7.1)
-      rspec-support (~> 3.7.0)
-    rspec-expectations (3.7.0)
+    rspec (3.8.0)
+      rspec-core (~> 3.8.0)
+      rspec-expectations (~> 3.8.0)
+      rspec-mocks (~> 3.8.0)
+    rspec-core (3.8.0)
+      rspec-support (~> 3.8.0)
+    rspec-expectations (3.8.1)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.7.0)
+      rspec-support (~> 3.8.0)
     rspec-its (1.2.0)
       rspec-core (>= 3.0.0)
       rspec-expectations (>= 3.0.0)
-    rspec-mocks (3.7.0)
+    rspec-mocks (3.8.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.7.0)
-    rspec-support (3.7.1)
+      rspec-support (~> 3.8.0)
+    rspec-support (3.8.0)
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
@@ -305,7 +305,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
     slop (3.6.0)
-    specinfra (2.75.0)
+    specinfra (2.75.1)
       net-scp
       net-ssh (>= 2.7)
       net-telnet
@@ -410,4 +410,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.16.2
+   1.16.3
