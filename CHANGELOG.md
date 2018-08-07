@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.10.3 -->
-## [v13.10.3](https://github.com/chef/chef/tree/v13.10.3) (2018-08-07)
+<!-- latest_release 13.10.4 -->
+## [v13.10.4](https://github.com/chef/chef/tree/v13.10.4) (2018-08-07)
 
 #### Merged Pull Requests
-- Pin to rspec to &lt; 3.8 [#7528](https://github.com/chef/chef/pull/7528) ([cheeseplus](https://github.com/cheeseplus))
+- [SHACK-290] Unpacking tarball paths suffer from URI error [#7522](https://github.com/chef/chef/pull/7522) ([tyler-ball](https://github.com/tyler-ball))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.10.0 -->
 ### Changes since 13.10.0 release
 
 #### Merged Pull Requests
+- [SHACK-290] Unpacking tarball paths suffer from URI error [#7522](https://github.com/chef/chef/pull/7522) ([tyler-ball](https://github.com/tyler-ball)) <!-- 13.10.4 -->
 - Pin to rspec to &lt; 3.8 [#7528](https://github.com/chef/chef/pull/7528) ([cheeseplus](https://github.com/cheeseplus)) <!-- 13.10.3 -->
 - Backport for 13: scrub tempfile names [#7526](https://github.com/chef/chef/pull/7526) ([tyler-ball](https://github.com/tyler-ball)) <!-- 13.10.2 -->
 - Check local file exists before installing a windows package [#7341](https://github.com/chef/chef/pull/7341) ([josh-barker](https://github.com/josh-barker)) <!-- 13.10.1 -->
