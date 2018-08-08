@@ -32,8 +32,6 @@ github:
   delete_branch_on_merge: true
   # The tag format to use (e.g. v1.0.0)
   version_tag_format: "v{{version}}"
-  # The Github Team primarily responsible for handling incoming Pull Requests.
-  maintainer_group: chef/client-core
   # allow bumping the minor release via label
   minor_bump_labels:
     - "Expeditor: Bump Minor Version"
@@ -82,3 +80,53 @@ artifact_actions:
     - built_in:tag_docker_image
     - built_in:publish_rubygems
     - built_in:notify_chefio_slack_channels
+
+subscriptions:
+  - workload: ruby_gem_published:mixlib-archive-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:mixlib-authentication-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:mixlib-cli-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:mixlib-log-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:mixlib-shellout-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:chef-vault-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:chef-zero-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:ohai-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:inspec-core-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:train-core-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:win32-process-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:win32-service-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:win32-taskscheduler-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:ffi-yajl-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:libyajl2-*
+    actions:
+      - bash:.expeditor/update_deps.sh
+  - workload: ruby_gem_published:cheffish-*
+    actions:
+      - bash:.expeditor/update_deps.sh
