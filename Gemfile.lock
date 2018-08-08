@@ -204,12 +204,12 @@ GEM
     netrc (0.11.0)
     octokit (4.9.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (14.3.0)
+    ohai (14.4.0)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
-      mixlib-cli
+      mixlib-cli (>= 1.7.0)
       mixlib-config (~> 2.0)
       mixlib-log (~> 2.0, >= 2.0.1)
       mixlib-shellout (~> 2.0)
@@ -269,7 +269,7 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-prof (0.17.0)
-    ruby-progressbar (1.9.0)
+    ruby-progressbar (1.10.0)
     ruby-shadow (2.5.0)
     rubyzip (1.2.1)
     safe_yaml (1.0.4)
