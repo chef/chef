@@ -322,6 +322,23 @@ matrix:
       - cat /tmp/out.txt
       - sudo cat /var/log/squid3/cache.log
       - sudo cat /var/log/squid3/access.log
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test rspec-centos-7
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - RSPEC_CENTOS=7
+      - KITCHEN_YAML=kitchen.travis.yml
 
 notifications:
   on_change: true

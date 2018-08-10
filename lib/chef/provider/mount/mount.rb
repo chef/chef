@@ -53,6 +53,7 @@ class Chef
         def enabled?
           # Check to see if there is a entry in /etc/fstab. Last entry for a volume wins.
           enabled = false
+          return unless ::File.exist?("/etc/fstab")
           ::File.foreach("/etc/fstab") do |line|
             case line
             when /^[#\s]/
