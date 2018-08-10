@@ -1,6 +1,6 @@
 name             "rspec"
 license          "Apache-2.0"
-description      "Runs nothing"
+description      "Utility cookbook for rspec testing"
 version          "1.0.0"
 
 chef_version     ">= 14"

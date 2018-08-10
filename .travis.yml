@@ -321,6 +321,8 @@ matrix:
       - cat /tmp/out.txt
       - sudo cat /var/log/squid3/cache.log
       - sudo cat /var/log/squid3/access.log
+  # Use test-kitchen to launch a centos docker container to run the full rspec tests against.  This catches
+  # errors in travis, before PRs are merged, hopefully before they become errors in jenkins.
   - rvm: 2.4.4
     services: docker
     sudo: required
