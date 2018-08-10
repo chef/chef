@@ -70,8 +70,6 @@ platforms:
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN yum -y install e2fsprogs
-      - RUN egrep -v '::1' /etc/hosts > /etc/hosts.new
-      - RUN cp /etc/hosts.new /etc/hosts
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: fedora-latest
