@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.28 -->
-## [v14.4.28](https://github.com/chef/chef/tree/v14.4.28) (2018-08-10)
+<!-- latest_release 14.4.29 -->
+## [v14.4.29](https://github.com/chef/chef/tree/v14.4.29) (2018-08-10)
 
 #### Merged Pull Requests
-- Update omnibus to 5.6.15 [#7536](https://github.com/chef/chef/pull/7536) ([tas50](https://github.com/tas50))
+- Update inspec to 2.2.61 [#7534](https://github.com/chef/chef/pull/7534) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Update inspec to 2.2.61 [#7534](https://github.com/chef/chef/pull/7534) ([tas50](https://github.com/tas50)) <!-- 14.4.29 -->
 - Update omnibus to 5.6.15 [#7536](https://github.com/chef/chef/pull/7536) ([tas50](https://github.com/tas50)) <!-- 14.4.28 -->
 - Bump Ohai to 14.4 [#7532](https://github.com/chef/chef/pull/7532) ([tas50](https://github.com/tas50)) <!-- 14.4.27 -->
 - stop parsing init script at the &quot;### END INIT INFO&quot; marker. [#7525](https://github.com/chef/chef/pull/7525) ([goblin23](https://github.com/goblin23)) <!-- 14.4.26 -->
