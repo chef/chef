@@ -53,7 +53,7 @@ class Chef
         def enabled?
           # Check to see if there is a entry in /etc/fstab. Last entry for a volume wins.
           enabled = false
-          if ::File.exist?("/etc/fstab")
+          unless ::File.exist?("/etc/fstab")
             logger.debug "/etc/fstab not found, treating mount as not-enabled"
             return
           end
