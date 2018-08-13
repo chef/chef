@@ -29,4 +29,8 @@ describe Chef::Resource::CronAccess do
     expect { resource.action :deny }.not_to raise_error
     expect { resource.action :lolcat }.to raise_error(ArgumentError)
   end
+
+  it "the user property is the name_property" do
+    expect(resource.user).to eql("bob")
+  end
 end
