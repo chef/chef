@@ -66,6 +66,20 @@ describe Chef::Resource::RemoteFile do
       stop_tiny_server
     end
 
+    context "when why-run is enabled", :whyrun_only do
+      let(:source) { "http://localhost:9000/nyan_cat.png" }
+
+      before do
+        Chef::Config[:why_run] = true
+        expect(File).not_to exist(path)
+        resource.run_action(:create)
+      end
+
+      it "does not fetch the remote file" do
+        expect(File).not_to exist(path)
+      end
+    end
+
     describe "when redownload isn't necessary" do
       let(:source) { "http://localhost:9000/seattle_capo.png" }
 
