@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.31 -->
-## [v14.4.31](https://github.com/chef/chef/tree/v14.4.31) (2018-08-13)
+<!-- latest_release 14.4.32 -->
+## [v14.4.32](https://github.com/chef/chef/tree/v14.4.32) (2018-08-13)
 
 #### Merged Pull Requests
-- Run rspec tests within a kitchen container on CentOS 7 [#7529](https://github.com/chef/chef/pull/7529) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix issue of setting comment for windows user [#7537](https://github.com/chef/chef/pull/7537) ([NAshwini](https://github.com/NAshwini))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Fix issue of setting comment for windows user [#7537](https://github.com/chef/chef/pull/7537) ([NAshwini](https://github.com/NAshwini)) <!-- 14.4.32 -->
 - Run rspec tests within a kitchen container on CentOS 7 [#7529](https://github.com/chef/chef/pull/7529) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.4.31 -->
 - osx_profile: Use the full path to /usr/bin/profiles [#7539](https://github.com/chef/chef/pull/7539) ([tas50](https://github.com/tas50)) <!-- 14.4.30 -->
 - Update inspec to 2.2.61 [#7534](https://github.com/chef/chef/pull/7534) ([tas50](https://github.com/tas50)) <!-- 14.4.29 -->
