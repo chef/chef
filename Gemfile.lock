@@ -25,7 +25,7 @@ PATH
       mixlib-authentication (~> 2.1)
       mixlib-cli (~> 1.7)
       mixlib-log (~> 2.0, >= 2.0.3)
-      mixlib-shellout (~> 2.0)
+      mixlib-shellout (~> 2.4)
       net-sftp (~> 2.1, >= 2.1.2)
       net-ssh (~> 4.2)
       net-ssh-multi (~> 1.2, >= 1.2.1)
@@ -56,7 +56,7 @@ PATH
       mixlib-authentication (~> 2.1)
       mixlib-cli (~> 1.7)
       mixlib-log (~> 2.0, >= 2.0.3)
-      mixlib-shellout (~> 2.0)
+      mixlib-shellout (~> 2.4)
       net-sftp (~> 2.1, >= 2.1.2)
       net-ssh (~> 4.2)
       net-ssh-multi (~> 1.2, >= 1.2.1)
@@ -345,7 +345,7 @@ GEM
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
     wmi-lite (1.0.0)
-    yard (0.9.15)
+    yard (0.9.16)
 
 PLATFORMS
   ruby
