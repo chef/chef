@@ -64,7 +64,7 @@ class Chef
                 unattended_flags,
                 expand_options(new_resource.options),
                 "& exit %%%%ERRORLEVEL%%%%",
-              ].join(" "), timeout: new_resource.timeout, returns: new_resource.returns
+              ].join(" "), timeout: new_resource.timeout, returns: new_resource.returns, sensitive: new_resource.sensitive
             )
           end
 
