@@ -98,33 +98,33 @@ class Chef
                equal_to: %w{ @reboot @yearly @annually @monthly @weekly @daily @midnight @hourly }
 
       property :minute, [Integer, String],
-               description: "",
+               description: "The minute to schedule the cron job to run at. Valid values: 0-59.",
                default: "*", callbacks: {
-                 "should be a valid minute spec" => ->(spec) { validate_numeric(spec, 0, 59) }
+                 "should be a valid minute spec" => ->(spec) { validate_numeric(spec, 0, 59) },
                }
 
       property :hour, [Integer, String],
-               description: "",
+               description: "The hour to schedule the cron job to run at. Valid values: 0-23.",
                default: "*", callbacks: {
-                 "should be a valid hour spec" => ->(spec) { validate_numeric(spec, 0, 23) }
+                 "should be a valid hour spec" => ->(spec) { validate_numeric(spec, 0, 23) },
                }
 
       property :day, [Integer, String],
-               description: "",
+               description: "The day to schedule the cron job to run at. Valid values: 1-31.",
                default: "*", callbacks: {
-                 "should be a valid day spec" => ->(spec) { validate_numeric(spec, 1, 31) }
+                 "should be a valid day spec" => ->(spec) { validate_numeric(spec, 1, 31) },
                }
 
       property :month, [Integer, String],
-               description: "",
+               description: "The month to schedule the cron job to run at. Valid values: 1-12, jan-dec, or *.",
                default: "*", callbacks: {
-                 "should be a valid month spec" => ->(spec) { validate_month(spec) }
+                 "should be a valid month spec" => ->(spec) { validate_month(spec) },
                }
 
       property :weekday, [Integer, String],
-               description: "",
+               description: "The day to schedule the cron job to run at. Valid values: 0-7, mon-sun, or *.",
                default: "*", callbacks: {
-                 "should be a valid weekday spec" => ->(spec) { validate_dow(spec) }
+                 "should be a valid weekday spec" => ->(spec) { validate_dow(spec) },
                }
 
       property :command, String,
@@ -142,7 +142,7 @@ class Chef
                description: "Set the PATH environment variable in the cron.d file."
 
       property :home, [String, NilClass],
-               description: ""
+               description: "Set the HOME environment variable in the cron.d file."
 
       property :shell, [String, NilClass],
                description: "Set the HOME environment variable in the cron.d file."
@@ -158,19 +158,26 @@ class Chef
                description: "The octal mode of the generated crontab file.",
                default: "0600"
 
+      # warn if someone passes the deprecated cookbook property
       def after_created
         raise ArgumentError, "The 'cookbook' property for the cron_d resource is no longer supported now that this resource ships in Chef itself." if new_resource.cookbook
       end
 
       action :create do
+        description "Add a cron definition file to /etc/cron.d."
+
         create_template(:create)
       end
 
       action :create_if_missing do
+        description "Add a cron definition file to /etc/cron.d, but do not update an existing file."
+
         create_template(:create_if_missing)
       end
 
       action :delete do
+        description "Remove a cron definition file from /etc/cron.d if it exists."
+
         # cleanup the legacy named job if it exists
         file "legacy named cron.d file" do
           path "/etc/cron.d/#{new_resource.cron_name}"
@@ -195,6 +202,7 @@ class Chef
             only_if { new_resource.cron_name != sanitized_name }
           end
 
+          # @todo this is Chef 12 era cleanup. Someday we should remove it all
           template "/etc/cron.d/#{sanitized_name}" do
             source ::File.expand_path("../support/cron.d.erb", __FILE__)
             local true
