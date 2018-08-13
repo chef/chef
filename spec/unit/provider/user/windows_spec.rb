@@ -65,7 +65,7 @@ describe Chef::Provider::User::Windows do
 
     describe "and the properties match" do
       it "doesn't set the comment field to be updated" do
-        expect(@provider.set_options).not_to have_key(:full_name)
+        expect(@provider.set_options).not_to have_key(:comment)
       end
 
       it "doesn't set the home directory to be updated" do
@@ -102,8 +102,8 @@ describe Chef::Provider::User::Windows do
         @provider.current_resource = @current_resource
       end
 
-      it "marks the full_name field to be updated" do
-        expect(@provider.set_options[:full_name]).to eq("Adam Jacob")
+      it "marks the comment field to be updated" do
+        expect(@provider.set_options[:comment]).to eq("Adam Jacob")
       end
 
       it "marks the home_dir property to be updated" do
