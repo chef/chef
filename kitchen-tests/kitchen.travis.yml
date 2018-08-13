@@ -35,6 +35,7 @@ platforms:
     pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN yum install -y cronie # TODO: remove this anytime past 8/13
 
 - name: amazonlinux-2
   driver:
@@ -63,6 +64,7 @@ platforms:
     pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN yum install -y cronie # TODO: remove this anytime past 8/13
 
 - name: centos-7
   driver:
@@ -78,6 +80,7 @@ platforms:
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN yum install -y cronie # TODO: remove this anytime past 8/13
 
 - name: ubuntu-14.04
   driver:
