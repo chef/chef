@@ -27,6 +27,12 @@ class Chef
       introduced "14.4"
       description "Use the cron_d resource to manage cron definitions in /etc/cron.d. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
 
+      # validate a provided value is between two other provided values
+      # we also allow * as a valid input
+      # @param spec the value to validate
+      # @param min the lowest value allowed
+      # @param max the highest value allowed
+      # @return [Boolean] valid or not?
       def self.validate_numeric(spec, min, max)
         return true if spec == "*"
         #  binding.pry
@@ -45,6 +51,9 @@ class Chef
         true
       end
 
+      # validate the provided month value to be jan - dec, 1 - 12, or *
+      # @param spec the value to validate
+      # @return [Boolean] valid or not?
       def self.validate_month(spec)
         return true if spec == "*"
         if spec.respond_to? :to_int
@@ -60,6 +69,9 @@ class Chef
         end
       end
 
+      # validate the provided day of the week is sun-sat, 0-7, or *
+      # @param spec the value to validate
+      # @return [Boolean] valid or not?
       def self.validate_dow(spec)
         return true if spec == "*"
         if spec.respond_to? :to_int
