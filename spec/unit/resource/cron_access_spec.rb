@@ -21,7 +21,7 @@ describe Chef::Resource::CronAccess do
   let(:resource) { Chef::Resource::CronAccess.new("bob") }
 
   it "has a default action of [:deny]" do
-    expect(resource.action).to eql([:deny])
+    expect(resource.action).to eql([:allow])
   end
 
   it "accepts create or delete for action" do
