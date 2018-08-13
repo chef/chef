@@ -15,7 +15,6 @@ depends          "resolver"
 depends          "selinux"
 depends          "ubuntu"
 depends          "users"
-depends          "cron"
 depends          "git"
 
 supports         "ubuntu"
