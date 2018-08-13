@@ -443,11 +443,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
-      it "downgrade on a local file raises an error" do
+      it "downgrade on a local file is ignored" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.version "1.2-1"
         yum_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        expect { yum_package.run_action(:install) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
+        yum_package.run_action(:install)
+        expect(yum_package.updated_by_last_action?).to be false
+        expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
       it "downgrade on a local file with allow_downgrade true works" do

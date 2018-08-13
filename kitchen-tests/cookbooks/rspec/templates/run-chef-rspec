@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# remove ip6 entries for docker
+egrep -v "ip6" /etc/hosts > /etc/hosts.new
+cp /etc/hosts.new /etc/hosts
+
+export PATH=/opt/chef/embedded/bin:$PATH
+cd /opt/chef/embedded/apps/chef
+
+/opt/chef/embedded/bin/bundle install
+/opt/chef/embedded/bin/bundle exec /opt/chef/embedded/bin/rspec --format progress
