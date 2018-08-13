@@ -24,8 +24,8 @@ class Chef
       preview_resource true
       resource_name :cron_d
 
-      introduced "14.3"
-      description ""
+      introduced "14.4"
+      description "Use the cron_d resource to manage cron definitions in /etc/cron.d. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
 
       property :cron_name, String,
                description: "Set the name of the cron job. If this isn't specified we'll use the resource name.",
