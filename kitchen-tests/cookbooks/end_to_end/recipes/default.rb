@@ -63,11 +63,17 @@ include_recipe "nscd"
 
 include_recipe "logrotate"
 
-include_recipe "cron"
-
 include_recipe "git"
 
 directory "/etc/ssl"
+
+cron_access "bob"
+
+cron_d "some random cron job" do
+  minute  0
+  hour    23
+  command "/usr/bin/true"
+end
 
 # Generate new key and certificate
 openssl_dhparam "/etc/ssl/dhparam.pem" do
