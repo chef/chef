@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.10.5 -->
-## [v13.10.5](https://github.com/chef/chef/tree/v13.10.5) (2018-08-14)
+<!-- latest_release 13.10.6 -->
+## [v13.10.6](https://github.com/chef/chef/tree/v13.10.6) (2018-08-14)
 
 #### Merged Pull Requests
-- Update to openssl 1.0.2p [#7547](https://github.com/chef/chef/pull/7547) ([tas50](https://github.com/tas50))
+- Use the existing helper method for package resource classes that don&#39;t support allow_downgrade [#7548](https://github.com/chef/chef/pull/7548) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.10.4 -->
 ### Changes since 13.10.4 release
 
 #### Merged Pull Requests
+- Use the existing helper method for package resource classes that don&#39;t support allow_downgrade [#7548](https://github.com/chef/chef/pull/7548) ([tas50](https://github.com/tas50)) <!-- 13.10.6 -->
 - Update to openssl 1.0.2p [#7547](https://github.com/chef/chef/pull/7547) ([tas50](https://github.com/tas50)) <!-- 13.10.5 -->
 <!-- release_rollup -->
 
