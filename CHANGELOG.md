@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.34 -->
-## [v14.4.34](https://github.com/chef/chef/tree/v14.4.34) (2018-08-13)
+<!-- latest_release 14.4.35 -->
+## [v14.4.35](https://github.com/chef/chef/tree/v14.4.35) (2018-08-14)
 
 #### Merged Pull Requests
-- windows_package: Fix package sensitive error [#7353](https://github.com/chef/chef/pull/7353) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Add cron_d and cron_access resources [#7253](https://github.com/chef/chef/pull/7253) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Add cron_d and cron_access resources [#7253](https://github.com/chef/chef/pull/7253) ([tas50](https://github.com/tas50)) <!-- 14.4.35 -->
 - windows_package: Fix package sensitive error [#7353](https://github.com/chef/chef/pull/7353) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.4.34 -->
 - Require mixlib-shellout 2.4 or later [#7543](https://github.com/chef/chef/pull/7543) ([tas50](https://github.com/tas50)) <!-- 14.4.33 -->
 - Fix issue of setting comment for windows user [#7537](https://github.com/chef/chef/pull/7537) ([NAshwini](https://github.com/NAshwini)) <!-- 14.4.32 -->
