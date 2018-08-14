@@ -61,11 +61,16 @@ class Chef
         key_content = ::File.exist?(key_file) ? File.read(key_file) : key_file
 
         begin
-          key = ::OpenSSL::PKey::RSA.new key_content, key_password
-        rescue ::OpenSSL::PKey::RSAError
+          key = OpenSSL::PKey.read key_content, key_password
+        rescue OpenSSL::PKey::PKeyError, ArgumentError
           return false
         end
-        key.private?
+
+        if key.is_a?(OpenSSL::PKey::EC)
+          key.private_key?
+        else
+          key.private?
+        end
       end
 
       # generate a dhparam file
