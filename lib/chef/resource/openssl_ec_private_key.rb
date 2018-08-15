@@ -23,8 +23,8 @@ class Chef
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
+      preview_resource true
       resource_name :openssl_ec_private_key
-      provides(:openssl_ec_private_key) { true }
 
       description "Use the openssl_ec_private_key resource to generate..."
       introduced "14.4"
@@ -47,10 +47,10 @@ class Chef
                description: "The designed cipher to use when generating your key. Run `openssl list-cipher-algorithms` to see available options.",
                default: "des3"
 
-      property :owner, [String, nil],
+      property :owner, String,
                description: "The owner of all files created by the resource."
 
-      property :group, [String, nil],
+      property :group, String,
                description: "The group of all files created by the resource."
 
       property :mode, [Integer, String],

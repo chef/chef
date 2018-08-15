@@ -22,16 +22,16 @@ class Chef
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
+      preview_resource true
       resource_name :openssl_x509_request
-      provides(:openssl_x509_request) { true }
 
       property :path, String, name_property: true,
                description: "The optional path to write the file to if you'd like to specify it here instead of in the resource name."
 
-      property :owner, [String, nil],
+      property :owner, String,
                description: "The owner of all files created by the resource."
 
-      property :group, [String, nil],
+      property :group, String,
                description: "The group of all files created by the resource."
 
       property :mode, [Integer, String], default: "0644",

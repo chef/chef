@@ -22,16 +22,16 @@ class Chef
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
+      preview_resource true
       resource_name :openssl_x509_certificate
-      provides(:openssl_x509) { true }
-      provides(:openssl_x509_certificate) { true }
+      provides :openssl_x509 { true } # legacy cookbook name. Cookbook will win. @todo Make this true in Chef 15
 
       property :path, String, name_property: true
 
-      property :owner, [String, nil],
+      property :owner, String,
                description: "The owner of all files created by the resource."
 
-      property :group, [String, nil],
+      property :group, String,
                description: "The group of all files created by the resource."
 
       property :expire,           Integer, default: 365
