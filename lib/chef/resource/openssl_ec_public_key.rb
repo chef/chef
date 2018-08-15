@@ -26,7 +26,7 @@ class Chef
       preview_resource true
       resource_name :openssl_ec_public_key
 
-      description "Use the openssl_ec_public_key resource to..."
+      description "Use the openssl_ec_public_key resource to generate ec public key files given a private key."
       introduced "14.4"
 
       property :path, String,
@@ -53,7 +53,7 @@ class Chef
                default: "0640"
 
       action :create do
-        description ""
+        description "Generate the ec public key from a private key"
 
         raise ArgumentError, "You cannot specify both 'private_key_path' and 'private_key_content' properties at the same time." if new_resource.private_key_path && new_resource.private_key_content
         raise ArgumentError, "You must specify the private key with either 'private_key_path' or 'private_key_content' properties." unless new_resource.private_key_path || new_resource.private_key_content

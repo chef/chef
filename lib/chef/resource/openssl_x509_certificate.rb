@@ -24,9 +24,14 @@ class Chef
 
       preview_resource true
       resource_name :openssl_x509_certificate
-      provides :openssl_x509 { true } # legacy cookbook name. Cookbook will win. @todo Make this true in Chef 15
+      provides(:openssl_x509) { true } # legacy cookbook name. Cookbook will win. @todo Make this true in Chef 15
 
-      property :path, String, name_property: true
+      description "Use the openssl_x509_certificate resource to generate signed or self-signed, PEM-formatted x509 certificates. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate. If a CA private key and certificate are provided, the certificate will be signed with them. Note: This resource was renamed from openssl_x509 to openssl_x509_certificate. The legacy name will continue to function, but cookbook code should be updated for the new resource name."
+      introduced "14.4"
+
+      property :path, String,
+               description: "Optional path to write the file to if you'd like to specify it here instead of in the resource name.",
+               name_property: true
 
       property :owner, String,
                description: "The owner of all files created by the resource."
@@ -34,28 +39,79 @@ class Chef
       property :group, String,
                description: "The group of all files created by the resource."
 
-      property :expire,           Integer, default: 365
-      property :mode,             [Integer, String], default: "0644"
-      property :country,          String
-      property :state,            String
-      property :city,             String
-      property :org,              String
-      property :org_unit,         String
-      property :common_name,      String
-      property :email,            String
-      property :extensions,       Hash, default: {}
-      property :subject_alt_name, Array, default: []
-      property :key_file,         String
-      property :key_pass,         String
-      property :key_type,         equal_to: %w{rsa ec}, default: "rsa"
-      property :key_length,       equal_to: [1024, 2048, 4096, 8192], default: 2048
-      property :key_curve,        equal_to: %w{secp384r1 secp521r1 prime256v1}, default: "prime256v1"
-      property :csr_file,         String
-      property :ca_cert_file,     String
-      property :ca_key_file,      String
-      property :ca_key_pass,      String
+      property :expire, Integer,
+               description: "Value representing the number of days from now through which the issued certificate cert will remain valid. The certificate will expire after this period.",
+               default: 365
+
+      property :mode, [Integer, String],
+               description: "The permission mode of all files created by the resource.",
+               default: "0644"
+
+      property :country, String,
+               description: "Value for the C ssl field."
+
+      property :state, String,
+               description: "Value for the ST certificate field."
+
+      property :city, String,
+               description: "Value for the L certificate field."
+
+      property :org, String,
+               description: "Value for the O certificate field."
+
+      property :org_unit, String,
+               description: "Value for the OU certificate field."
+
+      property :common_name, String,
+               description: "Value for the CN certificate field."
+
+      property :email, String,
+               description: "Value for the email ssl field."
+
+      property :extensions, Hash,
+               description: "Hash of X509 Extensions entries, in format { 'keyUsage' => { 'values' => %w( keyEncipherment digitalSignature), 'critical' => true } }.",
+               default: {}
+
+      property :subject_alt_name, Array,
+               description: "Array of Subject Alternative Name entries, in format DNS:example.com or IP:1.2.3.4.",
+               default: []
+
+      property :key_file, String,
+               description: "The path to a certificate key file on the filesystem. If the key_file attribute is specified, the resource will attempt to source a key from this location. If no key file is found, the resource will generate a new key file at this location. If the key_file attribute is not specified, the resource will generate a key file in the same directory as the generated certificate, with the same name as the generated certificate."
+
+      property :key_pass, String,
+               description: "The passphrase for an existing key's passphrase."
+
+      property :key_type, String,
+               equal_to: %w{rsa ec},
+               description: "The desired type of the generated key (rsa or ec).",
+               default: "rsa"
+
+      property :key_length, Integer,
+               equal_to: [1024, 2048, 4096, 8192],
+               description: "The desired Bit Length of the generated key (if key_type is equal to 'rsa').",
+               default: 2048
+
+      property :key_curve, String,
+               description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run openssl ecparam -list_curves to see available options.",
+               equal_to: %w{secp384r1 secp521r1 prime256v1},
+               default: "prime256v1"
+
+      property :csr_file, String,
+               description: "The path to a X509 Certificate Request (CSR) on the filesystem. If the csr_file attribute is specified, the resource will attempt to source a CSR from this location. If no CSR file is found, the resource will generate a Self-Signed Certificate and the certificate fields must be specified (common_name at last)."
+
+      property :ca_cert_file, String,
+               description: "The path to the CA X509 Certificate on the filesystem. If the ca_cert_file attribute is specified, the ca_key_file attribute must also be specified, the certificate will be signed with them."
+
+      property :ca_key_file, String,
+               description: "The path to the CA private key on the filesystem. If the ca_key_file attribute is specified, the `ca_cert_file' attribute must also be specified, the certificate will be signed with them."
+
+      property :ca_key_pass, String,
+               description: "The passphrase for CA private key's passphrase."
 
       action :create do
+        description "Generate a certificate"
+
         unless ::File.exist? new_resource.path
           converge_by("Create #{@new_resource}") do
             file new_resource.path do

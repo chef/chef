@@ -26,7 +26,7 @@ class Chef
       preview_resource true
       resource_name :openssl_ec_private_key
 
-      description "Use the openssl_ec_private_key resource to generate..."
+      description "Use the openssl_ec_private_key resource to generate generate ec private key files. If a valid ec key file can be opened at the specified location, no new file will be created. If the EC key file cannot be opened, either because it does not exist or because the password to the EC key file does not match the password in the recipe, it will be overwritten."
       introduced "14.4"
 
       property :path, String,
@@ -62,6 +62,8 @@ class Chef
                default: false, desired_state: false
 
       action :create do
+        description "Generate the ec private key"
+
         unless new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
           converge_by("Create an EC private key #{new_resource.path}") do
             log "Generating an #{new_resource.key_curve} "\

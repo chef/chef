@@ -27,11 +27,7 @@ class Chef
       provides(:openssl_rsa_private_key) { true }
       provides(:openssl_rsa_key) { true } # legacy cookbook resource name
 
-      description "Use the openssl_rsa_private_key resource to generate RSA private key files."\
-                  " If a valid RSA key file can be opened at the specified location, no new file"\
-                  " will be created. If the RSA key file cannot be opened, either because it does"\
-                  " not exist or because the password to the RSA key file does not match the"\
-                  " password in the recipe, it will be overwritten."
+      description "Use the openssl_rsa_private_key resource to generate RSA private key files. If a valid RSA key file can be opened at the specified location, no new file will be created. If the RSA key file cannot be opened, either because it does not exist or because the password to the RSA key file does not match the password in the recipe, it will be overwritten."
       introduced "14.0"
 
       property :path, String,

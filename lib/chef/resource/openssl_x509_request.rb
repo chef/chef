@@ -25,6 +25,9 @@ class Chef
       preview_resource true
       resource_name :openssl_x509_request
 
+      description "Use the openssl_x509_request resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate."
+      introduced "14.4"
+
       property :path, String, name_property: true,
                description: "The optional path to write the file to if you'd like to specify it here instead of in the resource name."
 
@@ -38,48 +41,50 @@ class Chef
                description: ""
 
       property :country, String,
-               description: ""
+               description: "Value for the C ssl field."
 
       property :state, String,
-               description: ""
+               description: "Value for the ST certificate field."
 
       property :city, String,
-               description: ""
+               description: "Value for the L certificate field."
 
       property :org, String,
-               description: ""
+               description: "Value for the O certificate field."
 
       property :org_unit, String,
-               description: ""
+               description: "Value for the OU certificate field."
 
       property :common_name, String,
                required: true,
-               description: ""
+               description: "Value for the CN certificate field."
 
       property :email, String,
-               description: ""
+               description: "Value for the email ssl field."
 
       property :key_file, String,
-               description: ""
+               description: "The path to a certificate key file on the filesystem. If the key_file attribute is specified, the resource will attempt to source a key from this location. If no key file is found, the resource will generate a new key file at this location. If the key_file attribute is not specified, the resource will generate a key file in the same directory as the generated certificate, with the same name as the generated certificate."
 
       property :key_pass, String,
-               description: ""
+               description: "The passphrase for an existing key's passphrase."
 
       property :key_type, String,
                equal_to: %w{rsa ec}, default: "ec",
-               description: ""
+               description: "The desired type of the generated key (rsa or ec)."
 
       property :key_length, Integer,
                equal_to: [1024, 2048, 4096, 8192], default: 2048,
-               description: ""
+               description: "The desired Bit Length of the generated key (if key_type is equal to 'rsa')."
 
       property :key_curve, String,
                equal_to: %w{secp384r1 secp521r1 prime256v1}, default: "prime256v1",
-               description: ""
+               description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run openssl ecparam -list_curves to see available options."
 
       default_action :create
 
       action :create do
+        description "Generate a certificate request."
+
         unless ::File.exist? new_resource.path
           converge_by("Create CSR #{@new_resource}") do
             file new_resource.name do
