@@ -1,6 +1,6 @@
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,20 @@
 # limitations under the License.
 #
 
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
-include_flag = !(['ubuntu', 'centos', 'aix'].include?(ohai[:platform]))
+include_flag = !(%w{amazon debian aix}.include?(ohai[:platform_family]) || (ohai[:platform_family] == "rhel" && ohai[:platform_version].to_i < 7))
 
-describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
+describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, external: include_flag do
+  # This test does not work in travis because there is no eth0
+
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
-    new_resource = Chef::Resource::Ifconfig.new('10.10.0.1', run_context)
+    new_resource = Chef::Resource::Ifconfig.new("10.10.0.1", run_context)
     new_resource
   end
 
@@ -43,19 +46,25 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     # use loopback interface for tests
     case ohai[:platform]
     when "aix"
-      'lo0'
+      "lo0"
     else
-      'lo'
+      "lo"
     end
+  end
+
+  def fetch_first_interface_name
+    shell_out("ip link list |grep UP|grep -vi loop|head -1|cut -d':' -f 2").stdout.strip
   end
 
   # **Caution: any updates to core interfaces can be risky.
   def en0_interface_for_test
     case ohai[:platform]
     when "aix"
-      'en0'
+      "en0"
+    when "ubuntu"
+      fetch_first_interface_name
     else
-      'eth0'
+      "eth0"
     end
   end
 
@@ -105,15 +114,15 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
   # Actual tests
 
   describe "#load_current_resource" do
-    it 'should load given interface' do
+    it "should load given interface" do
       new_resource.device lo_interface_for_test
       expect(current_resource.device).to eql(lo_interface_for_test)
       expect(current_resource.inet_addr).to match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)
     end
   end
 
-  exclude_test = ohai[:platform] != 'ubuntu'
-  describe "#action_add", :external => exclude_test do
+  exclude_test = ohai[:platform] != "ubuntu"
+  describe "#action_add", external: exclude_test do
     after do
       new_resource.run_action(:delete)
     end
@@ -125,7 +134,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_enable", :external => exclude_test do
+  describe "#action_enable", external: exclude_test do
     after do
       new_resource.run_action(:disable)
     end
@@ -136,7 +145,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_disable", :external => exclude_test do
+  describe "#action_disable", external: exclude_test do
     before do
       setup_enable_interface(new_resource)
       new_resource.run_action(:enable)
@@ -148,7 +157,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_delete", :external => exclude_test do
+  describe "#action_delete", external: exclude_test do
     before do
       setup_add_interface(new_resource)
       new_resource.run_action(:add)

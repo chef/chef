@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class NodeCreate < Knife
 
       deps do
-        require 'chef/node'
-        require 'chef/json_compat'
+        require "chef/node"
+        require "chef/json_compat"
       end
 
       banner "knife node create NODE (options)"
@@ -40,11 +40,8 @@ class Chef
 
         node = Chef::Node.new
         node.name(@node_name)
-        create_object(node)
+        create_object(node, object_class: Chef::Node)
       end
     end
   end
 end
-
-
-

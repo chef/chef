@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/core/node_presenter'
+require "chef/knife"
+require "chef/knife/core/node_presenter"
+require "addressable/uri"
 
 class Chef
   class Knife
@@ -26,87 +27,82 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require 'chef/node'
-        require 'chef/environment'
-        require 'chef/api_client'
-        require 'chef/search/query'
+        require "chef/node"
+        require "chef/environment"
+        require "chef/api_client"
+        require "chef/search/query"
       end
 
       include Knife::Core::NodeFormattingOptions
 
       banner "knife search INDEX QUERY (options)"
 
-      option :sort,
-        :short => "-o SORT",
-        :long => "--sort SORT",
-        :description => "The order to sort the results in",
-        :default => nil
-
       option :start,
-        :short => "-b ROW",
-        :long => "--start ROW",
-        :description => "The row to start returning results at",
-        :default => 0,
-        :proc => lambda { |i| i.to_i }
+        short: "-b ROW",
+        long: "--start ROW",
+        description: "The row to start returning results at.",
+        default: 0,
+        proc: lambda { |i| i.to_i }
 
       option :rows,
-        :short => "-R INT",
-        :long => "--rows INT",
-        :description => "The number of rows to return",
-        :default => nil,
-        :proc => lambda { |i| i.to_i }
+        short: "-R INT",
+        long: "--rows INT",
+        description: "The number of rows to return.",
+        default: nil,
+        proc: lambda { |i| i.to_i }
 
       option :run_list,
-        :short => "-r",
-        :long => "--run-list",
-        :description => "Show only the run list"
+        short: "-r",
+        long: "--run-list",
+        description: "Show only the run list."
 
       option :id_only,
-        :short => "-i",
-        :long => "--id-only",
-        :description => "Show only the ID of matching objects"
+        short: "-i",
+        long: "--id-only",
+        description: "Show only the ID of matching objects."
 
       option :query,
-        :short => "-q QUERY",
-        :long => "--query QUERY",
-        :description => "The search query; useful to protect queries starting with -"
+        short: "-q QUERY",
+        long: "--query QUERY",
+        description: "The search query; useful to protect queries starting with -."
 
       option :filter_result,
-        :short => "-f FILTER",
-        :long => "--filter-result FILTER",
-        :description => "Only bring back specific attributes of the matching objects; for example: \"ServerName=name, Kernel=kernel.version\""
+        short: "-f FILTER",
+        long: "--filter-result FILTER",
+        description: "Only return specific attributes of the matching objects; for example: \"ServerName=name, Kernel=kernel.version\"."
 
       def run
         read_cli_args
-        fuzzify_query
 
-        if @type == 'node'
+        if @type == "node"
           ui.use_presenter Knife::Core::NodePresenter
         end
 
         q = Chef::Search::Query.new
-        escaped_query = URI.escape(@query,
-                           Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
 
         result_items = []
         result_count = 0
 
         search_args = Hash.new
-        search_args[:sort] = config[:sort] if config[:sort]
+        search_args[:fuzz] = true
         search_args[:start] = config[:start] if config[:start]
         search_args[:rows] = config[:rows] if config[:rows]
         if config[:filter_result]
           search_args[:filter_result] = create_result_filter(config[:filter_result])
         elsif (not ui.config[:attribute].nil?) && (not ui.config[:attribute].empty?)
           search_args[:filter_result] = create_result_filter_from_attributes(ui.config[:attribute])
+        elsif config[:id_only]
+          search_args[:filter_result] = create_result_filter_from_attributes([])
         end
 
         begin
-          q.search(@type, escaped_query, search_args) do |item|
+          q.search(@type, @query, search_args) do |item|
             formatted_item = Hash.new
-            if item.is_a?(Hash)
+            if config[:id_only]
+              formatted_item = format_for_display({ "id" => item["__display_name"] })
+            elsif item.is_a?(Hash)
               # doing a little magic here to set the correct name
-              formatted_item[item["__display_name"]] = item.reject{|k| k == "__display_name"}
+              formatted_item[item["__display_name"]] = item.reject { |k| k == "__display_name" }
             else
               formatted_item = format_for_display(item)
             end
@@ -116,11 +112,11 @@ class Chef
         rescue Net::HTTPServerException => e
           msg = Chef::JSONCompat.from_json(e.response.body)["error"].first
           ui.error("knife search failed: #{msg}")
-          exit 1
+          exit 99
         end
 
         if ui.interchange?
-          output({:results => result_count, :rows => result_items})
+          output({ results: result_count, rows: result_items })
         else
           ui.log "#{result_count} items found"
           ui.log("\n")
@@ -131,12 +127,15 @@ class Chef
             end
           end
         end
+
+        # return a "failure" code to the shell so that knife search can be used in pipes similar to grep
+        exit 1 if result_count == 0
       end
 
       def read_cli_args
         if config[:query]
           if @name_args[1]
-            ui.error "please specify query as an argument or an option via -q, not both"
+            ui.error "Please specify query as an argument or an option via -q, not both"
             ui.msg opt_parser
             exit 1
           end
@@ -145,7 +144,7 @@ class Chef
         else
           case name_args.size
           when 0
-            ui.error "no query specified"
+            ui.error "No query specified"
             ui.msg opt_parser
             exit 1
           when 1
@@ -155,12 +154,6 @@ class Chef
             @type = name_args[0]
             @query = name_args[1]
           end
-        end
-      end
-
-      def fuzzify_query
-        if @query !~ /:/
-          @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}*"
         end
       end
 
@@ -177,13 +170,13 @@ class Chef
       # See lib/chef/search/query.rb for more examples of this.
       def create_result_filter(filter_string)
         final_filter = Hash.new
-        filter_string.gsub!(" ", "")
+        filter_string.delete!(" ")
         filters = filter_string.split(",")
         filters.each do |f|
           return_id, attr_path = f.split("=")
           final_filter[return_id.to_sym] = attr_path.split(".")
         end
-        return final_filter
+        final_filter
       end
 
       def create_result_filter_from_attributes(filter_array)
@@ -193,7 +186,7 @@ class Chef
         end
         # adding magic filter so we can actually pull the name as before
         final_filter["__display_name"] = [ "name" ]
-        return final_filter
+        final_filter
       end
 
     end

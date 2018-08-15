@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 shared_examples_for "a script resource" do
 
@@ -30,12 +30,8 @@ shared_examples_for "a script resource" do
     expect(script_resource.resource_name).to eql(resource_name)
   end
 
-  it "should set command to nil on the resource", :chef_gte_13_only do
+  it "should set command to nil on the resource", chef: ">= 13" do
     expect(script_resource.command).to be nil
-  end
-
-  it "should set command to the name on the resource", :chef_lt_13_only do
-    expect(script_resource.command).to eql script_resource.name
   end
 
   it "should accept a string for the code" do
@@ -48,27 +44,23 @@ shared_examples_for "a script resource" do
     expect(script_resource.flags).to eql("-f")
   end
 
-  it "should raise an exception if users set command on the resource", :chef_gte_13_only do
-    expect { script_resource.command('foo') }.to raise_error(Chef::Exceptions::Script)
-  end
-
-  it "should not raise an exception if users set command on the resource", :chef_lt_13_only do
-    expect { script_resource.command('foo') }.not_to raise_error
+  it "should raise an exception if users set command on the resource", chef: ">= 13" do
+    expect { script_resource.command("foo") }.to raise_error(Chef::Exceptions::Script)
   end
 
   describe "when executing guards" do
-    let(:resource) {
+    let(:resource) do
       resource = script_resource
       resource.run_context = run_context
-      resource.code 'echo hi'
+      resource.code "echo hi"
       resource
-    }
-    let(:node) {
+    end
+    let(:node) do
       node = Chef::Node.new
       node.automatic[:platform] = "debian"
       node.automatic[:platform_version] = "6.0"
       node
-    }
+    end
     let(:events) { Chef::EventDispatch::Dispatcher.new }
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
@@ -83,7 +75,7 @@ shared_examples_for "a script resource" do
       expect_any_instance_of(Chef::Resource::Conditional).not_to receive(:evaluate_block)
       expect_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).not_to receive(:evaluate_action)
       expect_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:evaluate).and_return(true)
-      resource.only_if 'echo hi'
+      resource.only_if "echo hi"
       expect(resource.should_skip?(:run)).to eq(nil)
     end
 
@@ -91,7 +83,7 @@ shared_examples_for "a script resource" do
       expect_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).not_to receive(:evaluate)
       expect_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:evaluate_action).and_return(true)
       resource.guard_interpreter :script
-      resource.only_if 'echo hi'
+      resource.only_if "echo hi"
       expect(resource.should_skip?(:run)).to eq(nil)
     end
   end

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-
+require "spec_helper"
 
 class NoWhyrunDemonstrator < Chef::Provider
   attr_reader :system_state_altered
   def whyrun_supported?
     false
   end
-  def load_current_resource
 
+  def load_current_resource
   end
+
   def action_foo
     @system_state_altered = true
   end
@@ -55,7 +55,6 @@ class CheckResourceSemanticsDemonstrator < ConvergeActionDemonstrator
   end
 end
 
-
 describe Chef::Provider do
   before(:each) do
     @cookbook_collection = Chef::CookbookCollection.new([])
@@ -76,10 +75,6 @@ describe Chef::Provider do
     expect(@provider.respond_to?(:shell_out!)).to be true
   end
 
-  it "should mixin shell_out_with_systems_locale" do
-    expect(@provider.respond_to?(:shell_out_with_systems_locale)).to be true
-  end
-
   it "should store the resource passed to new as new_resource" do
     expect(@provider.new_resource).to eql(@resource)
   end
@@ -92,8 +87,8 @@ describe Chef::Provider do
     expect(@provider.current_resource).to eql(nil)
   end
 
-  it "should not support whyrun by default" do
-    expect(@provider.send(:whyrun_supported?)).to eql(false)
+  it "should support whyrun by default" do
+    expect(@provider.send(:whyrun_supported?)).to eql(true)
   end
 
   it "should do nothing for check_resource_semantics! by default" do
@@ -107,17 +102,15 @@ describe Chef::Provider do
   it "evals embedded recipes with a pristine resource collection" do
     @provider.run_context.instance_variable_set(:@resource_collection, "doesn't matter what this is")
     temporary_collection = nil
-    snitch = Proc.new {temporary_collection = @run_context.resource_collection}
+    snitch = Proc.new { temporary_collection = @run_context.resource_collection }
     @provider.send(:recipe_eval, &snitch)
     expect(temporary_collection).to be_an_instance_of(Chef::ResourceCollection)
     expect(@provider.run_context.instance_variable_get(:@resource_collection)).to eq("doesn't matter what this is")
   end
 
   it "does not re-load recipes when creating the temporary run context" do
-    # we actually want to test that RunContext#load is never called, but we
-    # can't stub all instances of an object with rspec's mocks. :/
-    allow(Chef::RunContext).to receive(:new).and_raise("not supposed to happen")
-    snitch = Proc.new {temporary_collection = @run_context.resource_collection}
+    expect_any_instance_of(Chef::RunContext).not_to receive(:load)
+    snitch = Proc.new { temporary_collection = @run_context.resource_collection }
     @provider.send(:recipe_eval, &snitch)
   end
 
@@ -198,4 +191,11 @@ describe Chef::Provider do
     end
   end
 
+  context "when using use_inline_resources" do
+    it "should log a deprecation warning" do
+      pending Chef::VERSION.start_with?("14.1")
+      expect(Chef).to receive(:deprecated).with(:use_inline_resources, kind_of(String))
+      Class.new(described_class) { use_inline_resources }
+    end
+  end
 end

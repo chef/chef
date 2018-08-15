@@ -4,18 +4,18 @@
 # http://missingbit.blogspot.com/2011/07/stubbing-constants-in-rspec_20.html
 # http://digitaldumptruck.jotabout.com/?p=551
 
-def mock_constants(constants, &block)
+def mock_constants(constants)
   saved_constants = {}
   constants.each do |constant, val|
     source_object, const_name = parse_constant(constant)
     saved_constants[constant] = source_object.const_get(const_name)
-    with_warnings(nil) {source_object.const_set(const_name, val) }
+    with_warnings(nil) { source_object.const_set(const_name, val) }
   end
 
   begin
-    block.call
+    yield
   ensure
-    constants.each do |constant, val|
+    constants.each_key do |constant|
       source_object, const_name = parse_constant(constant)
       with_warnings(nil) { source_object.const_set(const_name, saved_constants[constant]) }
     end
@@ -23,7 +23,7 @@ def mock_constants(constants, &block)
 end
 
 def parse_constant(constant)
-  source, _, constant_name = constant.to_s.rpartition('::')
+  source, _, constant_name = constant.to_s.rpartition("::")
   [constantize(source), constant_name]
 end
 
@@ -41,7 +41,7 @@ end
 
 # File activesupport/lib/active_support/inflector/methods.rb, line 209
 def constantize(camel_cased_word)
-  names = camel_cased_word.split('::')
+  names = camel_cased_word.split("::")
   names.shift if names.empty? || names.first.empty?
 
   constant = Object

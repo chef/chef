@@ -1,6 +1,6 @@
 #
-# Author:: Joshua Timberman (<joshua@getchef.com>)
-# Copyright (c) 2014, Chef Software, Inc. <legal@getchef.com>
+# Author:: Joshua Timberman (<joshua@chef.io>)
+# Copyright 2014-2016, Chef Software, Inc. <legal@chef.io>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,35 +15,53 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
-describe Chef::Resource::HomebrewPackage, 'initialize' do
+describe Chef::Resource::HomebrewPackage, "initialize" do
 
   static_provider_resolution(
     resource: Chef::Resource::HomebrewPackage,
     provider: Chef::Provider::Package::Homebrew,
     name: :homebrew_package,
     action: :install,
-    os: "mac_os_x",
+    os: "mac_os_x"
   )
 
-  let(:resource) { Chef::Resource::HomebrewPackage.new('emacs') }
+  let(:resource) { Chef::Resource::HomebrewPackage.new("emacs") }
 
-  shared_examples 'home_brew user set and returned' do
-    it 'returns the configured homebrew_user' do
+  it "is a subclass of Chef::Resource::Package" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Package)
+  end
+
+  it "sets the default action as :install" do
+    expect(resource.action).to eql([:install])
+  end
+
+  it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
+  end
+
+  shared_examples "home_brew user set and returned" do
+    it "returns the configured homebrew_user" do
       resource.homebrew_user user
       expect(resource.homebrew_user).to eql(user)
     end
   end
 
-  context 'homebrew_user is set' do
-    let(:user) { 'Captain Picard' }
-    include_examples 'home_brew user set and returned'
+  context "homebrew_user is set" do
+    let(:user) { "Captain Picard" }
+    include_examples "home_brew user set and returned"
 
-    context 'as an integer' do
+    context "as an integer" do
       let(:user) { 1001 }
-      include_examples 'home_brew user set and returned'
+      include_examples "home_brew user set and returned"
     end
   end
 

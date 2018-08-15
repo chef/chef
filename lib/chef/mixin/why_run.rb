@@ -1,7 +1,7 @@
 #
-# Author:: Dan DeLeo ( <dan@opscode.com> )
-# Author:: Marc Paradise ( <marc@opscode.com> )
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Dan DeLeo ( <dan@chef.io> )
+# Author:: Marc Paradise ( <marc@chef.io> )
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,6 @@ class Chef
   module Mixin
     module WhyRun
 
-      # ==ConvergeActions
       # ConvergeActions implements the logic for why run. A ConvergeActions
       # object wraps a collection of actions, which consist of a descriptive
       # string and a block/Proc. Actions are executed by calling #converge!
@@ -49,7 +48,7 @@ class Chef
         def add_action(descriptions, &block)
           @actions << [descriptions, block]
           if (@resource.respond_to?(:is_guard_interpreter) && @resource.is_guard_interpreter) || !Chef::Config[:why_run]
-            block.call
+            yield
           end
           events.resource_update_applied(@resource, @action, descriptions)
         end
@@ -60,7 +59,6 @@ class Chef
         end
       end
 
-      # == ResourceRequirements
       # ResourceRequirements provides a framework for making assertions about
       # the host system's state. It also provides a mechanism for making
       # assumptions about what the system's state might have been when running
@@ -182,7 +180,7 @@ class Chef
           # will be allowed to continue in both whyrun and non-whyrun
           # mode
           #
-          # With a service resource that requires /etc/init.d/service-name to exist:
+          # @example With a service resource that requires /etc/init.d/service-name to exist:
           #   # in a provider
           #   assert(:start, :restart) do |a|
           #     a.assertion { ::File.exist?("/etc/init.d/service-name") }
@@ -222,7 +220,6 @@ class Chef
             @assertion_failed
           end
 
-
           # Runs the assertion/assumption logic. Will raise an Exception of the
           # type specified in #failure_message (or AssertionFailure by default)
           # if the requirement is not met and Chef is not running in why run
@@ -247,7 +244,7 @@ class Chef
 
         def initialize(resource, run_context)
           @resource, @run_context = resource, run_context
-          @assertions = Hash.new {|h,k| h[k] = [] }
+          @assertions = Hash.new { |h, k| h[k] = [] }
           @blocked_actions = []
         end
 
@@ -265,8 +262,8 @@ class Chef
         # Define a new Assertion.
         #
         # Takes a list of action names for which the assertion should be made.
-        # ==== Examples:
-        # A File provider that requires the parent directory to exist:
+        #
+        # @example A File provider that requires the parent directory to exist:
         #
         #   assert(:create, :create_if_missing) do |a|
         #     parent_dir = File.basename(@new_resource.path)
@@ -276,7 +273,7 @@ class Chef
         #     a.why_run("assuming parent directory #{parent_dir} would have been previously created"
         #   end
         #
-        # A service provider that requires the init script to exist:
+        # @example A service provider that requires the init script to exist:
         #
         #   assert(:start, :restart) do |a|
         #     a.assertion { ::File.exist?(@new_resource.init_script) }
@@ -287,17 +284,14 @@ class Chef
         #     end
         #   end
         #
-        # A File provider that will error out if you don't have permissions do
-        # delete the file, *even in why run mode*:
-        #
+        # @example A File provider that will error out if you don't have permissions do delete the file, *even in why run mode*:
         #   assert(:delete) do |a|
         #     a.assertion { ::File.writable?(@new_resource.path) }
         #     a.failure_message(Exceptions::InsufficientPrivileges,
         #                       "You don't have sufficient privileges to delete #{@new_resource.path}")
         #   end
         #
-        # A Template provider that will prevent action execution but continue the run in
-        # whyrun mode if the template source is not available.
+        # @example A Template provider that will prevent action execution but continue the run in whyrun mode if the template source is not available.
         #   assert(:create, :create_if_missing) do |a|
         #     a.assertion { File::exist?(@new_resource.source) }
         #     a.failure_message Chef::Exceptions::TemplateError, "Template #{@new_resource.source} could not be found exist."
@@ -313,16 +307,16 @@ class Chef
         def assert(*actions)
           assertion = Assertion.new
           yield assertion
-          actions.each {|action| @assertions[action] << assertion }
+          actions.each { |action| @assertions[action] << assertion }
         end
 
         # Run the assertion and assumption logic.
         def run(action)
           @assertions[action.to_sym].each do |a|
             a.run(action, events, @resource)
-            if a.assertion_failed? and a.block_action?
+            if a.assertion_failed? && a.block_action?
               @blocked_actions << action
-              return
+              break
             end
           end
         end

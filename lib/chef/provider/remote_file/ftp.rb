@@ -1,6 +1,6 @@
 #
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
-# Copyright:: Copyright (c) 2013 Jesse Campbell
+# Copyright:: Copyright 2013-2016, Jesse Campbell
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'tempfile'
-require 'net/ftp'
-require 'chef/provider/remote_file'
-require 'chef/file_content_management/tempfile'
+require "uri"
+require "tempfile"
+require "net/ftp"
+require "chef/provider/remote_file"
+require "chef/file_content_management/tempfile"
 
 class Chef
   class Provider
@@ -59,7 +59,7 @@ class Chef
           if uri.userinfo
             URI.unescape(uri.user)
           else
-            'anonymous'
+            "anonymous"
           end
         end
 
@@ -94,11 +94,11 @@ class Chef
         private
 
         def with_proxy_env
-          saved_socks_env = ENV['SOCKS_SERVER']
-          ENV['SOCKS_SERVER'] = proxy_uri(@uri).to_s
+          saved_socks_env = ENV["SOCKS_SERVER"]
+          ENV["SOCKS_SERVER"] = proxy_uri(@uri).to_s
           yield
         ensure
-          ENV['SOCKS_SERVER'] = saved_socks_env
+          ENV["SOCKS_SERVER"] = saved_socks_env
         end
 
         def with_connection
@@ -112,7 +112,7 @@ class Chef
 
         def validate_typecode!
           # Only support ascii and binary types
-          if typecode and /\A[ai]\z/ !~ typecode
+          if typecode && /\A[ai]\z/ !~ typecode
             raise ArgumentError, "invalid typecode: #{typecode.inspect}"
           end
         end
@@ -146,27 +146,16 @@ class Chef
           tempfile
         end
 
-        #adapted from buildr/lib/buildr/core/transports.rb via chef/rest/rest_client.rb
         def proxy_uri(uri)
-          proxy = Chef::Config["ftp_proxy"]
-          proxy = URI.parse(proxy) if String === proxy
-          if Chef::Config["ftp_proxy_user"]
-            proxy.user = Chef::Config["ftp_proxy_user"]
-          end
-          if Chef::Config["ftp_proxy_pass"]
-            proxy.password = Chef::Config["ftp_proxy_pass"]
-          end
-          excludes = Chef::Config[:no_proxy].to_s.split(/\s*,\s*/).compact
-          excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
-          return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
+          Chef::Config.proxy_uri("ftp", hostname, port)
         end
 
         def parse_path
-          path = uri.path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
+          path = uri.path.sub(%r{\A/}, "%2F") # re-encode the beginning slash because uri library decodes it.
           directories = path.split(%r{/}, -1)
-          directories.each {|d|
+          directories.each do |d|
             d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
-          }
+          end
           unless filename = directories.pop
             raise ArgumentError, "no filename: #{path.inspect}"
           end

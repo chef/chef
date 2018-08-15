@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item'
-require 'chef/json_compat'
-require 'tempfile'
+require "chef/data_bag_item"
+require "chef/encrypted_data_bag_item"
+require "chef/json_compat"
+require "tempfile"
 
 describe Chef::Knife::DataBagShow do
 
@@ -39,16 +39,17 @@ describe Chef::Knife::DataBagShow do
     k
   end
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }
   let(:item_name) { "ME" }
 
-  let(:data_bag_contents) { { "id" => "id", "baz"=>"http://localhost:4000/data/bag_o_data/baz",
-                        "qux"=>"http://localhost:4000/data/bag_o_data/qux"} }
-  let(:enc_hash) {Chef::EncryptedDataBagItem.encrypt_data_bag_item(data_bag_contents, secret)}
-  let(:data_bag) {Chef::DataBagItem.from_hash(data_bag_contents)}
+  let(:data_bag_contents) do
+    { "id" => "id", "baz" => "http://localhost:4000/data/bag_o_data/baz",
+      "qux" => "http://localhost:4000/data/bag_o_data/qux" } end
+  let(:enc_hash) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(data_bag_contents, secret) }
+  let(:data_bag) { Chef::DataBagItem.from_hash(data_bag_contents) }
   let(:data_bag_with_encoded_hash) { Chef::DataBagItem.from_hash(enc_hash) }
   let(:enc_data_bag) { Chef::EncryptedDataBagItem.new(enc_hash, secret) }
 
@@ -56,7 +57,7 @@ describe Chef::Knife::DataBagShow do
   #
   # let(:raw_hash)  {{ "login_name" => "alphaomega", "id" => item_name }}
   #
-  let(:config) { {format: "json"} }
+  let(:config) { { format: "json" } }
 
   context "Data bag to show is encrypted" do
     before do
@@ -70,9 +71,9 @@ describe Chef::Knife::DataBagShow do
       expect(knife.ui).to receive(:info).with("Encrypted data bag detected, decrypting with provided secret.")
       expect(Chef::EncryptedDataBagItem).to receive(:load).with(bag_name, item_name, secret).and_return(enc_data_bag)
 
-      expected = %q|baz: http://localhost:4000/data/bag_o_data/baz
+      expected = %q{baz: http://localhost:4000/data/bag_o_data/baz
 id:  id
-qux: http://localhost:4000/data/bag_o_data/qux|
+qux: http://localhost:4000/data/bag_o_data/qux}
       knife.run
       expect(stdout.string.strip).to eq(expected)
     end
@@ -80,7 +81,7 @@ qux: http://localhost:4000/data/bag_o_data/qux|
     it "displays the encrypted data bag when the secret is not provided" do
       expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(false)
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag_with_encoded_hash)
-      expect(knife.ui).to receive(:warn).with("Encrypted data bag detected, but no secret provided for decoding.  Displaying encrypted data.")
+      expect(knife.ui).to receive(:warn).with("Encrypted data bag detected, but no secret provided for decoding. Displaying encrypted data.")
 
       knife.run
       expect(stdout.string.strip).to include("baz", "qux", "cipher")
@@ -90,18 +91,32 @@ qux: http://localhost:4000/data/bag_o_data/qux|
   context "Data bag to show is not encrypted" do
     before do
       allow(knife).to receive(:encrypted?).and_return(false)
-      expect(knife).to receive(:read_secret).exactly(0).times
     end
 
     it "displays the data bag" do
+      expect(knife).to receive(:read_secret).exactly(0).times
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag)
-      expect(knife.ui).to receive(:info).with("Unencrypted data bag detected, ignoring any provided secret options.")
 
-      expected = %q|baz: http://localhost:4000/data/bag_o_data/baz
+      expected = %q{baz: http://localhost:4000/data/bag_o_data/baz
 id:  id
-qux: http://localhost:4000/data/bag_o_data/qux|
+qux: http://localhost:4000/data/bag_o_data/qux}
       knife.run
       expect(stdout.string.strip).to eq(expected)
+    end
+
+    context "when a secret is given" do
+      it "displays the data bag" do
+        expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)
+        expect(knife).to receive(:read_secret).and_return(secret)
+        expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag)
+        expect(knife.ui).to receive(:warn).with("Unencrypted data bag detected, ignoring any provided secret options.")
+
+        expected = %q{baz: http://localhost:4000/data/bag_o_data/baz
+id:  id
+qux: http://localhost:4000/data/bag_o_data/qux}
+        knife.run
+        expect(stdout.string.strip).to eq(expected)
+      end
     end
   end
 
@@ -116,7 +131,7 @@ qux: http://localhost:4000/data/bag_o_data/qux|
   it "raises an error when no @name_args are provided" do
     knife.name_args = []
 
-    expect {knife.run}.to exit_with_code(1)
+    expect { knife.run }.to exit_with_code(1)
     expect(stdout.string).to start_with("knife data bag show BAG [ITEM] (options)")
   end
 

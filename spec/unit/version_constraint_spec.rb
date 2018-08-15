@@ -1,6 +1,6 @@
 #
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
-require 'chef/version_constraint'
+require "spec_helper"
+require "chef/version_constraint"
 
 describe Chef::VersionConstraint do
   describe "validation" do
@@ -88,7 +88,7 @@ describe Chef::VersionConstraint do
         expect(@vc).to include Chef::Version.new("1.4")
       end
       it "Chef::CookbookVersion" do
-        cv = Chef::CookbookVersion.new("alice", '/tmp/blah.txt')
+        cv = Chef::CookbookVersion.new("alice", "/tmp/blah.txt")
         cv.version = "1.4"
         expect(@vc).to include cv
       end
@@ -149,31 +149,31 @@ describe Chef::VersionConstraint do
     end
   end
 
-  describe 'to_s' do
-    it 'shows a patch-level if one is given' do
-      vc = Chef::VersionConstraint.new '~> 1.2.0'
+  describe "to_s" do
+    it "shows a patch-level if one is given" do
+      vc = Chef::VersionConstraint.new "~> 1.2.0"
 
-      expect(vc.to_s).to eq('~> 1.2.0')
+      expect(vc.to_s).to eq("~> 1.2.0")
     end
 
-    it 'shows no patch-level if one is not given' do
-      vc = Chef::VersionConstraint.new '~> 1.2'
+    it "shows no patch-level if one is not given" do
+      vc = Chef::VersionConstraint.new "~> 1.2"
 
-      expect(vc.to_s).to eq('~> 1.2')
+      expect(vc.to_s).to eq("~> 1.2")
     end
   end
 
-  describe 'inspect' do
-    it 'shows a patch-level if one is given' do
-      vc = Chef::VersionConstraint.new '~> 1.2.0'
+  describe "inspect" do
+    it "shows a patch-level if one is given" do
+      vc = Chef::VersionConstraint.new "~> 1.2.0"
 
-      expect(vc.inspect).to eq('(~> 1.2.0)')
+      expect(vc.inspect).to eq("(~> 1.2.0)")
     end
 
-    it 'shows no patch-level if one is not given' do
-      vc = Chef::VersionConstraint.new '~> 1.2'
+    it "shows no patch-level if one is not given" do
+      vc = Chef::VersionConstraint.new "~> 1.2"
 
-      expect(vc.inspect).to eq('(~> 1.2)')
+      expect(vc.inspect).to eq("(~> 1.2)")
     end
   end
 end

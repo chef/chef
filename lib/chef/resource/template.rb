@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,64 +18,48 @@
 # limitations under the License.
 #
 
-require 'chef/resource/file'
-require 'chef/provider/template'
-require 'chef/mixin/securable'
+require "chef/resource/file"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
+    # A cookbook template is an Embedded Ruby (ERB) template that is used to dynamically generate static text files.
+    # Templates may contain Ruby expressions and statements, and are a great way to manage configuration files. Use the
+    # template resource to add cookbook templates to recipes; place the corresponding Embedded Ruby (ERB) template file
+    # in a cookbook's /templates directory.
+    #
+    # Use the template resource to manage the contents of a file using an Embedded Ruby (ERB) template by transferring
+    # files from a sub-directory of COOKBOOK_NAME/templates/ to a specified path located on a host that is running the
+    # chef-client. This resource includes actions and properties from the file resource. Template files managed by the
+    # template resource follow the same file specificity rules as the remote_file and file resources.
     class Template < Chef::Resource::File
-      include Chef::Mixin::Securable
-
+      resource_name :template
       provides :template
+
+      include Chef::Mixin::Securable
 
       attr_reader :inline_helper_blocks
       attr_reader :inline_helper_modules
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
-        @resource_name = :template
-        @action = "create"
         @source = "#{::File.basename(name)}.erb"
-        @cookbook = nil
-        @local = false
-        @variables = Hash.new
         @inline_helper_blocks = {}
         @inline_helper_modules = []
         @helper_modules = []
       end
 
-      def source(file=nil)
+      def source(file = nil)
         set_or_return(
           :source,
           file,
-          :kind_of => [ String, Array ]
+          kind_of: [ String, Array ]
         )
       end
 
-      def variables(args=nil)
-        set_or_return(
-          :variables,
-          args,
-          :kind_of => [ Hash ]
-        )
-      end
-
-      def cookbook(args=nil)
-        set_or_return(
-          :cookbook,
-          args,
-          :kind_of => [ String ]
-        )
-      end
-
-      def local(args=nil)
-        set_or_return(
-          :local,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :variables, Hash, default: lazy { Hash.new }
+      property :cookbook, String
+      property :local, [ TrueClass, FalseClass ], default: false
 
       # Declares a helper method to be defined in the template context when
       # rendering.
@@ -164,8 +148,8 @@ class Chef
       # And in the template resource:
       #   helpers(MyTemplateHelper)
       # The template code in the above example will work unmodified.
-      def helpers(module_name=nil,&block)
-        if block_given? and !module_name.nil?
+      def helpers(module_name = nil, &block)
+        if block_given? && !module_name.nil?
           raise Exceptions::ValidationFailed,
             "Passing both a module and block to #helpers is not supported. Call #helpers multiple times instead"
         elsif block_given?

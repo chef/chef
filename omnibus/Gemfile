@@ -1,0 +1,26 @@
+source "https://rubygems.org"
+
+gem "omnibus", git: "https://github.com/chef/omnibus", branch: "master"
+gem "omnibus-software", git: "https://github.com/chef/omnibus-software", branch: "master"
+
+gem "pedump"
+
+# This development group is installed by default when you run `bundle install`,
+# but if you are using Omnibus in a CI-based infrastructure, you do not need
+# the Test Kitchen-based build lab. You can skip these unnecessary dependencies
+# by running `bundle install --without development` to speed up build times.
+group :development do
+  # Use Berkshelf for resolving cookbook dependencies
+  gem "berkshelf", "~> 4.0"
+
+  # temp pin for chef 14 development
+  gem "ohai", "~> 13.0"
+
+  # Use Test Kitchen with Vagrant for converging the build environment
+  gem "test-kitchen",    "~> 1.21"
+  gem "kitchen-vagrant", "~> 1.3.1"
+  gem "winrm-fs", "~> 1.0"
+  gem "pry"
+  gem "pry-byebug"
+  gem "pry-stack_explorer"
+end

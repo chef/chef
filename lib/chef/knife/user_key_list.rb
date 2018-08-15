@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (tyler@chef.io)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc
+# Copyright:: Copyright 2015-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/key_list_base'
+require "chef/knife"
+require "chef/knife/key_list"
+require "chef/knife/key_list_base"
 
 class Chef
   class Knife
@@ -34,7 +35,7 @@ class Chef
 
       attr_reader :actor
 
-      def initialize(argv=[])
+      def initialize(argv = [])
         super(argv)
         @service_object = nil
       end
@@ -49,7 +50,7 @@ class Chef
       end
 
       def actor_missing_error
-        'You must specify a user name'
+        "You must specify a user name"
       end
 
       def service_object

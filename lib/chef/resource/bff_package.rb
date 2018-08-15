@@ -1,6 +1,6 @@
 #
 # Author:: Deepali Jagtap (<deepali.jagtap@clogeny.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/aix'
+require "chef/resource/package"
 
 class Chef
   class Resource
     class BffPackage < Chef::Resource::Package
+      resource_name :bff_package
       provides :bff_package
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :bff_package
-      end
-
+      description "Use the bff_package resource to manage packages for the AIX platform using the installp utility. When a package is installed from a local file, it must be added to the node using the remote_file or cookbook_file resources."
+      introduced "12.0"
     end
   end
 end

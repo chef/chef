@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Adam Edwards (<adamed@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::GuardInterpreter::ResourceGuardInterpreter do
   let(:node) do
@@ -24,7 +24,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
     node.default["kernel"] = Hash.new
     node.default["kernel"][:machine] = :x86_64.to_s
-    node.automatic[:os] = 'windows'
+    node.automatic[:os] = "windows"
     node
   end
 
@@ -52,7 +52,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
     it "raises an exception if guard_interpreter is set to a resource not derived from Chef::Resource::Script" do
       parent_resource.guard_interpreter(:file)
-      expect { guard_interpreter }.to raise_error(ArgumentError, 'Specified guard interpreter class Chef::Resource::File must be a kind of Chef::Resource::Execute resource')
+      expect { guard_interpreter }.to raise_error(ArgumentError, "Specified guard interpreter class Chef::Resource::File must be a kind of Chef::Resource::Execute resource")
     end
 
     context "when the resource cannot be found for the platform" do
@@ -62,7 +62,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
       it "raises an exception" do
         parent_resource.guard_interpreter(:foobar)
-        expect { guard_interpreter }.to raise_error(ArgumentError, 'Specified guard_interpreter resource foobar unknown for this platform')
+        expect { guard_interpreter }.to raise_error(ArgumentError, "Specified guard_interpreter resource foobar unknown for this platform")
       end
     end
 
@@ -84,6 +84,14 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
       expect(guard_interpreter.evaluate).to eq(true)
     end
 
+    it "does not corrupt the run_context of the node" do
+      node_run_context_before_guard_execution = parent_resource.run_context
+      expect(node_run_context_before_guard_execution.object_id).to eq(parent_resource.node.run_context.object_id)
+      guard_interpreter.evaluate
+      node_run_context_after_guard_execution = parent_resource.run_context
+      expect(node_run_context_after_guard_execution.object_id).to eq(parent_resource.node.run_context.object_id)
+    end
+
     describe "script command opts switch" do
       let(:command_opts) { {} }
       let(:guard_interpreter) { Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, "exit 0", command_opts) }
@@ -97,9 +105,9 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
             parent_resource
           end
 
-          let(:shell_out) {
-            instance_double(Mixlib::ShellOut, :live_stream => true, :run_command => true, :error! => nil)
-          }
+          let(:shell_out) do
+            instance_double(Mixlib::ShellOut, live_stream: true, run_command: true, error!: nil)
+          end
 
           before do
             # TODO for some reason Windows is failing on executing a ruby script
@@ -110,7 +118,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
           end
 
           it "merges to :code" do
-            expect(command_opts).to receive(:merge).with({:code => "exit 0"}).and_call_original
+            expect(command_opts).to receive(:merge).with({ code: "exit 0" }).and_call_original
             expect(guard_interpreter.evaluate).to eq(true)
           end
         end
@@ -123,7 +131,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
           end
 
           it "merges to :code" do
-            expect(command_opts).to receive(:merge).with({:command => "exit 0"}).and_call_original
+            expect(command_opts).to receive(:merge).with({ command: "exit 0" }).and_call_original
             expect(guard_interpreter.evaluate).to eq(true)
           end
         end
@@ -137,7 +145,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
         end
 
         it "merges to :command" do
-          expect(command_opts).to receive(:merge).with({:command => "exit 0"}).and_call_original
+          expect(command_opts).to receive(:merge).with({ command: "exit 0" }).and_call_original
           expect(guard_interpreter.evaluate).to eq(true)
         end
       end

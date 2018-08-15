@@ -1,6 +1,6 @@
 #
-# Author:: Chris Doherty <cdoherty@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef, Inc.
+# Author:: Chris Doherty <cdoherty@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,35 +16,26 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
-# In using this resource via notifications, it's important to *only* use
-# immediate notifications. Delayed notifications produce unintuitive and
-# probably undesired results.
 class Chef
   class Resource
     class Reboot < Chef::Resource
-      provides :reboot
+      resource_name :reboot
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :reboot
-        @provider = Chef::Provider::Reboot
-        @allowed_actions.push(:request_reboot, :reboot_now, :cancel)
+      description "Use the reboot resource to reboot a node, a necessary step with some"\
+                  " installations on certain platforms. This resource is supported for use on"\
+                  " the Microsoft Windows, macOS, and Linux platforms.\n"\
+                  "In using this resource via notifications, it's important to *only* use"\
+                  " immediate notifications. Delayed notifications produce unintuitive and"\
+                  " probably undesired results."
+      introduced "12.0"
 
-        @reason = "Reboot by Chef"
-        @delay_mins = 0
+      allowed_actions :request_reboot, :reboot_now, :cancel
+      default_action :nothing # make sure people are quite clear what they want
 
-        # no default action.
-      end
-
-      def reason(arg=nil)
-        set_or_return(:reason, arg, :kind_of => String)
-      end
-
-      def delay_mins(arg=nil)
-        set_or_return(:delay_mins, arg, :kind_of => Fixnum)
-      end
+      property :reason, String, default: "Reboot by Chef"
+      property :delay_mins, Integer, default: 0
     end
   end
 end

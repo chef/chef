@@ -1,7 +1,7 @@
 #
 # Authors:: Bryan McLellan (btm@loftninjas.org)
 #           Matthew Landauer (matthew@openaustralia.org)
-# Copyright:: Copyright (c) 2009 Bryan McLellan, Matthew Landauer
+# Copyright:: Copyright 2009-2016, Bryan McLellan, Matthew Landauer
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
   before(:each) do
@@ -30,7 +30,9 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
 
     @provider = Chef::Provider::Package::Freebsd::Pkg.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
-    allow(::File).to receive(:exist?).with('/usr/ports/Makefile').and_return(false)
+    allow(::File).to receive(:exist?).with("/usr/ports/Makefile").and_return(false)
+    allow(::File).to receive(:exist?).with("/usr/ports/www/wordpress").and_return(false)
+    allow(::File).to receive(:exist?).with("www/wordpress").and_return(false)
   end
 
   describe "when determining the current package state" do
@@ -62,38 +64,36 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     end
   end
 
-  describe "when querying for package state and attributes" do
+  describe "when querying for package state and properties" do
     before do
-      #@new_resource = Chef::Resource::Package.new("zsh")
+      # @new_resource = Chef::Resource::Package.new("zsh")
 
-      #@provider = Chef::Provider::Package::Freebsd::Pkg.new(@node, @new_resource)
+      # @provider = Chef::Provider::Package::Freebsd::Pkg.new(@node, @new_resource)
 
-      #@status = double("Status", :exitstatus => 0)
-      #@stdin = double("STDIN", :null_object => true)
-      #@stdout = double("STDOUT", :null_object => true)
-      #@stderr = double("STDERR", :null_object => true)
-      #@pid = double("PID", :null_object => true)
+      # @status = double("Status", :exitstatus => 0)
+      # @stdin = double("STDIN", :null_object => true)
+      # @stdout = double("STDOUT", :null_object => true)
+      # @stderr = double("STDERR", :null_object => true)
+      # @pid = double("PID", :null_object => true)
     end
 
     it "should return the version number when it is installed" do
-      pkg_info = OpenStruct.new(:stdout => "zsh-4.3.6_7")
-      expect(@provider).to receive(:shell_out!).with('pkg_info -E "zsh*"', :env => nil, :returns => [0,1]).and_return(pkg_info)
-      #@provider.should_receive(:popen4).with('pkg_info -E "zsh*"').and_yield(@pid, @stdin, ["zsh-4.3.6_7"], @stderr).and_return(@status)
+      pkg_info = OpenStruct.new(stdout: "zsh-4.3.6_7")
+      expect(@provider).to receive(:shell_out_compacted!).with("pkg_info", "-E", "zsh*", env: nil, returns: [0, 1], timeout: 900).and_return(pkg_info)
       allow(@provider).to receive(:package_name).and_return("zsh")
       expect(@provider.current_installed_version).to eq("4.3.6_7")
     end
 
     it "does not set the current version number when the package is not installed" do
-      pkg_info = OpenStruct.new(:stdout => "")
-      expect(@provider).to receive(:shell_out!).with('pkg_info -E "zsh*"', :env => nil, :returns => [0,1]).and_return(pkg_info)
+      pkg_info = OpenStruct.new(stdout: "")
+      expect(@provider).to receive(:shell_out_compacted!).with("pkg_info", "-E", "zsh*", env: nil, returns: [0, 1], timeout: 900).and_return(pkg_info)
       allow(@provider).to receive(:package_name).and_return("zsh")
       expect(@provider.current_installed_version).to be_nil
     end
 
     it "should return the port path for a valid port name" do
-      whereis = OpenStruct.new(:stdout => "zsh: /usr/ports/shells/zsh")
-      expect(@provider).to receive(:shell_out!).with("whereis -s zsh", :env => nil).and_return(whereis)
-      #@provider.should_receive(:popen4).with("whereis -s zsh").and_yield(@pid, @stdin, ["zsh: /usr/ports/shells/zsh"], @stderr).and_return(@status)
+      whereis = OpenStruct.new(stdout: "zsh: /usr/ports/shells/zsh")
+      expect(@provider).to receive(:shell_out_compacted!).with("whereis", "-s", "zsh", env: nil, timeout: 900).and_return(whereis)
       allow(@provider).to receive(:port_name).and_return("zsh")
       expect(@provider.port_path).to eq("/usr/ports/shells/zsh")
     end
@@ -101,24 +101,24 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     # Not happy with the form of these tests as they are far too closely tied to the implementation and so very fragile.
     it "should return the ports candidate version when given a valid port path" do
       allow(@provider).to receive(:port_path).and_return("/usr/ports/shells/zsh")
-      make_v = OpenStruct.new(:stdout => "4.3.6\n", :exitstatus => 0)
-      expect(@provider).to receive(:shell_out!).with("make -V PORTVERSION", {:cwd=>"/usr/ports/shells/zsh", :returns=>[0, 1], :env=>nil}).and_return(make_v)
+      make_v = OpenStruct.new(stdout: "4.3.6\n", exitstatus: 0)
+      expect(@provider).to receive(:shell_out_compacted!).with("make", "-V", "PORTVERSION", { cwd: "/usr/ports/shells/zsh", returns: [0, 1], env: nil, timeout: 900 }).and_return(make_v)
       expect(@provider.ports_candidate_version).to eq("4.3.6")
     end
 
     it "should figure out the package name when we have ports" do
-      allow(::File).to receive(:exist?).with('/usr/ports/Makefile').and_return(true)
+      allow(::File).to receive(:exist?).with("/usr/ports/Makefile").and_return(true)
       allow(@provider).to receive(:port_path).and_return("/usr/ports/shells/zsh")
-      make_v = OpenStruct.new(:stdout => "zsh-4.3.6_7\n", :exitstatus => 0)
-      expect(@provider).to receive(:shell_out!).with("make -V PKGNAME", {:cwd=>"/usr/ports/shells/zsh", :env=>nil, :returns=>[0, 1]}).and_return(make_v)
-      #@provider.should_receive(:ports_makefile_variable_value).with("PKGNAME").and_return("zsh-4.3.6_7")
+      make_v = OpenStruct.new(stdout: "zsh-4.3.6_7\n", exitstatus: 0)
+      expect(@provider).to receive(:shell_out_compacted!).with("make", "-V", "PKGNAME", { cwd: "/usr/ports/shells/zsh", env: nil, returns: [0, 1], timeout: 900 }).and_return(make_v)
+      # @provider.should_receive(:ports_makefile_variable_value).with("PKGNAME").and_return("zsh-4.3.6_7")
       expect(@provider.package_name).to eq("zsh")
     end
   end
 
   describe Chef::Provider::Package::Freebsd::Pkg, "install_package" do
     before(:each) do
-      @cmd_result = OpenStruct.new(:status => true)
+      @cmd_result = OpenStruct.new(status: true)
 
       @provider.current_resource = @current_resource
       allow(@provider).to receive(:package_name).and_return("zsh")
@@ -127,22 +127,22 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     end
 
     it "should run pkg_add -r with the package name" do
-      expect(@provider).to receive(:shell_out!).with("pkg_add -r zsh", :env => nil).and_return(@cmd_result)
+      expect(@provider).to receive(:shell_out_compacted!).with("pkg_add", "-r", "zsh", env: nil, timeout: 900).and_return(@cmd_result)
       @provider.install_package("zsh", "4.3.6_7")
     end
   end
 
   describe Chef::Provider::Package::Freebsd::Pkg, "port path" do
     before do
-      #@node = Chef::Node.new
+      # @node = Chef::Node.new
       @new_resource = Chef::Resource::Package.new("zsh")
       @new_resource.cookbook_name = "adventureclub"
       @provider = Chef::Provider::Package::Freebsd::Pkg.new(@new_resource, @run_context)
     end
 
     it "should figure out the port path from the package_name using whereis" do
-      whereis = OpenStruct.new(:stdout => "zsh: /usr/ports/shells/zsh")
-      expect(@provider).to receive(:shell_out!).with("whereis -s zsh", :env=>nil).and_return(whereis)
+      whereis = OpenStruct.new(stdout: "zsh: /usr/ports/shells/zsh")
+      expect(@provider).to receive(:shell_out_compacted!).with("whereis", "-s", "zsh", env: nil, timeout: 900).and_return(whereis)
       expect(@provider.port_path).to eq("/usr/ports/shells/zsh")
     end
 
@@ -174,18 +174,18 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
       allow(@provider).to receive(:package_name).and_return("ruby18-iconv")
       allow(@provider).to receive(:latest_link_name).and_return("ruby18-iconv")
 
-      @install_result = OpenStruct.new(:status => true)
+      @install_result = OpenStruct.new(status: true)
     end
 
     it "should run pkg_add -r with the package name" do
-      expect(@provider).to receive(:shell_out!).with("pkg_add -r ruby18-iconv", :env => nil).and_return(@install_result)
+      expect(@provider).to receive(:shell_out_compacted!).with("pkg_add", "-r", "ruby18-iconv", env: nil, timeout: 900).and_return(@install_result)
       @provider.install_package("ruby-iconv", "1.0")
     end
   end
 
   describe Chef::Provider::Package::Freebsd::Pkg, "remove_package" do
     before(:each) do
-      @pkg_delete = OpenStruct.new(:status => true)
+      @pkg_delete = OpenStruct.new(status: true)
       @new_resource.version "4.3.6_7"
       @current_resource.version "4.3.6_7"
       @provider.current_resource = @current_resource
@@ -193,7 +193,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     end
 
     it "should run pkg_delete with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("pkg_delete zsh-4.3.6_7", :env => nil).and_return(@pkg_delete)
+      expect(@provider).to receive(:shell_out_compacted!).with("pkg_delete", "zsh-4.3.6_7", env: nil, timeout: 900).and_return(@pkg_delete)
       @provider.remove_package("zsh", "4.3.6_7")
     end
   end
@@ -212,15 +212,15 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     end
 
     it "should return the port path for a valid port name" do
-      whereis = OpenStruct.new(:stdout => "bonnie++: /usr/ports/benchmarks/bonnie++")
-      expect(@provider).to receive(:shell_out!).with("whereis -s bonnie++", :env => nil).and_return(whereis)
+      whereis = OpenStruct.new(stdout: "bonnie++: /usr/ports/benchmarks/bonnie++")
+      expect(@provider).to receive(:shell_out_compacted!).with("whereis", "-s", "bonnie++", env: nil, timeout: 900).and_return(whereis)
       allow(@provider).to receive(:port_name).and_return("bonnie++")
       expect(@provider.port_path).to eq("/usr/ports/benchmarks/bonnie++")
     end
 
     it "should return the version number when it is installed" do
-      pkg_info = OpenStruct.new(:stdout => "bonnie++-1.96")
-      expect(@provider).to receive(:shell_out!).with('pkg_info -E "bonnie++*"', :env => nil, :returns => [0,1]).and_return(pkg_info)
+      pkg_info = OpenStruct.new(stdout: "bonnie++-1.96")
+      expect(@provider).to receive(:shell_out_compacted!).with("pkg_info", "-E", "bonnie++*", env: nil, returns: [0, 1], timeout: 900).and_return(pkg_info)
       allow(@provider).to receive(:package_name).and_return("bonnie++")
       expect(@provider.current_installed_version).to eq("1.96")
     end
@@ -252,8 +252,8 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
       allow(@provider).to receive(:package_name).and_return("perl")
       allow(@provider).to receive(:latest_link_name).and_return("perl")
 
-      cmd = OpenStruct.new(:status => true)
-      expect(@provider).to receive(:shell_out!).with("pkg_add -r perl", :env => nil).and_return(cmd)
+      cmd = OpenStruct.new(status: true)
+      expect(@provider).to receive(:shell_out_compacted!).with("pkg_add", "-r", "perl", env: nil, timeout: 900).and_return(cmd)
       @provider.install_package("perl5.8", "5.8.8_1")
     end
 
@@ -266,8 +266,8 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
       allow(@provider).to receive(:package_name).and_return("mysql-server")
       allow(@provider).to receive(:latest_link_name).and_return("mysql50-server")
 
-      cmd = OpenStruct.new(:status => true)
-      expect(@provider).to receive(:shell_out!).with("pkg_add -r mysql50-server", :env=>nil).and_return(cmd)
+      cmd = OpenStruct.new(status: true)
+      expect(@provider).to receive(:shell_out_compacted!).with("pkg_add", "-r", "mysql50-server", env: nil, timeout: 900).and_return(cmd)
       @provider.install_package("mysql50-server", "5.0.45_1")
     end
   end

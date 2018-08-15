@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Digester do
   before(:each) do
@@ -40,11 +40,10 @@ describe Chef::Digester do
 
     it "generates a checksum from a non-file IO object" do
       io = StringIO.new("riseofthemachines\nriseofthechefs\n")
-      expected_md5 = '0e157ac1e2dd73191b76067fb6b4bceb'
+      expected_md5 = "0e157ac1e2dd73191b76067fb6b4bceb"
       expect(@cache.generate_md5_checksum(io)).to eq(expected_md5)
     end
 
   end
 
 end
-

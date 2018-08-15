@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,15 +22,22 @@ require "chef/resource/scm"
 class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
-      provides :subversion
+      description "Use the subversion resource to manage source control resources that exist in a Subversion repository."
 
-      def initialize(name, run_context=nil)
-        super
-        @svn_arguments = '--no-auth-cache'
-        @svn_info_args = '--no-auth-cache'
-        @resource_name = :subversion
-        allowed_actions << :force_export
-      end
+      allowed_actions :force_export
+
+      property :svn_arguments, [String, nil, FalseClass],
+               description: "The extra arguments that are passed to the Subversion command.",
+               coerce: proc { |v| v == false ? nil : v }, # coerce false to nil
+               default: "--no-auth-cache"
+
+      property :svn_info_args, [String, nil, FalseClass],
+               description: "Use when the svn info command is used by the chef-client and arguments need to be passed. The svn_arguments command does not work when the svn info command is used.",
+               coerce: proc { |v| v == false ? nil : v }, # coerce false to nil
+               default: "--no-auth-cache"
+
+      property :svn_binary, String,
+               description: "The location of the svn binary."
 
       # Override exception to strip password if any, so it won't appear in logs and different Chef notifications
       def custom_exception_message(e)

@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class Chef
   class Util
@@ -28,12 +28,15 @@ class Chef
 end
 
 describe Chef::Provider::User::Windows do
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+
   before(:each) do
     @node = Chef::Node.new
-    @new_resource = Chef::Resource::User.new("monkey")
+    @new_resource = Chef::Resource::User::WindowsUser.new("monkey")
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @current_resource = Chef::Resource::User.new("monkey")
+    allow(@run_context).to receive(:logger).and_return(logger)
+    @current_resource = Chef::Resource::User::WindowsUser.new("monkey")
 
     @net_user = double("Chef::Util::Windows::NetUser")
     allow(Chef::Util::Windows::NetUser).to receive(:new).and_return(@net_user)
@@ -48,7 +51,7 @@ describe Chef::Provider::User::Windows do
     @provider = Chef::Provider::User::Windows.new(@new_resource, @run_context)
   end
 
-  describe "when comparing the user's current attributes to the desired attributes" do
+  describe "when comparing the user's current properties to the desired properties" do
     before do
       @new_resource.comment   "Adam Jacob"
       @new_resource.uid       1000
@@ -60,9 +63,9 @@ describe Chef::Provider::User::Windows do
       @provider.current_resource = @new_resource.clone
     end
 
-    describe "and the attributes match" do
+    describe "and the properties match" do
       it "doesn't set the comment field to be updated" do
-        expect(@provider.set_options).not_to have_key(:full_name)
+        expect(@provider.set_options).not_to have_key(:comment)
       end
 
       it "doesn't set the home directory to be updated" do
@@ -87,9 +90,9 @@ describe Chef::Provider::User::Windows do
 
     end
 
-    describe "and the attributes do not match" do
+    describe "and the properties do not match" do
       before do
-        @current_resource = Chef::Resource::User.new("adam")
+        @current_resource = Chef::Resource::User::WindowsUser.new("adam")
         @current_resource.comment   "Adam Jacob-foo"
         @current_resource.uid       1111
         @current_resource.gid       1111
@@ -99,47 +102,47 @@ describe Chef::Provider::User::Windows do
         @provider.current_resource = @current_resource
       end
 
-      it "marks the full_name field to be updated" do
-        expect(@provider.set_options[:full_name]).to eq("Adam Jacob")
+      it "marks the comment field to be updated" do
+        expect(@provider.set_options[:comment]).to eq("Adam Jacob")
       end
 
-      it "marks the home_dir attribute to be updated" do
-        expect(@provider.set_options[:home_dir]).to eq('/home/adam')
+      it "marks the home_dir property to be updated" do
+        expect(@provider.set_options[:home_dir]).to eq("/home/adam")
       end
 
-      it "marks the primary_group_id attribute to be updated" do
-        expect(@provider.set_options[:primary_group_id]).to eq(1000)
+      it "ignores the primary_group_id property" do
+        expect(@provider.set_options[:primary_group_id]).to eq(nil)
       end
 
-      it "marks the user_id attribute to be updated" do
+      it "marks the user_id property to be updated" do
         expect(@provider.set_options[:user_id]).to eq(1000)
       end
 
-      it "marks the script_path attribute to be updated" do
-        expect(@provider.set_options[:script_path]).to eq('/usr/bin/zsh')
+      it "marks the script_path property to be updated" do
+        expect(@provider.set_options[:script_path]).to eq("/usr/bin/zsh")
       end
 
-      it "marks the password attribute to be updated" do
-        expect(@provider.set_options[:password]).to eq('abracadabra')
+      it "marks the password property to be updated" do
+        expect(@provider.set_options[:password]).to eq("abracadabra")
       end
     end
   end
 
   describe "when creating the user" do
     it "should call @net_user.add with the return of set_options" do
-      allow(@provider).to receive(:set_options).and_return(:name=> "monkey")
-      expect(@net_user).to receive(:add).with(:name=> "monkey")
+      allow(@provider).to receive(:set_options).and_return(name: "monkey")
+      expect(@net_user).to receive(:add).with(name: "monkey")
       @provider.create_user
     end
   end
 
   describe "manage_user" do
     before(:each) do
-      allow(@provider).to receive(:set_options).and_return(:name=> "monkey")
+      allow(@provider).to receive(:set_options).and_return(name: "monkey")
     end
 
     it "should call @net_user.update with the return of set_options" do
-      expect(@net_user).to receive(:update).with(:name=> "monkey")
+      expect(@net_user).to receive(:update).with(name: "monkey")
       @provider.manage_user
     end
   end

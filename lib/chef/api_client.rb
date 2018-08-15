@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,13 +17,19 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/server_api"
 
+# DEPRECATION NOTE
+#
+# This code will be removed in Chef 13 in favor of the code in Chef::ApiClientV1,
+# which will be moved to this namespace. New development should occur in
+# Chef::ApiClientV1 until the time before Chef 13.
 class Chef
   class ApiClient
 
@@ -32,7 +38,7 @@ class Chef
 
     # Create a new Chef::ApiClient object.
     def initialize
-      @name = ''
+      @name = ""
       @public_key = nil
       @private_key = nil
       @admin = false
@@ -41,62 +47,62 @@ class Chef
 
     # Gets or sets the client name.
     #
-    # @params [Optional String] The name must be alpha-numeric plus - and _.
+    # @param [Optional String] The name must be alpha-numeric plus - and _.
     # @return [String] The current value of the name.
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(
         :name,
         arg,
-        :regex => /^[\-[:alnum:]_\.]+$/
+        regex: /^[\-[:alnum:]_\.]+$/
       )
     end
 
     # Gets or sets whether this client is an admin.
     #
-    # @params [Optional True/False] Should be true or false - default is false.
+    # @param [Optional True/False] Should be true or false - default is false.
     # @return [True/False] The current value
-    def admin(arg=nil)
+    def admin(arg = nil)
       set_or_return(
         :admin,
         arg,
-        :kind_of => [ TrueClass, FalseClass ]
+        kind_of: [ TrueClass, FalseClass ]
       )
     end
 
     # Gets or sets the public key.
     #
-    # @params [Optional String] The string representation of the public key.
+    # @param [Optional String] The string representation of the public key.
     # @return [String] The current value.
-    def public_key(arg=nil)
+    def public_key(arg = nil)
       set_or_return(
         :public_key,
         arg,
-        :kind_of => String
+        kind_of: String
       )
     end
 
     # Gets or sets whether this client is a validator.
     #
-    # @params [Boolean] whether or not the client is a validator.  If
+    # @param [Boolean] arg whether or not the client is a validator.  If
     #   `nil`, retrieves the already-set value.
     # @return [Boolean] The current value
-    def validator(arg=nil)
+    def validator(arg = nil)
       set_or_return(
         :validator,
         arg,
-        :kind_of => [TrueClass, FalseClass]
+        kind_of: [TrueClass, FalseClass]
       )
     end
 
     # Gets or sets the private key.
     #
-    # @params [Optional String] The string representation of the private key.
+    # @param [Optional String] The string representation of the private key.
     # @return [String] The current value.
-    def private_key(arg=nil)
+    def private_key(arg = nil)
       set_or_return(
         :private_key,
         arg,
-        :kind_of => [String, FalseClass]
+        kind_of: [String, FalseClass]
       )
     end
 
@@ -110,8 +116,8 @@ class Chef
         "public_key" => @public_key,
         "validator" => @validator,
         "admin" => @admin,
-        'json_class' => self.class.name,
-        "chef_type" => "client"
+        "json_class" => self.class.name,
+        "chef_type" => "client",
       }
       result["private_key"] = @private_key if @private_key
       result
@@ -134,16 +140,12 @@ class Chef
       client
     end
 
-    def self.json_create(data)
-      from_hash(data)
-    end
-
     def self.from_json(j)
       from_hash(Chef::JSONCompat.parse(j))
     end
 
     def self.http_api
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "0" })
     end
 
     def self.reregister(name)
@@ -151,11 +153,11 @@ class Chef
       api_client.reregister
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:client) do |n|
-          n = self.json_create(n) if n.instance_of?(Hash)
+          n = json_create(n) if n.instance_of?(Hash)
           response[n.name] = n
         end
         response
@@ -170,7 +172,7 @@ class Chef
       if response.kind_of?(Chef::ApiClient)
         response
       else
-        json_create(response)
+        from_hash(response)
       end
     end
 
@@ -181,20 +183,18 @@ class Chef
 
     # Save this client via the REST API, returns a hash including the private key
     def save
-      begin
-        http_api.put("clients/#{name}", { :name => self.name, :admin => self.admin, :validator => self.validator})
-      rescue Net::HTTPServerException => e
-        # If that fails, go ahead and try and update it
-        if e.response.code == "404"
-          http_api.post("clients", {:name => self.name, :admin => self.admin, :validator => self.validator })
-        else
-          raise e
-        end
+      http_api.put("clients/#{name}", { name: name, admin: admin, validator: validator })
+    rescue Net::HTTPServerException => e
+      # If that fails, go ahead and try and update it
+      if e.response.code == "404"
+        http_api.post("clients", { name: name, admin: admin, validator: validator })
+      else
+        raise e
       end
     end
 
     def reregister
-      reregistered_self = http_api.put("clients/#{name}", { :name => name, :admin => admin, :validator => validator, :private_key => true })
+      reregistered_self = http_api.put("clients/#{name}", { name: name, admin: admin, validator: validator, private_key: true })
       if reregistered_self.respond_to?(:[])
         private_key(reregistered_self["private_key"])
       else
@@ -215,11 +215,11 @@ class Chef
 
     def inspect
       "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}' validator:'#{validator}' " +
-      "public_key:'#{public_key}' private_key:'#{private_key}'"
+        "public_key:'#{public_key}' private_key:'#{private_key}'"
     end
 
     def http_api
-      @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "0" })
     end
 
   end

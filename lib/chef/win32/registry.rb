@@ -1,8 +1,8 @@
 #
-# Author:: Prajakta Purohit (<prajakta@opscode.com>)
-# Author:: Lamont Granquist (<lamont@opscode.com>)
+# Author:: Prajakta Purohit (<prajakta@chef.io>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: 2012, Opscode, Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,21 +16,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/reserved_names'
+require "chef/reserved_names"
+require "chef/win32/api"
+require "chef/mixin/wide_string"
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'win32/registry'
-  require 'win32/api'
+  require "chef/monkey_patches/win32/registry"
+  require "chef/win32/api/registry"
+  require "win32/registry"
+  require "win32/api"
 end
 
 class Chef
   class Win32
     class Registry
 
-      attr_accessor :run_context
-      attr_accessor :architecture
+      if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+        include Chef::ReservedNames::Win32::API::Registry
+        extend Chef::ReservedNames::Win32::API::Registry
+      end
 
-      def initialize(run_context=nil, user_architecture=:machine)
+      include Chef::Mixin::WideString
+      extend Chef::Mixin::WideString
+
+      attr_accessor :run_context
+      attr_reader :architecture
+
+      def initialize(run_context = nil, user_architecture = :machine)
         @run_context = run_context
         self.architecture = user_architecture
       end
@@ -44,35 +56,37 @@ class Chef
         hive, key = get_hive_and_key(key_path)
         key_exists!(key_path)
         values = hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          reg.map { |name, type, data| {:name=>name, :type=>get_name_from_type(type), :data=>data} }
+          reg.map { |name, type, data| { name: name, type: get_name_from_type(type), data: data } }
         end
       end
 
       def set_value(key_path, value)
-        Chef::Log.debug("Updating value #{value[:name]} in registry key #{key_path} with type #{value[:type]} and data #{value[:data]}")
+        data = value[:data]
+        data = data.to_s if value[:type] == :string
+        Chef::Log.trace("Updating value #{value[:name]} in registry key #{key_path} with type #{value[:type]} and data #{data}")
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         if value_exists?(key_path, value)
           if data_exists?(key_path, value)
-            Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} already had those values, not updated")
+            Chef::Log.trace("Value #{value[:name]} in registry key #{key_path} already had those values, not updated")
             return false
           else
             hive.open(key, ::Win32::Registry::KEY_SET_VALUE | ::Win32::Registry::KEY_QUERY_VALUE | registry_system_architecture) do |reg|
-              reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
+              reg.write(value[:name], get_type_from_name(value[:type]), data)
             end
-            Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} updated")
+            Chef::Log.trace("Value #{value[:name]} in registry key #{key_path} updated")
           end
         else
           hive.open(key, ::Win32::Registry::KEY_SET_VALUE | ::Win32::Registry::KEY_QUERY_VALUE | registry_system_architecture) do |reg|
-            reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
+            reg.write(value[:name], get_type_from_name(value[:type]), data)
           end
-          Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} created")
+          Chef::Log.trace("Value #{value[:name]} in registry key #{key_path} created")
         end
         true
       end
 
       def delete_value(key_path, value)
-        Chef::Log.debug("Deleting value #{value[:name]} from registry key #{key_path}")
+        Chef::Log.trace("Deleting value #{value[:name]} from registry key #{key_path}")
         if value_exists?(key_path, value)
           begin
             hive, key = get_hive_and_key(key_path)
@@ -81,70 +95,55 @@ class Chef
           end
           hive.open(key, ::Win32::Registry::KEY_SET_VALUE | registry_system_architecture) do |reg|
             reg.delete_value(value[:name])
-            Chef::Log.debug("Deleted value #{value[:name]} from registry key #{key_path}")
+            Chef::Log.trace("Deleted value #{value[:name]} from registry key #{key_path}")
           end
         else
-          Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} does not exist, not updated")
+          Chef::Log.trace("Value #{value[:name]} in registry key #{key_path} does not exist, not updated")
         end
         true
       end
 
       def create_key(key_path, recursive)
-        Chef::Log.debug("Creating registry key #{key_path}")
+        Chef::Log.trace("Creating registry key #{key_path}")
         if keys_missing?(key_path)
           if recursive == true
-            Chef::Log.debug("Registry key #{key_path} has missing subkeys, and recursive specified, creating them....")
+            Chef::Log.trace("Registry key #{key_path} has missing subkeys, and recursive specified, creating them....")
             create_missing(key_path)
           else
             raise Chef::Exceptions::Win32RegNoRecursive, "Registry key #{key_path} has missing subkeys, and recursive not specified"
           end
         end
         if key_exists?(key_path)
-          Chef::Log.debug("Registry key #{key_path} already exists, doing nothing")
+          Chef::Log.trace("Registry key #{key_path} already exists, doing nothing")
         else
           hive, key = get_hive_and_key(key_path)
           hive.create(key, ::Win32::Registry::KEY_WRITE | registry_system_architecture)
-          Chef::Log.debug("Registry key #{key_path} created")
+          Chef::Log.trace("Registry key #{key_path} created")
         end
         true
       end
 
       def delete_key(key_path, recursive)
-        Chef::Log.debug("Deleting registry key #{key_path}")
+        Chef::Log.trace("Deleting registry key #{key_path}")
         unless key_exists?(key_path)
-          Chef::Log.debug("Registry key #{key_path}, does not exist, not deleting")
+          Chef::Log.trace("Registry key #{key_path}, does not exist, not deleting")
           return true
         end
-        #key_path is in the form "HKLM\Software\Opscode" for example, extracting
-        #hive = HKLM,
-        #hive_namespace = ::Win32::Registry::HKEY_LOCAL_MACHINE
-        hive = key_path.split("\\").shift
-        hive_namespace, key_including_parent = get_hive_and_key(key_path)
-        if has_subkeys?(key_path)
-          if recursive == true
-            subkeys = get_subkeys(key_path)
-            subkeys.each do |key|
-              keypath_to_check = hive+"\\"+key_including_parent+"\\"+key
-              Chef::Log.debug("Deleting registry key #{key_path} recursively")
-              delete_key(keypath_to_check, true)
-            end
-            delete_key_ex(hive_namespace, key_including_parent)
-          else
-            raise Chef::Exceptions::Win32RegNoRecursive, "Registry key #{key_path} has subkeys, and recursive not specified"
-          end
-        else
-          delete_key_ex(hive_namespace, key_including_parent)
-          return true
+        if has_subkeys?(key_path) && !recursive
+          raise Chef::Exceptions::Win32RegNoRecursive, "Registry key #{key_path} has subkeys, and recursive not specified"
         end
+        hive, key_including_parent = get_hive_and_key(key_path)
+        # key_including_parent: Software\\Root\\Branch\\Fruit
+        # key => Fruit
+        # key_parent => Software\\Root\\Branch
+        key_parts = key_including_parent.split("\\")
+        key = key_parts.pop
+        key_parent = key_parts.join("\\")
+        hive.open(key_parent, ::Win32::Registry::KEY_WRITE | registry_system_architecture) do |reg|
+          reg.delete_key(key, recursive)
+        end
+        Chef::Log.trace("Registry key #{key_path} deleted")
         true
-      end
-
-      #Using the 'RegDeleteKeyEx' Windows API that correctly supports WOW64 systems (Win2003)
-      #instead of the 'RegDeleteKey'
-      def delete_key_ex(hive, key)
-        regDeleteKeyEx = ::Win32::API.new('RegDeleteKeyEx', 'LPLL', 'L', 'advapi32')
-        hive_num = hive.hkey - (1 << 32)
-        regDeleteKeyEx.call(hive_num, key, ::Win32::Registry::KEY_WRITE | registry_system_architecture, 0)
       end
 
       def key_exists?(key_path)
@@ -171,16 +170,16 @@ class Chef
         rescue Chef::Exceptions::Win32RegHiveMissing => e
           return false
         end
-        return true
+        true
       end
 
       def has_subkeys?(key_path)
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          reg.each_key{ |key| return true }
+          reg.each_key { |key| return true }
         end
-        return false
+        false
       end
 
       def get_subkeys(key_path)
@@ -188,9 +187,9 @@ class Chef
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          reg.each_key{ |current_key| subkeys << current_key }
+          reg.each_key { |current_key| subkeys << current_key }
         end
-        return subkeys
+        subkeys
       end
 
       # 32-bit chef clients running on 64-bit machines will default to reading the 64-bit registry
@@ -203,9 +202,9 @@ class Chef
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          return true if reg.any? {|val| val == value[:name] }
+          return true if reg.any? { |val| safely_downcase(val) == safely_downcase(value[:name]) }
         end
-        return false
+        false
       end
 
       def data_exists?(key_path, value)
@@ -213,14 +212,14 @@ class Chef
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type, val_data|
-            if val_name == value[:name] &&
-              val_type == get_type_from_name(value[:type]) &&
-              val_data == value[:data]
+            if safely_downcase(val_name) == safely_downcase(value[:name]) &&
+                val_type == get_type_from_name(value[:type]) &&
+                val_data == value[:data]
               return true
             end
           end
         end
-        return false
+        false
       end
 
       def value_exists!(key_path, value)
@@ -250,26 +249,13 @@ class Chef
             end
           end
         end
-        return false
+        false
       end
 
       def type_matches!(key_path, value)
         unless type_matches?(key_path, value)
           raise Chef::Exceptions::Win32RegTypesMismatch, "Registry key #{key_path} has a value #{value[:name]} with a type that is not #{value[:type]}"
         end
-      end
-
-      def get_type_from_name(val_type)
-        value = {
-          :binary => ::Win32::Registry::REG_BINARY,
-          :string => ::Win32::Registry::REG_SZ,
-          :multi_string => ::Win32::Registry::REG_MULTI_SZ,
-          :expand_string => ::Win32::Registry::REG_EXPAND_SZ,
-          :dword => ::Win32::Registry::REG_DWORD,
-          :dword_big_endian => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          :qword => ::Win32::Registry::REG_QWORD
-        }[val_type]
-        return value
       end
 
       def keys_missing?(key_path)
@@ -288,6 +274,13 @@ class Chef
       end
 
       private
+
+      def safely_downcase(val)
+        if val.is_a? String
+          return val.downcase
+        end
+        val
+      end
 
       def node
         run_context && run_context.node
@@ -323,18 +316,18 @@ class Chef
 
         raise Chef::Exceptions::Win32RegHiveMissing, "Registry Hive #{hive_name} does not exist" unless hive
 
-        return hive, key
+        [hive, key]
       end
 
       def _type_name_map
         {
-          :binary => ::Win32::Registry::REG_BINARY,
-          :string => ::Win32::Registry::REG_SZ,
-          :multi_string => ::Win32::Registry::REG_MULTI_SZ,
-          :expand_string => ::Win32::Registry::REG_EXPAND_SZ,
-          :dword => ::Win32::Registry::REG_DWORD,
-          :dword_big_endian => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          :qword => ::Win32::Registry::REG_QWORD
+          binary: ::Win32::Registry::REG_BINARY,
+          string: ::Win32::Registry::REG_SZ,
+          multi_string: ::Win32::Registry::REG_MULTI_SZ,
+          expand_string: ::Win32::Registry::REG_EXPAND_SZ,
+          dword: ::Win32::Registry::REG_DWORD,
+          dword_big_endian: ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
+          qword: ::Win32::Registry::REG_QWORD,
         }
       end
 
@@ -350,9 +343,9 @@ class Chef
           2 => ::Win32::Registry::REG_EXPAND_SZ,
           4 => ::Win32::Registry::REG_DWORD,
           5 => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          11 => ::Win32::Registry::REG_QWORD
+          11 => ::Win32::Registry::REG_QWORD,
         }[val_type]
-        return value
+        value
       end
 
       def create_missing(key_path)
@@ -364,7 +357,7 @@ class Chef
         missing_key_arr.each do |intermediate_key|
           existing_key_path = existing_key_path << "\\" << intermediate_key
           if !key_exists?(existing_key_path)
-            Chef::Log.debug("Recursively creating registry key #{existing_key_path}")
+            Chef::Log.trace("Recursively creating registry key #{existing_key_path}")
             hive.create(get_key(existing_key_path), ::Win32::Registry::KEY_ALL_ACCESS | registry_system_architecture)
           end
         end

@@ -1,5 +1,5 @@
 # Author:: Xabier de Zuazo (<xabier@onddo.com>)
-# Copyright:: Copyright (c) 2013 Onddo Labs, SL.
+# Copyright:: Copyright 2013-2016, Onddo Labs, SL.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
-require 'chef/version/platform'
+require "spec_helper"
+require "chef/version/platform"
 
 describe Chef::Version::Platform do
 
   it "is a subclass of Chef::Version" do
-    v = Chef::Version::Platform.new('1.1')
+    v = Chef::Version::Platform.new("1.1")
     expect(v).to be_an_instance_of(Chef::Version::Platform)
     expect(v).to be_a_kind_of(Chef::Version)
   end
@@ -30,7 +30,7 @@ describe Chef::Version::Platform do
   end
 
   describe "when creating valid Versions" do
-    good_versions = %w(1 1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003 1.2-STABLE 10.0-BETA3 9.1-RELEASE-p3)
+    good_versions = %w{1 1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003 1.2-STABLE 10.0-BETA3 9.1-RELEASE-p3}
     good_versions.each do |v|
       it "should accept '#{v}'" do
         Chef::Version::Platform.new v
@@ -58,4 +58,3 @@ describe Chef::Version::Platform do
   end
 
 end
-

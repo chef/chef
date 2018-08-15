@@ -1,6 +1,6 @@
 #--
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,13 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'erubis'
+require "tempfile"
+require "erubis"
 
 class Chef
   module Mixin
     module Template
 
-      # == ChefContext
       # ChefContext was previously used to mix behavior into Erubis::Context so
       # that it would be available to templates. This behavior has now moved to
       # TemplateContext, but this module is still mixed in to the
@@ -32,7 +31,6 @@ class Chef
       module ChefContext
       end
 
-      # == TemplateContext
       # TemplateContext is the base context class for all templates in Chef. It
       # defines user-facing extensions to the base Erubis::Context to provide
       # enhanced features. Individual instances of TemplateContext can be
@@ -43,6 +41,52 @@ class Chef
         include ChefContext
 
         attr_reader :_extension_modules
+
+        #
+        # Helpers for adding context of which resource is rendering the template (CHEF-5012)
+        #
+
+        # name of the cookbook containing the template resource, e.g.:
+        #   test
+        #
+        # @return [String] cookbook name
+        attr_reader :cookbook_name
+
+        # name of the recipe containing the template resource, e.g.:
+        #   default
+        #
+        # @return [String] recipe name
+        attr_reader :recipe_name
+
+        # string representation of the line in the recipe containing the template resource, e.g.:
+        #   /Users/lamont/solo/cookbooks/test/recipes/default.rb:2:in `from_file'
+        #
+        # @return [String] recipe line
+        attr_reader :recipe_line_string
+
+        # path to the recipe containing the template resource, e.g.:
+        #   /Users/lamont/solo/cookbooks/test/recipes/default.rb
+        #
+        # @return [String] recipe path
+        attr_reader :recipe_path
+
+        # line in the recipe containing the template resource, e.g.:
+        #   2
+        #
+        # @return [String] recipe line
+        attr_reader :recipe_line
+
+        # name of the template source itself, e.g.:
+        #   foo.erb
+        #
+        # @return [String] template name
+        attr_reader :template_name
+
+        # path to the template source itself, e.g.:
+        #   /Users/lamont/solo/cookbooks/test/templates/default/foo.erb
+        #
+        # @return [String] template path
+        attr_reader :template_path
 
         def initialize(variables)
           super
@@ -59,7 +103,7 @@ class Chef
         def node
           return @node if @node
           raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
-                "include a node variable if you plan to use it."
+            "include a node variable if you plan to use it."
         end
 
         #
@@ -89,6 +133,7 @@ class Chef
           raise "You cannot render partials in this context" unless @template_finder
 
           partial_variables = options.delete(:variables) || _public_instance_variables
+          partial_variables[:template_finder] = @template_finder
           partial_context = self.class.new(partial_variables)
           partial_context._extend_modules(@_extension_modules)
 
@@ -129,7 +174,7 @@ class Chef
           # this template.
 
           if Chef::Platform.windows?
-            output = output.gsub(/\r?\n/,"\r\n")
+            output = output.gsub(/\r?\n/, "\r\n")
           end
 
           output
@@ -139,7 +184,7 @@ class Chef
           module_names.each do |mod|
             context_methods = [:node, :render, :render_template, :render_template_from_string]
             context_methods.each do |core_method|
-              if mod.method_defined?(core_method) or mod.private_method_defined?(core_method)
+              if mod.method_defined?(core_method) || mod.private_method_defined?(core_method)
                 Chef::Log.warn("Core template method `#{core_method}' overridden by extension module #{mod}")
               end
             end
@@ -177,7 +222,7 @@ class Chef
         end
 
         def line_number
-          @line_number ||= $1.to_i if original_exception.backtrace.find {|line| line =~ /\(erubis\):(\d+)/ }
+          @line_number ||= $1.to_i if original_exception.backtrace.find { |line| line =~ /\(erubis\):(\d+)/ }
         end
 
         def source_location
@@ -198,7 +243,7 @@ class Chef
             contextual_lines = lines[beginning_line, source_size]
             output = []
             contextual_lines.each_with_index do |line, index|
-              line_number = (index+beginning_line+1).to_s.rjust(3)
+              line_number = (index + beginning_line + 1).to_s.rjust(3)
               output << "#{line_number}: #{line}"
             end
             output.join("\n")

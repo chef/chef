@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@
 # fakeweb is distributed under the MIT license, which is copied below:
 # ---
 #
-# Copyright 2006-2010 Blaine Cook, Chris Kampmeier, and other contributors
+# Copyright 2006-2016, Blaine Cook, Chris Kampmeier, and other contributors
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -43,7 +43,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'chef_zero/server'
+require "chef_zero/server"
 
 class Chef
   class HTTP
@@ -67,7 +67,7 @@ class Chef
           end
 
           if block_given?
-            block.call(@body)
+            yield(@body)
           else
             super
           end
@@ -81,59 +81,59 @@ class Chef
       #
       # HTTP status codes and descriptions
       STATUS_MESSAGE = {
-        100 => 'Continue',
-        101 => 'Switching Protocols',
-        200 => 'OK',
-        201 => 'Created',
-        202 => 'Accepted',
-        203 => 'Non-Authoritative Information',
-        204 => 'No Content',
-        205 => 'Reset Content',
-        206 => 'Partial Content',
-        207 => 'Multi-Status',
-        300 => 'Multiple Choices',
-        301 => 'Moved Permanently',
-        302 => 'Found',
-        303 => 'See Other',
-        304 => 'Not Modified',
-        305 => 'Use Proxy',
-        307 => 'Temporary Redirect',
-        400 => 'Bad Request',
-        401 => 'Unauthorized',
-        402 => 'Payment Required',
-        403 => 'Forbidden',
-        404 => 'Not Found',
-        405 => 'Method Not Allowed',
-        406 => 'Not Acceptable',
-        407 => 'Proxy Authentication Required',
-        408 => 'Request Timeout',
-        409 => 'Conflict',
-        410 => 'Gone',
-        411 => 'Length Required',
-        412 => 'Precondition Failed',
-        413 => 'Request Entity Too Large',
-        414 => 'Request-URI Too Large',
-        415 => 'Unsupported Media Type',
-        416 => 'Request Range Not Satisfiable',
-        417 => 'Expectation Failed',
-        422 => 'Unprocessable Entity',
-        423 => 'Locked',
-        424 => 'Failed Dependency',
-        426 => 'Upgrade Required',
-        428 => 'Precondition Required',
-        429 => 'Too Many Requests',
-        431 => 'Request Header Fields Too Large',
-        500 => 'Internal Server Error',
-        501 => 'Not Implemented',
-        502 => 'Bad Gateway',
-        503 => 'Service Unavailable',
-        504 => 'Gateway Timeout',
-        505 => 'HTTP Version Not Supported',
-        507 => 'Insufficient Storage',
-        511 => 'Network Authentication Required',
-      }
+        100 => "Continue",
+        101 => "Switching Protocols",
+        200 => "OK",
+        201 => "Created",
+        202 => "Accepted",
+        203 => "Non-Authoritative Information",
+        204 => "No Content",
+        205 => "Reset Content",
+        206 => "Partial Content",
+        207 => "Multi-Status",
+        300 => "Multiple Choices",
+        301 => "Moved Permanently",
+        302 => "Found",
+        303 => "See Other",
+        304 => "Not Modified",
+        305 => "Use Proxy",
+        307 => "Temporary Redirect",
+        400 => "Bad Request",
+        401 => "Unauthorized",
+        402 => "Payment Required",
+        403 => "Forbidden",
+        404 => "Not Found",
+        405 => "Method Not Allowed",
+        406 => "Not Acceptable",
+        407 => "Proxy Authentication Required",
+        408 => "Request Timeout",
+        409 => "Conflict",
+        410 => "Gone",
+        411 => "Length Required",
+        412 => "Precondition Failed",
+        413 => "Request Entity Too Large",
+        414 => "Request-URI Too Large",
+        415 => "Unsupported Media Type",
+        416 => "Request Range Not Satisfiable",
+        417 => "Expectation Failed",
+        422 => "Unprocessable Entity",
+        423 => "Locked",
+        424 => "Failed Dependency",
+        426 => "Upgrade Required",
+        428 => "Precondition Required",
+        429 => "Too Many Requests",
+        431 => "Request Header Fields Too Large",
+        500 => "Internal Server Error",
+        501 => "Not Implemented",
+        502 => "Bad Gateway",
+        503 => "Service Unavailable",
+        504 => "Gateway Timeout",
+        505 => "HTTP Version Not Supported",
+        507 => "Insufficient Storage",
+        511 => "Network Authentication Required",
+      }.freeze
 
-      STATUS_MESSAGE.values.each {|v| v.freeze }
+      STATUS_MESSAGE.each_value { |v| v.freeze }
       STATUS_MESSAGE.freeze
 
       def initialize(base_url)
@@ -148,7 +148,8 @@ class Chef
         @url.port
       end
 
-      def request(method, url, body, headers, &handler_block)
+      # FIXME: yard with @yield
+      def request(method, url, body, headers)
         request = req_to_rack(method, url, body, headers)
         res = ChefZero::SocketlessServerMap.request(port, request)
 
@@ -169,14 +170,16 @@ class Chef
           "QUERY_STRING"    => url.query,
           "SERVER_PORT"     => url.port,
           "HTTP_HOST"       => "localhost:#{url.port}",
+          "HTTP_X_OPS_SERVER_API_VERSION" => headers["X-Ops-Server-API-Version"],
           "rack.url_scheme" => "chefzero",
           "rack.input"      => StringIO.new(body_str),
         }
       end
 
       def to_net_http(code, headers, chunked_body)
-        body = chunked_body.join('')
-        msg = STATUS_MESSAGE[code] or raise "Cannot determine HTTP status message for code #{code}"
+        body = chunked_body.join("")
+        msg = STATUS_MESSAGE[code]
+        raise "Cannot determine HTTP status message for code #{code}" unless msg
         response = Net::HTTPResponse.send(:response_class, code.to_s).new("1.0", code.to_s, msg)
         response.instance_variable_set(:@body, body)
         headers.each do |name, value|
@@ -195,11 +198,10 @@ class Chef
       private
 
       def headers_extracted_from_options
-        options.reject {|name, _| KNOWN_OPTIONS.include?(name) }.map { |name, value|
+        options.reject { |name, _| KNOWN_OPTIONS.include?(name) }.map do |name, value|
           [name.to_s.split("_").map { |segment| segment.capitalize }.join("-"), value]
-        }
+        end
       end
-
 
     end
 

@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,10 @@
 #
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'win32/service'
+  require "win32/service"
 end
-require 'chef/config'
-require 'mixlib/cli'
+require "chef/config"
+require "mixlib/cli"
 
 class Chef
   class Application
@@ -37,39 +37,38 @@ class Chef
       include Mixlib::CLI
 
       option :action,
-        :short => "-a ACTION",
-        :long  => "--action ACTION",
-        :default => "status",
-        :description => "Action to carry out on chef-service (install, uninstall, status, start, stop, pause, or resume)"
+        short: "-a ACTION",
+        long: "--action ACTION",
+        default: "status",
+        description: "Action to carry out on chef-service (install, uninstall, status, start, stop, pause, or resume)"
 
       option :config_file,
-        :short => "-c CONFIG",
-        :long  => "--config CONFIG",
-        :default => "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
-        :description => "The configuration file to use for chef runs"
+        short: "-c CONFIG",
+        long: "--config CONFIG",
+        default: "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
+        description: "The configuration file to use for chef runs"
 
       option :log_location,
-        :short        => "-L LOGLOCATION",
-        :long         => "--logfile LOGLOCATION",
-        :description  => "Set the log file location for chef-service",
-        :default => "#{ENV['SYSTEMDRIVE']}/chef/client.log"
+        short: "-L LOGLOCATION",
+        long: "--logfile LOGLOCATION",
+        description: "Set the log file location for chef-service"
 
       option :help,
-        :short        => "-h",
-        :long         => "--help",
-        :description  => "Show this message",
-        :on           => :tail,
-        :boolean      => true,
-        :show_options => true,
-        :exit         => 0
+        short: "-h",
+        long: "--help",
+        description: "Show this message",
+        on: :tail,
+        boolean: true,
+        show_options: true,
+        exit: 0
 
       option :version,
-        :short        => "-v",
-        :long         => "--version",
-        :description  => "Show chef version",
-        :boolean      => true,
-        :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
-        :exit         => 0
+        short: "-v",
+        long: "--version",
+        description: "Show chef version",
+        boolean: true,
+        proc: lambda { |v| puts "Chef: #{::Chef::VERSION}" },
+        exit: 0
 
       def initialize(service_options)
         # having to call super in initialize is the most annoying
@@ -78,10 +77,10 @@ class Chef
 
         raise ArgumentError, "Service definition is not provided" if service_options.nil?
 
-        required_options = [:service_name, :service_display_name, :service_name, :service_description, :service_file_path]
+        required_options = [:service_name, :service_display_name, :service_description, :service_file_path]
 
         required_options.each do |req_option|
-          if !service_options.has_key?(req_option)
+          if !service_options.key?(req_option)
             raise ArgumentError, "Service definition doesn't contain required option #{req_option}"
           end
         end
@@ -92,17 +91,19 @@ class Chef
         @service_file_path = service_options[:service_file_path]
         @service_start_name = service_options[:run_as_user]
         @password = service_options[:run_as_password]
+        @delayed_start = service_options[:delayed_start]
+        @dependencies = service_options[:dependencies]
       end
 
       def run(params = ARGV)
         parse_options(params)
 
         case config[:action]
-        when 'install'
+        when "install"
           if service_exists?
             puts "Service #{@service_name} already exists on the system."
           else
-            ruby = File.join(RbConfig::CONFIG['bindir'], 'ruby')
+            ruby = File.join(RbConfig::CONFIG["bindir"], "ruby")
 
             opts = ""
             opts << " -c #{config[:config_file]}" if config[:config_file]
@@ -113,57 +114,64 @@ class Chef
             cmd = "\"#{ruby}\" \"#{@service_file_path}\" #{opts}".gsub(File::SEPARATOR, File::ALT_SEPARATOR)
 
             ::Win32::Service.new(
-                                 :service_name     => @service_name,
-                                 :display_name     => @service_display_name,
-                                 :description      => @service_description,
-                                 # Prior to 0.8.5, win32-service creates interactive services by default,
-                                 # and we don't want that, so we need to override the service type.
-                                 :service_type     => ::Win32::Service::SERVICE_WIN32_OWN_PROCESS,
-                                 :start_type       => ::Win32::Service::SERVICE_AUTO_START,
-                                 :binary_path_name => cmd,
-                                 :service_start_name => @service_start_name,
-                                 :password => @password,
-                                 )
+              service_name: @service_name,
+              display_name: @service_display_name,
+              description: @service_description,
+              # Prior to 0.8.5, win32-service creates interactive services by default,
+              # and we don't want that, so we need to override the service type.
+              service_type: ::Win32::Service::SERVICE_WIN32_OWN_PROCESS,
+              start_type: ::Win32::Service::SERVICE_AUTO_START,
+              binary_path_name: cmd,
+              service_start_name: @service_start_name,
+              password: @password,
+              dependencies: @dependencies
+            )
+            unless @delayed_start.nil?
+              ::Win32::Service.configure(
+                service_name: @service_name,
+                delayed_start: @delayed_start
+              )
+            end
             puts "Service '#{@service_name}' has successfully been installed."
           end
-        when 'status'
+        when "status"
           if !service_exists?
             puts "Service #{@service_name} doesn't exist on the system."
           else
             puts "State of #{@service_name} service is: #{current_state}"
           end
-        when 'start'
+        when "start"
           # TODO: allow override of startup parameters here?
-          take_action('start', RUNNING)
-        when 'stop'
-          take_action('stop', STOPPED)
-        when 'uninstall', 'delete'
-          take_action('stop', STOPPED)
+          take_action("start", RUNNING)
+        when "stop"
+          take_action("stop", STOPPED)
+        when "uninstall", "delete"
+          take_action("stop", STOPPED)
           unless service_exists?
             puts "Service #{@service_name} doesn't exist on the system."
           else
             ::Win32::Service.delete(@service_name)
             puts "Service #{@service_name} deleted"
           end
-        when 'pause'
-          take_action('pause', PAUSED)
-        when 'resume'
-          take_action('resume', RUNNING)
+        when "pause"
+          take_action("pause", PAUSED)
+        when "resume"
+          take_action("resume", RUNNING)
         end
       end
 
       private
 
       # Just some state constants
-      STOPPED = "stopped"
-      RUNNING = "running"
-      PAUSED = "paused"
+      STOPPED = "stopped".freeze
+      RUNNING = "running".freeze
+      PAUSED = "paused".freeze
 
       def service_exists?
-        return ::Win32::Service.exists?(@service_name)
+        ::Win32::Service.exists?(@service_name)
       end
 
-      def take_action(action=nil, desired_state=nil)
+      def take_action(action = nil, desired_state = nil)
         if service_exists?
           if current_state != desired_state
             ::Win32::Service.send(action, @service_name)

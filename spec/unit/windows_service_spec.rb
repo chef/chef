@@ -1,6 +1,6 @@
 #
 # Author:: Mukta Aphale (<mukta.aphale@clogeny.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,57 +15,104 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'spec_helper'
+require "spec_helper"
 if Chef::Platform.windows?
-  require 'chef/application/windows_service'
+  require "chef/application/windows_service"
 end
 
 describe "Chef::Application::WindowsService", :windows_only do
-  let (:instance) {Chef::Application::WindowsService.new}
-  let (:shell_out_result) {Object.new}
-  let (:tempfile) {Tempfile.new "log_file"}
-  before do
-    allow(instance).to receive(:parse_options)
-    allow(shell_out_result).to receive(:stdout)
-    allow(shell_out_result).to receive(:stderr)
+  let(:shell_out_result) { double("shellout", stdout: nil, stderr: nil) }
+  let(:config_options) do
+    {
+      log_location: STDOUT,
+      config_file: "test_config_file",
+      log_level: :info,
+    }
   end
-  it "runs chef-client in new process" do
-    expect(instance).to receive(:configure_chef).twice
-    instance.service_init
-    expect(instance).to receive(:run_chef_client).and_call_original
-    expect(instance).to receive(:shell_out).and_return(shell_out_result)
-    allow(instance).to receive(:running?).and_return(true, false)
-    allow(instance.instance_variable_get(:@service_signal)).to receive(:wait)
-    allow(instance).to receive(:state).and_return(4)
-    instance.service_main
+  let(:timeout) { 7200 }
+  let(:shellout_options) do
+    {
+      timeout: timeout,
+      logger: Chef::Log,
+    }
   end
 
-  context 'when running chef-client' do
-    it "passes config params to new process with a default timeout of 2 hours (7200 seconds)" do
-      Chef::Config.merge!({:log_location => tempfile.path, :config_file => "test_config_file", :log_level => :info})
-      expect(instance).to receive(:configure_chef).twice
-      instance.service_init
-      allow(instance).to receive(:running?).and_return(true, false)
-      allow(instance.instance_variable_get(:@service_signal)).to receive(:wait)
-      allow(instance).to receive(:state).and_return(4)
-      expect(instance).to receive(:run_chef_client).and_call_original
-      expect(instance).to receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}", {:timeout => 7200}).and_return(shell_out_result)
-      instance.service_main
+  before do
+    monologger = instance_double("MonoLogger", :level= => nil, :add => nil, :formatter= => nil, :formatter => nil)
+    allow(MonoLogger).to receive(:new).and_return(monologger)
+
+    Chef::Config.merge!(config_options)
+    allow(subject).to receive(:configure_chef)
+    allow(subject).to receive(:parse_options)
+    allow(subject).to receive(:running?).and_return(true, false)
+    allow(subject).to receive(:state).and_return(4)
+    subject.service_init
+  end
+
+  subject { Chef::Application::WindowsService.new }
+
+  it "passes DEFAULT_LOG_LOCATION to chef-client instead of STDOUT" do
+    expect(subject).to receive(:shell_out).with(
+      "chef-client.bat  --no-fork -c test_config_file -L #{Chef::Application::WindowsService::DEFAULT_LOG_LOCATION}",
+      shellout_options
+    ).and_return(shell_out_result)
+    subject.service_main
+  end
+
+  context "has a log location configured" do
+    let(:tempfile) { Tempfile.new "log_file" }
+    let(:config_options) do
+      {
+        log_location: tempfile.path,
+        config_file: "test_config_file",
+        log_level: :info,
+      }
+    end
+
+    after do
       tempfile.unlink
     end
 
-    it "passes config params to new process with a the timeout specified in the config" do
-      Chef::Config.merge!({:log_location => tempfile.path, :config_file => "test_config_file", :log_level => :info})
+    it "uses the configured log location" do
+      expect(subject).to receive(:shell_out).with(
+        "chef-client.bat  --no-fork -c test_config_file -L #{tempfile.path}",
+        shellout_options
+      ).and_return(shell_out_result)
+      subject.service_main
+    end
+
+    context "configured to Event Logger" do
+      let(:config_options) do
+        {
+          log_location: Chef::Log::WinEvt.new,
+          config_file: "test_config_file",
+          log_level: :info,
+        }
+      end
+
+      it "does not pass log location to new process" do
+        expect(subject).to receive(:shell_out).with(
+          "chef-client.bat  --no-fork -c test_config_file",
+          shellout_options
+        ).and_return(shell_out_result)
+        subject.service_main
+      end
+    end
+  end
+
+  context "configures a watchdog timeout" do
+    let(:timeout) { 10 }
+
+    before do
       Chef::Config[:windows_service][:watchdog_timeout] = 10
-      expect(instance).to receive(:configure_chef).twice
-      instance.service_init
-      allow(instance).to receive(:running?).and_return(true, false)
-      allow(instance.instance_variable_get(:@service_signal)).to receive(:wait)
-      allow(instance).to receive(:state).and_return(4)
-      expect(instance).to receive(:run_chef_client).and_call_original
-      expect(instance).to receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}", {:timeout => 10}).and_return(shell_out_result)
-      instance.service_main
-      tempfile.unlink
+    end
+
+    it "passes watchdog timeout to new process" do
+      expect(subject).to receive(:shell_out).with(
+        "chef-client.bat  --no-fork -c test_config_file -L #{Chef::Application::WindowsService::DEFAULT_LOG_LOCATION}",
+        shellout_options
+      ).and_return(shell_out_result)
+      subject.service_main
     end
   end
 end

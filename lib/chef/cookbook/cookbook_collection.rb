@@ -1,7 +1,7 @@
 #--
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/mash'
+require "chef/mash"
+require "chef/cookbook/gem_installer"
 
 class Chef
   # == Chef::CookbookCollection
@@ -33,13 +34,30 @@ class Chef
 
     # The input is a mapping of cookbook name to CookbookVersion objects. We
     # simply extract them
-    def initialize(cookbook_versions={})
+    def initialize(cookbook_versions = {})
       super() do |hash, key|
         raise Chef::Exceptions::CookbookNotFound, "Cookbook #{key} not found. " <<
           "If you're loading #{key} from another cookbook, make sure you configure the dependency in your metadata"
       end
-      cookbook_versions.each{ |cookbook_name, cookbook_version| self[cookbook_name] = cookbook_version }
+      cookbook_versions.each { |cookbook_name, cookbook_version| self[cookbook_name] = cookbook_version }
     end
 
+    # Validates that the cookbook metadata allows it to run on this instance.
+    #
+    # Currently checks chef_version and ohai_version in the cookbook metadata
+    # against the running Chef::VERSION and Ohai::VERSION.
+    #
+    # @raise [Chef::Exceptions::CookbookChefVersionMismatch] if the Chef::VERSION fails validation
+    # @raise [Chef::Exceptions::CookbookOhaiVersionMismatch] if the Ohai::VERSION fails validation
+    def validate!
+      each_value do |cookbook_version|
+        cookbook_version.metadata.validate_chef_version!
+        cookbook_version.metadata.validate_ohai_version!
+      end
+    end
+
+    def install_gems(events)
+      Cookbook::GemInstaller.new(self, events).install
+    end
   end
 end

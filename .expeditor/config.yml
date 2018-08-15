@@ -1,0 +1,132 @@
+# Documentation available at https://expeditor.chef.io/docs/getting-started/
+
+# The name of the product keys for this product (from mixlib-install)
+product_key:
+  - chef
+  - angrychef
+
+# Slack channel in Chef Software slack to send notifications about build failures, etc
+slack:
+  notify_channel: chef-notify
+
+# Which Ruby Gems, built when the Omnibus package is built, to publish to rubygems.org
+# This publish is triggered by the `built_in:publish_rubygems` artifact_action.
+rubygems:
+  - chef
+  - chef-config
+
+docker_images:
+  - chef
+
+habitat_packages:
+  - chef-client
+
+github:
+  # The file where the MAJOR.MINOR.PATCH version is kept. The version in this file
+  # is bumped automatically via the `built_in:bump_version` merge_action.
+  version_file: "VERSION"
+  # The file where our CHANGELOG is kept. This file is updated automatically with
+  # details from the Pull Request via the `built_in:update_changelog` merge_action.
+  changelog_file: "CHANGELOG.md"
+  # This deletes the GitHub PR branch after successfully merged into the release branch
+  delete_branch_on_merge: true
+  # The tag format to use (e.g. v1.0.0)
+  version_tag_format: "v{{version}}"
+  # allow bumping the minor release via label
+  minor_bump_labels:
+    - "Expeditor: Bump Minor Version"
+  # Which Github branches to build Omnibus releases from, and what versions
+  # (as determined by the value in the VERSION file) those branches are responsible
+  # for building.
+  release_branch:
+    - master:
+        version_constraint: 14.*
+    - chef-13:
+        version_constraint: 13.*
+
+# These actions are taken, in order they are specified, anytime a Pull Request is merged.
+merge_actions:
+  - built_in:bump_version:
+      ignore_labels:
+        - "Expeditor: Skip Version Bump"
+        - "Expeditor: Skip All"
+  - bash:.expeditor/update_version.sh:
+      only_if: built_in:bump_version
+  - built_in:update_changelog:
+      ignore_labels:
+        - "Expeditor: Exclude From Changelog"
+        - "Expeditor: Skip All"
+  - built_in:trigger_habitat_package_build:
+      ignore_labels:
+        - "Expeditor: Skip Build"
+        - "Expeditor: Skip All"
+      only_if: built_in:bump_version
+  - built_in:trigger_omnibus_release_build:
+      ignore_labels:
+        - "Expeditor: Skip Build"
+        - "Expeditor: Skip All"
+      only_if: built_in:bump_version
+
+# These actions are taken, in the order specified, when an Omnibus artifact is promoted
+# within Chef's internal artifact storage system.
+artifact_actions:
+  promoted_to_unstable:
+    - built_in:build_docker_image
+  promoted_to_current:
+    - built_in:tag_docker_image
+  promoted_to_stable:
+    - built_in:rollover_changelog
+    - bash:.expeditor/update_dockerfile.sh
+    - built_in:tag_docker_image
+    - built_in:publish_rubygems
+    - built_in:notify_chefio_slack_channels
+
+subscriptions:
+  - workload: ruby_gem_published:mixlib-archive-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:mixlib-authentication-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:mixlib-cli-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:mixlib-log-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:mixlib-shellout-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:chef-vault-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:chef-zero-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ohai-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:inspec-core-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:train-core-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-process-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-service-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-taskscheduler-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ffi-yajl-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:libyajl2-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:cheffish-*
+    actions:
+      - bash:.expeditor/update_dep.sh

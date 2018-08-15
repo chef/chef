@@ -1,5 +1,5 @@
-require 'chef/chef_fs/data_handler/data_handler_base'
-require 'chef/node'
+require "chef/chef_fs/data_handler/data_handler_base"
+require "chef/node"
 
 class Chef
   module ChefFS
@@ -7,22 +7,22 @@ class Chef
       class NodeDataHandler < DataHandlerBase
         def normalize(node, entry)
           result = normalize_hash(node, {
-            'name' => remove_dot_json(entry.name),
-            'json_class' => 'Chef::Node',
-            'chef_type' => 'node',
-            'chef_environment' => '_default',
-            'override' => {},
-            'normal' => {},
-            'default' => {},
-            'automatic' => {},
-            'run_list' => []
+            "name" => remove_dot_json(entry.name),
+            "json_class" => "Chef::Node",
+            "chef_type" => "node",
+            "chef_environment" => "_default",
+            "override" => {},
+            "normal" => {},
+            "default" => {},
+            "automatic" => {},
+            "run_list" => [],
           })
-          result['run_list'] = normalize_run_list(result['run_list'])
+          result["run_list"] = normalize_run_list(result["run_list"])
           result
         end
 
         def preserve_key?(key)
-          return key == 'name'
+          key == "name"
         end
 
         def chef_class

@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,9 +40,41 @@ class Chef
           error_description.section(exception.class.name, exception.message)
 
           if found_error_in_cookbooks?
-            traceback = filtered_bt.map {|line| "  #{line}"}.join("\n")
+            traceback = filtered_bt.map { |line| "  #{line}" }.join("\n")
             error_description.section("Cookbook Trace:", traceback)
             error_description.section("Relevant File Content:", context)
+          end
+
+          if exception_message_modifying_frozen?
+            msg = <<-MESSAGE
+            Ruby objects are often frozen to prevent further modifications
+            when they would negatively impact the process (e.g. values inside
+            Ruby's ENV class) or to prevent polluting other objects when default
+            values are passed by reference to many instances of an object (e.g.
+            the empty Array as a Chef resource default, passed by reference
+            to every instance of the resource).
+
+            Chef uses Object#freeze to ensure the default values of properties
+            inside Chef resources are not modified, so that when a new instance
+            of a Chef resource is created, and Object#dup copies values by
+            reference, the new resource is not receiving a default value that
+            has been by a previous instance of that resource.
+
+            Instead of modifying an object that contains a default value for all
+            instances of a Chef resource, create a new object and assign it to
+            the resource's parameter, e.g.:
+
+            fruit_basket = resource(:fruit_basket, 'default')
+
+            # BAD: modifies 'contents' object for all new fruit_basket instances
+            fruit_basket.contents << 'apple'
+
+            # GOOD: allocates new array only owned by this fruit_basket instance
+            fruit_basket.contents %w(apple)
+
+            MESSAGE
+
+            error_description.section("Additional information:", msg.gsub(/^ {6}/, ""))
           end
         end
 
@@ -75,22 +107,22 @@ class Chef
 
         def culprit_backtrace_entry
           @culprit_backtrace_entry ||= begin
-             bt_entry = filtered_bt.first
-             Chef::Log.debug("backtrace entry for compile error: '#{bt_entry}'")
-             bt_entry
+            bt_entry = filtered_bt.first
+            Chef::Log.trace("Backtrace entry for compile error: '#{bt_entry}'")
+            bt_entry
           end
         end
 
         def culprit_line
           @culprit_line ||= begin
-            line_number = culprit_backtrace_entry[/^(?:.\:)?[^:]+:([\d]+)/,1].to_i
-            Chef::Log.debug("Line number of compile error: '#{line_number}'")
+            line_number = culprit_backtrace_entry[/^(?:.\:)?[^:]+:([\d]+)/, 1].to_i
+            Chef::Log.trace("Line number of compile error: '#{line_number}'")
             line_number
           end
         end
 
         def culprit_file
-          @culprit_file ||= culprit_backtrace_entry[/^((?:.\:)?[^:]+):([\d]+)/,1]
+          @culprit_file ||= culprit_backtrace_entry[/^((?:.\:)?[^:]+):([\d]+)/, 1]
         end
 
         def filtered_bt
@@ -104,11 +136,15 @@ class Chef
         def backtrace_lines_in_cookbooks
           @backtrace_lines_in_cookbooks ||=
             begin
-              filters = Array(Chef::Config.cookbook_path).map {|p| /^#{Regexp.escape(p)}/i }
-              r = exception.backtrace.select {|line| filters.any? {|filter| line =~ filter }}
-              Chef::Log.debug("filtered backtrace of compile error: #{r.join(",")}")
+              filters = Array(Chef::Config.cookbook_path).map { |p| /^#{Regexp.escape(p)}/i }
+              r = exception.backtrace.select { |line| filters.any? { |filter| line =~ filter } }
+              Chef::Log.trace("Filtered backtrace of compile error: #{r.join(",")}")
               r
             end
+        end
+
+        def exception_message_modifying_frozen?
+          exception.message.include?("can't modify frozen")
         end
 
       end

@@ -1,6 +1,6 @@
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright 2010-2011 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ class Chef
     include Comparable
     attr_reader :major, :minor, :patch
 
-    def initialize(str="")
+    def initialize(str = "")
       parse(str)
     end
 
@@ -32,10 +32,15 @@ class Chef
       "#{@major}.#{@minor}.#{@patch}"
     end
 
-    def <=>(v)
+    def <=>(other)
       [:major, :minor, :patch].each do |method|
-        ans = (self.send(method) <=> v.send(method))
-        return ans if ans != 0
+        version = send(method)
+        begin
+          ans = (version <=> other.send(method))
+        rescue NoMethodError # if the other thing isn't a version object, return nil
+          return nil
+        end
+        return ans unless ans == 0
       end
       0
     end
@@ -53,7 +58,7 @@ class Chef
 
     protected
 
-    def parse(str="")
+    def parse(str = "")
       @major, @minor, @patch =
         case str.to_s
         when /^(\d+)\.(\d+)\.(\d+)$/
@@ -61,7 +66,7 @@ class Chef
         when /^(\d+)\.(\d+)$/
           [ $1.to_i, $2.to_i, 0 ]
         else
-          msg = "'#{str.to_s}' does not match 'x.y.z' or 'x.y'"
+          msg = "'#{str}' does not match 'x.y.z' or 'x.y'"
           raise Chef::Exceptions::InvalidCookbookVersion.new( msg )
         end
     end

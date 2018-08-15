@@ -1,6 +1,6 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
-# Copyright:: Copyright (c) 2010 Thomas Bishop
+# Copyright:: Copyright 2010-2016, Thomas Bishop
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::RpmPackage, "initialize" do
 
@@ -34,13 +34,29 @@ describe Chef::Resource::RpmPackage, "initialize" do
 end
 
 describe Chef::Resource::RpmPackage, "allow_downgrade" do
-  before(:each) do
-    @resource = Chef::Resource::RpmPackage.new("foo")
+  let(:resource) { Chef::Resource::RpmPackage.new("foo") }
+
+  it "is a subclass of Chef::Resource::Package" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Package)
   end
 
-  it "should allow you to specify whether allow_downgrade is true or false" do
-    expect { @resource.allow_downgrade true }.not_to raise_error
-    expect { @resource.allow_downgrade false }.not_to raise_error
-    expect { @resource.allow_downgrade "monkey" }.to raise_error(ArgumentError)
+  it "sets the default action as :install" do
+    expect(resource.action).to eql([:install])
+  end
+
+  it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
+  end
+
+  it "allows you to specify whether allow_downgrade is true or false" do
+    expect { resource.allow_downgrade true }.not_to raise_error
+    expect { resource.allow_downgrade false }.not_to raise_error
+    expect { resource.allow_downgrade "monkey" }.to raise_error(ArgumentError)
   end
 end

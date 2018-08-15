@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,20 @@
 # limitations under the License.
 #
 
-require 'chef/util/windows'
-require 'chef/exceptions'
-require 'chef/win32/net'
-require 'chef/win32/security'
+require "chef/util/windows"
+require "chef/exceptions"
+require "chef/win32/net"
+require "chef/win32/security"
 
-#wrapper around a subset of the NetUser* APIs.
-#nothing Chef specific, but not complete enough to be its own gem, so util for now.
+# wrapper around a subset of the NetUser* APIs.
+# nothing Chef specific, but not complete enough to be its own gem, so util for now.
 class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   private
+
   NetUser = Chef::ReservedNames::Win32::NetUser
   Security = Chef::ReservedNames::Win32::Security
+  Win32APIError = Chef::ReservedNames::Win32::API::Error
 
   USER_INFO_3_TRANSFORM = {
     name: :usri3_name,
@@ -59,10 +61,10 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     profile: :usri3_profile,
     home_dir_drive: :usri3_home_dir_drive,
     password_expired: :usri3_password_expired,
-  }
+  }.freeze
 
   def transform_usri3(args)
-    args.inject({}) do |memo, (k,v)|
+    args.inject({}) do |memo, (k, v)|
       memo[USER_INFO_3_TRANSFORM[k]] = v
       memo
     end
@@ -70,43 +72,45 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def usri3_to_hash(usri3)
     t = USER_INFO_3_TRANSFORM.invert
-    usri3.inject({}) do |memo, (k,v)|
+    usri3.inject({}) do |memo, (k, v)|
       memo[t[k]] = v
       memo
     end
   end
 
   def set_info(args)
-    begin
-      rc = NetUser::net_user_set_info_l3(nil, @username, transform_usri3(args))
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    rc = NetUser.net_user_set_info_l3(nil, @username, transform_usri3(args))
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   public
 
   def initialize(username)
     @username = username
-    @name = multi_to_wide(username)
   end
 
   LOGON32_PROVIDER_DEFAULT = Security::LOGON32_PROVIDER_DEFAULT
   LOGON32_LOGON_NETWORK = Security::LOGON32_LOGON_NETWORK
-  #XXX for an extra painful alternative, see: http://support.microsoft.com/kb/180548
+  # XXX for an extra painful alternative, see: http://support.microsoft.com/kb/180548
   def validate_credentials(passwd)
-    begin
-      token = Security::logon_user(@username, nil, passwd,
-                 LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
-      return true
-    rescue Chef::Exceptions::Win32APIError
+    token = Security.logon_user(@username, nil, passwd,
+               LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
+    true
+  rescue Chef::Exceptions::Win32APIError => e
+    Chef::Log.trace(e)
+    # we're only interested in the incorrect password failures
+    if e.to_s =~ /System Error Code: 1326/
       return false
     end
+    # all other exceptions will assume we cannot logon for a different reason
+    Chef::Log.trace("Unable to login with the specified credentials. Assuming the credentials are valid.")
+    true
   end
 
   def get_info
     begin
-      ui3 = NetUser::net_user_get_info_l3(nil, @username)
+      ui3 = NetUser.net_user_get_info_l3(nil, @username)
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
@@ -115,40 +119,39 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def add(args)
     transformed_args = transform_usri3(args)
-    NetUser::net_user_add_l3(nil, transformed_args)
-    NetUser::net_local_group_add_member(nil, "Users", args[:name])
+    NetUser.net_user_add_l3(nil, transformed_args)
+    NetUser.net_local_group_add_member(nil, Chef::ReservedNames::Win32::Security::SID.BuiltinUsers.account_simple_name, args[:name])
   end
 
-  def user_modify(&proc)
+  # FIXME: yard with @yield
+  def user_modify
     user = get_info
-    user[:last_logon] = user[:units_per_week] = 0 #ignored as per USER_INFO_3 doc
-    user[:logon_hours] = nil #PBYTE field; \0 == no changes
-    proc.call(user)
+    user[:last_logon] = user[:units_per_week] = 0 # ignored as per USER_INFO_3 doc
+    user[:logon_hours] = nil # PBYTE field; \0 == no changes
+    yield(user)
     set_info(user)
   end
 
   def update(args)
     user_modify do |user|
-      args.each do |key,val|
+      args.each do |key, val|
         user[key] = val
       end
     end
   end
 
   def delete
-    begin
-      NetUser::net_user_del(nil, @username)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    NetUser.net_user_del(nil, @username)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def disable_account
     user_modify do |user|
       user[:flags] |= NetUser::UF_ACCOUNTDISABLE
-      #This does not set the password to nil. It (for some reason) means to ignore updating the field.
-      #See similar behavior for the logon_hours field documented at
-      #http://msdn.microsoft.com/en-us/library/windows/desktop/aa371338%28v=vs.85%29.aspx
+      # This does not set the password to nil. It (for some reason) means to ignore updating the field.
+      # See similar behavior for the logon_hours field documented at
+      # http://msdn.microsoft.com/en-us/library/windows/desktop/aa371338%28v=vs.85%29.aspx
       user[:password] = nil
     end
   end
@@ -156,9 +159,9 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   def enable_account
     user_modify do |user|
       user[:flags] &= ~NetUser::UF_ACCOUNTDISABLE
-      #This does not set the password to nil. It (for some reason) means to ignore updating the field.
-      #See similar behavior for the logon_hours field documented at
-      #http://msdn.microsoft.com/en-us/library/windows/desktop/aa371338%28v=vs.85%29.aspx
+      # This does not set the password to nil. It (for some reason) means to ignore updating the field.
+      # See similar behavior for the logon_hours field documented at
+      # http://msdn.microsoft.com/en-us/library/windows/desktop/aa371338%28v=vs.85%29.aspx
       user[:password] = nil
     end
   end

@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class Chef
   class Util
@@ -29,8 +29,8 @@ class Chef
   end
 end
 
-GUID = "\\\\?\\Volume{578e72b5-6e70-11df-b5c5-000c29d4a7d9}\\"
-REMOTE = "\\\\server-name\\path"
+GUID = "\\\\?\\Volume{578e72b5-6e70-11df-b5c5-000c29d4a7d9}\\".freeze
+REMOTE = "\\\\server-name\\path".freeze
 
 describe Chef::Provider::Mount::Windows do
   before(:each) do
@@ -99,10 +99,10 @@ describe Chef::Provider::Mount::Windows do
       end
 
       it "should mount the filesystem if it is not mounted" do
-        expect(@vol).to receive(:add).with(:remote => @new_resource.device,
-                                       :username => @new_resource.username,
-                                       :domainname => @new_resource.domain,
-                                       :password => @new_resource.password)
+        expect(@vol).to receive(:add).with(remote: @new_resource.device,
+                                           username: @new_resource.username,
+                                           domainname: @new_resource.domain,
+                                           password: @new_resource.password)
         @provider.mount_fs
       end
 
@@ -110,6 +110,18 @@ describe Chef::Provider::Mount::Windows do
         expect(@vol).not_to receive(:add)
         allow(@current_resource).to receive(:mounted).and_return(true)
         @provider.mount_fs
+      end
+
+      context "mount_options_unchanged?" do
+        it "should return true if mounted device is the same" do
+          allow(@current_resource).to receive(:device).and_return(GUID)
+          expect(@provider.send :mount_options_unchanged?).to be true
+        end
+
+        it "should return false if mounted device has changed" do
+          allow(@current_resource).to receive(:device).and_return("XXXX")
+          expect(@provider.send :mount_options_unchanged?).to be false
+        end
       end
     end
 

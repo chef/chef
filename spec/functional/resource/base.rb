@@ -1,6 +1,6 @@
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 def run_context
   @run_context ||= begin
     node = Chef::Node.new
@@ -27,4 +26,3 @@ def run_context
     Chef::RunContext.new(node, {}, events)
   end
 end
-

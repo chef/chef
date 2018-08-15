@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,51 +16,37 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/resource/gem_package'
+require "chef/resource/package"
+require "chef/resource/gem_package"
 
 class Chef
   class Resource
+    # Use the chef_gem resource to install a gem only for the instance of Ruby that is dedicated to the chef-client.
+    # When a gem is installed from a local file, it must be added to the node using the remote_file or cookbook_file
+    # resources.
+    #
+    # The chef_gem resource works with all of the same properties and options as the gem_package resource, but does not
+    # accept the gem_binary property because it always uses the CurrentGemEnvironment under which the chef-client is
+    # running. In addition to performing actions similar to the gem_package resource, the chef_gem resource does the
+    # following:
+    #  - Runs its actions immediately, before convergence, allowing a gem to be used in a recipe immediately after it is
+    #    installed
+    #  - Runs Gem.clear_paths after the action, ensuring that gem is aware of changes so that it can be required
+    #    immediately after it is installed
     class ChefGem < Chef::Resource::Package::GemPackage
+      resource_name :chef_gem
 
-      provides :chef_gem
+      property :gem_binary, default: "#{RbConfig::CONFIG['bindir']}/gem",
+                            callbacks: {
+                 "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { |v| v == "#{RbConfig::CONFIG['bindir']}/gem" },
+               }
+      property :compile_time, [TrueClass, FalseClass], default: false, desired_state: false
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :chef_gem
-        @compile_time = Chef::Config[:chef_gem_compile_time]
-        @gem_binary = RbConfig::CONFIG['bindir'] + "/gem"
-      end
-
-      # The chef_gem resources is for installing gems to the current gem environment only for use by Chef cookbooks.
-      def gem_binary(arg=nil)
-        if arg
-          raise ArgumentError, "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments."
-        end
-
-        @gem_binary
-      end
-
-      def compile_time(arg=nil)
-        set_or_return(
-          :compile_time,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
+      # force the resource to compile time if the compile time property has been set
       def after_created
-        # Chef::Resource.run_action: Caveat: this skips Chef::Runner.run_action, where notifications are handled
-        # Action could be an array of symbols, but probably won't (think install + enable for a package)
-        if compile_time.nil?
-          Chef::Log.deprecation "#{self} chef_gem compile_time installation is deprecated"
-          Chef::Log.deprecation "#{self} Please set `compile_time false` on the resource to use the new behavior."
-          Chef::Log.deprecation "#{self} or set `compile_time true` on the resource if compile_time behavior is required."
-        end
-
-        if compile_time || compile_time.nil?
+        if compile_time
           Array(action).each do |action|
-            self.run_action(action)
+            run_action(action)
           end
           Gem.clear_paths
         end

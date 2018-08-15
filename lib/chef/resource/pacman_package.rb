@@ -1,6 +1,6 @@
 #
 # Author:: Jan Zimmek (<jan.zimmek@web.de>)
-# Copyright:: Copyright (c) 2010 Jan Zimmek
+# Copyright:: Copyright 2010-2016, Jan Zimmek
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
+require "chef/resource/package"
 
 class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
+      resource_name :pacman_package
+      provides :pacman_package
 
-      provides :pacman_package, os: "linux"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :pacman_package
-      end
-
+      description "Use the pacman_package resource to manage packages (using pacman) on the Arch Linux platform."
     end
   end
 end

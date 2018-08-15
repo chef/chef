@@ -1,8 +1,8 @@
 #--
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/mixin/params_validate'
-require 'chef/node'
-require 'chef/resource_collection'
+require "chef/exceptions"
+require "chef/mixin/params_validate"
+require "chef/node"
+require "chef/resource_collection"
 
 class Chef
   # == Chef::Runner
@@ -30,13 +30,15 @@ class Chef
 
     attr_reader :run_context
 
-    attr_reader :delayed_actions
-
     include Chef::Mixin::ParamsValidate
 
     def initialize(run_context)
-      @run_context      = run_context
-      @delayed_actions  = []
+      @run_context = run_context
+      run_context.runner = self
+    end
+
+    def delayed_actions
+      @run_context.delayed_actions
     end
 
     def events
@@ -45,7 +47,26 @@ class Chef
 
     # Determine the appropriate provider for the given resource, then
     # execute it.
-    def run_action(resource, action, notification_type=nil, notifying_resource=nil)
+    def run_action(resource, action, notification_type = nil, notifying_resource = nil)
+      # If there are any before notifications, why-run the resource
+      # and notify anyone who needs notifying
+      before_notifications = run_context.before_notifications(resource) || []
+      unless before_notifications.empty?
+        forced_why_run do
+          Chef::Log.info("#{resource} running why-run #{action} action to support before action")
+          resource.run_action(action, notification_type, notifying_resource)
+        end
+
+        if resource.updated_by_last_action?
+          before_notifications.each do |notification|
+            Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (before)")
+            run_action(notification.resource, notification.action, :before, resource)
+          end
+          resource.updated_by_last_action(false)
+        end
+      end
+
+      # Actually run the action for realsies
       resource.run_action(action, notification_type, notifying_resource)
 
       # Execute any immediate and queue up any delayed notifications
@@ -58,12 +79,8 @@ class Chef
         end
 
         run_context.delayed_notifications(resource).each do |notification|
-          if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
-            Chef::Log.info( "#{resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
-                            " (delayed), as it's already been queued")
-          else
-            delayed_actions << notification
-          end
+          # send the notification to the run_context of the receiving resource
+          notification.resource.run_context.add_delayed_action(notification)
         end
       end
     end
@@ -78,7 +95,7 @@ class Chef
 
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
-        Array(resource.action).each {|action| run_action(resource, action)}
+        Array(resource.action).each { |action| run_action(resource, action) }
       end
 
     rescue Exception => e
@@ -92,7 +109,7 @@ class Chef
     private
 
     # Run all our :delayed actions
-    def run_delayed_notifications(error=nil)
+    def run_delayed_notifications(error = nil)
       collected_failures = Exceptions::MultipleFailures.new
       collected_failures.client_run_failure(error) unless error.nil?
       delayed_actions.each do |notification|
@@ -113,5 +130,15 @@ class Chef
     rescue Exception => e
       e
     end
+
+    # helper to run a block of code with why_run forced to true and then restore it correctly
+    def forced_why_run
+      saved = Chef::Config[:why_run]
+      Chef::Config[:why_run] = true
+      yield
+    ensure
+      Chef::Config[:why_run] = saved
+    end
+
   end
 end

@@ -1,6 +1,6 @@
 #
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
-# Copyright:: Copyright (c) 2013 Jesse Campbell
+# Copyright:: Copyright 2013-2016, Jesse Campbell
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
+require "uri"
+require "addressable/uri"
 
 describe Chef::Provider::RemoteFile::LocalFile do
 
@@ -47,7 +49,7 @@ describe Chef::Provider::RemoteFile::LocalFile do
     end
 
     describe "when given local windows path with spaces" do
-      let(:uri) { URI.parse(URI.escape("file:///z:/windows/path/foo & bar.txt")) }
+      let(:uri) { URI.parse(Addressable::URI.encode("file:///z:/windows/path/foo & bar.txt")) }
       it "returns a valid windows local path" do
         expect(fetcher.source_path).to eq("z:/windows/path/foo & bar.txt")
       end
@@ -61,7 +63,7 @@ describe Chef::Provider::RemoteFile::LocalFile do
     end
 
     describe "when given unc windows path with spaces" do
-      let(:uri) { URI.parse(URI.escape("file:////server/share/windows/path/foo & bar.txt")) }
+      let(:uri) { URI.parse(Addressable::URI.encode("file:////server/share/windows/path/foo & bar.txt")) }
       it "returns a valid windows unc path" do
         expect(fetcher.source_path).to eq("//server/share/windows/path/foo & bar.txt")
       end
@@ -82,8 +84,8 @@ describe Chef::Provider::RemoteFile::LocalFile do
 
   describe "when fetching the object" do
 
-    let(:tempfile) { double("Tempfile", :path => "/tmp/foo/bar/nyan.png", :close => nil) }
-    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", :tempfile => tempfile) }
+    let(:tempfile) { double("Tempfile", path: "/tmp/foo/bar/nyan.png", close: nil) }
+    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", tempfile: tempfile) }
 
     before do
       current_resource.source("file:///nyan_cat.png")

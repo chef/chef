@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class RoleFromFile < Knife
 
       deps do
-        require 'chef/role'
-        require 'chef/knife/core/object_loader'
-        require 'chef/json_compat'
+        require "chef/role"
+        require "chef/knife/core/object_loader"
+        require "chef/json_compat"
       end
 
       banner "knife role from file FILE [FILE..] (options)"
@@ -42,15 +42,10 @@ class Chef
 
           output(format_for_display(updated)) if config[:print_after]
 
-          ui.info("Updated Role #{updated.name}!")
+          ui.info("Updated Role #{updated.name}")
         end
       end
 
     end
   end
 end
-
-
-
-
-

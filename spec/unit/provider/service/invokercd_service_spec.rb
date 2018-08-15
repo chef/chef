@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Invokercd, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = {:ps => "ps -ef"}
+    @node.automatic_attrs[:command] = { ps: "ps -ef" }
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -32,12 +32,12 @@ describe Chef::Provider::Service::Invokercd, "load_current_resource" do
     @provider = Chef::Provider::Service::Invokercd.new(@new_resource, @run_context)
     allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
 
-    @stdout = StringIO.new(<<-PS)
-aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
-aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
-aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
+    @stdout = StringIO.new(<<~PS)
+      aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
+      aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
+      aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
 PS
-    @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+    @status = double("Status", exitstatus: 0, stdout: @stdout)
     allow(@provider).to receive(:shell_out!).and_return(@status)
   end
 
@@ -48,12 +48,12 @@ PS
 
   it "should set the current resources service name to the new resources service name" do
     @provider.load_current_resource
-    expect(@current_resource.service_name).to eq('chef')
+    expect(@current_resource.service_name).to eq("chef")
   end
 
   describe "when the service supports status" do
     before do
-      @new_resource.supports({:status => true})
+      @new_resource.supports({ status: true })
     end
 
     it "should run '/usr/sbin/invoke-rc.d service_name status'" do
@@ -83,7 +83,7 @@ PS
 
   describe "when a status command has been specified" do
     before do
-      allow(@new_resource).to receive(:status_command).and_return("/usr/sbin/invoke-rc.d chefhasmonkeypants status")
+      @new_resource.status_command("/usr/sbin/invoke-rc.d chefhasmonkeypants status")
     end
 
     it "should run the services status command if one has been specified" do
@@ -94,15 +94,15 @@ PS
   end
 
   describe "when the node has not specified a ps command" do
-    it "should raise error if the node has a nil ps attribute and no other means to get status" do
-      @node.automatic_attrs[:command] = {:ps => nil}
+    it "should raise error if the node has a nil ps property and no other means to get status" do
+      @node.automatic_attrs[:command] = { ps: nil }
       @provider.action = :start
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
     end
 
-    it "should raise error if the node has an empty ps attribute and no other means to get status" do
-      @node.automatic_attrs[:command] = {:ps => ""}
+    it "should raise error if the node has an empty ps property and no other means to get status" do
+      @node.automatic_attrs[:command] = { ps: "" }
       @provider.action = :start
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
@@ -110,26 +110,26 @@ PS
 
   end
 
-  describe "when we have a 'ps' attribute" do
+  describe "when we have a 'ps' property" do
     it "should shell_out! the node's ps command" do
-      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", exitstatus: 0, stdout: @stdout)
       expect(@provider).to receive(:shell_out!).with(@node[:command][:ps]).and_return(@status)
       @provider.load_current_resource
     end
 
     it "should set running to true if the regex matches the output" do
-      @stdout = StringIO.new(<<-RUNNING_PS)
-aj        7842  5057  0 21:26 pts/2    00:00:06 chef
-aj        7842  5057  0 21:26 pts/2    00:00:06 poos
+      @stdout = StringIO.new(<<~RUNNING_PS)
+        aj        7842  5057  0 21:26 pts/2    00:00:06 chef
+        aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 RUNNING_PS
-      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", exitstatus: 0, stdout: @stdout)
       expect(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
       expect(@current_resource.running).to be_truthy
     end
 
     it "should set running to false if the regex doesn't match" do
-      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", exitstatus: 0, stdout: @stdout)
       expect(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
       expect(@current_resource.running).to be_falsey
@@ -151,12 +151,12 @@ RUNNING_PS
   describe "when starting the service" do
     it "should call the start command if one is specified" do
       @new_resource.start_command("/usr/sbin/invoke-rc.d chef startyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d chef startyousillysally")
+      expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef startyousillysally", default_env: false)
       @provider.start_service()
     end
 
     it "should call '/usr/sbin/invoke-rc.d service_name start' if no start command is specified" do
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} start")
+      expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} start", default_env: false)
       @provider.start_service()
     end
   end
@@ -164,26 +164,26 @@ RUNNING_PS
   describe Chef::Provider::Service::Invokercd, "stop_service" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/usr/sbin/invoke-rc.d chef itoldyoutostop")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d chef itoldyoutostop")
+      expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef itoldyoutostop", default_env: false)
       @provider.stop_service()
     end
 
     it "should call '/usr/sbin/invoke-rc.d service_name stop' if no stop command is specified" do
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} stop")
+      expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} stop", default_env: false)
       @provider.stop_service()
     end
   end
 
   describe "when restarting a service" do
     it "should call 'restart' on the service_name if the resource supports it" do
-      @new_resource.supports({:restart => true})
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restart")
+      @new_resource.supports({ restart: true })
+      expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restart", default_env: false)
       @provider.restart_service()
     end
 
     it "should call the restart_command if one has been specified" do
       @new_resource.restart_command("/usr/sbin/invoke-rc.d chef restartinafire")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restartinafire")
+      expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restartinafire", default_env: false)
       @provider.restart_service()
     end
 
@@ -197,14 +197,14 @@ RUNNING_PS
 
   describe "when reloading a service" do
     it "should call 'reload' on the service if it supports it" do
-      @new_resource.supports({:reload => true})
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d chef reload")
+      @new_resource.supports({ reload: true })
+      expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef reload", default_env: false)
       @provider.reload_service()
     end
 
     it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
       @new_resource.reload_command("/usr/sbin/invoke-rc.d chef lollerpants")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d chef lollerpants")
+      expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef lollerpants", default_env: false)
       @provider.reload_service()
     end
   end

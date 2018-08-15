@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/path_utils'
-require 'chef/chef_fs/file_system/operation_not_allowed_error'
+require "chef/chef_fs/path_utils"
+require "chef/chef_fs/file_system/exceptions"
 
 class Chef
   module ChefFS
@@ -27,18 +27,22 @@ class Chef
           @parent = parent
           @name = name
           if parent
-            @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            @path = Chef::ChefFS::PathUtils.join(parent.path, name)
           else
-            if name != ''
+            if name != ""
               raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
             end
-            @path = '/'
+            @path = "/"
           end
         end
 
         attr_reader :name
         attr_reader :parent
         attr_reader :path
+
+        alias_method :display_path, :path
+        alias_method :display_name, :name
+        alias_method :bare_name, :name
 
         # Override this if you have a special comparison algorithm that can tell
         # you whether this entry is the same as another--either a quicker or a
@@ -95,7 +99,10 @@ class Chef
         # directly perform a network request to retrieve the y.json data bag.  No
         # network request was necessary to retrieve
         def child(name)
-          NonexistentFSObject.new(name, self)
+          if can_have_child?(name, true) || can_have_child?(name, false)
+            result = make_child_entry(name)
+          end
+          result || NonexistentFSObject.new(name, self)
         end
 
         # Override children to report your *actual* list of children as an array.
@@ -143,10 +150,10 @@ class Chef
         def path_for_printing
           if parent
             parent_path = parent.path_for_printing
-            if parent_path == '.'
+            if parent_path == "."
               name
             else
-              Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
+              Chef::ChefFS::PathUtils.join(parent.path_for_printing, name)
             end
           else
             name
@@ -171,10 +178,10 @@ class Chef
 
         # Important directory attributes: name, parent, path, root
         # Overridable attributes: dir?, child(name), path_for_printing
-        # Abstract: read, write, delete, children, can_have_child?, create_child, compare_to
+        # Abstract: read, write, delete, children, can_have_child?, create_child, compare_to, make_child_entry
       end # class BaseFsObject
     end
   end
 end
 
-require 'chef/chef_fs/file_system/nonexistent_fs_object'
+require "chef/chef_fs/file_system/nonexistent_fs_object"

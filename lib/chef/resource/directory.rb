@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,47 +18,30 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/directory'
-require 'chef/mixin/securable'
+require "chef/resource"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
     class Directory < Chef::Resource
+      resource_name :directory
 
-      identity_attr :path
+      description "Use the directory resource to manage a directory, which is a hierarchy"\
+                  " of folders that comprises all of the information stored on a computer."\
+                  " The root directory is the top-level, under which the rest of the directory"\
+                  " is organized. The directory resource uses the name property to specify the"\
+                  " path to a location in a directory. Typically, permission to access that"\
+                  " location in the directory is required."
 
       state_attrs :group, :mode, :owner
 
       include Chef::Mixin::Securable
 
-      provides :directory
+      default_action :create
+      allowed_actions :create, :delete
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :directory
-        @path = name
-        @action = :create
-        @recursive = false
-        @allowed_actions.push(:create, :delete)
-      end
-
-      def recursive(arg=nil)
-        set_or_return(
-          :recursive,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def path(arg=nil)
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => String
-        )
-      end
-
+      property :path, String, name_property: true, identity: true
+      property :recursive, [ TrueClass, FalseClass ], default: false
     end
   end
 end

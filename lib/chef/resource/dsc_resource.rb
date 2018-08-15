@@ -1,7 +1,7 @@
 #
-# Author:: Adam Edwards (<adamed@getchef.com>)
+# Author:: Adam Edwards (<adamed@chef.io>)
 #
-# Copyright:: 2014, Opscode, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,26 +15,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/dsl/powershell'
+require "chef/dsl/powershell"
 
 class Chef
   class Resource
     class DscResource < Chef::Resource
+      resource_name :dsc_resource
+      provides :dsc_resource
 
-      provides :dsc_resource, os: "windows"
+      description "The dsc_resource resource allows any DSC resource to be used in a"\
+                  " Chef recipe, as well as any custom resources that have been added"\
+                  " to your Windows PowerShell environment. Microsoft frequently adds"\
+                  " new resources to the DSC resource collection."
+      introduced "12.2"
+
+      # This class will check if the object responds to
+      # to_text. If it does, it will call that as opposed
+      # to inspect. This is useful for properties that hold
+      # objects such as PsCredential, where we do not want
+      # to dump the actual ivars
+      class ToTextHash < Hash
+        def to_text
+          descriptions = map do |(property, obj)|
+            obj_text = if obj.respond_to?(:to_text)
+                         obj.to_text
+                       else
+                         obj.inspect
+                       end
+            "#{property}=>#{obj_text}"
+          end
+          "{#{descriptions.join(', ')}}"
+        end
+      end
 
       include Chef::DSL::Powershell
 
+      default_action :run
+
       def initialize(name, run_context)
         super
-        @properties = {}
-        @resource_name = :dsc_resource
+        @properties = ToTextHash.new
         @resource = nil
-        @allowed_actions.push(:run)
-        @action = :run
       end
 
-      def resource(value=nil)
+      def resource(value = nil)
         if value
           @resource = value
         else
@@ -42,7 +66,7 @@ class Chef
         end
       end
 
-      def module_name(value=nil)
+      def module_name(value = nil)
         if value
           @module_name = value
         else
@@ -50,9 +74,13 @@ class Chef
         end
       end
 
-      def property(property_name, value=nil)
+      property :module_version, String,
+               introduced: "12.21",
+               description: "The version number of the module to use. Powershell 5.0.10018.0 (or higher) supports having multiple versions of a module installed. This should be specified along with the module_name."
+
+      def property(property_name, value = nil)
         if not property_name.is_a?(Symbol)
-          raise TypeError, "A property name of type Symbol must be specified, '#{property_name.to_s}' of type #{property_name.class.to_s} was given"
+          raise TypeError, "A property name of type Symbol must be specified, '#{property_name}' of type #{property_name.class} was given"
         end
 
         if value.nil?
@@ -68,6 +96,18 @@ class Chef
           memo
         end
       end
+
+      # This property takes the action message for the reboot resource
+      # If the set method of the DSC resource indicate that a reboot
+      # is necessary, reboot_action provides the mechanism for a reboot to
+      # be requested.
+      property :reboot_action, Symbol, default: :nothing, equal_to: [:nothing, :reboot_now, :request_reboot],
+                introduced: "12.6",
+                description: "Use to request an immediate reboot or to queue a reboot using the :reboot_now (immediate reboot) or :request_reboot (queued reboot) actions built into the reboot resource."
+
+      property :timeout, Integer,
+               introduced: "12.6",
+               description: "The amount of time (in seconds) a command is to wait before timing out."
 
       private
 

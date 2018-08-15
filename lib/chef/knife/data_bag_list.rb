@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,23 +16,23 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class DataBagList < Knife
 
       deps do
-        require 'chef/data_bag'
+        require "chef/data_bag"
       end
 
       banner "knife data bag list (options)"
       category "data bag"
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+        short: "-w",
+        long: "--with-uri",
+        description: "Show corresponding URIs."
 
       def run
         output(format_list_for_display(Chef::DataBag.list))
@@ -40,7 +40,3 @@ class Chef
     end
   end
 end
-
-
-
-

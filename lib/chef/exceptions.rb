@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,19 +17,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "chef-config/exceptions"
+
 class Chef
   # == Chef::Exceptions
   # Chef's custom exceptions are all contained within the Chef::Exceptions
   # namespace.
   class Exceptions
 
+    ConfigurationError = ChefConfig::ConfigurationError
+
     # Backcompat with Chef::ShellOut code:
-    require 'mixlib/shellout/exceptions'
+    require "mixlib/shellout/exceptions"
 
     def self.const_missing(const_name)
       if const_name == :ShellCommandFailed
         Chef::Log.warn("Chef::Exceptions::ShellCommandFailed is deprecated, use Mixlib::ShellOut::ShellCommandFailed")
-        called_from = caller[0..3].inject("Called from:\n") {|msg, trace_line| msg << "  #{trace_line}\n" }
+        called_from = caller[0..3].inject("Called from:\n") { |msg, trace_line| msg << "  #{trace_line}\n" }
         Chef::Log.warn(called_from)
         Mixlib::ShellOut::ShellCommandFailed
       else
@@ -38,9 +42,12 @@ class Chef
     end
 
     class Application < RuntimeError; end
+    class SigInt < RuntimeError; end
+    class SigTerm < RuntimeError; end
     class Cron < RuntimeError; end
-    class Env < RuntimeError; end
+    class WindowsEnv < RuntimeError; end
     class Exec < RuntimeError; end
+    class Execute < RuntimeError; end
     class ErlCall < RuntimeError; end
     class FileNotFound < RuntimeError; end
     class Package < RuntimeError; end
@@ -62,26 +69,43 @@ class Chef
     class Group < RuntimeError; end
     class Link < RuntimeError; end
     class Mount < RuntimeError; end
+    class Reboot < Exception; end # rubocop:disable Lint/InheritException
+    class RebootPending < Exception; end # rubocop:disable Lint/InheritException
+    class RebootFailed < Mixlib::ShellOut::ShellCommandFailed; end
+    class ClientUpgraded < Exception; end # rubocop:disable Lint/InheritException
     class PrivateKeyMissing < RuntimeError; end
     class CannotWritePrivateKey < RuntimeError; end
     class RoleNotFound < RuntimeError; end
     class DuplicateRole < RuntimeError; end
     class ValidationFailed < ArgumentError; end
+    class CannotValidateStaticallyError < ArgumentError; end
     class InvalidPrivateKey < ArgumentError; end
-    class ConfigurationError < ArgumentError; end
     class MissingKeyAttribute < ArgumentError; end
     class KeyCommandInputError < ArgumentError; end
+    class BootstrapCommandInputError < ArgumentError
+      def initialize
+        super "You cannot pass both --json-attributes and --json-attribute-file. Please pass one or none."
+      end
+    end
     class InvalidKeyArgument < ArgumentError; end
     class InvalidKeyAttribute < ArgumentError; end
+    class InvalidUserAttribute < ArgumentError; end
+    class InvalidClientAttribute < ArgumentError; end
     class RedirectLimitExceeded < RuntimeError; end
     class AmbiguousRunlistSpecification < ArgumentError; end
     class CookbookFrozen < ArgumentError; end
     class CookbookNotFound < RuntimeError; end
+    class OnlyApiVersion0SupportedForAction < RuntimeError; end
     # Cookbook loader used to raise an argument error when cookbook not found.
     # for back compat, need to raise an error that inherits from ArgumentError
     class CookbookNotFoundInRepo < ArgumentError; end
     class RecipeNotFound < ArgumentError; end
+    # AttributeNotFound really means the attribute file could not be found
     class AttributeNotFound < RuntimeError; end
+    # NoSuchAttribute is raised on access by node.read!("foo", "bar") when node["foo"]["bar"] does not exist.
+    class NoSuchAttribute < RuntimeError; end
+    # AttributeTypeMismatch is raised by node.write!("foo", "bar", "baz") when e.g. node["foo"] = "bar" (overwriting String with Hash)
+    class AttributeTypeMismatch < RuntimeError; end
     class MissingCookbookDependency < StandardError; end # CHEF-5120
     class InvalidCommandOption < RuntimeError; end
     class CommandTimeout < RuntimeError; end
@@ -94,7 +118,14 @@ class Chef
     class ConflictingMembersInGroup < ArgumentError; end
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
+    class ProviderNotFound < RuntimeError; end
+    NoProviderAvailable = ProviderNotFound
     class VerificationNotFound < RuntimeError; end
+    class InvalidEventType < ArgumentError; end
+    class MultipleIdentityError < RuntimeError; end
+    # Used in Resource::ActionClass#load_current_resource to denote that
+    # the resource doesn't actually exist (for example, the file does not exist)
+    class CurrentValueDoesNotExist < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
     class NoSuchResourceType < NameError
@@ -102,6 +133,8 @@ class Chef
         super "Cannot find a resource for #{short_name} on #{node[:platform]} version #{node[:platform_version]}"
       end
     end
+
+    class InvalidPolicybuilderCall < ArgumentError; end
 
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
@@ -116,9 +149,10 @@ class Chef
     class EnclosingDirectoryDoesNotExist < ArgumentError; end
     # Errors originating from calls to the Win32 API
     class Win32APIError < RuntimeError; end
+
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
     # when older versions of Windows don't support newer Win32 API functions.
-    class Win32APIFunctionNotImplemented < NotImplementedError; end
+    class Win32APIFunctionNotImplemented < NotImplementedError; end # rubocop:disable Lint/InheritException
     # Attempting to run windows code on a not-windows node
     class Win32NotWindows < RuntimeError; end
     class WindowsNotAdmin < RuntimeError; end
@@ -132,6 +166,8 @@ class Chef
     class LCMParser < RuntimeError; end
 
     class CannotDetermineHomebrewOwner < Package; end
+    class CannotDetermineWindowsInstallerType < Package; end
+    class NoWindowsPackageSource < Package; end
 
     # Can not create staging file during file deployment
     class FileContentStagingError < RuntimeError
@@ -142,7 +178,7 @@ class Chef
 
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
-    class CookbookVersionConflict < ArgumentError ; end
+    class CookbookVersionConflict < ArgumentError; end
 
     # does not follow X.Y.Z format. ArgumentError?
     class InvalidPlatformVersion < ArgumentError; end
@@ -153,7 +189,7 @@ class Chef
     class InvalidVersionConstraint < ArgumentError; end
 
     # Version constraints are not allowed in chef-solo
-    class IllegalVersionConstraint < NotImplementedError; end
+    class IllegalVersionConstraint < NotImplementedError; end # rubocop:disable Lint/InheritException
 
     class MetadataNotValid < StandardError; end
     class MetadataNotFound < StandardError
@@ -181,7 +217,7 @@ class Chef
     class ImmutableAttributeModification < NoMethodError
       def initialize
         super "Node attributes are read-only when you do not specify which precedence level to set. " +
-          %Q(To set an attribute use code like `node.default["key"] = "value"')
+          %q{To set an attribute use code like `node.default["key"] = "value"'}
       end
     end
 
@@ -203,6 +239,10 @@ class Chef
     class Win32RegBadValueSize < ArgumentError; end
     class Win32RegTypesMismatch < ArgumentError; end
 
+    # incorrect input for registry_key create action throws following error
+    class RegKeyValuesTypeMissing < ArgumentError; end
+    class RegKeyValuesDataMissing < ArgumentError; end
+
     class InvalidEnvironmentPath < ArgumentError; end
     class EnvironmentNotFound < RuntimeError; end
 
@@ -215,9 +255,7 @@ class Chef
 
     class ChildConvergeError < RuntimeError; end
 
-    class NoProviderAvailable < RuntimeError; end
-
-    class DeprecatedFeatureError < RuntimeError;
+    class DeprecatedFeatureError < RuntimeError
       def initalize(message)
         super("#{message} (raising error due to treat_deprecation_warnings_as_errors being set)")
       end
@@ -228,7 +266,7 @@ class Chef
 
       attr_reader :expansion
 
-      def initialize(message_or_expansion=NULL)
+      def initialize(message_or_expansion = NULL)
         @expansion = nil
         case message_or_expansion
         when NULL
@@ -237,7 +275,7 @@ class Chef
           super
         when RunList::RunListExpansion
           @expansion = message_or_expansion
-          missing_roles = @expansion.errors.join(', ')
+          missing_roles = @expansion.errors.join(", ")
           super("The expanded run list includes nonexistent roles: #{missing_roles}")
         end
       end
@@ -270,7 +308,7 @@ class Chef
 
       def raise!
         unless empty?
-          raise self.for_raise
+          raise for_raise
         end
       end
 
@@ -307,7 +345,7 @@ class Chef
           result = {
             "message" => message,
             "non_existent_cookbooks" => non_existent_cookbooks,
-            "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions
+            "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions,
           }
           Chef::JSONCompat.to_json(result, *a)
         end
@@ -342,7 +380,7 @@ class Chef
             "message" => message,
             "unsatisfiable_run_list_item" => run_list_item,
             "non_existent_cookbooks" => non_existent_cookbooks,
-            "most_constrained_cookbooks" => most_constrained_cookbooks
+            "most_constrained_cookbooks" => most_constrained_cookbooks,
           }
           Chef::JSONCompat.to_json(result, *a)
         end
@@ -360,7 +398,10 @@ class Chef
     # length declared in the http response.
     class ContentLengthMismatch < RuntimeError
       def initialize(response_length, content_length)
-        super "Response body length #{response_length} does not match HTTP Content-Length header #{content_length}."
+        super <<~EOF
+          Response body length #{response_length} does not match HTTP Content-Length header #{content_length}.
+          This error is most often caused by network issues (proxies, etc) outside of chef-client.
+        EOF
       end
     end
 
@@ -401,18 +442,20 @@ class Chef
       end
     end
 
-    class AuditControlGroupDuplicate < RuntimeError
+    class AuditError < RuntimeError; end
+
+    class AuditControlGroupDuplicate < AuditError
       def initialize(name)
         super "Control group with name '#{name}' has already been defined"
       end
     end
-    class AuditNameMissing < RuntimeError; end
-    class NoAuditsProvided < RuntimeError
+    class AuditNameMissing < AuditError; end
+    class NoAuditsProvided < AuditError
       def initialize
         super "You must provide a block with controls"
       end
     end
-    class AuditsFailed < RuntimeError
+    class AuditsFailed < AuditError
       def initialize(num_failed, num_total)
         super "Audit phase found failures - #{num_failed}/#{num_total} controls failed"
       end
@@ -424,7 +467,7 @@ class Chef
     class RunFailedWrappingError < RuntimeError
       attr_reader :wrapped_errors
       def initialize(*errors)
-        errors = errors.select {|e| !e.nil?}
+        errors = errors.select { |e| !e.nil? }
         output = "Found #{errors.size} errors, they are stored in the backtrace"
         @wrapped_errors = errors
         super output
@@ -432,8 +475,8 @@ class Chef
 
       def fill_backtrace
         backtrace = []
-        wrapped_errors.each_with_index do |e,i|
-          backtrace << "#{i+1}) #{e.class} -  #{e.message}"
+        wrapped_errors.each_with_index do |e, i|
+          backtrace << "#{i + 1}) #{e.class} -  #{e.message}"
           backtrace += e.backtrace if e.backtrace
           backtrace << "" unless i == wrapped_errors.length - 1
         end
@@ -447,18 +490,41 @@ class Chef
       end
     end
 
+    class CookbookChefVersionMismatch < RuntimeError
+      def initialize(chef_version, cookbook_name, cookbook_version, *constraints)
+        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(", ")
+        super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on chef version #{constraint_str}, but the running chef version is #{chef_version}"
+      end
+    end
+
+    class CookbookOhaiVersionMismatch < RuntimeError
+      def initialize(ohai_version, cookbook_name, cookbook_version, *constraints)
+        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(", ")
+        super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on ohai version #{constraint_str}, but the running ohai version is #{ohai_version}"
+      end
+    end
+
     class MultipleDscResourcesFound < RuntimeError
       attr_reader :resources_found
       def initialize(resources_found)
         @resources_found = resources_found
         matches_info = @resources_found.each do |r|
-          if r['Module'].nil?
+          if r["Module"].nil?
             "Resource #{r['Name']} was found in #{r['Module']['Name']}"
           else
             "Resource #{r['Name']} is a binary resource"
           end
         end
-        super "Found multiple matching resources. #{matches_info.join("\n")}"
+        super "Found multiple resources matching #{matches_info[0]["Module"]["Name"]}:\n#{(matches_info.map { |f| f["Module"]["Version"] }).uniq.join("\n")}"
+      end
+    end
+
+    # exception specific to invalid usage of 'dsc_resource' resource
+    class DSCModuleNameMissing < ArgumentError; end
+
+    class GemRequirementConflict < RuntimeError
+      def initialize(gem_name, option, value1, value2)
+        super "Conflicting requirements for gem '#{gem_name}': Both #{value1.inspect} and #{value2.inspect} given for option #{option.inspect}"
       end
     end
   end

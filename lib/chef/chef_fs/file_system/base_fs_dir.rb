@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/base_fs_object'
-require 'chef/chef_fs/file_system/nonexistent_fs_object'
+require "chef/chef_fs/file_system/base_fs_object"
+require "chef/chef_fs/file_system/nonexistent_fs_object"
 
 class Chef
   module ChefFS
@@ -29,11 +29,6 @@ class Chef
 
         def dir?
           true
-        end
-
-        # Override child(name) to provide a child object by name without the network read
-        def child(name)
-          children.select { |child| child.name == name }.first || NonexistentFSObject.new(name, self)
         end
 
         def can_have_child?(name, is_dir)

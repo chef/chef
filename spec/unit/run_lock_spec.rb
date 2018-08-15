@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require File.expand_path('../../spec_helper', __FILE__)
-require 'chef/client'
+require File.expand_path("../../spec_helper", __FILE__)
+require "chef/client"
 
 describe Chef::RunLock do
 
-  default_cache_path = windows? ? 'C:\chef' : '/var/chef'
-  default_pid_location = windows? ? 'C:\chef\cache\chef-client-running.pid' : '/var/chef/cache/chef-client-running.pid'
+  default_cache_path = windows? ? 'C:\chef' : "/var/chef"
+  default_pid_location = windows? ? 'C:\chef\cache\chef-client-running.pid' : "/var/chef/cache/chef-client-running.pid"
 
   describe "when first created" do
     it "locates the lockfile in the file cache path by default" do
@@ -91,7 +91,7 @@ describe Chef::RunLock do
         it "should raise Chef::Exceptions::RunLockTimeout" do
           stub_blocked_run(0.001)
           expect(runlock).not_to receive(:wait)
-          expect{ runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
+          expect { runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
         end
       end
     end
@@ -118,9 +118,9 @@ describe Chef::RunLock do
       describe "and the lockfile is locked by another client run" do
         describe "and the lock is released before the timeout expires" do
           it "should acquire the lock" do
-            stub_blocked_run(@timeout/2.0)
+            stub_blocked_run(@timeout / 2.0)
             expect(runlock).to receive(:wait)
-            expect{ runlock.acquire }.not_to raise_error
+            expect { runlock.acquire }.not_to raise_error
           end
         end
 
@@ -128,7 +128,7 @@ describe Chef::RunLock do
           it "should raise a RunLockTimeout exception" do
             stub_blocked_run(2.0)
             expect(runlock).to receive(:wait)
-            expect{ runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
+            expect { runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
           end
         end
       end

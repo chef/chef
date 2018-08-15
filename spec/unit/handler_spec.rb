@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Handler do
   before(:each) do
@@ -36,8 +36,8 @@ describe Chef::Handler do
       @exception.set_backtrace(@backtrace)
       @run_status.exception = @exception
       @run_context = Chef::RunContext.new(@node, {}, @events)
-      @all_resources = [Chef::Resource::Cat.new('lolz'), Chef::Resource::ZenMaster.new('tzu')]
-      @all_resources.first.updated = true
+      @all_resources = [Chef::Resource::Cat.new("lolz"), Chef::Resource::ZenMaster.new("tzu")]
+      @all_resources.first.updated_by_last_action true
       @run_context.resource_collection.all_resources.replace(@all_resources)
       @run_status.run_context = @run_context
       @start_time = Time.now
@@ -100,7 +100,7 @@ describe Chef::Handler do
         $report_ran = true
         raise Exception, "I died the deth"
       end
-      expect {@handler.run_report_safely(@run_status)}.not_to raise_error
+      expect { @handler.run_report_safely(@run_status) }.not_to raise_error
       expect($report_ran).to be_truthy
     end
     it "does not fail if the report handler does not raise an exception" do
@@ -108,7 +108,7 @@ describe Chef::Handler do
       def @handler.report
         $report_ran = true
       end
-      expect {@handler.run_report_safely(@run_status)}.not_to raise_error
+      expect { @handler.run_report_safely(@run_status) }.not_to raise_error
       expect($report_ran).to be_truthy
     end
   end
@@ -117,8 +117,8 @@ describe Chef::Handler do
   describe "when running a report handler" do
     before do
       @run_context = Chef::RunContext.new(@node, {}, @events)
-      @all_resources = [Chef::Resource::Cat.new('foo'), Chef::Resource::ZenMaster.new('moo')]
-      @all_resources.first.updated = true
+      @all_resources = [Chef::Resource::Cat.new("foo"), Chef::Resource::ZenMaster.new("moo")]
+      @all_resources.first.updated_by_last_action true
       @run_context.resource_collection.all_resources.replace(@all_resources)
       @run_status.run_context = @run_context
       @start_time = Time.now
@@ -212,4 +212,91 @@ describe Chef::Handler do
     end
   end
 
+  describe "library report handler" do
+    before do
+      # we need to lazily declare this after we have reset Chef::Config in the default rspec before handler
+      class MyTestHandler < Chef::Handler
+        handler_for :report, :exception, :start
+
+        class << self
+          attr_accessor :ran_report
+        end
+
+        def report
+          self.class.ran_report = true
+        end
+      end
+    end
+
+    it "gets added to Chef::Config[:report_handlers]" do
+      expect(Chef::Config[:report_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "gets added to Chef::Config[:exception_handlers]" do
+      expect(Chef::Config[:exception_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "gets added to Chef::Config[:start_handlers]" do
+      expect(Chef::Config[:start_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "runs the report handler" do
+      Chef::Handler.run_report_handlers(@run_status)
+      expect(MyTestHandler.ran_report).to be true
+    end
+
+    it "runs the exception handler" do
+      Chef::Handler.run_exception_handlers(@run_status)
+      expect(MyTestHandler.ran_report).to be true
+    end
+
+    it "runs the start handler" do
+      Chef::Handler.run_start_handlers(@run_status)
+      expect(MyTestHandler.ran_report).to be true
+    end
+  end
+
+  describe "library singleton report handler" do
+    before do
+      # we need to lazily declare this after we have reset Chef::Config in the default rspec before handler
+      class MyTestHandler < Chef::Handler
+        handler_for :report, :exception, :start
+
+        include Singleton
+
+        attr_accessor :ran_report
+
+        def report
+          self.ran_report = true
+        end
+      end
+    end
+
+    it "gets added to Chef::Config[:report_handlers]" do
+      expect(Chef::Config[:report_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "gets added to Chef::Config[:exception_handlers]" do
+      expect(Chef::Config[:exception_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "gets added to Chef::Config[:start_handlers]" do
+      expect(Chef::Config[:start_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "runs the report handler" do
+      Chef::Handler.run_report_handlers(@run_status)
+      expect(MyTestHandler.instance.ran_report).to be true
+    end
+
+    it "runs the exception handler" do
+      Chef::Handler.run_exception_handlers(@run_status)
+      expect(MyTestHandler.instance.ran_report).to be true
+    end
+
+    it "runs the start handler" do
+      Chef::Handler.run_start_handlers(@run_status)
+      expect(MyTestHandler.instance.ran_report).to be true
+    end
+  end
 end

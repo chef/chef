@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2008-2012 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,14 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/resource_resolver'
-require 'chef/node'
-require 'chef/log'
-require 'chef/exceptions'
-require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/from_file'
-require 'chef/mixin/params_validate' # for DelayedEvaluator
+require "chef/resource"
+require "chef/resource_resolver"
+require "chef/node"
+require "chef/log"
+require "chef/exceptions"
+require "chef/mixin/convert_to_class_name"
+require "chef/mixin/from_file"
+require "chef/mixin/params_validate" # for DelayedEvaluator
 
 class Chef
   class Resource
@@ -35,19 +35,15 @@ class Chef
     # so attributes, default action, etc. can be defined with pleasing syntax.
     class LWRPBase < Resource
 
-      NULL_ARG = Object.new
-
       # Class methods
       class <<self
 
         include Chef::Mixin::ConvertToClassName
         include Chef::Mixin::FromFile
 
-        attr_accessor :loaded_lwrps
-
         def build_from_file(cookbook_name, filename, run_context)
           if LWRPBase.loaded_lwrps[filename]
-            Chef::Log.info("LWRP resource #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
+            Chef::Log.trace("Custom resource #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
             return loaded_lwrps[filename]
           end
 
@@ -55,82 +51,43 @@ class Chef
 
           # We load the class first to give it a chance to set its own name
           resource_class = Class.new(self)
-          resource_class.resource_name = resource_name
+          resource_class.resource_name resource_name.to_sym
           resource_class.run_context = run_context
-          resource_class.provides resource_name.to_sym
           resource_class.class_from_file(filename)
 
-          # Respect resource_name set inside the LWRP
+          # Make a useful string for the class (rather than <Class:312894723894>)
           resource_class.instance_eval do
             define_singleton_method(:to_s) do
-              "LWRP resource #{resource_name} from cookbook #{cookbook_name}"
+              "Custom resource #{resource_name} from cookbook #{cookbook_name}"
             end
             define_singleton_method(:inspect) { to_s }
           end
 
-          Chef::Log.debug("Loaded contents of #{filename} into resource #{resource_name} (#{resource_class})")
+          Chef::Log.trace("Loaded contents of #{filename} into resource #{resource_name} (#{resource_class})")
 
           LWRPBase.loaded_lwrps[filename] = true
-
-          Chef::Resource.register_deprecated_lwrp_class(resource_class, convert_to_class_name(resource_name))
 
           resource_class
         end
 
-        def resource_name(arg = NULL_ARG)
-          if arg.equal?(NULL_ARG)
-            @resource_name
-          else
-            @resource_name = arg
-          end
-        end
-
-        alias_method :resource_name=, :resource_name
-
-        # Define an attribute on this resource, including optional validation
-        # parameters.
-        def attribute(attr_name, validation_opts={})
-          define_method(attr_name) do |arg=nil|
-            set_or_return(attr_name.to_sym, arg, validation_opts)
-          end
-        end
-
-        # Sets the default action
-        def default_action(action_name=NULL_ARG)
-          unless action_name.equal?(NULL_ARG)
-            @actions ||= []
-            if action_name.is_a?(Array)
-              action = action_name.map { |arg| arg.to_sym }
-              @actions = actions | action
-              @default_action = action
-            else
-              action = action_name.to_sym
-              @actions.push(action) unless @actions.include?(action)
-              @default_action = [action]
-            end
-          end
-
-          @default_action ||= from_superclass(:default_action)
-        end
+        alias :attribute :property
 
         # Adds +action_names+ to the list of valid actions for this resource.
+        # Does not include superclass's action list when appending.
         def actions(*action_names)
-          if action_names.empty?
-            defined?(@actions) ? @actions : from_superclass(:actions, []).dup
+          action_names = action_names.flatten
+          if !action_names.empty? && !@allowed_actions
+            self.allowed_actions = ([ :nothing ] + action_names).uniq
           else
-            # BC-compat way for checking if actions have already been defined
-            if defined?(@actions)
-              @actions.push(*action_names)
-            else
-              @actions = action_names
-            end
+            allowed_actions(*action_names)
           end
         end
+        alias :actions= :allowed_actions=
 
         # @deprecated
         def valid_actions(*args)
-          Chef::Log.warn("`valid_actions' is deprecated, please use actions `instead'!")
-          actions(*args)
+          Chef::Log.warn("`valid_actions' is deprecated, please use allowed_actions `instead'!")
+          allowed_actions(*args)
         end
 
         # Set the run context on the class. Used to provide access to the node
@@ -141,12 +98,9 @@ class Chef
           run_context ? run_context.node : nil
         end
 
-        def lazy(&block)
-          DelayedEvaluator.new(&block)
-        end
-
         protected
 
+        attr_writer :loaded_lwrps
         def loaded_lwrps
           @loaded_lwrps ||= {}
         end
@@ -161,23 +115,6 @@ class Chef
           return default if superclass == Chef::Resource::LWRPBase
           superclass.respond_to?(m) ? superclass.send(m) : default
         end
-      end
-
-      private
-
-      # Default initializer. Sets the default action and allowed actions.
-      def initialize(name, run_context=nil)
-        super(name, run_context)
-
-        # Raise an exception if the resource_name was not defined
-        if self.class.resource_name.nil?
-          raise Chef::Exceptions::InvalidResourceSpecification,
-            "You must specify `resource_name'!"
-        end
-
-        @resource_name = self.class.resource_name.to_sym
-        @action = self.class.default_action
-        allowed_actions.push(self.class.actions).flatten!
       end
     end
   end

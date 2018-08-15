@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::ResourceCollection::ResourceList do
   let(:resource_list) { Chef::ResourceCollection::ResourceList.new() }
@@ -24,7 +24,7 @@ describe Chef::ResourceCollection::ResourceList do
   let(:second_resource) { Chef::Resource::ZenMaster.new("hattori") }
 
   def insert_resource(res)
-    expect{ resource_list.insert(res) }.not_to raise_error
+    expect { resource_list.insert(res) }.not_to raise_error
   end
 
   describe "initialize" do
@@ -47,14 +47,14 @@ describe Chef::ResourceCollection::ResourceList do
     end
 
     it "should raise error when trying to install something other than Chef::Resource" do
-      expect{ resource_list.insert("not a resource") }.to raise_error(ArgumentError)
+      expect { resource_list.insert("not a resource") }.to raise_error(ArgumentError)
     end
   end
 
   describe "accessors" do
     it "should be able to insert with []=" do
-      expect{ resource_list[0] = resource }.not_to raise_error
-      expect{ resource_list[1] = second_resource }.not_to raise_error
+      expect { resource_list[0] = resource }.not_to raise_error
+      expect { resource_list[1] = second_resource }.not_to raise_error
       expect(resource_list[0]).to be(resource)
       expect(resource_list[1]).to be(second_resource)
     end

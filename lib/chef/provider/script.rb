@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,10 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'chef/provider/execute'
-require 'forwardable'
+require "tempfile"
+require "chef/provider/execute"
+require "chef/win32/security" if Chef::Platform.windows?
+require "forwardable"
 
 class Chef
   class Provider
@@ -27,12 +28,13 @@ class Chef
 
       provides :bash
       provides :csh
+      provides :ksh
       provides :perl
       provides :python
       provides :ruby
       provides :script
 
-      def_delegators :@new_resource, :interpreter, :flags
+      def_delegators :new_resource, :interpreter, :flags
 
       attr_accessor :code
 
@@ -49,7 +51,7 @@ class Chef
         super
         # @todo Chef-13: change this to an exception
         if code.nil?
-          Chef::Log.warn "#{@new_resource}: No code attribute was given, resource does nothing, this behavior is deprecated and will be removed in Chef-13"
+          logger.warn "#{new_resource}: No code attribute was given, resource does nothing, this behavior is deprecated and will be removed in Chef-13"
         end
       end
 
@@ -65,10 +67,45 @@ class Chef
       end
 
       def set_owner_and_group
-        # FileUtils itself implements a no-op if +user+ or +group+ are nil
-        # You can prove this by running FileUtils.chown(nil,nil,'/tmp/file')
-        # as an unprivileged user.
-        FileUtils.chown(new_resource.user, new_resource.group, script_file.path)
+        if Chef::Platform.windows?
+          # And on Windows also this is a no-op if there is no user specified.
+          grant_alternate_user_read_access
+        else
+          # FileUtils itself implements a no-op if +user+ or +group+ are nil
+          # You can prove this by running FileUtils.chown(nil,nil,'/tmp/file')
+          # as an unprivileged user.
+          FileUtils.chown(new_resource.user, new_resource.group, script_file.path)
+        end
+      end
+
+      def grant_alternate_user_read_access
+        # Do nothing if an alternate user isn't specified -- the file
+        # will already have the correct permissions for the user as part
+        # of the default ACL behavior on Windows.
+        return if new_resource.user.nil?
+
+        # Duplicate the script file's existing DACL
+        # so we can add an ACE later
+        securable_object = Chef::ReservedNames::Win32::Security::SecurableObject.new(script_file.path)
+        aces = securable_object.security_descriptor.dacl.reduce([]) { |result, current| result.push(current) }
+
+        username = new_resource.user
+
+        if new_resource.domain
+          username = new_resource.domain + '\\' + new_resource.user
+        end
+
+        # Create an ACE that allows the alternate user read access to the script
+        # file so it can be read and executed.
+        user_sid = Chef::ReservedNames::Win32::Security::SID.from_account(username)
+        read_ace = Chef::ReservedNames::Win32::Security::ACE.access_allowed(user_sid, Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE, 0)
+        aces.push(read_ace)
+        acl = Chef::ReservedNames::Win32::Security::ACL.create(aces)
+
+        # This actually applies the modified DACL to the file
+        # Use parentheses to bypass RuboCop / ChefStyle warning
+        # about useless setter
+        (securable_object.dacl = acl)
       end
 
       def script_file

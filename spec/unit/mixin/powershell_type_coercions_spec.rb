@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/powershell_type_coercions'
-require 'base64'
+require "spec_helper"
+require "chef/mixin/powershell_type_coercions"
+require "base64"
 
 class Chef::PSTypeTester
   include Chef::Mixin::PowershellTypeCoercions
@@ -27,46 +27,58 @@ end
 describe Chef::Mixin::PowershellTypeCoercions do
   let (:test_class) { Chef::PSTypeTester.new }
 
-  describe '#translate_type' do
-    it 'should single quote a string' do
-      expect(test_class.translate_type('foo')).to eq("'foo'")
+  describe "#translate_type" do
+    it "single quotes a string" do
+      expect(test_class.translate_type("foo")).to eq("'foo'")
     end
 
-    ["'", '"', '#', '`'].each do |c|
-      it "should base64 encode a string that contains #{c}" do
-        expect(test_class.translate_type("#{c}")).to match(Base64.strict_encode64(c))
+    ["'", '"', "#", "`"].each do |c|
+      it "base64 encodes a string that contains #{c}" do
+        expect(test_class.translate_type(c.to_s)).to match(Base64.strict_encode64(c))
       end
     end
 
-    it 'should not quote an integer' do
-      expect(test_class.translate_type(123)).to eq('123')
+    it "does not quote an integer" do
+      expect(test_class.translate_type(123)).to eq("123")
     end
 
-    it 'should not quote a floating point number' do
-      expect(test_class.translate_type(123.4)).to eq('123.4')
+    it "does not quote a floating point number" do
+      expect(test_class.translate_type(123.4)).to eq("123.4")
     end
 
-    it 'should return $false when an instance of FalseClass is provided' do
-      expect(test_class.translate_type(false)).to eq('$false')
+    it "translates $false when an instance of FalseClass is provided" do
+      expect(test_class.translate_type(false)).to eq("$false")
     end
 
-    it 'should return $true when an instance of TrueClass is provided' do
-      expect(test_class.translate_type(true)).to eq('$true')
+    it "translates $true when an instance of TrueClass is provided" do
+      expect(test_class.translate_type(true)).to eq("$true")
     end
 
-    it 'should translate all members of a hash and wrap them in @{} separated by ;' do
-      expect(test_class.translate_type({"a" => 1, "b" => 1.2, "c" => false, "d" => true
+    it "translates all members of a hash and wrap them in @{} separated by ;" do
+      expect(test_class.translate_type({ "a" => 1, "b" => 1.2, "c" => false, "d" => true
       })).to eq("@{a=1;b=1.2;c=$false;d=$true}")
     end
 
-    it 'should translat all members of an array and them by a ,' do
-      expect(test_class.translate_type([true, false])).to eq('@($true,$false)')
+    it "translates all members of an array and them by a ," do
+      expect(test_class.translate_type([true, false])).to eq("@($true,$false)")
     end
 
-    it 'should fall back :to_psobject if we have not defined at explicit rule' do
+    it "translates a Chef::Node::ImmutableMash like a hash" do
+      node = Chef::Node.new
+      node.default[:test] = { "a" => 1, "b" => 1.2, "c" => false, "d" => true }
+      expect(test_class.translate_type(node[:test])).to eq("@{a=1;b=1.2;c=$false;d=$true}")
+    end
+
+    it "translates a Chef::Node::ImmutableArray like an array" do
+      node = Chef::Node.new
+      node.default[:test] = [ true, false ]
+      expect(test_class.translate_type(node[:test])).to eq("@($true,$false)")
+    end
+
+    it "falls back :to_psobject if we have not defined at explicit rule" do
       ps_obj = double("PSObject")
-      expect(ps_obj).to receive(:to_psobject).and_return('$true')
-      expect(test_class.translate_type(ps_obj)).to eq('($true)')
+      expect(ps_obj).to receive(:to_psobject).and_return("$true")
+      expect(test_class.translate_type(ps_obj)).to eq("($true)")
     end
   end
 end

@@ -1,7 +1,7 @@
 #
-# Author:: Joshua Timberman (<joshua@getchef.com>)
-# Author:: Lamont Granquist (<lamont@getchef.com>)
-# Copyright:: Copyright (c) 2009-2014 Chef Software, Inc.
+# Author:: Joshua Timberman (<joshua@chef.io>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,21 +17,16 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/mixin/shell_out'
-require 'chef/provider'
+require "chef/log"
+require "chef/mixin/shell_out"
+require "chef/provider"
 
 class Chef
   class Provider
     class Mount < Chef::Provider
-
       include Chef::Mixin::ShellOut
 
       attr_accessor :unmount_retries
-
-      def whyrun_supported?
-        true
-      end
 
       def load_current_resource
         true
@@ -46,10 +41,10 @@ class Chef
         unless current_resource.mounted
           converge_by("mount #{current_resource.device} to #{current_resource.mount_point}") do
             mount_fs
-            Chef::Log.info("#{new_resource} mounted")
+            logger.info("#{new_resource} mounted")
           end
         else
-          Chef::Log.debug("#{new_resource} is already mounted")
+          logger.trace("#{new_resource} is already mounted")
         end
       end
 
@@ -57,10 +52,10 @@ class Chef
         if current_resource.mounted
           converge_by("unmount #{current_resource.device}") do
             umount_fs
-            Chef::Log.info("#{new_resource} unmounted")
+            logger.info("#{new_resource} unmounted")
           end
         else
-          Chef::Log.debug("#{new_resource} is already unmounted")
+          logger.trace("#{new_resource} is already unmounted")
         end
       end
 
@@ -69,32 +64,32 @@ class Chef
           if new_resource.supports[:remount]
             converge_by("remount #{current_resource.device}") do
               remount_fs
-              Chef::Log.info("#{new_resource} remounted")
+              logger.info("#{new_resource} remounted")
             end
           else
             converge_by("unmount #{current_resource.device}") do
               umount_fs
-              Chef::Log.info("#{new_resource} unmounted")
+              logger.info("#{new_resource} unmounted")
             end
             wait_until_unmounted(unmount_retries)
             converge_by("mount #{current_resource.device}") do
               mount_fs
-              Chef::Log.info("#{new_resource} mounted")
+              logger.info("#{new_resource} mounted")
             end
           end
         else
-          Chef::Log.debug("#{new_resource} not mounted, nothing to remount")
+          logger.trace("#{new_resource} not mounted, nothing to remount")
         end
       end
 
       def action_enable
-        unless current_resource.enabled && mount_options_unchanged?
+        unless current_resource.enabled && mount_options_unchanged? && device_unchanged?
           converge_by("enable #{current_resource.device}") do
             enable_fs
-            Chef::Log.info("#{new_resource} enabled")
+            logger.info("#{new_resource} enabled")
           end
         else
-          Chef::Log.debug("#{new_resource} already enabled")
+          logger.trace("#{new_resource} already enabled")
         end
       end
 
@@ -102,12 +97,14 @@ class Chef
         if current_resource.enabled
           converge_by("disable #{current_resource.device}") do
             disable_fs
-            Chef::Log.info("#{new_resource} disabled")
+            logger.info("#{new_resource} disabled")
           end
         else
-          Chef::Log.debug("#{new_resource} already disabled")
+          logger.trace("#{new_resource} already disabled")
         end
       end
+
+      alias :action_unmount :action_umount
 
       #
       # Abstract Methods to be implemented by subclasses
@@ -115,12 +112,20 @@ class Chef
 
       # should actually check if the filesystem is mounted (not just return current_resource) and return true/false
       def mounted?
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not implement #mounted?"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #mounted?"
       end
 
       # should check new_resource against current_resource to see if mount options need updating, returns true/false
       def mount_options_unchanged?
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not implement #mount_options_unchanged?"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #mount_options_unchanged?"
+      end
+
+      # It's entirely plausible that a site might prefer UUIDs or labels, so
+      # we need to be able to update fstab to conform with their wishes
+      # without necessarily needing to remount the device.
+      # See #6851 for more.
+      def device_unchanged?
+        @current_resource.device == @new_resource.device
       end
 
       #
@@ -131,28 +136,28 @@ class Chef
 
       # should implement mounting of the filesystem, raises if action does not succeed
       def mount_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :mount"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :mount"
       end
 
       # should implement unmounting of the filesystem, raises if action does not succeed
       def umount_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :umount"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :umount"
       end
 
       # should implement remounting of the filesystem (via a -o remount or some other atomic-ish action that isn't
       # simply a umount/mount style remount), raises if action does not succeed
       def remount_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :remount"
       end
 
       # should implement enabling of the filesystem (e.g. in /etc/fstab), raises if action does not succeed
       def enable_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :enable"
       end
 
       # should implement disabling of the filesystem (e.g. in /etc/fstab), raises if action does not succeed
       def disable_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :disable"
       end
 
       private

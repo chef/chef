@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Delano (<stephen@ospcode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::EnvironmentEdit do
   before(:each) do
@@ -40,7 +40,7 @@ describe Chef::Knife::EnvironmentEdit do
   end
 
   it "should let you edit the environment" do
-    expect(@knife.ui).to receive(:edit_data).with(@environment)
+    expect(@knife.ui).to receive(:edit_data).with(@environment, object_class: Chef::Environment)
     @knife.run
   end
 
@@ -48,7 +48,7 @@ describe Chef::Knife::EnvironmentEdit do
     pansy = Chef::Environment.new
 
     @environment.name("new_environment_name")
-    expect(@knife.ui).to receive(:edit_data).with(@environment).and_return(pansy)
+    expect(@knife.ui).to receive(:edit_data).with(@environment, object_class: Chef::Environment).and_return(pansy)
     expect(pansy).to receive(:save)
     @knife.run
   end

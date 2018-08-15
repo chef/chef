@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/dsl/recipe'
-
+require "spec_helper"
+require "chef/dsl/recipe"
 
 RecipeDSLExampleClass = Struct.new(:cookbook_name, :recipe_name)
 class RecipeDSLExampleClass
@@ -54,10 +53,6 @@ describe Chef::DSL::Recipe do
     it "responds to shell_out" do
       expect(recipe.respond_to?(:shell_out!)).to be true
     end
-
-    it "responds to shell_out" do
-      expect(recipe.respond_to?(:shell_out_with_systems_locale)).to be true
-    end
   end
 
   context "when included in a class that defines the required interface directly" do
@@ -79,4 +74,3 @@ describe Chef::DSL::Recipe do
   end
 
 end
-

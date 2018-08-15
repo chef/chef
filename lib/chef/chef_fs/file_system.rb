@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/path_utils'
-require 'chef/chef_fs/file_system/default_environment_cannot_be_modified_error'
-require 'chef/chef_fs/file_system/operation_failed_error'
-require 'chef/chef_fs/file_system/operation_not_allowed_error'
-require 'chef/chef_fs/parallelizer'
+require "chef/chef_fs/path_utils"
+require "chef/chef_fs/file_system/exceptions"
+require "chef/chef_fs/parallelizer"
 
 class Chef
   module ChefFS
@@ -54,13 +52,13 @@ class Chef
 
         def list_from(entry, &block)
           # Include self in results if it matches
-          if pattern.match?(entry.path)
-            block.call(entry)
+          if pattern.match?(entry.display_path)
+            yield(entry)
           end
 
-          if pattern.could_match_children?(entry.path)
+          if pattern.could_match_children?(entry.display_path)
             # If it's possible that our children could match, descend in and add matches.
-            exact_child_name = pattern.exact_child_name_under(entry.path)
+            exact_child_name = pattern.exact_child_name_under(entry.display_path)
 
             # If we've got an exact name, don't bother listing children; just grab the
             # child with the given name.
@@ -70,9 +68,9 @@ class Chef
                 list_from(exact_child, &block)
               end
 
-            # Otherwise, go through all children and find any matches
+              # Otherwise, go through all children and find any matches
             elsif entry.dir?
-              results = Parallelizer::parallelize(entry.children) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
+              results = Parallelizer.parallelize(entry.children) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
               results.flatten(1).each(&block)
             end
           end
@@ -95,13 +93,13 @@ class Chef
       #
       def self.resolve_path(entry, path)
         return entry if path.length == 0
-        return resolve_path(entry.root, path) if path[0,1] == "/" && entry.root != entry
-        if path[0,1] == "/"
-          path = path[1,path.length-1]
+        return resolve_path(entry.root, path) if path[0, 1] == "/" && entry.root != entry
+        if path[0, 1] == "/"
+          path = path[1, path.length - 1]
         end
 
         result = entry
-        Chef::ChefFS::PathUtils::split(path).each do |part|
+        Chef::ChefFS::PathUtils.split(path).each do |part|
           result = result.child(part)
         end
         result
@@ -188,16 +186,16 @@ class Chef
           # Make sure everything on the server is also on the filesystem, and diff
           found_paths = Set.new
           Chef::ChefFS::FileSystem.list(a_root, pattern).each do |a|
-            found_paths << a.path
-            b = Chef::ChefFS::FileSystem.resolve_path(b_root, a.path)
+            found_paths << a.display_path
+            b = Chef::ChefFS::FileSystem.resolve_path(b_root, a.display_path)
             yield [ a, b ]
           end
 
           # Check the outer regex pattern to see if it matches anything on the
           # filesystem that isn't on the server
           Chef::ChefFS::FileSystem.list(b_root, pattern).each do |b|
-            if !found_paths.include?(b.path)
-              a = Chef::ChefFS::FileSystem.resolve_path(a_root, b.path)
+            if !found_paths.include?(b.display_path)
+              a = Chef::ChefFS::FileSystem.resolve_path(a_root, b.display_path)
               yield [ a, b ]
             end
           end
@@ -224,14 +222,14 @@ class Chef
         result = []
         a_children_names = Set.new
         a.children.each do |a_child|
-          a_children_names << a_child.name
-          result << [ a_child, b.child(a_child.name) ]
+          a_children_names << a_child.bare_name
+          result << [ a_child, b.child(a_child.bare_name) ]
         end
 
         # Check b for children that aren't in a
         b.children.each do |b_child|
-          if !a_children_names.include?(b_child.name)
-            result << [ a.child(b_child.name), b_child ]
+          if !a_children_names.include?(b_child.bare_name)
+            result << [ a.child(b_child.bare_name), b_child ]
           end
         end
         result
@@ -259,170 +257,174 @@ class Chef
         [ are_same, a_value, b_value ]
       end
 
-      private
+      class << self
+        private
 
-      # Copy two entries (could be files or dirs)
-      def self.copy_entries(src_entry, dest_entry, new_dest_parent, recurse_depth, options, ui, format_path)
-        # A NOTE about this algorithm:
-        # There are cases where this algorithm does too many network requests.
-        # knife upload with a specific filename will first check if the file
-        # exists (a "dir" in the parent) before deciding whether to POST or
-        # PUT it.  If we just tried PUT (or POST) and then tried the other if
-        # the conflict failed, we wouldn't need to check existence.
-        # On the other hand, we may already have DONE the request, in which
-        # case we shouldn't waste time trying PUT if we know the file doesn't
-        # exist.
-        # Will need to decide how that works with checksums, though.
-        error = false
-        begin
-          dest_path = format_path.call(dest_entry) if ui
-          src_path = format_path.call(src_entry) if ui
-          if !src_entry.exists?
-            if options[:purge]
-              # If we would not have uploaded it, we will not purge it.
-              if src_entry.parent.can_have_child?(dest_entry.name, dest_entry.dir?)
-                if options[:dry_run]
-                  ui.output "Would delete #{dest_path}" if ui
+        # Copy two entries (could be files or dirs)
+        def copy_entries(src_entry, dest_entry, new_dest_parent, recurse_depth, options, ui, format_path)
+          # A NOTE about this algorithm:
+          # There are cases where this algorithm does too many network requests.
+          # knife upload with a specific filename will first check if the file
+          # exists (a "dir" in the parent) before deciding whether to POST or
+          # PUT it.  If we just tried PUT (or POST) and then tried the other if
+          # the conflict failed, we wouldn't need to check existence.
+          # On the other hand, we may already have DONE the request, in which
+          # case we shouldn't waste time trying PUT if we know the file doesn't
+          # exist.
+          # Will need to decide how that works with checksums, though.
+          error = false
+          begin
+            dest_path = format_path.call(dest_entry) if ui
+            src_path = format_path.call(src_entry) if ui
+            if !src_entry.exists?
+              if options[:purge]
+                # If we would not have uploaded it, we will not purge it.
+                if src_entry.parent.can_have_child?(dest_entry.name, dest_entry.dir?)
+                  if options[:dry_run]
+                    ui.output "Would delete #{dest_path}" if ui
+                  else
+                    begin
+                      dest_entry.delete(true)
+                      ui.output "Deleted extra entry #{dest_path} (purge is on)" if ui
+                    rescue Chef::ChefFS::FileSystem::NotFoundError
+                      ui.output "Entry #{dest_path} does not exist. Nothing to do. (purge is on)" if ui
+                    end
+                  end
                 else
-                  begin
-                    dest_entry.delete(true)
-                    ui.output "Deleted extra entry #{dest_path} (purge is on)" if ui
-                  rescue Chef::ChefFS::FileSystem::NotFoundError
-                    ui.output "Entry #{dest_path} does not exist. Nothing to do. (purge is on)" if ui
+                  ui.output ("Not deleting extra entry #{dest_path} (purge is off)") if ui
+                end
+              end
+
+            elsif !dest_entry.exists?
+              if new_dest_parent.can_have_child?(src_entry.name, src_entry.dir?)
+                # If the entry can do a copy directly from filesystem, do that.
+                if new_dest_parent.respond_to?(:create_child_from)
+                  if options[:dry_run]
+                    ui.output "Would create #{dest_path}" if ui
+                  else
+                    new_dest_parent.create_child_from(src_entry)
+                    ui.output "Created #{dest_path}" if ui
+                  end
+                  return
+                end
+
+                if src_entry.dir?
+                  if options[:dry_run]
+                    ui.output "Would create #{dest_path}" if ui
+                    new_dest_dir = new_dest_parent.child(src_entry.name)
+                  else
+                    new_dest_dir = new_dest_parent.create_child(src_entry.name, nil)
+                    ui.output "Created #{dest_path}" if ui
+                  end
+                  # Directory creation is recursive.
+                  if recurse_depth != 0
+                    parallel_do(src_entry.children) do |src_child|
+                      new_dest_child = new_dest_dir.child(src_child.name)
+                      child_error = copy_entries(src_child, new_dest_child, new_dest_dir, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
+                      error ||= child_error
+                    end
+                  end
+                else
+                  if options[:dry_run]
+                    ui.output "Would create #{dest_path}" if ui
+                  else
+                    child = new_dest_parent.create_child(src_entry.name, src_entry.read)
+                    ui.output "Created #{format_path.call(child)}" if ui
                   end
                 end
-              else
-                ui.output ("Not deleting extra entry #{dest_path} (purge is off)") if ui
-              end
-            end
-
-          elsif !dest_entry.exists?
-            if new_dest_parent.can_have_child?(src_entry.name, src_entry.dir?)
-              # If the entry can do a copy directly from filesystem, do that.
-              if new_dest_parent.respond_to?(:create_child_from)
-                if options[:dry_run]
-                  ui.output "Would create #{dest_path}" if ui
-                else
-                  new_dest_parent.create_child_from(src_entry)
-                  ui.output "Created #{dest_path}" if ui
-                end
-                return
               end
 
-              if src_entry.dir?
-                if options[:dry_run]
-                  ui.output "Would create #{dest_path}" if ui
-                  new_dest_dir = new_dest_parent.child(src_entry.name)
-                else
-                  new_dest_dir = new_dest_parent.create_child(src_entry.name, nil)
-                  ui.output "Created #{dest_path}" if ui
-                end
-                # Directory creation is recursive.
-                if recurse_depth != 0
-                  parallel_do(src_entry.children) do |src_child|
-                    new_dest_child = new_dest_dir.child(src_child.name)
-                    child_error = copy_entries(src_child, new_dest_child, new_dest_dir, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
-                    error ||= child_error
-                  end
-                end
-              else
-                if options[:dry_run]
-                  ui.output "Would create #{dest_path}" if ui
-                else
-                  new_dest_parent.create_child(src_entry.name, src_entry.read)
-                  ui.output "Created #{dest_path}" if ui
-                end
-              end
-            end
-
-          else
-            # Both exist.
-
-            # If the entry can do a copy directly, do that.
-            if dest_entry.respond_to?(:copy_from)
-              if options[:force] || compare(src_entry, dest_entry)[0] == false
-                if options[:dry_run]
-                  ui.output "Would update #{dest_path}" if ui
-                else
-                  dest_entry.copy_from(src_entry, options)
-                  ui.output "Updated #{dest_path}" if ui
-                end
-              end
-              return
-            end
-
-            # If they are different types, log an error.
-            if src_entry.dir?
-              if dest_entry.dir?
-                # If both are directories, recurse into their children
-                if recurse_depth != 0
-                  parallel_do(child_pairs(src_entry, dest_entry)) do |src_child, dest_child|
-                    child_error = copy_entries(src_child, dest_child, dest_entry, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
-                    error ||= child_error
-                  end
-                end
-              else
-                # If they are different types.
-                ui.error("File #{src_path} is a directory while file #{dest_path} is a regular file\n") if ui
-                return
-              end
             else
-              if dest_entry.dir?
-                ui.error("File #{src_path} is a regular file while file #{dest_path} is a directory\n") if ui
-                return
-              else
+              # Both exist.
 
-                # Both are files!  Copy them unless we're sure they are the same.'
-                if options[:diff] == false
-                  should_copy = false
-                elsif options[:force]
-                  should_copy = true
-                  src_value = nil
-                else
-                  are_same, src_value, _dest_value = compare(src_entry, dest_entry)
-                  should_copy = !are_same
-                end
-                if should_copy
+              # If the entry can do a copy directly, do that.
+              if dest_entry.respond_to?(:copy_from)
+                if options[:force] || compare(src_entry, dest_entry)[0] == false
                   if options[:dry_run]
                     ui.output "Would update #{dest_path}" if ui
                   else
-                    src_value = src_entry.read if src_value.nil?
-                    dest_entry.write(src_value)
+                    dest_entry.copy_from(src_entry, options)
                     ui.output "Updated #{dest_path}" if ui
+                  end
+                end
+                return
+              end
+
+              # If they are different types, log an error.
+              if src_entry.dir?
+                if dest_entry.dir?
+                  # If both are directories, recurse into their children
+                  if recurse_depth != 0
+                    parallel_do(child_pairs(src_entry, dest_entry)) do |src_child, dest_child|
+                      child_error = copy_entries(src_child, dest_child, dest_entry, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
+                      error ||= child_error
+                    end
+                  end
+                else
+                  # If they are different types.
+                  ui.error("File #{src_path} is a directory while file #{dest_path} is a regular file\n") if ui
+                  return
+                end
+              else
+                if dest_entry.dir?
+                  ui.error("File #{src_path} is a regular file while file #{dest_path} is a directory\n") if ui
+                  return
+                else
+
+                  # Both are files!  Copy them unless we're sure they are the same.'
+                  if options[:diff] == false
+                    should_copy = false
+                  elsif options[:force]
+                    should_copy = true
+                    src_value = nil
+                  else
+                    are_same, src_value, _dest_value = compare(src_entry, dest_entry)
+                    should_copy = !are_same
+                  end
+                  if should_copy
+                    if options[:dry_run]
+                      ui.output "Would update #{dest_path}" if ui
+                    else
+                      src_value = src_entry.read if src_value.nil?
+                      dest_entry.write(src_value)
+                      ui.output "Updated #{dest_path}" if ui
+                    end
                   end
                 end
               end
             end
+          rescue RubyFileError => e
+            ui.warn "#{format_path.call(e.entry)} #{e.reason}." if ui
+          rescue DefaultEnvironmentCannotBeModifiedError => e
+            ui.warn "#{format_path.call(e.entry)} #{e.reason}." if ui
+          rescue OperationFailedError => e
+            ui.error "#{format_path.call(e.entry)} failed to #{e.operation}: #{e.message}" if ui
+            error = true
+          rescue OperationNotAllowedError => e
+            ui.error "#{format_path.call(e.entry)} #{e.reason}." if ui
+            error = true
           end
-        rescue DefaultEnvironmentCannotBeModifiedError => e
-          ui.warn "#{format_path.call(e.entry)} #{e.reason}." if ui
-        rescue OperationFailedError => e
-          ui.error "#{format_path.call(e.entry)} failed to #{e.operation}: #{e.message}" if ui
-          error = true
-        rescue OperationNotAllowedError => e
-          ui.error "#{format_path.call(e.entry)} #{e.reason}." if ui
-          error = true
+          error
         end
-        error
-      end
 
-      def self.get_or_create_parent(entry, options, ui, format_path)
-        parent = entry.parent
-        if parent && !parent.exists?
-          parent_path = format_path.call(parent) if ui
-          parent_parent = get_or_create_parent(parent, options, ui, format_path)
-          if options[:dry_run]
-            ui.output "Would create #{parent_path}" if ui
-          else
-            parent = parent_parent.create_child(parent.name, nil)
-            ui.output "Created #{parent_path}" if ui
+        def get_or_create_parent(entry, options, ui, format_path)
+          parent = entry.parent
+          if parent && !parent.exists?
+            parent_path = format_path.call(parent) if ui
+            parent_parent = get_or_create_parent(parent, options, ui, format_path)
+            if options[:dry_run]
+              ui.output "Would create #{parent_path}" if ui
+            else
+              parent = parent_parent.create_child(parent.name, nil)
+              ui.output "Created #{parent_path}" if ui
+            end
           end
+          parent
         end
-        return parent
-      end
 
-      def self.parallel_do(enum, options = {}, &block)
-        Chef::ChefFS::Parallelizer.parallel_do(enum, options, &block)
+        def parallel_do(enum, options = {}, &block)
+          Chef::ChefFS::Parallelizer.parallel_do(enum, options, &block)
+        end
       end
     end
   end

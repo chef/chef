@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@lambda.local>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'win32/daemon'
+require "win32/daemon"
 
 class SpecService < ::Win32::Daemon
   def service_init
@@ -24,9 +24,9 @@ class SpecService < ::Win32::Daemon
   end
 
   def service_main(*startup_parameters)
-    while running? do
+    while running?
       if !File.exists?(@test_service_file)
-        File.open(@test_service_file, 'wb') do |f|
+        File.open(@test_service_file, "wb") do |f|
           f.write("This file is created by SpecService")
         end
       end

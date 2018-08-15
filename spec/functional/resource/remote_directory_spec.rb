@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::RemoteDirectory do
   include_context Chef::Resource::Directory
@@ -36,14 +36,14 @@ describe Chef::Resource::RemoteDirectory do
 
     resource = Chef::Resource::RemoteDirectory.new(path, run_context)
     resource.source "remotedir"
-    resource.cookbook('openldap')
+    resource.cookbook("openldap")
     resource
   end
 
   def create_extraneous_files
-    FileUtils.mkdir_p(File.join(path, 'remotesubdir'))
-    @existing1 = File.join(path, 'marked_for_death.txt')
-    @existing2 = File.join(path, 'remotesubdir', 'marked_for_death_again.txt')
+    FileUtils.mkdir_p(File.join(path, "remotesubdir"))
+    @existing1 = File.join(path, "marked_for_death.txt")
+    @existing2 = File.join(path, "remotesubdir", "marked_for_death_again.txt")
     FileUtils.touch(@existing1)
     FileUtils.touch(@existing2)
   end
@@ -59,12 +59,12 @@ describe Chef::Resource::RemoteDirectory do
   # See spec/data/cookbooks/openldap/files/default
   let(:expected_files) do
     [
-      File.join(path, 'remote_dir_file1.txt'),
-      File.join(path, 'remote_dir_file2.txt'),
-      File.join(path, 'remotesubdir', 'remote_subdir_file1.txt'),
-      File.join(path, 'remotesubdir', 'remote_subdir_file2.txt'),
-      File.join(path, 'remotesubdir', '.a_dotfile'),
-      File.join(path, '.a_dotdir', '.a_dotfile_in_a_dotdir')
+      File.join(path, "remote_dir_file1.txt"),
+      File.join(path, "remote_dir_file2.txt"),
+      File.join(path, "remotesubdir", "remote_subdir_file1.txt"),
+      File.join(path, "remotesubdir", "remote_subdir_file2.txt"),
+      File.join(path, "remotesubdir", ".a_dotfile"),
+      File.join(path, ".a_dotdir", ".a_dotfile_in_a_dotdir"),
     ]
   end
 
@@ -133,11 +133,11 @@ describe Chef::Resource::RemoteDirectory do
       end
 
       it "leaves modifications alone" do
-        FileUtils.mkdir_p(File.join(path, 'remotesubdir'))
-        modified_file = File.join(path, 'remote_dir_file1.txt')
-        modified_subdir_file = File.join(path, 'remotesubdir', 'remote_subdir_file1.txt')
-        File.open(modified_file, 'a') {|f| f.puts "santa is real"}
-        File.open(modified_subdir_file, 'a') {|f| f.puts "so is rudolph"}
+        FileUtils.mkdir_p(File.join(path, "remotesubdir"))
+        modified_file = File.join(path, "remote_dir_file1.txt")
+        modified_subdir_file = File.join(path, "remotesubdir", "remote_subdir_file1.txt")
+        File.open(modified_file, "a") { |f| f.puts "santa is real" }
+        File.open(modified_subdir_file, "a") { |f| f.puts "so is rudolph" }
         modified_file_checksum = sha256_checksum(modified_file)
         modified_subdir_file_checksum = sha256_checksum(modified_subdir_file)
 
@@ -190,11 +190,11 @@ describe Chef::Resource::RemoteDirectory do
 
     context "and there are deeply nested extraneous files in the directory" do
       before do
-        FileUtils.mkdir_p(File.join(path, 'a', 'multiply', 'nested', 'directory'))
-        @existing1 = File.join(path, 'a', 'foo.txt')
-        @existing2 = File.join(path, 'a', 'multiply', 'bar.txt')
-        @existing3 = File.join(path, 'a', 'multiply', 'nested', 'baz.txt')
-        @existing4 = File.join(path, 'a', 'multiply', 'nested', 'directory', 'qux.txt')
+        FileUtils.mkdir_p(File.join(path, "a", "multiply", "nested", "directory"))
+        @existing1 = File.join(path, "a", "foo.txt")
+        @existing2 = File.join(path, "a", "multiply", "bar.txt")
+        @existing3 = File.join(path, "a", "multiply", "nested", "baz.txt")
+        @existing4 = File.join(path, "a", "multiply", "nested", "directory", "qux.txt")
         FileUtils.touch(@existing1)
         FileUtils.touch(@existing2)
         FileUtils.touch(@existing3)

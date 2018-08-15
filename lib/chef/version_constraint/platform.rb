@@ -1,5 +1,5 @@
 # Author:: Xabier de Zuazo (<xabier@onddo.com>)
-# Copyright:: Copyright (c) 2013 Onddo Labs, SL.
+# Copyright:: Copyright 2013-2016, Onddo Labs, SL.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +13,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require 'chef/version_constraint'
-require 'chef/version/platform'
+require "chef/version_constraint"
+require "chef/version/platform"
 
+# NOTE: this is fairly badly broken for its purpose and should not be used
+#       unless it gets fixed.  see chef/version/platform.
 class Chef
   class VersionConstraint
     class Platform < Chef::VersionConstraint

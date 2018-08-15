@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,47 +16,20 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
+require "chef/knife/supermarket_list"
 
 class Chef
   class Knife
-    class CookbookSiteList < Knife
+    class CookbookSiteList < Knife::SupermarketList
+
+      # Handle the subclassing (knife doesn't do this :()
+      dependency_loaders.concat(superclass.dependency_loaders)
+      options.merge!(superclass.options)
 
       banner "knife cookbook site list (options)"
       category "cookbook site"
 
-      option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
-
-      def run
-        if config[:with_uri]
-          cookbooks = Hash.new
-          get_cookbook_list.each{ |k,v| cookbooks[k] = v['cookbook'] }
-          ui.output(format_for_display(cookbooks))
-        else
-          ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))
-        end
-      end
-
-      def get_cookbook_list(items=10, start=0, cookbook_collection={})
-        cookbooks_url = "https://supermarket.chef.io/api/v1/cookbooks?items=#{items}&start=#{start}"
-        cr = noauth_rest.get_rest(cookbooks_url)
-        cr["items"].each do |cookbook|
-          cookbook_collection[cookbook["cookbook_name"]] = cookbook
-        end
-        new_start = start + cr["items"].length
-        if new_start < cr["total"]
-          get_cookbook_list(items, new_start, cookbook_collection)
-        else
-          cookbook_collection
-        end
-      end
     end
   end
 end
-
-
-
-

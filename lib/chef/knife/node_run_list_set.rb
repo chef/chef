@@ -1,6 +1,6 @@
 #
 # Author:: Mike Fiedler (<miketheman@gmail.com>)
-# Copyright:: Copyright (c) 2013 Mike Fiedler
+# Copyright:: Copyright 2013-2016, Mike Fiedler
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class NodeRunListSet < Knife
 
       deps do
-        require 'chef/node'
-        require 'chef/json_compat'
+        require "chef/node"
+        require "chef/json_compat"
       end
 
       banner "knife node run_list set NODE ENTRIES (options)"
@@ -37,11 +37,11 @@ class Chef
         elsif @name_args.size > 2
           # Check for nested lists and create a single plain one
           entries = @name_args[1..-1].map do |entry|
-            entry.split(',').map { |e| e.strip }
+            entry.split(",").map { |e| e.strip }
           end.flatten
         else
           # Convert to array and remove the extra spaces
-          entries = @name_args[1].split(',').map { |e| e.strip }
+          entries = @name_args[1].split(",").map { |e| e.strip }
         end
         node = Chef::Node.load(@name_args[0])
 

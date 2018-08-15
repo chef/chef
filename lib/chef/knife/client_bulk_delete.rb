@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,20 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class ClientBulkDelete < Knife
 
       deps do
-        require 'chef/api_client'
-        require 'chef/json_compat'
+        require "chef/api_client_v1"
       end
 
       option :delete_validators,
-       :short => "-D",
-       :long => "--delete-validators",
-       :description => "Force deletion of clients if they're validators"
+       short: "-D",
+       long: "--delete-validators",
+       description: "Force deletion of clients if they're validators"
 
       banner "knife client bulk delete REGEX (options)"
 
@@ -39,7 +38,7 @@ class Chef
           ui.fatal("You must supply a regular expression to match the results against")
           exit 42
         end
-        all_clients = Chef::ApiClient.list(true)
+        all_clients = Chef::ApiClientV1.list(true)
 
         matcher = /#{name_args[0]}/
         clients_to_delete = {}
@@ -65,7 +64,7 @@ class Chef
       def check_and_delete_validators(validators)
         unless validators.empty?
           unless config[:delete_validators]
-            ui.msg("Following clients are validators and will not be deleted.")
+            ui.msg("The following clients are validators and will not be deleted:")
             print_clients(validators)
             ui.msg("You must specify --delete-validators to delete the validator clients")
           else

@@ -1,7 +1,7 @@
 #
-# Author:: Lamont Granquist (<lamont@getchef.com>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: Copyright (c) 2012 Chef Software, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +17,20 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Formatters::Base do
-  let(:out) { double("out") }
-  let(:err) { double("err") }
+  let(:out) { StringIO.new }
+  let(:err) { StringIO.new }
   let(:formatter) { Chef::Formatters::Base.new(out, err) }
+  let(:exception) do
+    # An exception with a real backtrace.
+    begin
+      raise EOFError
+    rescue EOFError => exc
+    end
+    exc
+  end
 
   it "starts with an indentation of zero" do
     expect(formatter.output.indent).to eql(0)
@@ -43,6 +51,50 @@ describe Chef::Formatters::Base do
     formatter.indent_by(-2)
     expect(formatter.output.indent).to eql(0)
   end
+
+  it "humanizes EOFError exceptions for #registration_failed" do
+    formatter.registration_failed("foo.example.com", exception, double("Chef::Config"))
+    expect(out.string).to match(/Received an EOF on transport socket/)
+  end
+
+  it "humanizes EOFError exceptions for #node_load_failed" do
+    formatter.node_load_failed("foo.example.com", exception, double("Chef::Config"))
+    expect(out.string).to match(/Received an EOF on transport socket/)
+  end
+
+  it "humanizes EOFError exceptions for #run_list_expand_failed" do
+    formatter.run_list_expand_failed(double("Chef::Node"), exception)
+    expect(out.string).to match(/Received an EOF on transport socket/)
+  end
+
+  it "humanizes EOFError exceptions for #cookbook_resolution_failed" do
+    formatter.run_list_expand_failed(double("Expanded Run List"), exception)
+    expect(out.string).to match(/Received an EOF on transport socket/)
+  end
+
+  it "humanizes EOFError exceptions for #cookbook_sync_failed" do
+    formatter.cookbook_sync_failed("foo.example.com", exception)
+    expect(out.string).to match(/Received an EOF on transport socket/)
+  end
+
+  it "outputs error information for failed resources with ignore_failure true" do
+    resource = Chef::Resource::RubyBlock.new("test")
+    resource.ignore_failure(true)
+    formatter.resource_failed(resource, :run, exception)
+    expect(out.string).to match(/Error executing action `run` on resource 'ruby_block\[test\]'/)
+  end
+
+  it "does not output error information for failed resources with ignore_failure :quiet" do
+    resource = Chef::Resource::RubyBlock.new("test")
+    resource.ignore_failure(:quiet)
+    formatter.resource_failed(resource, :run, exception)
+    expect(out.string).to eq("")
+  end
+
+  it "does not output error information for failed resources with ignore_failure 'quiet'" do
+    resource = Chef::Resource::RubyBlock.new("test")
+    resource.ignore_failure("quiet")
+    formatter.resource_failed(resource, :run, exception)
+    expect(out.string).to eq("")
+  end
 end
-
-

@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,33 +15,63 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Mixin::ShellOut do
   include Chef::Mixin::ShellOut
 
   describe "shell_out_with_systems_locale" do
+    before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    end
+
     describe "when environment['LC_ALL'] is not set" do
       it "should use the default shell_out setting" do
         cmd = if windows?
-          shell_out_with_systems_locale('echo %LC_ALL%')
-        else
-          shell_out_with_systems_locale('echo $LC_ALL')
-        end
+                shell_out_with_systems_locale("echo %LC_ALL%")
+              else
+                shell_out_with_systems_locale("echo $LC_ALL")
+              end
 
-        expect(cmd.stdout.chomp).to match_environment_variable('LC_ALL')
+        expect(cmd.stdout.chomp).to match_environment_variable("LC_ALL")
       end
     end
 
     describe "when environment['LC_ALL'] is set" do
       it "should use the option's setting" do
         cmd = if windows?
-          shell_out_with_systems_locale('echo %LC_ALL%', :environment => {'LC_ALL' => 'POSIX'})
-        else
-          shell_out_with_systems_locale('echo $LC_ALL', :environment => {'LC_ALL' => 'POSIX'})
-        end
+                shell_out_with_systems_locale("echo %LC_ALL%", environment: { "LC_ALL" => "POSIX" })
+              else
+                shell_out_with_systems_locale("echo $LC_ALL", environment: { "LC_ALL" => "POSIX" })
+              end
 
-        expect(cmd.stdout.chomp).to eq 'POSIX'
+        expect(cmd.stdout.chomp).to eq "POSIX"
+      end
+    end
+  end
+
+  describe "shell_out default_env: false" do
+    describe "when environment['LC_ALL'] is not set" do
+      it "should use the default shell_out setting" do
+        cmd = if windows?
+                shell_out("echo %LC_ALL%", default_env: false)
+              else
+                shell_out("echo $LC_ALL", default_env: false)
+              end
+
+        expect(cmd.stdout.chomp).to match_environment_variable("LC_ALL")
+      end
+    end
+
+    describe "when environment['LC_ALL'] is set" do
+      it "should use the option's setting" do
+        cmd = if windows?
+                shell_out("echo %LC_ALL%", environment: { "LC_ALL" => "POSIX" }, default_env: false)
+              else
+                shell_out("echo $LC_ALL", environment: { "LC_ALL" => "POSIX" }, default_env: false)
+              end
+
+        expect(cmd.stdout.chomp).to eq "POSIX"
       end
     end
   end

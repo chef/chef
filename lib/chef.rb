@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,19 @@
 # limitations under the License.
 #
 
-require 'chef/version'
-require 'chef/nil_argument'
-require 'chef/mash'
-require 'chef/exceptions'
-require 'chef/log'
-require 'chef/config'
-require 'chef/providers'
-require 'chef/resources'
-require 'chef/shell_out'
+require "chef/version"
+require "chef/nil_argument"
+require "chef/mash"
+require "chef/exceptions"
+require "chef/log"
+require "chef/config"
+require "chef/providers"
+require "chef/resources"
 
-require 'chef/daemon'
+require "chef/daemon"
 
-require 'chef/run_status'
-require 'chef/handler'
-require 'chef/handler/json_file'
-
-require 'chef/chef_class'
+require "chef/run_status"
+require "chef/handler"
+require "chef/handler/json_file"
+require "chef/event_dispatch/dsl"
+require "chef/chef_class"

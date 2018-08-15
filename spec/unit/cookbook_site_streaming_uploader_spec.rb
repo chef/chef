@@ -1,6 +1,6 @@
 #
 # Author:: Xabier de Zuazo (xabier@onddo.com)
-# Copyright:: Copyright (c) 2013 Onddo Labs, SL.
+# Copyright:: Copyright 2013-2016, Onddo Labs, SL.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/cookbook_site_streaming_uploader'
+require "chef/cookbook_site_streaming_uploader"
 
 class FakeTempfile
   def initialize(basename)
@@ -39,7 +39,7 @@ describe Chef::CookbookSiteStreamingUploader do
   describe "create_build_dir" do
 
     before(:each) do
-      @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, 'cookbooks'))
+      @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
       @loader = Chef::CookbookLoader.new(@cookbook_repo)
       @loader.load_cookbooks
       allow(File).to receive(:unlink)
@@ -47,7 +47,7 @@ describe Chef::CookbookSiteStreamingUploader do
 
     it "should create the cookbook tmp dir" do
       cookbook = @loader[:openldap]
-      files_count = Dir.glob(File.join(@cookbook_repo, cookbook.name.to_s, '**', '*'), File::FNM_DOTMATCH).count { |file| File.file?(file) }
+      files_count = Dir.glob(File.join(@cookbook_repo, cookbook.name.to_s, "**", "*"), File::FNM_DOTMATCH).count { |file| File.file?(file) }
 
       expect(Tempfile).to receive(:new).with("chef-#{cookbook.name}-build").and_return(FakeTempfile.new("chef-#{cookbook.name}-build"))
       expect(FileUtils).to receive(:mkdir_p).exactly(files_count + 1).times
@@ -61,25 +61,25 @@ describe Chef::CookbookSiteStreamingUploader do
 
     before(:each) do
       @uri = "http://cookbooks.dummy.com/api/v1/cookbooks"
-      @secret_filename = File.join(CHEF_SPEC_DATA, 'ssl/private_key.pem')
+      @secret_filename = File.join(CHEF_SPEC_DATA, "ssl/private_key.pem")
       @rsa_key = File.read(@secret_filename)
-      response = Net::HTTPResponse.new('1.0', '200', 'OK')
+      response = Net::HTTPResponse.new("1.0", "200", "OK")
       allow_any_instance_of(Net::HTTP).to receive(:request).and_return(response)
     end
 
     it "should send an http request" do
       expect_any_instance_of(Net::HTTP).to receive(:request)
-      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, "bill", @secret_filename)
     end
 
     it "should read the private key file" do
       expect(File).to receive(:read).with(@secret_filename).and_return(@rsa_key)
-      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, "bill", @secret_filename)
     end
 
     it "should add the authentication signed header" do
       expect_any_instance_of(Mixlib::Authentication::SigningObject).to receive(:sign).and_return({})
-      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, "bill", @secret_filename)
     end
 
     it "should be able to send post requests" do
@@ -88,7 +88,7 @@ describe Chef::CookbookSiteStreamingUploader do
       expect(Net::HTTP::Post).to receive(:new).once.and_return(post)
       expect(Net::HTTP::Put).not_to receive(:new)
       expect(Net::HTTP::Get).not_to receive(:new)
-      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, "bill", @secret_filename)
     end
 
     it "should be able to send put requests" do
@@ -97,27 +97,27 @@ describe Chef::CookbookSiteStreamingUploader do
       expect(Net::HTTP::Post).not_to receive(:new)
       expect(Net::HTTP::Put).to receive(:new).once.and_return(put)
       expect(Net::HTTP::Get).not_to receive(:new)
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename)
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename)
     end
 
     it "should be able to receive files to attach as argument" do
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename, {
-        :myfile => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')), # a dummy file
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
+        myfile: File.new(File.join(CHEF_SPEC_DATA, "config.rb")), # a dummy file
       })
     end
 
     it "should be able to receive strings to attach as argument" do
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename, {
-        :mystring => 'Lorem ipsum',
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
+        mystring: "Lorem ipsum",
       })
     end
 
     it "should be able to receive strings and files as argument at the same time" do
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename, {
-        :myfile1 => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')),
-        :mystring1 => 'Lorem ipsum',
-        :myfile2 => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')),
-        :mystring2 => 'Dummy text',
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
+        myfile1: File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
+        mystring1: "Lorem ipsum",
+        myfile2: File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
+        mystring2: "Dummy text",
       })
     end
 
@@ -125,7 +125,7 @@ describe Chef::CookbookSiteStreamingUploader do
 
   describe "StreamPart" do
     before(:each) do
-      @file = File.new(File.join(CHEF_SPEC_DATA, 'config.rb'))
+      @file = File.new(File.join(CHEF_SPEC_DATA, "config.rb"))
       @stream_part = Chef::CookbookSiteStreamingUploader::StreamPart.new(@file, File.size(@file))
     end
 
@@ -147,7 +147,7 @@ describe Chef::CookbookSiteStreamingUploader do
 
   describe "StringPart" do
     before(:each) do
-      @str = 'What a boring string'
+      @str = "What a boring string"
       @string_part = Chef::CookbookSiteStreamingUploader::StringPart.new(@str)
     end
 
@@ -189,7 +189,7 @@ describe Chef::CookbookSiteStreamingUploader do
     end
 
     it "should read receiving destination buffer as second argument (CHEF-4456: Ruby 2 compat)" do
-      dst_buf = ''
+      dst_buf = ""
       @multipart_stream.read(10, dst_buf)
       expect(dst_buf).to eql("#{@string1}#{@string2}"[0, 10])
     end

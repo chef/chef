@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
+require "chef/win32/api"
 
 class Chef
   module ReservedNames::Win32
@@ -24,7 +24,7 @@ class Chef
       module Synchronization
         extend Chef::ReservedNames::Win32::API
 
-        ffi_lib 'kernel32'
+        ffi_lib "kernel32"
 
         # Constant synchronization functions use to indicate wait
         # forever.

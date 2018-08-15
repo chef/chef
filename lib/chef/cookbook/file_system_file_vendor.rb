@@ -1,7 +1,7 @@
 #--
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/cookbook/file_vendor'
+require "chef/cookbook/file_vendor"
 
 class Chef
   class Cookbook
@@ -35,22 +35,21 @@ class Chef
       attr_reader :repo_paths
 
       def initialize(manifest, *repo_paths)
-        @cookbook_name = manifest[:cookbook_name]
+        @cookbook_name = manifest.name
         @repo_paths = repo_paths.flatten
-        raise ArgumentError, "You must specify at least one repo path" if @repo_paths.empty?
+        raise ArgumentError, "You must specify at least one repo path" if repo_paths.empty?
+      end
+
+      def cookbooks
+        @cookbooks ||= Chef::CookbookLoader.new(repo_paths).load_cookbooks
       end
 
       # Implements abstract base's requirement. It looks in the
       # Chef::Config.cookbook_path file hierarchy for the requested
       # file.
       def get_filename(filename)
-        location = @repo_paths.inject(nil) do |memo, basepath|
-          candidate_location = File.join(basepath, @cookbook_name, filename)
-          memo = candidate_location if File.exist?(candidate_location)
-          memo
-        end
-        raise "File #{filename} does not exist for cookbook #{@cookbook_name}" unless location
-
+        location = File.join(cookbooks[cookbook_name].root_dir, filename) if cookbooks.key?(cookbook_name)
+        raise "File #{filename} does not exist for cookbook #{cookbook_name}" unless location && File.exist?(location)
         location
       end
 

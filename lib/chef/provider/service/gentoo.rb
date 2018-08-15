@@ -1,7 +1,7 @@
 #
 # Author:: Lee Jensen (<ljensen@engineyard.com>)
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: AJ Christensen (<aj@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,31 +17,30 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
-require 'chef/mixin/command'
-require 'chef/util/path_helper'
+require "chef/provider/service/init"
+require "chef/util/path_helper"
 
 class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
 
   provides :service, platform_family: "gentoo"
 
   def load_current_resource
+    supports[:status] = true if supports[:status].nil?
+    supports[:restart] = true if supports[:restart].nil?
 
-    @new_resource.supports[:status] = true
-    @new_resource.supports[:restart] = true
     @found_script = false
     super
 
     @current_resource.enabled(
-      Dir.glob("/etc/runlevels/**/#{Chef::Util::PathHelper.escape_glob(@current_resource.service_name)}").any? do |file|
+      Dir.glob("/etc/runlevels/**/#{Chef::Util::PathHelper.escape_glob_dir(@current_resource.service_name)}").any? do |file|
         @found_script = true
         exists = ::File.exists? file
         readable = ::File.readable? file
-        Chef::Log.debug "#{@new_resource} exists: #{exists}, readable: #{readable}"
-        exists and readable
+        logger.trace "#{@new_resource} exists: #{exists}, readable: #{readable}"
+        exists && readable
       end
     )
-    Chef::Log.debug "#{@new_resource} enabled: #{@current_resource.enabled}"
+    logger.trace "#{@new_resource} enabled: #{@current_resource.enabled}"
 
     @current_resource
   end
@@ -61,11 +60,11 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     end
   end
 
-  def enable_service()
+  def enable_service
     shell_out!("/sbin/rc-update add #{@new_resource.service_name} default")
   end
 
-  def disable_service()
+  def disable_service
     shell_out!("/sbin/rc-update del #{@new_resource.service_name} default")
   end
 end

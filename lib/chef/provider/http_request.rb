@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'chef/http/simple'
+require "tempfile"
+require "chef/http/simple"
 
 class Chef
   class Provider
@@ -27,95 +27,105 @@ class Chef
 
       attr_accessor :http
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
-        @http = Chef::HTTP::Simple.new(@new_resource.url)
+        @http = Chef::HTTP::Simple.new(new_resource.url)
       end
 
-      # Send a HEAD request to @new_resource.url
+      # Send a HEAD request to new_resource.url
       def action_head
-        message = check_message(@new_resource.message)
+        message = check_message(new_resource.message)
         # CHEF-4762: we expect a nil return value from Chef::HTTP for a "200 Success" response
         # and false for a "304 Not Modified" response
         modified = @http.head(
-          "#{@new_resource.url}",
-          @new_resource.headers
+          (new_resource.url).to_s,
+          new_resource.headers
         )
-        Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
-        Chef::Log.debug("#{@new_resource} HEAD request response: #{modified}")
+        logger.info("#{new_resource} HEAD to #{new_resource.url} successful")
+        logger.trace("#{new_resource} HEAD request response: #{modified}")
         # :head is usually used to trigger notifications, which converge_by now does
         if modified != false
-          converge_by("#{@new_resource} HEAD to #{@new_resource.url} returned modified, trigger notifications") {}
+          converge_by("#{new_resource} HEAD to #{new_resource.url} returned modified, trigger notifications") {}
         end
       end
 
-      # Send a GET request to @new_resource.url
+      # Send a GET request to new_resource.url
       def action_get
-        converge_by("#{@new_resource} GET to #{@new_resource.url}") do
+        converge_by("#{new_resource} GET to #{new_resource.url}") do
 
-          message = check_message(@new_resource.message)
+          message = check_message(new_resource.message)
           body = @http.get(
-            "#{@new_resource.url}",
-            @new_resource.headers
+            (new_resource.url).to_s,
+            new_resource.headers
           )
-          Chef::Log.info("#{@new_resource} GET to #{@new_resource.url} successful")
-          Chef::Log.debug("#{@new_resource} GET request response: #{body}")
+          logger.info("#{new_resource} GET to #{new_resource.url} successful")
+          logger.trace("#{new_resource} GET request response: #{body}")
         end
       end
 
-      # Send a PUT request to @new_resource.url, with the message as the payload
+      # Send a PATCH request to new_resource.url, with the message as the payload
+      def action_patch
+        converge_by("#{new_resource} PATCH to #{new_resource.url}") do
+          message = check_message(new_resource.message)
+          body = @http.patch(
+            (new_resource.url).to_s,
+            message,
+            new_resource.headers
+          )
+          logger.info("#{new_resource} PATCH to #{new_resource.url} successful")
+          logger.trace("#{new_resource} PATCH request response: #{body}")
+        end
+      end
+
+      # Send a PUT request to new_resource.url, with the message as the payload
       def action_put
-        converge_by("#{@new_resource} PUT to #{@new_resource.url}") do
-          message = check_message(@new_resource.message)
+        converge_by("#{new_resource} PUT to #{new_resource.url}") do
+          message = check_message(new_resource.message)
           body = @http.put(
-            "#{@new_resource.url}",
+            (new_resource.url).to_s,
             message,
-            @new_resource.headers
+            new_resource.headers
           )
-          Chef::Log.info("#{@new_resource} PUT to #{@new_resource.url} successful")
-          Chef::Log.debug("#{@new_resource} PUT request response: #{body}")
+          logger.info("#{new_resource} PUT to #{new_resource.url} successful")
+          logger.trace("#{new_resource} PUT request response: #{body}")
         end
       end
 
-      # Send a POST request to @new_resource.url, with the message as the payload
+      # Send a POST request to new_resource.url, with the message as the payload
       def action_post
-        converge_by("#{@new_resource} POST to #{@new_resource.url}") do
-          message = check_message(@new_resource.message)
+        converge_by("#{new_resource} POST to #{new_resource.url}") do
+          message = check_message(new_resource.message)
           body = @http.post(
-            "#{@new_resource.url}",
+            (new_resource.url).to_s,
             message,
-            @new_resource.headers
+            new_resource.headers
           )
-          Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} message: #{message.inspect} successful")
-          Chef::Log.debug("#{@new_resource} POST request response: #{body}")
+          logger.info("#{new_resource} POST to #{new_resource.url} message: #{message.inspect} successful")
+          logger.trace("#{new_resource} POST request response: #{body}")
         end
       end
 
-      # Send a DELETE request to @new_resource.url
+      # Send a DELETE request to new_resource.url
       def action_delete
-        converge_by("#{@new_resource} DELETE to #{@new_resource.url}") do
+        converge_by("#{new_resource} DELETE to #{new_resource.url}") do
           body = @http.delete(
-            "#{@new_resource.url}",
-            @new_resource.headers
+            (new_resource.url).to_s,
+            new_resource.headers
           )
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource} DELETE to #{@new_resource.url} successful")
-          Chef::Log.debug("#{@new_resource} DELETE request response: #{body}")
+          new_resource.updated_by_last_action(true)
+          logger.info("#{new_resource} DELETE to #{new_resource.url} successful")
+          logger.trace("#{new_resource} DELETE request response: #{body}")
         end
       end
 
       private
 
-        def check_message(message)
-          if message.kind_of?(Proc)
-            message.call
-          else
-            message
-          end
+      def check_message(message)
+        if message.kind_of?(Proc)
+          message.call
+        else
+          message
         end
+      end
 
     end
   end

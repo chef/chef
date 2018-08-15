@@ -1,9 +1,9 @@
 #
-# Authors:: AJ Christensen (<aj@opscode.com>)
+# Authors:: AJ Christensen (<aj@chef.io>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
 #           Scott Bonds (<scott@ggr.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
-# Copyright:: Copyright (c) 2014 Richard Manyanza, Scott Bonds
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2014-2016, Richard Manyanza, Scott Bonds
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,33 +19,20 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/openbsd'
-require 'chef/mixin/shell_out'
+require "chef/resource/package"
+require "chef/provider/package/openbsd"
+require "chef/mixin/shell_out"
 
 class Chef
   class Resource
     class OpenbsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
+      resource_name :openbsd_package
       provides :package, os: "openbsd"
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :openbsd_package
-      end
-
-      def after_created
-        assign_provider
-      end
-
-      private
-
-      def assign_provider
-        @provider = Chef::Provider::Package::Openbsd
-      end
-
+      description "Use the openbsd_package resource to manage packages for the OpenBSD platform."
+      introduced "12.1"
     end
   end
 end
-

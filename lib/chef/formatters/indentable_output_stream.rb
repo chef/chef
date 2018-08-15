@@ -19,7 +19,7 @@ class Chef
 
       def highline
         @highline ||= begin
-          require 'highline'
+          require "highline"
           HighLine.new
         end
       end
@@ -35,19 +35,24 @@ class Chef
       # cause indentation but will not move to the next line yet (future 'print'
       # and 'puts' statements will stay on this line).
       def start_line(string, *args)
-        print(string, from_args(args, :start_line => true))
+        print(string, from_args(args, start_line: true))
       end
 
       # Print a line.  This will continue from the last start_line or print,
       # or start a new line and indent if necessary.
       def puts(string, *args)
-        print(string, from_args(args, :end_line => true))
+        print(string, from_args(args, end_line: true))
       end
 
       # Print an entire line from start to end.  This will terminate any existing
       # lines and cause indentation.
       def puts_line(string, *args)
-        print(string, from_args(args, :start_line => true, :end_line => true))
+        print(string, from_args(args, start_line: true, end_line: true))
+      end
+
+      # Print a raw chunk
+      def <<(obj)
+        print(obj)
       end
 
       # Print a string.
@@ -98,14 +103,14 @@ class Chef
         if colors.size == 1 && colors[0].kind_of?(Hash)
           merge_options.merge(colors[0])
         else
-          merge_options.merge({ :colors => colors })
+          merge_options.merge({ colors: colors })
         end
       end
 
       def print_string(string, options)
         if string.empty?
           if options[:end_line]
-            print_line('', options)
+            print_line("", options)
           end
         else
           string.lines.each do |line|
@@ -131,7 +136,7 @@ class Chef
 
       def move_to_next_line
         if @line_started
-          @out.puts ''
+          @out.puts ""
           @line_started = false
         end
       end
@@ -146,11 +151,11 @@ class Chef
             if @current_stream != options[:stream]
               @out.print "#{(' ' * indent)}[#{options[:name]}] "
             else
-              @out.print ' ' * (indent + 3 + options[:name].size)
+              @out.print " " * (indent + 3 + options[:name].size)
             end
           else
             # Otherwise, just print indents.
-            @out.print ' ' * indent
+            @out.print " " * indent
           end
 
           if @current_stream != options[:stream]

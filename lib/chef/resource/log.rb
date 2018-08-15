@@ -1,7 +1,7 @@
 #
 # Author:: Cary Penniman (<cary@rightscale.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,62 +17,36 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/log'
+require "chef/resource"
 
 class Chef
   class Resource
+    # @example logging at default info level
+    #   log "your string to log"
+    #
+    # @example logging at specified debug level
+    #   log "a debug string" do
+    #     level :debug
+    #   end
     class Log < Chef::Resource
-      provides :log
+      resource_name :log
 
-      identity_attr :message
+      description "Use the log resource to create log entries. The log resource behaves"\
+                  " like any other resource: built into the resource collection during the"\
+                  " compile phase, and then run during the execution phase. (To create a log"\
+                  " entry that is not built into the resource collection, use Chef::Log instead"\
+                  " of the log resource.)"
 
-      # Sends a string from a recipe to a log provider
-      #
-      # log "some string to log" do
-      #   level :info  # (default)  also supports :warn, :debug, and :error
-      # end
-      #
-      # === Example
-      # log "your string to log"
-      #
-      # or
-      #
-      # log "a debug string" { level :debug }
-      #
+      property :message, String,
+               name_property: true, identity: true,
+               description: "The message to be added to a log file. If not specified we'll use the resource's name instead."
 
-      # Initialize log resource with a name as the string to log
-      #
-      # === Parameters
-      # name<String>:: Message to log
-      # collection<Array>:: Collection of included recipes
-      # node<Chef::Node>:: Node where resource will be used
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :log
-        @level = :info
-        @action = :write
-        @allowed_actions.push(:write)
-        @message = name
-      end
+      property :level, Symbol,
+               equal_to: [ :debug, :info, :warn, :error, :fatal ], default: :info,
+               description: "The logging level to display this message at."
 
-      def message(arg=nil)
-        set_or_return(
-          :message,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      # <Symbol> Log level, one of :debug, :info, :warn, :error or :fatal
-      def level(arg=nil)
-        set_or_return(
-          :level,
-          arg,
-          :equal_to => [ :debug, :info, :warn, :error, :fatal ]
-        )
-      end
-
+      allowed_actions :write
+      default_action :write
     end
   end
 end

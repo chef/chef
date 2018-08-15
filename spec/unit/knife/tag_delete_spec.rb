@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::TagDelete do
   before(:each) do
@@ -16,7 +16,7 @@ describe Chef::Knife::TagDelete do
 
   describe "run" do
     it "can delete tags on a node" do
-      expect(@node.tags).to eq(["sadtag", "happytag"])
+      expect(@node.tags).to eq(%w{sadtag happytag})
       @knife.run
       expect(@node.tags).to eq(["happytag"])
       expect(@stderr.string).to match /deleted.+sadtag/i

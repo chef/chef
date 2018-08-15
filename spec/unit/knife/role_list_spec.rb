@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleList do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleList.new
     allow(@knife).to receive(:output).and_return(true)
     @list = {
       "foo" => "http://example.com/foo",
-      "bar" => "http://example.com/foo"
+      "bar" => "http://example.com/foo",
     }
     allow(Chef::Role).to receive(:list).and_return(@list)
   end
@@ -38,7 +38,7 @@ describe Chef::Knife::RoleList do
 
     it "should pretty print the list" do
       expect(Chef::Role).to receive(:list).and_return(@list)
-      expect(@knife).to receive(:output).with([ "bar", "foo" ])
+      expect(@knife).to receive(:output).with(%w{bar foo})
       @knife.run
     end
 
@@ -52,5 +52,3 @@ describe Chef::Knife::RoleList do
     end
   end
 end
-
-

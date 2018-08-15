@@ -1,7 +1,7 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2009 Bryan McLellan
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2009-2016, Bryan McLellan
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,123 +17,30 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
     class Route < Chef::Resource
-      provides :route
+      default_action :add
+      allowed_actions :add, :delete
 
-      identity_attr :target
+      description "Use the route resource to manage the system routing table in a Linux environment."
 
-      state_attrs :netmask, :gateway
+      property :target, String, identity: true, name_property: true
+      property :comment, [String, nil]
+      property :metric, [Integer, nil]
+      property :netmask, [String, nil]
+      property :gateway, [String, nil]
+      property :device, [String, nil], desired_state: false # Has a partial default in the provider of eth0.
+      property :route_type, [:host, :net], default: :host, coerce: proc { |x| x.to_sym }, desired_state: false
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :route
-        @target = name
-        @action = [:add]
-        @allowed_actions.push(:add, :delete)
-        @netmask = nil
-        @gateway = nil
-        @metric = nil
-        @device = nil
-        @route_type = :host
-        @networking = nil
-        @networking_ipv6 = nil
-        @hostname = nil
-        @domainname = nil
-        @domain = nil
-      end
-
-      def networking(arg=nil)
-        set_or_return(
-          :networking,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def networking_ipv6(arg=nil)
-        set_or_return(
-          :networking_ipv6,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def hostname(arg=nil)
-        set_or_return(
-          :hostname,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def domainname(arg=nil)
-        set_or_return(
-          :domainname,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def domain(arg=nil)
-        set_or_return(
-          :domain,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def target(arg=nil)
-        set_or_return(
-          :target,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def netmask(arg=nil)
-        set_or_return(
-          :netmask,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def gateway(arg=nil)
-        set_or_return(
-          :gateway,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def metric(arg=nil)
-        set_or_return(
-          :metric,
-          arg,
-          :kind_of => Integer
-        )
-      end
-
-      def device(arg=nil)
-        set_or_return(
-          :device,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def route_type(arg=nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
-        set_or_return(
-          :route_type,
-          real_arg,
-          :equal_to => [ :host, :net ]
-        )
-      end
+      # I can find no evidence of these properties actually being used by Chef. NK 2017-04-11
+      property :networking, [String, nil], desired_state: false
+      property :networking_ipv6, [String, nil], desired_state: false
+      property :hostname, [String, nil], desired_state: false
+      property :domainname, [String, nil], desired_state: false
+      property :domain, [String, nil], desired_state: false
     end
   end
 end

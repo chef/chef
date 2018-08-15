@@ -1,7 +1,7 @@
 #
 # Author:: Jay Mundrawala (jdm@chef.io)
 # Author:: SAWANOBORI Yukihiko (<sawanoboriyu@higanworks.com>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,15 +17,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Log::WinEvt do
-  let(:evtlog) { instance_double("Win32::EventLog")}
+  let(:evtlog) { instance_double("Win32::EventLog") }
   let(:winevt) { Chef::Log::WinEvt.new(evtlog) }
   let(:app) { Chef::Application.new }
 
   before do
-
     Chef::Log.init(MonoLogger.new(winevt))
     @old_log_level = Chef::Log.level
     Chef::Log.level = :info
@@ -39,12 +38,12 @@ describe Chef::Log::WinEvt do
   end
 
   it "should send message with severity info to Windows Event Log." do
-    expect(winevt).to receive(:info).with("*** Chef 12.4.0.dev.0 ***")
+    expect(winevt).to receive(:add).with(1, "*** Chef 12.4.0.dev.0 ***", nil)
     Chef::Log.info("*** Chef 12.4.0.dev.0 ***")
   end
 
   it "should send message with severity warning to Windows Event Log." do
-    expect(winevt).to receive(:warn).with("No config file found or specified on command line, using command line options.")
+    expect(winevt).to receive(:add).with(2, "No config file found or specified on command line, using command line options.", nil)
     Chef::Log.warn("No config file found or specified on command line, using command line options.")
   end
 

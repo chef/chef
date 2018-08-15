@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-require 'chef/monologger'
-require 'tempfile'
-require 'spec_helper'
+require "chef/monologger"
+require "tempfile"
+require "spec_helper"
 
 describe MonoLogger do
   it "should disable buffering when passed an IO stream" do

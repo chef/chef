@@ -21,6 +21,14 @@ class Chef
         events.stream_output(self, str, options)
       end
 
+      def <<(str)
+        events.stream_output(self, str, options)
+      end
+
+      def write(str)
+        events.stream_output(self, str, options)
+      end
+
       def close
         events.stream_closed(self, options)
       end

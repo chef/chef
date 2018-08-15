@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,32 +17,34 @@
 # limitations under the License.
 #
 
-require 'forwardable'
-require 'chef/version'
-require 'mixlib/cli'
-require 'chef/workstation_config_loader'
-require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/path_sanity'
-require 'chef/knife/core/subcommand_loader'
-require 'chef/knife/core/ui'
-require 'chef/local_mode'
-require 'chef/rest'
-require 'chef/http/authenticator'
-require 'pp'
+require "forwardable"
+require "chef/version"
+require "mixlib/cli"
+require "chef/workstation_config_loader"
+require "chef/mixin/convert_to_class_name"
+require "chef/mixin/path_sanity"
+require "chef/knife/core/subcommand_loader"
+require "chef/knife/core/ui"
+require "chef/local_mode"
+require "chef/server_api"
+require "chef/http/authenticator"
+require "chef/http/http_request"
+require "chef/http"
+require "pp"
 
 class Chef
   class Knife
 
-    Chef::REST::RESTRequest.user_agent = "Chef Knife#{Chef::REST::RESTRequest::UA_COMMON}"
+    Chef::HTTP::HTTPRequest.user_agent = "Chef Knife#{Chef::HTTP::HTTPRequest::UA_COMMON}"
 
     include Mixlib::CLI
     include Chef::Mixin::PathSanity
     extend Chef::Mixin::ConvertToClassName
     extend Forwardable
 
-    # Backwards Compat:
-    # Ideally, we should not vomit all of these methods into this base class;
-    # instead, they should be accessed by hitting the ui object directly.
+    # @note Backwards Compat:
+    #   Ideally, we should not vomit all of these methods into this base class;
+    #   instead, they should be accessed by hitting the ui object directly.
     def_delegator :@ui, :stdout
     def_delegator :@ui, :stderr
     def_delegator :@ui, :stdin
@@ -70,7 +72,7 @@ class Chef
       @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
     end
 
-    def self.msg(msg="")
+    def self.msg(msg = "")
       ui.msg(msg)
     end
 
@@ -87,32 +89,41 @@ class Chef
     def self.inherited(subclass)
       unless subclass.unnamed?
         subcommands[subclass.snake_case_name] = subclass
+        subcommand_files[subclass.snake_case_name] +=
+          if subclass.superclass.to_s == "Chef::ChefFS::Knife"
+            # ChefFS-based commands have a superclass that defines an
+            # inhereited method which calls super. This means that the
+            # top of the call stack is not the class definition for
+            # our subcommand.  Try the second entry in the call stack.
+            [path_from_caller(caller[1])]
+          else
+            [path_from_caller(caller[0])]
+          end
       end
     end
 
     # Explicitly set the category for the current command to +new_category+
     # The category is normally determined from the first word of the command
     # name, but some commands make more sense using two or more words
-    # ===Arguments
-    # new_category::: A String to set the category to (see examples)
-    # ===Examples:
-    # Data bag commands would be in the 'data' category by default. To put them
-    # in the 'data bag' category:
-    #   category('data bag')
+    # @param new_category [String] value to set the category to (see examples)
+    #
+    # @example Data bag commands would be in the 'data' category by default. To
+    #  put them in the 'data bag' category:
+    #  category('data bag')
     def self.category(new_category)
       @category = new_category
     end
 
     def self.subcommand_category
-      @category || snake_case_name.split('_').first unless unnamed?
+      @category || snake_case_name.split("_").first unless unnamed?
     end
 
     def self.snake_case_name
-      convert_to_snake_case(name.split('::').last) unless unnamed?
+      convert_to_snake_case(name.split("::").last) unless unnamed?
     end
 
     def self.common_name
-      snake_case_name.split('_').join(' ')
+      snake_case_name.split("_").join(" ")
     end
 
     # Does this class have a name? (Classes created via Class.new don't)
@@ -121,15 +132,32 @@ class Chef
     end
 
     def self.subcommand_loader
-      @subcommand_loader ||= Knife::SubcommandLoader.new(chef_config_dir)
+      @subcommand_loader ||= Chef::Knife::SubcommandLoader.for_config(chef_config_dir)
     end
 
     def self.load_commands
       @commands_loaded ||= subcommand_loader.load_commands
     end
 
+    def self.guess_category(args)
+      subcommand_loader.guess_category(args)
+    end
+
+    def self.subcommand_class_from(args)
+      if args.size == 1 && args[0].strip.casecmp("rehash") == 0
+        # To prevent issues with the rehash file not pointing to the correct plugins,
+        # we always use the glob loader when regenerating the rehash file
+        @subcommand_loader = Chef::Knife::SubcommandLoader.gem_glob_loader(chef_config_dir)
+      end
+      subcommand_loader.command_class_from(args) || subcommand_not_found!(args)
+    end
+
     def self.subcommands
       @@subcommands ||= {}
+    end
+
+    def self.subcommand_files
+      @@subcommand_files ||= Hash.new([])
     end
 
     def self.subcommands_by_category
@@ -142,30 +170,6 @@ class Chef
       @subcommands_by_category
     end
 
-    # Print the list of subcommands knife knows about. If +preferred_category+
-    # is given, only subcommands in that category are shown
-    def self.list_commands(preferred_category=nil)
-      load_commands
-
-      category_desc = preferred_category ? preferred_category + " " : ''
-      msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
-
-      if preferred_category && subcommands_by_category.key?(preferred_category)
-        commands_to_show = {preferred_category => subcommands_by_category[preferred_category]}
-      else
-        commands_to_show = subcommands_by_category
-      end
-
-      commands_to_show.sort.each do |category, commands|
-        next if category =~ /deprecated/i
-        msg "** #{category.upcase} COMMANDS **"
-        commands.sort.each do |command|
-          msg subcommands[command].banner if subcommands[command]
-        end
-        msg
-      end
-    end
-
     # Shared with subclasses
     @@chef_config_dir = nil
 
@@ -173,11 +177,12 @@ class Chef
       @config_loader ||= WorkstationConfigLoader.new(nil, Chef::Log)
     end
 
-    def self.load_config(explicit_config_file)
+    def self.load_config(explicit_config_file, profile)
       config_loader.explicit_config_file = explicit_config_file
+      config_loader.profile = profile
       config_loader.load
 
-      ui.warn("No knife configuration file found") if config_loader.no_config_found?
+      ui.warn("No knife configuration file found. See https://docs.chef.io/config_rb_knife.html for details.") if config_loader.no_config_found?
 
       config_loader
     rescue Exceptions::ConfigurationError => e
@@ -191,56 +196,28 @@ class Chef
 
     # Run knife for the given +args+ (ARGV), adding +options+ to the list of
     # CLI options that the subcommand knows how to handle.
-    # ===Arguments
-    # args::: usually ARGV
-    # options::: A Mixlib::CLI option parser hash. These +options+ are how
-    # subcommands know about global knife CLI options
-    def self.run(args, options={})
+    #
+    # @param args [Array] The arguments. Usually ARGV
+    # @param options [Mixlib::CLI option parser hash] These +options+ are how
+    #   subcommands know about global knife CLI options
+    #
+    def self.run(args, options = {})
       # Fallback debug logging. Normally the logger isn't configured until we
       # read the config, but this means any logging that happens before the
       # config file is read may be lost. If the KNIFE_DEBUG variable is set, we
       # setup the logger for debug logging to stderr immediately to catch info
       # from early in the setup process.
-      if ENV['KNIFE_DEBUG']
+      if ENV["KNIFE_DEBUG"]
         Chef::Log.init($stderr)
         Chef::Log.level(:debug)
       end
 
-      load_commands
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options = options.merge!(subcommand_class.options)
       subcommand_class.load_deps
       instance = subcommand_class.new(args)
       instance.configure_chef
       instance.run_with_pretty_exceptions
-    end
-
-    def self.guess_category(args)
-      category_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
-      category_words.map! {|w| w.split('-')}.flatten!
-      matching_category = nil
-      while (!matching_category) && (!category_words.empty?)
-        candidate_category = category_words.join(' ')
-        matching_category = candidate_category if subcommands_by_category.key?(candidate_category)
-        matching_category || category_words.pop
-      end
-      matching_category
-    end
-
-    def self.subcommand_class_from(args)
-      command_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
-
-      subcommand_class = nil
-
-      while ( !subcommand_class ) && ( !command_words.empty? )
-        snake_case_class_name = command_words.join("_")
-        unless subcommand_class = subcommands[snake_case_class_name]
-          command_words.pop
-        end
-      end
-      # see if we got the command as e.g., knife node-list
-      subcommand_class ||= subcommands[args.first.gsub('-', '_')]
-      subcommand_class || subcommand_not_found!(args)
     end
 
     def self.dependency_loaders
@@ -257,54 +234,82 @@ class Chef
       end
     end
 
-    private
+    OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack azure google linode push vcenter lpar}.freeze
 
-    OFFICIAL_PLUGINS = %w[ec2 rackspace windows openstack terremark bluebox]
-
-    # :nodoc:
-    # Error out and print usage. probably because the arguments given by the
-    # user could not be resolved to a subcommand.
-    def self.subcommand_not_found!(args)
-      ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")
-
-      if category_commands = guess_category(args)
-        list_commands(category_commands)
-      elsif missing_plugin = ( OFFICIAL_PLUGINS.find {|plugin| plugin == args[0]} )
-        ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
-        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}`")
-        ui.info("Use `chef gem install knife-#{missing_plugin}` instead if using ChefDK")
-      else
-        list_commands
+    class << self
+      def list_commands(preferred_category = nil)
+        category_desc = preferred_category ? preferred_category + " " : ""
+        msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
+        subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
+          next if category =~ /deprecated/i
+          msg "** #{category.upcase} COMMANDS **"
+          commands.sort.each do |command|
+            subcommand_loader.load_command(command)
+            msg subcommands[command].banner if subcommands[command]
+          end
+          msg
+        end
       end
 
-      exit 10
-    end
+      private
 
-    def self.reset_config_path!
-      @@chef_config_dir = nil
+      # @api private
+      def path_from_caller(caller_line)
+        caller_line.split(/:\d+/).first
+      end
+
+      # Error out and print usage. probably because the arguments given by the
+      # user could not be resolved to a subcommand.
+      # @api private
+      def subcommand_not_found!(args)
+        ui.fatal("Cannot find subcommand for: '#{args.join(' ')}'")
+
+        # Mention rehash when the subcommands cache(plugin_manifest.json) is used
+        if subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::HashedCommandLoader)
+          ui.info("If this is a recently installed plugin, please run 'knife rehash' to update the subcommands cache.")
+        end
+
+        if category_commands = guess_category(args)
+          list_commands(category_commands)
+        elsif OFFICIAL_PLUGINS.include?(args[0]) # command was an uninstalled official chef knife plugin
+          ui.info("Use `chef gem install knife-#{args[0]}` to install the plugin into ChefDK")
+        else
+          list_commands
+        end
+
+        exit 10
+      end
+
+      # @api private
+      def reset_config_path!
+        @@chef_config_dir = nil
+      end
+
     end
 
     reset_config_path!
 
-    public
-
     # Create a new instance of the current class configured for the given
     # arguments and options
-    def initialize(argv=[])
+    def initialize(argv = [])
       super() # having to call super in initialize is the most annoying anti-pattern :(
       @ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, config)
 
-      command_name_words = self.class.snake_case_name.split('_')
+      command_name_words = self.class.snake_case_name.split("_")
 
       # Mixlib::CLI ignores the embedded name_args
       @name_args = parse_options(argv)
-      @name_args.delete(command_name_words.join('-'))
+      @name_args.delete(command_name_words.join("-"))
       @name_args.reject! { |name_arg| command_name_words.delete(name_arg) }
 
       # knife node run_list add requires that we have extra logic to handle
       # the case that command name words could be joined by an underscore :/
-      command_name_words = command_name_words.join('_')
-      @name_args.reject! { |name_arg| command_name_words == name_arg }
+      command_name_joined = command_name_words.join("_")
+      @name_args.reject! { |name_arg| command_name_joined == name_arg }
+
+      # Similar handling for hyphens.
+      command_name_joined = command_name_words.join("-")
+      @name_args.reject! { |name_arg| command_name_joined == name_arg }
 
       if config[:help]
         msg opt_parser
@@ -313,7 +318,7 @@ class Chef
 
       # copy Mixlib::CLI over so that it can be configured in knife.rb
       # config file
-      Chef::Config[:verbosity] = config[:verbosity]
+      Chef::Config[:verbosity] = config[:verbosity] if config[:verbosity]
     end
 
     def parse_options(args)
@@ -324,31 +329,35 @@ class Chef
       exit(1)
     end
 
-    # Returns a subset of the Chef::Config[:knife] Hash that is relevant to the
-    # currently executing knife command. This is used by #configure_chef to
-    # apply settings from knife.rb to the +config+ hash.
-    def config_file_settings
-      config_file_settings = {}
-      self.class.options.keys.each do |key|
-        config_file_settings[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
-      end
-      config_file_settings
+    # keys from mixlib-cli options
+    def cli_keys
+      self.class.options.keys
     end
 
-    # Apply Config in this order:
-    # defaults from mixlib-cli
-    # settings from config file, via Chef::Config[:knife]
-    # config from command line
+    # extracts the settings from the Chef::Config[:knife] sub-hash that correspond
+    # to knife cli options -- in preparation for merging config values with cli values
+    #
+    # NOTE: due to weirdness in mixlib-config #has_key? is only true if the value has
+    # been set by the user -- the Chef::Config defaults return #has_key?() of false and
+    # this code DEPENDS on that functionality since applying the default values in
+    # Chef::Config[:knife] would break the defaults in the cli that we would otherwise
+    # overwrite.
+    def config_file_settings
+      cli_keys.each_with_object({}) do |key, memo|
+        memo[key] = Chef::Config[:knife][key] if Chef::Config[:knife].key?(key)
+      end
+    end
+
+    # config is merged in this order (inverse of precedence)
+    #  default_config       - mixlib-cli defaults (accessor from the mixin)
+    #  config_file_settings - Chef::Config[:knife] sub-hash
+    #  config               - mixlib-cli settings (accessor from the mixin)
     def merge_configs
-      # Apply config file settings on top of mixlib-cli defaults
-      combined_config = default_config.merge(config_file_settings)
-      # Apply user-supplied options on top of the above combination
-      combined_config = combined_config.merge(config)
-      # replace the config hash from mixlib-cli with our own.
-      # Need to use the mutate-in-place #replace method instead of assigning to
-      # the instance variable because other code may have a reference to the
-      # original config hash object.
-      config.replace(combined_config)
+      # other code may have a handle to the config object, so use Hash#replace to deliberately
+      # update-in-place.
+      config.replace(
+        default_config.merge(config_file_settings).merge(config)
+      )
     end
 
     # Catch-all method that does any massaging needed for various config
@@ -362,22 +371,24 @@ class Chef
         Chef::Config[:log_level] = :warn
       when 1
         Chef::Config[:log_level] = :info
-      else
+      when 2
         Chef::Config[:log_level] = :debug
+      else
+        Chef::Config[:log_level] = :trace
       end
 
-      Chef::Config[:log_level] = :debug if ENV['KNIFE_DEBUG']
+      Chef::Config[:log_level] = :trace if ENV["KNIFE_DEBUG"]
 
       Chef::Config[:node_name]         = config[:node_name]       if config[:node_name]
       Chef::Config[:client_key]        = config[:client_key]      if config[:client_key]
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
       Chef::Config[:environment]       = config[:environment]     if config[:environment]
 
-      Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+      Chef::Config.local_mode = config[:local_mode] if config.key?(:local_mode)
 
-      Chef::Config.listen = config[:listen] if config.has_key?(:listen)
+      Chef::Config.listen = config[:listen] if config.key?(:listen)
 
-      if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+      if Chef::Config.local_mode && !Chef::Config.key?(:cookbook_path) && !Chef::Config.key?(:chef_repo_path)
         Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
       end
       Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
@@ -392,35 +403,45 @@ class Chef
       Mixlib::Log::Formatter.show_time = false
       Chef::Log.init(Chef::Config[:log_location])
       Chef::Log.level(Chef::Config[:log_level] || :error)
-
-      if Chef::Config[:node_name] && Chef::Config[:node_name].bytesize > 90
-        # node names > 90 bytes only work with authentication protocol >= 1.1
-        # see discussion in config.rb.
-        Chef::Config[:authentication_protocol_version] = "1.1"
-      end
     end
 
     def configure_chef
       # knife needs to send logger output to STDERR by default
       Chef::Config[:log_location] = STDERR
-      config_loader = self.class.load_config(config[:config_file])
+      config_loader = self.class.load_config(config[:config_file], config[:profile])
       config[:config_file] = config_loader.config_location
+
+      # For CLI options like `--config-option key=value`. These have to get
+      # parsed and applied separately.
+      extra_config_options = config.delete(:config_option)
 
       merge_configs
       apply_computed_config
+
       # This has to be after apply_computed_config so that Mixlib::Log is configured
       Chef::Log.info("Using configuration from #{config[:config_file]}") if config[:config_file]
+
+      begin
+        Chef::Config.apply_extra_config_options(extra_config_options)
+      rescue ChefConfig::UnparsableConfigOption => e
+        ui.error e.message
+        show_usage
+        exit(1)
+      end
+
+      Chef::Config.export_proxies
     end
 
     def show_usage
-      stdout.puts("USAGE: " + self.opt_parser.to_s)
+      stdout.puts("USAGE: " + opt_parser.to_s)
     end
 
     def run_with_pretty_exceptions(raise_exception = false)
-      unless self.respond_to?(:run)
+      unless respond_to?(:run)
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
       enforce_path_sanity
+      maybe_setup_fips
       Chef::LocalMode.with_server_connectivity do
         run
       end
@@ -449,7 +470,7 @@ class Chef
       when NameError, NoMethodError
         ui.error "knife encountered an unexpected error"
         ui.info  "This may be a bug in the '#{self.class.common_name}' knife command or plugin"
-        ui.info  "Please collect the output of this command with the `-VV` option before filing a bug report."
+        ui.info  "Please collect the output of this command with the `-VVV` option before filing a bug report."
         ui.info  "Exception: #{e.class.name}: #{e.message}"
       when Chef::Exceptions::PrivateKeyMissing
         ui.error "Your private key could not be loaded from #{api_key}"
@@ -469,7 +490,11 @@ class Chef
         ui.error "Failed to authenticate to #{server_url} as #{username} with key #{api_key}"
         ui.info "Response:  #{format_rest_error(response)}"
       when Net::HTTPForbidden
-        ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action"
+        ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action."
+        proxy_env_vars = ENV.to_hash.keys.map(&:downcase) & %w{http_proxy https_proxy ftp_proxy socks_proxy no_proxy}
+        unless proxy_env_vars.empty?
+          ui.error "There are proxy servers configured, your Chef server may need to be added to NO_PROXY."
+        end
         ui.info "Response:  #{format_rest_error(response)}"
       when Net::HTTPBadRequest
         ui.error "The data in your request was invalid"
@@ -487,11 +512,13 @@ class Chef
         ui.error "Service temporarily unavailable"
         ui.info "Response: #{format_rest_error(response)}"
       when Net::HTTPNotAcceptable
-        min_version = Chef::JSONCompat.from_json(response.body)["min_version"]
-        max_version = Chef::JSONCompat.from_json(response.body)["max_version"]
+        version_header = Chef::JSONCompat.from_json(response["x-ops-server-api-version"])
+        client_api_version = version_header["request_version"]
+        min_server_version = version_header["min_version"]
+        max_server_version = version_header["max_version"]
         ui.error "The version of Chef that Knife is using is not supported by the Chef server you sent this request to"
-        ui.info "This version of Chef requires a server API version of #{Chef::HTTP::Authenticator::SERVER_API_VERSION}"
-        ui.info "The Chef server you sent the request to supports a min API verson of #{min_version} and a max API version of #{max_version}"
+        ui.info "The request that Knife sent was using API version #{client_api_version}"
+        ui.info "The Chef server you sent the request to supports a min API verson of #{min_server_version} and a max API version of #{max_server_version}"
         ui.info "Please either update your Chef client or server to be a compatible set"
       else
         ui.error response.message
@@ -512,32 +539,38 @@ class Chef
     #--
     # TODO: this code belongs in Chef::REST
     def format_rest_error(response)
-      Array(Chef::JSONCompat.from_json(response.body)["error"]).join('; ')
+      Array(Chef::JSONCompat.from_json(response.body)["error"]).join("; ")
     rescue Exception
       response.body
     end
 
-    def create_object(object, pretty_name=nil, &block)
-      output = edit_data(object)
+    # FIXME: yard with @yield
+    def create_object(object, pretty_name = nil, object_class: nil)
+      output = if object_class
+                 edit_data(object, object_class: object_class)
+               else
+                 edit_hash(object)
+               end
 
       if Kernel.block_given?
-        output = block.call(output)
+        output = yield(output)
       else
         output.save
       end
 
       pretty_name ||= output
 
-      self.msg("Created #{pretty_name}")
+      msg("Created #{pretty_name}")
 
       output(output) if config[:print_after]
     end
 
-    def delete_object(klass, name, delete_name=nil, &block)
+    # FIXME: yard with @yield
+    def delete_object(klass, name, delete_name = nil)
       confirm("Do you really want to delete #{name}")
 
       if Kernel.block_given?
-        object = block.call
+        object = yield
       else
         object = klass.load(name)
         object.destroy
@@ -546,20 +579,30 @@ class Chef
       output(format_for_display(object)) if config[:print_after]
 
       obj_name = delete_name ? "#{delete_name}[#{name}]" : object
-      self.msg("Deleted #{obj_name}")
+      msg("Deleted #{obj_name}")
+    end
+
+    # helper method for testing if a field exists
+    # and returning the usage and proper error if not
+    def test_mandatory_field(field, fieldname)
+      if field.nil?
+        show_usage
+        ui.fatal("You must specify a #{fieldname}")
+        exit 1
+      end
     end
 
     def rest
       @rest ||= begin
-        require 'chef/rest'
-        Chef::REST.new(Chef::Config[:chef_server_url])
+        require "chef/server_api"
+        Chef::ServerAPI.new(Chef::Config[:chef_server_url])
       end
     end
 
     def noauth_rest
       @rest ||= begin
-        require 'chef/rest'
-        Chef::REST.new(Chef::Config[:chef_server_url], false, false)
+        require "chef/http/simple_json"
+        Chef::HTTP::SimpleJSON.new(Chef::Config[:chef_server_url])
       end
     end
 
@@ -567,5 +610,11 @@ class Chef
       Chef::Config[:chef_server_url]
     end
 
+    def maybe_setup_fips
+      if !config[:fips].nil?
+        Chef::Config[:fips] = config[:fips]
+      end
+      Chef::Config.init_openssl
+    end
   end
 end

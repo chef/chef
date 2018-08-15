@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef-config/path_helper'
-require 'spec_helper'
+require "chef-config/path_helper"
+require "spec_helper"
 
 RSpec.describe ChefConfig::PathHelper do
 
@@ -27,30 +27,30 @@ RSpec.describe ChefConfig::PathHelper do
     describe "join" do
 
       it "joins starting with '' resolve to absolute paths" do
-        expect(path_helper.join('', 'a', 'b')).to eq("#{path_helper.path_separator}a#{path_helper.path_separator}b")
+        expect(path_helper.join("", "a", "b")).to eq("#{path_helper.path_separator}a#{path_helper.path_separator}b")
       end
 
       it "joins ending with '' add a / to the end" do
-        expect(path_helper.join('a', 'b', '')).to eq("a#{path_helper.path_separator}b#{path_helper.path_separator}")
+        expect(path_helper.join("a", "b", "")).to eq("a#{path_helper.path_separator}b#{path_helper.path_separator}")
       end
 
     end
 
     describe "dirname" do
       it "dirname('abc') is '.'" do
-        expect(path_helper.dirname('abc')).to eq('.')
+        expect(path_helper.dirname("abc")).to eq(".")
       end
       it "dirname('/') is '/'" do
         expect(path_helper.dirname(path_helper.path_separator)).to eq(path_helper.path_separator)
       end
       it "dirname('a/b/c') is 'a/b'" do
-        expect(path_helper.dirname(path_helper.join('a', 'b', 'c'))).to eq(path_helper.join('a', 'b'))
+        expect(path_helper.dirname(path_helper.join("a", "b", "c"))).to eq(path_helper.join("a", "b"))
       end
       it "dirname('a/b/c/') is 'a/b'" do
-        expect(path_helper.dirname(path_helper.join('a', 'b', 'c', ''))).to eq(path_helper.join('a', 'b'))
+        expect(path_helper.dirname(path_helper.join("a", "b", "c", ""))).to eq(path_helper.join("a", "b"))
       end
       it "dirname('/a/b/c') is '/a/b'" do
-        expect(path_helper.dirname(path_helper.join('', 'a', 'b', 'c'))).to eq(path_helper.join('', 'a', 'b'))
+        expect(path_helper.dirname(path_helper.join("", "a", "b", "c"))).to eq(path_helper.join("", "a", "b"))
       end
     end
   end
@@ -93,7 +93,6 @@ RSpec.describe ChefConfig::PathHelper do
 
     end
 
-
     it "cleanpath changes slashes into backslashes and leaves backslashes alone" do
       expect(path_helper.cleanpath('/a/b\\c/d/')).to eq('\\a\\b\\c\\d')
     end
@@ -113,11 +112,11 @@ RSpec.describe ChefConfig::PathHelper do
     include_examples("common_functionality")
 
     it "path_separator is /" do
-      expect(path_helper.path_separator).to eq('/')
+      expect(path_helper.path_separator).to eq("/")
     end
 
     it "cleanpath removes extra slashes alone" do
-      expect(path_helper.cleanpath('/a///b/c/d/')).to eq('/a/b/c/d')
+      expect(path_helper.cleanpath("/a///b/c/d/")).to eq("/a/b/c/d")
     end
 
     describe "platform-specific #join behavior" do
@@ -224,7 +223,7 @@ RSpec.describe ChefConfig::PathHelper do
       end
     end
 
-    context "not on windows", :unix_only  do
+    context "not on windows", :unix_only do
       it "returns a canonical path" do
         expect(path_helper.canonical_path("/etc//apache.d/sites-enabled/../sites-available/default")).to eq("/etc/apache.d/sites-available/default")
       end
@@ -256,10 +255,10 @@ RSpec.describe ChefConfig::PathHelper do
       it "joins, cleanpaths, and escapes characters reserved by glob" do
         args = ["this/*path", "[needs]", "escaping?"]
         escaped_path = if ChefConfig.windows?
-          "this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
-        else
-          "this/\\*path/\\[needs\\]/escaping\\?"
-        end
+                         "this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
+                       else
+                         "this/\\*path/\\[needs\\]/escaping\\?"
+                       end
         expect(path_helper).to receive(:join).with(*args).and_call_original
         expect(path_helper).to receive(:cleanpath).and_call_original
         expect(path_helper.escape_glob(*args)).to eq(escaped_path)
@@ -267,9 +266,26 @@ RSpec.describe ChefConfig::PathHelper do
     end
   end
 
+  describe "escape_glob_dir" do
+    it "escapes characters reserved by glob without using backslashes for path separators" do
+      path = "C:/this/*path/[needs]/escaping?"
+      escaped_path = "C:/this/\\*path/\\[needs\\]/escaping\\?"
+      expect(path_helper.escape_glob_dir(path)).to eq(escaped_path)
+    end
+
+    context "when given more than one argument" do
+      it "joins, cleanpaths, and escapes characters reserved by glob" do
+        args = ["this/*path", "[needs]", "escaping?"]
+        escaped_path = "this/\\*path/\\[needs\\]/escaping\\?"
+        expect(path_helper).to receive(:join).with(*args).and_call_original
+        expect(path_helper.escape_glob_dir(*args)).to eq(escaped_path)
+      end
+    end
+  end
+
   describe "all_homes" do
     before do
-      stub_const('ENV', env)
+      stub_const("ENV", env)
       allow(ChefConfig).to receive(:windows?).and_return(is_windows)
     end
 

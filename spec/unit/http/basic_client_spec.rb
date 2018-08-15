@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/http/basic_client'
+require "spec_helper"
+require "chef/http/basic_client"
 
 describe "HTTP Connection" do
 
@@ -26,6 +26,26 @@ describe "HTTP Connection" do
   describe ".new" do
     it "creates an instance" do
       subject
+    end
+  end
+
+  describe "#initialize" do
+    it "calls .start when doing keepalives" do
+      basic_client = Chef::HTTP::BasicClient.new(uri, keepalives: true)
+      expect(basic_client).to receive(:configure_ssl)
+      net_http_mock = instance_double(Net::HTTP, proxy_address: nil, "proxy_port=" => nil, "read_timeout=" => nil, "open_timeout=" => nil)
+      expect(net_http_mock).to receive(:start).and_return(net_http_mock)
+      expect(Net::HTTP).to receive(:new).and_return(net_http_mock)
+      expect(basic_client.http_client).to eql(net_http_mock)
+    end
+
+    it "does not call .start when not doing keepalives" do
+      basic_client = Chef::HTTP::BasicClient.new(uri)
+      expect(basic_client).to receive(:configure_ssl)
+      net_http_mock = instance_double(Net::HTTP, proxy_address: nil, "proxy_port=" => nil, "read_timeout=" => nil, "open_timeout=" => nil)
+      expect(net_http_mock).not_to receive(:start)
+      expect(Net::HTTP).to receive(:new).and_return(net_http_mock)
+      expect(basic_client.http_client).to eql(net_http_mock)
     end
   end
 
@@ -40,90 +60,13 @@ describe "HTTP Connection" do
   end
 
   describe "#proxy_uri" do
-    shared_examples_for "a proxy uri" do
-      let(:proxy_host) { "proxy.mycorp.com" }
-      let(:proxy_port) { 8080 }
-      let(:proxy) { "#{proxy_prefix}#{proxy_host}:#{proxy_port}" }
+    subject(:proxy_uri) { basic_client.proxy_uri }
 
-      it "should contain the host" do
-        proxy_uri = subject.proxy_uri
-        expect(proxy_uri.host).to eq(proxy_host)
-      end
-
-      it "should contain the port" do
-        proxy_uri = subject.proxy_uri
-        expect(proxy_uri.port).to eq(proxy_port)
-      end
-    end
-
-    context "when the config setting is normalized (does not contain the scheme)" do
-      include_examples "a proxy uri" do
-
-        let(:proxy_prefix) { "" }
-
-        before do
-          Chef::Config["#{uri.scheme}_proxy"] = proxy
-          Chef::Config[:no_proxy] = nil
-        end
-
-      end
-    end
-
-    context "when the config setting is not normalized (contains the scheme)" do
-      include_examples "a proxy uri" do
-        let(:proxy_prefix) { "#{uri.scheme}://" }
-
-        before do
-          Chef::Config["#{uri.scheme}_proxy"] = proxy
-          Chef::Config[:no_proxy] = nil
-        end
-
-      end
-    end
-
-    context "when the proxy is set by the environment" do
-
-      include_examples "a proxy uri" do
-
-        let(:env) do
-          {
-            "https_proxy" => "https://proxy.mycorp.com:8080",
-            "https_proxy_user" => "jane_username",
-            "https_proxy_pass" => "opensesame"
-          }
-        end
-
-        let(:proxy_uri) { URI.parse(env["https_proxy"]) }
-
-        before do
-          allow(basic_client).to receive(:env).and_return(env)
-        end
-
-        it "sets the proxy user" do
-          expect(basic_client.http_proxy_user(proxy_uri)).to eq("jane_username")
-        end
-
-        it "sets the proxy pass" do
-          expect(basic_client.http_proxy_pass(proxy_uri)).to eq("opensesame")
-        end
-      end
-
-    end
-
-    context "when an empty proxy is set by the environment" do
-      let(:env) do
-        {
-          "https_proxy" => ""
-        }
-      end
-
-      before do
-        allow(subject).to receive(:env).and_return(env)
-      end
-
-      it "to not fail with URI parse exception" do
-        expect { subject.proxy_uri }.to_not raise_error
-      end
+    it "uses ChefConfig's proxy_uri method" do
+      expect(ChefConfig::Config).to receive(:proxy_uri).at_least(:once).with(
+        uri.scheme, uri.host, uri.port
+      )
+      proxy_uri
     end
   end
 end

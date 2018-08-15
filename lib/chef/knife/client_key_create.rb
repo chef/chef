@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (tyler@chef.io)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc
+# Copyright:: Copyright 2015-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/key_create_base'
+require "chef/knife"
+require "chef/knife/key_create"
+require "chef/knife/key_create_base"
 
 class Chef
   class Knife
@@ -30,9 +31,11 @@ class Chef
     class ClientKeyCreate < Knife
       include Chef::Knife::KeyCreateBase
 
+      banner "knife client key create CLIENT (options)"
+
       attr_reader :actor
 
-      def initialize(argv=[])
+      def initialize(argv = [])
         super(argv)
         @service_object = nil
       end
@@ -43,7 +46,7 @@ class Chef
       end
 
       def actor_field_name
-        'client'
+        "client"
       end
 
       def service_object
@@ -51,7 +54,7 @@ class Chef
       end
 
       def actor_missing_error
-        'You must specify a client name'
+        "You must specify a client name"
       end
 
       def apply_params!(params)

@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright 2011-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
-require 'chef/util/path_helper'
+require "chef/provider/service/init"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
     class Service
       class Insserv < Chef::Provider::Service::Init
 
-        provides :service, os: "linux"
-
-        def self.provides?(node, resource)
-          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
+        provides :service, platform_family: %w{debian rhel fedora suse amazon} do |node|
+          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
         end
 
         def self.supports?(resource, action)
@@ -38,7 +36,7 @@ class Chef
           super
 
           # Look for a /etc/rc.*/SnnSERVICE link to signify that the service would be started in a runlevel
-          if Dir.glob("/etc/rc**/S*#{Chef::Util::PathHelper.escape_glob(current_resource.service_name)}").empty?
+          if Dir.glob("/etc/rc**/S*#{Chef::Util::PathHelper.escape_glob_dir(current_resource.service_name)}").empty?
             current_resource.enabled false
           else
             current_resource.enabled true
@@ -47,12 +45,12 @@ class Chef
           current_resource
         end
 
-        def enable_service()
+        def enable_service
           shell_out!("/sbin/insserv -r -f #{new_resource.service_name}")
           shell_out!("/sbin/insserv -d -f #{new_resource.service_name}")
         end
 
-        def disable_service()
+        def disable_service
           shell_out!("/sbin/insserv -r -f #{new_resource.service_name}")
         end
       end

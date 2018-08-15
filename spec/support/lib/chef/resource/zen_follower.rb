@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,22 +15,16 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/json_compat'
+require "chef/knife"
+require "chef/json_compat"
 
 class Chef
   class Resource
     class ZenFollower < Chef::Resource
-      provides :zen_follower
 
       provides :follower, platform: "zen"
 
-      def initialize(name, run_context=nil)
-        @resource_name = :zen_follower
-        super
-      end
-
-      def master(arg=nil)
+      def master(arg = nil)
         if !arg.nil?
           @master = arg
         end

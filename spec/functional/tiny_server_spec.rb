@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tiny_server'
+require "spec_helper"
+require "tiny_server"
 
 describe TinyServer::API do
   before do
@@ -26,53 +26,54 @@ describe TinyServer::API do
   end
 
   it "is a Singleton" do
-    expect {TinyServer::API.new}.to raise_error
+    expect { TinyServer::API.new }.to raise_error NoMethodError
   end
 
   it "clears the router" do
-    @api.get('/blargh', 200, "blargh")
+    @api.get("/blargh", 200, "blargh")
     @api.clear
     expect(@api.routes["GET"]).to be_empty
   end
 
   it "creates a route for a GET request" do
-    @api.get('/foo/bar', 200, 'hello foobar')
+    @api.get("/foo/bar", 200, "hello foobar")
     # WEBrick gives you the full URI with host, Thin only gave the part after scheme+host+port
-    response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => 'http://localhost:1974/foo/bar')
-    expect(response).to eq([200, {'Content-Type' => 'application/json'}, [ 'hello foobar' ]])
+    response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => "http://localhost:1974/foo/bar")
+    expect(response).to eq([200, { "Content-Type" => "application/json" }, [ "hello foobar" ]])
   end
 
   it "creates a route for a request with a block" do
     block_called = false
-    @api.get('/bar/baz', 200) { block_called = true; 'hello barbaz' }
-    response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => 'http://localhost:1974/bar/baz')
-    expect(response).to eq([200, {'Content-Type' => 'application/json'}, [ 'hello barbaz' ]])
+    @api.get("/bar/baz", 200) { block_called = true; "hello barbaz" }
+    response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => "http://localhost:1974/bar/baz")
+    expect(response).to eq([200, { "Content-Type" => "application/json" }, [ "hello barbaz" ]])
     expect(block_called).to be_truthy
   end
 
   it "returns debugging info for 404s" do
-    response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => '/no_such_thing')
+    response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => "/no_such_thing")
     expect(response[0]).to eq(404)
-    expect(response[1]).to eq({'Content-Type' => 'application/json'})
+    expect(response[1]).to eq({ "Content-Type" => "application/json" })
     expect(response[2]).to be_a_kind_of(Array)
     response_obj = Chef::JSONCompat.from_json(response[2].first)
     expect(response_obj["message"]).to eq("no data matches the request for /no_such_thing")
-    expect(response_obj["available_routes"]).to eq({"GET"=>[], "PUT"=>[], "POST"=>[], "DELETE"=>[]})
-    expect(response_obj["request"]).to eq({"REQUEST_METHOD"=>"GET", "REQUEST_URI"=>"/no_such_thing"})
+    expect(response_obj["available_routes"]).to eq({ "GET" => [], "PUT" => [], "POST" => [], "DELETE" => [] })
+    expect(response_obj["request"]).to eq({ "REQUEST_METHOD" => "GET", "REQUEST_URI" => "/no_such_thing" })
   end
 
 end
 
 describe TinyServer::Manager do
   it "runs the server" do
-    @server = TinyServer::Manager.new
-    @server.start
+    server = TinyServer::Manager.new
+    server.start
+    begin
+      TinyServer::API.instance.get("/index", 200, "[\"hello\"]")
 
-    TinyServer::API.instance.get("/index", 200, "[\"hello\"]")
-
-    rest = Chef::REST.new('http://localhost:9000', false, false)
-    expect(rest.get_rest("index")).to eq(["hello"])
-
-    @server.stop
+      rest = Chef::HTTP.new("http://localhost:9000")
+      expect(rest.get("index")).to eq("[\"hello\"]")
+    ensure
+      server.stop
+    end
   end
 end

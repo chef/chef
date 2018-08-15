@@ -1,7 +1,7 @@
 #
-# Author:: Stephen Delano (<stephen@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Stephen Delano (<stephen@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,39 +17,19 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
+require "chef/knife/supermarket_unshare"
 
 class Chef
   class Knife
-    class CookbookSiteUnshare < Knife
+    class CookbookSiteUnshare < Knife::SupermarketUnshare
 
-      deps do
-        require 'chef/json_compat'
-      end
+    # Handle the subclassing (knife doesn't do this :()
+      dependency_loaders.concat(superclass.dependency_loaders)
+      options.merge!(superclass.options)
 
-      banner "knife cookbook site unshare COOKBOOK"
+      banner "knife cookbook site unshare COOKBOOK (options)"
       category "cookbook site"
-
-      def run
-        @cookbook_name = @name_args[0]
-        if @cookbook_name.nil?
-          show_usage
-          ui.fatal "You must provide the name of the cookbook to unshare"
-          exit 1
-        end
-
-        confirm "Do you really want to unshare the cookbook #{@cookbook_name}"
-
-        begin
-          rest.delete_rest "https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}"
-        rescue Net::HTTPServerException => e
-          raise e unless e.message =~ /Forbidden/
-          ui.error "Forbidden: You must be the maintainer of #{@cookbook_name} to unshare it."
-          exit 1
-        end
-
-        ui.info "Unshared cookbook #{@cookbook_name}"
-      end
 
     end
   end

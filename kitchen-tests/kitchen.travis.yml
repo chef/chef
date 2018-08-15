@@ -1,0 +1,120 @@
+---
+driver:
+  name: dokken
+  privileged: true
+  chef_image: chef/chef
+  chef_version: current
+
+transport:
+  name: dokken
+
+provisioner:
+  name: chef_github
+  root_path: /opt/kitchen
+  require_chef_omnibus: latest
+  chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
+  chef_omnibus_install_options: "-c current"
+  github_owner: "chef"
+  github_repo: "chef"
+  refname: <%= ENV['TRAVIS_COMMIT'] %>
+  ohai_refname: "master"
+  github_access_token: <%= ENV['KITCHEN_GITHUB_TOKEN'] %>
+  data_path: test/fixtures
+# disable file provider diffs so we don't overflow travis' line limit
+  client_rb:
+    diff_disabled: true
+
+verifier:
+  name: inspec
+  format: progress
+
+platforms:
+- name: amazonlinux
+  driver:
+    image: dokken/amazonlinux
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN yum install -y cronie # TODO: remove this anytime past 8/13
+
+- name: amazonlinux-2
+  driver:
+    image: dokken/amazonlinux-2
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: debian-8
+  driver:
+    image: dokken/debian-8
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+
+- name: debian-9
+  driver:
+    image: dokken/debian-9
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+
+- name: centos-6
+  driver:
+    image: dokken/centos-6
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN yum install -y cronie # TODO: remove this anytime past 8/13
+
+- name: centos-7
+  driver:
+    image: dokken/centos-7
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install e2fsprogs
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: fedora-latest
+  driver:
+    image: dokken/fedora-latest
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN yum install -y cronie # TODO: remove this anytime past 8/13
+
+- name: ubuntu-14.04
+  driver:
+    image: dokken/ubuntu-14.04
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+
+- name: ubuntu-16.04
+  driver:
+    image: dokken/ubuntu-16.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+
+- name: ubuntu-18.04
+  driver:
+    image: dokken/ubuntu-18.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+
+- name: opensuse-leap
+  driver:
+    image: dokken/opensuse-leap
+    pid_one_command: /bin/systemd
+
+suites:
+  - name: end-to-end
+    run_list:
+      - recipe[end_to_end::default]
+  - name: rspec
+    run_list:
+      - recipe[rspec]
+    lifecycle:
+      post_converge:
+        - remote: /usr/local/bin/run-chef-rspec

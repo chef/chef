@@ -1,7 +1,7 @@
-# Author:: Prajakta Purohit (<prajakta@opscode.com>)
-# Author:: Lamont Granquist (<lamont@opscode.com>)
+# Author:: Prajakta Purohit (<prajakta@chef.io>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: 2011, Opscode, Inc.
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,17 +15,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/provider/registry_key'
-require 'chef/resource'
-require 'chef/digester'
+
+require "chef/resource"
+require "chef/digester"
 
 class Chef
   class Resource
     class RegistryKey < Chef::Resource
-      provides :registry_key
+      resource_name :registry_key
+      provides(:registry_key) { true }
 
-      identity_attr :key
+      description "Use the registry_key resource to create and delete registry keys in Microsoft Windows."
+      introduced "11.0"
+
       state_attrs :values
+
+      default_action :create
+      allowed_actions :create, :create_if_missing, :delete, :delete_key
 
       # Some registry key data types may not be safely reported as json.
       # Example (CHEF-5323):
@@ -58,66 +64,44 @@ class Chef
       # See lib/chef/resource_reporter.rb for more information.
       attr_reader :unscrubbed_values
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
-        @resource_name = :registry_key
-        @action = :create
-        @architecture = :machine
-        @recursive = false
-        @key = name
         @values, @unscrubbed_values = [], []
-        @allowed_actions.push(:create, :create_if_missing, :delete, :delete_key)
       end
 
-      def key(arg=nil)
-        set_or_return(
-          :key,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :key, String, name_property: true, identity: true
 
-      def values(arg=nil)
+      def values(arg = nil)
         if not arg.nil?
           if arg.is_a?(Hash)
-            @values = [ arg ]
+            @values = [ Mash.new(arg).symbolize_keys ]
           elsif arg.is_a?(Array)
-            @values = arg
+            @values = []
+            arg.each do |value|
+              @values << Mash.new(value).symbolize_keys
+            end
           else
             raise ArgumentError, "Bad type for RegistryKey resource, use Hash or Array"
           end
 
           @values.each do |v|
-            raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.has_key?(:name)
-            raise ArgumentError, "Missing type key in RegistryKey values hash" unless v.has_key?(:type)
-            raise ArgumentError, "Missing data key in RegistryKey values hash" unless v.has_key?(:data)
+            raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.key?(:name)
             v.each_key do |key|
-              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name,:type,:data].include?(key)
+              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name, :type, :data].include?(key)
             end
             raise ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
-            raise Argument Error "Type of type => #{v[:name]} should be symbol" unless v[:type].is_a?(Symbol)
+            if v[:type]
+              raise ArgumentError, "Type of type => #{v[:type]} should be symbol" unless v[:type].is_a?(Symbol)
+            end
           end
           @unscrubbed_values = @values
-        elsif self.instance_variable_defined?(:@values)
+        elsif instance_variable_defined?(:@values)
           scrub_values(@values)
         end
       end
 
-      def recursive(arg=nil)
-        set_or_return(
-          :recursive,
-          arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def architecture(arg=nil)
-        set_or_return(
-          :architecture,
-          arg,
-          :kind_of => Symbol
-        )
-      end
+      property :recursive, [TrueClass, FalseClass], default: false
+      property :architecture, Symbol, default: :machine, equal_to: [:machine, :x86_64, :i386]
 
       private
 
@@ -127,7 +111,7 @@ class Chef
           scrubbed_value = value.dup
           if needs_checksum?(scrubbed_value)
             data_io = StringIO.new(scrubbed_value[:data].to_s)
-            scrubbed_value[:data] = Chef::Digester.instance.generate_md5_checksum(data_io)
+            scrubbed_value[:data] = Chef::Digester.instance.generate_checksum(data_io)
           end
           scrubbed << scrubbed_value
         end

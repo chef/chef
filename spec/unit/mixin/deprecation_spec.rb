@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/deprecation'
+require "spec_helper"
+require "chef/mixin/deprecation"
 
 describe Chef::Mixin do
   describe "deprecating constants (Class/Module)" do
@@ -36,7 +36,7 @@ describe Chef::Mixin do
     end
 
     it "warns when accessing the deprecated constant" do
-      Chef::Mixin::DeprecatedClass
+      Chef::Mixin::DeprecatedClass # rubocop:disable Lint/Void
       expect(@log_io.string).to include("This is a test deprecation")
     end
   end
@@ -46,7 +46,7 @@ describe Chef::Mixin::Deprecation::DeprecatedInstanceVariable do
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
 
-    @deprecated_ivar = Chef::Mixin::Deprecation::DeprecatedInstanceVariable.new('value', 'an_ivar')
+    @deprecated_ivar = Chef::Mixin::Deprecation::DeprecatedInstanceVariable.new("value", "an_ivar")
   end
 
   it "forward method calls to the target object" do

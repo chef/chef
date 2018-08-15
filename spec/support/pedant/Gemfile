@@ -1,3 +1,0 @@
-source "https://rubygems.org"
-
-gem 'chef-pedant', :github => 'opscode/chef-pedant', :ref => "server-cli-option"

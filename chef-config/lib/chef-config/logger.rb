@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-
 module ChefConfig
 
   # Implements enough of Logger's API that we can use it in place of a real
@@ -26,6 +25,9 @@ module ChefConfig
     end
 
     def add(_severity, _message = nil, _progname = nil)
+    end
+
+    def trace(_progname = nil, &block)
     end
 
     def debug(_progname = nil, &block)
@@ -58,5 +60,3 @@ module ChefConfig
     @logger
   end
 end
-
-

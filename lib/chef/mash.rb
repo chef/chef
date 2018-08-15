@@ -1,4 +1,4 @@
-# Copyright (c) 2009 Dan Kubb
+# Copyright 2009-2016, Dan Kubb
 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@
 # Some portions of blank.rb and mash.rb are verbatim copies of software
 # licensed under the MIT license. That license is included below:
 
-# Copyright (c) 2005-2008 David Heinemeier Hansson
+# Copyright 2005-2016, David Heinemeier Hansson
 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -71,7 +71,7 @@ class Mash < Hash
   def initialize_copy(orig)
     super
     # Handle nested values
-    each do |k,v|
+    each do |k, v|
       if v.kind_of?(Mash) || v.is_a?(Array)
         self[k] = v.dup
       end
@@ -103,6 +103,12 @@ class Mash < Hash
   # @see Mash#convert_value
   def []=(key, value)
     regular_writer(convert_key(key), convert_value(value))
+  end
+
+  # internal API for use by Chef's deep merge cache
+  # @api private
+  def internal_set(key, value)
+    regular_writer(key, convert_value(value))
   end
 
   # @param other_hash<Hash>
@@ -142,14 +148,14 @@ class Mash < Hash
   #
   # @return [Array] The values at each of the provided keys
   def values_at(*indices)
-    indices.collect {|key| self[convert_key(key)]}
+    indices.collect { |key| self[convert_key(key)] }
   end
 
   # @param hash<Hash> The hash to merge with the mash.
   #
   # @return [Mash] A new mash with the hash values merged in.
   def merge(hash)
-    self.dup.update(hash)
+    dup.update(hash)
   end
 
   # @param key<Object>
@@ -166,7 +172,7 @@ class Mash < Hash
   #   { :one => 1, :two => 2, :three => 3 }.except(:one)
   #     #=> { "two" => 2, "three" => 3 }
   def except(*keys)
-    super(*keys.map {|k| convert_key(k)})
+    super(*keys.map { |k| convert_key(k) })
   end
 
   # Used to provide the same interface as Hash.
@@ -195,6 +201,7 @@ class Mash < Hash
   end
 
   protected
+
   # @param key<Object> The key to convert.
   #
   # @param [Object]

@@ -1,11 +1,11 @@
 #--
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Thom May (<thom@clearairturbulence.org>)
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,10 +20,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'uri'
-require 'net/http'
-require 'chef/http/ssl_policies'
-require 'chef/http/http_request'
+require "uri"
+require "net/http"
+require "chef/http/ssl_policies"
+require "chef/http/http_request"
 
 class Chef
   class HTTP
@@ -32,18 +32,22 @@ class Chef
       HTTPS = "https".freeze
 
       attr_reader :url
-      attr_reader :http_client
       attr_reader :ssl_policy
+      attr_reader :keepalives
 
       # Instantiate a BasicClient.
       # === Arguments:
       # url:: An URI for the remote server.
       # === Options:
       # ssl_policy:: The SSL Policy to use, defaults to DefaultSSLPolicy
-      def initialize(url, opts={})
+      def initialize(url, opts = {})
         @url = url
         @ssl_policy = opts[:ssl_policy] || DefaultSSLPolicy
-        @http_client = build_http_client
+        @keepalives = opts[:keepalives] || false
+      end
+
+      def http_client
+        @http_client ||= build_http_client
       end
 
       def host
@@ -54,34 +58,34 @@ class Chef
         @url.port
       end
 
-      def request(method, url, req_body, base_headers={})
+      def request(method, url, req_body, base_headers = {})
         http_request = HTTPRequest.new(method, url, req_body, base_headers).http_request
-        Chef::Log.debug("Initiating #{method} to #{url}")
-        Chef::Log.debug("---- HTTP Request Header Data: ----")
+        Chef::Log.trace("Initiating #{method} to #{url}")
+        Chef::Log.trace("---- HTTP Request Header Data: ----")
         base_headers.each do |name, value|
-          Chef::Log.debug("#{name}: #{value}")
+          Chef::Log.trace("#{name}: #{value}")
         end
-        Chef::Log.debug("---- End HTTP Request Header Data ----")
+        Chef::Log.trace("---- End HTTP Request Header Data ----")
         http_client.request(http_request) do |response|
-          Chef::Log.debug("---- HTTP Status and Header Data: ----")
-          Chef::Log.debug("HTTP #{response.http_version} #{response.code} #{response.msg}")
+          Chef::Log.trace("---- HTTP Status and Header Data: ----")
+          Chef::Log.trace("HTTP #{response.http_version} #{response.code} #{response.msg}")
 
           response.each do |header, value|
-            Chef::Log.debug("#{header}: #{value}")
+            Chef::Log.trace("#{header}: #{value}")
           end
-          Chef::Log.debug("---- End HTTP Status/Header Data ----")
+          Chef::Log.trace("---- End HTTP Status/Header Data ----")
 
           # For non-400's, log the request and response bodies
-          if !response.code || !response.code.start_with?('2')
+          if !response.code || !response.code.start_with?("2")
             if response.body
-              Chef::Log.debug("---- HTTP Response Body ----")
-              Chef::Log.debug(response.body)
-              Chef::Log.debug("---- End HTTP Response Body -----")
+              Chef::Log.trace("---- HTTP Response Body ----")
+              Chef::Log.trace(response.body)
+              Chef::Log.trace("---- End HTTP Response Body -----")
             end
             if req_body
-              Chef::Log.debug("---- HTTP Request Body ----")
-              Chef::Log.debug(req_body)
-              Chef::Log.debug("---- End HTTP Request Body ----")
+              Chef::Log.trace("---- HTTP Request Body ----")
+              Chef::Log.trace(req_body)
+              Chef::Log.trace("---- End HTTP Request Body ----")
             end
           end
 
@@ -95,30 +99,18 @@ class Chef
         raise
       end
 
-      #adapted from buildr/lib/buildr/core/transports.rb
       def proxy_uri
-        proxy = Chef::Config["#{url.scheme}_proxy"] ||
-                env["#{url.scheme.upcase}_PROXY"] || env["#{url.scheme}_proxy"]
-
-        # Check if the proxy string contains a scheme. If not, add the url's scheme to the
-        # proxy before parsing. The regex /^.*:\/\// matches, for example, http://. Reusing proxy
-        # here since we are really just trying to get the string built correctly.
-        if String === proxy && !proxy.strip.empty?
-          if proxy.match(/^.*:\/\//)
-           proxy = URI.parse(proxy.strip)
-          else
-           proxy = URI.parse("#{url.scheme}://#{proxy.strip}")
-          end 
-        end
-        
-        no_proxy = Chef::Config[:no_proxy] || env['NO_PROXY'] || env['no_proxy']
-        excludes = no_proxy.to_s.split(/\s*,\s*/).compact
-        excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
-        return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
+        @proxy_uri ||= Chef::Config.proxy_uri(url.scheme, host, port)
       end
 
       def build_http_client
-        http_client = http_client_builder.new(host, port)
+        # Note: the last nil in the new below forces Net::HTTP to ignore the
+        # no_proxy environment variable. This is a workaround for limitations
+        # in Net::HTTP use of the no_proxy environment variable. We internally
+        # match no_proxy with a fuzzy matcher, rather than letting Net::HTTP
+        # do it.
+        http_client = http_client_builder.new(host, port, nil)
+        http_client.proxy_port = nil if http_client.proxy_address.nil?
 
         if url.scheme == HTTPS
           configure_ssl(http_client)
@@ -126,37 +118,33 @@ class Chef
 
         http_client.read_timeout = config[:rest_timeout]
         http_client.open_timeout = config[:rest_timeout]
-        http_client
+        if keepalives
+          http_client.start
+        else
+          http_client
+        end
       end
 
       def config
         Chef::Config
       end
 
-      def env
-        ENV
-      end
-
       def http_client_builder
-        http_proxy = proxy_uri
-        if http_proxy.nil?
+        if proxy_uri.nil?
           Net::HTTP
         else
-          Chef::Log.debug("Using #{http_proxy.host}:#{http_proxy.port} for proxy")
-          user = http_proxy_user(http_proxy)
-          pass = http_proxy_pass(http_proxy)
-          Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass)
+          Chef::Log.trace("Using #{proxy_uri.host}:#{proxy_uri.port} for proxy")
+          Net::HTTP.Proxy(proxy_uri.host, proxy_uri.port, http_proxy_user(proxy_uri),
+                          http_proxy_pass(proxy_uri))
         end
       end
 
-      def http_proxy_user(http_proxy)
-        http_proxy.user || Chef::Config["#{url.scheme}_proxy_user"] ||
-        env["#{url.scheme.upcase}_PROXY_USER"] || env["#{url.scheme}_proxy_user"]
+      def http_proxy_user(proxy_uri)
+        proxy_uri.user || Chef::Config["#{proxy_uri.scheme}_proxy_user"]
       end
 
-      def http_proxy_pass(http_proxy)
-        http_proxy.password || Chef::Config["#{url.scheme}_proxy_pass"] ||
-        env["#{url.scheme.upcase}_PROXY_PASS"] || env["#{url.scheme}_proxy_pass"]
+      def http_proxy_pass(proxy_uri)
+        proxy_uri.password || Chef::Config["#{proxy_uri.scheme}_proxy_pass"]
       end
 
       def configure_ssl(http_client)

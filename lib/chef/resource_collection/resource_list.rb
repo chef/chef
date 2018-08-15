@@ -1,6 +1,6 @@
 #
-# Author:: Tyler Ball (<tball@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Tyler Ball (<tball@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/resource_collection/stepable_iterator'
-require 'chef/resource_collection/resource_collection_serialization'
-require 'forwardable'
+require "chef/resource"
+require "chef/resource_collection/stepable_iterator"
+require "chef/resource_collection/resource_collection_serialization"
+require "forwardable"
 
 # This class keeps the list of all known Resources in the order they are to be executed in.  It also keeps a pointer
 # to the most recently executed resource so we can add resources-to-execute after this point.
@@ -67,6 +67,16 @@ class Chef
         end
       end
 
+      def delete(key)
+        raise ArgumentError, "Must pass a Chef::Resource or String to delete" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+        key = key.to_s
+        ret = @resources.reject! { |r| r.to_s == key }
+        if ret.nil?
+          raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
+        end
+        ret
+      end
+
       # @deprecated - can be removed when it is removed from resource_collection.rb
       def []=(index, resource)
         @resources[index] = resource
@@ -76,7 +86,8 @@ class Chef
         @resources
       end
 
-      def execute_each_resource(&resource_exec_block)
+      # FIXME: yard with @yield
+      def execute_each_resource
         @iterator = ResourceCollection::StepableIterator.for_collection(@resources)
         @iterator.each_with_index do |resource, idx|
           @insert_after_idx = idx
@@ -84,6 +95,12 @@ class Chef
         end
       end
 
+      def self.from_hash(o)
+        collection = new()
+        resources = o["instance_vars"]["@resources"].map { |r| Chef::Resource.from_hash(r) }
+        collection.instance_variable_set(:@resources, resources)
+        collection
+      end
     end
   end
 end

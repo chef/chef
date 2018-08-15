@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Steve Midgley (http://www.misuse.org/science)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
-# Copyright:: Copyright (c) 2008 Steve Midgley
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2016, Steve Midgley
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,7 +64,7 @@ class Chef
         when Hash
           if dest.kind_of?(Hash)
             source.each do |src_key, src_value|
-              if dest[src_key]
+              if dest.key?(src_key)
                 dest[src_key] = deep_merge!(src_value, dest[src_key])
               else # dest[src_key] doesn't exist so we take whatever source has
                 dest[src_key] = src_value
@@ -75,7 +75,7 @@ class Chef
           end
         when Array
           if dest.kind_of?(Array)
-            dest = dest | source
+            dest |= source
           else
             dest = source
           end
@@ -106,7 +106,7 @@ class Chef
         if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
           merge_with.each do |key, merge_with_value|
             value =
-              if merge_onto.has_key?(key)
+              if merge_onto.key?(key)
                 hash_only_merge(merge_onto[key], merge_with_value)
               else
                 merge_with_value

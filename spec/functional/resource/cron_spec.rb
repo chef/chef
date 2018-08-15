@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/shell_out"
 
 describe Chef::Resource::Cron, :requires_root, :unix_only do
 
@@ -55,17 +55,17 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   # Actual tests
   let(:new_resource) do
     new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
-    new_resource.user  'root'
+    new_resource.user  "root"
     # @hourly is not supported on solaris, aix
     if ohai[:platform] == "solaris" || ohai[:platform] == "solaris2" || ohai[:platform] == "aix"
       new_resource.minute "0 * * * *"
     else
-      new_resource.minute '@hourly'
+      new_resource.minute "@hourly"
     end
-    new_resource.hour ''
-    new_resource.day ''
-    new_resource.month ''
-    new_resource.weekday ''
+    new_resource.hour ""
+    new_resource.day ""
+    new_resource.month ""
+    new_resource.weekday ""
     new_resource.command "/bin/true"
     new_resource
   end
@@ -104,11 +104,11 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
   end
 
-  exclude_solaris = ["solaris", "opensolaris", "solaris2", "omnios"].include?(ohai[:platform])
-  describe "create action with various attributes", :external => exclude_solaris do
+  exclude_solaris = %w{solaris opensolaris solaris2 omnios}.include?(ohai[:platform])
+  describe "create action with various attributes", external: exclude_solaris do
     def create_and_validate_with_attribute(resource, attribute, value)
-      if ohai[:platform] == 'aix'
-         expect {resource.run_action(:create)}.to raise_error(Chef::Exceptions::Cron, /Aix cron entry does not support environment variables. Please set them in script and use script in cron./)
+      if ohai[:platform] == "aix"
+        expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron, /Aix cron entry does not support environment variables. Please set them in script and use script in cron./)
       else
         resource.run_action(:create)
         # Verify if the cron is created successfully
@@ -117,10 +117,10 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
 
     def cron_attribute_should_exists(cron_name, attribute, value)
-      return if ['aix', 'solaris'].include?(ohai[:platform])
+      return if %w{aix solaris}.include?(ohai[:platform])
       # Test if the attribute exists on newly created cron
       cron_should_exists(cron_name, "")
-      expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{attribute.upcase}=#{value}\"").exitstatus).to eq(0)
+      expect(shell_out("crontab -l -u #{new_resource.user} | grep '#{attribute.upcase}=\"#{value}\"'").exitstatus).to eq(0)
     end
 
     after do
@@ -146,6 +146,13 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
       new_resource.home "/home/opscode"
       create_and_validate_with_attribute(new_resource, "home", "/home/opscode")
     end
+
+    %i{ home mailto path shell }.each do |attr|
+      it "supports an empty string for #{attr} attribute" do
+        new_resource.send(attr, "")
+        create_and_validate_with_attribute(new_resource, attr.to_s, "")
+      end
+    end
   end
 
   describe "negative tests for create action" do
@@ -154,7 +161,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
 
     def cron_create_should_raise_exception
-      expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron, /Error updating state of #{new_resource.name}, exit: 1/)
+      expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron)
       cron_should_not_exists(new_resource.name)
     end
 

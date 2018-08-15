@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,171 +16,30 @@
 # limitations under the License.
 #
 
-
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
     class Scm < Chef::Resource
-      provides :scm
+      default_action :sync
+      allowed_actions :checkout, :export, :sync, :diff, :log
 
-      identity_attr :destination
-
-      state_attrs :revision
-
-      def initialize(name, run_context=nil)
-        super
-        @destination = name
-        @resource_name = :scm
-        @enable_submodules = false
-        @enable_checkout = true
-        @revision = "HEAD"
-        @remote = "origin"
-        @ssh_wrapper = nil
-        @depth = nil
-        @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
-        @action = [:sync]
-        @checkout_branch = "deploy"
-        @environment = nil
-      end
-
-      def destination(arg=nil)
-        set_or_return(
-          :destination,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def repository(arg=nil)
-        set_or_return(
-          :repository,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def revision(arg=nil)
-        set_or_return(
-          :revision,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def user(arg=nil)
-        set_or_return(
-          :user,
-          arg,
-          :kind_of => [String, Integer]
-        )
-      end
-
-      def group(arg=nil)
-        set_or_return(
-          :group,
-          arg,
-          :kind_of => [String, Integer]
-        )
-      end
-
-      def svn_username(arg=nil)
-        set_or_return(
-          :svn_username,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def svn_password(arg=nil)
-        set_or_return(
-          :svn_password,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def svn_arguments(arg=nil)
-        @svn_arguments, arg = nil, nil if arg == false
-        set_or_return(
-          :svn_arguments,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def svn_info_args(arg=nil)
-        @svn_info_args, arg = nil, nil if arg == false
-        set_or_return(
-          :svn_info_args,
-          arg,
-          :kind_of => String)
-      end
-
+      property :destination, String, name_property: true, identity: true
+      property :repository, String
+      property :revision, String, default: "HEAD"
+      property :user, [String, Integer]
+      property :group, [String, Integer]
+      property :svn_username, String
+      property :svn_password, String, sensitive: true, desired_state: false
       # Capistrano and git-deploy use ``shallow clone''
-      def depth(arg=nil)
-        set_or_return(
-          :depth,
-          arg,
-          :kind_of => Integer
-        )
-      end
-
-      def enable_submodules(arg=nil)
-        set_or_return(
-          :enable_submodules,
-          arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def enable_checkout(arg=nil)
-        set_or_return(
-          :enable_checkout,
-          arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def remote(arg=nil)
-        set_or_return(
-          :remote,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def ssh_wrapper(arg=nil)
-        set_or_return(
-          :ssh_wrapper,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def timeout(arg=nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => Integer
-        )
-      end
-
-      def checkout_branch(arg=nil)
-        set_or_return(
-          :checkout_branch,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def environment(arg=nil)
-        set_or_return(
-          :environment,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
+      property :depth, Integer
+      property :enable_submodules, [TrueClass, FalseClass], default: false
+      property :enable_checkout, [TrueClass, FalseClass], default: true
+      property :remote, String, default: "origin"
+      property :ssh_wrapper, String, desired_state: false
+      property :timeout, Integer, desired_state: false
+      property :checkout_branch, String, default: "deploy"
+      property :environment, [Hash, nil], default: nil
 
       alias :env :environment
     end

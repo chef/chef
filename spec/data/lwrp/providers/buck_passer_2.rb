@@ -8,7 +8,7 @@ def without_deprecation_warnings(&block)
   end
 end
 
-action :pass_buck do
+def action_pass_buck
   lwrp_bar :prepared_eyes do
     action :prepare_eyes
     # We know there will be a deprecation error here; head it off

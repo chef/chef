@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::GemPackage, "initialize" do
 
@@ -25,18 +25,43 @@ describe Chef::Resource::GemPackage, "initialize" do
     resource: Chef::Resource::GemPackage,
     provider: Chef::Provider::Package::Rubygems,
     name: :gem_package,
-    action: :install,
+    action: :install
   )
 
 end
 
 describe Chef::Resource::GemPackage, "gem_binary" do
-  before(:each) do
-    @resource = Chef::Resource::GemPackage.new("foo")
+  let(:resource) { Chef::Resource::GemPackage.new("foo") }
+
+  it "sets the default action as :install" do
+    expect(resource.action).to eql([:install])
   end
 
-  it "should set the gem_binary variable to whatever is passed in" do
-    @resource.gem_binary("/opt/local/bin/gem")
-    expect(@resource.gem_binary).to eql("/opt/local/bin/gem")
+  it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
+  end
+
+  it "sets the gem_binary variable to whatever is passed in" do
+    resource.gem_binary("/opt/local/bin/gem")
+    expect(resource.gem_binary).to eql("/opt/local/bin/gem")
+  end
+end
+
+describe Chef::Resource::GemPackage, "clear_gem_sources" do
+  let(:resource) { Chef::Resource::GemPackage.new("foo") }
+
+  it "is false by default" do
+    expect(resource.clear_sources).to be false
+  end
+
+  it "sets the default of clear_sources to the config value" do
+    Chef::Config[:clear_gem_sources] = true
+    expect(resource.clear_sources).to be true
   end
 end

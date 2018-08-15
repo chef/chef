@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/process'
-require 'chef/win32/api/psapi'
-require 'chef/win32/error'
-require 'chef/win32/handle'
-require 'ffi'
+require "chef/win32/api/process"
+require "chef/win32/api/psapi"
+require "chef/win32/error"
+require "chef/win32/handle"
+require "ffi"
 
 class Chef
   module ReservedNames::Win32
@@ -67,6 +67,19 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
         result
+      end
+
+      def self.is_wow64_process
+        is_64_bit_process_result = FFI::MemoryPointer.new(:int)
+
+        # The return value of IsWow64Process is nonzero value if the API call succeeds.
+        # The result data are returned in the last parameter, not the return value.
+        call_succeeded = IsWow64Process(GetCurrentProcess(), is_64_bit_process_result)
+
+        # The result is nonzero if IsWow64Process's calling process, in the case here
+        # this process, is running under WOW64, i.e. the result is nonzero if this
+        # process is 32-bit (aka :i386).
+        (call_succeeded != 0) && (is_64_bit_process_result.get_int(0) != 0)
       end
 
         # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,

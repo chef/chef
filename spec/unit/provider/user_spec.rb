@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 EtcPwnamIsh = Struct.new(:name, :passwd, :uid, :gid, :gecos, :dir, :shell, :change, :uclass, :expire)
 EtcGrnamIsh = Struct.new(:name, :passwd, :gid, :mem)
@@ -58,7 +58,7 @@ describe Chef::Provider::User do
   describe "executing load_current_resource" do
     before(:each) do
       @node = Chef::Node.new
-      #@new_resource = double("Chef::Resource::User",
+      # @new_resource = double("Chef::Resource::User",
       #  :null_object => true,
       #  :username => "adam",
       #  :comment => "Adam Jacob",
@@ -68,7 +68,7 @@ describe Chef::Provider::User do
       #  :shell => "/usr/bin/zsh",
       #  :password => nil,
       #  :updated => nil
-      #)
+      # )
       allow(Chef::Resource::User).to receive(:new).and_return(@current_resource)
       @pw_user = EtcPwnamIsh.new
       @pw_user.name = "adam"
@@ -83,7 +83,7 @@ describe Chef::Provider::User do
 
     it "should create a current resource with the same name as the new resource" do
       @provider.load_current_resource
-      expect(@provider.current_resource.name).to eq('adam')
+      expect(@provider.current_resource.name).to eq("adam")
     end
 
     it "should set the username of the current resource to the username of the new resource" do
@@ -92,7 +92,7 @@ describe Chef::Provider::User do
     end
 
     it "should change the encoding of gecos to the encoding of the new resource" do
-      @pw_user.gecos.force_encoding('ASCII-8BIT')
+      @pw_user.gecos.force_encoding("ASCII-8BIT")
       @provider.load_current_resource
       expect(@provider.current_resource.comment.encoding).to eq(@new_resource.comment.encoding)
     end
@@ -110,11 +110,11 @@ describe Chef::Provider::User do
 
     # The mapping between the Chef::Resource::User and Getpwnam struct
     user_attrib_map = {
-      :uid => :uid,
-      :gid => :gid,
-      :comment => :gecos,
-      :home => :dir,
-      :shell => :shell
+      uid: :uid,
+      gid: :gid,
+      comment: :gecos,
+      home: :dir,
+      shell: :shell,
     }
     user_attrib_map.each do |user_attrib, getpwnam_attrib|
       it "should set the current resources #{user_attrib} based on getpwnam #{getpwnam_attrib}" do
@@ -129,7 +129,7 @@ describe Chef::Provider::User do
     end
 
     it "shouldn't try and convert the group gid if none has been supplied" do
-      allow(@new_resource).to receive(:gid).and_return(nil)
+      @new_resource.gid(false)
       expect(@provider).not_to receive(:convert_group_name)
       @provider.load_current_resource
     end
@@ -140,18 +140,16 @@ describe Chef::Provider::User do
 
     describe "and running assertions" do
       def self.shadow_lib_unavail?
-        begin
-          require 'rubygems'
-          require 'shadow'
-        rescue LoadError
-          skip "ruby-shadow gem not installed for dynamic load test"
-          true
-        else
-          false
-        end
+        require "rubygems"
+        require "shadow"
+      rescue LoadError
+        skip "ruby-shadow gem not installed for dynamic load test"
+        true
+      else
+        false
       end
 
-      before (:each) do
+      before(:each) do
         user = @pw_user.dup
         user.name = "root"
         user.passwd = "x"
@@ -161,15 +159,15 @@ describe Chef::Provider::User do
 
       unless shadow_lib_unavail?
         context "and we have the ruby-shadow gem" do
-          skip "and we are not root (rerun this again as root)", :requires_unprivileged_user => true
+          skip "and we are not root (rerun this again as root)", requires_unprivileged_user: true
 
-          context "and we are root", :requires_root => true do
+          context "and we are root", requires_root: true do
             it "should pass assertions when ruby-shadow can be loaded" do
-              @provider.action = 'create'
+              @provider.action = "create"
               original_method = @provider.method(:require)
               expect(@provider).to receive(:require) { |*args| original_method.call(*args) }
-              passwd_info = Struct::PasswdEntry.new(:sp_namp => "adm ", :sp_pwdp => "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", :sp_lstchg => 14861, :sp_min => 0, :sp_max => 99999,
-                                                    :sp_warn => 7, :sp_inact => -1, :sp_expire => -1, :sp_flag => -1)
+              passwd_info = Struct::PasswdEntry.new(sp_namp: "adm ", sp_pwdp: "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", sp_lstchg: 14861, sp_min: 0, sp_max: 99999,
+                                                    sp_warn: 7, sp_inact: -1, sp_expire: -1, sp_flag: -1)
               expect(Shadow::Passwd).to receive(:getspnam).with("adam").and_return(passwd_info)
               @provider.load_current_resource
               @provider.define_resource_requirements
@@ -183,42 +181,48 @@ describe Chef::Provider::User do
         expect(@provider).to receive(:require).with("shadow") { raise LoadError }
         @provider.load_current_resource
         @provider.define_resource_requirements
-        expect {@provider.process_resource_requirements}.to raise_error Chef::Exceptions::MissingLibrary
+        expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::MissingLibrary
       end
 
     end
   end
 
   describe "compare_user" do
-    let(:mapping) {
+    let(:mapping) do
       {
-        'username' => ["adam", "Adam"],
-        'comment' => ["Adam Jacob", "adam jacob"],
-        'uid' => [1000, 1001],
-        'gid' => [1000, 1001],
-        'home' => ["/home/adam", "/Users/adam"],
-        'shell'=> ["/usr/bin/zsh", "/bin/bash"],
-        'password'=> ["abcd","12345"]
+        "username" => %w{adam Adam},
+        "comment" => ["Adam Jacob", "adam jacob"],
+        "uid" => [1000, 1001],
+        "gid" => [1000, 1001],
+        "home" => ["/home/adam", "/Users/adam"],
+        "shell" => ["/usr/bin/zsh", "/bin/bash"],
+        "password" => %w{abcd 12345},
       }
-    }
+    end
 
-    %w{uid gid comment home shell password}.each do |attribute|
-      it "should return true if #{attribute} doesn't match" do
-        @new_resource.send(attribute, mapping[attribute][0])
-        @current_resource.send(attribute, mapping[attribute][1])
+    %w{uid gid comment home shell password}.each do |property|
+      it "should return true if #{property} doesn't match" do
+        @new_resource.send(property, mapping[property][0])
+        @current_resource.send(property, mapping[property][1])
         expect(@provider.compare_user).to eql(true)
       end
     end
 
-    %w{uid gid}.each do |attribute|
-      it "should return false if string #{attribute} matches fixnum" do
-        @new_resource.send(attribute, "100")
-        @current_resource.send(attribute, 100)
+    %w{uid gid}.each do |property|
+      it "should return false if string #{property} matches fixnum" do
+        @new_resource.send(property, "100")
+        @current_resource.send(property, 100)
         expect(@provider.compare_user).to eql(false)
       end
     end
 
     it "should return false if the objects are identical" do
+      expect(@provider.compare_user).to eql(false)
+    end
+
+    it "should ignore differences in trailing slash in home paths" do
+      @new_resource.home "/home/adam"
+      @current_resource.home "/home/adam/"
       expect(@provider.compare_user).to eql(false)
     end
   end
@@ -252,7 +256,7 @@ describe Chef::Provider::User do
       expect(@new_resource).to be_updated
     end
 
-    it "should call manage_user if the user exists and has mismatched attributes" do
+    it "should call manage_user if the user exists and has mismatched properties" do
       @provider.user_exists = true
       allow(@provider).to receive(:compare_user).and_return(true)
       expect(@provider).to receive(:manage_user).and_return(true)
@@ -311,7 +315,7 @@ describe Chef::Provider::User do
       # @provider.stub(:manage_user).and_return(true)
     end
 
-    it "should run manage_user if the user exists and has mismatched attributes" do
+    it "should run manage_user if the user exists and has mismatched properties" do
       expect(@provider).to receive(:compare_user).and_return(true)
       expect(@provider).to receive(:manage_user).and_return(true)
       @provider.action_manage
@@ -331,7 +335,7 @@ describe Chef::Provider::User do
       @provider.action_manage
     end
 
-    it "should not run manage_user if the user exists but has no differing attributes" do
+    it "should not run manage_user if the user exists but has no differing properties" do
       expect(@provider).to receive(:compare_user).and_return(false)
       expect(@provider).not_to receive(:manage_user)
       @provider.action_manage
@@ -354,7 +358,7 @@ describe Chef::Provider::User do
       # @provider.stub(:manage_user).and_return(true)
     end
 
-    it "should run manage_user if the user exists and has mismatched attributes" do
+    it "should run manage_user if the user exists and has mismatched properties" do
       expect(@provider).to receive(:compare_user).and_return(true)
       expect(@provider).to receive(:manage_user).and_return(true)
       @provider.action_modify
@@ -368,7 +372,7 @@ describe Chef::Provider::User do
       expect(@new_resource).to be_updated
     end
 
-    it "should not run manage_user if the user exists but has no differing attributes" do
+    it "should not run manage_user if the user exists but has no differing properties" do
       expect(@provider).to receive(:compare_user).and_return(false)
       expect(@provider).not_to receive(:manage_user)
       @provider.action_modify
@@ -379,7 +383,6 @@ describe Chef::Provider::User do
       expect { @provider.action = :modify; @provider.run_action }.to raise_error(Chef::Exceptions::User)
     end
   end
-
 
   describe "action_lock" do
     before(:each) do
@@ -441,8 +444,8 @@ describe Chef::Provider::User do
 
   describe "convert_group_name" do
     before do
-      @new_resource.gid('999')
-      @group = EtcGrnamIsh.new('wheel', '*', 999, [])
+      @new_resource.gid("999")
+      @group = EtcGrnamIsh.new("wheel", "*", 999, [])
     end
 
     it "should lookup the group name locally" do
@@ -452,9 +455,18 @@ describe Chef::Provider::User do
 
     it "should raise an error if we can't translate the group name during resource assertions" do
       expect(Etc).to receive(:getgrnam).and_raise(ArgumentError)
+      @provider.action = :create
       @provider.define_resource_requirements
       @provider.convert_group_name
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::User)
+    end
+
+    it "does not raise an error if we can't translate the group name during resource assertions if we are removing the user" do
+      expect(Etc).to receive(:getgrnam).and_raise(ArgumentError)
+      @provider.action = :remove
+      @provider.define_resource_requirements
+      @provider.convert_group_name
+      expect { @provider.process_resource_requirements }.not_to raise_error
     end
 
     it "should set the new resources gid to the integerized version if available" do

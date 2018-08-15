@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
   before do
@@ -27,7 +27,7 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
 
     @description = Chef::Formatters::ErrorDescription.new("Error Expanding RunList:")
     @outputter = Chef::Formatters::IndentableOutputStream.new(StringIO.new, STDERR)
-    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
   end
 
   describe "when explaining a missing role error" do
@@ -38,7 +38,6 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
       @run_list_expansion.missing_roles_with_including_role << [ "role[another-missing-role]", "role[base]" ]
 
       @exception = Chef::Exceptions::MissingRole.new(@run_list_expansion)
-
 
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
       @inspector.add_explanation(@description)
@@ -58,7 +57,7 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
       allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
-      allow(@inspector).to receive(:config).and_return(:node_name => "unit-test.example.com")
+      allow(@inspector).to receive(:config).and_return(node_name: "unit-test.example.com")
 
       @inspector.add_explanation(@description)
     end
@@ -77,9 +76,9 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
       @exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
-      allow(@inspector).to receive(:config).and_return(:node_name => "unit-test.example.com",
-                                           :client_key => "/etc/chef/client.pem",
-                                           :chef_server_url => "http://chef.example.com")
+      allow(@inspector).to receive(:config).and_return(node_name: "unit-test.example.com",
+                                                       client_key: "/etc/chef/client.pem",
+                                                       chef_server_url: "http://chef.example.com")
 
       @inspector.add_explanation(@description)
     end
@@ -90,4 +89,3 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
   end
 
 end
-

@@ -1,9 +1,9 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright 2008-2014 Chef Software, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +19,12 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/rest'
-require 'chef/run_context'
-require 'chef/config'
-require 'chef/node'
-require 'chef/chef_class'
+require "chef/log"
+require "chef/server_api"
+require "chef/run_context"
+require "chef/config"
+require "chef/node"
+require "chef/chef_class"
 
 class Chef
   module PolicyBuilder
@@ -33,6 +33,9 @@ class Chef
     # expands the run_list on a node object and then queries the chef-server
     # to find the correct set of cookbooks, given version constraints of the
     # node's environment.
+    #
+    # Note that this class should only be used via PolicyBuilder::Dynamic and
+    # not instantiated directly.
     class ExpandNodeObject
 
       attr_reader :events
@@ -55,26 +58,33 @@ class Chef
         @run_list_expansion = nil
       end
 
-      # This method injects the run_context and provider and resource priority
-      # maps into the Chef class.  The run_context has to be injected here, the provider and
-      # resource maps could be moved if a better place can be found to do this work.
+      # This method injects the run_context and into the Chef class.
+      #
+      # NOTE: This is duplicated with the Policyfile implementation. If
+      # it gets any more complicated, it needs to be moved elsewhere.
       #
       # @param run_context [Chef::RunContext] the run_context to inject
       def setup_chef_class(run_context)
         Chef.set_run_context(run_context)
       end
 
-      def setup_run_context(specific_recipes=nil)
-        if Chef::Config[:solo]
+      def setup_run_context(specific_recipes = nil)
+        if Chef::Config[:solo_legacy_mode]
           Chef::Cookbook::FileVendor.fetch_from_disk(Chef::Config[:cookbook_path])
           cl = Chef::CookbookLoader.new(Chef::Config[:cookbook_path])
           cl.load_cookbooks
           cookbook_collection = Chef::CookbookCollection.new(cl)
+          cookbook_collection.validate!
+          cookbook_collection.install_gems(events)
+
           run_context = Chef::RunContext.new(node, cookbook_collection, @events)
         else
           Chef::Cookbook::FileVendor.fetch_from_remote(api_service)
           cookbook_hash = sync_cookbooks
           cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
+          cookbook_collection.validate!
+          cookbook_collection.install_gems(events)
+
           run_context = Chef::RunContext.new(node, cookbook_collection, @events)
         end
 
@@ -93,25 +103,9 @@ class Chef
         run_context
       end
 
-
-      # In client-server operation, loads the node state from the server. In
-      # chef-solo operation, builds a new node object.
-      def load_node
-        events.node_load_start(node_name, Chef::Config)
-        Chef::Log.debug("Building node object for #{node_name}")
-
-        if Chef::Config[:solo]
-          @node = Chef::Node.build(node_name)
-        else
-          @node = Chef::Node.find_or_create(node_name)
-        end
-      rescue Exception => e
-        # TODO: wrap this exception so useful error info can be given to the
-        # user.
-        events.node_load_failed(node_name, e, Chef::Config)
-        raise
+      def finish_load_node(node)
+        @node = node
       end
-
 
       # Applies environment, external JSON attributes, and override run list to
       # the node, Then expands the run_list.
@@ -139,17 +133,18 @@ class Chef
         Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
 
         events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
+        events.run_list_expanded(@run_list_expansion)
 
         node
       end
 
       # Expands the node's run list. Stores the run_list_expansion object for later use.
       def expand_run_list
-        @run_list_expansion = if Chef::Config[:solo]
-          node.expand!('disk')
-        else
-          node.expand!('server')
-        end
+        @run_list_expansion = if Chef::Config[:solo_legacy_mode]
+                                node.expand!("disk")
+                              else
+                                node.expand!("server")
+                              end
 
         # @run_list_expansion is a RunListExpansion.
         #
@@ -175,12 +170,17 @@ class Chef
       # === Returns
       # Hash:: The hash of cookbooks with download URLs as given by the server
       def sync_cookbooks
-        Chef::Log.debug("Synchronizing cookbooks")
+        Chef::Log.trace("Synchronizing cookbooks")
 
         begin
           events.cookbook_resolution_start(@expanded_run_list_with_versions)
           cookbook_hash = api_service.post("environments/#{node.chef_environment}/cookbook_versions",
-                                         {:run_list => @expanded_run_list_with_versions})
+                                           { run_list: @expanded_run_list_with_versions })
+
+          cookbook_hash = cookbook_hash.inject({}) do |memo, (key, value)|
+            memo[key] = Chef::CookbookVersion.from_hash(value)
+            memo
+          end
         rescue Exception => e
           # TODO: wrap/munge exception to provide helpful error output
           events.cookbook_resolution_failed(@expanded_run_list_with_versions, e)
@@ -214,7 +214,7 @@ class Chef
 
       def setup_run_list_override
         runlist_override_sanity_check!
-        unless(override_runlist.empty?)
+        unless override_runlist.empty?
           node.override_runlist(*override_runlist)
           Chef::Log.warn "Run List override has been provided."
           Chef::Log.warn "Original Run List: [#{node.primary_runlist}]"
@@ -226,11 +226,11 @@ class Chef
       def runlist_override_sanity_check!
         # Convert to array and remove whitespace
         if override_runlist.is_a?(String)
-          @override_runlist = override_runlist.split(',').map { |e| e.strip }
+          @override_runlist = override_runlist.split(",").map { |e| e.strip }
         end
         @override_runlist = [override_runlist].flatten.compact
         override_runlist.map! do |item|
-          if(item.is_a?(Chef::RunList::RunListItem))
+          if item.is_a?(Chef::RunList::RunListItem)
             item
           else
             Chef::RunList::RunListItem.new(item)
@@ -239,7 +239,8 @@ class Chef
       end
 
       def api_service
-        @api_service ||= Chef::REST.new(config[:chef_server_url])
+        @api_service ||= Chef::ServerAPI.new(config[:chef_server_url],
+                                             { version_class: Chef::CookbookManifestVersions })
       end
 
       def config

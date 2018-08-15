@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,22 +33,27 @@ class Chef
         registry = Chef::Win32::Registry.new(run_context, architecture)
         registry.key_exists?(key_path)
       end
+
       def registry_get_values(key_path, architecture = :machine)
         registry = Chef::Win32::Registry.new(run_context, architecture)
         registry.get_values(key_path)
       end
+
       def registry_has_subkeys?(key_path, architecture = :machine)
         registry = Chef::Win32::Registry.new(run_context, architecture)
         registry.has_subkeys?(key_path)
       end
+
       def registry_get_subkeys(key_path, architecture = :machine)
         registry = Chef::Win32::Registry.new(run_context, architecture)
         registry.get_subkeys(key_path)
       end
+
       def registry_value_exists?(key_path, value, architecture = :machine)
         registry = Chef::Win32::Registry.new(run_context, architecture)
         registry.value_exists?(key_path, value)
       end
+
       def registry_data_exists?(key_path, value, architecture = :machine)
         registry = Chef::Win32::Registry.new(run_context, architecture)
         registry.data_exists?(key_path, value)
@@ -56,4 +61,3 @@ class Chef
     end
   end
 end
-

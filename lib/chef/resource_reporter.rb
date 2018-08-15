@@ -1,9 +1,9 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Prajakta Purohit (prajakta@opscode.com>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Prajakta Purohit (prajakta@chef.io>)
 # Auther:: Tyler Cloke (<tyler@opscode.com>)
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,18 +19,18 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'securerandom'
-require 'chef/event_dispatch/base'
+require "uri"
+require "securerandom"
+require "chef/event_dispatch/base"
 
 class Chef
   class ResourceReporter < EventDispatch::Base
 
-    class ResourceReport < Struct.new(:new_resource,
-                                      :current_resource,
-                                      :action,
-                                      :exception,
-                                      :elapsed_time)
+    ResourceReport = Struct.new(:new_resource,
+                                :current_resource,
+                                :action,
+                                :exception,
+                                :elapsed_time) do
 
       def self.new_with_current_state(new_resource, action, current_resource)
         report = new
@@ -72,7 +72,7 @@ class Chef
         as_hash["result"] = action.to_s
         if success?
         else
-          #as_hash["result"] = "failed"
+          # as_hash["result"] = "failed"
         end
         if new_resource.cookbook_name
           as_hash["cookbook_name"] = new_resource.cookbook_name
@@ -87,17 +87,16 @@ class Chef
       end
 
       def success?
-        !self.exception
+        !exception
       end
     end # End class ResouceReport
 
     attr_reader :updated_resources
     attr_reader :status
     attr_reader :exception
-    attr_reader :run_id
     attr_reader :error_descriptions
 
-    PROTOCOL_VERSION = '0.1.0'
+    PROTOCOL_VERSION = "0.1.0".freeze
 
     def initialize(rest_client)
       if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
@@ -112,6 +111,7 @@ class Chef
       @exception = nil
       @rest_client = rest_client
       @error_descriptions = {}
+      @expanded_run_list = {}
     end
 
     def run_started(run_status)
@@ -120,8 +120,8 @@ class Chef
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{node_name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :start, :run_id => run_id,
-                                                                          :start_time => start_time.to_s}, headers)
+          server_response = @rest_client.post(resource_history_url, { action: :start, run_id: run_id,
+                                                                      start_time: start_time.to_s }, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
           handle_error_starting_run(e, resource_history_url)
         end
@@ -153,7 +153,7 @@ class Chef
           Chef::Log.info(message + reason + reporting_status)
         else
           reporting_status = "Disabling reporting for run."
-          Chef::Log.debug(message + reason + reporting_status)
+          Chef::Log.trace(message + reason + reporting_status)
         end
       end
 
@@ -197,6 +197,17 @@ class Chef
     def resource_completed(new_resource)
       if @pending_update && !nested_resource?(new_resource)
         @pending_update.finish
+
+        # Verify if the resource has sensitive data
+        # and create a new blank resource with only
+        # the name so we can report it back without
+        # sensitive data
+        if @pending_update.new_resource.sensitive
+          klass = @pending_update.new_resource.class
+          resource_name = @pending_update.new_resource.name
+          @pending_update.new_resource = klass.new(resource_name)
+        end
+
         @updated_resources << @pending_update
         @pending_update = nil
       end
@@ -217,18 +228,21 @@ class Chef
       end
     end
 
+    def run_list_expanded(run_list_expansion)
+      @expanded_run_list = run_list_expansion
+    end
+
     def post_reporting_data
       if reporting_enabled?
         run_data = prepare_run_data
         resource_history_url = "reports/nodes/#{node_name}/runs/#{run_id}"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
-        Chef::Log.debug run_data.inspect
+        Chef::Log.trace run_data.inspect
         compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
-        Chef::Log.debug("Sending compressed run data...")
-        # Since we're posting compressed data we can not directly call post_rest which expects JSON
-        reporting_url = @rest_client.create_url(resource_history_url)
+        Chef::Log.trace("Sending compressed run data...")
+        # Since we're posting compressed data we can not directly call post which expects JSON
         begin
-          @rest_client.raw_http_request(:POST, reporting_url, headers({'Content-Encoding' => 'gzip'}), compressed_data)
+          @rest_client.raw_request(:POST, resource_history_url, headers({ "Content-Encoding" => "gzip" }), compressed_data)
         rescue StandardError => e
           if e.respond_to? :response
             Chef::FileCache.store("failed-reporting-data.json", Chef::JSONCompat.to_json_pretty(run_data), 0640)
@@ -238,12 +252,12 @@ class Chef
           end
         end
       else
-        Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
+        Chef::Log.trace("Server doesn't support resource history, skipping resource report.")
       end
     end
 
     def headers(additional_headers = {})
-      options = {'X-Ops-Reporting-Protocol-Version' => PROTOCOL_VERSION}
+      options = { "X-Ops-Reporting-Protocol-Version" => PROTOCOL_VERSION }
       options.merge(additional_headers)
     end
 
@@ -271,13 +285,14 @@ class Chef
       run_data["data"] = {}
       run_data["start_time"] = start_time.to_s
       run_data["end_time"] = end_time.to_s
+      run_data["expanded_run_list"] = Chef::JSONCompat.to_json(@expanded_run_list)
 
       if exception
         exception_data = {}
         exception_data["class"] = exception.inspect
         exception_data["message"] = exception.message
         exception_data["backtrace"] = Chef::JSONCompat.to_json(exception.backtrace)
-        exception_data["description"] =  @error_descriptions
+        exception_data["description"] = @error_descriptions
         run_data["data"]["exception"] = exception_data
       end
       run_data
@@ -314,7 +329,7 @@ class Chef
 
     def encode_gzip(data)
       "".tap do |out|
-        Zlib::GzipWriter.wrap(StringIO.new(out)){|gz| gz << data }
+        Zlib::GzipWriter.wrap(StringIO.new(out)) { |gz| gz << data }
       end
     end
 

@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,15 @@
 # limitations under the License.
 #
 
-require 'forwardable'
+require "forwardable"
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/data_bag'
-require 'chef/mash'
-require 'chef/json_compat'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/data_bag"
+require "chef/mash"
+require "chef/server_api"
+require "chef/json_compat"
 
 class Chef
   class DataBagItem
@@ -36,8 +37,6 @@ class Chef
     include Chef::Mixin::ParamsValidate
 
     VALID_ID = /^[\.\-[:alnum:]_]+$/
-
-    attr_accessor :chef_server_rest
 
     def self.validate_id!(id_str)
       if id_str.nil? || ( id_str !~ VALID_ID )
@@ -58,15 +57,11 @@ class Chef
     end
 
     def chef_server_rest
-      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
     def self.chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
-    end
-
-    def raw_data
-      @raw_data
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
     def validate_id!(id_str)
@@ -74,6 +69,7 @@ class Chef
     end
 
     def raw_data=(new_data)
+      new_data = Mash.new(new_data)
       unless new_data.respond_to?(:[]) && new_data.respond_to?(:keys)
         raise Exceptions::ValidationFailed, "Data Bag Items must contain a Hash or Mash!"
       end
@@ -81,11 +77,11 @@ class Chef
       @raw_data = new_data
     end
 
-    def data_bag(arg=nil)
+    def data_bag(arg = nil)
       set_or_return(
         :data_bag,
         arg,
-        :regex => /^[\-[:alnum:]_]+$/
+        regex: /^[\-[:alnum:]_]+$/
       )
     end
 
@@ -94,10 +90,10 @@ class Chef
     end
 
     def object_name
-      raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.has_key?('id')
+      raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.key?("id")
       raise Exceptions::ValidationFailed, "You must have declared what bag this item belongs to!" unless data_bag
 
-      id = raw_data['id']
+      id = raw_data["id"]
       "data_bag_item_#{data_bag}_#{id}"
     end
 
@@ -106,9 +102,9 @@ class Chef
     end
 
     def to_hash
-      result = self.raw_data
+      result = raw_data.dup
       result["chef_type"] = "data_bag_item"
-      result["data_bag"] = self.data_bag
+      result["data_bag"] = data_bag.to_s
       result
     end
 
@@ -119,37 +115,33 @@ class Chef
         "json_class" => self.class.name,
         "chef_type"  => "data_bag_item",
         "data_bag"   => data_bag,
-        "raw_data"   => raw_data
+        "raw_data"   => raw_data,
       }
       Chef::JSONCompat.to_json(result, *a)
     end
 
     def self.from_hash(h)
+      h.delete("chef_type")
+      h.delete("json_class")
+
       item = new
-      item.raw_data = h
+      item.data_bag(h.delete("data_bag")) if h.key?("data_bag")
+      if h.key?("raw_data")
+        item.raw_data = h["raw_data"]
+      else
+        item.raw_data = h
+      end
       item
-    end
-
-    # Create a Chef::DataBagItem from JSON
-    def self.json_create(o)
-      bag_item = new
-      bag_item.data_bag(o["data_bag"])
-      o.delete("data_bag")
-      o.delete("chef_type")
-      o.delete("json_class")
-      o.delete("name")
-
-      bag_item.raw_data = Mash.new(o["raw_data"])
-      bag_item
     end
 
     # Load a Data Bag Item by name via either the RESTful API or local data_bag_path if run in solo mode
     def self.load(data_bag, name)
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         bag = Chef::DataBag.load(data_bag)
+        raise Exceptions::InvalidDataBagItemID, "Item #{name} not found in data bag #{data_bag}. Other items found: #{bag.keys.join(", ")}" unless bag.include?(name)
         item = bag[name]
       else
-        item = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{data_bag}/#{name}")
+        item = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data/#{data_bag}/#{name}")
       end
 
       if item.kind_of?(DataBagItem)
@@ -161,37 +153,37 @@ class Chef
       end
     end
 
-    def destroy(data_bag=data_bag(), databag_item=name)
-      chef_server_rest.delete_rest("data/#{data_bag}/#{databag_item}")
+    def destroy(data_bag = self.data_bag(), databag_item = name)
+      chef_server_rest.delete("data/#{data_bag}/#{databag_item}")
     end
 
     # Save this Data Bag Item via RESTful API
-    def save(item_id=@raw_data['id'])
+    def save(item_id = @raw_data["id"])
       r = chef_server_rest
       begin
         if Chef::Config[:why_run]
-          Chef::Log.warn("In whyrun mode, so NOT performing data bag item save.")
+          Chef::Log.warn("In why-run mode, so NOT performing data bag item save.")
         else
-          r.put_rest("data/#{data_bag}/#{item_id}", self)
+          r.put("data/#{data_bag}/#{item_id}", self)
         end
       rescue Net::HTTPServerException => e
         raise e unless e.response.code == "404"
-        r.post_rest("data/#{data_bag}", self)
+        r.post("data/#{data_bag}", self)
       end
       self
     end
 
     # Create this Data Bag Item via RESTful API
     def create
-      chef_server_rest.post_rest("data/#{data_bag}", self)
+      chef_server_rest.post("data/#{data_bag}", self)
       self
     end
 
     def ==(other)
       other.respond_to?(:to_hash) &&
-      other.respond_to?(:data_bag) &&
-      (other.to_hash == to_hash) &&
-      (other.data_bag.to_s == data_bag.to_s)
+        other.respond_to?(:data_bag) &&
+        (other.to_hash == to_hash) &&
+        (other.data_bag.to_s == data_bag.to_s)
     end
 
     # As a string
@@ -204,11 +196,11 @@ class Chef
     end
 
     def pretty_print(pretty_printer)
-      pretty_printer.pp({"data_bag_item('#{data_bag}', '#{id}')" => self.to_hash})
+      pretty_printer.pp({ "data_bag_item('#{data_bag}', '#{id}')" => to_hash })
     end
 
     def id
-      @raw_data['id']
+      @raw_data["id"]
     end
 
   end

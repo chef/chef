@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,23 +16,18 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/knife/configure'
-require 'ohai'
+require "chef/knife/configure"
 
 describe "knife configure" do
   let (:ohai) do
-    o = Ohai::System.new
-    o.load_plugins
-    o.require_plugin 'os'
-    o.require_plugin 'hostname'
-    o
+    OHAI_SYSTEM
   end
 
   it "loads the fqdn from Ohai" do
     knife_configure = Chef::Knife::Configure.new
-    hostname_guess = ohai[:fqdn] || ohai[:machinename] || ohai[:hostname] || 'localhost'
+    hostname_guess = ohai[:fqdn] || ohai[:machinename] || ohai[:hostname] || "localhost"
     expect(knife_configure.guess_servername).to eql(hostname_guess)
   end
 end

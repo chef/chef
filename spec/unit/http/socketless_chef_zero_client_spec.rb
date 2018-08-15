@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/http/socketless_chef_zero_client'
+require "chef/http/socketless_chef_zero_client"
 
 describe Chef::HTTP::SocketlessChefZeroClient do
 
@@ -110,7 +110,7 @@ describe Chef::HTTP::SocketlessChefZeroClient do
       end
 
       it "does not fail when calling read_body with a block" do
-        expect(net_http_response.read_body {|chunk| chunk }).to eq("bunch o' JSON")
+        expect(net_http_response.read_body { |chunk| chunk }).to eq("bunch o' JSON")
       end
 
     end
@@ -132,7 +132,7 @@ describe Chef::HTTP::SocketlessChefZeroClient do
 
     let(:method) { :GET }
     let(:relative_url) { "clients" }
-    let(:headers) { { "Accept" => "application/json" } }
+    let(:headers) { { "Accept" => "application/json", "X-Ops-Server-API-Version" => "2" } }
     let(:body) { false }
 
     let(:expected_rack_req) do
@@ -144,11 +144,11 @@ describe Chef::HTTP::SocketlessChefZeroClient do
         "QUERY_STRING"    => uri.query,
         "SERVER_PORT"     => uri.port,
         "HTTP_HOST"       => "localhost:#{uri.port}",
+        "HTTP_X_OPS_SERVER_API_VERSION" => "2",
         "rack.url_scheme" => "chefzero",
         "rack.input"      => an_instance_of(StringIO),
       }
     end
-
 
     let(:response_code) { 200 }
     let(:response_headers) { { "Content-Type" => "Application/JSON" } }

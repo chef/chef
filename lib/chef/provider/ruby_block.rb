@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: AJ Christensen (<aj@chef.io>)
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,18 +22,14 @@ class Chef
     class RubyBlock < Chef::Provider
       provides :ruby_block
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
         true
       end
 
       def action_run
-        converge_by("execute the ruby block #{@new_resource.name}") do
-          @new_resource.block.call
-          Chef::Log.info("#{@new_resource} called")
+        converge_by("execute the ruby block #{new_resource.name}") do
+          new_resource.block.call
+          logger.info("#{new_resource} called")
         end
       end
 

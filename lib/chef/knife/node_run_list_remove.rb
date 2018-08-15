@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,18 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class NodeRunListRemove < Knife
 
       deps do
-        require 'chef/node'
-        require 'chef/json_compat'
+        require "chef/node"
+        require "chef/json_compat"
       end
 
-      banner "knife node run_list remove [NODE] [ENTRY[,ENTRY]] (options)"
+      banner "knife node run_list remove [NODE] [ENTRY [ENTRY]] (options)"
 
       def run
         node = Chef::Node.load(@name_args[0])
@@ -35,14 +35,25 @@ class Chef
         if @name_args.size > 2
           # Check for nested lists and create a single plain one
           entries = @name_args[1..-1].map do |entry|
-            entry.split(',').map { |e| e.strip }
+            entry.split(",").map { |e| e.strip }
           end.flatten
         else
           # Convert to array and remove the extra spaces
-          entries = @name_args[1].split(',').map { |e| e.strip }
+          entries = @name_args[1].split(",").map { |e| e.strip }
         end
 
-        entries.each { |e| node.run_list.remove(e) }
+        # iterate over the list of things to remove,
+        # warning if one of them was not found
+        entries.each do |e|
+          if node.run_list.find { |rli| e == rli.to_s }
+            node.run_list.remove(e)
+          else
+            ui.warn "#{e} is not in the run list"
+            unless e =~ /^(recipe|role)\[/
+              ui.warn "(did you forget recipe[] or role[] around it?)"
+            end
+          end
+        end
 
         node.save
 

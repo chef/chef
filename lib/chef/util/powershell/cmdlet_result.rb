@@ -1,7 +1,7 @@
 #
-# Author:: Adam Edwards (<adamed@getchef.com>)
+# Author:: Adam Edwards (<adamed@chef.io>)
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,46 +16,46 @@
 # limitations under the License.
 #
 
-require 'chef/json_compat'
+require "chef/json_compat"
 
 class Chef
-class Util
-class Powershell
-  class CmdletResult
-    attr_reader :output_format
+  class Util
+    class Powershell
+      class CmdletResult
+        attr_reader :output_format
 
-    def initialize(status, streams, output_format)
-      @status = status
-      @output_format = output_format
-      @streams = streams
-    end
+        def initialize(status, streams, output_format)
+          @status = status
+          @output_format = output_format
+          @streams = streams
+        end
 
-    def stdout
-      @status.stdout
-    end
-    
-    def stderr
-      @status.stderr
-    end
+        def stdout
+          @status.stdout
+        end
 
-    def stream(name)
-      @streams[name].read
-    end
+        def stderr
+          @status.stderr
+        end
 
-    def return_value
-      if output_format == :object
-        Chef::JSONCompat.parse(stream(:json))
-      elsif output_format == :json
-        stream(:json)
-      else
-        @status.stdout
+        def stream(name)
+          @streams[name].read
+        end
+
+        def return_value
+          if output_format == :object
+            Chef::JSONCompat.parse(stream(:json))
+          elsif output_format == :json
+            stream(:json)
+          else
+            @status.stdout
+          end
+        end
+
+        def succeeded?
+          @succeeded = @status.status.exitstatus == 0
+        end
       end
     end
-
-    def succeeded?
-      @succeeded = @status.status.exitstatus == 0
-    end
   end
-end
-end
 end

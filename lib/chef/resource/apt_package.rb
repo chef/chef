@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,29 +16,23 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/apt'
+require "chef/resource/package"
 
 class Chef
   class Resource
     class AptPackage < Chef::Resource::Package
+      resource_name :apt_package
+      provides :package, platform_family: "debian"
 
-      provides :apt_package
-      provides :package, os: "linux", platform_family: [ "debian" ]
+      description "Use the apt_package resource to manage packages on Debian and Ubuntu platforms."
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :apt_package
-        @default_release = nil
-      end
+      property :default_release, String,
+               description: "The default release. For example: stable.",
+               desired_state: false
 
-      def default_release(arg=nil)
-        set_or_return(
-          :default_release,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :overwrite_config_files, [TrueClass, FalseClass],
+               description: "Overwrite existing config files with those in the package if prompted by apt.",
+               default: false
 
     end
   end

@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/file'
+require "chef/win32/file"
 
 class Chef
   module ReservedNames::Win32
@@ -92,7 +92,6 @@ class Chef
           wtime_to_time(make_uint64(file_time_struct[:dw_low_date_time],
             file_time_struct[:dw_high_date_time]))
         end
-
 
       end
     end

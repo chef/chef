@@ -1,7 +1,7 @@
 #
 # Author:: Lee Jensen (<ljensen@engineyard.com>)
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: AJ Christensen (<aj@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Gentoo do
   before(:each) do
@@ -30,7 +30,7 @@ describe Chef::Provider::Service::Gentoo do
 
     @provider = Chef::Provider::Service::Gentoo.new(@new_resource, @run_context)
     allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
-    @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+    @status = double("Status", exitstatus: 0, stdout: @stdout)
     allow(@provider).to receive(:shell_out).and_return(@status)
     allow(File).to receive(:exists?).with("/etc/init.d/chef").and_return(true)
     allow(File).to receive(:exists?).with("/sbin/rc-update").and_return(true)
@@ -100,7 +100,7 @@ describe Chef::Provider::Service::Gentoo do
         end
       end
 
-  end
+    end
 
     it "should return the current_resource" do
       expect(@provider.load_current_resource).to eq(@current_resource)
@@ -108,17 +108,17 @@ describe Chef::Provider::Service::Gentoo do
 
     it "should support the status command automatically" do
       @provider.load_current_resource
-      expect(@new_resource.supports[:status]).to be_truthy
+      expect(@provider.supports[:status]).to be true
     end
 
     it "should support the restart command automatically" do
       @provider.load_current_resource
-      expect(@new_resource.supports[:restart]).to be_truthy
+      expect(@provider.supports[:restart]).to be true
     end
 
     it "should not support the reload command automatically" do
       @provider.load_current_resource
-      expect(@new_resource.supports[:reload]).not_to be_truthy
+      expect(@provider.supports[:reload]).to be_falsey
     end
 
   end

@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 shared_examples_for "a content deploy strategy" do
 
@@ -37,7 +37,6 @@ shared_examples_for "a content deploy strategy" do
 
   let(:content_deployer) { described_class.new }
   let(:target_file_path) { File.join(sandbox_dir, "cp-deploy-strategy-target-file.txt") }
-
 
   describe "creating the file" do
 
@@ -69,7 +68,7 @@ shared_examples_for "a content deploy strategy" do
 
     def ace_inherits?(ace)
       flags = ace.flags
-      (flags & masks::OBJECT_INHERIT_ACE) !=0
+      (flags & masks::OBJECT_INHERIT_ACE) != 0
     end
 
     let(:parent_inheritable_aces) do
@@ -126,7 +125,7 @@ shared_examples_for "a content deploy strategy" do
       security_descriptor_invariants.inject({}) do |prop_map, property|
         prop_map[property] = descriptor.send(property)
         prop_map
-       end
+      end
     end
 
     before do
@@ -180,7 +179,7 @@ describe Chef::FileContentManagement::Deploy::Cp do
       :uid,
       :gid,
       :mode,
-      :ino
+      :ino,
     ]
   end
 
@@ -188,7 +187,7 @@ describe Chef::FileContentManagement::Deploy::Cp do
     [
       :owner,
       :group,
-      :dacl
+      :dacl,
     ]
   end
 
@@ -202,7 +201,7 @@ describe Chef::FileContentManagement::Deploy::MvUnix, :unix_only do
     [
       :uid,
       :gid,
-      :mode
+      :mode,
     ]
   end
 
@@ -210,7 +209,7 @@ describe Chef::FileContentManagement::Deploy::MvUnix, :unix_only do
 end
 
 # On Unix we won't have loaded the file, avoid undefined constant errors:
-class Chef::FileContentManagement::Deploy::MvWindows ; end
+class Chef::FileContentManagement::Deploy::MvWindows; end
 
 describe Chef::FileContentManagement::Deploy::MvWindows, :windows_only do
 
@@ -220,7 +219,7 @@ describe Chef::FileContentManagement::Deploy::MvWindows, :windows_only do
       [
        :owner,
        :group,
-       :dacl
+       :dacl,
       ]
     end
 

@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'spec_helper'
+require "spec_helper"
+require "chef/cookbook_version"
 
 describe Chef::Cookbook::FileVendor do
 
@@ -23,7 +24,13 @@ describe Chef::Cookbook::FileVendor do
 
   context "when configured to fetch files over http" do
 
-    let(:http) { double("Chef::REST") }
+    let(:http) { double("Chef::ServerAPI") }
+
+    # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
+    let(:manifest) do
+      cbv = Chef::CookbookVersion.new("bob", Array(Dir.tmpdir))
+      cbv.cookbook_manifest
+    end
 
     before do
       file_vendor_class.fetch_from_remote(http)
@@ -39,8 +46,11 @@ describe Chef::Cookbook::FileVendor do
 
     context "with a manifest from a cookbook version" do
 
-      # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-      let(:manifest) { {:cookbook_name => "bob", :name => "bob-1.2.3"} }
+      # # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
+      # let(:manifest) do
+      #   cbv = Chef::CookbookVersion.new("bob", Array(Dir.tmpdir))
+      #   cbv.cookbook_manifest
+      # end
 
       it "creates a RemoteFileVendor for a given manifest" do
         file_vendor = file_vendor_class.create_from_manifest(manifest)
@@ -52,9 +62,6 @@ describe Chef::Cookbook::FileVendor do
     end
 
     context "with a manifest from a cookbook artifact" do
-
-      # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-      let(:manifest) { {:name => "bob"} }
 
       it "creates a RemoteFileVendor for a given manifest" do
         file_vendor = file_vendor_class.create_from_manifest(manifest)
@@ -68,10 +75,12 @@ describe Chef::Cookbook::FileVendor do
 
   context "when configured to load files from disk" do
 
-    let(:cookbook_path) { %w[/var/chef/cookbooks /var/chef/other_cookbooks] }
+    let(:cookbook_path) { %w{/var/chef/cookbooks /var/chef/other_cookbooks} }
 
-    # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-    let(:manifest) { {:cookbook_name => "bob"} }
+    let(:manifest) do
+      cbv = Chef::CookbookVersion.new("bob", Array(Dir.tmpdir))
+      cbv.cookbook_manifest
+    end
 
     before do
       file_vendor_class.fetch_from_disk(cookbook_path)
@@ -94,5 +103,21 @@ describe Chef::Cookbook::FileVendor do
 
   end
 
-end
+  context "when vendoring a cookbook with a name mismatch" do
+    let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "cookbooks") }
 
+    let(:manifest) do
+      cbv = Chef::CookbookVersion.new("name-mismatch", Array(Dir.tmpdir))
+      cbv.cookbook_manifest
+    end
+
+    before do
+      file_vendor_class.fetch_from_disk(cookbook_path)
+    end
+
+    it "retrieves the file from the correct location based on path to the cookbook that conatins the correct name metadata" do
+      file_vendor = file_vendor_class.create_from_manifest(manifest)
+      file_vendor.get_filename("metadata.rb")
+    end
+  end
+end

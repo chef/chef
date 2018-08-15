@@ -1,7 +1,7 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
 # Author:: Mark Mzyk (<mmzyk@ospcode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,10 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
-require 'chef/win32/api/security'
-require 'chef/win32/api/system'
+require "chef/win32/api"
+require "chef/win32/api/security"
+require "chef/win32/api/system"
+require "chef/win32/unicode"
 
 class Chef
   module ReservedNames::Win32
@@ -66,6 +67,7 @@ class Chef
         MAX_PATH = 260
 
         SYMBOLIC_LINK_FLAG_DIRECTORY = 0x1
+        SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE = 0x2
 
         FILE_NAME_NORMALIZED = 0x0
         FILE_NAME_OPENED = 0x8
@@ -162,7 +164,7 @@ class Chef
           (device_type << 16) | (access << 14) | (function << 2) | method
         end
 
-        FSCTL_GET_REPARSE_POINT         = CTL_CODE(FILE_DEVICE_FILE_SYSTEM, 42, METHOD_BUFFERED, FILE_ANY_ACCESS)
+        FSCTL_GET_REPARSE_POINT = CTL_CODE(FILE_DEVICE_FILE_SYSTEM, 42, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
         # Reparse point tags
         IO_REPARSE_TAG_MOUNT_POINT              = 0xA0000003
@@ -175,13 +177,20 @@ class Chef
         IO_REPARSE_TAG_SYMLINK                  = 0xA000000C
         IO_REPARSE_TAG_DFSR                     = 0x80000012
 
-        MAXIMUM_REPARSE_DATA_BUFFER_SIZE        = 16*1024
+        MAXIMUM_REPARSE_DATA_BUFFER_SIZE        = 16 * 1024
 
         ###############################################
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'kernel32'
+        ffi_lib "kernel32", "version"
+
+        # Does not map directly to a win32 struct
+        # see https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464(v=vs.85).aspx
+        class Translation < FFI::Struct
+          layout :w_lang, :WORD,
+          :w_code_page, :WORD
+        end
 
 =begin
 typedef struct _FILETIME {
@@ -230,7 +239,7 @@ typedef struct _WIN32_FIND_DATA {
           :n_file_size_low, :DWORD,
           :dw_reserved_0, :DWORD,
           :dw_reserved_1, :DWORD,
-          :c_file_name, [:BYTE, MAX_PATH*2],
+          :c_file_name, [:BYTE, MAX_PATH * 2],
           :c_alternate_file_name, [:BYTE, 14]
         end
 
@@ -299,11 +308,12 @@ typedef struct _REPARSE_DATA_BUFFER {
 
           def substitute_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:SubstituteNameOffset]
-            string_pointer.read_wstring(self[:SubstituteNameLength]/2)
+            string_pointer.read_wstring(self[:SubstituteNameLength] / 2)
           end
+
           def print_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:PrintNameOffset]
-            string_pointer.read_wstring(self[:PrintNameLength]/2)
+            string_pointer.read_wstring(self[:PrintNameLength] / 2)
           end
         end
         class REPARSE_DATA_BUFFER_MOUNT_POINT < FFI::Struct
@@ -315,11 +325,12 @@ typedef struct _REPARSE_DATA_BUFFER {
 
           def substitute_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:SubstituteNameOffset]
-            string_pointer.read_wstring(self[:SubstituteNameLength]/2)
+            string_pointer.read_wstring(self[:SubstituteNameLength] / 2)
           end
+
           def print_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:PrintNameOffset]
-            string_pointer.read_wstring(self[:PrintNameLength]/2)
+            string_pointer.read_wstring(self[:PrintNameLength] / 2)
           end
         end
         class REPARSE_DATA_BUFFER_GENERIC < FFI::Struct
@@ -450,6 +461,52 @@ BOOL WINAPI DeviceIoControl(
 =end
         safe_attach_function :DeviceIoControl, [:HANDLE, :DWORD, :LPVOID, :DWORD, :LPVOID, :DWORD, :LPDWORD, :pointer], :BOOL
 
+# BOOL WINAPI DeleteVolumeMountPoint(
+  # _In_ LPCTSTR lpszVolumeMountPoint
+# );
+        safe_attach_function :DeleteVolumeMountPointW, [:LPCTSTR], :BOOL
+
+# BOOL WINAPI SetVolumeMountPoint(
+  # _In_ LPCTSTR lpszVolumeMountPoint,
+  # _In_ LPCTSTR lpszVolumeName
+# );
+        safe_attach_function :SetVolumeMountPointW, [:LPCTSTR, :LPCTSTR], :BOOL
+
+# BOOL WINAPI GetVolumeNameForVolumeMountPoint(
+  # _In_  LPCTSTR lpszVolumeMountPoint,
+  # _Out_ LPTSTR  lpszVolumeName,
+  # _In_  DWORD   cchBufferLength
+# );
+        safe_attach_function :GetVolumeNameForVolumeMountPointW, [:LPCTSTR, :LPTSTR, :DWORD], :BOOL
+
+=begin
+BOOL WINAPI GetFileVersionInfo(
+  _In_       LPCTSTR lptstrFilename,
+  _Reserved_ DWORD   dwHandle,
+  _In_       DWORD   dwLen,
+  _Out_      LPVOID  lpData
+);
+=end
+        safe_attach_function :GetFileVersionInfoW, [:LPCTSTR, :DWORD, :DWORD, :LPVOID], :BOOL
+
+=begin
+DWORD WINAPI GetFileVersionInfoSize(
+  _In_      LPCTSTR lptstrFilename,
+  _Out_opt_ LPDWORD lpdwHandle
+);
+=end
+        safe_attach_function :GetFileVersionInfoSizeW, [:LPCTSTR, :LPDWORD], :DWORD
+
+=begin
+BOOL WINAPI VerQueryValue(
+  _In_  LPCVOID pBlock,
+  _In_  LPCTSTR lpSubBlock,
+  _Out_ LPVOID  *lplpBuffer,
+  _Out_ PUINT   puLen
+);
+=end
+        safe_attach_function :VerQueryValueW, [:LPCVOID, :LPCTSTR, :LPVOID, :PUINT], :BOOL
+
         ###############################################
         # Helpers
         ###############################################
@@ -479,58 +536,55 @@ BOOL WINAPI DeviceIoControl(
         # retrieves a file search handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
-        def file_search_handle(path, &block)
-          begin
+        # FIXME: yard with @yield
+        def file_search_handle(path)
             # Workaround for CHEF-4419:
             # Make sure paths starting with "/" has a drive letter
             # assigned from the current working diretory.
             # Note: With CHEF-4427 this issue will be fixed with a
             # broader fix to map all the paths starting with "/" to
             # SYSTEM_DRIVE on windows.
-            path = ::File.expand_path(path) if path.start_with? "/"
-            path = canonical_encode_path(path)
-            find_data = WIN32_FIND_DATA.new
-            handle = FindFirstFileW(path, find_data)
-            if handle == INVALID_HANDLE_VALUE
-              Chef::ReservedNames::Win32::Error.raise!
-            end
-            block.call(handle, find_data)
-          ensure
-            FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
+          path = ::File.expand_path(path) if path.start_with? "/"
+          path = canonical_encode_path(path)
+          find_data = WIN32_FIND_DATA.new
+          handle = FindFirstFileW(path, find_data)
+          if handle == INVALID_HANDLE_VALUE
+            Chef::ReservedNames::Win32::Error.raise!
           end
+          yield(handle, find_data)
+        ensure
+          FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
         end
 
         # retrieves a file handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
-        def file_handle(path, &block)
-          begin
-            path = canonical_encode_path(path)
-            handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
-                                  nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
+        # FIXME: yard with @yield
+        def file_handle(path)
+          path = canonical_encode_path(path)
+          handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
+                                nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
 
-            if handle == INVALID_HANDLE_VALUE
-              Chef::ReservedNames::Win32::Error.raise!
-            end
-            block.call(handle)
-          ensure
-            CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
+          if handle == INVALID_HANDLE_VALUE
+            Chef::ReservedNames::Win32::Error.raise!
           end
+          yield(handle)
+        ensure
+          CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
         end
 
-        def symlink_file_handle(path, &block)
-          begin
-            path = encode_path(path)
-            handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,
-                                  nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
+        # FIXME: yard with @yield
+        def symlink_file_handle(path)
+          path = encode_path(path)
+          handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,
+                                nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
 
-            if handle == INVALID_HANDLE_VALUE
-              Chef::ReservedNames::Win32::Error.raise!
-            end
-            block.call(handle)
-          ensure
-            CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
+          if handle == INVALID_HANDLE_VALUE
+            Chef::ReservedNames::Win32::Error.raise!
           end
+          yield(handle)
+        ensure
+          CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
         end
 
         def retrieve_file_info(file_name)
@@ -543,6 +597,21 @@ BOOL WINAPI DeviceIoControl(
             end
           end
           file_information
+        end
+
+        def retrieve_file_version_info(file_name)
+          file_name = encode_path(file_name)
+          file_size = GetFileVersionInfoSizeW(file_name, nil)
+          if file_size == 0
+            Chef::ReservedNames::Win32::Error.raise!
+          end
+
+          version_info = FFI::MemoryPointer.new(file_size)
+          unless GetFileVersionInfoW(file_name, 0, file_size, version_info)
+            Chef::ReservedNames::Win32::Error.raise!
+          end
+
+          version_info
         end
 
       end

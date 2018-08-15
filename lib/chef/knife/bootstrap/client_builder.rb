@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/node'
-require 'chef/rest'
-require 'chef/api_client/registration'
-require 'chef/api_client'
-require 'tmpdir'
+require "chef/node"
+require "chef/server_api"
+require "chef/api_client/registration"
+require "chef/api_client"
+require "chef/knife/bootstrap"
+require "tmpdir"
 
 class Chef
   class Knife
@@ -33,6 +34,8 @@ class Chef
         attr_accessor :chef_config
         # @return [Chef::Knife::UI] ui object for output
         attr_accessor :ui
+        # @return [Chef::ApiClient] client saved on run
+        attr_reader :client
 
         # @param knife_config [Hash] Hash of knife config settings
         # @param chef_config [Hash] Hash of chef config settings
@@ -50,7 +53,7 @@ class Chef
 
           ui.info("Creating new client for #{node_name}")
 
-          create_client!
+          @client = create_client!
 
           ui.info("Creating new node for #{node_name}")
 
@@ -88,6 +91,16 @@ class Chef
         # @return [String] run_list from the knife_config
         def run_list
           knife_config[:run_list]
+        end
+
+        # @return [String] policy_name from the knife_config
+        def policy_name
+          knife_config[:policy_name]
+        end
+
+        # @return [String] policy_group from the knife_config
+        def policy_group
+          knife_config[:policy_group]
         end
 
         # @return [Hash,Array] Object representation of json first-boot attributes from the knife_config
@@ -140,6 +153,11 @@ class Chef
               node.run_list(normalized_run_list)
               node.normal_attrs = first_boot_attributes if first_boot_attributes
               node.environment(environment) if environment
+              node.policy_name = policy_name if policy_name
+              node.policy_group = policy_group if policy_group
+              (knife_config[:tags] || []).each do |tag|
+                node.tags << tag
+              end
               node
             end
         end
@@ -167,22 +185,22 @@ class Chef
         # @param relative_path [String] URI path relative to the chef organization
         # @return [Boolean] if the relative path exists or returns a 404
         def resource_exists?(relative_path)
-          rest.get_rest(relative_path)
+          rest.get(relative_path)
           true
         rescue Net::HTTPServerException => e
           raise unless e.response.code == "404"
           false
         end
 
-        # @return [Chef::REST] REST client using the client credentials
+        # @return [Chef::ServerAPI] REST client using the client credentials
         def client_rest
-          @client_rest ||= Chef::REST.new(chef_server_url, node_name, client_path)
+          @client_rest ||= Chef::ServerAPI.new(chef_server_url, client_name: node_name, signing_key_filename: client_path)
         end
 
-        # @return [Chef::REST] REST client using the cli user's knife credentials
+        # @return [Chef::ServerAPI] REST client using the cli user's knife credentials
         # this uses the users's credentials
         def rest
-          @rest ||= Chef::REST.new(chef_server_url)
+          @rest ||= Chef::ServerAPI.new(chef_server_url)
         end
       end
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Mathieu Sauve-Frankel <msf@kisoku.net>
-# Copyright:: Copyright (c) 2009 Mathieu Sauve-Frankel
+# Copyright:: Copyright 2009-2016, Mathieu Sauve-Frankel
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service'
-require 'chef/resource/service'
-require 'chef/mixin/command'
+require "chef/provider/service"
+require "chef/resource/service"
 
 class Chef
   class Provider
@@ -41,10 +40,6 @@ class Chef
           @current_resource
         end
 
-        def whyrun_supported?
-          true
-        end
-
         def shared_resource_requirements
           super
           requirements.assert(:all_actions) do |a|
@@ -58,26 +53,27 @@ class Chef
           shared_resource_requirements
           requirements.assert(:start) do |a|
             a.assertion { @new_resource.start_command }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that start_command be set"
+            a.failure_message Chef::Exceptions::Service, "#{self} requires that start_command be set"
           end
           requirements.assert(:stop) do |a|
             a.assertion { @new_resource.stop_command }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that stop_command be set"
+            a.failure_message Chef::Exceptions::Service, "#{self} requires that stop_command be set"
           end
 
           requirements.assert(:restart) do |a|
-            a.assertion { @new_resource.restart_command  || ( @new_resource.start_command && @new_resource.stop_command ) }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
+            a.assertion { @new_resource.restart_command || ( @new_resource.start_command && @new_resource.stop_command ) }
+            a.failure_message Chef::Exceptions::Service, "#{self} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
           end
 
           requirements.assert(:reload) do |a|
             a.assertion { @new_resource.reload_command }
-            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires a reload_command be set in order to perform a reload"
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} requires a reload_command be set in order to perform a reload"
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @new_resource.status_command or @new_resource.supports[:status] or
-              (!ps_cmd.nil? and !ps_cmd.empty?) }
+            a.assertion do
+              @new_resource.status_command || supports[:status] ||
+                (!ps_cmd.nil? && !ps_cmd.empty?) end
             a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this node's 'command.ps' attribute"
           end
           requirements.assert(:all_actions) do |a|
@@ -87,16 +83,16 @@ class Chef
         end
 
         def start_service
-          shell_out_with_systems_locale!(@new_resource.start_command)
+          shell_out!(@new_resource.start_command, default_env: false)
         end
 
         def stop_service
-          shell_out_with_systems_locale!(@new_resource.stop_command)
+          shell_out!(@new_resource.stop_command, default_env: false)
         end
 
         def restart_service
           if @new_resource.restart_command
-            shell_out_with_systems_locale!(@new_resource.restart_command)
+            shell_out!(@new_resource.restart_command, default_env: false)
           else
             stop_service
             sleep 1
@@ -105,18 +101,19 @@ class Chef
         end
 
         def reload_service
-          shell_out_with_systems_locale!(@new_resource.reload_command)
+          shell_out!(@new_resource.reload_command, default_env: false)
         end
 
-      protected
+        protected
+
         def determine_current_status!
           if @new_resource.status_command
-            Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
+            logger.trace("#{@new_resource} you have specified a status command, running..")
 
             begin
               if shell_out(@new_resource.status_command).exitstatus == 0
                 @current_resource.running true
-                Chef::Log.debug("#{@new_resource} is running")
+                logger.trace("#{@new_resource} is running")
               end
             rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
             # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
@@ -127,12 +124,12 @@ class Chef
               nil
             end
 
-          elsif @new_resource.supports[:status]
-            Chef::Log.debug("#{@new_resource} supports status, running")
+          elsif supports[:status]
+            logger.trace("#{@new_resource} supports status, running")
             begin
               if shell_out("#{default_init_command} status").exitstatus == 0
                 @current_resource.running true
-                Chef::Log.debug("#{@new_resource} is running")
+                logger.trace("#{@new_resource} is running")
               end
             # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
             # Temporarily catching different types of exceptions here until we get Shellout fixed.
@@ -143,9 +140,9 @@ class Chef
               nil
             end
           else
-            Chef::Log.debug "#{@new_resource} falling back to process table inspection"
+            logger.trace "#{@new_resource} falling back to process table inspection"
             r = Regexp.new(@new_resource.pattern)
-            Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
+            logger.trace "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
             begin
               shell_out!(ps_cmd).stdout.each_line do |line|
                 if r.match(line)
@@ -155,7 +152,7 @@ class Chef
               end
 
               @current_resource.running false unless @current_resource.running
-              Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
+              logger.trace "#{@new_resource} running: #{@current_resource.running}"
             # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
             # Temporarily catching different types of exceptions here until we get Shellout fixed.
             # TODO: Remove the line before one we get the ShellOut fix.
@@ -166,6 +163,7 @@ class Chef
         end
 
         def ps_cmd
+          # XXX: magic attributes are a shitty api, need something better here and deprecate this attribute
           @run_context.node[:command] && @run_context.node[:command][:ps]
         end
       end

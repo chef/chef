@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,23 @@
 # limitations under the License.
 #
 
-require 'chef/resource/script'
-require 'chef/provider/script'
+require "chef/resource/script"
+require "chef/provider/script"
 
 class Chef
   class Resource
     class Perl < Chef::Resource::Script
-      provides :perl
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
-        @resource_name = :perl
         @interpreter = "perl"
       end
 
+      description "Use the perl resource to execute scripts using the Perl interpreter."\
+                  " This resource may also use any of the actions and properties that are"\
+                  " available to the execute resource. Commands that are executed with this"\
+                  " resource are (by their nature) not idempotent, as they are typically"\
+                  " unique to the environment in which they are run. Use not_if and only_if"\
+                  " to guard this resource for idempotence."
     end
   end
 end

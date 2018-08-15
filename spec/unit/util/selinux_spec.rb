@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,7 @@
 # limitations under the License.
 #
 
-
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Util::Selinux do
   class TestClass
@@ -40,7 +39,7 @@ describe Chef::Util::Selinux do
   end
 
   it "each part of ENV['PATH'] should be checked" do
-    expected_paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
+    expected_paths = ENV["PATH"].split(File::PATH_SEPARATOR) + [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
 
     expected_paths.each do |bin_path|
       selinux_path = File.join(bin_path, "selinuxenabled")
@@ -61,8 +60,8 @@ describe Chef::Util::Selinux do
 
     describe "when selinux is enabled" do
       before do
-        cmd_result = double("Cmd Result", :exitstatus => 0)
-        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
+        cmd_result = double("Cmd Result", exitstatus: 0)
+        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, { returns: [0, 1] }).and_return(cmd_result)
       end
 
       it "should report selinux is enabled" do
@@ -74,8 +73,8 @@ describe Chef::Util::Selinux do
 
     describe "when selinux is disabled" do
       before do
-        cmd_result = double("Cmd Result", :exitstatus => 1)
-        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
+        cmd_result = double("Cmd Result", exitstatus: 1)
+        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, { returns: [0, 1] }).and_return(cmd_result)
       end
 
       it "should report selinux is disabled" do
@@ -87,12 +86,12 @@ describe Chef::Util::Selinux do
 
     describe "when selinux gives an unexpected status" do
       before do
-        cmd_result = double("Cmd Result", :exitstatus => 101)
-        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
+        cmd_result = double("Cmd Result", exitstatus: 101)
+        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, { returns: [0, 1] }).and_return(cmd_result)
       end
 
       it "should throw an error" do
-        expect {@test_instance.selinux_enabled?}.to raise_error(RuntimeError)
+        expect { @test_instance.selinux_enabled? }.to raise_error(RuntimeError)
       end
     end
   end
@@ -125,45 +124,31 @@ describe Chef::Util::Selinux do
     end
 
     it "should call restorecon non-recursive by default" do
-      restorecon_command = "#{@restorecon_enabled_path} -R \"#{path}\""
-      expect(@test_instance).to receive(:shell_out!).twice.with(restorecon_command)
+      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, "-R", path).twice
       @test_instance.restore_security_context(path)
       expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path)
     end
 
     it "should call restorecon recursive when recursive is set" do
-      restorecon_command = "#{@restorecon_enabled_path} -R -r \"#{path}\""
-      expect(@test_instance).to receive(:shell_out!).twice.with(restorecon_command)
+      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, "-R", "-r", path).twice
       @test_instance.restore_security_context(path, true)
       expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path, true)
     end
 
     it "should call restorecon non-recursive when recursive is not set" do
-      restorecon_command = "#{@restorecon_enabled_path} -R \"#{path}\""
-      expect(@test_instance).to receive(:shell_out!).twice.with(restorecon_command)
+      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, "-R", path).twice
       @test_instance.restore_security_context(path)
       expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path)
     end
 
     describe "when restorecon doesn't exist on the system" do
-      before do
-        allow(File).to receive(:executable?) do |file_path|
-          expect(file_path.end_with?("restorecon")).to be_truthy
-          false
-        end
-      end
-
       it "should log a warning message" do
-        log = [ ]
-        allow(Chef::Log).to receive(:warn) do |message|
-          log << message
-        end
-
+        allow(File).to receive(:executable?).with(/restorecon$/).and_return(false)
+        expect(Chef::Log).to receive(:warn).with(/Can not find 'restorecon' on the system. Skipping selinux security context restore./).at_least(:once)
         @test_instance.restore_security_context(path)
-        expect(log).not_to be_empty
         expect(File).not_to receive(:executable?)
         @test_instance.restore_security_context(path)
       end

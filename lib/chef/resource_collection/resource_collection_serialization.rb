@@ -1,6 +1,6 @@
 #
-# Author:: Tyler Ball (<tball@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Tyler Ball (<tball@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,18 +15,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require "chef/json_compat"
+
 class Chef
   class ResourceCollection
     module ResourceCollectionSerialization
       # Serialize this object as a hash
       def to_hash
         instance_vars = Hash.new
-        self.instance_variables.each do |iv|
-          instance_vars[iv] = self.instance_variable_get(iv)
+        instance_variables.each do |iv|
+          instance_vars[iv] = instance_variable_get(iv)
         end
         {
-            'json_class' => self.class.name,
-            'instance_vars' => instance_vars
+            "json_class" => self.class.name,
+            "instance_vars" => instance_vars,
         }
       end
 
@@ -39,12 +42,16 @@ class Chef
       end
 
       module ClassMethods
-        def json_create(o)
-          collection = self.new()
-          o["instance_vars"].each do |k,v|
+        def from_hash(o)
+          collection = new()
+          o["instance_vars"].each do |k, v|
             collection.instance_variable_set(k.to_sym, v)
           end
           collection
+        end
+
+        def from_json(j)
+          from_hash(Chef::JSONCompat.parse(j))
         end
       end
 

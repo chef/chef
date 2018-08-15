@@ -1,6 +1,6 @@
 #
 # Author:: David Balatero (<dbalatero@gmail.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,14 @@
 # limitations under the License.
 #
 
+require "chef/resource/package"
+
 class Chef
   class Resource
     class MacportsPackage < Chef::Resource::Package
+      resource_name :macports_package
 
-      provides :macports_package
-      provides :package, os: "darwin"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :macports_package
-      end
+      description "Use the macports_package resource to manage packages for the macOS platform."
     end
   end
 end

@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'zlib'
-require 'chef/http/http_request'
+require "zlib"
+require "chef/http/http_request"
 
 class Chef
   class HTTP
@@ -50,12 +50,12 @@ class Chef
       DEFLATE           = "deflate".freeze
       IDENTITY          = "identity".freeze
 
-      def initialize(opts={})
+      def initialize(opts = {})
         @disable_gzip = false
         handle_options(opts)
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         headers[HTTPRequest::ACCEPT_ENCODING] = HTTPRequest::ENCODING_GZIP_DEFLATE unless gzip_disabled?
         [method, url, headers, data]
       end
@@ -79,10 +79,10 @@ class Chef
         else
           case response[CONTENT_ENCODING]
           when GZIP
-            Chef::Log.debug "decompressing gzip response"
+            Chef::Log.trace "Decompressing gzip response"
             Zlib::Inflate.new(Zlib::MAX_WBITS + 16).inflate(response.body)
           when DEFLATE
-            Chef::Log.debug "decompressing deflate response"
+            Chef::Log.trace "Decompressing deflate response"
             Zlib::Inflate.inflate(response.body)
           else
             response.body
@@ -94,26 +94,25 @@ class Chef
       # object you can use to unzip/inflate a streaming response.
       def stream_response_handler(response)
         if gzip_disabled?
-          Chef::Log.debug "disable_gzip is set. \
+          Chef::Log.trace "disable_gzip is set. \
             Not using #{response[CONTENT_ENCODING]} \
             and initializing noop stream deflator."
           NoopInflater.new
         else
           case response[CONTENT_ENCODING]
           when GZIP
-            Chef::Log.debug "Initializing gzip stream deflator"
+            Chef::Log.trace "Initializing gzip stream deflator"
             GzipInflater.new
           when DEFLATE
-            Chef::Log.debug "Initializing deflate stream deflator"
+            Chef::Log.trace "Initializing deflate stream deflator"
             DeflateInflater.new
           else
-            Chef::Log.debug "content_encoding = '#{response[CONTENT_ENCODING]}' \
+            Chef::Log.trace "content_encoding = '#{response[CONTENT_ENCODING]}' \
               initializing noop stream deflator."
             NoopInflater.new
           end
         end
       end
-
 
       # gzip is disabled using the disable_gzip => true option in the
       # constructor. When gzip is disabled, no 'Accept-Encoding' header will be
@@ -132,12 +131,11 @@ class Chef
       def handle_options(opts)
         opts.each do |name, value|
           case name.to_s
-          when 'disable_gzip'
+          when "disable_gzip"
             @disable_gzip = value
           end
         end
       end
-
 
     end
   end

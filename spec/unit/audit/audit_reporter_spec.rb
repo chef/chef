@@ -1,8 +1,8 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Author:: Claire McQuin (<claire@getchef.com>)
+# Author:: Claire McQuin (<claire@chef.io>)
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,23 +18,24 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Audit::AuditReporter do
 
   let(:rest) { double("rest") }
   let(:reporter) { described_class.new(rest) }
-  let(:node) { double("node", :name => "sofreshsoclean") }
+  let(:node) { double("node", name: "sofreshsoclean") }
   let(:run_id) { 0 }
   let(:start_time) { Time.new(2014, 12, 3, 9, 31, 05, "-08:00") }
   let(:end_time) { Time.new(2014, 12, 3, 9, 36, 14, "-08:00") }
-  let(:run_status) { instance_double(Chef::RunStatus, :node => node, :run_id => run_id,
-    :start_time => start_time, :end_time => end_time) }
+  let(:run_status) do
+    instance_double(Chef::RunStatus, node: node, run_id: run_id,
+                                     start_time: start_time, end_time: end_time) end
 
   describe "#audit_phase_start" do
 
-    it "notifies audit phase start to debug log" do
-      expect(Chef::Log).to receive(:debug).with(/Audit Reporter starting/)
+    it "notifies audit phase start to trace log" do
+      expect(Chef::Log).to receive(:trace).with(/Audit Reporter starting/)
       reporter.audit_phase_start(run_status)
     end
 
@@ -57,7 +58,6 @@ describe Chef::Audit::AuditReporter do
     before do
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
       allow(reporter).to receive(:run_status).and_return(run_status)
-      allow(rest).to receive(:create_url).and_return(true)
       allow(rest).to receive(:post).and_return(true)
       allow(reporter).to receive(:audit_data).and_return(audit_data)
       allow(reporter).to receive(:run_status).and_return(run_status)
@@ -75,37 +75,34 @@ describe Chef::Audit::AuditReporter do
       end
 
       it "posts audit data to server endpoint" do
-        endpoint = "api.opscode.us/orgname/controls"
         headers = {
-          'X-Ops-Audit-Report-Protocol-Version' => Chef::Audit::AuditReporter::PROTOCOL_VERSION
+          "X-Ops-Audit-Report-Protocol-Version" => Chef::Audit::AuditReporter::PROTOCOL_VERSION,
         }
 
-        expect(rest).to receive(:create_url).
-          with("controls").
-          and_return(endpoint)
-        expect(rest).to receive(:post).
-          with(endpoint, run_data, headers)
+        expect(rest).to receive(:post)
+          .with("controls", run_data, headers)
         reporter.run_completed(node)
       end
 
       context "when audit phase failed" do
 
-        let(:audit_error) { double("AuditError", :class => "Chef::Exceptions::AuditError",
-          :message => "Audit phase failed with error message: derpderpderp",
-          :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) }
+        let(:audit_error) do
+          double("AuditError", class: "Chef::Exceptions::AuditError",
+                               message: "Audit phase failed with error message: derpderpderp",
+                               backtrace: ["/path/recipe.rb:57", "/path/library.rb:106"]) end
 
-          before do
-            reporter.instance_variable_set(:@audit_phase_error, audit_error)
-          end
+        before do
+          reporter.instance_variable_set(:@audit_phase_error, audit_error)
+        end
 
         it "reports an error" do
           reporter.run_completed(node)
           expect(run_data).to have_key(:error)
           expect(run_data).to have_key(:error)
-          expect(run_data[:error]).to eq <<-EOM.strip!
-Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
-/path/recipe.rb:57
-/path/library.rb:106
+          expect(run_data[:error]).to eq <<~EOM.strip!
+            Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
+            /path/recipe.rb:57
+            /path/library.rb:106
 EOM
         end
 
@@ -126,11 +123,11 @@ EOM
 
         context "the error is an http error" do
 
-          let(:response) { double("response", :code => code) }
+          let(:response) { double("response", code: code) }
 
           before do
-            expect(Chef::Log).to receive(:debug).with(/Sending audit report/)
-            expect(Chef::Log).to receive(:debug).with(/Audit Report/)
+            expect(Chef::Log).to receive(:trace).with(/Sending audit report/)
+            expect(Chef::Log).to receive(:trace).with(/Audit Report/)
             allow(error).to receive(:response).and_return(response)
             expect(error).to receive(:respond_to?).with(:response).and_return(true)
           end
@@ -140,7 +137,7 @@ EOM
             let(:code) { "404" }
 
             it "logs that the server doesn't support audit reporting" do
-              expect(Chef::Log).to receive(:debug).with(/Server doesn't support audit reporting/)
+              expect(Chef::Log).to receive(:trace).with(/Server doesn't support audit reporting/)
               reporter.run_completed(node)
             end
           end
@@ -148,12 +145,12 @@ EOM
           shared_examples "non-404 error code" do
 
             it "saves the error report" do
-              expect(Chef::FileCache).to receive(:store).
-                with("failed-audit-data.json", an_instance_of(String), 0640).
-                and_return(true)
-              expect(Chef::FileCache).to receive(:load).
-                with("failed-audit-data.json", false).
-                and_return(true)
+              expect(Chef::FileCache).to receive(:store)
+                .with("failed-audit-data.json", an_instance_of(String), 0640)
+                .and_return(true)
+              expect(Chef::FileCache).to receive(:load)
+                .with("failed-audit-data.json", false)
+                .and_return(true)
               expect(Chef::Log).to receive(:error).with(/Failed to post audit report to server/)
               reporter.run_completed(node)
             end
@@ -187,16 +184,16 @@ EOM
         context "when reporting url fatals are enabled" do
 
           before do
-            allow(Chef::Config).to receive(:[]).
-              with(:enable_reporting_url_fatals).
-              and_return(true)
+            allow(Chef::Config).to receive(:[])
+              .with(:enable_reporting_url_fatals)
+              .and_return(true)
           end
 
           it "raises the error" do
             expect(error).to receive(:respond_to?).with(:response).and_return(false)
             allow(Chef::Log).to receive(:error).and_return(true)
             expect(Chef::Log).to receive(:error).with(/Reporting fatals enabled. Aborting run./)
-            expect{ reporter.run_completed(node) }.to raise_error(error)
+            expect { reporter.run_completed(node) }.to raise_error(error)
           end
 
         end
@@ -206,12 +203,12 @@ EOM
     context "when auditing is not enabled" do
 
       before do
-        allow(Chef::Log).to receive(:debug)
+        allow(Chef::Log).to receive(:trace)
       end
 
       it "doesn't send reports" do
         expect(reporter).to receive(:auditing_enabled?).and_return(false)
-        expect(Chef::Log).to receive(:debug).with("Audit Reports are disabled. Skipping sending reports.")
+        expect(Chef::Log).to receive(:trace).with("Audit Reports are disabled. Skipping sending reports.")
         reporter.run_completed(node)
       end
 
@@ -220,13 +217,13 @@ EOM
     context "when the run fails before audits" do
 
       before do
-        allow(Chef::Log).to receive(:debug)
+        allow(Chef::Log).to receive(:trace)
       end
 
       it "doesn't send reports" do
         expect(reporter).to receive(:auditing_enabled?).and_return(true)
         expect(reporter).to receive(:run_status).and_return(nil)
-        expect(Chef::Log).to receive(:debug).with("Run failed before audit mode was initialized, not sending audit report to server")
+        expect(Chef::Log).to receive(:trace).with("Run failed before audit mode was initialized, not sending audit report to server")
         reporter.run_completed(node)
       end
 
@@ -238,13 +235,15 @@ EOM
     let(:audit_data) { Chef::Audit::AuditData.new(node.name, run_id) }
     let(:run_data) { audit_data.to_hash }
 
-    let(:audit_error) { double("AuditError", :class => "Chef::Exceptions::AuditError",
-      :message => "Audit phase failed with error message: derpderpderp",
-      :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) }
+    let(:audit_error) do
+      double("AuditError", class: "Chef::Exceptions::AuditError",
+                           message: "Audit phase failed with error message: derpderpderp",
+                           backtrace: ["/path/recipe.rb:57", "/path/library.rb:106"]) end
 
-    let(:run_error) { double("RunError", :class => "Chef::Exceptions::RunError",
-      :message => "This error shouldn't be reported.",
-      :backtrace => ["fix it", "fix it", "fix it"]) }
+    let(:run_error) do
+      double("RunError", class: "Chef::Exceptions::RunError",
+                         message: "This error shouldn't be reported.",
+                         backtrace: ["fix it", "fix it", "fix it"]) end
 
     before do
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
@@ -255,7 +254,6 @@ EOM
 
     context "when no prior exception is stored" do
       it "reports no error" do
-        expect(rest).to receive(:create_url)
         expect(rest).to receive(:post)
         reporter.run_failed(run_error)
         expect(run_data).to_not have_key(:error)
@@ -268,14 +266,13 @@ EOM
       end
 
       it "reports the prior error" do
-        expect(rest).to receive(:create_url)
         expect(rest).to receive(:post)
         reporter.run_failed(run_error)
         expect(run_data).to have_key(:error)
-        expect(run_data[:error]).to eq <<-EOM.strip!
-Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
-/path/recipe.rb:57
-/path/library.rb:106
+        expect(run_data[:error]).to eq <<~EOM.strip!
+          Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
+          /path/recipe.rb:57
+          /path/library.rb:106
 EOM
       end
     end
@@ -283,23 +280,27 @@ EOM
 
   shared_context "audit data" do
 
-    let(:control_group_foo) { instance_double(Chef::Audit::ControlGroupData,
-      :metadata => double("foo metadata")) }
-    let(:control_group_bar) { instance_double(Chef::Audit::ControlGroupData,
-      :metadata => double("bar metadata")) }
+    let(:control_group_foo) do
+      instance_double(Chef::Audit::ControlGroupData,
+      metadata: double("foo metadata")) end
+    let(:control_group_bar) do
+      instance_double(Chef::Audit::ControlGroupData,
+      metadata: double("bar metadata")) end
 
-    let(:ordered_control_groups) {
+    let(:ordered_control_groups) do
       {
         "foo" => control_group_foo,
-        "bar" => control_group_bar
+        "bar" => control_group_bar,
       }
-    }
+    end
 
-    let(:audit_data) { instance_double(Chef::Audit::AuditData,
-      :add_control_group => true) }
+    let(:audit_data) do
+      instance_double(Chef::Audit::AuditData,
+      add_control_group: true) end
 
-    let(:run_context) { instance_double(Chef::RunContext,
-      :audits => ordered_control_groups) }
+    let(:run_context) do
+      instance_double(Chef::RunContext,
+      audits: ordered_control_groups) end
 
     before do
       allow(reporter).to receive(:ordered_control_groups).and_return(ordered_control_groups)
@@ -312,16 +313,16 @@ EOM
   describe "#audit_phase_complete" do
     include_context "audit data"
 
-    it "notifies audit phase finished to debug log" do
-      expect(Chef::Log).to receive(:debug).with(/Audit Reporter completed/)
-      reporter.audit_phase_complete
+    it "notifies audit phase finished to trace log" do
+      expect(Chef::Log).to receive(:trace).with(/Audit Reporter completed/)
+      reporter.audit_phase_complete("Output from audit mode")
     end
 
     it "collects audit data" do
-      ordered_control_groups.each do |_name, group|
+      ordered_control_groups.each_value do |group|
         expect(audit_data).to receive(:add_control_group).with(group)
       end
-      reporter.audit_phase_complete
+      reporter.audit_phase_complete("Output from audit mode")
     end
   end
 
@@ -330,16 +331,16 @@ EOM
 
     let(:error) { double("Exception") }
 
-    it "notifies audit phase failed to debug log" do
-      expect(Chef::Log).to receive(:debug).with(/Audit Reporter failed/)
-      reporter.audit_phase_failed(error)
+    it "notifies audit phase failed to trace log" do
+      expect(Chef::Log).to receive(:trace).with(/Audit Reporter failed/)
+      reporter.audit_phase_failed(error, "Output from audit mode")
     end
 
     it "collects audit data" do
-      ordered_control_groups.each do |_name, group|
+      ordered_control_groups.each_value do |group|
         expect(audit_data).to receive(:add_control_group).with(group)
       end
-      reporter.audit_phase_failed(error)
+      reporter.audit_phase_failed(error, "Output from audit mode")
     end
   end
 
@@ -347,33 +348,30 @@ EOM
     include_context "audit data"
 
     let(:name) { "bat" }
-    let(:control_group) { instance_double(Chef::Audit::ControlGroupData,
-      :metadata => double("metadata")) }
+    let(:control_group) do
+      instance_double(Chef::Audit::ControlGroupData,
+      metadata: double("metadata")) end
 
     before do
-      allow(Chef::Audit::ControlGroupData).to receive(:new).
-        with(name, control_group.metadata).
-        and_return(control_group)
+      allow(Chef::Audit::ControlGroupData).to receive(:new)
+        .with(name, control_group.metadata)
+        .and_return(control_group)
     end
 
     it "stores the control group" do
-      expect(ordered_control_groups).to receive(:has_key?).with(name).and_return(false)
+      expect(ordered_control_groups).to receive(:key?).with(name).and_return(false)
       allow(run_context.audits).to receive(:[]).with(name).and_return(control_group)
-      expect(ordered_control_groups).to receive(:store).
-        with(name, control_group).
-        and_call_original
+      expect(ordered_control_groups).to receive(:store)
+        .with(name, control_group)
+        .and_call_original
       reporter.control_group_started(name)
-      # stubbed :has_key? above, which is used by the have_key matcher,
-      # so instead we check the response to Hash's #key? because luckily
-      # #key? does not call #has_key?
-      expect(ordered_control_groups.key?(name)).to be true
       expect(ordered_control_groups[name]).to eq control_group
     end
 
     context "when a control group with the same name has been seen" do
       it "raises an exception" do
-        expect(ordered_control_groups).to receive(:has_key?).with(name).and_return(true)
-        expect{ reporter.control_group_started(name) }.to raise_error(Chef::Exceptions::AuditControlGroupDuplicate)
+        expect(ordered_control_groups).to receive(:key?).with(name).and_return(true)
+        expect { reporter.control_group_started(name) }.to raise_error(Chef::Exceptions::AuditControlGroupDuplicate)
       end
     end
   end
@@ -395,11 +393,11 @@ EOM
 
     let(:name) { "bar" }
     let(:example_data) { double("example data") }
-    let(:error) { double("Exception", :message => "oopsie") }
+    let(:error) { double("Exception", message: "oopsie") }
 
     it "notifies the control group the example failed" do
-      expect(control_group_bar).to receive(:example_failure).
-        with(example_data, error.message)
+      expect(control_group_bar).to receive(:example_failure)
+        .with(example_data, error.message)
       reporter.control_example_failure(name, example_data, error)
     end
   end
@@ -408,9 +406,9 @@ EOM
     shared_examples "enabled?" do |true_or_false|
 
       it "returns #{true_or_false}" do
-        expect(Chef::Config).to receive(:[]).
-          with(:audit_mode).
-          and_return(audit_setting)
+        expect(Chef::Config).to receive(:[])
+          .with(:audit_mode)
+          .and_return(audit_setting)
         expect(reporter.auditing_enabled?).to be true_or_false
       end
     end

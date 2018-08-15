@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2009-2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/data_bag_secret_options'
+require "chef/knife"
+require "chef/knife/data_bag_secret_options"
 
 class Chef
   class Knife
@@ -26,8 +26,8 @@ class Chef
       include DataBagSecretOptions
 
       deps do
-        require 'chef/data_bag'
-        require 'chef/encrypted_data_bag_item'
+        require "chef/data_bag"
+        require "chef/encrypted_data_bag_item"
       end
 
       banner "knife data bag show BAG [ITEM] (options)"
@@ -35,32 +35,32 @@ class Chef
 
       def run
         display = case @name_args.length
-        when 2 # Bag and Item names provided
-          secret = encryption_secret_provided_ignore_encrypt_flag? ? read_secret : nil
-          raw_data = Chef::DataBagItem.load(@name_args[0], @name_args[1]).raw_data
-          encrypted = encrypted?(raw_data)
+                  when 2 # Bag and Item names provided
+                    secret = encryption_secret_provided_ignore_encrypt_flag? ? read_secret : nil
+                    raw_data = Chef::DataBagItem.load(@name_args[0], @name_args[1]).raw_data
+                    encrypted = encrypted?(raw_data)
 
-          if encrypted && secret
-            # Users do not need to pass --encrypt to read data, we simply try to use the provided secret
-            ui.info("Encrypted data bag detected, decrypting with provided secret.")
-            raw = Chef::EncryptedDataBagItem.load(@name_args[0],
-                                                  @name_args[1],
-                                                  secret)
-            format_for_display(raw.to_hash)
-          elsif encrypted && !secret
-            ui.warn("Encrypted data bag detected, but no secret provided for decoding.  Displaying encrypted data.")
-            format_for_display(raw_data)
-          else
-            ui.info("Unencrypted data bag detected, ignoring any provided secret options.")
-            format_for_display(raw_data)
-          end
+                    if encrypted && secret
+                      # Users do not need to pass --encrypt to read data, we simply try to use the provided secret
+                      ui.info("Encrypted data bag detected, decrypting with provided secret.")
+                      raw = Chef::EncryptedDataBagItem.load(@name_args[0],
+                                                            @name_args[1],
+                                                            secret)
+                      format_for_display(raw.to_hash)
+                    elsif encrypted && !secret
+                      ui.warn("Encrypted data bag detected, but no secret provided for decoding. Displaying encrypted data.")
+                      format_for_display(raw_data)
+                    else
+                      ui.warn("Unencrypted data bag detected, ignoring any provided secret options.") if secret
+                      format_for_display(raw_data)
+                    end
 
-        when 1 # Only Bag name provided
-          format_list_for_display(Chef::DataBag.load(@name_args[0]))
-        else
-          stdout.puts opt_parser
-          exit(1)
-        end
+                  when 1 # Only Bag name provided
+                    format_list_for_display(Chef::DataBag.load(@name_args[0]))
+                  else
+                    stdout.puts opt_parser
+                    exit(1)
+                  end
         output(display)
       end
 

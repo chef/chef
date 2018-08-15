@@ -3,7 +3,7 @@
 # ./chef-shell - Run the Chef REPL (Shell)
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009
+# Copyright:: Copyright 2009-2018 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,20 +18,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-begin
-  require "rubygems"
-rescue LoadError
-end
+Encoding.default_external = Encoding::UTF_8
 
 require "irb"
 require "irb/completion"
-require 'irb/ext/save-history'
+require "irb/ext/save-history"
 
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
 
 require "chef/shell"
 
-# On Windows only, enable irb --noreadline because of input problems --
-# See CHEF-3284.
-IRB.conf[:USE_READLINE] = false if Chef::Platform::windows?
 Shell.start

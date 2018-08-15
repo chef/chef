@@ -1,6 +1,6 @@
 #
 # Author:: Mike Dodge (<mikedodge04@gmail.com>)
-# Copyright:: Copyright (c) 2015 Facebook, Inc.
+# Copyright:: Copyright 2015-2016, Facebook, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,43 +16,26 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
+require "chef/resource/service"
 
 class Chef
   class Resource
     class MacosxService < Chef::Resource::Service
-
+      resource_name :macosx_service
+      provides :macosx_service
       provides :service, os: "darwin"
-      provides :macosx_service, os: "darwin"
+
+      description "Use the macosx_service resource to manage services on the macOS platform."
 
       identity_attr :service_name
 
       state_attrs :enabled, :running
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :macosx_service
-        @plist = nil
-        @session_type = nil
-      end
-
       # This will enable user to pass a plist in the case
       # that the filename and label for the service dont match
-      def plist(arg=nil)
-        set_or_return(
-          :plist,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :plist, String
 
-      def session_type(arg=nil)
-        set_or_return(
-          :session_type,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :session_type, String
 
     end
   end

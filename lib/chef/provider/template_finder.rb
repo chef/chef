@@ -1,6 +1,6 @@
 #--
 # Author:: Andrea Campi (<andrea.campi@zephirworks.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,8 @@ class Chef
         cookbook.preferred_filename_on_disk_location(@node, :templates, template_name)
       end
 
-    protected
+      protected
+
       def template_source_name(name, options)
         if options[:source]
           options[:source]

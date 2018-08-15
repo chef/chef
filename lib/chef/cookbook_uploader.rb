@@ -1,14 +1,15 @@
 
-require 'set'
-require 'chef/exceptions'
-require 'chef/knife/cookbook_metadata'
-require 'chef/digester'
-require 'chef/cookbook_manifest'
-require 'chef/cookbook_version'
-require 'chef/cookbook/syntax_check'
-require 'chef/cookbook/file_system_file_vendor'
-require 'chef/util/threaded_job_queue'
-require 'chef/sandbox'
+require "set"
+require "chef/exceptions"
+require "chef/knife/cookbook_metadata"
+require "chef/digester"
+require "chef/cookbook_manifest"
+require "chef/cookbook_version"
+require "chef/cookbook/syntax_check"
+require "chef/cookbook/file_system_file_vendor"
+require "chef/util/threaded_job_queue"
+require "chef/sandbox"
+require "chef/server_api"
 
 class Chef
   class CookbookUploader
@@ -31,15 +32,15 @@ class Chef
     #           uploading the cookbook. This allows frozen CookbookVersion
     #           documents on the server to be overwritten (otherwise a 409 is
     #           returned by the server)
-    # * :rest   A Chef::REST object that you have configured the way you like it.
+    # * :rest   A Chef::ServerAPI object that you have configured the way you like it.
     #           If you don't provide this, one will be created using the values
     #           in Chef::Config.
     # * :concurrency   An integer that decided how many threads will be used to
     #           perform concurrent uploads
-    def initialize(cookbooks, opts={})
+    def initialize(cookbooks, opts = {})
       @opts = opts
       @cookbooks = Array(cookbooks)
-      @rest = opts[:rest] || Chef::REST.new(Chef::Config[:chef_server_url])
+      @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions)
       @concurrency = opts[:concurrency] || 10
       @policy_mode = opts[:policy_mode] || false
     end
@@ -54,8 +55,8 @@ class Chef
         checksum_files.merge!(cb.checksums)
       end
 
-      checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
-      new_sandbox = rest.post("sandboxes", { :checksums => checksums })
+      checksums = checksum_files.inject({}) { |memo, elt| memo[elt.first] = nil; memo }
+      new_sandbox = rest.post("sandboxes", { checksums: checksums })
 
       Chef::Log.info("Uploading files")
 
@@ -64,25 +65,25 @@ class Chef
       checksums_to_upload = Set.new
 
       # upload the new checksums and commit the sandbox
-      new_sandbox['checksums'].each do |checksum, info|
-        if info['needs_upload'] == true
+      new_sandbox["checksums"].each do |checksum, info|
+        if info["needs_upload"] == true
           checksums_to_upload << checksum
           Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
-          queue << uploader_function_for(checksum_files[checksum], checksum, info['url'], checksums_to_upload)
+          queue << uploader_function_for(checksum_files[checksum], checksum, info["url"], checksums_to_upload)
         else
-          Chef::Log.debug("#{checksum_files[checksum]} has not changed")
+          Chef::Log.trace("#{checksum_files[checksum]} has not changed")
         end
       end
 
       queue.process(@concurrency)
 
-      sandbox_url = new_sandbox['uri']
-      Chef::Log.debug("Committing sandbox")
+      sandbox_url = new_sandbox["uri"]
+      Chef::Log.trace("Committing sandbox")
       # Retry if S3 is claims a checksum doesn't exist (the eventual
       # in eventual consistency)
       retries = 0
       begin
-        rest.put(sandbox_url, {:is_completed => true})
+        rest.put(sandbox_url, { is_completed: true })
       rescue Net::HTTPServerException => e
         if e.message =~ /^400/ && (retries += 1) <= 5
           sleep 2
@@ -119,10 +120,10 @@ class Chef
         # but we need the base64 encoding for the content-md5
         # header
         checksum64 = Base64.encode64([checksum].pack("H*")).strip
-        file_contents = File.open(file, "rb") {|f| f.read}
+        file_contents = File.open(file, "rb") { |f| f.read }
 
         # Custom headers. 'content-type' disables JSON serialization of the request body.
-        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, "accept" => 'application/json' }
+        headers = { "content-type" => "application/x-binary", "content-md5" => checksum64, "accept" => "application/json" }
 
         begin
           rest.put(url, file_contents, headers)
@@ -144,7 +145,6 @@ class Chef
         Chef::Log.info("Validating templates")
         exit(1) unless syntax_checker.validate_templates
         Chef::Log.info("Syntax OK")
-        true
       end
     end
 

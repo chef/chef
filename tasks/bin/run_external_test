@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+$:.unshift(File.expand_path("../../lib", File.dirname(__FILE__)))
+
+require "tmpdir"
+require "bundler"
+require "chef/mixin/shell_out"
+
+include Chef::Mixin::ShellOut
+
+github_repo = ARGV.shift
+git_thing = ARGV.shift
+
+build_dir = File.expand_path(ENV["TRAVIS_BUILD_DIR"] || Dir.pwd)
+
+env = { "GEMFILE_MOD" => "gem 'chef', path: '#{build_dir}'" }
+
+Dir.mktmpdir("chef-external-test") do |dir|
+  git_url = "https://github.com/#{github_repo}"
+  Dir.rmdir dir
+  shell_out!("git clone #{git_url} #{dir}", live_stream: STDOUT)
+  Dir.chdir(dir) do
+    shell_out!("git checkout #{git_thing}", live_stream: STDOUT)
+    Bundler.with_clean_env do
+      shell_out!("bundle install", live_stream: STDOUT, env: env)
+      shell_out!("bundle exec #{ARGV.join(" ")}", live_stream: STDOUT, env: env)
+    end
+  end
+end

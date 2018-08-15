@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::FileContentManagement::Deploy::MvUnix do
 
@@ -38,9 +38,9 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
     let(:target_file_mode) { 0644 }
     let(:target_file_stat) do
       double "File::Stat struct for target file",
-           :mode => target_file_mode,
-           :uid => target_file_uid,
-           :gid => target_file_gid
+           mode: target_file_mode,
+           uid: target_file_uid,
+           gid: target_file_gid
     end
 
     before do
@@ -99,5 +99,3 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
 
   end
 end
-
-

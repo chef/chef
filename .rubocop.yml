@@ -1,0 +1,34 @@
+AllCops:
+  Exclude:
+    - "spec/data/**/*"
+    - "vendor/**/*"
+    - "pkg/**/*"
+    - "chef-config/pkg/**/*"
+    - "habitat/**/*"
+Security/Eval:
+  Enabled: false
+Lint/UselessAssignment:
+  Enabled: false
+Lint/DeprecatedClassMethods:
+  Enabled: false
+Lint/ParenthesesAsGroupedExpression:
+  Enabled: false
+Lint/AmbiguousRegexpLiteral:
+  Enabled: false
+Lint/AssignmentInCondition:
+  Enabled: false
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+Lint/UnneededSplatExpansion:
+  Enabled: false
+Lint/ShadowingOuterLocalVariable:
+  Enabled: false
+Lint/EmptyWhen:
+  Enabled: false
+Lint/IneffectiveAccessModifier:
+  Enabled: false
+Lint/ShadowedException:
+  Enabled: false
+Layout/AlignHash:
+  Enabled: true
+  EnforcedLastArgumentHashStyle: ignore_implicit

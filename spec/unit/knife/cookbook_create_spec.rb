@@ -1,6 +1,6 @@
 #
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 
 describe Chef::Knife::CookbookCreate do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
     @knife = Chef::Knife::CookbookCreate.new
     @knife.config = {}
     @knife.name_args = ["foobar"]
@@ -33,227 +34,8 @@ describe Chef::Knife::CookbookCreate do
 
     # Fixes CHEF-2579
     it "should expand the path of the cookbook directory" do
-      expect(File).to receive(:expand_path).with("~/tmp/monkeypants")
-      @knife.config = {:cookbook_path => "~/tmp/monkeypants"}
-      allow(@knife).to receive(:create_cookbook)
-      allow(@knife).to receive(:create_readme)
-      allow(@knife).to receive(:create_changelog)
-      allow(@knife).to receive(:create_metadata)
+      expect(Chef::Log).to receive(:fatal).with("knife cookbook create has been removed. Please use `chef generate cookbook` from the ChefDK")
       @knife.run
-    end
-
-    it "should create a new cookbook with default values to copyright name, email, readme format and license if those are not supplied" do
-      @dir = Dir.tmpdir
-      @knife.config = {:cookbook_path => @dir}
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "YOUR_COMPANY_NAME", "none")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "YOUR_COMPANY_NAME", "YOUR_EMAIL", "none", "md")
-      @knife.run
-    end
-
-    it "should create a new cookbook with specified company name in the copyright section if one is specified" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "YOUR_EMAIL", "none", "md")
-      @knife.run
-    end
-
-    it "should create a new cookbook with specified copyright name and email if they are specified" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none", "md")
-      @knife.run
-    end
-
-    it "should create a new cookbook with specified copyright name and email and license information (true) if they are specified" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "apachev2"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "apachev2")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "apachev2", "md")
-      @knife.run
-    end
-
-    it "should create a new cookbook with specified copyright name and email and license information (false) if they are specified" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => false
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none", "md")
-      @knife.run
-    end
-
-    it "should create a new cookbook with specified copyright name and email and license information ('false' as string) if they are specified" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "false"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none", "md")
-      @knife.run
-    end
-
-    it "should allow specifying a gpl2 license" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "gplv2"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv2")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "gplv2", "md")
-      @knife.run
-    end
-
-    it "should allow specifying a gplv3 license" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "gplv3"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv3")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "gplv3", "md")
-      @knife.run
-    end
-
-    it "should allow specifying the mit license" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "md")
-      @knife.run
-    end
-
-    it "should allow specifying the rdoc readme format" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "rdoc"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "rdoc")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "rdoc")
-      @knife.run
-    end
-
-    it "should allow specifying the mkd readme format" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "mkd"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "mkd")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "mkd")
-      @knife.run
-    end
-
-    it "should allow specifying the txt readme format" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "txt"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "txt")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "txt")
-      @knife.run
-    end
-
-    it "should allow specifying an arbitrary readme format" do
-      @dir = Dir.tmpdir
-      @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "foo"
-      }
-      @knife.name_args=["foobar"]
-      expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
-      expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "foo")
-      expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
-      expect(@knife).to receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "foo")
-      @knife.run
-    end
-
-    context "when the cookbooks path is set to nil" do
-      before do
-        Chef::Config[:cookbook_path] = nil
-      end
-
-      it "should throw an argument error" do
-        @dir = Dir.tmpdir
-        expect{@knife.run}.to raise_error(ArgumentError)
-      end
     end
 
   end

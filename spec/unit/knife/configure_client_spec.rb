@@ -1,6 +1,6 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
-# Copyright:: Copyright (c) 2011 Thomas Bishop
+# Copyright:: Copyright 2011-2016, Thomas Bishop
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,61 +16,59 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::ConfigureClient do
   before do
     @knife = Chef::Knife::ConfigureClient.new
-    Chef::Config[:chef_server_url] = 'https://chef.example.com'
-    Chef::Config[:validation_client_name] = 'chef-validator'
-    Chef::Config[:validation_key] = '/etc/chef/validation.pem'
+    Chef::Config[:chef_server_url] = "https://chef.example.com"
+    Chef::Config[:validation_client_name] = "chef-validator"
+    Chef::Config[:validation_key] = "/etc/chef/validation.pem"
 
     @stderr = StringIO.new
     allow(@knife.ui).to receive(:stderr).and_return(@stderr)
   end
 
-  describe 'run' do
-    it 'should print usage and exit when a directory is not provided' do
+  describe "run" do
+    it "should print usage and exit when a directory is not provided" do
       expect(@knife).to receive(:show_usage)
       expect(@knife.ui).to receive(:fatal).with(/must provide the directory/)
-      expect {
+      expect do
         @knife.run
-      }.to raise_error SystemExit
+      end.to raise_error SystemExit
     end
 
-    describe 'when specifing a directory' do
+    describe "when specifing a directory" do
       before do
-        @knife.name_args = ['/home/bob/.chef']
+        @knife.name_args = ["/home/bob/.chef"]
         @client_file = StringIO.new
         @validation_file = StringIO.new
-        expect(File).to receive(:open).with('/home/bob/.chef/client.rb', 'w').
-                                   and_yield(@client_file)
-        expect(File).to receive(:open).with('/home/bob/.chef/validation.pem', 'w').
-                                   and_yield(@validation_file)
-        expect(IO).to receive(:read).and_return('foo_bar_baz')
+        expect(File).to receive(:open).with("/home/bob/.chef/client.rb", "w")
+          .and_yield(@client_file)
+        expect(File).to receive(:open).with("/home/bob/.chef/validation.pem", "w")
+          .and_yield(@validation_file)
+        expect(IO).to receive(:read).and_return("foo_bar_baz")
       end
 
-      it 'should recursively create the directory' do
-        expect(FileUtils).to receive(:mkdir_p).with('/home/bob/.chef')
+      it "should recursively create the directory" do
+        expect(FileUtils).to receive(:mkdir_p).with("/home/bob/.chef")
         @knife.run
       end
 
-      it 'should write out the config file' do
+      it "should write out the config file" do
         allow(FileUtils).to receive(:mkdir_p)
         @knife.run
-        expect(@client_file.string).to match /log_level\s+\:info/
-        expect(@client_file.string).to match /log_location\s+STDOUT/
         expect(@client_file.string).to match /chef_server_url\s+'https\:\/\/chef\.example\.com'/
         expect(@client_file.string).to match /validation_client_name\s+'chef-validator'/
       end
 
-      it 'should write out the validation.pem file' do
+      it "should write out the validation.pem file" do
         allow(FileUtils).to receive(:mkdir_p)
         @knife.run
         expect(@validation_file.string).to match /foo_bar_baz/
       end
 
-      it 'should print information on what is being configured' do
+      it "should print information on what is being configured" do
         allow(FileUtils).to receive(:mkdir_p)
         @knife.run
         expect(@stderr.string).to match /creating client configuration/i
@@ -81,4 +79,3 @@ describe Chef::Knife::ConfigureClient do
   end
 
 end
-

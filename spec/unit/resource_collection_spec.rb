@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::ResourceCollection do
   let(:rc) { Chef::ResourceCollection.new() }
@@ -65,7 +65,7 @@ describe Chef::ResourceCollection do
     end
 
     it "should accept named arguments in any order" do
-      rc.insert(resource, :instance_name => 'foo', :resource_type =>'bar')
+      rc.insert(resource, instance_name: "foo", resource_type: "bar")
       expect(rc[0]).to eq(resource)
     end
 
@@ -98,11 +98,11 @@ describe Chef::ResourceCollection do
     it "should allow you to iterate over every resource in the collection" do
       load_up_resources
       results = Array.new
-      expect {
+      expect do
         rc.each do |r|
           results << r.name
         end
-      }.not_to raise_error
+      end.not_to raise_error
       results.each_index do |i|
         case i
         when 0
@@ -120,11 +120,11 @@ describe Chef::ResourceCollection do
     it "should allow you to iterate over every resource by index" do
       load_up_resources
       results = Array.new
-      expect {
+      expect do
         rc.each_index do |i|
           results << rc[i].name
         end
-      }.not_to raise_error
+      end.not_to raise_error
       results.each_index do |i|
         case i
         when 0
@@ -162,23 +162,53 @@ describe Chef::ResourceCollection do
     end
   end
 
+  describe "delete" do
+    it "should allow you to delete resources by name via delete" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      rc << zmr
+      expect(rc).not_to be_empty
+      expect(rc.delete(zmr.to_s)).to eql(zmr)
+      expect(rc).to be_empty
+
+      zmr = Chef::Resource::ZenMaster.new("cat")
+      rc[0] = zmr
+      expect(rc).not_to be_empty
+      expect(rc.delete(zmr)).to eql(zmr)
+      expect(rc).to be_empty
+
+      zmr = Chef::Resource::ZenMaster.new("monkey")
+      rc.push(zmr)
+      expect(rc).not_to be_empty
+      expect(rc.delete(zmr)).to eql(zmr)
+      expect(rc).to be_empty
+    end
+
+    it "should raise an exception if you send something strange to delete" do
+      expect { rc.delete(:symbol) }.to raise_error(ArgumentError)
+    end
+
+    it "should raise an exception if it cannot find a resource with delete" do
+      expect { rc.delete("zen_master[dog]") }.to raise_error(Chef::Exceptions::ResourceNotFound)
+    end
+  end
+
   describe "resources" do
 
     it "should find a resource by symbol and name (:zen_master => monkey)" do
       load_up_resources
-      expect(rc.resources(:zen_master => "monkey").name).to eql("monkey")
+      expect(rc.resources(zen_master: "monkey").name).to eql("monkey")
     end
 
     it "should find a resource by symbol and array of names (:zen_master => [a,b])" do
       load_up_resources
-      results = rc.resources(:zen_master => [ "monkey", "dog" ])
+      results = rc.resources(zen_master: %w{monkey dog})
       expect(results.length).to eql(2)
       check_by_names(results, "monkey", "dog")
     end
 
     it "should find resources of multiple kinds (:zen_master => a, :file => b)" do
       load_up_resources
-      results = rc.resources(:zen_master => "monkey", :file => "something")
+      results = rc.resources(zen_master: "monkey", file: "something")
       expect(results.length).to eql(2)
       check_by_names(results, "monkey", "something")
     end
@@ -189,6 +219,7 @@ describe Chef::ResourceCollection do
     end
 
     it "should find resources by strings of zen_master[a,b]" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       load_up_resources
       results = rc.resources("zen_master[monkey,dog]")
       expect(results.length).to eql(2)
@@ -211,7 +242,7 @@ describe Chef::ResourceCollection do
     end
 
     it "raises an error when attempting to find a resource that does not exist" do
-      expect {rc.find("script[nonesuch]")}.to raise_error(Chef::Exceptions::ResourceNotFound)
+      expect { rc.find("script[nonesuch]") }.to raise_error(Chef::Exceptions::ResourceNotFound)
     end
 
   end
@@ -222,9 +253,8 @@ describe Chef::ResourceCollection do
     end
 
     it "accepts a single-element :resource_type => 'resource_name' Hash" do
-      expect(rc.validate_lookup_spec!(:service => "apache2")).to be_truthy
+      expect(rc.validate_lookup_spec!(service: "apache2")).to be_truthy
     end
-
 
     it "accepts a chef resource object" do
       res = Chef::Resource.new("foo", nil)
@@ -252,7 +282,7 @@ describe Chef::ResourceCollection do
       expect(json).to match(/instance_vars/)
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { rc }
     end
   end
@@ -262,10 +292,10 @@ describe Chef::ResourceCollection do
       expect(rc.respond_to?(:from_json)).to eq(false)
     end
 
-    it "should convert from json using the CHEF::JSONCompat library" do
+    it "should convert from json using the Chef::JSONCompat library" do
       rc << resource
       json = Chef::JSONCompat.to_json(rc)
-      s_rc = Chef::JSONCompat.from_json(json)
+      s_rc = Chef::ResourceCollection.from_json(json)
       expect(s_rc).to be_a_kind_of(Chef::ResourceCollection)
       expect(s_rc[0].name).to eql(resource.name)
     end
@@ -284,15 +314,85 @@ describe Chef::ResourceCollection do
     end
   end
 
+  describe "multiple run_contexts" do
+    let(:node) { Chef::Node.new }
+    let(:parent_run_context) { Chef::RunContext.new(node, {}, nil) }
+    let(:parent_resource_collection) { parent_run_context.resource_collection }
+    let(:child_run_context) { parent_run_context.create_child }
+    let(:child_resource_collection) { child_run_context.resource_collection }
+
+    it "should find resources in the parent run_context with lookup" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      parent_resource_collection << zmr
+      expect(child_resource_collection.lookup(zmr.to_s)).to eql(zmr)
+    end
+
+    it "should not find resources in the parent run_context with lookup_local" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      parent_resource_collection << zmr
+      expect { child_resource_collection.lookup_local(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+    end
+
+    it "should find resources in the child run_context with lookup_local" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      child_resource_collection << zmr
+      expect(child_resource_collection.lookup_local(zmr.to_s)).to eql(zmr)
+    end
+
+    it "should find resources in the parent run_context with find" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      parent_resource_collection << zmr
+      expect(child_resource_collection.find(zmr.to_s)).to eql(zmr)
+    end
+
+    it "should not find resources in the parent run_context with find_local" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      parent_resource_collection << zmr
+      expect { child_resource_collection.find_local(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+    end
+
+    it "should find resources in the child run_context with find_local" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      child_resource_collection << zmr
+      expect(child_resource_collection.find_local(zmr.to_s)).to eql(zmr)
+    end
+
+    it "should not find resources in the child run_context in any way from the parent" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      child_resource_collection << zmr
+      expect { parent_resource_collection.find_local(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      expect { parent_resource_collection.find(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      expect { parent_resource_collection.lookup_local(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      expect { parent_resource_collection.lookup(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+    end
+
+    it "should behave correctly when there is an identically named resource in the child and parent" do
+      a = Chef::Resource::File.new("something")
+      a.content("foo")
+      parent_resource_collection << a
+      b = Chef::Resource::File.new("something")
+      b.content("bar")
+      child_resource_collection << b
+      expect(child_resource_collection.find_local("file[something]").content).to eql("bar")
+      expect(child_resource_collection.find("file[something]").content).to eql("bar")
+      expect(child_resource_collection.lookup_local("file[something]").content).to eql("bar")
+      expect(child_resource_collection.lookup("file[something]").content).to eql("bar")
+      expect(parent_resource_collection.find_local("file[something]").content).to eql("foo")
+      expect(parent_resource_collection.find("file[something]").content).to eql("foo")
+      expect(parent_resource_collection.lookup_local("file[something]").content).to eql("foo")
+      expect(parent_resource_collection.lookup("file[something]").content).to eql("foo")
+    end
+  end
+
   def check_by_names(results, *names)
     names.each do |res_name|
-      expect(results.detect{ |res| res.name == res_name }).not_to eql(nil)
+      expect(results.detect { |res| res.name == res_name }).not_to eql(nil)
     end
   end
 
   def load_up_resources
     %w{dog cat monkey}.each do |n|
-       rc << Chef::Resource::ZenMaster.new(n)
+      rc << Chef::Resource::ZenMaster.new(n)
     end
     rc << Chef::Resource::File.new("something")
   end

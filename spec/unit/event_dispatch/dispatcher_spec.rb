@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 #
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/event_dispatch/dispatcher'
+require "spec_helper"
+require "chef/event_dispatch/dispatcher"
 
 describe Chef::EventDispatch::Dispatcher do
 
@@ -47,15 +47,76 @@ describe Chef::EventDispatch::Dispatcher do
       expect(event_sink).to receive(:run_start).with("12.4.0")
       dispatcher.run_start("12.4.0")
 
-      expect(event_sink).to receive(:synchronized_cookbook).with("apache2")
-      dispatcher.synchronized_cookbook("apache2")
+      cookbook_version = double("cookbook_version")
+      expect(event_sink).to receive(:synchronized_cookbook).with("apache2", cookbook_version)
+      dispatcher.synchronized_cookbook("apache2", cookbook_version)
 
       exception = StandardError.new("foo")
-      expect(event_sink).to receive(:recipe_file_load_failed).with("/path/to/file.rb", exception)
-      dispatcher.recipe_file_load_failed("/path/to/file.rb", exception)
+      expect(event_sink).to receive(:recipe_file_load_failed).with("/path/to/file.rb", exception, "myrecipe")
+      dispatcher.recipe_file_load_failed("/path/to/file.rb", exception, "myrecipe")
     end
 
+    context "when an event sink has fewer arguments for an event" do
+      # Can't use a double because they don't report arity correctly.
+      let(:event_sink) do
+        Class.new(Chef::EventDispatch::Base) do
+          attr_reader :synchronized_cookbook_args
+          def synchronized_cookbook(cookbook_name)
+            @synchronized_cookbook_args = [cookbook_name]
+          end
+        end.new
+      end
+
+      it "trims the arugment list" do
+        cookbook_version = double("cookbook_version")
+        dispatcher.synchronized_cookbook("apache2", cookbook_version)
+        expect(event_sink.synchronized_cookbook_args).to eq ["apache2"]
+      end
+    end
   end
 
-end
+  context "when two event sinks have different arguments for an event" do
+    let(:event_sink_1) do
+      Class.new(Chef::EventDispatch::Base) do
+        attr_reader :synchronized_cookbook_args
+        def synchronized_cookbook(cookbook_name)
+          @synchronized_cookbook_args = [cookbook_name]
+        end
+      end.new
+    end
+    let(:event_sink_2) do
+      Class.new(Chef::EventDispatch::Base) do
+        attr_reader :synchronized_cookbook_args
+        def synchronized_cookbook(cookbook_name, cookbook)
+          @synchronized_cookbook_args = [cookbook_name, cookbook]
+        end
+      end.new
+    end
 
+    context "and the one with fewer arguments comes first" do
+      before do
+        dispatcher.register(event_sink_1)
+        dispatcher.register(event_sink_2)
+      end
+      it "trims the arugment list" do
+        cookbook_version = double("cookbook_version")
+        dispatcher.synchronized_cookbook("apache2", cookbook_version)
+        expect(event_sink_1.synchronized_cookbook_args).to eq ["apache2"]
+        expect(event_sink_2.synchronized_cookbook_args).to eq ["apache2", cookbook_version]
+      end
+    end
+
+    context "and the one with fewer arguments comes last" do
+      before do
+        dispatcher.register(event_sink_2)
+        dispatcher.register(event_sink_1)
+      end
+      it "trims the arugment list" do
+        cookbook_version = double("cookbook_version")
+        dispatcher.synchronized_cookbook("apache2", cookbook_version)
+        expect(event_sink_1.synchronized_cookbook_args).to eq ["apache2"]
+        expect(event_sink_2.synchronized_cookbook_args).to eq ["apache2", cookbook_version]
+      end
+    end
+  end
+end

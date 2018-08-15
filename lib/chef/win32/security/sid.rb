@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/win32/security'
-require 'chef/win32/api/net'
-require 'chef/win32/api/error'
+require "chef/win32/security"
+require "chef/win32/api/net"
+require "chef/win32/api/error"
 
-require 'wmi-lite/wmi'
+require "wmi-lite/wmi"
 
 class Chef
   module ReservedNames::Win32
@@ -46,11 +46,11 @@ class Chef
         end
 
         def self.from_string_sid(string_sid)
-          Chef::ReservedNames::Win32::Security::convert_string_sid_to_sid(string_sid)
+          Chef::ReservedNames::Win32::Security.convert_string_sid_to_sid(string_sid)
         end
 
         def ==(other)
-          other != nil && Chef::ReservedNames::Win32::Security.equal_sid(self, other)
+          !other.nil? && Chef::ReservedNames::Win32::Security.equal_sid(self, other)
         end
 
         attr_reader :pointer
@@ -59,9 +59,14 @@ class Chef
           Chef::ReservedNames::Win32::Security.lookup_account_sid(self)
         end
 
+        def account_simple_name
+          domain, name, use = account
+          name
+        end
+
         def account_name
           domain, name, use = account
-          (domain != nil && domain.length > 0) ? "#{domain}\\#{name}" : name
+          (!domain.nil? && domain.length > 0) ? "#{domain}\\#{name}" : name
         end
 
         def size
@@ -78,123 +83,161 @@ class Chef
 
         # Well-known SIDs
         def self.Null
-          SID.from_string_sid('S-1-0')
+          SID.from_string_sid("S-1-0")
         end
+
         def self.Nobody
-          SID.from_string_sid('S-1-0-0')
+          SID.from_string_sid("S-1-0-0")
         end
+
         def self.World
-          SID.from_string_sid('S-1-1')
+          SID.from_string_sid("S-1-1")
         end
+
         def self.Everyone
-          SID.from_string_sid('S-1-1-0')
+          SID.from_string_sid("S-1-1-0")
         end
+
         def self.Local
-          SID.from_string_sid('S-1-2')
+          SID.from_string_sid("S-1-2")
         end
+
         def self.Creator
-          SID.from_string_sid('S-1-3')
+          SID.from_string_sid("S-1-3")
         end
+
         def self.CreatorOwner
-          SID.from_string_sid('S-1-3-0')
+          SID.from_string_sid("S-1-3-0")
         end
+
         def self.CreatorGroup
-          SID.from_string_sid('S-1-3-1')
+          SID.from_string_sid("S-1-3-1")
         end
+
         def self.CreatorOwnerServer
-          SID.from_string_sid('S-1-3-2')
+          SID.from_string_sid("S-1-3-2")
         end
+
         def self.CreatorGroupServer
-          SID.from_string_sid('S-1-3-3')
+          SID.from_string_sid("S-1-3-3")
         end
+
         def self.NonUnique
-          SID.from_string_sid('S-1-4')
+          SID.from_string_sid("S-1-4")
         end
+
         def self.Nt
-          SID.from_string_sid('S-1-5')
+          SID.from_string_sid("S-1-5")
         end
+
         def self.Dialup
-          SID.from_string_sid('S-1-5-1')
+          SID.from_string_sid("S-1-5-1")
         end
+
         def self.Network
-          SID.from_string_sid('S-1-5-2')
+          SID.from_string_sid("S-1-5-2")
         end
+
         def self.Batch
-          SID.from_string_sid('S-1-5-3')
+          SID.from_string_sid("S-1-5-3")
         end
+
         def self.Interactive
-          SID.from_string_sid('S-1-5-4')
+          SID.from_string_sid("S-1-5-4")
         end
+
         def self.Service
-          SID.from_string_sid('S-1-5-6')
+          SID.from_string_sid("S-1-5-6")
         end
+
         def self.Anonymous
-          SID.from_string_sid('S-1-5-7')
+          SID.from_string_sid("S-1-5-7")
         end
+
         def self.Proxy
-          SID.from_string_sid('S-1-5-8')
+          SID.from_string_sid("S-1-5-8")
         end
+
         def self.EnterpriseDomainControllers
-          SID.from_string_sid('S-1-5-9')
+          SID.from_string_sid("S-1-5-9")
         end
+
         def self.PrincipalSelf
-          SID.from_string_sid('S-1-5-10')
+          SID.from_string_sid("S-1-5-10")
         end
+
         def self.AuthenticatedUsers
-          SID.from_string_sid('S-1-5-11')
+          SID.from_string_sid("S-1-5-11")
         end
+
         def self.RestrictedCode
-          SID.from_string_sid('S-1-5-12')
+          SID.from_string_sid("S-1-5-12")
         end
+
         def self.TerminalServerUsers
-          SID.from_string_sid('S-1-5-13')
+          SID.from_string_sid("S-1-5-13")
         end
+
         def self.LocalSystem
-          SID.from_string_sid('S-1-5-18')
+          SID.from_string_sid("S-1-5-18")
         end
+
         def self.NtLocal
-          SID.from_string_sid('S-1-5-19')
+          SID.from_string_sid("S-1-5-19")
         end
+
         def self.NtNetwork
-          SID.from_string_sid('S-1-5-20')
+          SID.from_string_sid("S-1-5-20")
         end
+
         def self.BuiltinAdministrators
-          SID.from_string_sid('S-1-5-32-544')
+          SID.from_string_sid("S-1-5-32-544")
         end
+
         def self.BuiltinUsers
-          SID.from_string_sid('S-1-5-32-545')
+          SID.from_string_sid("S-1-5-32-545")
         end
+
         def self.Guests
-          SID.from_string_sid('S-1-5-32-546')
+          SID.from_string_sid("S-1-5-32-546")
         end
+
         def self.PowerUsers
-          SID.from_string_sid('S-1-5-32-547')
+          SID.from_string_sid("S-1-5-32-547")
         end
+
         def self.AccountOperators
-          SID.from_string_sid('S-1-5-32-548')
+          SID.from_string_sid("S-1-5-32-548")
         end
+
         def self.ServerOperators
-          SID.from_string_sid('S-1-5-32-549')
+          SID.from_string_sid("S-1-5-32-549")
         end
+
         def self.PrintOperators
-          SID.from_string_sid('S-1-5-32-550')
+          SID.from_string_sid("S-1-5-32-550")
         end
+
         def self.BackupOperators
-          SID.from_string_sid('S-1-5-32-551')
+          SID.from_string_sid("S-1-5-32-551")
         end
+
         def self.Replicators
-          SID.from_string_sid('S-1-5-32-552')
+          SID.from_string_sid("S-1-5-32-552")
         end
+
         def self.Administrators
-          SID.from_string_sid('S-1-5-32-544')
+          SID.from_string_sid("S-1-5-32-544")
         end
 
         def self.None
           SID.from_account("#{::ENV['COMPUTERNAME']}\\None")
         end
+
         def self.Administrator
           SID.from_account("#{::ENV['COMPUTERNAME']}\\#{SID.admin_account_name}")
         end
+
         def self.Guest
           SID.from_account("#{::ENV['COMPUTERNAME']}\\Guest")
         end
@@ -205,8 +248,7 @@ class Chef
 
         # See https://technet.microsoft.com/en-us/library/cc961992.aspx
         # In practice, this is SID.Administrators if the current_user is an admin (even if not
-        # running elevated), and is current_user otherwise. On win2k3, it technically can be
-        # current_user in all cases if a certain group policy is set.
+        # running elevated), and is current_user otherwise.
         def self.default_security_object_owner
           token = Chef::ReservedNames::Win32::Security.open_current_process_token
           Chef::ReservedNames::Win32::Security.get_token_information_owner(token)
@@ -237,11 +279,11 @@ class Chef
 
             status = ERROR_MORE_DATA
 
-            while(status == ERROR_MORE_DATA) do
+            while status == ERROR_MORE_DATA
               status = NetUserEnum(servername, level, filter, bufptr, prefmaxlen, entriesread, totalentries, resume_handle)
 
-              if (status == NERR_Success || status == ERROR_MORE_DATA)
-                entriesread.read_long.times.collect do |i|
+              if status == NERR_Success || status == ERROR_MORE_DATA
+                Array.new(entriesread.read_long) do |i|
                   user_info = USER_INFO_3.new(bufptr.read_pointer + i * USER_INFO_3.size)
                   # Check if the account is the Administrator account
                   # RID for the Administrator account is always 500 and it's privilage is set to USER_PRIV_ADMIN

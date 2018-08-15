@@ -1,6 +1,7 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Davide Cavalca (<dcavalca@fb.com>)
+# Copyright:: Copyright 2011-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Systemd do
 
@@ -26,24 +27,27 @@ describe Chef::Provider::Service::Systemd do
 
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
-  let(:service_name) { "rsyslog.service" }
+  let(:service_name) { "rsyslog\\x2d.service" }
+
+  let(:service_name_escaped) { "rsyslog\\\\x2d.service" }
 
   let(:new_resource) { Chef::Resource::Service.new(service_name) }
 
   let(:provider) { Chef::Provider::Service::Systemd.new(new_resource, run_context) }
 
   let(:shell_out_success) do
-    double('shell_out_with_systems_locale', :exitstatus => 0, :error? => false)
+    double("shell_out", exitstatus: 0, error?: false)
   end
 
   let(:shell_out_failure) do
-    double('shell_out_with_systems_locale', :exitstatus => 1, :error? => true)
+    double("shell_out", exitstatus: 1, error?: true)
   end
 
   let(:current_resource) { Chef::Resource::Service.new(service_name) }
 
   before(:each) do
     allow(Chef::Resource::Service).to receive(:new).with(service_name).and_return(current_resource)
+    allow(Etc).to receive(:getpwnam).and_return(OpenStruct.new(uid: 10000))
   end
 
   describe "load_current_resource" do
@@ -51,6 +55,7 @@ describe Chef::Provider::Service::Systemd do
     before(:each) do
       allow(provider).to receive(:is_active?).and_return(false)
       allow(provider).to receive(:is_enabled?).and_return(false)
+      allow(provider).to receive(:is_masked?).and_return(false)
     end
 
     it "should create a current resource with the name of the new resource" do
@@ -127,6 +132,23 @@ describe Chef::Provider::Service::Systemd do
       expect(current_resource.enabled).to be false
     end
 
+    it "should check if the service is masked" do
+      expect(provider).to receive(:is_masked?)
+      provider.load_current_resource
+    end
+
+    it "should set masked to true if the service is masked" do
+      allow(provider).to receive(:is_masked?).and_return(true)
+      provider.load_current_resource
+      expect(current_resource.masked).to be true
+    end
+
+    it "should set masked to false if the service is not masked" do
+      allow(provider).to receive(:is_masked?).and_return(false)
+      provider.load_current_resource
+      expect(current_resource.masked).to be false
+    end
+
     it "should return the current resource" do
       expect(provider.load_current_resource).to eql(current_resource)
     end
@@ -148,31 +170,48 @@ describe Chef::Provider::Service::Systemd do
 
         it "should call the start command if one is specified" do
           allow(new_resource).to receive(:start_command).and_return("/sbin/rsyslog startyousillysally")
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog startyousillysally")
+          expect(provider).to receive(:shell_out!).with("/sbin/rsyslog startyousillysally", default_env: false)
           provider.start_service
         end
 
-        it "should call '#{systemctl_path} start service_name' if no start command is specified" do
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} start #{service_name}").and_return(shell_out_success)
-          provider.start_service
+        context "when a user is not specified" do
+          it "should call '#{systemctl_path} --system start service_name' if no start command is specified" do
+            expect(provider).to receive(:shell_out!).with("#{systemctl_path} --system start #{service_name_escaped}", default_env: false).and_return(shell_out_success)
+            provider.start_service
+          end
+
+          it "should not call '#{systemctl_path} --system start service_name' if it is already running" do
+            current_resource.running(true)
+            expect(provider).not_to receive(:shell_out!).with("#{systemctl_path} --system start #{service_name_escaped}", {})
+            provider.start_service
+          end
         end
 
-        it "should not call '#{systemctl_path} start service_name' if it is already running" do
-          current_resource.running(true)
-          expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} start #{service_name}")
-          provider.start_service
+        context "when a user is specified" do
+          it "should call '#{systemctl_path} --user start service_name' if no start command is specified" do
+            current_resource.user("joe")
+            expect(provider).to receive(:shell_out!).with("#{systemctl_path} --user start #{service_name_escaped}", { environment: { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, user: "joe", default_env: false }).and_return(shell_out_success)
+            provider.start_service
+          end
+
+          it "should not call '#{systemctl_path} --user start service_name' if it is already running" do
+            current_resource.running(true)
+            current_resource.user("joe")
+            expect(provider).not_to receive(:shell_out!).with("#{systemctl_path} --user start #{service_name_escaped}", { environment: { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, user: "joe" })
+            provider.start_service
+          end
         end
 
         it "should call the restart command if one is specified" do
           current_resource.running(true)
           allow(new_resource).to receive(:restart_command).and_return("/sbin/rsyslog restartyousillysally")
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog restartyousillysally")
+          expect(provider).to receive(:shell_out!).with("/sbin/rsyslog restartyousillysally", default_env: false)
           provider.restart_service
         end
 
-        it "should call '#{systemctl_path} restart service_name' if no restart command is specified" do
+        it "should call '#{systemctl_path} --system restart service_name' if no restart command is specified" do
           current_resource.running(true)
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} restart #{service_name}").and_return(shell_out_success)
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} --system restart #{service_name_escaped}", default_env: false).and_return(shell_out_success)
           provider.restart_service
         end
 
@@ -181,15 +220,15 @@ describe Chef::Provider::Service::Systemd do
             it "should call the reload command" do
               current_resource.running(true)
               allow(new_resource).to receive(:reload_command).and_return("/sbin/rsyslog reloadyousillysally")
-              expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog reloadyousillysally")
+              expect(provider).to receive(:shell_out!).with("/sbin/rsyslog reloadyousillysally", default_env: false)
               provider.reload_service
             end
           end
 
           context "when a reload command is not specified" do
-            it "should call '#{systemctl_path} reload service_name' if the service is running" do
+            it "should call '#{systemctl_path} --system reload service_name' if the service is running" do
               current_resource.running(true)
-              expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} reload #{service_name}").and_return(shell_out_success)
+              expect(provider).to receive(:shell_out!).with("#{systemctl_path} --system reload #{service_name_escaped}", default_env: false).and_return(shell_out_success)
               provider.reload_service
             end
 
@@ -204,19 +243,19 @@ describe Chef::Provider::Service::Systemd do
         it "should call the stop command if one is specified" do
           current_resource.running(true)
           allow(new_resource).to receive(:stop_command).and_return("/sbin/rsyslog stopyousillysally")
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally")
+          expect(provider).to receive(:shell_out!).with("/sbin/rsyslog stopyousillysally", default_env: false)
           provider.stop_service
         end
 
-        it "should call '#{systemctl_path} stop service_name' if no stop command is specified" do
+        it "should call '#{systemctl_path} --system stop service_name' if no stop command is specified" do
           current_resource.running(true)
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} stop #{service_name}").and_return(shell_out_success)
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} --system stop #{service_name_escaped}", default_env: false).and_return(shell_out_success)
           provider.stop_service
         end
 
-        it "should not call '#{systemctl_path} stop service_name' if it is already stopped" do
+        it "should not call '#{systemctl_path} --system stop service_name' if it is already stopped" do
           current_resource.running(false)
-          expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} stop #{service_name}")
+          expect(provider).not_to receive(:shell_out!).with("#{systemctl_path} --system stop #{service_name_escaped}", {})
           provider.stop_service
         end
       end
@@ -225,17 +264,35 @@ describe Chef::Provider::Service::Systemd do
         before(:each) do
           provider.current_resource = current_resource
           current_resource.service_name(service_name)
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
-        it "should call '#{systemctl_path} enable service_name' to enable the service" do
-          expect(provider).to receive(:shell_out!).with("#{systemctl_path} enable #{service_name}").and_return(shell_out_success)
+        it "should call '#{systemctl_path} --system enable service_name' to enable the service" do
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} --system enable #{service_name_escaped}", {}).and_return(shell_out_success)
           provider.enable_service
         end
 
-        it "should call '#{systemctl_path} disable service_name' to disable the service" do
-          expect(provider).to receive(:shell_out!).with("#{systemctl_path} disable #{service_name}").and_return(shell_out_success)
+        it "should call '#{systemctl_path} --system disable service_name' to disable the service" do
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} --system disable #{service_name_escaped}", {}).and_return(shell_out_success)
           provider.disable_service
+        end
+      end
+
+      describe "mask and unmask service" do
+        before(:each) do
+          provider.current_resource = current_resource
+          current_resource.service_name(service_name)
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
+        end
+
+        it "should call '#{systemctl_path} --system mask service_name' to mask the service" do
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} --system mask #{service_name_escaped}", {}).and_return(shell_out_success)
+          provider.mask_service
+        end
+
+        it "should call '#{systemctl_path} --system unmask service_name' to unmask the service" do
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} --system unmask #{service_name_escaped}", {}).and_return(shell_out_success)
+          provider.unmask_service
         end
       end
 
@@ -243,16 +300,16 @@ describe Chef::Provider::Service::Systemd do
         before(:each) do
           provider.current_resource = current_resource
           current_resource.service_name(service_name)
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
-        it "should return true if '#{systemctl_path} is-active service_name' returns 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-active #{service_name} --quiet").and_return(shell_out_success)
+        it "should return true if '#{systemctl_path} --system is-active service_name' returns 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-active #{service_name_escaped} --quiet", {}).and_return(shell_out_success)
           expect(provider.is_active?).to be true
         end
 
-        it "should return false if '#{systemctl_path} is-active service_name' returns anything except 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-active #{service_name} --quiet").and_return(shell_out_failure)
+        it "should return false if '#{systemctl_path} --system is-active service_name' returns anything except 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-active #{service_name_escaped} --quiet", {}).and_return(shell_out_failure)
           expect(provider.is_active?).to be false
         end
       end
@@ -261,17 +318,45 @@ describe Chef::Provider::Service::Systemd do
         before(:each) do
           provider.current_resource = current_resource
           current_resource.service_name(service_name)
-          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
-        it "should return true if '#{systemctl_path} is-enabled service_name' returns 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_success)
+        it "should return true if '#{systemctl_path} --system is-enabled service_name' returns 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped} --quiet", {}).and_return(shell_out_success)
           expect(provider.is_enabled?).to be true
         end
 
-        it "should return false if '#{systemctl_path} is-enabled service_name' returns anything except 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_failure)
+        it "should return false if '#{systemctl_path} --system is-enabled service_name' returns anything except 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped} --quiet", {}).and_return(shell_out_failure)
           expect(provider.is_enabled?).to be false
+        end
+      end
+
+      describe "is_masked?" do
+        before(:each) do
+          provider.current_resource = current_resource
+          current_resource.service_name(service_name)
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
+        end
+
+        it "should return true if '#{systemctl_path} --system is-enabled service_name' returns 'masked' and returns anything except 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "masked", exitstatus: shell_out_failure))
+          expect(provider.is_masked?).to be true
+        end
+
+        it "should return true if '#{systemctl_path} --system is-enabled service_name' outputs 'masked-runtime' and returns anything except 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "masked-runtime", exitstatus: shell_out_failure))
+          expect(provider.is_masked?).to be true
+        end
+
+        it "should return false if '#{systemctl_path} --system is-enabled service_name' returns 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "enabled", exitstatus: shell_out_success))
+          expect(provider.is_masked?).to be false
+        end
+
+        it "should return false if '#{systemctl_path} --system is-enabled service_name' returns anything except 0 and outputs an error'" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "Failed to get unit file state for #{service_name}: No such file or directory", exitstatus: shell_out_failure))
+          expect(provider.is_masked?).to be false
         end
       end
     end

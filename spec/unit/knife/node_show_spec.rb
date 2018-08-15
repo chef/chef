@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::NodeShow do
 
   let(:node) do
     node = Chef::Node.new()
     node.name("adam")
-    node.run_list = ['role[base]']
+    node.run_list = ["role[base]"]
     node
   end
 
@@ -34,7 +34,7 @@ describe Chef::Knife::NodeShow do
   end
 
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
   end
 
   describe "run" do
@@ -54,10 +54,10 @@ describe Chef::Knife::NodeShow do
     end
 
     it "should pretty print json" do
-      knife.config[:format] = 'json'
+      knife.config[:format] = "json"
       stdout = StringIO.new
       allow(knife.ui).to receive(:stdout).and_return(stdout)
-      expect(Chef::Node).to receive(:load).with('adam').and_return(node)
+      expect(Chef::Node).to receive(:load).with("adam").and_return(node)
       knife.run
       expect(stdout.string).to eql("{\n  \"name\": \"adam\",\n  \"chef_environment\": \"_default\",\n  \"run_list\": [\n\n]\n,\n  \"normal\": {\n\n  }\n}\n")
     end

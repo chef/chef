@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,53 +16,57 @@
 # limitations under the License.
 #
 
-require 'pathname'
-require 'chef/provider/user'
+require "pathname"
+require "chef/provider/user"
 
 class Chef
   class Provider
     class User
       class Useradd < Chef::Provider::User
 
-        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
+        Chef::Log.warn("the Chef::Provider::User::Useradd provider is deprecated, please subclass Chef::Provider::User directly")
+
+        # the linux version of this has been forked off, this is the base class now of solaris and AIX and should be abandoned
+        # and those provider should be rewritten like the linux version.
+
+        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]].freeze
 
         def create_user
           command = compile_command("useradd") do |useradd|
             useradd.concat(universal_options)
             useradd.concat(useradd_options)
           end
-          shell_out!(*command)
+          shell_out!(command)
         end
 
         def manage_user
-          unless universal_options.empty?
-            command = compile_command("usermod") do |u|
-              u.concat(universal_options)
-            end
-            shell_out!(*command)
+          return if universal_options.empty?
+          command = compile_command("usermod") do |u|
+            u.concat(universal_options)
           end
+          shell_out!(command)
         end
 
         def remove_user
           command = [ "userdel" ]
-          command << "-r" if managing_home_dir?
+          command << "-r" if new_resource.manage_home
           command << "-f" if new_resource.force
           command << new_resource.username
-          shell_out!(*command)
+          shell_out!(command)
         end
 
         def check_lock
           # we can get an exit code of 1 even when it's successful on
           # rhel/centos (redhat bug 578534). See additional error checks below.
-          passwd_s = shell_out!("passwd", "-S", new_resource.username, :returns => [0,1])
+          passwd_s = shell_out!("passwd", "-S", new_resource.username, returns: [0, 1])
           if whyrun_mode? && passwd_s.stdout.empty? && passwd_s.stderr.match(/does not exist/)
             # if we're in whyrun mode and the user is not yet created we assume it would be
             return false
           end
 
-          raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if passwd_s.stdout.empty?
+          raise Chef::Exceptions::User, "Cannot determine if #{new_resource} is locked!" if passwd_s.stdout.empty?
 
-          status_line = passwd_s.stdout.split(' ')
+          status_line = passwd_s.stdout.split(" ")
           case status_line[1]
           when /^P/
             @locked = false
@@ -74,11 +78,11 @@ class Chef
 
           unless passwd_s.exitstatus == 0
             raise_lock_error = false
-            if ['redhat', 'centos'].include?(node[:platform])
-              passwd_version_check = shell_out!('rpm -q passwd')
+            if %w{redhat centos}.include?(node[:platform])
+              passwd_version_check = shell_out!("rpm", "-q", "passwd")
               passwd_version = passwd_version_check.stdout.chomp
 
-              unless passwd_version == 'passwd-0.73-1'
+              unless passwd_version == "passwd-0.73-1"
                 raise_lock_error = true
               end
             else
@@ -115,31 +119,30 @@ class Chef
                 update_options(field, option, opts)
               end
               if updating_home?
-                if managing_home_dir?
-                  Chef::Log.debug("#{new_resource} managing the users home directory")
-                  opts << "-d" << new_resource.home << "-m"
+                opts << "-d" << new_resource.home
+                if new_resource.manage_home
+                  logger.trace("#{new_resource} managing the users home directory")
+                  opts << "-m"
                 else
-                  Chef::Log.debug("#{new_resource} setting home to #{new_resource.home}")
-                  opts << "-d" << new_resource.home
+                  logger.trace("#{new_resource} setting home to #{new_resource.home}")
                 end
               end
-              opts << "-o" if new_resource.non_unique || new_resource.supports[:non_unique]
+              opts << "-o" if new_resource.non_unique
               opts
             end
         end
 
         def update_options(field, option, opts)
-          if @current_resource.send(field).to_s != new_resource.send(field).to_s
-            if new_resource.send(field)
-              Chef::Log.debug("#{new_resource} setting #{field} to #{new_resource.send(field)}")
-              opts << option << new_resource.send(field).to_s
-            end
-          end
+          return unless current_resource.send(field).to_s != new_resource.send(field).to_s
+          return unless new_resource.send(field)
+          logger.trace("#{new_resource} setting #{field} to #{new_resource.send(field)}")
+          opts << option << new_resource.send(field).to_s
         end
 
         def useradd_options
           opts = []
           opts << "-r" if new_resource.system
+          opts << "-M" unless new_resource.manage_home
           opts
         end
 
@@ -148,12 +151,8 @@ class Chef
           # Pathname#cleanpath does a better job than ::File::expand_path (on both unix and windows)
           # ::File.expand_path("///tmp") == ::File.expand_path("/tmp") => false
           # ::File.expand_path("\\tmp") => "C:/tmp"
-          return true if @current_resource.home.nil? && new_resource.home
-          new_resource.home and Pathname.new(@current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
-        end
-
-        def managing_home_dir?
-          new_resource.manage_home || new_resource.supports[:manage_home]
+          return true if current_resource.home.nil? && new_resource.home
+          new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
         end
 
       end

@@ -8,7 +8,7 @@ Upstream Author(s):
 
 Copyright:
 
-    Copyright (C) 2010 Opscode, Inc
+    Copyright 2010-2016, Chef Software Inc.
 
 License:
 
@@ -26,7 +26,7 @@ License:
 
 The Debian packaging is:
 
-    Copyright (C) 2010 Opscode, Inc (<legal@opscode.com>)
+    Copyright 2010-2016, Chef Software Inc. (<legal@chef.io>)
 
 
 and is licensed under the Apache 2.0 license.

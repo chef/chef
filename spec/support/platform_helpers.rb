@@ -1,29 +1,36 @@
-require 'fcntl'
-require 'chef/mixin/shell_out'
-
+require "fcntl"
+require "chef/mixin/shell_out"
+require "ohai/mixin/http_helper"
+require "ohai/mixin/gce_metadata"
+require "chef/mixin/powershell_out"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
+  extend Chef::Mixin::PowershellOut
 end
 
-def ruby_lt_20?
-  !ruby_gte_20?
+# magic stolen from bundler/spec/support/less_than_proc.rb
+class DependencyProc < Proc
+  attr_accessor :present
+
+  def self.with(present)
+    provided = Gem::Version.new(present.dup)
+    new do |required|
+      !Gem::Requirement.new(required).satisfied_by?(provided)
+    end.tap { |l| l.present = present }
+  end
+
+  def inspect
+    "\"#{present}\""
+  end
 end
 
-def chef_gte_13?
-  Chef::VERSION.split('.').first.to_i >= 13
+def ruby_64bit?
+  !!(RbConfig::CONFIG["host_cpu"] =~ /x86_64/)
 end
 
-def chef_lt_13?
-  Chef::VERSION.split('.').first.to_i < 13
-end
-
-def ruby_gte_19?
-  RUBY_VERSION.to_f >= 1.9
-end
-
-def ruby_20?
-  !!(RUBY_VERSION =~ /^2.0/)
+def ruby_32bit?
+  !!(RbConfig::CONFIG["host_cpu"] =~ /i686/)
 end
 
 def windows?
@@ -35,44 +42,63 @@ def ohai
   OHAI_SYSTEM
 end
 
-require 'wmi-lite/wmi' if windows?
+require "wmi-lite/wmi" if windows?
 
 def windows_domain_joined?
   return false unless windows?
   wmi = WmiLite::Wmi.new
-  computer_system = wmi.first_of('Win32_ComputerSystem')
-  computer_system['partofdomain']
-end
-
-def windows_win2k3?
-  return false unless windows?
-  wmi = WmiLite::Wmi.new
-  host = wmi.first_of('Win32_OperatingSystem')
-  (host['version'] && host['version'].start_with?("5.2"))
+  computer_system = wmi.first_of("Win32_ComputerSystem")
+  computer_system["partofdomain"]
 end
 
 def windows_2008r2_or_later?
   return false unless windows?
-  wmi = WmiLite::Wmi.new
-  host = wmi.first_of('Win32_OperatingSystem')
-  version = host['version']
-  return false unless version
-  components = version.split('.').map do | component |
+  return false unless host_version
+  components = host_version.split(".").map do |component|
     component.to_i
   end
-  components.length >=2 && components[0] >= 6 && components[1] >= 1
+  components.length >= 2 && components[0] >= 6 && components[1] >= 1
+end
+
+def windows_2012r2?
+  return false unless windows?
+  (host_version && host_version.start_with?("6.3"))
+end
+
+def windows_gte_10?
+  return false unless windows?
+  Gem::Requirement.new(">= 10").satisfied_by?(Gem::Version.new(host_version))
+end
+
+def host_version
+  @host_version ||= begin
+    wmi = WmiLite::Wmi.new
+    host = wmi.first_of("Win32_OperatingSystem")
+    host["version"]
+  end
 end
 
 def windows_powershell_dsc?
   return false unless windows?
   supports_dsc = false
   begin
-    wmi = WmiLite::Wmi.new('root/microsoft/windows/desiredstateconfiguration')
+    wmi = WmiLite::Wmi.new("root/microsoft/windows/desiredstateconfiguration")
     lcm = wmi.query("SELECT * FROM meta_class WHERE __this ISA 'MSFT_DSCLocalConfigurationManager'")
     supports_dsc = !! lcm
   rescue WmiLite::WmiException
   end
   supports_dsc
+end
+
+def windows_nano_server?
+  require "chef/platform/query_helpers"
+  Chef::Platform.windows_nano_server?
+end
+
+def windows_user_right?(right)
+  return false unless windows?
+  require "chef/win32/security"
+  Chef::ReservedNames::Win32::Security.get_account_right(ENV["USERNAME"]).include?(right)
 end
 
 def mac_osx_106?
@@ -101,10 +127,9 @@ def mac_osx?
   false
 end
 
-
 # detects if the hardware is 64-bit (evaluates to true in "WOW64" mode in a 32-bit app on a 64-bit system)
 def windows64?
-  windows? && ( ENV['PROCESSOR_ARCHITECTURE'] == 'AMD64' || ENV['PROCESSOR_ARCHITEW6432'] == 'AMD64' )
+  windows? && ( ENV["PROCESSOR_ARCHITECTURE"] == "AMD64" || ENV["PROCESSOR_ARCHITEW6432"] == "AMD64" )
 end
 
 # detects if the hardware is 32-bit
@@ -116,6 +141,10 @@ end
 
 def unix?
   !windows?
+end
+
+def linux?
+  !!(RUBY_PLATFORM =~ /linux/)
 end
 
 def os_x?
@@ -130,22 +159,50 @@ def freebsd?
   !!(RUBY_PLATFORM =~ /freebsd/)
 end
 
+def intel_64bit?
+  !!(ohai[:kernel][:machine] == "x86_64")
+end
+
+def rhel?
+  !!(ohai[:platform_family] == "rhel")
+end
+
+def rhel5?
+  rhel? && !!(ohai[:platform_version].to_i == 5)
+end
+
+def rhel6?
+  rhel? && !!(ohai[:platform_version].to_i == 6)
+end
+
+def rhel7?
+  rhel? && !!(ohai[:platform_version].to_i == 7)
+end
+
+def debian_family?
+  !!(ohai[:platform_family] == "debian")
+end
+
 def aix?
   !!(RUBY_PLATFORM =~ /aix/)
 end
 
-def supports_cloexec?
-  Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
+def wpar?
+  !((ohai[:virtualization] || {})[:wpar_no].nil?)
 end
 
-DEV_NULL = windows? ? 'NUL' : '/dev/null'
+def supports_cloexec?
+  Fcntl.const_defined?("F_SETFD") && Fcntl.const_defined?("FD_CLOEXEC")
+end
+
+DEV_NULL = windows? ? "NUL" : "/dev/null"
 
 def selinux_enabled?
   # This code is currently copied from lib/chef/util/selinux to make
   # specs independent of product.
   selinuxenabled_path = which("selinuxenabled")
   if selinuxenabled_path
-    cmd = Mixlib::ShellOut.new(selinuxenabled_path, :returns => [0,1])
+    cmd = Mixlib::ShellOut.new(selinuxenabled_path, returns: [0, 1])
     cmd_result = cmd.run_command
     case cmd_result.exitstatus
     when 1
@@ -153,7 +210,7 @@ def selinux_enabled?
     when 0
       return true
     else
-      raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
+      raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
     end
   else
     # We assume selinux is not enabled if selinux utils are not
@@ -181,4 +238,26 @@ end
 
 def aes_256_gcm?
   OpenSSL::Cipher.ciphers.include?("aes-256-gcm")
+end
+
+def fips?
+  ENV["CHEF_FIPS"] == "1"
+end
+
+class HttpHelper
+  extend Ohai::Mixin::HttpHelper
+  def self.logger
+    Chef::Log
+  end
+end
+
+def gce?
+  HttpHelper.can_socket_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR, 80)
+rescue SocketError
+  false
+end
+
+def choco_installed?
+  result = ShellHelpers.powershell_out("choco --version")
+  result.stderr.empty? ? true : false
 end

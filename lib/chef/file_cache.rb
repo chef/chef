@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/mixin/params_validate'
-require 'chef/mixin/create_path'
-require 'chef/exceptions'
-require 'chef/json_compat'
-require 'fileutils'
-require 'chef/util/path_helper'
+require "chef/mixin/params_validate"
+require "chef/mixin/create_path"
+require "chef/exceptions"
+require "chef/json_compat"
+require "fileutils"
+require "chef/util/path_helper"
 
 class Chef
   class FileCache
@@ -39,15 +39,15 @@ class Chef
       #
       # === Returns
       # true
-      def store(path, contents, perm=0640)
+      def store(path, contents, perm = 0640)
         validate(
           {
-            :path => path,
-            :contents => contents
+            path: path,
+            contents: contents,
           },
           {
-            :path => { :kind_of => String },
-            :contents => { :kind_of => String },
+            path: { kind_of: String },
+            contents: { kind_of: String },
           }
         )
 
@@ -68,12 +68,12 @@ class Chef
       def move_to(file, path)
         validate(
           {
-            :file => file,
-            :path => path
+            file: file,
+            path: path,
           },
           {
-            :file => { :kind_of => String },
-            :path => { :kind_of => String },
+            file: { kind_of: String },
+            path: { kind_of: String },
           }
         )
 
@@ -85,7 +85,7 @@ class Chef
             File.join(create_cache_path(File.join(file_path_array), true), file_name)
           )
         else
-          raise RuntimeError, "Cannot move #{file} to #{path}!"
+          raise "Cannot move #{file} to #{path}!"
         end
       end
 
@@ -102,13 +102,13 @@ class Chef
       #
       # === Raises
       # Chef::Exceptions::FileNotFound:: If it cannot find the file in the cache
-      def load(path, read=true)
+      def load(path, read = true)
         validate(
           {
-            :path => path
+            path: path,
           },
           {
-            :path => { :kind_of => String }
+            path: { kind_of: String },
           }
         )
         cache_path = create_cache_path(path, false)
@@ -131,10 +131,10 @@ class Chef
       def delete(path)
         validate(
           {
-            :path => path
+            path: path,
           },
           {
-            :path => { :kind_of => String },
+            path: { kind_of: String },
           }
         )
         cache_path = create_cache_path(path, false)
@@ -158,9 +158,9 @@ class Chef
       # [String] - An array of file cache keys matching the glob
       def find(glob_pattern)
         keys = Array.new
-        Dir[File.join(Chef::Util::PathHelper.escape_glob(file_cache_path), glob_pattern)].each do |f|
+        Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(file_cache_path), glob_pattern)].each do |f|
           if File.file?(f)
-            keys << f[/^#{Regexp.escape(Dir[Chef::Util::PathHelper.escape_glob(file_cache_path)].first) + File::Separator}(.+)/, 1]
+            keys << f[/^#{Regexp.escape(Dir[Chef::Util::PathHelper.escape_glob_dir(file_cache_path)].first) + File::Separator}(.+)/, 1]
           end
         end
         keys
@@ -175,13 +175,13 @@ class Chef
       # === Returns
       # True:: If the file exists
       # False:: If it does not
-      def has_key?(path)
+      def key?(path)
         validate(
           {
-            :path => path
+            path: path,
           },
           {
-            :path => { :kind_of => String },
+            path: { kind_of: String },
           }
         )
         full_path = create_cache_path(path, false)
@@ -192,6 +192,8 @@ class Chef
         end
       end
 
+      alias_method :has_key?, :key?
+
       # Create a full path to a given file in the cache. By default,
       # also creates the path if it does not exist.
       #
@@ -201,7 +203,7 @@ class Chef
       #
       # === Returns
       # String:: The fully expanded path
-      def create_cache_path(path, create_if_missing=true)
+      def create_cache_path(path, create_if_missing = true)
         cache_dir = File.expand_path(File.join(file_cache_path, path))
         if create_if_missing
           create_path(cache_dir)

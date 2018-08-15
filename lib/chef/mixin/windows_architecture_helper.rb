@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Adam Edwards (<adamed@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,14 @@
 # limitations under the License.
 #
 
-
-require 'chef/exceptions'
-require 'chef/platform/query_helpers'
-require 'win32/api' if Chef::Platform.windows?
-require 'chef/win32/api/process' if Chef::Platform.windows?
-require 'chef/win32/api/error' if Chef::Platform.windows?
+require "chef/exceptions"
+require "chef/platform/query_helpers"
+require "chef/win32/process" if Chef::Platform.windows?
+require "chef/win32/system" if Chef::Platform.windows?
 
 class Chef
   module Mixin
     module WindowsArchitectureHelper
-
-      if Chef::Platform.windows?
-        include Chef::ReservedNames::Win32::API::Process
-        include Chef::ReservedNames::Win32::API::Error
-      end
 
       def node_windows_architecture(node)
         node[:kernel][:machine].to_sym
@@ -42,18 +35,31 @@ class Chef
           is_i386_process_on_x86_64_windows?
       end
 
-      def with_os_architecture(node)
+      def forced_32bit_override_required?(node, desired_architecture)
+        desired_architecture == :i386 &&
+          node_windows_architecture(node) == :x86_64 &&
+          !is_i386_process_on_x86_64_windows?
+      end
+
+      def wow64_directory
+        Chef::ReservedNames::Win32::System.get_system_wow64_directory
+      end
+
+      def with_os_architecture(node, architecture: nil)
         node ||= begin
-          os_arch = ENV['PROCESSOR_ARCHITEW6432'] ||
-                    ENV['PROCESSOR_ARCHITECTURE']
+          os_arch = ENV["PROCESSOR_ARCHITEW6432"] ||
+            ENV["PROCESSOR_ARCHITECTURE"]
           Hash.new.tap do |n|
             n[:kernel] = Hash.new
-            n[:kernel][:machine] = os_arch == 'AMD64' ? :x86_64 : :i386
+            n[:kernel][:machine] = os_arch == "AMD64" ? :x86_64 : :i386
           end
         end
+
+        architecture ||= node_windows_architecture(node)
+
         wow64_redirection_state = nil
 
-        if wow64_architecture_override_required?(node, node_windows_architecture(node))
+        if wow64_architecture_override_required?(node, architecture)
           wow64_redirection_state = disable_wow64_file_redirection(node)
         end
 
@@ -68,16 +74,15 @@ class Chef
 
       def node_supports_windows_architecture?(node, desired_architecture)
         assert_valid_windows_architecture!(desired_architecture)
-        return (node_windows_architecture(node) == :x86_64 ||
-                desired_architecture == :i386) ? true : false
+        ( node_windows_architecture(node) == :x86_64 ) || ( desired_architecture == :i386 )
       end
 
       def valid_windows_architecture?(architecture)
-        return (architecture == :x86_64) || (architecture == :i386)
+        ( architecture == :x86_64 ) || ( architecture == :i386 )
       end
 
       def assert_valid_windows_architecture!(architecture)
-        if ! valid_windows_architecture?(architecture)
+        if !valid_windows_architecture?(architecture)
           raise Chef::Exceptions::Win32ArchitectureIncorrect,
           "The specified architecture was not valid. It must be one of :i386 or :x86_64"
         end
@@ -85,49 +90,21 @@ class Chef
 
       def is_i386_process_on_x86_64_windows?
         if Chef::Platform.windows?
-          is_64_bit_process_result = FFI::MemoryPointer.new(:int)
-
-          # The return value of IsWow64Process is nonzero value if the API call succeeds.
-          # The result data are returned in the last parameter, not the return value.
-          call_succeeded = IsWow64Process(GetCurrentProcess(), is_64_bit_process_result)
-
-          # The result is nonzero if IsWow64Process's calling process, in the case here
-          # this process, is running under WOW64, i.e. the result is nonzero if this
-          # process is 32-bit (aka :i386).
-          result = (call_succeeded != 0) && (is_64_bit_process_result.get_int(0) != 0)
+          Chef::ReservedNames::Win32::Process.is_wow64_process
         else
           false
         end
       end
 
       def disable_wow64_file_redirection( node )
-        original_redirection_state = ['0'].pack('P')
-
-        if ( ( node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?)
-          win32_wow_64_disable_wow_64_fs_redirection =
-            ::Win32::API.new('Wow64DisableWow64FsRedirection', 'P', 'L', 'kernel32')
-
-          succeeded = win32_wow_64_disable_wow_64_fs_redirection.call(original_redirection_state)
-
-          if succeeded == 0
-            raise Win32APIError "Failed to disable Wow64 file redirection"
-          end
-
+        if ( node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?
+          Chef::ReservedNames::Win32::System.wow64_disable_wow64_fs_redirection
         end
-
-        original_redirection_state
       end
 
       def restore_wow64_file_redirection( node, original_redirection_state )
-        if ( (node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?)
-          win32_wow_64_revert_wow_64_fs_redirection =
-            ::Win32::API.new('Wow64RevertWow64FsRedirection', 'P', 'L', 'kernel32')
-
-          succeeded = win32_wow_64_revert_wow_64_fs_redirection.call(original_redirection_state)
-
-          if succeeded == 0
-            raise Win32APIError "Failed to revert Wow64 file redirection"
-          end
+        if (node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?
+          Chef::ReservedNames::Win32::System.wow64_revert_wow64_fs_redirection(original_redirection_state)
         end
       end
 

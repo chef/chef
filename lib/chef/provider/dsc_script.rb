@@ -1,7 +1,7 @@
 #
-# Author:: Adam Edwards (<adamed@getchef.com>)
+# Author:: Adam Edwards (<adamed@chef.io>)
 #
-# Copyright:: 2014, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,35 +16,35 @@
 # limitations under the License.
 #
 
-require 'chef/util/powershell/cmdlet'
-require 'chef/util/dsc/configuration_generator'
-require 'chef/util/dsc/local_configuration_manager'
-require 'chef/util/path_helper'
+require "chef/util/powershell/cmdlet"
+require "chef/util/dsc/configuration_generator"
+require "chef/util/dsc/local_configuration_manager"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
     class DscScript < Chef::Provider
 
-      provides :dsc_script, os: "windows"
+      provides :dsc_script
 
       def initialize(dsc_resource, run_context)
         super(dsc_resource, run_context)
         @dsc_resource = dsc_resource
         @resource_converged = false
         @operations = {
-          :set => Proc.new { |config_manager, document, shellout_flags|
+          set: Proc.new do |config_manager, document, shellout_flags|
             config_manager.set_configuration(document, shellout_flags)
-          },
-          :test => Proc.new { |config_manager, document, shellout_flags|
+          end,
+          test: Proc.new do |config_manager, document, shellout_flags|
             config_manager.test_configuration(document, shellout_flags)
-          }}
+          end }
       end
 
       def action_run
         if ! @resource_converged
           converge_by(generate_description) do
             run_configuration(:set)
-            Chef::Log.info("DSC resource configuration completed successfully")
+            logger.info("DSC resource configuration completed successfully")
           end
         end
       end
@@ -58,19 +58,15 @@ class Chef
         end
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def define_resource_requirements
         requirements.assert(:run) do |a|
           err = [
-            'Could not find PowerShell DSC support on the system',
+            "Could not find PowerShell DSC support on the system",
             powershell_info_str,
             "Powershell 4.0 or higher was not detected on your system and is required to use the dsc_script resource.",
           ]
           a.assertion { supports_dsc? }
-          a.failure_message Chef::Exceptions::NoProviderAvailable, err.join(' ')
+          a.failure_message Chef::Exceptions::ProviderNotFound, err.join(" ")
           a.whyrun err + ["Assuming a previous resource installs Powershell 4.0 or higher."]
           a.block_action!
         end
@@ -90,16 +86,16 @@ class Chef
         config_manager = Chef::Util::DSC::LocalConfigurationManager.new(@run_context.node, config_directory)
 
         shellout_flags = {
-          :cwd => @dsc_resource.cwd,
-          :environment => @dsc_resource.environment,
-          :timeout => @dsc_resource.timeout
+          cwd: @dsc_resource.cwd,
+          environment: @dsc_resource.environment,
+          timeout: @dsc_resource.timeout,
         }
 
         begin
           configuration_document = generate_configuration_document(config_directory, configuration_flags)
           @operations[operation].call(config_manager, configuration_document, shellout_flags)
         rescue Exception => e
-          Chef::Log.error("DSC operation failed: #{e.message.to_s}")
+          logger.error("DSC operation failed: #{e.message}")
           raise e
         ensure
           ::FileUtils.rm_rf(config_directory)
@@ -117,9 +113,9 @@ class Chef
 
       def generate_configuration_document(config_directory, configuration_flags)
         shellout_flags = {
-          :cwd => @dsc_resource.cwd,
-          :environment => @dsc_resource.environment,
-          :timeout => @dsc_resource.timeout
+          cwd: @dsc_resource.cwd,
+          environment: @dsc_resource.environment,
+          timeout: @dsc_resource.timeout,
         }
 
         generator = Chef::Util::DSC::ConfigurationGenerator.new(@run_context.node, config_directory)
@@ -128,8 +124,8 @@ class Chef
           generator.configuration_document_from_script_path(@dsc_resource.command, configuration_name, configuration_flags, shellout_flags)
         else
           # If code is also not provided, we mimic what the other script resources do (execute nothing)
-          Chef::Log.warn("Neither code or command were provided for dsc_resource[#{@dsc_resource.name}].") unless @dsc_resource.code
-          generator.configuration_document_from_script_code(@dsc_resource.code || '', configuration_flags, @dsc_resource.imports, shellout_flags)
+          logger.warn("Neither code or command were provided for dsc_resource[#{@dsc_resource.name}].") unless @dsc_resource.code
+          generator.configuration_document_from_script_code(@dsc_resource.code || "", configuration_flags, @dsc_resource.imports, shellout_flags)
         end
       end
 
@@ -138,7 +134,7 @@ class Chef
           @dsc_resource.configuration_data_script
         elsif @dsc_resource.configuration_data
           configuration_data_path = "#{config_directory}/chef_dsc_config_data.psd1"
-          ::File.open(configuration_data_path, 'wt') do | script |
+          ::File.open(configuration_data_path, "wt") do |script|
             script.write(@dsc_resource.configuration_data)
           end
           configuration_data_path
@@ -164,8 +160,12 @@ class Chef
           @dsc_resources_info.map do |resource|
             if resource.changes_state?
               # We ignore the last log message because it only contains the time it took, which looks weird
-              cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, '').strip }
-              "converge DSC resource #{resource.name} by #{cleaned_messages.find_all{ |c| c != ''}.join("\n")}"
+              cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, "").strip }
+              unless cleaned_messages.empty?
+                "converge DSC resource #{resource.name} by #{cleaned_messages.find_all { |c| c != '' }.join("\n")}"
+              else
+                "converge DSC resource #{resource.name}"
+              end
             else
               # This is needed because a dsc script can have resources that are both converged and not
               "converge DSC resource #{resource.name} by doing nothing because it is already converged"
@@ -177,7 +177,7 @@ class Chef
         if run_context && run_context.node[:languages] && run_context.node[:languages][:powershell]
           install_info = "Powershell #{run_context.node[:languages][:powershell][:version]} was found on the system."
         else
-          install_info = 'Powershell was not found.'
+          install_info = "Powershell was not found."
         end
       end
     end

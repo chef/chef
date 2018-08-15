@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/win32/error'
-require 'chef/win32/api/memory'
+require "chef/win32/error"
+require "chef/win32/api/memory"
 
 class Chef
   module ReservedNames::Win32
@@ -35,7 +35,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
         # If a block is passed, handle freeing the memory at the end
-        if block != nil
+        if !block.nil?
           begin
             yield result
           ensure

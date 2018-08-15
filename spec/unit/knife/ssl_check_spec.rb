@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-require 'stringio'
+require "stringio"
 
 describe Chef::Knife::SslCheck do
 
@@ -67,11 +67,11 @@ describe Chef::Knife::SslCheck do
 
     it "prints an error and exits" do
       expect { ssl_check.run }.to raise_error(SystemExit)
-      expected_stdout=<<-E
-USAGE: knife ssl check [URL] (options)
+      expected_stdout = <<~E
+        USAGE: knife ssl check [URL] (options)
 E
-      expected_stderr=<<-E
-ERROR: Given URI: `foo.test' is invalid
+      expected_stderr = <<~E
+        ERROR: Given URI: `foo.test' is invalid
 E
       expect(stdout_io.string).to eq(expected_stdout)
       expect(stderr_io.string).to eq(expected_stderr)
@@ -83,11 +83,11 @@ E
 
       it "prints an error and exits" do
         expect { ssl_check.run }.to raise_error(SystemExit)
-        expected_stdout=<<-E
-USAGE: knife ssl check [URL] (options)
+        expected_stdout = <<~E
+          USAGE: knife ssl check [URL] (options)
 E
-        expected_stderr=<<-E
-ERROR: Given URI: `#{name_args[0]}' is invalid
+        expected_stderr = <<~E
+          ERROR: Given URI: `#{name_args[0]}' is invalid
 E
         expect(stdout_io.string).to eq(expected_stdout)
         expect(stderr_io.string).to eq(expected_stderr)
@@ -112,6 +112,22 @@ E
       allow(OpenSSL::X509::Certificate).to receive(:new).with(IO.read(trusted_cert_file)).and_return(certificate)
       allow(ssl_check).to receive(:verify_cert).and_return(true)
       allow(ssl_check).to receive(:verify_cert_host).and_return(true)
+    end
+
+    context "when the trusted certificates directory is not glob escaped", :windows_only do
+      let(:trusted_certs_dir) { File.join(CHEF_SPEC_DATA.tr("/", "\\"), "trusted_certs") }
+
+      before do
+        allow(ssl_check).to receive(:trusted_certificates).and_call_original
+        allow(store).to receive(:verify).with(certificate).and_return(true)
+      end
+
+      it "escpaes the trusted certificates directory" do
+        expect(Dir).to receive(:glob)
+          .with("#{ChefConfig::PathHelper.escape_glob_dir(trusted_certs_dir)}/*.{crt,pem}")
+          .and_return([trusted_cert_file])
+        ssl_check.run
+      end
     end
 
     context "when the trusted certificates have valid X509 properties" do
@@ -145,15 +161,15 @@ E
     let(:ssl_socket) { double(OpenSSL::SSL::SSLSocket) }
 
     before do
-      expect(TCPSocket).to receive(:new).with("foo.example.com", 8443).and_return(tcp_socket)
+      expect(ssl_check).to receive(:proxified_socket).with("foo.example.com", 8443).and_return(tcp_socket)
       expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(tcp_socket, ssl_check.verify_peer_ssl_context).and_return(ssl_socket)
     end
 
     def run
       ssl_check.run
     rescue Exception
-      #puts "OUT: #{stdout_io.string}"
-      #puts "ERR: #{stderr_io.string}"
+      # puts "OUT: #{stdout_io.string}"
+      # puts "ERR: #{stderr_io.string}"
       raise
     end
 
@@ -163,6 +179,7 @@ E
         expect(ssl_check).to receive(:verify_X509).and_return(true) # X509 valid certs (no warn)
         expect(ssl_socket).to receive(:connect) # no error
         expect(ssl_socket).to receive(:post_connection_check).with("foo.example.com") # no error
+        expect(ssl_socket).to receive(:hostname=).with("foo.example.com") # no error
       end
 
       it "prints a success message" do
@@ -180,23 +197,28 @@ E
       let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
 
       before do
-        trap(:INT, "DEFAULT")
+        @old_signal = trap(:INT, "DEFAULT")
 
-        expect(TCPSocket).to receive(:new).
-          with("foo.example.com", 8443).
-          and_return(tcp_socket_for_debug)
-        expect(OpenSSL::SSL::SSLSocket).to receive(:new).
-          with(tcp_socket_for_debug, ssl_check.noverify_peer_ssl_context).
-          and_return(ssl_socket_for_debug)
+        expect(ssl_check).to receive(:proxified_socket)
+          .with("foo.example.com", 8443)
+          .and_return(tcp_socket_for_debug)
+        expect(OpenSSL::SSL::SSLSocket).to receive(:new)
+          .with(tcp_socket_for_debug, ssl_check.noverify_peer_ssl_context)
+          .and_return(ssl_socket_for_debug)
+      end
+
+      after do
+        trap(:INT, @old_signal)
       end
 
       context "when the certificate's CN does not match the hostname" do
         before do
           expect(ssl_check).to receive(:verify_X509).and_return(true) # X509 valid certs
           expect(ssl_socket).to receive(:connect) # no error
-          expect(ssl_socket).to receive(:post_connection_check).
-            with("foo.example.com").
-            and_raise(OpenSSL::SSL::SSLError)
+          expect(ssl_socket).to receive(:post_connection_check)
+            .with("foo.example.com")
+            .and_raise(OpenSSL::SSL::SSLError)
+          expect(ssl_socket).to receive(:hostname=).with("foo.example.com") # no error
           expect(ssl_socket_for_debug).to receive(:connect)
           expect(ssl_socket_for_debug).to receive(:peer_cert).and_return(self_signed_crt)
         end
@@ -213,8 +235,10 @@ E
       context "when the cert is not signed by any trusted authority" do
         before do
           expect(ssl_check).to receive(:verify_X509).and_return(true) # X509 valid certs
-          expect(ssl_socket).to receive(:connect).
-            and_raise(OpenSSL::SSL::SSLError)
+          expect(ssl_socket).to receive(:connect)
+            .and_raise(OpenSSL::SSL::SSLError)
+          expect(ssl_socket).to receive(:hostname=)
+            .with("foo.example.com") # no error
           expect(ssl_socket_for_debug).to receive(:connect)
           expect(ssl_socket_for_debug).to receive(:peer_cert).and_return(self_signed_crt)
         end

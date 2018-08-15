@@ -1,6 +1,6 @@
 #
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010-2011 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/encrypted_data_bag_item'
+require "spec_helper"
+require "chef/encrypted_data_bag_item"
 
 module Version0Encryptor
   def self.encrypt_value(plaintext_data, key)
@@ -32,14 +32,14 @@ module Version0Encryptor
   end
 end
 
-describe Chef::EncryptedDataBagItem::Encryptor  do
+describe Chef::EncryptedDataBagItem::Encryptor do
 
   subject(:encryptor) { described_class.new(plaintext_data, key) }
-  let(:plaintext_data) { {"foo" => "bar"} }
+  let(:plaintext_data) { { "foo" => "bar" } }
   let(:key) { "passwd" }
 
   it "encrypts to format version 1 by default" do
-    expect(encryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor)
+    expect(encryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
   end
 
   describe "generating a random IV" do
@@ -66,8 +66,8 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       final_data = encryptor.for_encrypted_item
       expect(final_data["encrypted_data"]).to eq encryptor.encrypted_data
       expect(final_data["iv"]).to eq Base64.encode64(encryptor.iv)
-      expect(final_data["version"]).to eq 1
-      expect(final_data["cipher"]).to eq"aes-256-cbc"
+      expect(final_data["version"]).to eq 3
+      expect(final_data["cipher"]).to eq "aes-256-gcm"
     end
   end
 
@@ -97,7 +97,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       Chef::Config[:data_bag_encrypt_version] = 3
     end
 
-    context "on supported platforms", :aes_256_gcm_only, :ruby_20_only do
+    context "on supported platforms", :aes_256_gcm_only, ruby: "~> 2.0.0" do
 
       it "creates a version 3 encryptor" do
         expect(encryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
@@ -112,7 +112,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
 
       it "includes the auth_tag in the envelope" do
         final_data = encryptor.for_encrypted_item
-        expect(final_data["auth_tag"]).to eq(Base64::encode64(encryptor.auth_tag))
+        expect(final_data["auth_tag"]).to eq(Base64.encode64(encryptor.auth_tag))
       end
 
       it "throws an error if auth tag is read before encrypting the data" do
@@ -149,10 +149,10 @@ end
 describe Chef::EncryptedDataBagItem::Decryptor do
 
   subject(:decryptor) { described_class.for(encrypted_value, decryption_key) }
-  let(:plaintext_data) { {"foo" => "bar"} }
+  let(:plaintext_data) { { "foo" => "bar" } }
   let(:encryption_key) { "passwd" }
   let(:decryption_key) { encryption_key }
-  let(:json_wrapped_data) {  Chef::JSONCompat.to_json({"json_wrapper" => plaintext_data}) }
+  let(:json_wrapped_data) { Chef::JSONCompat.to_json({ "json_wrapper" => plaintext_data }) }
 
   shared_examples "decryption examples" do
     it "decrypts the encrypted value" do
@@ -166,7 +166,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
   context "when decrypting a version 3 (JSON+aes-256-gcm+random iv+auth tag) encrypted value" do
 
-    context "on supported platforms", :aes_256_gcm_only, :ruby_20_only do
+    context "on supported platforms", :aes_256_gcm_only, ruby: "~> 2.0.0" do
 
       let(:encrypted_value) do
         Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
@@ -238,7 +238,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
   context "when decrypting a version 1 (JSON+aes-256-cbc+random iv) encrypted value" do
 
     let(:encrypted_value) do
-      Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
+      Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
     end
 
     it "selects the correct strategy for version 1" do
@@ -290,7 +290,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
   end
 
-  context "when decrypting a version 0 (YAML+aes-256-cbc+no iv) encrypted value" do
+  context "when decrypting a version 0 (YAML+aes-256-cbc+no iv) encrypted value", :not_supported_under_fips do
     let(:encrypted_value) do
       Version0Encryptor.encrypt_value(plaintext_data, encryption_key)
     end
@@ -320,11 +320,12 @@ end
 describe Chef::EncryptedDataBagItem do
   subject { described_class }
   let(:encrypted_data_bag_item) { subject.new(encoded_data, secret) }
-  let(:plaintext_data) {{
+  let(:plaintext_data) do
+    {
       "id" => "item_name",
       "greeting" => "hello",
-      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }}
-  }}
+      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true } },
+  } end
   let(:secret) { "abc123SECRET" }
   let(:encoded_data) { subject.encrypt_data_bag_item(plaintext_data, secret) }
 
@@ -335,7 +336,7 @@ describe Chef::EncryptedDataBagItem do
     end
 
     it "encrypts non-collection objects" do
-      expect(encoded_data["greeting"]["version"]).to eq 1
+      expect(encoded_data["greeting"]["version"]).to eq 3
       expect(encoded_data["greeting"]).to have_key("iv")
 
       iv = encoded_data["greeting"]["iv"]
@@ -345,7 +346,7 @@ describe Chef::EncryptedDataBagItem do
     end
 
     it "encrypts nested values" do
-      expect(encoded_data["nested"]["version"]).to eq 1
+      expect(encoded_data["nested"]["version"]).to eq 3
       expect(encoded_data["nested"]).to have_key("iv")
 
       iv = encoded_data["nested"]["iv"]

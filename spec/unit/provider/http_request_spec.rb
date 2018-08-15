@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::HttpRequest do
   before(:each) do
@@ -24,7 +24,7 @@ describe Chef::Provider::HttpRequest do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::HttpRequest.new('adam')
+    @new_resource = Chef::Resource::HttpRequest.new("adam")
     @new_resource.name "adam"
     @new_resource.url "http://www.opscode.com/"
     @new_resource.message "is cool"
@@ -34,7 +34,7 @@ describe Chef::Provider::HttpRequest do
 
   describe "load_current_resource" do
 
-    it "should set up a Chef::REST client, with no authentication" do
+    it "should set up a Chef::ServerAPI client, with no authentication" do
       expect(Chef::HTTP::Simple).to receive(:new).with(@new_resource.url)
       @provider.load_current_resource
     end
@@ -45,7 +45,7 @@ describe Chef::Provider::HttpRequest do
       # run_action(x) forces load_current_resource to run;
       # that would overwrite our supplied mock Chef::Rest # object
       allow(@provider).to receive(:load_current_resource).and_return(true)
-      @http = double("Chef::REST")
+      @http = double("Chef::ServerAPI")
       @provider.http = @http
     end
 
@@ -73,7 +73,7 @@ describe Chef::Provider::HttpRequest do
       end
 
       it "should inflate a message block at runtime" do
-        allow(@new_resource).to receive(:message).and_return(lambda { "return" })
+        @new_resource.message(lambda { "return" })
         expect(@http).to receive(:put).with("http://www.opscode.com/", "return", {})
         @provider.run_action(:put)
         expect(@new_resource).to be_updated
@@ -138,7 +138,7 @@ describe Chef::Provider::HttpRequest do
       it "should not update a HEAD request if a not modified response (CHEF-4762)" do
         if_modified_since = File.mtime(__FILE__).httpdate
         @new_resource.headers "If-Modified-Since" => if_modified_since
-        expect(@http).to receive(:head).with("http://www.opscode.com/", {"If-Modified-Since" => if_modified_since}).and_return(false)
+        expect(@http).to receive(:head).with("http://www.opscode.com/", { "If-Modified-Since" => if_modified_since }).and_return(false)
         @provider.run_action(:head)
         expect(@new_resource).not_to be_updated
       end

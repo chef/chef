@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,48 +17,38 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/http_request'
+require "chef/resource"
 
 class Chef
   class Resource
     class HttpRequest < Chef::Resource
+      resource_name :http_request
       provides :http_request
 
-      identity_attr :url
+      description "Use the http_request resource to send an HTTP request (GET, PUT,"\
+                  " POST, DELETE, HEAD, or OPTIONS) with an arbitrary message. This"\
+                  " resource is often useful when custom callbacks are necessary."
 
-      def initialize(name, run_context=nil)
+      default_action :get
+      allowed_actions :get, :patch, :put, :post, :delete, :head, :options
+
+      property :url, String, identity: true,
+               description: "The URL to which an HTTP request is sent."
+
+      property :headers, Hash, default: lazy { Hash.new },
+               description: "A Hash of custom headers."
+
+      def initialize(name, run_context = nil)
         super
-        @resource_name = :http_request
         @message = name
-        @url = nil
-        @action = :get
-        @headers = {}
-        @allowed_actions.push(:get, :put, :post, :delete, :head, :options)
       end
 
-      def url(args=nil)
-        set_or_return(
-          :url,
-          args,
-          :kind_of => String
-        )
-      end
-
-      def message(args=nil, &block)
+      def message(args = nil, &block)
         args = block if block_given?
         set_or_return(
           :message,
           args,
-          :kind_of => Object
-        )
-      end
-
-      def headers(args=nil)
-        set_or_return(
-          :headers,
-          args,
-          :kind_of => Hash
+          kind_of: Object
         )
       end
 

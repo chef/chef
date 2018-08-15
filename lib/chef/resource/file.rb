@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +17,18 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/platform/query_helpers'
-require 'chef/mixin/securable'
-require 'chef/resource/file/verification'
+require "chef/resource"
+require "chef/platform/query_helpers"
+require "chef/mixin/securable"
+require "chef/resource/file/verification"
+require "pathname"
 
 class Chef
   class Resource
     class File < Chef::Resource
       include Chef::Mixin::Securable
 
-      identity_attr :path
+      description "Use the file resource to manage files directly on a node."
 
       if Platform.windows?
         # Use Windows rights instead of standard *nix permissions
@@ -44,98 +45,46 @@ class Chef
       # mutate the new_resource.checksum which would change the
       # user intent in the new_resource if the resource is reused.
       #
-      # @returns [String] Checksum of the file we actually rendered
+      # @return [String] Checksum of the file we actually rendered
       attr_accessor :final_checksum
 
-      provides :file
+      default_action :create
+      allowed_actions :create, :delete, :touch, :create_if_missing
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :file
-        @path = name
-        @backup = 5
-        @action = "create"
-        @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
-        @atomic_update = Chef::Config[:file_atomic_update]
-        @force_unlink = false
-        @manage_symlink_source = nil
-        @diff = nil
-        @verifications = []
-      end
+      property :path, String, name_property: true, identity: true,
+               description: "The full path to the file, including the file name and its extension. For example: /files/file.txt. Default value: the name of the resource block. Microsoft Windows: A path that begins with a forward slash (/) will point to the root of the current working directory of the chef-client process. This path can vary from system to system. Therefore, using a path that begins with a forward slash (/) is not recommended."
 
-      def content(arg=nil)
-        set_or_return(
-          :content,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :atomic_update, [ TrueClass, FalseClass ], desired_state: false, default: lazy { |r| r.docker? && r.special_docker_files?(r.path) ? false : Chef::Config[:file_atomic_update] },
+               description: "Perform atomic file updates on a per-resource basis. Set to true for atomic file updates. Set to false for non-atomic file updates. This setting overrides file_atomic_update, which is a global setting found in the client.rb file."
 
-      def backup(arg=nil)
-        set_or_return(
-          :backup,
-          arg,
-          :kind_of => [ Integer, FalseClass ]
-        )
-      end
+      property :backup, [ Integer, FalseClass ], desired_state: false, default: 5,
+               description: "The number of backups to be kept in /var/chef/backup (for UNIX- and Linux-based platforms) or C:/chef/backup (for the Microsoft Windows platform). Set to false to prevent backups from being kept."
 
-      def checksum(arg=nil)
-        set_or_return(
-          :checksum,
-          arg,
-          :regex => /^[a-zA-Z0-9]{64}$/
-        )
-      end
+      property :checksum, [ /^[a-zA-Z0-9]{64}$/, nil ],
+               description: "The SHA-256 checksum of the file. Use to ensure that a specific file is used. If the checksum does not match, the file is not used."
 
-      def path(arg=nil)
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :content, [ String, nil ], desired_state: false,
+               description: "A string that is written to the file. The contents of this property replace any previous content when this property has something other than the default value. The default behavior will not modify content."
 
-      def diff(arg=nil)
-        set_or_return(
-          :diff,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :diff, [ String, nil ], desired_state: false
 
-      def atomic_update(arg=nil)
-        set_or_return(
-          :atomic_update,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :force_unlink, [ TrueClass, FalseClass ], desired_state: false, default: false,
+               description: "How the chef-client handles certain situations when the target file turns out not to be a file. For example, when a target file is actually a symlink. Set to true for the chef-client delete the non-file target and replace it with the specified file. Set to false for the chef-client to raise an error."
 
-      def force_unlink(arg=nil)
-        set_or_return(
-          :force_unlink,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :manage_symlink_source, [ TrueClass, FalseClass ], desired_state: false,
+               description: "Change the behavior of the file resource if it is pointed at a symlink. When this value is set to true, the Chef client will manage the symlink's permissions or will replace the symlink with a normal file if the resource has content. When this value is set to false, Chef will follow the symlink and will manage the permissions and content of symlink's target file. The default behavior is true but emits a warning that the default value will be changed to false in a future version; setting this explicitly to true or false suppresses this warning."
 
-      def manage_symlink_source(arg=nil)
-        set_or_return(
-          :manage_symlink_source,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :verifications, Array, default: lazy { [] }
 
-      def verify(command=nil, opts={}, &block)
+      def verify(command = nil, opts = {}, &block)
         if ! (command.nil? || [String, Symbol].include?(command.class))
           raise ArgumentError, "verify requires either a string, symbol, or a block"
         end
 
         if command || block_given?
-          @verifications << Verification.new(self, command, opts, &block)
+          verifications << Verification.new(self, command, opts, &block)
         else
-          @verifications
+          verifications
         end
       end
 
@@ -146,6 +95,10 @@ class Chef
           state_attrs[:checksum] = final_checksum
         end
         state_attrs
+      end
+
+      def special_docker_files?(file)
+        %w{/etc/hosts /etc/hostname /etc/resolv.conf}.include?(Pathname(file.scrub).cleanpath.to_path)
       end
     end
   end

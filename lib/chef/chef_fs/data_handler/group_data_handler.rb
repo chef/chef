@@ -1,5 +1,5 @@
-require 'chef/chef_fs/data_handler/data_handler_base'
-require 'chef/api_client'
+require "chef/chef_fs/data_handler/data_handler_base"
+require "chef/api_client"
 
 class Chef
   module ChefFS
@@ -7,32 +7,32 @@ class Chef
       class GroupDataHandler < DataHandlerBase
         def normalize(group, entry)
           defaults = {
-            'name' => remove_dot_json(entry.name),
-            'groupname' => remove_dot_json(entry.name),
-            'users' => [],
-            'clients' => [],
-            'groups' => [],
+            "name" => remove_dot_json(entry.name),
+            "groupname" => remove_dot_json(entry.name),
+            "users" => [],
+            "clients" => [],
+            "groups" => [],
           }
           if entry.org
-            defaults['orgname'] = entry.org
+            defaults["orgname"] = entry.org
           end
           result = normalize_hash(group, defaults)
-          if result['actors'] && result['actors'].sort.uniq == (result['users'] + result['clients']).sort.uniq
-            result.delete('actors')
+          if result["actors"] && result["actors"].sort.uniq == (result["users"] + result["clients"]).sort.uniq
+            result.delete("actors")
           end
           result
         end
 
         def normalize_for_put(group, entry)
           result = super(group, entry)
-          result['actors'] = {
-            'users' => result['users'],
-            'clients' => result['clients'],
-            'groups' => result['groups']
+          result["actors"] = {
+            "users" => result["users"],
+            "clients" => result["clients"],
+            "groups" => result["groups"],
           }
-          result.delete('users')
-          result.delete('clients')
-          result.delete('groups')
+          result.delete("users")
+          result.delete("clients")
+          result.delete("groups")
           result
         end
 
@@ -41,7 +41,7 @@ class Chef
         end
 
         def preserve_key?(key)
-          return key == 'name'
+          key == "name"
         end
 
         def chef_class

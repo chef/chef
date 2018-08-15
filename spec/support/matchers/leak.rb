@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ module Matchers
   module LeakBase
     include RSpec::Matchers
 
-    def initialize(opts={}, &block)
+    def initialize(opts = {})
       @warmup = opts[:warmup] || 5
       @iterations = opts[:iterations] || 100
       @variance = opts[:variance] || 5000
@@ -35,6 +35,7 @@ module Matchers
     end
 
     private
+
     def match(measure, given_proc)
       profiler.start
 
@@ -60,10 +61,10 @@ module Matchers
     def profiler
       @profiler ||= begin
         if Chef::Platform.windows?
-          require File.join(File.dirname(__FILE__), '..', 'platforms', 'prof', 'win32')
+          require File.join(File.dirname(__FILE__), "..", "platforms", "prof", "win32")
           RSpec::Prof::Win32::Profiler.new
         else
-          require File.join(File.dirname(__FILE__), '..', 'prof', 'gc')
+          require File.join(File.dirname(__FILE__), "..", "prof", "gc")
           RSpec::Prof::GC::Profiler.new
         end
       end
@@ -90,6 +91,7 @@ module Matchers
   def leak_memory(opts, &block)
     Matchers::LeakMemory.new(opts, &block)
   end
+
   def leak_handles(opts, &block)
     Matchers::LeakHandles.new(opts, &block)
   end

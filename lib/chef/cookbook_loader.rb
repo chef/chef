@@ -1,9 +1,9 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/config'
-require 'chef/exceptions'
-require 'chef/cookbook/cookbook_version_loader'
-require 'chef/cookbook_version'
-require 'chef/cookbook/chefignore'
-require 'chef/cookbook/metadata'
+require "chef/config"
+require "chef/exceptions"
+require "chef/cookbook/cookbook_version_loader"
+require "chef/cookbook_version"
+require "chef/cookbook/chefignore"
+require "chef/cookbook/metadata"
 
 #
 # CookbookLoader class loads the cookbooks lazily as read
@@ -44,10 +44,10 @@ class Chef
       @cookbooks_by_name = Mash.new
       @loaded_cookbooks = {}
       @metadata = Mash.new
-      @cookbooks_paths = Hash.new {|h,k| h[k] = []} # for deprecation warnings
+      @cookbooks_paths = Hash.new { |h, k| h[k] = [] } # for deprecation warnings
       @chefignores = {}
       @repo_paths = repo_paths.map do |repo_path|
-        repo_path = File.expand_path(repo_path)
+        File.expand_path(repo_path)
       end
 
       @preloaded_cookbooks = false
@@ -62,20 +62,38 @@ class Chef
 
     def merged_cookbook_paths # for deprecation warnings
       merged_cookbook_paths = {}
-      @merged_cookbooks.each {|c| merged_cookbook_paths[c] = @cookbooks_paths[c]}
+      @merged_cookbooks.each { |c| merged_cookbook_paths[c] = @cookbooks_paths[c] }
       merged_cookbook_paths
     end
 
-    def load_cookbooks
+    def warn_about_cookbook_shadowing
+      unless merged_cookbooks.empty?
+        Chef::Log.deprecation "The cookbook(s): #{merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path. " +
+          "A composite version has been compiled.  This has been deprecated since 0.10.4, in Chef 13 this behavior will be REMOVED."
+      end
+    end
+
+    # Will be removed when cookbook shadowing is removed, do NOT create new consumers of this API.
+    #
+    # @api private
+    def load_cookbooks_without_shadow_warning
       preload_cookbooks
-      @loaders_by_name.each do |cookbook_name, _loaders|
+      @loaders_by_name.each_key do |cookbook_name|
         load_cookbook(cookbook_name)
       end
       @cookbooks_by_name
     end
 
+    def load_cookbooks
+      ret = load_cookbooks_without_shadow_warning
+      warn_about_cookbook_shadowing
+      ret
+    end
+
     def load_cookbook(cookbook_name)
       preload_cookbooks
+
+      return @cookbooks_by_name[cookbook_name] if @cookbooks_by_name.key?(cookbook_name)
 
       return nil unless @loaders_by_name.key?(cookbook_name.to_s)
 
@@ -94,7 +112,7 @@ class Chef
         end
       end
 
-      if @loaded_cookbooks.has_key?(cookbook_name)
+      if @loaded_cookbooks.key?(cookbook_name)
         cookbook_version = @loaded_cookbooks[cookbook_name].cookbook_version
         @cookbooks_by_name[cookbook_name] = cookbook_version
         @metadata[cookbook_name] = cookbook_version.metadata
@@ -103,10 +121,10 @@ class Chef
     end
 
     def [](cookbook)
-      if @cookbooks_by_name.has_key?(cookbook.to_sym) or load_cookbook(cookbook.to_sym)
+      if @cookbooks_by_name.key?(cookbook.to_sym) || load_cookbook(cookbook.to_sym)
         @cookbooks_by_name[cookbook.to_sym]
       else
-        raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook.to_s}; did you forget to add metadata to a cookbook? (https://docs.chef.io/config_rb_metadata.html)"
+        raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook}; did you forget to add metadata to a cookbook? (https://docs.chef.io/config_rb_metadata.html)"
       end
     end
 
@@ -119,9 +137,17 @@ class Chef
     alias :key? :has_key?
 
     def each
-      @cookbooks_by_name.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|
+      @cookbooks_by_name.keys.sort_by(&:to_s).each do |cname|
         yield(cname, @cookbooks_by_name[cname])
       end
+    end
+
+    def each_key(&block)
+      cookbook_names.each(&block)
+    end
+
+    def each_value(&block)
+      values.each(&block)
     end
 
     def cookbook_names
@@ -161,7 +187,7 @@ class Chef
       @all_files_in_repo_paths ||=
         begin
           @repo_paths.inject([]) do |all_children, repo_path|
-            all_children += Dir[File.join(Chef::Util::PathHelper.escape_glob(repo_path), "*")]
+            all_children + Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(repo_path), "*")]
           end
         end
     end

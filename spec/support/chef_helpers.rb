@@ -1,4 +1,4 @@
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 #
 CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/../data/")
 CHEF_SPEC_ASSETS = File.expand_path(File.dirname(__FILE__) + "/../functional/assets/")
-CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, 'test-backup-path')
+CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, "test-backup-path")
 
 Chef::Config[:log_level] = :fatal
 Chef::Config[:persistent_queue] = false
@@ -25,9 +25,8 @@ Chef::Log.init(StringIO.new)
 Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)
 
-
 def sha256_checksum(path)
-  Digest::SHA256.hexdigest(File.read(path))
+  OpenSSL::Digest::SHA256.hexdigest(File.read(path))
 end
 
 # From Ruby 1.9.2+
@@ -54,13 +53,11 @@ end
 # This is a temporary fix to get tests passing on systems that have no `diff`
 # until we can replace shelling out to `diff` with ruby diff-lcs
 def has_diff?
-  begin
-    diff_cmd = Mixlib::ShellOut.new("diff -v")
-    diff_cmd.run_command
-    true
-  rescue Errno::ENOENT
-    false
-  end
+  diff_cmd = Mixlib::ShellOut.new("diff -v")
+  diff_cmd.run_command
+  true
+rescue Errno::ENOENT
+  false
 end
 
 # This is a helper to determine if the ruby in the PATH contains
@@ -82,12 +79,34 @@ end
 # This is a helper to canonicalize paths that we're using in the file
 # tests.
 def canonicalize_path(path)
-  windows? ? path.gsub('/', '\\') : path
+  windows? ? path.tr("/", '\\') : path
+end
+
+# Makes a temp directory with a canonical path on any platform.
+# Only really needed to work around an issue on Windows where
+# Ruby's temp library generates paths with short names.
+def make_canonical_temp_directory
+  temp_directory = Dir.mktmpdir
+  if windows?
+    # On Windows, temporary file / directory path names may have shortened
+    # subdirectory names due to reliance on the TMP and TEMP environment variables
+    # in some Windows APIs and duplicated logic in Ruby's temp file implementation.
+    # To work around this in the unit test context, we obtain the long (canonical)
+    # path name via a Windows system call so that this path name can be used
+    # in expectations that assume the ability to canonically name paths in comparisons.
+    # Note that this was not an issue prior to Ruby 2.2 -- with Ruby 2.2,
+    # some Chef code started to use long file names, while Ruby's temp file implementation
+    # continued to return the shortened names -- this would cause these particular tests to
+    # fail if the username happened to be longer than 8 characters.
+    Chef::ReservedNames::Win32::File.get_long_path_name(temp_directory)
+  else
+    temp_directory
+  end
 end
 
 # Check if a cmd exists on the PATH
 def which(cmd)
-  paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
+  paths = ENV["PATH"].split(File::PATH_SEPARATOR) + [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
   paths.each do |path|
     filename = File.join(path, cmd)
     return filename if File.executable?(filename)

@@ -1,6 +1,6 @@
 #
 # Author:: Scott Bonds (<scott@ggr.com>)
-# Copyright:: Copyright (c) 2014 Scott Bonds
+# Copyright:: Copyright 2014-2016, Scott Bonds
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,39 +16,39 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/command'
-require 'chef/mixin/shell_out'
-require 'chef/provider/service/init'
-require 'chef/resource/service'
+require "chef/mixin/shell_out"
+require "chef/provider/service/init"
+require "chef/resource/service"
 
 class Chef
   class Provider
     class Service
       class Openbsd < Chef::Provider::Service::Init
 
-        provides :service, os: [ "openbsd" ]
+        provides :service, os: "openbsd"
 
         include Chef::Mixin::ShellOut
 
         attr_reader :init_command, :rc_conf, :rc_conf_local, :enabled_state_found
 
-        RC_CONF_PATH = '/etc/rc.conf'
-        RC_CONF_LOCAL_PATH = '/etc/rc.conf.local'
+        RC_CONF_PATH = "/etc/rc.conf".freeze
+        RC_CONF_LOCAL_PATH = "/etc/rc.conf.local".freeze
 
         def initialize(new_resource, run_context)
           super
-          @rc_conf = ::File.read(RC_CONF_PATH) rescue ''
-          @rc_conf_local = ::File.read(RC_CONF_LOCAL_PATH) rescue ''
+          @rc_conf = ::File.read(RC_CONF_PATH) rescue ""
+          @rc_conf_local = ::File.read(RC_CONF_LOCAL_PATH) rescue ""
           @init_command = ::File.exist?(rcd_script_path) ? rcd_script_path : nil
-          new_resource.supports[:status] = true
           new_resource.status_command("#{default_init_command} check")
         end
 
         def load_current_resource
+          supports[:status] = true if supports[:status].nil?
+
           @current_resource = Chef::Resource::Service.new(new_resource.name)
           current_resource.service_name(new_resource.service_name)
 
-          Chef::Log.debug("#{current_resource} found at #{init_command}")
+          logger.trace("#{current_resource} found at #{init_command}")
 
           determine_current_status!
           determine_enabled_status!
@@ -71,7 +71,7 @@ class Chef
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { init_command && builtin_service_enable_variable_name != nil }
+            a.assertion { init_command && !builtin_service_enable_variable_name.nil? }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
@@ -81,7 +81,7 @@ class Chef
           if !is_enabled?
             if is_builtin?
               if is_enabled_by_default?
-                update_rcl rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, '')
+                update_rcl rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, "")
               else
                 # add line with blank string, which means enable
                 update_rcl rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"\"\n"
@@ -89,9 +89,9 @@ class Chef
             else
               # add to pkg_scripts, most recent addition goes last
               old_services_list = rc_conf_local.match(/^pkg_scripts="(.*)"/)
-              old_services_list = old_services_list ? old_services_list[1].split(' ') : []
+              old_services_list = old_services_list ? old_services_list[1].split(" ") : []
               new_services_list = old_services_list + [new_resource.service_name]
-              if rc_conf_local.match(/^pkg_scripts="(.*)"/)
+              if rc_conf_local =~ /^pkg_scripts="(.*)"/
                 new_rcl = rc_conf_local.sub(/^pkg_scripts="(.*)"/, "pkg_scripts=\"#{new_services_list.join(' ')}\"")
               else
                 new_rcl = rc_conf_local + "\n" + "pkg_scripts=\"#{new_services_list.join(' ')}\"\n"
@@ -109,14 +109,14 @@ class Chef
                 update_rcl rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"NO\"\n"
               else
                 # remove line to disable
-                update_rcl rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, '')
+                update_rcl rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, "")
               end
             else
               # remove from pkg_scripts
               old_list = rc_conf_local.match(/^pkg_scripts="(.*)"/)
-              old_list = old_list ? old_list[1].split(' ') : []
+              old_list = old_list ? old_list[1].split(" ") : []
               new_list = old_list - [new_resource.service_name]
-              update_rcl rc_conf_local.sub(/^pkg_scripts="(.*)"/, pkg_scripts="#{new_list.join(' ')}")
+              update_rcl rc_conf_local.sub(/^pkg_scripts="(.*)"/, pkg_scripts = (new_list.join(" ")).to_s)
             end
           end
         end
@@ -158,7 +158,7 @@ class Chef
           result = false
           var_name = builtin_service_enable_variable_name
           if var_name
-            if rc_conf.match(/^#{Regexp.escape(var_name)}=(.*)/)
+            if rc_conf =~ /^#{Regexp.escape(var_name)}=(.*)/
               result = true
             end
           end

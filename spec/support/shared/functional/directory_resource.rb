@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ shared_examples_for "a directory resource" do
 
   include_context "diff disabled"
 
-  let(:expect_updated?) {true}
+  let(:expect_updated?) { true }
 
   context "when the target directory does not exist" do
     before do
@@ -48,7 +48,7 @@ shared_examples_for "a directory resource" do
           expect(File).not_to exist(path)
 
           resource.recursive(true)
-          @recursive_path = File.join(path, 'red-headed-stepchild')
+          @recursive_path = File.join(path, "red-headed-stepchild")
           resource.path(@recursive_path)
           resource.run_action(:create)
         end
@@ -68,14 +68,14 @@ shared_examples_for "a directory resource" do
     def allowed_acl(sid, expected_perms)
       [
        ACE.access_allowed(sid, expected_perms[:specific]),
-       ACE.access_allowed(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
+       ACE.access_allowed(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE)),
       ]
     end
 
     def denied_acl(sid, expected_perms)
       [
        ACE.access_denied(sid, expected_perms[:specific]),
-       ACE.access_denied(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
+       ACE.access_denied(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE)),
       ]
     end
 
@@ -133,7 +133,7 @@ shared_examples_for "a directory resource" do
 
       context "with the recursive option" do
         before do
-          FileUtils.mkdir(File.join(path, 'red-headed-stepchild'))
+          FileUtils.mkdir(File.join(path, "red-headed-stepchild"))
           resource.recursive(true)
           resource.run_action(:delete)
         end
@@ -152,7 +152,7 @@ shared_context Chef::Resource::Directory do
   # deployment strategies more completely.
   let(:test_file_dir) do
     if windows?
-      File.join(ENV['systemdrive'], "test-dir")
+      File.join(ENV["systemdrive"], "test-dir")
     else
       File.join(CHEF_SPEC_DATA, "test-dir")
     end
@@ -163,11 +163,11 @@ shared_context Chef::Resource::Directory do
   end
 
   before do
-    FileUtils::mkdir_p(test_file_dir)
+    FileUtils.mkdir_p(test_file_dir)
   end
 
   after do
-    FileUtils::rm_rf(test_file_dir)
+    FileUtils.rm_rf(test_file_dir)
   end
 
   after(:each) do

@@ -1,4 +1,20 @@
-require 'chef/chef_fs/knife'
+#
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require "chef/chef_fs/knife"
 
 class Chef
   class Knife
@@ -8,14 +24,14 @@ class Chef
       category "path-based"
 
       deps do
-        require 'chef/chef_fs/file_system'
-        require 'chef/chef_fs/file_system/not_found_error'
+        require "chef/chef_fs/file_system"
+        require "chef/chef_fs/file_system/exceptions"
       end
 
       option :local,
-        :long => '--local',
-        :boolean => true,
-        :description => "Show local files instead of remote"
+        long: "--local",
+        boolean: true,
+        description: "Show local files instead of remote."
 
       def run
         # Get the matches (recursively)
@@ -32,7 +48,7 @@ class Chef
                   result.write(new_value)
                   output "Updated #{format_path(result)}"
                 else
-                  output "#{format_path(result)} unchanged!"
+                  output "#{format_path(result)} unchanged"
                 end
               rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
                 ui.error "#{format_path(e.entry)}: #{e.reason}."
@@ -50,15 +66,15 @@ class Chef
       end
 
       def edit_text(text, extension)
-        if (!config[:disable_editing])
-          Tempfile.open([ 'knife-edit-', extension ]) do |file|
+        if !config[:disable_editing]
+          Tempfile.open([ "knife-edit-", extension ]) do |file|
             # Write the text to a temporary file
             file.write(text)
             file.close
 
             # Let the user edit the temporary file
             if !system("#{config[:editor]} #{file.path}")
-              raise "Please set EDITOR environment variable"
+              raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup.html for details."
             end
 
             result_text = IO.read(file.path)
@@ -70,4 +86,3 @@ class Chef
     end
   end
 end
-

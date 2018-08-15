@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,34 +18,27 @@
 # limitations under the License.
 #
 
-require 'chef/resource/file'
-require 'chef/provider/cookbook_file'
-require 'chef/mixin/securable'
+require "chef/resource/file"
+require "chef/provider/cookbook_file"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
     class CookbookFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      provides :cookbook_file
+      resource_name :cookbook_file
 
-      def initialize(name, run_context=nil)
-        super
-        @provider = Chef::Provider::CookbookFile
-        @resource_name = :cookbook_file
-        @action = "create"
-        @source = ::File.basename(name)
-        @cookbook = nil
-      end
+      description "Use the cookbook_file resource to transfer files from a sub-directory of COOKBOOK_NAME/files/ to a specified path located on a host that is running the chef-client. The file is selected according to file specificity, which allows different source files to be used based on the hostname, host platform (operating system, distro, or as appropriate), or platform version. Files that are located in the COOKBOOK_NAME/files/default sub-directory may be used on any platform.\n\nDuring a chef-client run, the checksum for each local file is calculated and then compared against the checksum for the same file as it currently exists in the cookbook on the Chef server. A file is not transferred when the checksums match. Only files that require an update are transferred from the Chef server to a node."
 
-      def source(source_filename=nil)
-        set_or_return(:source, source_filename, :kind_of => [ String, Array ])
-      end
+      property :source, [ String, Array ],
+                description: "The name of the file in COOKBOOK_NAME/files/default or the path to a file located in COOKBOOK_NAME/files. The path must include the file name and its extension. This can be used to distribute specific files depending upon the platform used.",
+                default: lazy { ::File.basename(name) }
 
-      def cookbook(cookbook_name=nil)
-        set_or_return(:cookbook, cookbook_name, :kind_of => String)
-      end
+      property :cookbook, String,
+                description: "The cookbook in which a file is located (if it is not located in the current cookbook)."
 
+      default_action :create
     end
   end
 end

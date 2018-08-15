@@ -1,7 +1,7 @@
 #
-# Author:: Jay Mundrawala (<jdm@getchef.com>)
+# Author:: Jay Mundrawala (<jdm@chef.io>)
 #
-# Copyright:: 2014, Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/event_loggers/base'
-require 'chef/platform/query_helpers'
-require 'chef/win32/eventlog'
+require "chef/event_loggers/base"
+require "chef/platform/query_helpers"
+require "chef/win32/eventlog"
 
 class Chef
   module EventLoggers
@@ -35,62 +35,62 @@ class Chef
       LOG_CATEGORY_ID = 11001
 
       # Since we must install the event logger, this is not really configurable
-      SOURCE = 'Chef'
+      SOURCE = "Chef".freeze
 
       def self.available?
-        return Chef::Platform::windows?
+        Chef::Platform.windows?
       end
 
       def initialize
-        @eventlog = ::Win32::EventLog::open('Application')
+        @eventlog = ::Win32::EventLog.open("Application")
       end
 
       def run_start(version)
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::INFO_TYPE,
-          :source => SOURCE,
-          :event_id => RUN_START_EVENT_ID,
-          :data => [version]
+          event_type: ::Win32::EventLog::INFO_TYPE,
+          source: SOURCE,
+          event_id: RUN_START_EVENT_ID,
+          data: [version]
         )
       end
 
       def run_started(run_status)
         @run_status = run_status
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::INFO_TYPE,
-          :source => SOURCE,
-          :event_id => RUN_STARTED_EVENT_ID,
-          :data => [run_status.run_id]
+          event_type: ::Win32::EventLog::INFO_TYPE,
+          source: SOURCE,
+          event_id: RUN_STARTED_EVENT_ID,
+          data: [run_status.run_id]
         )
       end
 
       def run_completed(node)
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::INFO_TYPE,
-          :source => SOURCE,
-          :event_id => RUN_COMPLETED_EVENT_ID,
-          :data => [@run_status.run_id, @run_status.elapsed_time.to_s]
+          event_type: ::Win32::EventLog::INFO_TYPE,
+          source: SOURCE,
+          event_id: RUN_COMPLETED_EVENT_ID,
+          data: [@run_status.run_id, @run_status.elapsed_time.to_s]
         )
       end
 
-      #Failed chef-client run %1 in %2 seconds.
-      #Exception type: %3
-      #Exception message: %4
-      #Exception backtrace: %5
+      # Failed chef-client run %1 in %2 seconds.
+      # Exception type: %3
+      # Exception message: %4
+      # Exception backtrace: %5
       def run_failed(e)
         data =
           if @run_status
             [@run_status.run_id,
              @run_status.elapsed_time.to_s]
           else
-            ["UNKNOWN", "UNKNOWN"]
+            %w{UNKNOWN UNKNOWN}
           end
 
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::ERROR_TYPE,
-          :source => SOURCE,
-          :event_id => RUN_FAILED_EVENT_ID,
-          :data => data + [e.class.name,
+          event_type: ::Win32::EventLog::ERROR_TYPE,
+          source: SOURCE,
+          event_id: RUN_FAILED_EVENT_ID,
+          data: data + [e.class.name,
                            e.message,
                            e.backtrace.join("\n")]
         )

@@ -1,6 +1,6 @@
 #
 # Author:: Michael Leinartas (<mleinartas@gmail.com>)
-# Copyright:: Copyright (c) 2010 Michael Leinartas
+# Copyright:: Copyright 2010-2016, Michael Leinartas
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,47 +16,47 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Ohai do
 
-  before(:each) do
-    @resource = Chef::Resource::Ohai.new("ohai_reload")
+  let(:resource) { Chef::Resource::Ohai.new("fakey_fakerton") }
+
+  it "has a resource name of :ohai" do
+    expect(resource.resource_name).to eql(:ohai)
   end
 
-  it "should create a new Chef::Resource::Ohai" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::Ohai)
+  it "the ohai_name property is the name_property" do
+    expect(resource.ohai_name).to eql("fakey_fakerton")
   end
 
-  it "should have a resource name of :ohai" do
-    expect(@resource.resource_name).to eql(:ohai)
+  it "sets the default action as :reload" do
+    expect(resource.action).to eql([:reload])
   end
 
-  it "should have a default action of create" do
-    expect(@resource.action).to eql(:reload)
+  it "supports :reload action" do
+    expect { resource.action :reload }.not_to raise_error
   end
 
-  it "should allow you to set the plugin attribute" do
-    @resource.plugin "passwd"
-    expect(@resource.plugin).to eql("passwd")
+  it "allows you to set the plugin property" do
+    resource.plugin "passwd"
+    expect(resource.plugin).to eql("passwd")
   end
 
   describe "when it has a plugin value" do
     before do
-      @resource.name("test")
-      @resource.plugin("passwd")
+      resource.name("test")
+      resource.plugin("passwd")
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = resource.state_for_resource_reporter
       expect(state[:plugin]).to eq("passwd")
     end
 
     it "returns the name as its identity" do
-      expect(@resource.identity).to eq("test")
+      expect(resource.identity).to eq("test")
     end
   end
-
 
 end

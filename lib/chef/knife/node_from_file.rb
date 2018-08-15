@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class NodeFromFile < Knife
 
       deps do
-        require 'chef/node'
-        require 'chef/json_compat'
-        require 'chef/knife/core/object_loader'
+        require "chef/node"
+        require "chef/json_compat"
+        require "chef/knife/core/object_loader"
       end
 
       banner "knife node from file FILE (options)"
@@ -36,13 +36,13 @@ class Chef
 
       def run
         @name_args.each do |arg|
-          updated = loader.load_from('nodes', arg)
-  
+          updated = loader.load_from("nodes", arg)
+
           updated.save
-  
+
           output(format_for_display(updated)) if config[:print_after]
-  
-          ui.info("Updated Node #{updated.name}!")
+
+          ui.info("Updated Node #{updated.name}")
         end
       end
 

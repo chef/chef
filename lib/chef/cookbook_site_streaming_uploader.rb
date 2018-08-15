@@ -1,8 +1,8 @@
 #
 # Author:: Stanislav Vitvitskiy
-# Author:: Nuo Yan (nuo@opscode.com)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Author:: Nuo Yan (nuo@chef.io)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2009-2016, 2010-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,20 +18,20 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'net/http'
-require 'mixlib/authentication/signedheaderauth'
-require 'openssl'
+require "uri"
+require "net/http"
+require "mixlib/authentication/signedheaderauth"
+require "openssl"
 
 class Chef
   # == Chef::CookbookSiteStreamingUploader
   # A streaming multipart HTTP upload implementation. Used to upload cookbooks
-  # (in tarball form) to http://cookbooks.opscode.com
+  # (in tarball form) to https://supermarket.chef.io
   #
   # inspired by http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
   class CookbookSiteStreamingUploader
 
-    DefaultHeaders = { 'accept' => 'application/json', 'x-chef-version' => ::Chef::VERSION }
+    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION }.freeze # rubocop:disable Naming/ConstantName
 
     class << self
 
@@ -41,21 +41,19 @@ class Chef
         tmp_cookbook_dir = tmp_cookbook_path.path
         File.unlink(tmp_cookbook_dir)
         FileUtils.mkdir_p(tmp_cookbook_dir)
-        Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
+        Chef::Log.trace("Staging at #{tmp_cookbook_dir}")
         checksums_to_on_disk_paths = cookbook.checksums
-        Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
-          cookbook.manifest[segment].each do |manifest_record|
-            path_in_cookbook = manifest_record[:path]
-            on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
-            dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
-            FileUtils.mkdir_p(File.dirname(dest))
-            Chef::Log.debug("Staging #{on_disk_path} to #{dest}")
-            FileUtils.cp(on_disk_path, dest)
-          end
+        cookbook.each_file do |manifest_record|
+          path_in_cookbook = manifest_record[:path]
+          on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
+          dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
+          FileUtils.mkdir_p(File.dirname(dest))
+          Chef::Log.trace("Staging #{on_disk_path} to #{dest}")
+          FileUtils.cp(on_disk_path, dest)
         end
 
         # First, generate metadata
-        Chef::Log.debug("Generating metadata")
+        Chef::Log.trace("Generating metadata")
         kcm = Chef::Knife::CookbookMetadata.new
         kcm.config[:cookbook_path] = [ tmp_cookbook_dir ]
         kcm.name_args = [ cookbook.name.to_s ]
@@ -73,11 +71,10 @@ class Chef
       end
 
       def make_request(http_verb, to_url, user_id, secret_key_filename, params = {}, headers = {})
-        boundary = '----RubyMultipartClient' + rand(1000000).to_s + 'ZZZZZ'
+        boundary = "----RubyMultipartClient" + rand(1000000).to_s + "ZZZZZ"
         parts = []
         content_file = nil
 
-        timestamp = Time.now.utc.iso8601
         secret_key = OpenSSL::PKey::RSA.new(File.read(secret_key_filename))
 
         unless params.nil? || params.empty?
@@ -114,14 +111,14 @@ class Chef
         # TODO: tim: 2009-12-28: It'd be nice to remove this special case, and
         # always hash the entire request body. In the file case it would just be
         # expanded multipart text - the entire body of the POST.
-        content_body = parts.inject("") { |result,part| result + part.read(0, part.size) }
+        content_body = parts.inject("") { |result, part| result + part.read(0, part.size) }
         content_file.rewind if content_file # we consumed the file for the above operation, so rewind it.
 
         signing_options = {
-          :http_method=>http_verb,
-          :path=>url.path,
-          :user_id=>user_id,
-          :timestamp=>timestamp}
+          http_method: http_verb,
+          path: url.path,
+          user_id: user_id,
+          timestamp: timestamp }
         (content_file && signing_options[:file] = content_file) || (signing_options[:body] = (content_body || ""))
 
         headers.merge!(Mixlib::Authentication::SignedHeaderAuth.signing_object(signing_options).sign(secret_key))
@@ -129,7 +126,7 @@ class Chef
         content_file.rewind if content_file
 
         # net/http doesn't like symbols for header keys, so we'll to_s each one just in case
-        headers = DefaultHeaders.merge(Hash[*headers.map{ |k,v| [k.to_s, v] }.flatten])
+        headers = DefaultHeaders.merge(Hash[*headers.map { |k, v| [k.to_s, v] }.flatten])
 
         req = case http_verb
               when :put
@@ -138,7 +135,7 @@ class Chef
                 Net::HTTP::Post.new(url.path, headers)
               end
         req.content_length = body_stream.size
-        req.content_type = 'multipart/form-data; boundary=' + boundary unless parts.empty?
+        req.content_type = "multipart/form-data; boundary=" + boundary unless parts.empty?
         req.body_stream = body_stream
 
         http = Chef::HTTP::BasicClient.new(url).http_client
@@ -150,11 +147,11 @@ class Chef
           alias :to_s :body
 
           # BUGBUG this makes the response compatible with what respsonse_steps expects to test headers (response.headers[] -> response[])
-          def headers
+          def headers # rubocop:disable Lint/NestedMethodDefinition
             self
           end
 
-          def status
+          def status  # rubocop:disable Lint/NestedMethodDefinition
             code.to_i
           end
         end
@@ -201,12 +198,12 @@ class Chef
       end
 
       def size
-        @parts.inject(0) {|size, part| size + part.size}
+        @parts.inject(0) { |size, part| size + part.size }
       end
 
       def read(how_much, dst_buf = nil)
         if @part_no >= @parts.size
-          dst_buf.replace('') if dst_buf
+          dst_buf.replace("") if dst_buf
           return dst_buf
         end
 
@@ -229,14 +226,14 @@ class Chef
           next_part = read(how_much_next_part)
           result = current_part + if next_part
                                     next_part
-          else
-            ''
-          end
+                                  else
+                                    ""
+                                  end
         else
           @part_offset += how_much_current_part
           result = current_part
         end
-        dst_buf ? dst_buf.replace(result || '') : result
+        dst_buf ? dst_buf.replace(result || "") : result
       end
     end
 

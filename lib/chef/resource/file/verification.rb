@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc
+# Copyright:: Copyright 2014-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/guard_interpreter'
-require 'chef/mixin/descendants_tracker'
+require "chef/exceptions"
+require "chef/guard_interpreter"
+require "chef/mixin/descendants_tracker"
 
 class Chef
   class Resource
@@ -28,7 +28,7 @@ class Chef
       # See RFC 027 for a full specification
       #
       # File verifications allow user-supplied commands a means of
-      # preventing file reosurce content deploys.  Their intended use
+      # preventing file resource content deploys.  Their intended use
       # is to verify the contents of a temporary file before it is
       # deployed onto the system.
       #
@@ -73,11 +73,15 @@ class Chef
         end
 
         def self.lookup(name)
-          c = descendants.find {|d| d.provides?(name) }
+          c = descendants.find { |d| d.provides?(name) }
           if c.nil?
             raise Chef::Exceptions::VerificationNotFound.new "No file verification for #{name} found."
           end
           c
+        end
+
+        def logger
+          @parent_resource.logger
         end
 
         def initialize(parent_resource, command, opts, &block)
@@ -86,8 +90,8 @@ class Chef
           @parent_resource = parent_resource
         end
 
-        def verify(path, opts={})
-          Chef::Log.debug("Running verification[#{self}] on #{path}")
+        def verify(path, opts = {})
+          logger.trace("Running verification[#{self}] on #{path}")
           if @block
             verify_block(path, opts)
           elsif @command.is_a?(Symbol)
@@ -106,7 +110,10 @@ class Chef
         # We reuse Chef::GuardInterpreter in order to support
         # the same set of options that the not_if/only_if blocks do
         def verify_command(path, opts)
-          command = @command % {:file => path}
+          if @command.include?("%{file}")
+            raise ArgumentError, "The %{file} expansion for verify commands has been removed. Please use %{path} instead."
+          end
+          command = @command % { path: path }
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
           interpreter.evaluate
         end
@@ -115,6 +122,16 @@ class Chef
           verification_class = Chef::Resource::File::Verification.lookup(@command)
           v = verification_class.new(@parent_resource, @command, @command_opts, &@block)
           v.verify(path, opts)
+        end
+
+        def to_s
+          if @block
+            "<Proc>"
+          elsif @command.is_a?(Symbol)
+            "#{@command.inspect} (#{Chef::Resource::File::Verification.lookup(@command).name})"
+          elsif @command.is_a?(String)
+            @command
+          end
         end
       end
     end

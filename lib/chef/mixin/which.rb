@@ -1,6 +1,6 @@
 #--
-# Author:: Lamont Granquist <lamont@getchef.io>
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Lamont Granquist <lamont@chef.io>
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,19 +18,32 @@
 class Chef
   module Mixin
     module Which
-      def which(cmd, opts = {})
-        extra_path =
-          if opts[:extra_path].nil?
-            [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
-          else
-            [ opts[:extra_path] ].flatten
-          end
-        paths = ENV['PATH'].split(File::PATH_SEPARATOR) + extra_path
-        paths.each do |path|
-          filename = File.join(path, cmd)
-          return filename if File.executable?(filename)
-        end
-        false
+      def which(*cmds, extra_path: nil, &block)
+        where(*cmds, extra_path: extra_path, &block).first || false
+      end
+
+      def where(*cmds, extra_path: nil, &block)
+        # NOTE: unnecessarily duplicates function of path_sanity
+        extra_path ||= [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
+        paths = env_path.split(File::PATH_SEPARATOR) + Array(extra_path)
+        cmds.map do |cmd|
+          paths.map do |path|
+            filename = Chef.path_to(File.join(path, cmd))
+            filename if valid_executable?(filename, &block)
+          end.compact
+        end.flatten
+      end
+
+      private
+
+      # for test stubbing
+      def env_path
+        ENV["PATH"]
+      end
+
+      def valid_executable?(filename, &block)
+        return false unless File.executable?(filename) && !File.directory?(filename)
+        block ? yield(filename) : true
       end
     end
   end

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,26 +16,25 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class ClientList < Knife
 
       deps do
-        require 'chef/api_client'
-        require 'chef/json_compat'
+        require "chef/api_client_v1"
       end
 
       banner "knife client list (options)"
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+        short: "-w",
+        long: "--with-uri",
+        description: "Show corresponding URIs"
 
       def run
-        output(format_list_for_display(Chef::ApiClient.list))
+        output(format_list_for_display(Chef::ApiClientV1.list))
       end
     end
   end

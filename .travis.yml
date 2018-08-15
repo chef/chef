@@ -1,22 +1,32 @@
 language: ruby
+cache: bundler
+dist: trusty
 
-sudo: false
 # Early warning system to catch if Rubygems breaks something
 before_install:
-  gem update --system
+  - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+  - gem --version
+    # travis may preinstall a bundler gem which is later than the one which we pin, which may totally hose us, so we preemtively
+    # uninstall anything they may have installed here.  if they haven't installed anything then we have to ignore the failure
+    # to uninstall the default bundler that ships embedded in ruby itself.
+  - rvm @global do gem uninstall bundler -a -x || true
+  - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+  - bundle --version
+  - rm -f .bundle/config
 
+before_script:
+ # force all .rspec tests into progress display to reduce line count
+ - echo --color > .rspec
+ - echo -fp >> .rspec
+ # necessary for sudo: true tests, ingore failures on tests invoked with sudo: false
+ - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers
+
+# do not run expensive spec tests on PRs, only on branches
 branches:
   only:
   - master
-  - 10-stable
-  - 11-stable
-  - 12-stable
-
-# do not run expensive spec tests on PRs, only on branches
-script: "
-echo '--color\n-fp' > .rspec;
-bundle exec rake spec;
-"
+  - chef-14
+  - chef-13
 
 env:
   global:
@@ -24,77 +34,315 @@ env:
 
 matrix:
   include:
-  - rvm: 2.0
-  - rvm: 2.1
-  - rvm: 2.2
-  - rvm: 2.1
-    gemfile: pedant.gemfile
-    script: bundle exec rake pedant
-    ### START TEST KITCHEN ONLY ###
-  - rvm: 2.1
+  - env:
+      INTEGRATION_SPECS_24: 1
+    rvm: 2.4.4
+    sudo: true
+    script: sudo -E $(which bundle) exec rake spec:integration;
+    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
+  - env:
+      INTEGRATION_SPECS_25: 1
+    rvm: 2.5.1
+    sudo: true
+    script: sudo -E $(which bundle) exec rake spec:integration;
+    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
+  - env:
+      FUNCTIONAL_SPECS_24: 1
+    rvm: 2.4.4
+    sudo: true
+    script: sudo -E $(which bundle) exec rake spec:functional;
+    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
+  - env:
+      FUNCTIONAL_SPECS_25: 1
+    rvm: 2.5.1
+    sudo: true
+    script: sudo -E $(which bundle) exec rake spec:functional;
+    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
+  - env:
+      UNIT_SPECS_24: 1
+    rvm: 2.4.4
+    sudo: true
+    script:
+      - sudo -E $(which bundle) exec rake spec:unit;
+      - sudo -E $(which bundle) exec rake component_specs
+    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
+  - env:
+      UNIT_SPECS_25: 1
+    rvm: 2.5.1
+    sudo: true
+    script:
+      - sudo -E $(which bundle) exec rake spec:unit;
+      - sudo -E $(which bundle) exec rake component_specs
+    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
+  - env:
+      CHEFSTYLE: 1
+    rvm: 2.5.1
+    script: bundle exec rake style
+    # also remove integration / external tests
+    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
+  #
+  # External tests
+  #
+  - env:
+      TEST_GEM: sethvargo/chef-sugar
+    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
+    rvm: 2.5.1
+  - env:
+      - PEDANT_OPTS=--skip-oc_id
+      - TEST_GEM=chef/chef-zero
+      - CHEF_FS=true
+    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake pedant
+    rvm: 2.5.1
+  - env:
+      TEST_GEM: chef/cheffish
+    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
+    rvm: 2.5.1
+  - env:
+      TEST_GEM: chefspec/chefspec
+    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
+    rvm: 2.5.1
+  - env:
+      TEST_GEM: poise/halite
+    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
+    rvm: 2.5.1
+  - env:
+      TEST_GEM: chef/knife-windows
+    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
+    rvm: 2.5.1
+  # disable this pending a Chef 14 compat version of poise
+  # - env:
+  #     TEST_GEM: poise/poise
+  #   script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
+  #   rvm: 2.5.1
+  ### START TEST KITCHEN ONLY ###
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
-    - echo -n $DO_KEY_CHUNK_{0..30} >> ~/.ssh/id_aws.base64
-    - cat ~/.ssh/id_aws.base64 | tr -d ' ' | base64 --decode > ~/.ssh/id_aws.pem
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
-    - cd kitchen-tests
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
     script:
-# FIXME: we should fix centos-6 against AWS and then enable it here
-    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen test ubuntu; fi
+      - bundle exec kitchen test end-to-end-amazonlinux-2
     after_failure:
-    - cat .kitchen/logs/kitchen.log
-    after_script:
-    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen destroy ubuntu; fi
+      - cat .kitchen/logs/kitchen.log
     env:
-    - KITCHEN_YAML=.kitchen.travis.yml
-    - EC2_SSH_KEY_PATH=~/.ssh/id_aws.pem
-    - secure: VAauyVnAMWhqvnhJOJ/tCDn3XAdWqzbWiDVQPNBkqtm2SBIvhmZl2hlrusvw6YLU31Prdf8fSFhOSysVQQs/rJYrmD/1BfV79p6M7cGXYZ0nGWwldF81N296lyFoZLyrqtmG4G0cx3Pw2ojADFgFe+B5eTGlqJFD+z371g4RF/Y=
-    - secure: A+qtUF2LPJGkUAdvt04AwZMt69rzaeTyR0/1XEOAuntBKKXSCzddUzr5ePDc9QQ/57AWywKxhVLpnxk3QzKN7r7zerDxyIJBgklNDpNAKkeQjP3T6FpaKEIN9ROcpPtsM6FJ5Agb+bEQoRJF7s+ampO3wLV3XpTiWNuWkcAhv9A=
-    - secure: J8JIg15trrPgc8X/1DsaUWDQCdDWTvN/AorXzZ/ReudHS6G/KpoynZ5lTmKjlgFiFNE/TGMDv486pStGtIcarTKTuIEmNADdEWlAVH7bxclpayMjtppVuapRCkZWccs5gz5CJyhX7yhQCFTYoqVox9Y4qHGCluF3oqCcPRtCOOw=
-    - secure: NJYn0blTMwIoFxZlsoMWK8hPO/fi45rgWOqEImnjvSRk++5WL+GgjLBgLvEi7wCMkBijhIMWtnva60ojd4MrxeS7evrmGRjJKXnPuSKEsrGbArZPskBjCAcg+3PlnQQUkFf6hvbGD3HZlJtcbs4hrx8tbDT2Ie7bmQfqpsawKY4=
-    - secure: FipoX1VzZkzPUP6Gxd05DEva7cX6xKK2Wdq+Y18nNkyW2afPLXCNl5kCsNrgvbqAzbjKaP2M8+b0zwKjrFzNebqmmx1RRfZUJWUkNRF1EgE+tHytmMZW6tNcQlTlvA0KqXi4Dt6SIQ0l/DhwwNKZ80jmpiyYi/ErxIXzbVgVtYA=
-    - secure: T2MbE9twIkdaor796/lDioCgb2+FP3G8lXq+lIqnjaL22WMP8yKtkjNo8ggSlvQZE7MAQHqi5LISw5MU2MI6ImTU50/pgdWreM5Cx37WWYqntcbJ0Sz7v396KGJzeqbDql1fGolHDlykfi+OJzzbIGC8cjz7iAD2RUZU95wEC5s=
-    - secure: hWEQInvuanQavFCE3m6/q9BjNEFZQmLc94EWnBKTMiwUAdYgQQMLohN7K1Gc8irxYKp86F+P+XWE4lfDZNK3sqmxyk51TtT2EfmKWs+jSLq4+NBYQwXCpRELC5Irpm0GRCYthhsQSuarpVWss/0s0o7iJQaHxrSPcQiwDouIpwU=
-    - secure: OllJUaR/WUu+H0FIjU7vQxU10JT4d+/FZuTqnX6ZTcXN3dXCirnabYp/j+r5OBY3QeOojOyzGfHUWYEUGH/PTxcxYjrohtFTWht9N9x+SxfX2fLqieH/kRKyDmIidsY8qKChf/LD9f+SwpXRXND/PctKhNR4C5BH57fGUEqE9FU=
-    - secure: KgKnGtM4e+cVYfLn78eTWJ1q4ORv128abB72QBc/xiSh0rvxSIojVKZCXmRetQPXIl7NoIzU2IyjR1ABEZ+vA83PayTEsOr2KDRDgolSIgZSSiDFt4U2phQsxl4fX7wFv/jWlbxM2fysKBSIRAF57CwBjGhLjmpUO+5PdoR7N2s=
-    - secure: IgOx4STauKnJWENQGcn2iBp32XcNd2anNR0Fua0ugjudu1+CV+IxcIhI8ohOfZEXyVK4MGTF8uXWrYtoiwyExG4mTXqpRWJCgIkncqiWlfT+8BoAGWxCQhUYub3MaNZANPgebKPJhTPQ8OwNz09gPMNkewRfAqNF05eb8FU2kGA=
-    - secure: CPXP6g3c1FH4Zm4U19XaPvq9nnyNsQCXRkxiPcGqsJZsGG2QMgzPQyjiAuPqnWxxZHit/6NgzUszJC+skSgcTzDTeD6rOA0Wcxtbr/Un4RRxRnTcRc6mSEZqSu9RbAZMYur/mSQ9HDHnjFe1ok85He4s9jM1iFdgjtg1ToelEmA=
-    - secure: fp9pzNe09PIyZ/8NjbMPGW1zdG3Q/KhJ+stUKqA+FRopAMX/Hh24gFIVJhFOmfr4Vhn0J8sF7RsFaR1mdzcPewliOzKxknWhGEGMcG9LFCZcv+vVK0Fxs4nUzCRtaXUt08FpsRofG0iBvfapZ7YBhK7lslqGVI+fxCd3ZXmayG8=
-    - secure: NT/6qcecxmuKYOnw1Atc6hsyJlfB6XI2Z1lg7dE0PhlEVW2EpkckHjAc+5hgg8Zt7TifYm2qDQWJwblwPP0mMj3ra4ZIMaZAiG2kzQoZ5kthqwjAV9fatZvrDXi+jd9wBF2hPyiCokAQiTLmKTYjzY2FBqPO3VDLWdf9qZqRmxw=
-    - secure: MjIWyfquKANh/YeoyHGksdvAUQ4wc2tBCQmq1QcRhKwb7Sy6wcDk1nujDmnGE7HFpZUS6CyoZF7AMzJGFkCzrChpsLQYUP4hc7VjkXOLzi90vJUl+ANq7KPOmxC0MjKpgeHqCysRbTYbUsnJZfbbZbIZjCAjY0YCY2pGniXpvQc=
-    - secure: AsZLOiFrHkGsY6jp2ShI5kYz78V6PEUyizgtPCWTgevTRGWpdCq9csIEoqUBY+vMUxmQPC6IY4fwHkrRCbv/rJyhwRl/Rnwa3aw8bdD+YD17IxnpXKGXXUyXdTZmF7HzAkVgStehL+qWZ3x9TBdExIV37KVgrVw/b+S0QqBUlQo=
-    - secure: jwEnSquLreMM1M6N3gGpgTGHd8VtjBUTLDdkrokhiH1jHLpz7Hmr6xeajhZws+2sLtLiB7hYi6WsZBE5VcymBoObh9MeodO9Ve5/1z06lFmx1DyYV6euyo9WUkU2WpoVfu8k7O+eAvyrXXZVqm8Oz1p7Isb6Bh5+fJH2H8rhed4=
-    - secure: HOAK620U6mlS11XK+JtXTBk26Tt2vWO4shA/6Zit/y0/kAz7JnbXtup7FSysXliBoSv4YsxA6IbgZ8V0tuIXj+q7EcqtHMmQhqzMJG5jRKVhtGiFIhDmwmxJvdfIvwtZOO3mMk0OspLz24sWp8wCciYZMPj0hZJR04R9aWEO3cE=
-    - secure: DfTRP74UWWxA460XfLoJFgRLwoKbHWNIueL6qr982AnuAxeZFofsxCqxSxcSJmu67TxuPc+b201+BmanHKYmSauGS31t0F4QXk7lCTaT/x38mAPsWvMFkY8HEl56JhmzEp2hAKDB/t0/HItwmvxT1vd5WvNRSSojEVzChftV/zE=
-    - secure: JoCWsJzTgj+epgzmgbvV7/bdAPHwUGXZA7Jdvv9vIJ5lCo6h9WwCw6/KCvH+bHtrT/RfZmUmxouCxJCLKwts1ZrMmedTIXpMrQJo/YgWRp7ziFnLyZ8jG8bD7rep3ngq1x/cRGc3cZvYN6IK3GS6C27OviYLFsTw74AUnWTaFSo=
-    - secure: iXfl0WnAnfKurZUrMeV1yOoFiiZ+MKx/Zj6ZVP2++A9EOxxIxb/fS/gIOzSjBQwzrR+fJVHIlX0g42CiBKDQWUvIl5I8kZCVIP6AHa1jyzlmZE9lqSlojz3k5RPS7pW6nIX+z1NHMvtb3e5xeLv8y4J5kwZErqZ+YDJmBRtPxPU=
-    - secure: RhAW5kABDPB3GWKD+NCg05Kcd92F/+kg+0icXXN166DWQYUut3MLrSY80xNzkz5nXTI9EFU4fUqlKLDiF/kelr0Zp/zpCQAB54o4cu5FkZz0Bgs9k7yUdCRyz6Vt2ChV5cYI4JTn9bMaeXEaGlOjP1iE51rYT6KO6kKlwsEnjUc=
-    - secure: jy/3fC+UtrDcE/X6/IxkyT2SrYMKkiEMP1ht4d5mxvNA0Xxn43E16c6FNP0JWPpWRGRIP38vnQRB4yOPU9BXvRmmswVL9Ge4e/6flJvKwD5Rlqb2dfaGaHRYV9v8Nkdzl2FvZ9eBH5KHxgG19gCG6L3RXP/+zYwrr4AQdm0fpfw=
-    - secure: RYEwBWYVXRTEdUWhQxdWXo6tldlVx8pha9zB0rgafcUQxaatAefnRc4X4HXTQnqr2n9TZ2TQGpM8vte/wr6Pjc85VZbimWGzgrvn0kg4MwPR8ZYiEM5qQ/pUpj4+93rpA91PhCGvZoZTqOrXHm4kMPuKro5I6qA4BFUXuANeC/s=
-    - secure: gHSicpqkqcZT04QurSgszrAiI6HOCw1DBlfIIi9KAJj7mG5GijD/4AQ6HCmcRMbCDJ0nUuvm/kckASnRtF5+3xvIJnuoyyEfCZWxt1lhK2UbS87VU+pVdws/VzwpisXuKsh3H0uT8DDVkWPH/ZWDgfVa74eYDEHiQFjo+2xx5ZA=
-    - secure: Q42bco3JXEpyVbL2akiOsaCHnAagAFIb3TF6H5qJfaLLqmGs/XrrgxliNaVMfWVSwPT2wpQvg9UGF9x37No9bZBv33DgYcWExmXb/lvGPpkctX37+FTMzECQHxOuUbYPQA7ZEuJ4AA7bwgpMISUeSyz5XXz44KcXIrZK2GWH+X4=
-    - secure: hugd8NVukJc3redDvlOt6zhaqa63XLNMp/eIIlNllW8VfQ6CJ1P7KJPwgxH24sDyrw7rLzOkBl6R4kaVWsCLCFp+NE6yFFHl9wDkSdLC1OX1DMrJnDsogwUqqe+jX8dxePSy26MSTfG8eo9/NxN9uXr+tKaHoi6G7BRXDHtQ8dQ=
-    - secure: TRkW9pIuIYHXJmPlDYoddxIp2M2W2f7qBGNJKEMB5xrOezES7w9XTg2eQXrD8jBO+fUUmMnAaDAXZuU58nMysPXx3vhtZKncg8w5CyuXJk2P8nkdPh0u5nmRhEpWrLKtLwJrX48xmJhNQvQqDAyL5c9WUzlWJ4WJFgoP5IDWmLc=
-    - secure: QHuMdtFCvttiIOx6iS+lH4bKXZMwsgVQ6FPsUW5zJ7uw6mAEWKEil9xNk4aYV9FywinwUs4fnFlnIW/Gj1gLkUjm4DtxdmRZIlRXIbgsNch6H916TCPg4Q2oPsW2nVdXPjW/2jhkfLUiSnuhL+ylami1NF8Up7vokXknh/jFNZU=
-    - secure: GTfrUVmMQSxho3Ia4Y1ONqKvVMD34GHF2/TJb8UdQV7iH+nVxVXpy3nWaCXa9ri7lRzMefkoVLy0gKK13YoVd7w3d2S3/IfNakC85XfN6VuOzK/FDkA0WoPrgKjcQ64I+3dQ6cgrMWWTieKwRZy+Ve24iRbnN055Hk+VRMu6OGw=
-    - secure: SOMYGVfHLkHsH6koxpw68YQ4ydEo6YXPhHbrYGQbehUbFa6+OZzBcAJRJbKjyhD2AZRvNr2jB8XnjYKvVyDGQRpkWhGYZ7CpHqINpDsqKBsbiMe3/+KmKQqS+UKxNGefquoOvyQ1N8Xy77dkWYokRtGMEuR12RkZLonxiDW8Qyg=
-    - secure: bSsDg+dJnPFdFiC/tbb61HdLh/Q0z2RVVAReT1wvV1BN4fN4NydvkUGbQmyFNyyunLulEs+X0oFma9L0497nUlTnan8UOg9sIleTSybPX6E9xSKKCItH1GgDw8bM9Igez5OOrrePBD3altVrH+FmGx0dlTQgM/KZMN50BJ79cXw=
-    ### END TEST KITCHEN ONLY ###
+      - AMAZON=2
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-amazonlinux
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - AMAZON=201X
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-ubuntu-1404
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - UBUNTU=14.04
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-ubuntu-1604
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - UBUNTU=16.04
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-ubuntu-1804
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - UBUNTU=18.04
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-debian-8
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - DEBIAN=8
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-debian-9
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - DEBIAN=9
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-centos-6
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - CENTOS=6
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-centos-7
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - CENTOS=7
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-fedora-latest
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - FEDORA=latest
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-opensuse-leap
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+     - OPENSUSELEAP=42
+     - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.5.1
+    sudo: required
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - rvm @global do gem uninstall bundler -a -x || true
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - sudo apt-get update
+      - sudo apt-get -y install squid3 git curl
+    env:
+      - PROXY_TESTS_DIR=proxy_tests/files/default/scripts
+      - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
+    script:
+      - bundle exec chef-client --version
+      - git clone https://github.com/chef/proxy_tests.git
+      - rvmsudo -E bundle exec bash $PROXY_TESTS_DIR/run_tests.sh chef_client \* \* /tmp/out.txt
+    after_script:
+      - cat /tmp/out.txt
+      - sudo cat /var/log/squid3/cache.log
+      - sudo cat /var/log/squid3/access.log
+  # Use test-kitchen to launch a centos docker container to run the full rspec tests against.  This catches
+  # errors in travis, before PRs are merged, hopefully before they become errors in jenkins.
+  - rvm: 2.4.4
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test rspec-centos-7
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - RSPEC_CENTOS=7
+      - KITCHEN_YAML=kitchen.travis.yml
+
 notifications:
   on_change: true
   on_failure: true
   on_success: change
   on_pull_requests: false
-  irc:
-    channels:
-    - chat.freenode.net#chef-hacking
-  webhooks:
-    urls:
-    # Gitter IM
-    - secure: HmMKr/ysKVyKUJ24PRCHcA8QCmlFoukrYumY0GRLzvaFWO8PknHO1t/0RbrKRb2ed/hgkFd+RKNCYvSvcE8Ahr2vlMrBeGHGfVeOGkWtbhLgNqo1b50Ll9CqvTM8X2ZIq6hIWraanwoYRQu/8uGL29yH4lBi7DhpTkFwBMLulhQ=
-  hipchat:
-    rooms:
-    # Build Statuses
-    - secure: G8MNo94L8bmWWwkH2/ViB2QaZnZHZscYM/mEjDbOGd15sqrruwckeARyBoUcRI7P1C6AFmS4IKCNVXa6KzX4Pbh51gQWM92zRpRTZpplwtXz53/1l8ajLFLLMLvEMTlBFAANUKEUFAQPY4dMa14V3Qc5oijfIncN61k4nZNTKpY=
-    # Open Source
-    - secure: hmcex4PpG5dn8WvjndONO4xCUKOC5kPU/bUEGRrfVbe2YKJE7t0XXbNDC96W/xBgzgnJzvf1Er0zJKDrNf4qEDEWFoozdN00WLcqREgaLLS3Seto2FjR/BpBk5q+sCV0rwwEMms2P4Qk+VSnDCnm9EaeM55hOabqNuOrRzoZLBQ=

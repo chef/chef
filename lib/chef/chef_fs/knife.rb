@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
+require "pathname"
 
 class Chef
   module ChefFS
@@ -24,11 +25,11 @@ class Chef
       # Workaround for CHEF-3932
       def self.deps
         super do
-          require 'chef/config'
-          require 'chef/chef_fs/parallelizer'
-          require 'chef/chef_fs/config'
-          require 'chef/chef_fs/file_pattern'
-          require 'chef/chef_fs/path_utils'
+          require "chef/config"
+          require "chef/chef_fs/parallelizer"
+          require "chef/chef_fs/config"
+          require "chef/chef_fs/file_pattern"
+          require "chef/chef_fs/path_utils"
           yield
         end
       end
@@ -44,16 +45,16 @@ class Chef
       end
 
       option :repo_mode,
-        :long => '--repo-mode MODE',
-        :description => "Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything"
+        long: "--repo-mode MODE",
+        description: "Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything"
 
       option :chef_repo_path,
-        :long => '--chef-repo-path PATH',
-        :description => 'Overrides the location of chef repo. Default is specified by chef_repo_path in the config'
+        long: "--chef-repo-path PATH",
+        description: "Overrides the location of chef repo. Default is specified by chef_repo_path in the config"
 
       option :concurrency,
-        :long => '--concurrency THREADS',
-        :description => 'Maximum number of simultaneous requests to send (default: 10)'
+        long: "--concurrency THREADS",
+        description: "Maximum number of simultaneous requests to send (default: 10)"
 
       def configure_chef
         super
@@ -63,7 +64,7 @@ class Chef
         # --chef-repo-path forcibly overrides all other paths
         if config[:chef_repo_path]
           Chef::Config[:chef_repo_path] = config[:chef_repo_path]
-          %w(acl client cookbook container data_bag environment group node role user).each do |variable_name|
+          Chef::ChefFS::Config::INFLECTIONS.each_value do |variable_name|
             Chef::Config.delete("#{variable_name}_path".to_sym)
           end
         end
@@ -98,14 +99,41 @@ class Chef
       end
 
       def pattern_arg_from(arg)
-        # TODO support absolute file paths and not just patterns?  Too much?
-        # Could be super useful in a world with multiple repo paths
-        if !@chef_fs_config.base_path && !Chef::ChefFS::PathUtils.is_absolute?(arg)
-          # Check if chef repo path is specified to give a better error message
-          ui.error("Attempt to use relative path '#{arg}' when current directory is outside the repository path")
+        inferred_path = nil
+        if Chef::ChefFS::PathUtils.is_absolute?(arg)
+          # We should be able to use this as-is - but the user might have incorrectly provided
+          # us with a path that is based off of the OS root path instead of the Chef-FS root.
+          # Do a quick and dirty sanity check.
+          if possible_server_path = @chef_fs_config.server_path(arg)
+            ui.warn("The absolute path provided is suspicious: #{arg}")
+            ui.warn("If you wish to refer to a file location, please provide a path that is rooted at the chef-repo.")
+            ui.warn("Consider writing '#{possible_server_path}' instead of '#{arg}'")
+          end
+          # Use the original path because we can't be sure.
+          inferred_path = arg
+        elsif arg[0, 1] == "~"
+          # Let's be nice and fix it if possible - but warn the user.
+          ui.warn("A path relative to a user home directory has been provided: #{arg}")
+          ui.warn("Paths provided need to be rooted at the chef-repo being considered or be relative paths.")
+          inferred_path = @chef_fs_config.server_path(arg)
+          ui.warn("Using '#{inferred_path}' as the path instead of '#{arg}'.")
+        elsif Pathname.new(arg).absolute?
+          # It is definitely a system absolute path (such as C:\ or \\foo\bar) but it cannot be
+          # interpreted as a Chef-FS absolute path.  Again attempt to be nice but warn the user.
+          ui.warn("An absolute file system path that isn't a server path was provided: #{arg}")
+          ui.warn("Paths provided need to be rooted at the chef-repo being considered or be relative paths.")
+          inferred_path = @chef_fs_config.server_path(arg)
+          ui.warn("Using '#{inferred_path}' as the path instead of '#{arg}'.")
+        elsif @chef_fs_config.base_path.nil?
+          # These are all relative paths.  We can't resolve and root paths unless we are in the
+          # chef repo.
+          ui.error("Attempt to use relative path '#{arg}' when current directory is outside the repository path.")
+          ui.error("Current working directory is '#{@chef_fs_config.cwd}'.")
           exit(1)
+        else
+          inferred_path = Chef::ChefFS::PathUtils.join(@chef_fs_config.base_path, arg)
         end
-        Chef::ChefFS::FilePattern.relative_to(@chef_fs_config.base_path, arg)
+        Chef::ChefFS::FilePattern.new(inferred_path)
       end
 
       def format_path(entry)
@@ -117,7 +145,7 @@ class Chef
       end
 
       def discover_repo_dir(dir)
-        %w(.chef cookbooks data_bags environments roles).each do |subdir|
+        %w{.chef cookbooks data_bags environments roles}.each do |subdir|
           return dir if File.directory?(File.join(dir, subdir))
         end
         # If this isn't it, check the parent

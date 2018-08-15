@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/formatters/error_inspectors/api_error_formatting'
+require "chef/formatters/error_inspectors/api_error_formatting"
 
 class Chef
   module Formatters
@@ -41,12 +41,14 @@ class Chef
 
         def add_explanation(error_description)
           case exception
-          when *NETWORK_ERROR_CLASSES
-            describe_network_errors(error_description)
           when Net::HTTPServerException, Net::HTTPFatalError
             humanize_http_exception(error_description)
+          when EOFError
+            describe_eof_error(error_description)
+          when *NETWORK_ERROR_CLASSES
+            describe_network_errors(error_description)
           else
-            error_description.section("Unexpected Error:","#{exception.class.name}: #{exception.message}")
+            error_description.section("Unexpected Error:", "#{exception.class.name}: #{exception.message}")
           end
         end
 

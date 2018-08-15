@@ -1,6 +1,6 @@
 #
 # Author:: Sahil Muthoo (<sahil.muthoo@gmail.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::Status do
   before(:each) do
     node = Chef::Node.new.tap do |n|
       n.automatic_attrs["fqdn"] = "foobar"
       n.automatic_attrs["ohai_time"] = 1343845969
+      n.automatic_attrs["platform"] = "mac_os_x"
+      n.automatic_attrs["platform_version"] = "10.12.5"
     end
     allow(Time).to receive(:now).and_return(Time.at(1428573420))
     @query = double("Chef::Search::Query")
@@ -34,19 +36,20 @@ describe Chef::Knife::Status do
   end
 
   describe "run" do
-    let(:opts) {{filter_result:
+    let(:opts) do
+      { filter_result:
                  { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
-                  ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
-                  platform_version: ["platform_version"], chef_environment: ["chef_environment"]}}}
+                   ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
+                   platform_version: ["platform_version"], chef_environment: ["chef_environment"] } } end
 
     it "should default to searching for everything" do
       expect(@query).to receive(:search).with(:node, "*:*", opts)
       @knife.run
     end
 
-    it "should filter healthy nodes" do
-      @knife.config[:hide_healthy] = true
-      expect(@query).to receive(:search).with(:node, "NOT ohai_time:[1428569820 TO 1428573420]", opts)
+    it "should filter by nodes older than some mins" do
+      @knife.config[:hide_by_mins] = 59
+      expect(@query).to receive(:search).with(:node, "NOT ohai_time:[1428569880 TO 1428573420]", opts)
       @knife.run
     end
 
@@ -56,10 +59,10 @@ describe Chef::Knife::Status do
       @knife.run
     end
 
-    it "should filter by environment and health" do
+    it "should filter by environment and nodes older than some mins" do
       @knife.config[:environment] = "production"
-      @knife.config[:hide_healthy] = true
-      expect(@query).to receive(:search).with(:node, "chef_environment:production NOT ohai_time:[1428569820 TO 1428573420]", opts)
+      @knife.config[:hide_by_mins] = 59
+      expect(@query).to receive(:search).with(:node, "chef_environment:production NOT ohai_time:[1428569880 TO 1428573420]", opts)
       @knife.run
     end
 
@@ -79,22 +82,22 @@ describe Chef::Knife::Status do
         @knife.run
       end
 
-      it "should filter healthy nodes" do
-        @knife.config[:hide_healthy] = true
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name NOT ohai_time:[1428569820 TO 1428573420]", opts)
+      it "should filter by nodes older than some mins with nodename specified" do
+        @knife.config[:hide_by_mins] = 59
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name NOT ohai_time:[1428569880 TO 1428573420]", opts)
         @knife.run
       end
 
-      it "should filter by environment" do
+      it "should filter by environment with nodename specified" do
         @knife.config[:environment] = "production"
         expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production", opts)
         @knife.run
       end
 
-      it "should filter by environment and health" do
+      it "should filter by environment and nodes older than some mins with nodename specified" do
         @knife.config[:environment] = "production"
-        @knife.config[:hide_healthy] = true
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production NOT ohai_time:[1428569820 TO 1428573420]", opts)
+        @knife.config[:hide_by_mins] = 59
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production NOT ohai_time:[1428569880 TO 1428573420]", opts)
         @knife.run
       end
     end

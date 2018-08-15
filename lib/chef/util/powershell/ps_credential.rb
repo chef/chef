@@ -1,7 +1,7 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
 #
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/crypto' if Chef::Platform.windows?
+require "chef/win32/crypto" if Chef::Platform.windows?
 
 class Chef::Util::Powershell
   class PSCredential
@@ -28,6 +28,9 @@ class Chef::Util::Powershell
     def to_psobject
       "New-Object System.Management.Automation.PSCredential('#{@username}',('#{encrypt(@password)}' | ConvertTo-SecureString))"
     end
+
+    alias to_s to_psobject
+    alias to_text to_psobject
 
     private
 

@@ -1,4 +1,4 @@
-require 'chef-config/windows'
+require "chef-config/windows"
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
@@ -32,8 +32,8 @@ RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
 
-  config.filter_run_excluding :windows_only => true unless ChefConfig.windows?
-  config.filter_run_excluding :unix_only => true if ChefConfig.windows?
+  config.filter_run_excluding windows_only: true unless ChefConfig.windows?
+  config.filter_run_excluding unix_only: true if ChefConfig.windows?
 
   # Limits the available syntax to the non-monkey patched syntax that is
   # recommended. For more details, see:
@@ -53,7 +53,7 @@ RSpec.configure do |config|
     # Use the documentation formatter for detailed output,
     # unless a formatter has already been configured
     # (e.g. via a command-line flag).
-    config.default_formatter = 'doc'
+    config.default_formatter = "doc"
   end
 
   # Print the 10 slowest examples and example groups at the

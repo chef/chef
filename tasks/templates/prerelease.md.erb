@@ -1,0 +1,26 @@
+Ohai Chefs!
+
+We have selected <%= @version %> as our Chef v<%= @maj_minor %> release candidate which is scheduled for release on <%= @date.strftime('%A %B %-d, %Y') %>.
+
+# Release Highlights
+
+<%= @release_notes %>
+
+Please see the [CHANGELOG](https://github.com/chef/chef/blob/master/CHANGELOG.md) for the complete list of changes.
+
+# Get the Build
+As always, you can download binaries directly from [downloads.chef.io](https://downloads.chef.io/chef/current/<%= @version %>) or by using the new `mixlib-install` command line utility available in ChefDK 0.19.6 or greater.
+
+```shell
+$ mixlib-install download chef -v <%= @version %> -c current
+```
+
+Alternatively, you can install Chef using one of the following command options:
+
+```shell
+# In Shell
+$ curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -v <%= @version %> -c current
+
+# In Windows Powershell
+. { iwr -useb https://omnitruck.chef.io/install.ps1 } | iex; install -project chef -version <%= @version %> -channel current
+```

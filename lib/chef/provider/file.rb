@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2008-2013 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,21 +17,20 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/log'
-require 'chef/resource/file'
-require 'chef/provider'
-require 'etc'
-require 'fileutils'
-require 'chef/scan_access_control'
-require 'chef/mixin/checksum'
-require 'chef/mixin/file_class'
-require 'chef/util/backup'
-require 'chef/util/diff'
-require 'chef/util/selinux'
-require 'chef/deprecation/provider/file'
-require 'chef/deprecation/warnings'
-require 'chef/file_content_management/deploy'
+require "chef/config"
+require "chef/log"
+require "chef/resource/file"
+require "chef/provider"
+require "etc"
+require "fileutils"
+require "chef/scan_access_control"
+require "chef/mixin/checksum"
+require "chef/mixin/file_class"
+require "chef/mixin/enforce_ownership_and_permissions"
+require "chef/util/backup"
+require "chef/util/diff"
+require "chef/util/selinux"
+require "chef/file_content_management/deploy"
 
 # The Tao of File Providers:
 #  - the content provider must always return a tempfile that we can delete/mv
@@ -51,10 +50,6 @@ class Chef
       include Chef::Util::Selinux
       include Chef::Mixin::FileClass
 
-      extend Chef::Deprecation::Warnings
-      include Chef::Deprecation::Provider::File
-      add_deprecation_warnings_for(Chef::Deprecation::Provider::File.instance_methods)
-
       provides :file
 
       attr_reader :deployment_strategy
@@ -69,10 +64,6 @@ class Chef
           @deployment_strategy = Chef::FileContentManagement::Deploy.strategy(new_resource.atomic_update)
         end
         super
-      end
-
-      def whyrun_supported?
-        true
       end
 
       def load_current_resource
@@ -94,14 +85,14 @@ class Chef
         # true if we are going to be creating a new file
         @needs_creating  = !::File.exist?(new_resource.path) || needs_unlinking?
 
-        # Let children resources override constructing the @current_resource
+        # Let children resources override constructing the current_resource
         @current_resource ||= Chef::Resource::File.new(new_resource.name)
         current_resource.path(new_resource.path)
 
         if !needs_creating?
           # we are updating an existing file
           if managing_content?
-            Chef::Log.debug("#{new_resource} checksumming file at #{new_resource.path}.")
+            logger.trace("#{new_resource} checksumming file at #{new_resource.path}.")
             current_resource.checksum(checksum(current_resource.path))
           else
             # if the file does not exist or is not a file, then the checksum is invalid/pointless
@@ -119,17 +110,17 @@ class Chef
 
         # Make sure the parent directory exists, otherwise fail.  For why-run assume it would have been created.
         requirements.assert(:create, :create_if_missing, :touch) do |a|
-          parent_directory = ::File.dirname(@new_resource.path)
+          parent_directory = ::File.dirname(new_resource.path)
           a.assertion { ::File.directory?(parent_directory) }
           a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does not exist.")
           a.whyrun("Assuming directory #{parent_directory} would have been created")
         end
 
         # Make sure the file is deletable if it exists, otherwise fail.
-        if ::File.exist?(@new_resource.path)
+        if ::File.exist?(new_resource.path)
           requirements.assert(:delete) do |a|
-            a.assertion { ::File.writable?(@new_resource.path) }
-            a.failure_message(Chef::Exceptions::InsufficientPermissions,"File #{@new_resource.path} exists but is not writable so it cannot be deleted")
+            a.assertion { ::File.writable?(new_resource.path) }
+            a.failure_message(Chef::Exceptions::InsufficientPermissions, "File #{new_resource.path} exists but is not writable so it cannot be deleted")
           end
         end
 
@@ -153,33 +144,33 @@ class Chef
         do_contents_changes
         do_acl_changes
         do_selinux
-        load_resource_attributes_from_file(@new_resource)
+        load_resource_attributes_from_file(new_resource) unless Chef::Config[:why_run]
       end
 
       def action_create_if_missing
-        unless ::File.exist?(@new_resource.path)
+        unless ::File.exist?(new_resource.path)
           action_create
         else
-          Chef::Log.debug("#{@new_resource} exists at #{@new_resource.path} taking no action.")
+          logger.trace("#{new_resource} exists at #{new_resource.path} taking no action.")
         end
       end
 
       def action_delete
-        if ::File.exists?(@new_resource.path)
-          converge_by("delete file #{@new_resource.path}") do
-            do_backup unless file_class.symlink?(@new_resource.path)
-            ::File.delete(@new_resource.path)
-            Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
+        if ::File.exists?(new_resource.path)
+          converge_by("delete file #{new_resource.path}") do
+            do_backup unless file_class.symlink?(new_resource.path)
+            ::File.delete(new_resource.path)
+            logger.info("#{new_resource} deleted file at #{new_resource.path}")
           end
         end
       end
 
       def action_touch
         action_create
-        converge_by("update utime on file #{@new_resource.path}") do
+        converge_by("update utime on file #{new_resource.path}") do
           time = Time.now
-          ::File.utime(time, time, @new_resource.path)
-          Chef::Log.info("#{@new_resource} updated atime and mtime to #{time}")
+          ::File.utime(time, time, new_resource.path)
+          logger.info("#{new_resource} updated atime and mtime to #{time}")
         end
       end
 
@@ -196,8 +187,8 @@ class Chef
       # content (for things like doing checksums in load_current_resource).  Expected to
       # be overridden in subclasses.
       def managing_content?
-        return true if @new_resource.checksum
-        return true if !@new_resource.content.nil? && @action != :create_if_missing
+        return true if new_resource.checksum
+        return true if !new_resource.content.nil? && @action != :create_if_missing
         false
       end
 
@@ -227,25 +218,25 @@ class Chef
       # assertions, which then decide whether or not to raise or issue a
       # warning for whyrun mode.
       def inspect_existing_fs_entry
-        path = @new_resource.path
+        path = new_resource.path
 
         if !l_exist?(path)
           [nil, nil, nil]
         elsif real_file?(path)
           [nil, nil, nil]
-        elsif file_class.symlink?(path) && @new_resource.manage_symlink_source
+        elsif file_class.symlink?(path) && new_resource.manage_symlink_source
           verify_symlink_sanity(path)
-        elsif file_class.symlink?(@new_resource.path) && @new_resource.manage_symlink_source.nil?
-          Chef::Log.warn("File #{path} managed by #{@new_resource} is really a symlink. Managing the source file instead.")
-          Chef::Log.warn("Disable this warning by setting `manage_symlink_source true` on the resource")
-          Chef::Log.warn("In a future Chef release, 'manage_symlink_source' will not be enabled by default")
+        elsif file_class.symlink?(new_resource.path) && new_resource.manage_symlink_source.nil?
+          logger.warn("File #{path} managed by #{new_resource} is really a symlink. Managing the source file instead.")
+          logger.warn("Disable this warning by setting `manage_symlink_source true` on the resource")
+          logger.warn("In a future Chef release, 'manage_symlink_source' will not be enabled by default")
           verify_symlink_sanity(path)
-        elsif @new_resource.force_unlink
+        elsif new_resource.force_unlink
           [nil, nil, nil]
         else
           [ Chef::Exceptions::FileTypeMismatch,
-            "File #{path} exists, but is a #{file_type_string(@new_resource.path)}, set force_unlink to true to remove",
-            "Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource"
+            "File #{path} exists, but is a #{file_type_string(new_resource.path)}, set force_unlink to true to remove",
+            "Assuming #{file_type_string(new_resource.path)} at #{new_resource.path} would have been removed by a previous resource",
           ]
         end
       end
@@ -265,8 +256,8 @@ class Chef
         else
           [ Chef::Exceptions::FileTypeMismatch,
             "File #{path} exists, but is a symlink to #{real_path} which is a #{file_type_string(real_path)}. " +
-            "Disable manage_symlink_source and set force_unlink to remove it.",
-            "Assuming symlink #{path} or source file #{real_path} would have been fixed by a previous resource"
+              "Disable manage_symlink_source and set force_unlink to remove it.",
+            "Assuming symlink #{path} or source file #{real_path} would have been fixed by a previous resource",
           ]
         end
       rescue Errno::ELOOP
@@ -281,8 +272,8 @@ class Chef
 
       def content
         @content ||= begin
-          load_current_resource if @current_resource.nil?
-          @content_class.new(@new_resource, @current_resource, @run_context)
+          load_current_resource if current_resource.nil?
+          @content_class.new(new_resource, current_resource, @run_context, logger)
         end
       end
 
@@ -311,11 +302,9 @@ class Chef
 
       # like real_file? that follows (sane) symlinks
       def symlink_to_real_file?(path)
-        begin
-          real_file?(::File.realpath(path))
-        rescue Errno::ELOOP, Errno::ENOENT
-          false
-        end
+        real_file?(::File.realpath(path))
+      rescue Errno::ELOOP, Errno::ENOENT
+        false
       end
 
       # Similar to File.exist?, but also returns true in the case that the
@@ -343,26 +332,26 @@ class Chef
       end
 
       def do_validate_content
-        if new_resource.checksum && tempfile && ( new_resource.checksum != tempfile_checksum )
+        if new_resource.checksum && tempfile && ( new_resource.checksum.downcase != tempfile_checksum )
           raise Chef::Exceptions::ChecksumMismatch.new(short_cksum(new_resource.checksum), short_cksum(tempfile_checksum))
         end
 
         if tempfile
           new_resource.verify.each do |v|
             if ! v.verify(tempfile.path)
-              raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{v}"
+              raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{new_resource.sensitive ? '[sensitive]' : v}"
             end
           end
         end
       end
 
       def do_unlink
-        if @new_resource.force_unlink
+        if new_resource.force_unlink
           if needs_unlinking?
             # unlink things that aren't normal files
-            description = "unlink #{file_type_string(@new_resource.path)} at #{@new_resource.path}"
+            description = "unlink #{file_type_string(new_resource.path)} at #{new_resource.path}"
             converge_by(description) do
-              unlink(@new_resource.path)
+              unlink(new_resource.path)
             end
           end
         end
@@ -370,15 +359,15 @@ class Chef
 
       def do_create_file
         if needs_creating?
-          converge_by("create new file #{@new_resource.path}") do
-            deployment_strategy.create(@new_resource.path)
-            Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
+          converge_by("create new file #{new_resource.path}") do
+            deployment_strategy.create(new_resource.path)
+            logger.info("#{new_resource} created file #{new_resource.path}")
           end
         end
       end
 
       def do_backup(file = nil)
-        Chef::Util::Backup.new(@new_resource, file).backup!
+        Chef::Util::Backup.new(new_resource, file).backup!
       end
 
       def diff
@@ -388,7 +377,7 @@ class Chef
       def update_file_contents
         do_backup unless needs_creating?
         deployment_strategy.deploy(tempfile.path, ::File.realpath(new_resource.path))
-        Chef::Log.info("#{new_resource} updated file contents #{new_resource.path}")
+        logger.info("#{new_resource} updated file contents #{new_resource.path}")
         if managing_content?
           # save final checksum for reporting.
           new_resource.final_checksum = checksum(new_resource.path)
@@ -404,17 +393,17 @@ class Chef
         end
 
         # the file? on the next line suppresses the case in why-run when we have a not-file here that would have otherwise been removed
-        if ::File.file?(@new_resource.path) && contents_changed?
-          description = [ "update content in file #{@new_resource.path} from \
-#{short_cksum(@current_resource.checksum)} to #{short_cksum(tempfile_checksum)}" ]
+        if ::File.file?(new_resource.path) && contents_changed?
+          description = [ "update content in file #{new_resource.path} from \
+#{short_cksum(current_resource.checksum)} to #{short_cksum(tempfile_checksum)}" ]
 
           # Hide the diff output if the resource is marked as a sensitive resource
-          if @new_resource.sensitive
-            @new_resource.diff("suppressed sensitive resource")
+          if new_resource.sensitive
+            new_resource.diff("suppressed sensitive resource")
             description << "suppressed sensitive resource"
           else
-            diff.diff(@current_resource.path, tempfile.path)
-            @new_resource.diff( diff.for_reporting ) unless needs_creating?
+            diff.diff(current_resource.path, tempfile.path)
+            new_resource.diff( diff.for_reporting ) unless needs_creating?
             description << diff.for_output
           end
 
@@ -436,10 +425,10 @@ class Chef
         if resource_updated? && Chef::Config[:enable_selinux_file_permission_fixup]
           if selinux_enabled?
             converge_by("restore selinux security context") do
-              restore_security_context(::File.realpath(@new_resource.path), recursive)
+              restore_security_context(::File.realpath(new_resource.path), recursive)
             end
           else
-            Chef::Log.debug "selinux utilities can not be found. Skipping selinux permission fixup."
+            logger.trace "selinux utilities can not be found. Skipping selinux permission fixup."
           end
         end
       end
@@ -453,17 +442,12 @@ class Chef
       end
 
       def contents_changed?
-        Chef::Log.debug "calculating checksum of #{tempfile.path} to compare with #{@current_resource.checksum}"
-        tempfile_checksum != @current_resource.checksum
+        logger.trace "calculating checksum of #{tempfile.path} to compare with #{current_resource.checksum}"
+        tempfile_checksum != current_resource.checksum
       end
 
       def tempfile
         @tempfile ||= content.tempfile
-      end
-
-      def short_cksum(checksum)
-        return "none" if checksum.nil?
-        checksum.slice(0,6)
       end
 
       def load_resource_attributes_from_file(resource)
@@ -474,7 +458,7 @@ class Chef
           # reporting won't work for Windows.
           return
         end
-        acl_scanner = ScanAccessControl.new(@new_resource, resource)
+        acl_scanner = ScanAccessControl.new(new_resource, resource)
         acl_scanner.set_all!
       end
 

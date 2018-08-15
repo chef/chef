@@ -1,5 +1,5 @@
 
-require 'spec_helper'
+require "spec_helper"
 
 # Stubs a basic client object
 shared_context "client" do
@@ -11,16 +11,16 @@ shared_context "client" do
 
   let(:ohai_data) do
     {
-      :fqdn =>             fqdn,
-      :hostname =>         hostname,
-      :machinename =>      machinename,
-      :platform =>         platform,
-      :platform_version => platform_version
+      fqdn: fqdn,
+      hostname: hostname,
+      machinename: machinename,
+      platform: platform,
+      platform_version: platform_version,
     }
   end
 
   let(:ohai_system) do
-    ohai = instance_double("Ohai::System", :all_plugins => true, :data => ohai_data)
+    ohai = instance_double("Ohai::System", all_plugins: true, data: ohai_data, logger: logger)
     allow(ohai).to receive(:[]) do |k|
       ohai_data[k]
     end
@@ -37,19 +37,24 @@ shared_context "client" do
   let(:json_attribs) { nil }
   let(:client_opts) { {} }
 
+  let(:stdout) { STDOUT }
+  let(:stderr) { STDERR }
+
   let(:client) do
     Chef::Config[:event_loggers] = []
-    Chef::Client.new(json_attribs, client_opts).tap do |c|
+    allow(Ohai::System).to receive(:new).and_return(ohai_system)
+    opts = client_opts.merge({ logger: logger })
+    Chef::Client.new(json_attribs, opts).tap do |c|
       c.node = node
     end
   end
 
-  before do
-    Chef::Log.logger = Logger.new(StringIO.new)
+  let(:logger) { instance_double("Mixlib::Log::Child", trace: nil, debug: nil, warn: nil, info: nil, error: nil, fatal: nil) }
 
-    # Node/Ohai data
-    #Chef::Config[:node_name] = fqdn
-    allow(Ohai::System).to receive(:new).and_return(ohai_system)
+  before do
+    stub_const("Chef::Client::STDOUT_FD", stdout)
+    stub_const("Chef::Client::STDERR_FD", stderr)
+    allow(client).to receive(:logger).and_return(logger)
   end
 end
 
@@ -68,22 +73,24 @@ shared_context "a client run" do
   let(:api_client_exists?) { false }
   let(:enable_fork)        { false }
 
-  let(:http_cookbook_sync) { double("Chef::REST (cookbook sync)") }
-  let(:http_node_load)     { double("Chef::REST (node)") }
-  let(:http_node_save)     { double("Chef::REST (node save)") }
+  let(:http_data_collector)   { double("Chef::ServerAPI (data collector)") }
+  let(:http_cookbook_sync)    { double("Chef::ServerAPI (cookbook sync)") }
+  let(:http_node_load)        { double("Chef::ServerAPI (node)") }
+  let(:http_node_save)        { double("Chef::ServerAPI (node save)") }
+  let(:reporting_rest_client) { double("Chef::ServerAPI (reporting client)") }
 
   let(:runner)       { instance_double("Chef::Runner") }
-  let(:audit_runner) { instance_double("Chef::Audit::Runner", :failed? => false) }
+  let(:audit_runner) { instance_double("Chef::Audit::Runner", failed?: false) }
 
   def stub_for_register
     # --Client.register
     #   Make sure Client#register thinks the client key doesn't
     #   exist, so it tries to register and create one.
     allow(File).to receive(:exists?).and_call_original
-    expect(File).to receive(:exists?).
-      with(Chef::Config[:client_key]).
-      exactly(:once).
-      and_return(api_client_exists?)
+    expect(File).to receive(:exists?)
+      .with(Chef::Config[:client_key])
+      .exactly(:once)
+      .and_return(api_client_exists?)
 
     unless api_client_exists?
       #   Client.register will register with the validation client name.
@@ -91,14 +98,22 @@ shared_context "a client run" do
     end
   end
 
+  def stub_for_data_collector_init
+    expect(Chef::ServerAPI).to receive(:new)
+      .with(Chef::Config[:data_collector][:server_url], validate_utf8: false)
+      .exactly(:once)
+      .and_return(http_data_collector)
+  end
+
   def stub_for_node_load
     #   Client.register will then turn around create another
-    #   Chef::REST object, this time with the client key it got from the
+    #   Chef::ServerAPI object, this time with the client key it got from the
     #   previous step.
-    expect(Chef::REST).to receive(:new).
-      with(Chef::Config[:chef_server_url], fqdn, Chef::Config[:client_key]).
-      exactly(:once).
-      and_return(http_node_load)
+    expect(Chef::ServerAPI).to receive(:new)
+      .with(Chef::Config[:chef_server_url], client_name: fqdn,
+                                           signing_key_filename: Chef::Config[:client_key])
+      .exactly(:once)
+      .and_return(http_node_load)
 
     # --Client#build_node
     #   looks up the node, which we will return, then later saves it.
@@ -110,15 +125,25 @@ shared_context "a client run" do
     expect_any_instance_of(Chef::ResourceReporter).to receive(:node_load_completed)
   end
 
+  def stub_rest_clean
+    allow(client).to receive(:rest_clean).and_return(reporting_rest_client)
+  end
+
   def stub_for_sync_cookbooks
     # --Client#setup_run_context
     # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
     #
     expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-    expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
-    expect(http_cookbook_sync).to receive(:post).
-      with("environments/_default/cookbook_versions", {:run_list => []}).
-      and_return({})
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
+    expect(http_cookbook_sync).to receive(:post)
+      .with("environments/_default/cookbook_versions", { run_list: [] })
+      .and_return({})
+  end
+
+  def stub_for_required_recipe
+    response = Net::HTTPNotFound.new("1.1", "404", "Not Found")
+    exception = Net::HTTPServerException.new('404 "Not Found"', response)
+    expect(http_node_load).to receive(:get).with("required_recipe").and_raise(exception)
   end
 
   def stub_for_converge
@@ -139,16 +164,17 @@ shared_context "a client run" do
 
   before do
     Chef::Config[:client_fork] = enable_fork
-    Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
+    Chef::Config[:cache_path] = windows? ? 'C:\chef' : "/var/chef"
     Chef::Config[:why_run] = false
     Chef::Config[:audit_mode] = :enabled
+    Chef::Config[:chef_guid] = "default-guid"
 
-    stub_const("Chef::Client::STDOUT_FD", stdout)
-    stub_const("Chef::Client::STDERR_FD", stderr)
-
+    stub_rest_clean
     stub_for_register
+    stub_for_data_collector_init
     stub_for_node_load
     stub_for_sync_cookbooks
+    stub_for_required_recipe
     stub_for_converge
     stub_for_audit
     stub_for_node_save
@@ -175,8 +201,9 @@ shared_context "converge completed" do
     allow(node).to receive(:data_for_save).and_return(node.for_json)
 
     # --Client#save_updated_node
-    expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url], fqdn, Chef::Config[:client_key], validate_utf8: false).and_return(http_node_save)
-    expect(http_node_save).to receive(:put_rest).with("nodes/#{fqdn}", node.for_json).and_return(true)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], client_name: fqdn,
+                                                                                  signing_key_filename: Chef::Config[:client_key], validate_utf8: false).and_return(http_node_save)
+    expect(http_node_save).to receive(:put).with("nodes/#{fqdn}", node.for_json).and_return(true)
   end
 end
 
@@ -215,14 +242,16 @@ shared_context "audit phase failed with error" do
 
   def stub_for_audit
     expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+    expect(Chef::Audit::Logger).to receive(:read_buffer).and_return("Audit mode output!")
     expect(audit_runner).to receive(:run).and_raise(audit_error)
-    expect(client.events).to receive(:audit_phase_failed).with(audit_error)
+    expect(client.events).to receive(:audit_phase_failed).with(audit_error, "Audit mode output!")
   end
 end
 
 shared_context "audit phase completed with failed controls" do
-  let(:audit_runner) { instance_double("Chef::Audit::Runner", :failed? => true,
-    :num_failed => 1, :num_total => 3) }
+  let(:audit_runner) do
+    instance_double("Chef::Audit::Runner", failed?: true,
+                                           num_failed: 1, num_total: 3) end
 
   let(:audit_error) do
     err = Chef::Exceptions::AuditsFailed.new(audit_runner.num_failed, audit_runner.num_total)
@@ -232,11 +261,12 @@ shared_context "audit phase completed with failed controls" do
 
   def stub_for_audit
     expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+    expect(Chef::Audit::Logger).to receive(:read_buffer).and_return("Audit mode output!")
     expect(audit_runner).to receive(:run)
     expect(Chef::Exceptions::AuditsFailed).to receive(:new).with(
       audit_runner.num_failed, audit_runner.num_total
     ).and_return(audit_error)
-    expect(client.events).to receive(:audit_phase_failed).with(audit_error)
+    expect(client.events).to receive(:audit_phase_failed).with(audit_error, "Audit mode output!")
   end
 end
 

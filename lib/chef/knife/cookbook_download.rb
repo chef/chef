@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -27,27 +27,27 @@ class Chef
       attr_accessor :cookbook_name
 
       deps do
-        require 'chef/cookbook_version'
+        require "chef/cookbook_version"
       end
 
       banner "knife cookbook download COOKBOOK [VERSION] (options)"
 
       option :latest,
-       :short => "-N",
-       :long => "--latest",
-       :description => "The version of the cookbook to download",
-       :boolean => true
+       short: "-N",
+       long: "--latest",
+       description: "The version of the cookbook to download",
+       boolean: true
 
       option :download_directory,
-       :short => "-d DOWNLOAD_DIRECTORY",
-       :long => "--dir DOWNLOAD_DIRECTORY",
-       :description => "The directory to download the cookbook into",
-       :default => Dir.pwd
+       short: "-d DOWNLOAD_DIRECTORY",
+       long: "--dir DOWNLOAD_DIRECTORY",
+       description: "The directory to download the cookbook into",
+       default: Dir.pwd
 
       option :force,
-       :short => "-f",
-       :long => "--force",
-       :description => "Force download over the download directory if it exists"
+       short: "-f",
+       long: "--force",
+       description: "Force download over the download directory if it exists"
 
       # TODO: tim/cw: 5-23-2010: need to implement knife-side
       # specificity for downloads - need to implement --platform and
@@ -69,13 +69,13 @@ class Chef
 
         ui.info("Downloading #{@cookbook_name} cookbook version #{@version}")
 
-        cookbook = rest.get_rest("cookbooks/#{@cookbook_name}/#{@version}")
-        manifest = cookbook.manifest
+        cookbook = Chef::CookbookVersion.load(@cookbook_name, @version)
+        manifest = cookbook.cookbook_manifest
 
         basedir = File.join(config[:download_directory], "#{@cookbook_name}-#{cookbook.version}")
         if File.exists?(basedir)
           if config[:force]
-            Chef::Log.debug("Deleting #{basedir}")
+            Chef::Log.trace("Deleting #{basedir}")
             FileUtils.rm_rf(basedir)
           else
             ui.fatal("Directory #{basedir} exists, use --force to overwrite")
@@ -83,15 +83,13 @@ class Chef
           end
         end
 
-        Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
-          next unless manifest.has_key?(segment)
+        manifest.by_parent_directory.each do |segment, files|
           ui.info("Downloading #{segment}")
-          manifest[segment].each do |segment_file|
-            dest = File.join(basedir, segment_file['path'].gsub('/', File::SEPARATOR))
-            Chef::Log.debug("Downloading #{segment_file['path']} to #{dest}")
+          files.each do |segment_file|
+            dest = File.join(basedir, segment_file["path"].gsub("/", File::SEPARATOR))
+            Chef::Log.trace("Downloading #{segment_file['path']} to #{dest}")
             FileUtils.mkdir_p(File.dirname(dest))
-            rest.sign_on_redirect = false
-            tempfile = rest.get_rest(segment_file['url'], true)
+            tempfile = rest.streaming_request(segment_file["url"])
             FileUtils.mv(tempfile.path, dest)
           end
         end
@@ -99,7 +97,6 @@ class Chef
       end
 
       def determine_version
-
         if available_versions.nil?
           nil
         elsif available_versions.size == 1

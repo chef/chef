@@ -1,4 +1,4 @@
-require 'chef/chef_fs/data_handler/data_handler_base'
+require "chef/chef_fs/data_handler/data_handler_base"
 
 class Chef
   module ChefFS
@@ -7,16 +7,16 @@ class Chef
         def normalize(acl, entry)
           # Normalize the order of the keys for easier reading
           result = normalize_hash(acl, {
-            'create' => {},
-            'read' => {},
-            'update' => {},
-            'delete' => {},
-            'grant' => {}
+            "create" => {},
+            "read" => {},
+            "update" => {},
+            "delete" => {},
+            "grant" => {},
             })
-          result.keys.each do |key|
-            result[key] = normalize_hash(result[key], { 'actors' => [], 'groups' => [] })
-            result[key]['actors'] = result[key]['actors'].sort
-            result[key]['groups'] = result[key]['groups'].sort
+          result.each_key do |key|
+            result[key] = normalize_hash(result[key], { "actors" => [], "groups" => [] })
+            result[key]["actors"] = result[key]["actors"].sort
+            result[key]["groups"] = result[key]["groups"].sort
           end
           result
         end

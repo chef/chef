@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,17 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
+require "chef/resource/package"
 
 class Chef
   class Resource
     class PortagePackage < Chef::Resource::Package
+      resource_name :portage_package
       provides :portage_package
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :portage_package
-        @provider = Chef::Provider::Package::Portage
-      end
+      description "Use the portage_package resource to manage packages for the Gentoo platform."
 
+      property :timeout, default: 3600
     end
   end
 end

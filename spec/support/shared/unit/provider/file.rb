@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 if windows?
-  require 'chef/win32/file'
+  require "chef/win32/file"
 end
 
 # Filesystem stubs
@@ -37,7 +37,7 @@ end
 
 # forwards-vs-reverse slashes on windows sucks
 def windows_path
-  windows? ? normalized_path.gsub(/\\/, '/') : normalized_path
+  windows? ? normalized_path.tr('\\', "/") : normalized_path
 end
 
 # this is all getting a bit stupid, CHEF-4802 cut to remove all this
@@ -117,7 +117,7 @@ class BasicTempfile < ::File
   end
 
   def self.new(basename)
-    super(make_tmp_path(basename), File::RDWR|File::CREAT|File::EXCL, 0600)
+    super(make_tmp_path(basename), File::RDWR | File::CREAT | File::EXCL, 0600)
   end
 
   def unlink
@@ -142,7 +142,7 @@ shared_examples_for Chef::Provider::File do
   end
 
   after do
-    tempfile.close if (tempfile && !tempfile.closed?)
+    tempfile.close if tempfile && !tempfile.closed?
     File.unlink(tempfile.path) rescue nil
   end
 
@@ -258,11 +258,11 @@ shared_examples_for Chef::Provider::File do
         allow(ChefConfig).to receive(:windows?).and_return(false)
         # mock up the filesystem to behave like unix
         setup_normal_file
-        stat_struct = double("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
+        stat_struct = double("::File.stat", mode: 0600, uid: 0, gid: 0, mtime: 10000)
         resource_real_path = File.realpath(resource.path)
         expect(File).to receive(:stat).with(resource_real_path).at_least(:once).and_return(stat_struct)
-        allow(Etc).to receive(:getgrgid).with(0).and_return(double("Group Ent", :name => "wheel"))
-        allow(Etc).to receive(:getpwuid).with(0).and_return(double("User Ent", :name => "root"))
+        allow(Etc).to receive(:getgrgid).with(0).and_return(double("Group Ent", name: "wheel"))
+        allow(Etc).to receive(:getpwuid).with(0).and_return(double("User Ent", name: "root"))
       end
 
       context "when the new_resource does not specify any state" do
@@ -383,11 +383,11 @@ shared_examples_for Chef::Provider::File do
       allow(ChefConfig).to receive(:windows?).and_return(false)
       # mock up the filesystem to behave like unix
       setup_normal_file
-      stat_struct = double("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
+      stat_struct = double("::File.stat", mode: 0600, uid: 0, gid: 0, mtime: 10000)
       resource_real_path = File.realpath(resource.path)
       allow(File).to receive(:stat).with(resource_real_path).and_return(stat_struct)
-      allow(Etc).to receive(:getgrgid).with(0).and_return(double("Group Ent", :name => "wheel"))
-      allow(Etc).to receive(:getpwuid).with(0).and_return(double("User Ent", :name => "root"))
+      allow(Etc).to receive(:getgrgid).with(0).and_return(double("Group Ent", name: "wheel"))
+      allow(Etc).to receive(:getpwuid).with(0).and_return(double("User Ent", name: "root"))
       provider.send(:load_resource_attributes_from_file, resource)
     end
 
@@ -419,12 +419,12 @@ shared_examples_for Chef::Provider::File do
       [:create, :create_if_missing, :touch].each do |action|
         context "action #{action}" do
           it "raises EnclosingDirectoryDoesNotExist" do
-            expect {provider.run_action(action)}.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+            expect { provider.run_action(action) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
           end
 
           it "does not raise an exception in why-run mode" do
             Chef::Config[:why_run] = true
-            expect {provider.run_action(action)}.not_to raise_error
+            expect { provider.run_action(action) }.not_to raise_error
             Chef::Config[:why_run] = false
           end
         end
@@ -435,19 +435,19 @@ shared_examples_for Chef::Provider::File do
       before { setup_unwritable_file }
 
       it "action delete raises InsufficientPermissions" do
-        expect {provider.run_action(:delete)}.to raise_error(Chef::Exceptions::InsufficientPermissions)
+        expect { provider.run_action(:delete) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
       end
 
       it "action delete also raises InsufficientPermissions in why-run mode" do
         Chef::Config[:why_run] = true
-        expect {provider.run_action(:delete)}.to raise_error(Chef::Exceptions::InsufficientPermissions)
+        expect { provider.run_action(:delete) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
         Chef::Config[:why_run] = false
       end
     end
   end
 
   context "action create" do
-    it "should create the file, update its contents and then set the acls on the file"  do
+    it "should create the file, update its contents and then set the acls on the file" do
       setup_missing_file
       expect(provider).to receive(:do_create_file)
       expect(provider).to receive(:do_contents_changes)
@@ -459,29 +459,32 @@ shared_examples_for Chef::Provider::File do
     context "do_validate_content" do
       before { setup_normal_file }
 
-      let(:tempfile) {
-        t = double('Tempfile', :path => "/tmp/foo-bar-baz", :closed? => true)
+      let(:tempfile) do
+        t = double("Tempfile", path: "/tmp/foo-bar-baz", closed?: true)
         allow(content).to receive(:tempfile).and_return(t)
         t
-      }
-
-      let(:verification) { double("Verification") }
+      end
 
       context "with user-supplied verifications" do
         it "calls #verify on each verification with tempfile path" do
-          allow(Chef::Resource::File::Verification).to receive(:new).and_return(verification)
-          provider.new_resource.verify "true"
-          provider.new_resource.verify "true"
-          expect(verification).to receive(:verify).with(tempfile.path).twice.and_return(true)
+          provider.new_resource.verify windows? ? "REM" : "true"
+          provider.new_resource.verify windows? ? "REM" : "true"
           provider.send(:do_validate_content)
         end
 
         it "raises an exception if any verification fails" do
-          provider.new_resource.verify "true"
-          provider.new_resource.verify "false"
-          allow(verification).to receive(:verify).with("true").and_return(true)
-          allow(verification).to receive(:verify).with("false").and_return(false)
-          expect{provider.send(:do_validate_content)}.to raise_error(Chef::Exceptions::ValidationFailed)
+          allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
+          provider.new_resource.verify windows? ? "REM" : "true"
+          provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, "Proposed content for #{provider.new_resource.path} failed verification #{windows? ? "cmd.exe /c exit 1" : "false"}")
+        end
+
+        it "does not show verification for sensitive resources" do
+          allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
+          provider.new_resource.verify windows? ? "REM" : "true"
+          provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
+          provider.new_resource.sensitive true
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, "Proposed content for #{provider.new_resource.path} failed verification [sensitive]")
         end
       end
     end
@@ -512,7 +515,7 @@ shared_examples_for Chef::Provider::File do
         before do
           setup_normal_file
           provider.load_current_resource
-          tempfile = double('Tempfile', :path => "/tmp/foo-bar-baz")
+          tempfile = double("Tempfile", path: "/tmp/foo-bar-baz")
           allow(content).to receive(:tempfile).and_return(tempfile)
           expect(File).to receive(:exists?).with("/tmp/foo-bar-baz").and_return(true)
           expect(tempfile).to receive(:close).once
@@ -525,14 +528,14 @@ shared_examples_for Chef::Provider::File do
           let(:diff_for_reporting) { "+++\n---\n+foo\n-bar\n" }
           before do
             allow(provider).to receive(:contents_changed?).and_return(true)
-            diff = double('Diff', :for_output => ['+++','---','+foo','-bar'],
-                                  :for_reporting => diff_for_reporting )
+            diff = double("Diff", for_output: ["+++", "---", "+foo", "-bar"],
+                                  for_reporting: diff_for_reporting )
             allow(diff).to receive(:diff).with(resource_path, tempfile_path).and_return(true)
             expect(provider).to receive(:diff).at_least(:once).and_return(diff)
             expect(provider).to receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)
             allow(provider).to receive(:managing_content?).and_return(true)
             allow(provider).to receive(:checksum).with(resource_path).and_return(tempfile_sha256)
-            expect(resource).not_to receive(:checksum).with(tempfile_sha256)  # do not mutate the new resource
+            expect(resource).not_to receive(:checksum).with(tempfile_sha256) # do not mutate the new resource
             expect(provider.deployment_strategy).to receive(:deploy).with(tempfile_path, normalized_path)
           end
           context "when the file was created" do
@@ -554,7 +557,7 @@ shared_examples_for Chef::Provider::File do
           end
           context "when the file was not created" do
             before do
-              allow(provider).to receive(:do_backup)  # stub do_backup
+              allow(provider).to receive(:do_backup) # stub do_backup
               expect(provider).to receive(:needs_creating?).at_least(:once).and_return(false)
             end
 
@@ -575,7 +578,7 @@ shared_examples_for Chef::Provider::File do
           end
         end
 
-        it "does nothing when the contents have not changed"  do
+        it "does nothing when the contents have not changed" do
           allow(provider).to receive(:contents_changed?).and_return(false)
           expect(provider).not_to receive(:diff)
           provider.send(:do_contents_changes)
@@ -585,20 +588,20 @@ shared_examples_for Chef::Provider::File do
       it "does nothing when there is no content to deploy (tempfile returned from contents is nil)" do
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(nil)
         expect(provider).not_to receive(:diff)
-        expect{ provider.send(:do_contents_changes) }.not_to raise_error
+        expect { provider.send(:do_contents_changes) }.not_to raise_error
       end
 
       it "raises an exception when the content object returns a tempfile with a nil path" do
-        tempfile = double('Tempfile', :path => nil)
+        tempfile = double("Tempfile", path: nil)
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
-        expect{ provider.send(:do_contents_changes) }.to raise_error
+        expect { provider.send(:do_contents_changes) }.to raise_error(RuntimeError)
       end
 
       it "raises an exception when the content object returns a tempfile that does not exist" do
-        tempfile = double('Tempfile', :path => "/tmp/foo-bar-baz")
+        tempfile = double("Tempfile", path: "/tmp/foo-bar-baz")
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
         expect(File).to receive(:exists?).with("/tmp/foo-bar-baz").and_return(false)
-        expect{ provider.send(:do_contents_changes) }.to raise_error
+        expect { provider.send(:do_contents_changes) }.to raise_error(RuntimeError)
       end
     end
 
@@ -688,6 +691,16 @@ shared_examples_for Chef::Provider::File do
       end
     end
 
+    context "in why run mode" do
+      before { Chef::Config[:why_run] = true }
+      after { Chef::Config[:why_run] = false }
+
+      it "does not modify new_resource" do
+        setup_missing_file
+        expect(provider).not_to receive(:load_resource_attributes_from_file).with(provider.new_resource)
+        provider.run_action(:create)
+      end
+    end
   end
 
   context "action delete" do
@@ -717,7 +730,7 @@ shared_examples_for Chef::Provider::File do
         it "should not try to backup or delete the file, and should not be updated by last action" do
           expect(provider).not_to receive(:do_backup)
           expect(File).not_to receive(:delete)
-          expect { provider.run_action(:delete) }.to raise_error()
+          expect { provider.run_action(:delete) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
           expect(resource).not_to be_updated_by_last_action
         end
       end

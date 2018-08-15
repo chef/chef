@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Adam Edwards (<adamed@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,24 +16,21 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Batch do
+  let(:node) { Chef::Node.new }
 
   before(:each) do
-    node = Chef::Node.new
-
     node.default["kernel"] = Hash.new
     node.default["kernel"][:machine] = :x86_64.to_s
-    node.automatic[:os] = 'windows'
+    node.automatic[:os] = "windows"
 
     run_context = Chef::RunContext.new(node, nil, nil)
-
     @resource = Chef::Resource::Batch.new("batch_unit_test", run_context)
-
   end
 
-  it "should create a new Chef::Resource::Batch" do
+  it "creates a new Chef::Resource::Batch" do
     expect(@resource).to be_a_kind_of(Chef::Resource::Batch)
   end
 
@@ -41,7 +38,7 @@ describe Chef::Resource::Batch do
     let(:resource_instance) { @resource }
     let(:resource_instance_name ) { @resource.command }
     let(:resource_name) { :batch }
-    let(:interpreter_file_name) { 'cmd.exe' }
+    let(:interpreter_file_name) { "cmd.exe" }
 
     it_should_behave_like "a Windows script resource"
   end

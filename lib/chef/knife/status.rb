@@ -1,6 +1,6 @@
 #
 # Author:: Ian Meyer (<ianmmeyer@gmail.com>)
-# Copyright:: Copyright (c) 2010 Ian Meyer
+# Copyright:: Copyright 2010-2016, Ian Meyer
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/core/status_presenter'
-require 'chef/knife/core/node_presenter'
+require "chef/knife"
+require "chef/knife/core/status_presenter"
+require "chef/knife/core/node_presenter"
 
 class Chef
   class Knife
@@ -26,25 +26,29 @@ class Chef
       include Knife::Core::NodeFormattingOptions
 
       deps do
-        require 'chef/search/query'
+        require "chef/search/query"
       end
 
       banner "knife status QUERY (options)"
 
       option :run_list,
-        :short => "-r",
-        :long => "--run-list",
-        :description => "Show the run list"
+        short: "-r",
+        long: "--run-list",
+        description: "Show the run list"
 
       option :sort_reverse,
-        :short => "-s",
-        :long => "--sort-reverse",
-        :description => "Sort the status list by last run time descending"
+        short: "-s",
+        long: "--sort-reverse",
+        description: "Sort the status list by last run time descending"
 
       option :hide_healthy,
-        :short => "-H",
-        :long => "--hide-healthy",
-        :description => "Hide nodes that have run chef in the last hour"
+        short: "-H",
+        long: "--hide-healthy",
+        description: "Hide nodes that have run chef in the last hour. [DEPRECATED] Use --hide-by-mins MINS instead"
+
+      option :hide_by_mins,
+        long: "--hide-by-mins MINS",
+        description: "Hide nodes that have run chef in the last MINS minutes"
 
       def append_to_query(term)
         @query << " AND " unless @query.empty?
@@ -57,10 +61,10 @@ class Chef
         if config[:long_output]
           opts = {}
         else
-          opts = {filter_result:
+          opts = { filter_result:
                  { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
-                  ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
-                  platform_version: ["platform_version"], chef_environment: ["chef_environment"]}}
+                   ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
+                   platform_version: ["platform_version"], chef_environment: ["chef_environment"] } }
         end
 
         @query ||= ""
@@ -68,10 +72,19 @@ class Chef
         append_to_query("chef_environment:#{config[:environment]}") if config[:environment]
 
         if config[:hide_healthy]
+          ui.warn("-H / --hide-healthy is deprecated and will be removed in Chef 15. Use --hide-by-mins MINS instead")
           time = Time.now.to_i
           # AND NOT is not valid lucene syntax, so don't use append_to_query
           @query << " " unless @query.empty?
-          @query << "NOT ohai_time:[#{(time - 60*60).to_s} TO #{time.to_s}]"
+          @query << "NOT ohai_time:[#{(time - 60 * 60)} TO #{time}]"
+        end
+
+        if config[:hide_by_mins]
+          hidemins = config[:hide_by_mins].to_i
+          time = Time.now.to_i
+          # AND NOT is not valid lucene syntax, so don't use append_to_query
+          @query << " " unless @query.empty?
+          @query << "NOT ohai_time:[#{(time - hidemins * 60)} TO #{time}]"
         end
 
         @query = @query.empty? ? "*:*" : @query
@@ -83,13 +96,13 @@ class Chef
           all_nodes << node
         end
 
-        output(all_nodes.sort { |n1, n2|
-          if (config[:sort_reverse] || Chef::Config[:knife][:sort_status_reverse])
-            (n2["ohai_time"] or 0) <=> (n1["ohai_time"] or 0)
+        output(all_nodes.sort do |n1, n2|
+          if config[:sort_reverse] || Chef::Config[:knife][:sort_status_reverse]
+            (n2["ohai_time"] || 0) <=> (n1["ohai_time"] || 0)
           else
-            (n1["ohai_time"] or 0) <=> (n2["ohai_time"] or 0)
+            (n1["ohai_time"] || 0) <=> (n2["ohai_time"] || 0)
           end
-        })
+        end)
       end
 
     end

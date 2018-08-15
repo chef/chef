@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,25 +16,29 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Perl do
 
-  before(:each) do
-    @resource = Chef::Resource::Perl.new("fakey_fakerton")
+  let(:resource) { Chef::Resource::Perl.new("fakey_fakerton") }
+
+  it "is a subclass of Chef::Resource::Script" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Script)
   end
 
-  it "should create a new Chef::Resource::Perl" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::Perl)
+  it "has a resource name of :perl" do
+    expect(resource.resource_name).to eql(:perl)
   end
 
-  it "should have a resource name of :perl" do
-    expect(@resource.resource_name).to eql(:perl)
+  it "has an interpreter of perl" do
+    expect(resource.interpreter).to eql("perl")
   end
 
-  it "should have an interpreter of perl" do
-    expect(@resource.interpreter).to eql("perl")
+  it "sets the default action as :run" do
+    expect(resource.action).to eql([:run])
   end
 
+  it "supports :run action" do
+    expect { resource.action :run }.not_to raise_error
+  end
 end

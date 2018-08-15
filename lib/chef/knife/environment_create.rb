@@ -1,6 +1,6 @@
 #
-# Author:: Stephen Delano (<stephen@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Stephen Delano (<stephen@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,23 +16,22 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class EnvironmentCreate < Knife
 
       deps do
-        require 'chef/environment'
-        require 'chef/json_compat'
+        require "chef/environment"
       end
 
       banner "knife environment create ENVIRONMENT (options)"
 
       option :description,
-        :short => "-d DESCRIPTION",
-        :long => "--description DESCRIPTION",
-        :description => "The environment description"
+        short: "-d DESCRIPTION",
+        long: "--description DESCRIPTION",
+        description: "The environment description."
 
       def run
         env_name = @name_args[0]
@@ -46,7 +45,7 @@ class Chef
         env = Chef::Environment.new
         env.name(env_name)
         env.description(config[:description]) if config[:description]
-        create_object(env)
+        create_object(env, object_class: Chef::Environment)
       end
     end
   end

@@ -1,5 +1,7 @@
 #
 # This file is structured to be consumed by both humans and computers.
+# To update the generated Markdown, run `bundle exec rake maintainers:generate`
+# To synchronize the maintainers with the github teams, run `bundle exec rake maintainers:synchronize`
 # It is a TOML document containing Markdown
 #
 [Preamble]
@@ -10,7 +12,7 @@ file tells you who needs to review your patch - you need a simple majority of ma
 for the relevant subsystems to provide a :+1: on your pull request. Additionally, you need
 to not receive a veto from a Lieutenant or the Project Lead.
 
-Check out [How Chef is Maintained](https://github.com/opscode/chef-rfc/blob/master/rfc030-maintenance-policy.md#how-the-project-is-maintained) for details on the process, how to become
+Check out [How Chef is Maintained](https://github.com/chef/chef-rfc/blob/master/rfc030-maintenance-policy.md#how-the-project-is-maintained) for details on the process, how to become
 a maintainer, lieutenant, or the project lead.
 """
 
@@ -20,58 +22,54 @@ a maintainer, lieutenant, or the project lead.
     person = "adamhjk"
 
   [Org.Components]
+    title = "Components"
+
     [Org.Components.Core]
       title = "Chef Core"
+      team = "client-core"
       text = """
-Handles the core parts of the Chef DSL, base resource and provider
-infrastructure, and the Chef applications. Includes anything not covered by
-another component.
+Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, chefstyle, and sundry others.
 """
 
       lieutenant = "thommay"
 
       maintainers = [
+        "adamleff",
         "btm",
+        "coderanger",
+        "cheeseplus",
         "danielsdeleo",
         "fujin",
         "jaymzh",
-        "jdmundrawala",
+        "jaym",
+        "jkeiser",
         "jonlives",
+        "jtimberman",
         "lamont-granquist",
+        "ranjib",
         "smurawski",
+        "stevendanna",
+        "stuartpreston",
+        "tas50",
+        "tduffield",
         "tyler-ball",
-        "ranjib"
+        "itmustbejj"
       ]
 
-    [Org.Components.DevTools]
-      title = "Dev Tools"
-      text = "Chef Zero, Knife, Chef Apply and Chef Shell."
+    [Org.Components.Provisioning]
+      title = "Chef Provisioning"
+      team = "provisioning"
+      text = """
+Chef Provisioning and Drivers.  Supported Drivers are listed in the [README](https://github.com/chef/chef-provisioning/blob/master/README.md#chef-provisioning).
+"""
 
-      paths = [
-        "lib/chef/knife.rb",
-        "lib/chef/knife/",
-        "spec/functional/knife/",
-        "spec/integration/knife/",
-        "spec/unit/knife/"
-      ]
+      lieutenant = "tyler-ball"
 
       maintainers = [
-        "danielsdeleo",
-        "jtimberman",
-        "lamont-granquist",
-        "stevendanna"
-      ]
-
-    [Org.Components.TestTools]
-      title = "Test Tools"
-      text = "ChefSpec"
-
-      lieutenant = "sethvargo"
-
-      maintainers = [
-        "jtimberman",
-        "lamont-granquist",
-        "ranjib"
+        "jkeiser",
+        "jjasghar",
+        "stuartpreston",
+        "thehar"
       ]
 
     [Org.Components.Subsystems]
@@ -82,6 +80,7 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems."Enterprise Linux"]
         title = "Enterprise Linux"
+        team = "client-enterprise-linux"
 
         lieutenant = "jonlives"
 
@@ -92,25 +91,35 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems.Ubuntu]
         title = "Ubuntu"
+        team = "client-ubuntu"
+
+        lieutenant = "ranjib"
 
         maintainers = [
           "lamont-granquist",
-          "ranjib",
+          "tas50",
           "thommay"
         ]
 
       [Org.Components.Subsystems.Windows]
         title = "Windows"
+        team = "client-windows"
 
         lieutenant = "btm"
         maintainers = [
-          "jdmundrawala",
+          "jaym",
           "ksubrama",
-          "smurawski"
+          "smurawski",
+          "stuartpreston",
+          "chefsalim",
+          "mwrock"
         ]
 
       [Org.Components.Subsystems.Solaris]
         title = "Solaris"
+        team = "client-solaris"
+
+        lieutenant = "thommay"
 
         maintainers = [
           "lamont-granquist"
@@ -118,39 +127,116 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems.AIX]
         title = "AIX"
+        team = "client-aix"
+
+        lieutenant = "lamont-granquist"
+
+      [Org.Components.Subsystems."Mac OS X"]
+        title = "Mac OS X"
+        team = "client-os-x"
+
+        lieutenant = "jtimberman"
+
+        maintainers = [
+          "tyler-ball",
+          "mikedodge04"
+        ]
+
+      [Org.Components.Subsystems.Debian]
+        title = "Debian"
+        team = "client-debian"
+
+        lieutenant = "thommay"
+
+        maintainers = [
+          "lamont-granquist",
+          "tas50"
+        ]
+
+    [Org.Components.Subsystems.Fedora]
+        title = "Fedora"
+        team = "client-fedora"
 
         maintainers = [
           "lamont-granquist"
         ]
 
-      [Org.Components.Subsystems."Mac OS X"]
-        title = "Mac OS X"
-
-        lieutenant = "jtimberman"
+      [Org.Components.Subsystems.openSUSE]
+        title = "openSUSE"
+        team = "client-opensuse"
 
         maintainers = [
-          "tyler-ball"
+          "lamont-granquist",
+          "tas50"
+        ]
+
+      [Org.Components.Subsystems."SUSE Enterprise Linux"]
+        title = "SUSE Enterprise Linux Server"
+        team = "client-suse"
+
+        maintainers = [
+          "lamont-granquist"
         ]
 
       [Org.Components.Subsystems.FreeBSD]
         title = "FreeBSD"
+        team = "client-freebsd"
 
         lieutenant = "martinisoft"
 
         maintainers = [
           "Aevin1387",
-          "tBunnyMan"
+          "OnlyHaveCans",
+          "AgentMeerkat"
         ]
 
+      [Org.Components.Subsystems.OpenBSD]
+        title = "OpenBSD"
+        team = "client-openbsd"
+
+        lieutenant = "joemiller"
+
+    [Org.Components.Subsystems.Gentoo]
+        title = "Gentoo"
+        team = "client-gentoo"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
+    [Org.Components.Subsystems.OmniOS]
+        title = "OmniOS"
+        team = "client-omnios"
+
+        maintainers = [
+          "thommay"
+        ]
+
+    [Org.Components.Subsystems.ArchLinux]
+        title = "ArchLinux"
+        team = "client-archlinux"
+
+        maintainers = [
+          "lamont-granquist",
+          "ryancragun"
+        ]
 
 [people]
   [people.adamhjk]
     Name = "Adam Jacob"
     GitHub = "adamhjk"
 
+  [people.adamleff]
+    Name = "Adam Leff"
+    GitHub = "adamleff"
+
   [people.Aevin1387]
     Name = "Cory Stephenson"
     GitHub = "Aevin1387"
+
+  [people.AgentMeerkat]
+    Name = "Bryant Lippert"
+    GitHub = "AgentMeerkat"
 
   [people.btm]
     Name = "Bryan McLellan"
@@ -168,9 +254,9 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Phil Dibowitz"
     GitHub = "jaymzh"
 
-  [people.jdmundrawala]
+  [people.jaym]
     Name = "Jay Mundrawala"
-    GitHub = "jdmundrawala"
+    GitHub = "jaym"
 
   [people.jonlives]
     Name = "Jon Cowie"
@@ -188,17 +274,9 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Aaron Kalin"
     GitHub = "martinisoft"
 
-  [people.mcquin]
-    Name = "Claire McQuin"
-    GitHub = "mcquin"
-
   [people.ranjib]
     Name = "Ranjib Dey"
     GitHub = "ranjib"
-
-  [people.sethvargo]
-    Name = "Seth Vargo"
-    GitHub = "sethvargo"
 
   [people.smurawski]
     Name = "Steven Murawski"
@@ -208,9 +286,9 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Steven Danna"
     GitHub = "stevendanna"
 
-  [people.tBunnyMan]
+  [people.OnlyHaveCans]
     Name = "David Aronsohn"
-    GitHub = "tbunnyman"
+    GitHub = "OnlyHaveCans"
     IRC = "tBunnyMan"
     Twitter = "OnlyHaveCans"
 
@@ -227,3 +305,67 @@ The specific components of Chef related to a given platform - including (but not
   [people.ksubrama]
     Name = "Kartik Cating-Subramanian"
     GitHub = "ksubrama"
+
+  [people.joemiller]
+    Name = "Joe Miller"
+    GitHub = "joemiller"
+
+  [people.coderanger]
+    Name = "Noah Kantrowitz"
+    GitHub = "coderanger"
+
+  [people.ryancragun]
+    Name = "Ryan Cragun"
+    GitHub = "ryancragun"
+
+  [people.chefsalim]
+    Name = "Salim Alam"
+    GitHub = "chefsalim"
+
+  [people.mwrock]
+    Name = "Matt Wrock"
+    GitHub = "mwrock"
+
+  [people.tas50]
+    Name = "Tim Smith"
+    GitHub = "tas50"
+    Twitter = "tas50"
+    IRC = "tas50"
+
+  [people.jkeiser]
+    Name = "John Keiser"
+    GitHub = "jkeiser"
+
+  [people.stuartpreston]
+    Name = "Stuart Preston"
+    GitHub = "stuartpreston"
+
+  [people.jjasghar]
+    Name = "JJ Asghar"
+    GitHub = "jjasghar"
+    Twitter = "jjasghar"
+    IRC = "j^2"
+
+  [people.thehar]
+    Name = "Harley Alaniz"
+    GitHub = "thehar"
+
+  [people.tduffield]
+    Name = "Tom Duffield"
+    GitHub = "tduffield"
+
+  [people.mikedodge04]
+    Name = "mikedodge04"
+    GitHub = "mikedodge04"
+    Twitter = "mikedodge04"
+    IRC = "mikedodge04"
+
+  [people.itmustbejj]
+    Name = "Josh Hudson"
+    GitHub = "itmustbejj"
+    Twitter = "itmustbejj"
+    IRC = "itmustbejj"
+
+  [people.cheeseplus]
+    Name = "Seth Thomas"
+    GitHub = "cheeseplus"

@@ -1,6 +1,6 @@
 #
 # Author:: Jan Zimmek (<jan.zimmek@web.de>)
-# Copyright:: Copyright (c) 2010 Jan Zimmek
+# Copyright:: Copyright 2010-2016, Jan Zimmek
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
+require "chef/provider/service/init"
 
 class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 
@@ -32,8 +32,8 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   end
 
   def load_current_resource
-    raise Chef::Exceptions::Service, "Could not find /etc/rc.conf"  unless ::File.exists?("/etc/rc.conf")
-    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf"  unless ::File.read("/etc/rc.conf").match(/DAEMONS=\((.*)\)/m)
+    raise Chef::Exceptions::Service, "Could not find /etc/rc.conf" unless ::File.exists?("/etc/rc.conf")
+    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf" unless ::File.read("/etc/rc.conf") =~ /DAEMONS=\((.*)\)/m
     super
 
     @current_resource.enabled(daemons.include?(@current_resource.service_name))
@@ -49,8 +49,8 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   #   )
   def daemons
     entries = []
-    if ::File.read("/etc/rc.conf").match(/DAEMONS=\((.*)\)/m)
-      entries += $1.gsub(/\\?[\r\n]/, ' ').gsub(/# *[^ ]+/,' ').split(' ') if $1.length > 0
+    if ::File.read("/etc/rc.conf") =~ /DAEMONS=\((.*)\)/m
+      entries += $1.gsub(/\\?[\r\n]/, " ").gsub(/# *[^ ]+/, " ").split(" ") if $1.length > 0
     end
 
     yield(entries) if block_given?
@@ -66,11 +66,11 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
     end
   end
 
-  def enable_service()
+  def enable_service
     new_daemons = []
     entries = daemons
 
-    if entries.include?(new_resource.service_name) or entries.include?("@#{new_resource.service_name}")
+    if entries.include?(new_resource.service_name) || entries.include?("@#{new_resource.service_name}")
       # exists and already enabled (or already enabled as a background service)
       # new_daemons += entries
     else
@@ -92,7 +92,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
     end
   end
 
-  def disable_service()
+  def disable_service
     new_daemons = []
     entries = daemons
 
@@ -100,7 +100,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
       # exists and disabled
       # new_daemons += entries
     else
-      if entries.include?(new_resource.service_name) or entries.include?("@#{new_resource.service_name}")
+      if entries.include?(new_resource.service_name) || entries.include?("@#{new_resource.service_name}")
         # exists but enabled (or enabled as a back-ground service)
         # FIXME: Does arch support !@foobar ?
         entries.each do |daemon|

@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright 2015-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,7 @@ class Chef
     attr_reader :resource
 
     # FIXME (ruby-2.1 syntax): most of these are mandatory
-    def initialize(type:nil, name:nil, created_at: nil, params: nil, run_context: nil, cookbook_name: nil, recipe_name: nil, enclosing_provider: nil)
+    def initialize(type: nil, name: nil, created_at: nil, params: nil, run_context: nil, cookbook_name: nil, recipe_name: nil, enclosing_provider: nil)
       @type               = type
       @name               = name
       @created_at         = created_at
@@ -43,19 +43,12 @@ class Chef
     end
 
     def build(&block)
-      raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
-
       @resource = resource_class.new(name, run_context)
+      if resource.resource_name.nil?
+        raise Chef::Exceptions::InvalidResourceSpecification, "#{resource}.resource_name is `nil`!  Did you forget to put `provides :blah` or `resource_name :blah` in your resource class?"
+      end
       resource.source_line = created_at
       resource.declared_type = type
-
-      # If we have a resource like this one, we want to steal its state
-      # This behavior is very counter-intuitive and should be removed.
-      # See CHEF-3694, https://tickets.opscode.com/browse/CHEF-3694
-      # Moved to this location to resolve CHEF-5052, https://tickets.opscode.com/browse/CHEF-5052
-      if prior_resource
-        resource.load_from(prior_resource)
-      end
 
       resource.cookbook_name = cookbook_name
       resource.recipe_name = recipe_name
@@ -67,14 +60,12 @@ class Chef
       resource.params = params
 
       # Evaluate resource attribute DSL
-      resource.instance_eval(&block) if block_given?
-
-      # emit a cloned resource warning if it is warranted
-      if prior_resource
-        if is_trivial_resource?(prior_resource) && identicalish_resources?(prior_resource, resource)
-          emit_harmless_cloning_debug
-        else
-          emit_cloned_resource_warning
+      if block_given?
+        resource.resource_initializing = true
+        begin
+          resource.instance_eval(&block)
+        ensure
+          resource.resource_initializing = false
         end
       end
 
@@ -93,45 +84,9 @@ class Chef
       @resource_class ||= Chef::Resource.resource_for_node(type, run_context.node)
     end
 
-    def is_trivial_resource?(resource)
-      identicalish_resources?(resource_class.new(name, run_context), resource)
-    end
-
-    # this is an equality test specific to checking for 3694 cloning warnings
-    def identicalish_resources?(first, second)
-      skipped_ivars = [ :@source_line, :@cookbook_name, :@recipe_name, :@params, :@elapsed_time, :@declared_type ]
-      checked_ivars = ( first.instance_variables | second.instance_variables ) - skipped_ivars
-      non_matching_ivars = checked_ivars.reject do |iv|
-        if iv == :@action && ( [first.instance_variable_get(iv)].flatten == [:nothing] || [second.instance_variable_get(iv)].flatten == [:nothing] )
-          # :nothing action on either side of the comparison always matches
-          true
-        else
-          first.instance_variable_get(iv) == second.instance_variable_get(iv)
-        end
-      end
-      Chef::Log.debug("ivars which did not match with the prior resource: #{non_matching_ivars}")
-      non_matching_ivars.empty?
-    end
-
-    def emit_cloned_resource_warning
-      Chef::Log.warn("Cloning resource attributes for #{resource} from prior resource (CHEF-3694)")
-      Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
-      Chef::Log.warn("Current  #{resource}: #{resource.source_line}") if resource.source_line
-    end
-
-    def emit_harmless_cloning_debug
-      Chef::Log.debug("Harmless resource cloning from #{prior_resource}:#{prior_resource.source_line} to #{resource}:#{resource.source_line}")
-    end
-
-    def prior_resource
-      @prior_resource ||=
-        begin
-          key = "#{type}[#{name}]"
-          prior_resource = run_context.resource_collection.lookup(key)
-        rescue Chef::Exceptions::ResourceNotFound
-          nil
-        end
-    end
-
   end
 end
+
+require "chef/exceptions"
+require "chef/resource"
+require "chef/log"

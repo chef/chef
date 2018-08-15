@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Template do
 
   def binread(file)
-    File.open(file,"rb") {|f| f.read }
+    File.open(file, "rb") { |f| f.read }
   end
 
   include_context Chef::Resource::File
@@ -32,6 +32,7 @@ describe Chef::Resource::Template do
   let(:node) do
     node = Chef::Node.new
     node.normal[:slappiness] = "a warm gun"
+    node.normal[:nested][:secret] = "value"
     node
   end
 
@@ -44,8 +45,8 @@ describe Chef::Resource::Template do
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, cookbook_collection, events)
     resource = Chef::Resource::Template.new(path, run_context)
-    resource.source('openldap_stuff.conf.erb')
-    resource.cookbook('openldap')
+    resource.source("openldap_stuff.conf.erb")
+    resource.cookbook("openldap")
 
     # NOTE: partials rely on `cookbook_name` getting set by chef internals and
     # ignore the user-set `cookbook` attribute.
@@ -66,14 +67,14 @@ describe Chef::Resource::Template do
 
   context "when the target file does not exist" do
     it "creates the template with the rendered content using the variable attribute when the :create action is run" do
-      resource.source('openldap_variable_stuff.conf.erb')
-      resource.variables(:secret => "nutella")
+      resource.source("openldap_variable_stuff.conf.erb")
+      resource.variables(secret: "nutella")
       resource.run_action(:create)
       expect(IO.read(path)).to eq("super secret is nutella")
     end
 
     it "creates the template with the rendered content using a local erb file when the :create action is run" do
-      resource.source(File.expand_path(File.join(CHEF_SPEC_DATA,'cookbooks','openldap','templates','default','openldap_stuff.conf.erb')))
+      resource.source(File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks", "openldap", "templates", "default", "openldap_stuff.conf.erb")))
       resource.cookbook(nil)
       resource.local(true)
       resource.run_action(:create)
@@ -110,8 +111,8 @@ describe Chef::Resource::Template do
 
     context "using single helper syntax referencing @node" do
       before do
-        node.set[:helper_test_attr] = "value from helper method"
-        resource.helper(:helper_method) { "#{@node[:helper_test_attr]}" }
+        node.normal[:helper_test_attr] = "value from helper method"
+        resource.helper(:helper_method) { (@node[:helper_test_attr]).to_s }
       end
 
       it_behaves_like "a template with helpers"
@@ -131,7 +132,7 @@ describe Chef::Resource::Template do
 
     context "using an inline block referencing @node" do
       before do
-        node.set[:helper_test_attr] = "value from helper method"
+        node.normal[:helper_test_attr] = "value from helper method"
 
         resource.helpers do
           def helper_method
@@ -168,7 +169,7 @@ describe Chef::Resource::Template do
       end
 
       before do
-        node.set[:helper_test_attr] = "value from helper method"
+        node.normal[:helper_test_attr] = "value from helper method"
 
         resource.helpers(ExampleModuleReferencingATNode)
       end
@@ -191,7 +192,7 @@ describe Chef::Resource::Template do
   describe "when template source contains windows style line endings" do
     include_context "diff disabled"
 
-    ["all", "some", "no"].each do |test_case|
+    %w{all some no}.each do |test_case|
       context "for #{test_case} lines" do
         let(:resource) do
           r = create_resource
@@ -206,6 +207,38 @@ describe Chef::Resource::Template do
           end
         end
       end
+    end
+  end
+
+  describe "when template variables contain lazy{} calls" do
+    it "resolves the DelayedEvaluator" do
+      resource.source("openldap_variable_stuff.conf.erb")
+      resource.variables(secret: Chef::DelayedEvaluator.new { "nutella" })
+      resource.run_action(:create)
+      expect(IO.read(path)).to eq("super secret is nutella")
+    end
+
+    it "does not mutate the resource variables" do
+      resource.source("openldap_variable_stuff.conf.erb")
+      resource.variables(secret: Chef::DelayedEvaluator.new { "nutella" })
+      resource.run_action(:create)
+      expect(resource.variables[:secret]).to be_a Chef::DelayedEvaluator
+    end
+
+    it "resolves the DelayedEvaluator when deeply nested" do
+      resource.source("openldap_nested_variable_stuff.erb")
+      resource.variables(secret: [{ "key" => Chef::DelayedEvaluator.new { "nutella" } }])
+      resource.run_action(:create)
+      expect(IO.read(path)).to eq("super secret is nutella")
+    end
+  end
+
+  describe "when passing a node attribute mash as a template variable" do
+    it "uses the node attributes like a hash" do
+      resource.source("openldap_variable_stuff.conf.erb")
+      resource.variables(node[:nested])
+      resource.run_action(:create)
+      expect(IO.read(path)).to eq("super secret is value")
     end
   end
 

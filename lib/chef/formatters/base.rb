@@ -1,7 +1,7 @@
 #
-# Author:: Tyler Cloke (<tyler@opscode.com>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-require 'chef/event_dispatch/base'
-require 'chef/formatters/error_inspectors'
-require 'chef/formatters/error_descriptor'
-require 'chef/formatters/error_mapper'
-require 'chef/formatters/indentable_output_stream'
+require "chef/event_dispatch/base"
+require "chef/formatters/error_inspectors"
+require "chef/formatters/error_description"
+require "chef/formatters/error_mapper"
+require "chef/formatters/indentable_output_stream"
 
 class Chef
 
@@ -51,8 +51,8 @@ class Chef
     #--
     # TODO: is it too clever to be defining new() on a module like this?
     def self.new(name, out, err)
-      formatter_class = by_name(name.to_s) or
-        raise UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(', ')})"
+      formatter_class = by_name(name.to_s)
+      raise UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(', ')})" unless formatter_class
 
       formatter_class.new(out, err)
     end
@@ -96,7 +96,7 @@ class Chef
         if @output.indent < 0
           # This is left commented out for now.  We need to uncomment it and fix at least one bug in
           # the formatter, and then leave this line uncommented in the future.
-          #Chef::Log.warn "Internal Formatter Error -- Attempt to indent by negative number of spaces"
+          # Chef::Log.warn "Internal Formatter Error -- Attempt to indent by negative number of spaces"
           @output.indent = 0
         end
         @output.indent
@@ -110,7 +110,7 @@ class Chef
       end
 
       def registration_failed(node_name, exception, config)
-        #A Formatters::ErrorDescription object
+        # A Formatters::ErrorDescription object
         description = ErrorMapper.registration_failed(node_name, exception, config)
         display_error(description)
       end
@@ -137,7 +137,7 @@ class Chef
 
       def resource_failed(resource, action, exception)
         description = ErrorMapper.resource_failed(resource, action, exception)
-        display_error(description)
+        display_error(description) unless resource.ignore_failure && resource.ignore_failure.to_s == "quiet"
       end
 
       # Generic callback for any attribute/library/lwrp/recipe file in a
@@ -203,17 +203,32 @@ class Chef
       end
 
       # Delegates to #file_loaded
-      def recipe_file_loaded(path)
+      def recipe_file_loaded(path, recipe)
         file_loaded(path)
       end
 
       # Delegates to #file_load_failed
-      def recipe_file_load_failed(path, exception)
+      def recipe_file_load_failed(path, exception, recipe)
         file_load_failed(path, exception)
       end
 
-    end
+      # Log a deprecation warning object.
+      #
+      # @param deprecation [Chef::Deprecated::Base] Deprecation object to log.
+      #   In previous versions, this could be a string. Don't do that anymore.
+      # @param location [Object] Unused, present only for compatbility.
+      def deprecation(deprecation, _location = nil)
+        Chef::Log.deprecation(deprecation.to_s) unless deprecation.silenced?
+      end
 
+      def is_structured_deprecation?(deprecation)
+        deprecation.kind_of?(Chef::Deprecated::Base)
+      end
+
+      def is_formatter?
+        true
+      end
+    end
 
     # == NullFormatter
     # Formatter that doesn't actually produce any output. You can use this to
@@ -222,6 +237,9 @@ class Chef
 
       cli_name(:null)
 
+      def is_formatter?
+        false
+      end
     end
 
   end

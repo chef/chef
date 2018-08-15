@@ -1,6 +1,6 @@
 #
-# Author:: Stephen Delano (<stephen@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Stephen Delano (<stephen@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,23 @@
 # limitations under the License.
 #
 
+require "chef/knife"
+
 class Chef
   class Knife
     class EnvironmentFromFile < Knife
 
       deps do
-        require 'chef/environment'
-        require 'chef/knife/core/object_loader'
+        require "chef/environment"
+        require "chef/knife/core/object_loader"
       end
 
       banner "knife environment from file FILE [FILE..] (options)"
 
       option :all,
-      :short => "-a",
-      :long  => "--all",
-      :description => "Upload all environments"
+      short: "-a",
+      long: "--all",
+      description: "Upload all environments."
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(Chef::Environment, ui)
@@ -61,7 +63,6 @@ class Chef
         output(format_for_display(updated)) if config[:print_after]
         ui.info("Updated Environment #{updated.name}")
       end
-
 
       def run
         if config[:all] == true

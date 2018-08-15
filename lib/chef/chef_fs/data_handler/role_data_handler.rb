@@ -1,5 +1,5 @@
-require 'chef/chef_fs/data_handler/data_handler_base'
-require 'chef/role'
+require "chef/chef_fs/data_handler/data_handler_base"
+require "chef/role"
 
 class Chef
   module ChefFS
@@ -7,24 +7,24 @@ class Chef
       class RoleDataHandler < DataHandlerBase
         def normalize(role, entry)
           result = normalize_hash(role, {
-            'name' => remove_dot_json(entry.name),
-            'description' => '',
-            'json_class' => 'Chef::Role',
-            'chef_type' => 'role',
-            'default_attributes' => {},
-            'override_attributes' => {},
-            'run_list' => [],
-            'env_run_lists' => {}
+            "name" => remove_file_extension(entry.name),
+            "description" => "",
+            "json_class" => "Chef::Role",
+            "chef_type" => "role",
+            "default_attributes" => {},
+            "override_attributes" => {},
+            "run_list" => [],
+            "env_run_lists" => {},
           })
-          result['run_list'] = normalize_run_list(result['run_list'])
-          result['env_run_lists'].each_pair do |env, run_list|
-            result['env_run_lists'][env] = normalize_run_list(run_list)
+          result["run_list"] = normalize_run_list(result["run_list"])
+          result["env_run_lists"].each_pair do |env, run_list|
+            result["env_run_lists"][env] = normalize_run_list(run_list)
           end
           result
         end
 
         def preserve_key?(key)
-          return key == 'name'
+          key == "name"
         end
 
         def chef_class
@@ -32,7 +32,7 @@ class Chef
         end
 
         def to_ruby(object)
-          to_ruby_keys(object, %w(name description default_attributes override_attributes run_list env_run_lists))
+          to_ruby_keys(object, %w{name description default_attributes override_attributes run_list env_run_lists})
         end
       end
     end

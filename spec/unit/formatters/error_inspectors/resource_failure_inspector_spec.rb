@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
   include Chef::DSL::Recipe
@@ -40,7 +40,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
     @stdout = StringIO.new
     @outputter = Chef::Formatters::IndentableOutputStream.new(@stdout, STDERR)
-    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
 
     allow(Chef::Config).to receive(:cookbook_path).and_return([ "/var/chef/cache" ])
   end
@@ -95,7 +95,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
         @error = begin
                    @context.render_template_from_string("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno")
-                 rescue  Chef::Mixin::Template::TemplateError => e
+                 rescue Chef::Mixin::Template::TemplateError => e
                    e
                  end
 
@@ -107,7 +107,6 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @description.display(@outputter)
         expect(@stdout.string).to include(@error.source_listing)
       end
-
 
     end
 
@@ -188,6 +187,5 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     end
 
   end
-
 
 end

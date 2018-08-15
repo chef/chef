@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
+require "chef/win32/api"
 
 class Chef
   module ReservedNames::Win32
@@ -132,7 +132,7 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'kernel32', 'user32'
+        ffi_lib "kernel32", "user32"
 
         class OSVERSIONINFOEX < FFI::Struct
           layout :dw_os_version_info_size, :DWORD,
@@ -185,6 +185,29 @@ int WINAPI GetSystemMetrics(
 );
 =end
         safe_attach_function :GetSystemMetrics, [:int], :int
+
+=begin
+UINT WINAPI GetSystemWow64Directory(
+  _Out_ LPTSTR lpBuffer,
+  _In_  UINT   uSize
+);
+=end
+        safe_attach_function :GetSystemWow64DirectoryW, [:LPTSTR, :UINT], :UINT
+        safe_attach_function :GetSystemWow64DirectoryA, [:LPTSTR, :UINT], :UINT
+
+=begin
+BOOL WINAPI Wow64DisableWow64FsRedirection(
+  _Out_ PVOID *OldValue
+);
+=end
+        safe_attach_function :Wow64DisableWow64FsRedirection, [:PVOID], :BOOL
+
+=begin
+BOOL WINAPI Wow64RevertWow64FsRedirection(
+  _In_ PVOID OldValue
+);
+=end
+        safe_attach_function :Wow64RevertWow64FsRedirection, [:PVOID], :BOOL
 
 =begin
 LRESULT WINAPI SendMessageTimeout(

@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2009-2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/data_bag_secret_options'
+require "chef/knife"
+require "chef/knife/data_bag_secret_options"
 
 class Chef
   class Knife
@@ -26,8 +26,8 @@ class Chef
       include DataBagSecretOptions
 
       deps do
-        require 'chef/data_bag_item'
-        require 'chef/encrypted_data_bag_item'
+        require "chef/data_bag_item"
+        require "chef/encrypted_data_bag_item"
       end
 
       banner "knife data bag edit BAG ITEM (options)"
@@ -49,29 +49,26 @@ class Chef
 
       def run
         if @name_args.length != 2
-          stdout.puts "You must supply the data bag and an item to edit!"
+          stdout.puts "You must supply the data bag and an item to edit"
           stdout.puts opt_parser
           exit 1
         end
 
         item, was_encrypted = load_item(@name_args[0], @name_args[1])
-        edited_item = edit_data(item)
+        edited_item = edit_hash(item)
 
         if was_encrypted || encryption_secret_provided?
           ui.info("Encrypting data bag using provided secret.")
           item_to_save = Chef::EncryptedDataBagItem.encrypt_data_bag_item(edited_item, read_secret)
         else
-          ui.info("Saving data bag unencrypted.  To encrypt it, provide an appropriate secret.")
+          ui.info("Saving data bag unencrypted. To encrypt it, provide an appropriate secret.")
           item_to_save = edited_item
         end
 
-        rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", item_to_save)
+        rest.put("data/#{@name_args[0]}/#{@name_args[1]}", item_to_save)
         stdout.puts("Saved data_bag_item[#{@name_args[1]}]")
         ui.output(edited_item) if config[:print_after]
       end
     end
   end
 end
-
-
-

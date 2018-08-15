@@ -1,8 +1,8 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Author:: Claire McQuin (<claire@getchef.com>)
+# Author:: Claire McQuin (<claire@chef.io>)
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/audit/audit_event_proxy'
+require "spec_helper"
+require "chef/audit/audit_event_proxy"
 
 describe Chef::Audit::AuditEventProxy do
 
@@ -34,19 +34,20 @@ describe Chef::Audit::AuditEventProxy do
   describe "#example_group_started" do
 
     let(:description) { "poots" }
-    let(:group) { double("ExampleGroup", :parent_groups => parents,
-      :description => description) }
-    let(:notification) { double("Notification", :group => group) }
+    let(:group) do
+      double("ExampleGroup", parent_groups: parents,
+                             description: description) end
+    let(:notification) { double("Notification", group: group) }
 
     context "when notified from a top-level example group" do
 
       let(:parents) { [double("ExampleGroup")] }
 
       it "notifies control_group_started event" do
-        expect(Chef::Log).to receive(:debug).
-          with("Entered \`control_group\` block named poots")
-        expect(events).to receive(:control_group_started).
-          with(description)
+        expect(Chef::Log).to receive(:trace)
+          .with("Entered \`control_group\` block named poots")
+        expect(events).to receive(:control_group_started)
+          .with(description)
         audit_event_proxy.example_group_started(notification)
       end
     end
@@ -65,9 +66,9 @@ describe Chef::Audit::AuditEventProxy do
   describe "#stop" do
 
     let(:examples) { [] }
-    let(:notification) { double("Notification", :examples => examples) }
+    let(:notification) { double("Notification", examples: examples) }
     let(:exception) { nil }
-    let(:example) { double("Example", :exception => exception) }
+    let(:example) { double("Example", exception: exception) }
     let(:control_group_name) { "audit test" }
     let(:control_data) { double("ControlData") }
 
@@ -86,14 +87,14 @@ describe Chef::Audit::AuditEventProxy do
       let(:excpetion) { nil }
 
       before do
-        allow(audit_event_proxy).to receive(:build_control_from).
-          with(example).
-          and_return([control_group_name, control_data])
+        allow(audit_event_proxy).to receive(:build_control_from)
+          .with(example)
+          .and_return([control_group_name, control_data])
       end
 
       it "notifies events" do
-        expect(events).to receive(:control_example_success).
-          with(control_group_name, control_data)
+        expect(events).to receive(:control_example_success)
+          .with(control_group_name, control_data)
         audit_event_proxy.stop(notification)
       end
     end
@@ -104,14 +105,14 @@ describe Chef::Audit::AuditEventProxy do
       let(:exception) { double("ExpectationNotMet") }
 
       before do
-        allow(audit_event_proxy).to receive(:build_control_from).
-          with(example).
-          and_return([control_group_name, control_data])
+        allow(audit_event_proxy).to receive(:build_control_from)
+          .with(example)
+          .and_return([control_group_name, control_data])
       end
 
       it "notifies events" do
-        expect(events).to receive(:control_example_failure).
-          with(control_group_name, control_data, exception)
+        expect(events).to receive(:control_example_failure)
+          .with(control_group_name, control_data, exception)
         audit_event_proxy.stop(notification)
       end
     end
@@ -120,60 +121,61 @@ describe Chef::Audit::AuditEventProxy do
 
       let(:examples) { [example] }
 
-      let(:example) { double("Example", :metadata => metadata,
-        :description => example_description,
-        :full_description => full_description, :exception => nil) }
+      let(:example) do
+        double("Example", metadata: metadata,
+                          description: example_description,
+                          full_description: full_description, exception: nil) end
 
-      let(:metadata) {
+      let(:metadata) do
         {
-          :described_class => described_class,
-          :example_group => example_group,
-          :line_number => line
+          described_class: described_class,
+          example_group: example_group,
+          line_number: line,
         }
-      }
+      end
 
-      let(:example_group) {
+      let(:example_group) do
         {
-          :description => group_description,
-          :parent_example_group => parent_group
+          description: group_description,
+          parent_example_group: parent_group,
         }
-      }
+      end
 
-      let(:parent_group) {
+      let(:parent_group) do
         {
-          :description => control_group_name,
-          :parent_example_group => nil
+          description: control_group_name,
+          parent_example_group: nil,
         }
-      }
+      end
 
       let(:line) { 27 }
 
-      let(:control_data) {
+      let(:control_data) do
         {
-          :name => example_description,
-          :desc => full_description,
-          :resource_type => resource_type,
-          :resource_name => resource_name,
-          :context => context,
-          :line_number => line
+          name: example_description,
+          desc: full_description,
+          resource_type: resource_type,
+          resource_name: resource_name,
+          context: context,
+          line_number: line,
         }
-      }
+      end
 
       shared_examples "built control" do
 
         before do
           if described_class
-            allow(described_class).to receive(:instance_variable_get).
-              with(:@name).
-              and_return(resource_name)
-            allow(described_class.class).to receive(:name).
-              and_return(described_class.class)
+            allow(described_class).to receive(:instance_variable_get)
+              .with(:@name)
+              .and_return(resource_name)
+            allow(described_class.class).to receive(:name)
+              .and_return(described_class.class)
           end
         end
 
         it "returns the controls block name and example metadata for reporting" do
-          expect(events).to receive(:control_example_success).
-            with(control_group_name, control_data)
+          expect(events).to receive(:control_example_success)
+            .with(control_group_name, control_data)
           audit_event_proxy.stop(notification)
         end
       end
@@ -218,12 +220,14 @@ describe Chef::Audit::AuditEventProxy do
         let(:control_group_name) { "application ports" }
         let(:group_description) { "#{resource_type} #{resource_name}" }
         let(:example_description) { "should not be listening" }
-        let(:full_description) { [control_group_name, group_description,
-          example_description].join(" ") }
+        let(:full_description) do
+          [control_group_name, group_description,
+          example_description].join(" ") end
 
         # Metadata fields
-        let(:described_class) { double("Serverspec::Type::Port",
-          :class => "Serverspec::Type::Port", :name => resource_name) }
+        let(:described_class) do
+          double("Serverspec::Type::Port",
+          class: "Serverspec::Type::Port", name: resource_name) end
 
         # Control data fields
         let(:resource_type) { "Port" }
@@ -246,8 +250,9 @@ describe Chef::Audit::AuditEventProxy do
         let(:control_group_name) { "application ports" }
         let(:group_description) { "port 111" }
         let(:example_description) { "is not listening" }
-        let(:full_description) { [control_group_name, group_description,
-          example_description].join(" ") }
+        let(:full_description) do
+          [control_group_name, group_description,
+          example_description].join(" ") end
 
         # Metadata fields
         let(:described_class) { nil }
@@ -276,27 +281,29 @@ describe Chef::Audit::AuditEventProxy do
         let(:outer_group_description) { "File \"tmp/audit\"" }
         let(:group_description) { "#{resource_type} #{resource_name}" }
         let(:example_description) { "is a file" }
-        let(:full_description) { [control_group_name, outer_group_description,
-          group_description, example_description].join(" ") }
+        let(:full_description) do
+          [control_group_name, outer_group_description,
+          group_description, example_description].join(" ") end
 
         # Metadata parts
-        let(:described_class) { double("Serverspec::Type::File",
-          :class => "Serverspec::Type::File", :name => resource_name) }
+        let(:described_class) do
+          double("Serverspec::Type::File",
+          class: "Serverspec::Type::File", name: resource_name) end
 
         # Example group parts
-        let(:parent_group) {
+        let(:parent_group) do
           {
-            :description => outer_group_description,
-            :parent_example_group => control_group
+            description: outer_group_description,
+            parent_example_group: control_group,
           }
-        }
+        end
 
-        let(:control_group) {
+        let(:control_group) do
           {
-            :description => control_group_name,
-            :parent_example_group => nil
+            description: control_group_name,
+            parent_example_group: nil,
           }
-        }
+        end
 
         # Control data parts
         let(:resource_type) { "File" }

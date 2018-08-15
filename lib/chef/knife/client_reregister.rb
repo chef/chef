@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,23 +16,22 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class ClientReregister < Knife
 
       deps do
-        require 'chef/api_client'
-        require 'chef/json_compat'
+        require "chef/api_client_v1"
       end
 
       banner "knife client reregister CLIENT (options)"
 
       option :file,
-        :short => "-f FILE",
-        :long  => "--file FILE",
-        :description => "Write the key to a file"
+        short: "-f FILE",
+        long: "--file FILE",
+        description: "Write the key to a file"
 
       def run
         @client_name = @name_args[0]
@@ -43,8 +42,8 @@ class Chef
           exit 1
         end
 
-        client = Chef::ApiClient.reregister(@client_name)
-        Chef::Log.debug("Updated client data: #{client.inspect}")
+        client = Chef::ApiClientV1.reregister(@client_name)
+        Chef::Log.trace("Updated client data: #{client.inspect}")
         key = client.private_key
         if config[:file]
           File.open(config[:file], "w") do |f|

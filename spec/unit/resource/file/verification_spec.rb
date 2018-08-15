@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc
+# Copyright:: Copyright 2014-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::File::Verification do
   let(:t_block) { Proc.new { true } }
   let(:f_block) { Proc.new { false } }
-  let(:path_block) { Proc.new { |path| path }}
+  let(:path_block) { Proc.new { |path| path } }
   let(:temp_path) { "/tmp/foobar" }
 
   describe "verification registration" do
@@ -33,7 +33,7 @@ describe Chef::Resource::File::Verification do
     end
 
     it "raises an error if a verification can't be found" do
-      expect{Chef::Resource::File::Verification.lookup(:dne)}.to raise_error(Chef::Exceptions::VerificationNotFound)
+      expect { Chef::Resource::File::Verification.lookup(:dne) }.to raise_error(Chef::Exceptions::VerificationNotFound)
     end
   end
 
@@ -42,13 +42,13 @@ describe Chef::Resource::File::Verification do
 
     it "expects a string argument" do
       v = Chef::Resource::File::Verification.new(parent_resource, nil, {}) {}
-      expect{ v.verify("/foo/bar") }.to_not raise_error
-      expect{ v.verify }.to raise_error
+      expect { v.verify("/foo/bar") }.to_not raise_error
+      expect { v.verify }.to raise_error(ArgumentError)
     end
 
     it "accepts an options hash" do
       v = Chef::Resource::File::Verification.new(parent_resource, nil, {}) {}
-      expect{ v.verify("/foo/bar", {:future => true}) }.to_not raise_error
+      expect { v.verify("/foo/bar", { future: true }) }.to_not raise_error
     end
 
     context "with a verification block" do
@@ -66,15 +66,42 @@ describe Chef::Resource::File::Verification do
         v = Chef::Resource::File::Verification.new(parent_resource, nil, {}, &f_block)
         expect(v.verify(temp_path)).to eq(false)
       end
+
+      it "responds to to_s" do
+        v = Chef::Resource::File::Verification.new(parent_resource, nil, {}) {}
+        expect(v.to_s).to eq("<Proc>")
+      end
     end
 
     context "with a verification command(String)" do
-      it "substitutes \%{file} with the path" do
-        test_command = if windows?
-                         "if \"#{temp_path}\" == \"%{file}\" (exit 0) else (exit 1)"
-                       else
-                         "test #{temp_path} = %{file}"
-                       end
+      before(:each) do
+        allow(Chef::Log).to receive(:deprecation).and_return(nil)
+      end
+
+      def platform_specific_verify_command(variable_name)
+        if windows?
+          "if \"#{temp_path}\" == \"%{#{variable_name}}\" (exit 0) else (exit 1)"
+        else
+          "test #{temp_path} = %{#{variable_name}}"
+        end
+      end
+
+      it "raises an error when \%{file} is used" do
+        test_command = platform_specific_verify_command("file")
+        expect do
+          Chef::Resource::File::Verification.new(parent_resource, test_command, {}).verify(temp_path)
+        end.to raise_error(ArgumentError)
+      end
+
+      it "does not raise an error when \%{file} is not used" do
+        test_command = platform_specific_verify_command("path")
+        expect do
+          Chef::Resource::File::Verification.new(parent_resource, test_command, {}).verify(temp_path)
+        end.to_not raise_error
+      end
+
+      it "substitutes \%{path} with the path" do
+        test_command = platform_specific_verify_command("path")
         v = Chef::Resource::File::Verification.new(parent_resource, test_command, {})
         expect(v.verify(temp_path)).to eq(true)
       end
@@ -88,23 +115,32 @@ describe Chef::Resource::File::Verification do
         v = Chef::Resource::File::Verification.new(parent_resource, "true", {})
         expect(v.verify(temp_path)).to eq(true)
       end
+
+      it "responds to to_s" do
+        v = Chef::Resource::File::Verification.new(parent_resource, "some command --here", {})
+        expect(v.to_s).to eq("some command --here")
+      end
     end
 
     context "with a named verification(Symbol)" do
+      let(:registered_verification) { double("registered_verification") }
+      subject { described_class.new(parent_resource, :cats, {}) }
       before(:each) do
         class Chef::Resource::File::Verification::Turtle < Chef::Resource::File::Verification
           provides :cats
           def verify(path, opts)
           end
         end
+        allow(Chef::Resource::File::Verification::Turtle).to receive(:new).and_return(registered_verification)
       end
 
       it "delegates to the registered verification" do
-        registered_verification = double()
-        allow(Chef::Resource::File::Verification::Turtle).to receive(:new).and_return(registered_verification)
-        v = Chef::Resource::File::Verification.new(parent_resource, :cats, {})
         expect(registered_verification).to receive(:verify).with(temp_path, {})
-        v.verify(temp_path, {})
+        subject.verify(temp_path, {})
+      end
+
+      it "responds to to_s" do
+        expect(subject.to_s).to eq(":cats (Chef::Resource::File::Verification::Turtle)")
       end
     end
   end

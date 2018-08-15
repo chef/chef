@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/from_file'
-require 'chef/resource_definition'
+require "chef/mixin/from_file"
+require "chef/resource_definition"
 
 class Chef
   class ResourceDefinitionList
@@ -29,7 +29,7 @@ class Chef
       @defines = Hash.new
     end
 
-    def define(resource_name, prototype_params=nil, &block)
+    def define(resource_name, prototype_params = nil, &block)
       @defines[resource_name] = ResourceDefinition.new
       @defines[resource_name].define(resource_name, prototype_params, &block)
       true

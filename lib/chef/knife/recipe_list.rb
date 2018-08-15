@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 class Chef::Knife::RecipeList < Chef::Knife
 
   banner "knife recipe list [PATTERN]"
 
   def run
-    recipes = rest.get_rest('cookbooks/_recipes')
+    recipes = rest.get("cookbooks/_recipes")
     if pattern = @name_args.first
       recipes = recipes.grep(Regexp.new(pattern))
     end

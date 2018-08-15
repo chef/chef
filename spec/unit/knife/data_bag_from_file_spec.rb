@@ -1,6 +1,6 @@
 #
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item'
-require 'tempfile'
+require "chef/data_bag_item"
+require "chef/encrypted_data_bag_item"
+require "tempfile"
 
 Chef::Knife::DataBagFromFile.load_deps
 
@@ -52,7 +52,7 @@ describe Chef::Knife::DataBagFromFile do
     k
   end
 
-  let(:tmp_dir) { Dir.mktmpdir }
+  let(:tmp_dir) { make_canonical_temp_directory }
   let(:db_folder) { File.join(tmp_dir, data_bags_path, bag_name) }
   let(:db_file) { Tempfile.new(["data_bag_from_file_test", ".json"], db_folder) }
   let(:db_file2) { Tempfile.new(["data_bag_from_file_test2", ".json"], db_folder) }
@@ -72,14 +72,15 @@ describe Chef::Knife::DataBagFromFile do
   let(:loader) { double("Knife::Core::ObjectLoader") }
 
   let(:data_bags_path) { "data_bags" }
-  let(:plain_data) { {
+  let(:plain_data) do
+    {
       "id" => "item_name",
       "greeting" => "hello",
-      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }}
-  } }
+      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true } },
+  } end
   let(:enc_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(plain_data, secret) }
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }
@@ -164,7 +165,7 @@ describe Chef::Knife::DataBagFromFile do
   describe "command line parsing" do
     it "prints help if given no arguments" do
       knife.name_args = [bag_name]
-      expect {knife.run}.to exit_with_code(1)
+      expect { knife.run }.to exit_with_code(1)
       expect(stdout.string).to start_with("knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)")
     end
   end

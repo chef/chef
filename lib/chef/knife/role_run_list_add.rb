@@ -1,6 +1,7 @@
-# Author:: Adam Jacob (<adam@opscode.com>)
+#
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: William Albenzi (<walbenzi@gmail.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,31 +17,31 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class RoleRunListAdd < Knife
 
       deps do
-        require 'chef/role'
-        require 'chef/json_compat'
+        require "chef/role"
+        require "chef/json_compat"
       end
 
-      banner "knife role run_list add [ROLE] [ENTRY[,ENTRY]] (options)"
+      banner "knife role run_list add [ROLE] [ENTRY [ENTRY]] (options)"
 
       option :after,
-        :short => "-a ITEM",
-        :long  => "--after ITEM",
-        :description => "Place the ENTRY in the run list after ITEM"
+        short: "-a ITEM",
+        long: "--after ITEM",
+        description: "Place the ENTRY in the run list after ITEM."
 
-      def add_to_env_run_list(role, environment, entries, after=nil)
+      def add_to_env_run_list(role, environment, entries, after = nil)
         if after
           nlist = []
           unless role.env_run_lists.key?(environment)
             role.env_run_lists_add(environment => nlist)
           end
-          role.run_list_for(environment).each do |entry| 
+          role.run_list_for(environment).each do |entry|
             nlist << entry
             if entry == after
               entries.each { |e| nlist << e }
@@ -68,11 +69,11 @@ class Chef
         if @name_args.size > 1
           # Check for nested lists and create a single plain one
           entries = @name_args[1..-1].map do |entry|
-            entry.split(',').map { |e| e.strip }
+            entry.split(",").map { |e| e.strip }
           end.flatten
         else
           # Convert to array and remove the extra spaces
-          entries = @name_args[1].split(',').map { |e| e.strip }
+          entries = @name_args[1].split(",").map { |e| e.strip }
         end
 
         add_to_env_run_list(role, environment, entries, config[:after])

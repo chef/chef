@@ -1,6 +1,6 @@
 #
 # Author:: Phil Dibowitz (<phild@fb.com>)
-# Copyright:: Copyright (c) 2013 Facebook
+# Copyright:: Copyright 2013-2016, Facebook
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,13 +19,6 @@
 class Chef
   class Resource
     class WhyrunSafeRubyBlock < Chef::Resource::RubyBlock
-      provides :whyrun_safe_ruby_block
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :whyrun_safe_ruby_block
-      end
-
     end
   end
 end

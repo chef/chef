@@ -1,4 +1,20 @@
-require 'chef/chef_fs/knife'
+#
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require "chef/chef_fs/knife"
 
 class Chef
   class Knife
@@ -8,35 +24,35 @@ class Chef
       category "path-based"
 
       deps do
-        require 'chef/chef_fs/file_system'
-        require 'highline'
+        require "chef/chef_fs/file_system"
+        require "highline"
       end
 
       option :recursive,
-        :short => '-R',
-        :boolean => true,
-        :description => "List directories recursively"
+        short: "-R",
+        boolean: true,
+        description: "List directories recursively"
       option :bare_directories,
-        :short => '-d',
-        :boolean => true,
-        :description => "When directories match the pattern, do not show the directories' children"
+        short: "-d",
+        boolean: true,
+        description: "When directories match the pattern, do not show the directories' children"
       option :local,
-        :long => '--local',
-        :boolean => true,
-        :description => "List local directory instead of remote"
+        long: "--local",
+        boolean: true,
+        description: "List local directory instead of remote"
       option :flat,
-        :short => '-f',
-        :long => '--flat',
-        :boolean => true,
-        :description => "Show a list of filenames rather than the prettified ls-like output normally produced"
+        short: "-f",
+        long: "--flat",
+        boolean: true,
+        description: "Show a list of filenames rather than the prettified ls-like output normally produced"
       option :one_column,
-        :short => '-1',
-        :boolean => true,
-        :description => "Show only one column of results"
+        short: "-1",
+        boolean: true,
+        description: "Show only one column of results"
       option :trailing_slashes,
-        :short => '-p',
-        :boolean => true,
-        :description => "Show trailing slashes after directories"
+        short: "-p",
+        boolean: true,
+        description: "Show trailing slashes after directories"
 
       attr_accessor :exit_code
 
@@ -44,9 +60,9 @@ class Chef
         patterns = name_args.length == 0 ? [""] : name_args
 
         # Get the top-level matches
-        args = pattern_args_from(patterns)
         all_results = parallelize(pattern_args_from(patterns)) do |pattern|
           pattern_results = Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern).to_a
+
           if pattern_results.first && !pattern_results.first.exists? && pattern.exact_path
             ui.error "#{format_path(pattern_results.first)}: No such file or directory"
             self.exit_code = 1
@@ -69,7 +85,7 @@ class Chef
 
         # Flatten out directory results if necessary
         if config[:flat]
-          dir_results.each do |result, children|
+          dir_results.each do |result, children| # rubocop:disable Performance/HashEachMethods
             results += children
           end
           dir_results = []
@@ -94,10 +110,10 @@ class Chef
             printed_something = true
           end
           output "#{format_path(result)}:"
-          print_results(children.map { |result| maybe_add_slash(result.name, result.dir?) }.sort, "")
+          print_results(children.map { |result| maybe_add_slash(result.display_name, result.dir?) }.sort, "")
         end
 
-        exit self.exit_code if self.exit_code
+        exit exit_code if exit_code
       end
 
       def add_dir_result(result)
@@ -129,17 +145,17 @@ class Chef
         else
           columns = HighLine::SystemExtensions.terminal_size[0]
         end
-        current_line = ''
+        current_line = ""
         results.each do |result|
           if current_line.length > 0 && current_line.length + print_space > columns
             output current_line.rstrip
-            current_line = ''
+            current_line = ""
           end
           if current_line.length == 0
             current_line << indent
           end
           current_line << result
-          current_line << (' ' * (print_space - result.length))
+          current_line << (" " * (print_space - result.length))
         end
         output current_line.rstrip if current_line.length > 0
       end

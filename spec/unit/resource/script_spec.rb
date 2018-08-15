@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +17,22 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Script do
   let(:resource_instance_name) { "fakey_fakerton" }
   let(:script_resource) { Chef::Resource::Script.new(resource_instance_name) }
   let(:resource_name) { :script }
 
-  it "should accept a string for the interpreter" do
+  it "sets the default action as :run" do
+    expect(script_resource.action).to eql([:run])
+  end
+
+  it "supports :run action" do
+    expect { script_resource.action :run }.not_to raise_error
+  end
+
+  it "accepts a string for the interpreter" do
     script_resource.interpreter "naaaaNaNaNaaNaaNaaNaa"
     expect(script_resource.interpreter).to eql("naaaaNaNaNaaNaaNaaNaa")
   end

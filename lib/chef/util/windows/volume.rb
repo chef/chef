@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,44 +16,34 @@
 # limitations under the License.
 #
 
-#simple wrapper around Volume APIs. might be possible with WMI, but possibly more complex.
+# simple wrapper around Volume APIs. might be possible with WMI, but possibly more complex.
 
-require 'chef/util/windows'
-require 'windows/volume'
+require "chef/win32/api/file"
+require "chef/util/windows"
 
 class Chef::Util::Windows::Volume < Chef::Util::Windows
-
-  private
-  include Windows::Volume
-  #XXX not defined in the current windows-pr release
-  DeleteVolumeMountPoint =
-    Windows::API.new('DeleteVolumeMountPoint', 'S', 'B') unless defined? DeleteVolumeMountPoint
-
-  public
+  attr_reader :mount_point
 
   def initialize(name)
-    name += "\\" unless name =~ /\\$/ #trailing slash required
-    @name = name
+    name += "\\" unless name =~ /\\$/ # trailing slash required
+    @mount_point = name
   end
 
   def device
-    buffer = 0.chr * 256
-    if GetVolumeNameForVolumeMountPoint(@name, buffer, buffer.size)
-      return buffer[0,buffer.size].unpack("Z*")[0]
-    else
-      raise ArgumentError, get_last_error
-    end
+    Chef::ReservedNames::Win32::File.get_volume_name_for_volume_mount_point(mount_point)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def delete
-    unless DeleteVolumeMountPoint.call(@name)
-      raise ArgumentError, get_last_error
-    end
+    Chef::ReservedNames::Win32::File.delete_volume_mount_point(mount_point)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def add(args)
-    unless SetVolumeMountPoint(@name, args[:remote])
-      raise ArgumentError, get_last_error
-    end
+    Chef::ReservedNames::Win32::File.set_volume_mount_point(mount_point, args[:remote])
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 end

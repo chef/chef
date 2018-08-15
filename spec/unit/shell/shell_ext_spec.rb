@@ -1,6 +1,6 @@
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Shell::Extensions do
   describe "extending object for top level methods" do
@@ -34,8 +34,8 @@ describe Shell::Extensions do
     it "finds a subsession in irb for an object" do
       target_context_obj = Chef::Node.new
 
-      irb_context = double("context", :main => target_context_obj)
-      irb_session = double("irb session", :context => irb_context)
+      irb_context = double("context", main: target_context_obj)
+      irb_session = double("irb session", context: irb_context)
       @job_manager.jobs = [[:thread, irb_session]]
       allow(@root_context).to receive(:jobs).and_return(@job_manager)
       @root_context.ensure_session_select_defined
@@ -92,9 +92,9 @@ describe Shell::Extensions do
     end
 
     it "prints node attributes" do
-      node = double("node", :attribute => {:foo => :bar})
+      node = double("node", attribute: { foo: :bar })
       @shell_client.node = node
-      expect(@root_context).to receive(:pp).with({:foo => :bar})
+      expect(@root_context).to receive(:pp).with({ foo: :bar })
       @root_context.ohai
       expect(@root_context).to receive(:pp).with(:bar)
       @root_context.ohai(:foo)

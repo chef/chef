@@ -1,7 +1,7 @@
 #
 # Author:: Michael Leinartas (<mleinartas@gmail.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2010 Michael Leinartas
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2010-2016, Michael Leinartas
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,39 +17,23 @@
 # limitations under the License.
 #
 
+require "chef/resource"
+
 class Chef
   class Resource
     class Ohai < Chef::Resource
+      resource_name :ohai
       provides :ohai
 
-      identity_attr :name
+      description "Use the ohai resource to reload the Ohai configuration on a node."\
+                  " This allows recipes that change system attributes (like a recipe"\
+                  " that adds a user) to refer to those attributes later on during the chef-client run."
 
-      state_attrs :plugin
+      property :ohai_name, name_property: true
+      property :plugin, String
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :ohai
-        @name = name
-        @allowed_actions.push(:reload)
-        @action = :reload
-        @plugin = nil
-      end
-
-      def plugin(arg=nil)
-        set_or_return(
-          :plugin,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def name(arg=nil)
-        set_or_return(
-          :name,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      default_action :reload
+      allowed_actions :reload
     end
   end
 end

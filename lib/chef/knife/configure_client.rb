@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -34,13 +34,11 @@ class Chef
         FileUtils.mkdir_p(@config_dir)
         ui.info("Writing client.rb")
         File.open(File.join(@config_dir, "client.rb"), "w") do |file|
-          file.puts('log_level        :info')
-          file.puts('log_location     STDOUT')
           file.puts("chef_server_url  '#{Chef::Config[:chef_server_url]}'")
           file.puts("validation_client_name '#{Chef::Config[:validation_client_name]}'")
         end
         ui.info("Writing validation.pem")
-        File.open(File.join(@config_dir, 'validation.pem'), "w") do |validation|
+        File.open(File.join(@config_dir, "validation.pem"), "w") do |validation|
           validation.puts(IO.read(Chef::Config[:validation_key]))
         end
       end

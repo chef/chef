@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,31 @@
 # limitations under the License.
 #
 
-
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
     class Breakpoint < Chef::Resource
       provides :breakpoint
+      resource_name :breakpoint
 
-      def initialize(action="break", *args)
-        @name = caller.first
-        super(@name, *args)
-        @action = "break"
-        @allowed_actions << :break
-        @resource_name = :breakpoint
+      description "Use the breakpoint resource to add breakpoints to recipes. Run the chef-shell in chef-client mode, and then use those breakpoints to debug recipes. Breakpoints are ignored by the chef-client during an actual chef-client run. That said, breakpoints are typically used to debug recipes only when running them in a non-production environment, after which they are removed from those recipes before the parent cookbook is uploaded to the Chef server."
+      introduced "12.0"
+
+      default_action :break
+
+      def initialize(action = "break", *args)
+        super(caller.first, *args)
+      end
+
+      action :break do
+        if defined?(Shell) && Shell.running?
+          with_run_context :parent do
+            run_context.resource_collection.iterator.pause
+            new_resource.updated_by_last_action(true)
+            run_context.resource_collection.iterator
+          end
+        end
       end
     end
   end

@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,29 +17,23 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'chef/resource/file'
-require 'chef/provider/remote_file'
-require 'chef/mixin/securable'
-require 'chef/mixin/uris'
+require "uri"
+require "chef/resource/file"
+require "chef/provider/remote_file"
+require "chef/mixin/securable"
+require "chef/mixin/uris"
 
 class Chef
   class Resource
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      provides :remote_file
+      description "Use the remote_file resource to transfer a file from a remote location"\
+                  " using file specificity. This resource is similar to the file resource."
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
-        @resource_name = :remote_file
-        @action = "create"
         @source = []
-        @use_etag = true
-        @use_last_modified = true
-        @ftp_active_mode = false
-        @headers = {}
-        @provider = Chef::Provider::RemoteFile
       end
 
       # source can take any of the following as arguments
@@ -54,9 +48,9 @@ class Chef
         arg = parse_source_args(args)
         ret = set_or_return(:source,
                             arg,
-                            { :callbacks => {
-                                :validate_source => method(:validate_source)
-                              }})
+                            { callbacks: {
+                                validate_source: method(:validate_source),
+                              } })
         if ret.is_a? String
           Array(ret)
         else
@@ -69,20 +63,14 @@ class Chef
           nil
         elsif args[0].is_a?(Chef::DelayedEvaluator) && args.count == 1
           args[0]
-        elsif args.any? {|a| a.is_a?(Chef::DelayedEvaluator)} && args.count > 1
+        elsif args.any? { |a| a.is_a?(Chef::DelayedEvaluator) } && args.count > 1
           raise Exceptions::InvalidRemoteFileURI, "Only 1 source argument allowed when using a lazy evaluator"
         else
           Array(args).flatten
         end
       end
 
-      def checksum(args=nil)
-        set_or_return(
-          :checksum,
-          args,
-          :kind_of => String
-        )
-      end
+      property :checksum, String
 
       # Disable or enable ETag and Last Modified conditional GET. Equivalent to
       #   use_etag(true_or_false)
@@ -92,38 +80,78 @@ class Chef
         use_last_modified(true_or_false)
       end
 
-      def use_etag(args=nil)
-        set_or_return(
-          :use_etag,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :use_etag, [ TrueClass, FalseClass ], default: true
 
       alias :use_etags :use_etag
 
-      def use_last_modified(args=nil)
-        set_or_return(
-          :use_last_modified,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
+      property :use_last_modified, [ TrueClass, FalseClass ], default: true
+
+      property :ftp_active_mode, [ TrueClass, FalseClass ], default: false
+
+      property :headers, Hash, default: lazy { Hash.new }
+
+      property :show_progress, [ TrueClass, FalseClass ], default: false
+
+      property :remote_user, String
+
+      property :remote_domain, String
+
+      property :remote_password, String, sensitive: true
+
+      property :authentication, equal_to: [:remote, :local], default: :remote
+
+      def after_created
+        validate_identity_platform(remote_user, remote_password, remote_domain)
+        identity = qualify_user(remote_user, remote_password, remote_domain)
+        remote_domain(identity[:domain])
+        remote_user(identity[:user])
       end
 
-      def ftp_active_mode(args=nil)
-        set_or_return(
-          :ftp_active_mode,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
+      def validate_identity_platform(specified_user, password = nil, specified_domain = nil)
+        if node[:platform_family] == "windows"
+          if specified_user && password.nil?
+            raise ArgumentError, "A value for `remote_password` must be specified when a value for `user` is specified on the Windows platform"
+          end
+        end
       end
 
-      def headers(args=nil)
-        set_or_return(
-          :headers,
-          args,
-          :kind_of => Hash
-        )
+      def qualify_user(specified_user, password = nil, specified_domain = nil)
+        domain = specified_domain
+        user = specified_user
+
+        if specified_user.nil? && ! specified_domain.nil?
+          raise ArgumentError, "The domain `#{specified_domain}` was specified, but no user name was given"
+        end
+
+        # if domain is provided in both username and domain
+        if specified_user && ((specified_user.include? '\\') || (specified_user.include? "@")) && specified_domain
+          raise ArgumentError, "The domain is provided twice. Username: `#{specified_user}`, Domain: `#{specified_domain}`. Please specify domain only once."
+        end
+
+        if ! specified_user.nil? && specified_domain.nil?
+          # Splitting username of format: Domain\Username
+          domain_and_user = user.split('\\')
+
+          if domain_and_user.length == 2
+            domain = domain_and_user[0]
+            user = domain_and_user[1]
+          elsif domain_and_user.length == 1
+            # Splitting username of format: Username@Domain
+            domain_and_user = user.split("@")
+            if domain_and_user.length == 2
+              domain = domain_and_user[1]
+              user = domain_and_user[0]
+            elsif domain_and_user.length != 1
+              raise ArgumentError, "The specified user name `#{user}` is not a syntactically valid user name"
+            end
+          end
+        end
+
+        if ( password || domain ) && user.nil?
+          raise ArgumentError, "A value for `password` or `domain` was specified without specification of a value for `user`"
+        end
+
+        { domain: domain, user: user }
       end
 
       private
@@ -143,7 +171,7 @@ class Chef
       end
 
       def absolute_uri?(source)
-        Chef::Provider::RemoteFile::Fetcher.network_share?(source) or (source.kind_of?(String) and as_uri(source).absolute?)
+        Chef::Provider::RemoteFile::Fetcher.network_share?(source) || (source.kind_of?(String) && as_uri(source).absolute?)
       rescue URI::InvalidURIError
         false
       end

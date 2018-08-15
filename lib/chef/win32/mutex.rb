@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright 2013 Opscode, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/synchronization'
+require "chef/win32/api/synchronization"
+require "chef/win32/unicode"
 
 class Chef
   module ReservedNames::Win32
@@ -54,7 +55,7 @@ class Chef
           when WAIT_ABANDONED
             # Previous owner of the mutex died before it can release the
             # mutex. Log a warning and continue.
-            Chef::Log.debug "Existing owner of the mutex exited prematurely."
+            Chef::Log.trace "Existing owner of the mutex exited prematurely."
             break
           when WAIT_OBJECT_0
             # Mutex is successfully acquired.
@@ -78,7 +79,7 @@ class Chef
           # of the process goes away and this class is only being used
           # to synchronize chef-clients runs on a node.
           Chef::Log.error("Can not release mutex '#{name}'. This might cause issues \
-if the mutex is attempted to be acquired by other threads.")
+if other threads attempt to acquire the mutex.")
           Chef::ReservedNames::Win32::Error.raise!
         end
       end
@@ -113,5 +114,3 @@ if the mutex is attempted to be acquired by other threads.")
     end
   end
 end
-
-

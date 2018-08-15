@@ -1,6 +1,6 @@
 #
-# Author:: Tyler Ball (<tball@getchef.com>)
-# Copyright:: Copyright (c) 2010-2014 Opscode, Inc.
+# Author:: Tyler Ball (<tball@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/encrypted_data_bag_item/encryptor'
+require "chef/encrypted_data_bag_item/encryptor"
 
 class Chef::EncryptedDataBagItem
   # Common code for checking if a data bag appears encrypted
@@ -39,7 +39,7 @@ class Chef::EncryptedDataBagItem
     # true only when there is an exact match between the VersionXEncryptor
     # keys and the hash's keys.
     def looks_like_encrypted?(data)
-      return false unless data.is_a?(Hash) && data.has_key?("version")
+      return false unless data.is_a?(Hash) && data.key?("version")
       case data["version"]
         when 1
           Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor.encryptor_keys.sort == data.keys.sort

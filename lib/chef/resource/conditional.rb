@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
-require 'chef/guard_interpreter'
+require "chef/mixin/shell_out"
+require "chef/guard_interpreter"
 
 class Chef
   class Resource
@@ -30,11 +30,11 @@ class Chef
         private :new
       end
 
-      def self.not_if(parent_resource, command=nil, command_opts={}, &block)
+      def self.not_if(parent_resource, command = nil, command_opts = {}, &block)
         new(:not_if, parent_resource, command, command_opts, &block)
       end
 
-      def self.only_if(parent_resource, command=nil, command_opts={}, &block)
+      def self.only_if(parent_resource, command = nil, command_opts = {}, &block)
         new(:only_if, parent_resource, command, command_opts, &block)
       end
 
@@ -43,7 +43,7 @@ class Chef
       attr_reader :command_opts
       attr_reader :block
 
-      def initialize(positivity, parent_resource, command=nil, command_opts={}, &block)
+      def initialize(positivity, parent_resource, command = nil, command_opts = {}, &block)
         @positivity = positivity
         @command, @command_opts = command, command_opts
         @block = block
@@ -55,7 +55,7 @@ class Chef
 
       def configure
         case @command
-        when String,Array
+        when String, Array
           @guard_interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, @command, @command_opts)
           @block = nil
         when nil
@@ -103,7 +103,15 @@ class Chef
       end
 
       def evaluate_block
-        @block.call
+        @block.call.tap do |rv|
+          if rv.is_a?(String) && !rv.empty?
+            # This is probably a mistake:
+            #   not_if { "command" }
+            sanitized_rv = @parent_resource.sensitive ? "a string" : rv.inspect
+            Chef::Log.warn("#{@positivity} block for #{@parent_resource} returned #{sanitized_rv}, did you mean to run a command?" +
+              (@parent_resource.sensitive ? "" : " If so use '#{@positivity} #{sanitized_rv}' in your code."))
+          end
+        end
       end
 
       def short_description

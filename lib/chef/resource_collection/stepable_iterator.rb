@@ -1,5 +1,5 @@
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,7 @@ class Chef
       attr_accessor :collection
       attr_reader :position
 
-      def initialize(collection=[])
+      def initialize(collection = [])
         @position = 0
         @paused = false
         @collection = collection
@@ -72,11 +72,11 @@ class Chef
         @position = 0
       end
 
-      def skip_back(skips=1)
+      def skip_back(skips = 1)
         @position -= skips
       end
 
-      def skip_forward(skips=1)
+      def skip_forward(skips = 1)
         @position += skips
       end
 
@@ -100,9 +100,7 @@ class Chef
       end
 
       def iterate
-        while @position < size && !paused?
-          step
-        end
+        step while @position < size && !paused?
         collection
       end
 

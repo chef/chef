@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna
-# Copyright:: Copyright (c) 2012 Opscode, Inc
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,21 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::UserList do
+  let(:knife) { Chef::Knife::UserList.new }
+  let(:stdout) { StringIO.new }
+
   before(:each) do
     Chef::Knife::UserList.load_deps
-    @knife = Chef::Knife::UserList.new
+    allow(knife.ui).to receive(:stderr).and_return(stdout)
+    allow(knife.ui).to receive(:stdout).and_return(stdout)
   end
 
-  it 'lists the users' do
-    expect(Chef::User).to receive(:list)
-    expect(@knife).to receive(:format_list_for_display)
-    @knife.run
+  it "lists the users" do
+    expect(Chef::UserV1).to receive(:list)
+    expect(knife).to receive(:format_list_for_display)
+    knife.run
   end
 end

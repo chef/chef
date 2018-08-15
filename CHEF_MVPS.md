@@ -2,7 +2,8 @@
 
 Every release of Chef we pick someone from the community to name as the Most Valuable Player for that release. It could be someone who provided a big feature, reported a security vulnerability, or someone doing great things in the community that we want to highlight.
 
-In addition to the Hall of Fame and MVP recipients, three individuals are awarded the distinction of "Awesome Community Chef" each year at ChefConf.
+In addition to the Hall of Fame and MVP recipients, a number of individuals are awarded the distinction
+of "Awesome Community Chef" each year at ChefConf.
 
 #### Hall of Fame
 
@@ -91,7 +92,7 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 
 #### Awesome Community Chefs
 
-Each year at ChefConf, three individuals are awarded the Awesome Community Chef award. The Awesome Community Chef awards are a way for the community to recognize a few of the individuals who have made a dramatic impact and have helped further the cause.
+Each year at ChefConf, a number of individuals are awarded the Awesome Community Chef award. The Awesome Community Chef awards are a way for the community to recognize a few of the individuals who have made a dramatic impact and have helped further the cause.
 
 * 2013
   * [Bryan Berry](https://github.com/bryanwb)
@@ -106,3 +107,19 @@ Each year at ChefConf, three individuals are awarded the Awesome Community Chef 
   * [Jon Cowie](https://github.com/jonlives)
   * [Noah Kantrowitz](https://github.com/coderanger)
   * [Matt Wrock](https://github.com/mwrock)
+* [2016](https://blog.chef.io/2016/08/31/awesome-community-chefs-2016/)
+  * [Mike Fiedler](https://github.com/miketheman)
+  * [Doug Ireton](https://github.com/dougireton)
+  * [Stuart Preston](https://github.com/stuartpreston)
+  * [Seth Thomas](https://github.com/cheeseplus)
+* [2017](https://blog.chef.io/2017/06/08/awesome-community-chefs-2017-award-winners/)
+  * [Ben Dang](https://github.com/bdangit)
+  * [Annie Hedgpeth](https://github.com/anniehedgpeth)
+  * [Sean O'Meara](https://github.com/someara)
+  * [Nell Shamrell-Harrington](https://github.com/nellshamrell)
+* [2018](https://blog.chef.io/2018/05/24/2018-awesome-community-chefs/)
+  * [Dan Webb](https://github.com/damacus)
+  * [Romain Sertelon](https://github.com/rsertelon)
+  * [Edmund Haselwanter](https://github.com/ehaselwanter)
+  * [Tim Smith](https://github.com/tas50)
+  * [Joshua Timberman](https://github.com/jtimberman)

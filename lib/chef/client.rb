@@ -1,9 +1,9 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,41 +18,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/path_sanity'
-require 'chef/log'
-require 'chef/rest'
-require 'chef/api_client'
-require 'chef/api_client/registration'
-require 'chef/audit/runner'
-require 'chef/node'
-require 'chef/role'
-require 'chef/file_cache'
-require 'chef/run_context'
-require 'chef/runner'
-require 'chef/run_status'
-require 'chef/cookbook/cookbook_collection'
-require 'chef/cookbook/file_vendor'
-require 'chef/cookbook/file_system_file_vendor'
-require 'chef/cookbook/remote_file_vendor'
-require 'chef/event_dispatch/dispatcher'
-require 'chef/event_loggers/base'
-require 'chef/event_loggers/windows_eventlog'
-require 'chef/exceptions'
-require 'chef/formatters/base'
-require 'chef/formatters/doc'
-require 'chef/formatters/minimal'
-require 'chef/version'
-require 'chef/resource_reporter'
-require 'chef/audit/audit_reporter'
-require 'chef/run_lock'
-require 'chef/policy_builder'
-require 'chef/request_id'
-require 'chef/platform/rebooter'
-require 'chef/mixin/deprecation'
-require 'ohai'
-require 'rbconfig'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/path_sanity"
+require "chef/log"
+require "chef/deprecated"
+require "chef/server_api"
+require "chef/api_client"
+require "chef/api_client/registration"
+require "chef/audit/runner"
+require "chef/node"
+require "chef/role"
+require "chef/file_cache"
+require "chef/run_context"
+require "chef/runner"
+require "chef/run_status"
+require "chef/cookbook/cookbook_collection"
+require "chef/cookbook/file_vendor"
+require "chef/cookbook/file_system_file_vendor"
+require "chef/cookbook/remote_file_vendor"
+require "chef/event_dispatch/dispatcher"
+require "chef/event_loggers/base"
+require "chef/event_loggers/windows_eventlog"
+require "chef/exceptions"
+require "chef/formatters/base"
+require "chef/formatters/doc"
+require "chef/formatters/minimal"
+require "chef/version"
+require "chef/resource_reporter"
+require "chef/data_collector"
+require "chef/audit/audit_reporter"
+require "chef/run_lock"
+require "chef/policy_builder"
+require "chef/request_id"
+require "chef/platform/rebooter"
+require "chef/mixin/deprecation"
+require "ohai"
+require "rbconfig"
 
 class Chef
   # == Chef::Client
@@ -78,6 +80,7 @@ class Chef
     def node
       run_status.node
     end
+
     def node=(value)
       run_status.node = value
     end
@@ -92,7 +95,7 @@ class Chef
     #
     # The rest object used to communicate with the Chef server.
     #
-    # @return [Chef::REST]
+    # @return [Chef::ServerAPI]
     #
     attr_reader :rest
 
@@ -132,6 +135,7 @@ class Chef
     #
     attr_reader :events
 
+    attr_reader :logger
     #
     # Creates a new Chef::Client.
     #
@@ -143,9 +147,11 @@ class Chef
     # @option args [Array<String>] :specific_recipes A list of recipe file paths
     #   to load after the run list has been loaded.
     #
-    def initialize(json_attribs=nil, args={})
+    def initialize(json_attribs = nil, args = {})
       @json_attribs = json_attribs || {}
-      @ohai = Ohai::System.new
+      @logger = args.delete(:logger) || Chef::Log.with_child
+
+      @ohai = Ohai::System.new(logger: logger)
 
       event_handlers = configure_formatters + configure_event_loggers
       event_handlers += Array(Chef::Config[:event_handlers])
@@ -159,13 +165,6 @@ class Chef
       if new_runlist = args.delete(:runlist)
         @json_attribs["run_list"] = new_runlist
       end
-
-      # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
-      require 'chef/platform/provider_priority_map' unless defined? Chef::Platform::ProviderPriorityMap
-      require 'chef/platform/resource_priority_map' unless defined? Chef::Platform::ResourcePriorityMap
-
-      Chef.set_provider_priority_map(Chef::Platform::ProviderPriorityMap.instance)
-      Chef.set_resource_priority_map(Chef::Platform::ResourcePriorityMap.instance)
     end
 
     #
@@ -239,6 +238,8 @@ class Chef
     # @return Always returns true.
     #
     def run
+      start_profiling
+
       run_error = nil
 
       runlock = RunLock.new(Chef::Config.lockfile)
@@ -251,13 +252,17 @@ class Chef
         request_id = Chef::RequestID.instance.request_id
         run_context = nil
         events.run_start(Chef::VERSION)
-        Chef::Log.info("*** Chef #{Chef::VERSION} ***")
-        Chef::Log.info "Chef-client pid: #{Process.pid}"
-        Chef::Log.debug("Chef-client request_id: #{request_id}")
+        logger.info("*** Chef #{Chef::VERSION} ***")
+        logger.info("Platform: #{RUBY_PLATFORM}")
+        logger.info "Chef-client pid: #{Process.pid}"
+        logger.debug("Chef-client request_id: #{request_id}")
         enforce_path_sanity
         run_ohai
 
-        register unless Chef::Config[:solo]
+        generate_guid
+
+        register unless Chef::Config[:solo_legacy_mode]
+        register_data_collector_reporter
 
         load_node
 
@@ -265,12 +270,17 @@ class Chef
 
         run_status.run_id = request_id
         run_status.start_clock
-        Chef::Log.info("Starting Chef Run for #{node.name}")
+        logger.info("Starting Chef Run for #{node.name}")
         run_started
 
         do_windows_admin_check
 
+        Chef.resource_handler_map.lock!
+        Chef.provider_handler_map.lock!
+
         run_context = setup_run_context
+
+        load_required_recipe(@rest, run_context) unless Chef::Config[:solo_legacy_mode]
 
         if Chef::Config[:audit_mode] != :audit_only
           converge_error = converge_and_save(run_context)
@@ -278,7 +288,7 @@ class Chef
 
         if Chef::Config[:why_run] == true
           # why_run should probably be renamed to why_converge
-          Chef::Log.debug("Not running controls in 'why_run' mode - this mode is used to see potential converge changes")
+          logger.debug("Not running controls in 'why-run' mode - this mode is used to see potential converge changes")
         elsif Chef::Config[:audit_mode] != :disabled
           audit_error = run_audits(run_context)
         end
@@ -287,41 +297,47 @@ class Chef
         raise converge_error if converge_error
 
         run_status.stop_clock
-        Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
+        logger.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
-        events.run_completed(node)
+        events.run_completed(node, run_status)
+
+        # keep this inside the main loop to get exception backtraces
+        end_profiling
 
         # rebooting has to be the last thing we do, no exceptions.
         Chef::Platform::Rebooter.reboot_if_needed!(node)
       rescue Exception => run_error
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
-        Chef::Log.debug("Re-raising exception: #{run_error.class} - #{run_error.message}\n#{run_error.backtrace.join("\n  ")}")
+        logger.trace("Re-raising exception: #{run_error.class} - #{run_error.message}\n#{run_error.backtrace.join("\n  ")}")
         # If we failed really early, we may not have a run_status yet. Too early for these to be of much use.
         if run_status
           run_status.stop_clock
           run_status.exception = run_error
           run_failed
         end
-        events.run_failed(run_error)
+        events.run_failed(run_error, run_status)
       ensure
         Chef::RequestID.instance.reset_request_id
-        request_id = nil
         @run_status = nil
-        run_context = nil
         runlock.release
-        GC.start
       end
 
       # Raise audit, converge, and other errors here so that we exit
       # with the proper exit status code and everything gets raised
       # as a RunFailedWrappingError
       if run_error || converge_error || audit_error
-        error = if run_error == converge_error
-          Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
-        else
-          Chef::Exceptions::RunFailedWrappingError.new(run_error, converge_error, audit_error)
-        end
-        error.fill_backtrace
+        error = if Chef::Config[:audit_mode] == :disabled
+                  run_error || converge_error
+                else
+                  e = if run_error == converge_error
+                        Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
+                      else
+                        Chef::Exceptions::RunFailedWrappingError.new(run_error, converge_error, audit_error)
+                      end
+                  e.fill_backtrace
+                  e
+                end
+
         Chef::Application.debug_stacktrace(error)
         raise error
       end
@@ -358,7 +374,7 @@ class Chef
 
     # @api private
     def default_formatter
-      if (STDOUT.tty? && !Chef::Config[:force_logger]) || Chef::Config[:force_formatter]
+      if !Chef::Config[:force_logger] || Chef::Config[:force_formatter]
         [:doc]
       else
         [:null]
@@ -382,13 +398,25 @@ class Chef
       end
     end
 
+    # A rest object with validate_utf8 set to false.  This will not throw exceptions
+    # on non-UTF8 strings in JSON but will sanitize them so that e.g. POSTs will
+    # never fail.  Cannot be configured on a request-by-request basis, so we carry
+    # around another rest object for it.
+    #
+    # @api private
+    def rest_clean(client_name = node_name, config = Chef::Config)
+      @rest_clean ||=
+        Chef::ServerAPI.new(config[:chef_server_url], client_name: client_name,
+                                                      signing_key_filename: config[:client_key], validate_utf8: false)
+    end
+
     # Resource reporters send event information back to the chef server for
     # processing.  Can only be called after we have a @rest object
     # @api private
     def register_reporters
       [
-        Chef::ResourceReporter.new(rest),
-        Chef::Audit::AuditReporter.new(rest)
+        Chef::ResourceReporter.new(rest_clean),
+        Chef::Audit::AuditReporter.new(rest_clean),
       ].each do |r|
         events.register(r)
       end
@@ -491,6 +519,49 @@ class Chef
     end
 
     #
+    # Adds a required recipe as specified by the Chef Server
+    #
+    # @return The modified run context
+    #
+    # @api private
+    #
+    # TODO: @rest doesn't appear to be used anywhere outside
+    # of client.register except for here. If it's common practice
+    # to create your own rest client, perhaps we should do that
+    # here but it seems more appropriate to reuse one that we
+    # know is already created. for ease of testing, we'll pass
+    # the existing rest client in as a parameter
+    #
+    def load_required_recipe(rest, run_context)
+      required_recipe_contents = rest.get("required_recipe")
+      logger.info("Required Recipe found, loading it")
+      Chef::FileCache.store("required_recipe", required_recipe_contents)
+      required_recipe_file = Chef::FileCache.load("required_recipe", false)
+
+      # TODO: add integration tests with resource reporting turned on
+      #       (presumably requires changes to chef-zero)
+      #
+      # Chef::Recipe.new takes a cookbook name and a recipe name along
+      # with the run context. These names are eventually used in the
+      # resource reporter, and if the cookbook name cannot be found in the
+      # cookbook collection then we will fail with an exception. Cases where
+      # we currently also fail:
+      #   - specific recipes
+      #   - chef-apply would fail if resource reporting was enabled
+      #
+      recipe = Chef::Recipe.new(nil, nil, run_context)
+      recipe.from_file(required_recipe_file)
+      run_context
+    rescue Net::HTTPServerException => e
+      case e.response
+      when Net::HTTPNotFound
+        logger.trace("Required Recipe not configured on the server, skipping it")
+      else
+        raise
+      end
+    end
+
+    #
     # The PolicyBuilder strategy for figuring out run list and cookbooks.
     #
     # @return [Chef::PolicyBuilder::Policyfile, Chef::PolicyBuilder::ExpandNodeObject]
@@ -498,7 +569,7 @@ class Chef
     # @api private
     #
     def policy_builder
-      @policy_builder ||= Chef::PolicyBuilder.strategy.new(node_name, ohai.data, json_attribs, override_runlist, events)
+      @policy_builder ||= Chef::PolicyBuilder::Dynamic.new(node_name, ohai.data, json_attribs, override_runlist, events)
     end
 
     #
@@ -512,12 +583,12 @@ class Chef
     # @api private
     #
     def save_updated_node
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         # nothing to do
       elsif policy_builder.temporary_policy?
-        Chef::Log.warn("Skipping final node save because override_runlist was given")
+        logger.warn("Skipping final node save because override_runlist was given")
       else
-        Chef::Log.debug("Saving the current state of node #{node_name}")
+        logger.debug("Saving the current state of node #{node_name}")
         node.save
       end
     end
@@ -533,9 +604,12 @@ class Chef
     # @api private
     #
     def run_ohai
-      filter = Chef::Config[:minimal_ohai] ? %w[fqdn machinename hostname platform platform_version os os_version] : nil
+      filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version ohai_time os os_version} : nil
       ohai.all_plugins(filter)
       events.ohai_completed(node)
+    rescue Ohai::Exceptions::CriticalPluginFailure => e
+      logger.error("Critical Ohai plugins failed: #{e.message}")
+      exit(false)
     end
 
     #
@@ -547,14 +621,10 @@ class Chef
     # - ohai[:machinename]
     # - ohai[:hostname]
     #
-    # If we are running against a server with authentication protocol < 1.0, we
-    # *require* authentication protocol version 1.1.
-    #
     # @raise [Chef::Exceptions::CannotDetermineNodeName] If the node name is not
     #   set and cannot be determined via ohai.
     #
     # @see Chef::Config#node_name
-    # @see Chef::Config#authentication_protocol_version
     #
     # @api private
     #
@@ -563,14 +633,6 @@ class Chef
       Chef::Config[:node_name] = name
 
       raise Chef::Exceptions::CannotDetermineNodeName unless name
-
-      # node names > 90 bytes only work with authentication protocol >= 1.1
-      # see discussion in config.rb.
-      # TODO use a computed default in Chef::Config to determine this instead of
-      # setting it.
-      if name.bytesize > 90
-        Chef::Config[:authentication_protocol_version] = "1.1"
-      end
 
       name
     end
@@ -584,7 +646,7 @@ class Chef
     # If Chef::Config.client_key does not exist, we register the client with the
     # Chef server and fire the registration_start and registration_completed events.
     #
-    # @return [Chef::REST] The server connection object.
+    # @return [Chef::ServerAPI] The server connection object.
     #
     # @see Chef::Config#chef_server_url
     # @see Chef::Config#client_key
@@ -596,21 +658,24 @@ class Chef
     #
     # @api private
     #
-    def register(client_name=node_name, config=Chef::Config)
+    def register(client_name = node_name, config = Chef::Config)
       if !config[:client_key]
         events.skipping_registration(client_name, config)
-        Chef::Log.debug("Client key is unspecified - skipping registration")
+        logger.trace("Client key is unspecified - skipping registration")
       elsif File.exists?(config[:client_key])
         events.skipping_registration(client_name, config)
-        Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
+        logger.trace("Client key #{config[:client_key]} is present - skipping registration")
       else
         events.registration_start(node_name, config)
-        Chef::Log.info("Client key #{config[:client_key]} is not present - registering")
+        logger.info("Client key #{config[:client_key]} is not present - registering")
         Chef::ApiClient::Registration.new(node_name, config[:client_key]).run
         events.registration_completed
       end
       # We now have the client key, and should use it from now on.
-      @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
+      @rest = Chef::ServerAPI.new(config[:chef_server_url], client_name: client_name,
+                                                            signing_key_filename: config[:client_key])
+      # force initialization of the rest_clean API object
+      rest_clean(client_name, config)
       register_reporters
     rescue Exception => e
       # TODO this should probably only ever fire if we *started* registration.
@@ -650,7 +715,7 @@ class Chef
       catch(:end_client_run_early) do
         begin
           events.converge_start(run_context)
-          Chef::Log.debug("Converging node #{node_name}")
+          logger.debug("Converging node #{node_name}")
           @runner = Chef::Runner.new(run_context)
           @runner.converge
           events.converge_complete
@@ -718,18 +783,18 @@ class Chef
     def run_audits(run_context)
       begin
         events.audit_phase_start(run_status)
-        Chef::Log.info("Starting audit phase")
+        logger.info("Starting audit phase")
         auditor = Chef::Audit::Runner.new(run_context)
         auditor.run
         if auditor.failed?
           audit_exception = Chef::Exceptions::AuditsFailed.new(auditor.num_failed, auditor.num_total)
-          events.audit_phase_failed(audit_exception)
+          @events.audit_phase_failed(audit_exception, Chef::Audit::Logger.read_buffer)
         else
-          events.audit_phase_complete
+          @events.audit_phase_complete(Chef::Audit::Logger.read_buffer)
         end
       rescue Exception => e
-        Chef::Log.error("Audit phase failed with error message: #{e.message}")
-        events.audit_phase_failed(e)
+        logger.error("Audit phase failed with error message: #{e.message}")
+        @events.audit_phase_failed(e, Chef::Audit::Logger.read_buffer)
         audit_exception = e
       end
       audit_exception
@@ -761,19 +826,19 @@ class Chef
     #
     def do_windows_admin_check
       if Chef::Platform.windows?
-        Chef::Log.debug("Checking for administrator privileges....")
+        logger.trace("Checking for administrator privileges....")
 
         if !has_admin_privileges?
           message = "chef-client doesn't have administrator privileges on node #{node_name}."
           if Chef::Config[:fatal_windows_admin_check]
-            Chef::Log.fatal(message)
-            Chef::Log.fatal("fatal_windows_admin_check is set to TRUE.")
+            logger.fatal(message)
+            logger.fatal("fatal_windows_admin_check is set to TRUE.")
             raise Chef::Exceptions::WindowsNotAdmin, message
           else
-            Chef::Log.warn("#{message} This might cause unexpected resource failures.")
+            logger.warn("#{message} This might cause unexpected resource failures.")
           end
         else
-          Chef::Log.debug("chef-client has administrator privileges on node #{node_name}.")
+          logger.trace("chef-client has administrator privileges on node #{node_name}.")
         end
       end
     end
@@ -879,19 +944,32 @@ class Chef
     #
     STDERR_FD = STDERR
 
-    #
-    # Deprecated writers
-    #
-
-    include Chef::Mixin::Deprecation
-    deprecated_attr_writer :ohai, "There is no alternative. Leave ohai alone!"
-    deprecated_attr_writer :rest, "There is no alternative. Leave rest alone!"
-    deprecated_attr :runner, "There is no alternative. Leave runner alone!"
-
     private
 
     attr_reader :override_runlist
     attr_reader :specific_recipes
+
+    def profiling_prereqs!
+      require "ruby-prof"
+    rescue LoadError
+      raise "You must have the ruby-prof gem installed in order to use --profile-ruby"
+    end
+
+    def start_profiling
+      return unless Chef::Config[:profile_ruby]
+      profiling_prereqs!
+      RubyProf.start
+    end
+
+    def end_profiling
+      return unless Chef::Config[:profile_ruby]
+      profiling_prereqs!
+      path = Chef::FileCache.create_cache_path("graph_profile.out", false)
+      File.open(path, "w+") do |file|
+        RubyProf::GraphPrinter.new(RubyProf.stop).print(file, {})
+      end
+      logger.warn("Ruby execution profile dumped to #{path}")
+    end
 
     def empty_directory?(path)
       !File.exists?(path) || (Dir.entries(path).size <= 2)
@@ -902,32 +980,58 @@ class Chef
     end
 
     def assert_cookbook_path_not_empty(run_context)
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         # Check for cookbooks in the path given
         # Chef::Config[:cookbook_path] can be a string or an array
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
         cookbook_paths = Array(Chef::Config[:cookbook_path])
-        Chef::Log.debug "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(', ')}"
-        if cookbook_paths.all? {|path| empty_directory?(path) }
+        logger.trace "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(', ')}"
+        if cookbook_paths.all? { |path| empty_directory?(path) }
           msg = "None of the cookbook paths set in Chef::Config[:cookbook_path], #{cookbook_paths.inspect}, contain any cookbooks"
-          Chef::Log.fatal(msg)
+          logger.fatal(msg)
           raise Chef::Exceptions::CookbookNotFound, msg
         end
       else
-        Chef::Log.warn("Node #{node_name} has an empty run list.") if run_context.node.run_list.empty?
+        logger.warn("Node #{node_name} has an empty run list.") if run_context.node.run_list.empty?
       end
-
     end
 
     def has_admin_privileges?
-      require 'chef/win32/security'
+      require "chef/win32/security"
 
       Chef::ReservedNames::Win32::Security.has_admin_privileges?
+    end
+
+    # Ensure that we have a GUID for this node
+    # If we've got the proper configuration, we'll simply set that.
+    # If we're registed with the data collector, we'll migrate that UUID into our configuration and use that
+    # Otherwise, we'll create a new GUID and save it
+    def generate_guid
+      Chef::Config[:chef_guid] ||=
+        if File.exists?(Chef::Config[:chef_guid_path])
+          File.read(Chef::Config[:chef_guid_path])
+        else
+          uuid = UUIDFetcher.node_uuid
+          File.open(Chef::Config[:chef_guid_path], "w+") do |fh|
+            fh.write(uuid)
+          end
+          uuid
+        end
+    end
+
+    class UUIDFetcher
+      extend Chef::DataCollector::Messages::Helpers
+    end
+
+    # Register the data collector reporter to send event information to the
+    # data collector server
+    def register_data_collector_reporter
+      events.register(Chef::DataCollector::Reporter.new) if Chef::DataCollector.register_reporter?
     end
   end
 end
 
 # HACK cannot load this first, but it must be loaded.
-require 'chef/cookbook_loader'
-require 'chef/cookbook_version'
-require 'chef/cookbook/synchronizer'
+require "chef/cookbook_loader"
+require "chef/cookbook_version"
+require "chef/cookbook/synchronizer"

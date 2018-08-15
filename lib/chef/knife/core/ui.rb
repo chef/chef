@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require 'forwardable'
-require 'chef/platform/query_helpers'
-require 'chef/knife/core/generic_presenter'
-require 'tempfile'
+require "forwardable"
+require "chef/platform/query_helpers"
+require "chef/knife/core/generic_presenter"
+require "tempfile"
 
 class Chef
   class Knife
@@ -57,7 +57,7 @@ class Chef
 
       def highline
         @highline ||= begin
-          require 'highline'
+          require "highline"
           HighLine.new
         end
       end
@@ -65,22 +65,18 @@ class Chef
       # Prints a message to stdout. Aliased as +info+ for compatibility with
       # the logger API.
       def msg(message)
-        begin
-          stdout.puts message
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
-        end
+        stdout.puts message
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+        exit 0
       end
 
       # Prints a msg to stderr. Used for info, warn, error, and fatal.
       def log(message)
-        begin
-          stderr.puts message
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
-        end
+        stderr.puts message
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+        exit 0
       end
 
       alias :info :log
@@ -137,10 +133,10 @@ class Chef
         @presenter.interchange?
       end
 
-      def ask_question(question, opts={})
-        question = question + "[#{opts[:default]}] " if opts[:default]
+      def ask_question(question, opts = {})
+        question += "[#{opts[:default]}] " if opts[:default]
 
-        if opts[:default] and config[:defaults]
+        if opts[:default] && config[:defaults]
           opts[:default]
         else
           stdout.print question
@@ -155,43 +151,48 @@ class Chef
       end
 
       def pretty_print(data)
-        begin
-          stdout.puts data
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
-        end
+        stdout.puts data
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+        exit 0
       end
-
 
       # Hash -> Hash
       # Works the same as edit_data but
-      # returns a hash rather than a JSON string/Fully infated object
+      # returns a hash rather than a JSON string/Fully inflated object
       def edit_hash(hash)
         raw = edit_data(hash, false)
         Chef::JSONCompat.parse(raw)
       end
 
-      def edit_data(data, parse_output=true)
+      def edit_data(data, parse_output = true, object_class: nil)
         output = Chef::JSONCompat.to_json_pretty(data)
-        if (!config[:disable_editing])
-          Tempfile.open([ 'knife-edit-', '.json' ]) do |tf|
+        if !config[:disable_editing]
+          Tempfile.open([ "knife-edit-", ".json" ]) do |tf|
             tf.sync = true
             tf.puts output
             tf.close
-            raise "Please set EDITOR environment variable" unless system("#{config[:editor]} #{tf.path}")
+            raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup.html for details." unless system("#{config[:editor]} #{tf.path}")
 
             output = IO.read(tf.path)
           end
         end
 
-        parse_output ? Chef::JSONCompat.from_json(output) : output
+        if parse_output
+          if object_class.nil?
+            raise ArgumentError, "Please pass in the object class to hydrate or use #edit_hash"
+          else
+            object_class.from_hash(Chef::JSONCompat.parse(output))
+          end
+        else
+          output
+        end
       end
 
       def edit_object(klass, name)
         object = klass.load(name)
 
-        output = edit_data(object)
+        output = edit_data(object, object_class: klass)
 
         # Only make the save if the user changed the object.
         #
@@ -207,9 +208,9 @@ class Chef
         output_parsed_again = Chef::JSONCompat.parse(Chef::JSONCompat.to_json(output))
         if object_parsed_again != output_parsed_again
           output.save
-          self.msg("Saved #{output}")
+          msg("Saved #{output}")
         else
-          self.msg("Object unchanged, not saving")
+          msg("Object unchanged, not saving")
         end
         output(format_for_display(object)) if config[:print_after]
       end
@@ -217,16 +218,16 @@ class Chef
       def confirmation_instructions(default_choice)
         case default_choice
         when true
-          '? (Y/n) '
+          "? (Y/n) "
         when false
-          '? (y/N) '
+          "? (y/N) "
         else
-          '? (Y/N) '
+          "? (Y/N) "
         end
       end
 
       # See confirm method for argument information
-      def confirm_without_exit(question, append_instructions=true, default_choice=nil)
+      def confirm_without_exit(question, append_instructions = true, default_choice = nil)
         return true if config[:yes]
 
         stdout.print question
@@ -239,19 +240,19 @@ class Chef
         when "Y", "y"
           true
         when "N", "n"
-          self.msg("You said no, so I'm done here.")
+          msg("You said no, so I'm done here.")
           false
         when ""
           unless default_choice.nil?
             default_choice
           else
-            self.msg("I have no idea what to do with '#{answer}'")
-            self.msg("Just say Y or N, please.")
+            msg("I have no idea what to do with '#{answer}'")
+            msg("Just say Y or N, please.")
             confirm_without_exit(question, append_instructions, default_choice)
           end
         else
-          self.msg("I have no idea what to do with '#{answer}'")
-          self.msg("Just say Y or N, please.")
+          msg("I have no idea what to do with '#{answer}'")
+          msg("Just say Y or N, please.")
           confirm_without_exit(question, append_instructions, default_choice)
         end
       end
@@ -264,7 +265,7 @@ class Chef
       # append_instructions => Should print '? (Y/N)' as instructions
       # default_choice => Set to true for 'Y', and false for 'N' as default answer
       #
-      def confirm(question, append_instructions=true, default_choice=nil)
+      def confirm(question, append_instructions = true, default_choice = nil)
         unless confirm_without_exit(question, append_instructions, default_choice)
           exit 3
         end
