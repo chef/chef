@@ -27,9 +27,10 @@ class Chef
       include Chef::Mixin::Securable
 
       description "Use the remote_directory resource to incrementally transfer a directory"\
-                  " from a cookbook to a node. The director that is copied from the cookbook"\
-                  " should be located under COOKBOOK_NAME/files/default/REMOTE_DIRECTORY. The"\
-                  " remote_directory resource will obey file specificity."
+                  " from a cookbook to a node. The directory that is copied from the cookbook"\
+                  " should be located under either COOKBOOK_NAME/files/REMOTE_DIRECTORY or"\
+                  " COOKBOOK_NAME/templates/REMOTE_DIRECTORY. The remote_directory resource"\
+                  " will obey file specificity."
 
       identity_attr :path
 
@@ -59,6 +60,13 @@ class Chef
       property :overwrite, [ TrueClass, FalseClass ], default: true
       property :cookbook, String
 
+      property :segment, [String, Symbol],
+               description: "Directory location within the cookbook, either the files or templates folder",
+               coerce: proc { |arg| arg.kind_of?(String) ? arg.to_sym : arg },
+               equal_to: [:files, :templates],
+               validation_message: "The segment must be defined as either :files or :templates",
+               default: :files
+            
       def files_group(arg = nil)
         set_or_return(
           :files_group,
