@@ -102,4 +102,30 @@ describe Chef::Resource::RemoteDirectory do
       expect(resource.identity).to eq("/var/path/")
     end
   end
+
+  it "accepts :files or :templates for the segment property" do
+
+    #default 
+    expect(resource.segment).to eql(:files)
+
+    resource.segment :files
+    expect(resource.segment).to eql(:files)
+
+    resource.segment "files"
+    expect(resource.segment).to eql(:files)
+
+    resource.segment :templates
+    expect(resource.segment).to eql(:templates)
+
+    resource.segment "templates"
+    expect(resource.segment).to eql(:templates)
+
+    expect { resource.segment :files }.not_to raise_error
+    expect { resource.segment :templates }.not_to raise_error  
+    expect { resource.segment "files" }.not_to raise_error
+    expect { resource.segment "templates" }.not_to raise_error
+
+    expect { resource.segment "invalid_value" }.to raise_error
+    expect { resource.segment :invalid_value }.to raise_error
+  end
 end
