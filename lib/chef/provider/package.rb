@@ -64,6 +64,9 @@ class Chef
       def load_current_resource; end
 
       def define_resource_requirements
+        # Before install and upgrade we are validating package name
+        validate_package(new_resource.package_name)
+
         # XXX: upgrade with a specific version doesn't make a whole lot of sense, but why don't we throw this anyway if it happens?
         # if not, shouldn't we raise to tell the user to use install instead of upgrade if they want to pin a version?
         requirements.assert(:install) do |a|
@@ -170,7 +173,6 @@ class Chef
       end
 
       def removing_package?
-        validate_package(new_resource.package_name)
         if !current_version_array.any?
           # ! any? means it's all nil's, which means nothing is installed
           false
@@ -306,11 +308,6 @@ class Chef
       end
 
       def validate_package(name)
-        raise( Chef::Exceptions::Package, "package name not allowed spaces, tabs, newlines, etc." ) if invalid_name?(name)
-      end
-
-      def invalid_name?(x)
-        ( x.is_a?(Array) && x.any? { |name| name.strip.index(/\s/) } ) || ( x.is_a?(String) && x.strip.index(/\s/) )
       end
 
       # used by subclasses.  deprecated.  use #a_to_s instead.
