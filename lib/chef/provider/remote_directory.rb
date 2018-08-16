@@ -81,7 +81,7 @@ class Chef
 
       private
       
-      # Symbol defining the source of remote_directoy content
+      # Symbol defining the source of remote_directory content
       #
       # @return [Symbol] Either :files or :templates segment target
       #
