@@ -94,13 +94,6 @@ describe Chef::CookbookVersion, "file specificity" do
 
        # directory adirectory
        {
-         :name => "files/anotherfile1.rb",
-         :path => "files/root_directory/anotherfile1.rb.root",
-         :checksum => "csum-root-directory",
-         :specificity => "root_directory",
-       },
-        
-       {
          name: "files/anotherfile1.rb",
          path: "files/host-examplehost.example.org/adirectory/anotherfile1.rb.host",
          full_path: "/cookbook-folder/files/host-examplehost.example.org/adirectory/anotherfile1.rb.host",
@@ -489,20 +482,7 @@ describe Chef::CookbookVersion, "file specificity" do
 
   ## Globbing the relative paths out of the manifest records ##
 
-  describe "when globbing for relative file paths based on filespecificity" do
-    
-    it "should return a list of relative paths based on priority preference: root directory" do
-      node = Chef::Node.new
-      node.automatic_attrs[:platform] = "ubuntu"
-      node.automatic_attrs[:platform_version] = "9.10"
-      node.automatic_attrs[:fqdn] = "examplehost.example.org"
-
-      filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "root_directory")
-      expect(filenames).not_to be_nil
-      expect(filenames.size).to eq(1)
-
-      expect(filenames.sort).to eq(["anotherfile1.rb.root"])
-    end    
+  describe "when globbing for relative file paths based on filespecificity" do  
     
     it "should return a list of relative paths based on priority preference: host" do
       node = Chef::Node.new
