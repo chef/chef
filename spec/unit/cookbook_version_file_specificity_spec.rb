@@ -482,8 +482,7 @@ describe Chef::CookbookVersion, "file specificity" do
 
   ## Globbing the relative paths out of the manifest records ##
 
-  describe "when globbing for relative file paths based on filespecificity" do  
-    
+  describe "when globbing for relative file paths based on filespecificity" do
     it "should return a list of relative paths based on priority preference: host" do
       node = Chef::Node.new
       node.automatic_attrs[:platform] = "ubuntu"
