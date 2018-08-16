@@ -18,7 +18,7 @@ require "chef/resource"
 
 class Chef
   class Resource
-    class OpensslX509Certificate < Chef::Resource
+    class OpensslX509Request < Chef::Resource
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
