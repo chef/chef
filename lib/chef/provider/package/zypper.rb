@@ -109,7 +109,7 @@ class Chef
         end
 
         def install_package(name, version)
-          zypper_package("install", *options, allow_downgrade, name, version)
+          zypper_package("install", global_options, *options, "--auto-agree-with-licenses", allow_downgrade, name, version)
         end
 
         def upgrade_package(name, version)
@@ -118,19 +118,19 @@ class Chef
         end
 
         def remove_package(name, version)
-          zypper_package("remove", *options, name, version)
+          zypper_package("remove", global_options, *options, name, version)
         end
 
         def purge_package(name, version)
-          zypper_package("remove", *options, "--clean-deps", name, version)
+          zypper_package("remove", global_options, *options, "--clean-deps", name, version)
         end
 
         def lock_package(name, version)
-          zypper_package("addlock", *options, name, version)
+          zypper_package("addlock", global_options, *options, name, version)
         end
 
         def unlock_package(name, version)
-          zypper_package("removelock", *options, name, version)
+          zypper_package("removelock", global_options, *options, name, version)
         end
 
         private
@@ -141,12 +141,12 @@ class Chef
           end
         end
 
-        def zypper_package(command, *options, names, versions)
+        def zypper_package(command, global_options, *options, names, versions)
           zipped_names = zip(names, versions)
           if zypper_version < 1.0
-            shell_out!("zypper", gpg_checks, command, *options, "-y", names)
+            shell_out!("zypper", global_options, gpg_checks, command, *options, "-y", names)
           else
-            shell_out!("zypper", *options,"--non-interactive", gpg_checks, command, "--auto-agree-with-licenses", zipped_names)
+            shell_out!("zypper", global_options, "--non-interactive", gpg_checks, command, *options, zipped_names)
           end
         end
 
@@ -156,6 +156,10 @@ class Chef
 
         def allow_downgrade
           "--oldpackage" if new_resource.allow_downgrade
+        end
+
+        def global_options
+          new_resource.global_options if new_resource.global_options
         end
       end
     end
