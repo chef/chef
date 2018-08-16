@@ -81,21 +81,21 @@ class Chef
 
       private
       
-      # Symbol definning the source of remote_directoy content
+      # Symbol defining the source of remote_directoy content
       #
-      # @return [Symbol] either :files or :templates segment target
+      # @return [Symbol] Either :files or :templates segment target
       #
       def segment_name
         new_resource.segment
       end
 
-      # Depending on segment property definition, return the approviate Resource class
+      # Depending on the segment property definition, return the appropriate Resource class
       #
       # @return [Class] Either CookbookFile or Template resource class
       #
       def segment_resource
         return segment_name == :files ? Chef::Resource::CookbookFile : Chef::Resource::Template
-        raise Chef::Exceptions::InvalidResourceSpecification, "Invalid segment name, #{new_resource.segment}." 
+        raise Chef::Exceptions::InvalidResourceSpecification, "Invalid segment name, #{segment_name}." 
       end
       
       # Add a file and its parent directories to the managed_files Hash.
