@@ -65,7 +65,7 @@ class Chef
           converge_by("Create a dhparam file #{new_resource.path}") do
             dhparam_content = gen_dhparam(new_resource.key_length, new_resource.generator).to_pem
 
-            declare_resource(:file, new_resource.path) do
+            file new_resource.path do
               action :create
               owner new_resource.owner unless new_resource.owner.nil?
               group new_resource.group unless new_resource.group.nil?

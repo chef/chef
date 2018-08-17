@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2009-2018, Chef Software Inc.
+# Copyright:: Copyright 2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,26 +19,24 @@ require "chef/resource"
 
 class Chef
   class Resource
-    class OpensslRsaPrivateKey < Chef::Resource
+    class OpensslEcPrivateKey < Chef::Resource
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      resource_name :openssl_rsa_private_key
-      provides(:openssl_rsa_private_key) { true }
-      provides(:openssl_rsa_key) { true } # legacy cookbook resource name
+      preview_resource true
+      resource_name :openssl_ec_private_key
 
-      description "Use the openssl_rsa_private_key resource to generate RSA private key files. If a valid RSA key file can be opened at the specified location, no new file will be created. If the RSA key file cannot be opened, either because it does not exist or because the password to the RSA key file does not match the password in the recipe, it will be overwritten."
-      introduced "14.0"
+      description "Use the openssl_ec_private_key resource to generate generate ec private key files. If a valid ec key file can be opened at the specified location, no new file will be created. If the EC key file cannot be opened, either because it does not exist or because the password to the EC key file does not match the password in the recipe, it will be overwritten."
+      introduced "14.4"
 
       property :path, String,
                description: "The path to write the file to it's different than the resource name.",
                name_property: true
 
-      property :key_length, Integer,
-               equal_to: [1024, 2048, 4096, 8192],
-               validation_message: "key_length (bits) must be 1024, 2048, 4096, or 8192.",
-               description: "The desired bit length of the generated key.",
-               default: 2048
+      property :key_curve, String,
+               equal_to: %w{secp384r1 secp521r1 prime256v1 secp224r1 secp256k1},
+               description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run openssl ecparam -list_curves to see available options.",
+               default: "prime256v1"
 
       property :key_pass, String,
                description: "The desired passphrase for the key."
@@ -49,10 +47,10 @@ class Chef
                description: "The designed cipher to use when generating your key. Run `openssl list-cipher-algorithms` to see available options.",
                default: "des3"
 
-      property :owner, [String, nil],
+      property :owner, String,
                description: "The owner of all files created by the resource."
 
-      property :group, [String, nil],
+      property :group, String,
                description: "The group of all files created by the resource."
 
       property :mode, [Integer, String],
@@ -64,25 +62,28 @@ class Chef
                default: false, desired_state: false
 
       action :create do
-        description "Create the RSA private key."
+        description "Generate the ec private key"
 
-        return if new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
+        unless new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
+          converge_by("Create an EC private key #{new_resource.path}") do
+            log "Generating an #{new_resource.key_curve} "\
+                "EC key file at #{new_resource.name}, this may take some time"
 
-        converge_by("create #{new_resource.key_length} bit RSA key #{new_resource.path}") do
-          if new_resource.key_pass
-            unencrypted_rsa_key = gen_rsa_priv_key(new_resource.key_length)
-            rsa_key_content = encrypt_rsa_key(unencrypted_rsa_key, new_resource.key_pass, new_resource.key_cipher)
-          else
-            rsa_key_content = gen_rsa_priv_key(new_resource.key_length).to_pem
-          end
+            if new_resource.key_pass
+              unencrypted_ec_key = gen_ec_priv_key(new_resource.key_curve)
+              ec_key_content = encrypt_ec_key(unencrypted_ec_key, new_resource.key_pass, new_resource.key_cipher)
+            else
+              ec_key_content = gen_ec_priv_key(new_resource.key_curve).to_pem
+            end
 
-          file new_resource.path do
-            action :create
-            owner new_resource.owner unless new_resource.owner.nil?
-            group new_resource.group unless new_resource.group.nil?
-            mode new_resource.mode
-            sensitive true
-            content rsa_key_content
+            file new_resource.path do
+              action :create
+              owner new_resource.owner unless new_resource.owner.nil?
+              group new_resource.group unless new_resource.group.nil?
+              mode new_resource.mode
+              sensitive true
+              content ec_key_content
+            end
           end
         end
       end

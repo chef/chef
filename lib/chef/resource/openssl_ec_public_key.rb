@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2009-2018, Chef Software Inc.
+# Copyright:: Copyright 2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,15 +19,15 @@ require "chef/resource"
 
 class Chef
   class Resource
-    class OpensslRsaPublicKey < Chef::Resource
+    class OpensslEcPublicKey < Chef::Resource
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      resource_name :openssl_rsa_public_key
-      provides(:openssl_rsa_public_key) { true }
+      preview_resource true
+      resource_name :openssl_ec_public_key
 
-      description "Use the openssl_rsa_public_key resource to generate RSA public key files given a RSA private key."
-      introduced "14.0"
+      description "Use the openssl_ec_public_key resource to generate ec public key files given a private key."
+      introduced "14.4"
 
       property :path, String,
                description: "The path to write the file to if different than the resource's name.",
@@ -42,10 +42,10 @@ class Chef
       property :private_key_pass, String,
                description: "The passphrase of the provided private key."
 
-      property :owner, [String, nil],
+      property :owner, String,
                description: "The owner of all files created by the resource."
 
-      property :group, [String, nil],
+      property :group, String,
                description: "The group of all files created by the resource."
 
       property :mode, [Integer, String],
@@ -53,20 +53,20 @@ class Chef
                default: "0640"
 
       action :create do
-        description "Create the RSA public key."
+        description "Generate the ec public key from a private key"
 
         raise ArgumentError, "You cannot specify both 'private_key_path' and 'private_key_content' properties at the same time." if new_resource.private_key_path && new_resource.private_key_content
         raise ArgumentError, "You must specify the private key with either 'private_key_path' or 'private_key_content' properties." unless new_resource.private_key_path || new_resource.private_key_content
-        raise "#{new_resource.private_key_path} not a valid private RSA key or password is invalid" unless priv_key_file_valid?((new_resource.private_key_path || new_resource.private_key_content), new_resource.private_key_pass)
+        raise "#{new_resource.private_key_path} not a valid private EC key or password is invalid" unless priv_key_file_valid?((new_resource.private_key_path || new_resource.private_key_content), new_resource.private_key_pass)
 
-        rsa_key_content = gen_rsa_pub_key((new_resource.private_key_path || new_resource.private_key_content), new_resource.private_key_pass)
+        ec_key_content = gen_ec_pub_key((new_resource.private_key_path || new_resource.private_key_content), new_resource.private_key_pass)
 
         file new_resource.path do
           action :create
           owner new_resource.owner unless new_resource.owner.nil?
           group new_resource.group unless new_resource.group.nil?
           mode new_resource.mode
-          content rsa_key_content
+          content ec_key_content
         end
       end
     end
