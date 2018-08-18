@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.37 -->
-## [v14.4.37](https://github.com/chef/chef/tree/v14.4.37) (2018-08-17)
+<!-- latest_release 14.4.38 -->
+## [v14.4.38](https://github.com/chef/chef/tree/v14.4.38) (2018-08-18)
 
 #### Merged Pull Requests
-- Add new openssl resources: ec_private_key, ec_public_key, certificate, and x509_request [#7513](https://github.com/chef/chef/pull/7513) ([tas50](https://github.com/tas50))
+- Fix failed RHEL6 32-bit functional tests [#7555](https://github.com/chef/chef/pull/7555) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Fix failed RHEL6 32-bit functional tests [#7555](https://github.com/chef/chef/pull/7555) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.4.38 -->
 - Add new openssl resources: ec_private_key, ec_public_key, certificate, and x509_request [#7513](https://github.com/chef/chef/pull/7513) ([tas50](https://github.com/tas50)) <!-- 14.4.37 -->
 - Update to openssl 1.0.2p [#7546](https://github.com/chef/chef/pull/7546) ([tas50](https://github.com/tas50)) <!-- 14.4.36 -->
 - Add cron_d and cron_access resources [#7253](https://github.com/chef/chef/pull/7253) ([tas50](https://github.com/tas50)) <!-- 14.4.35 -->
