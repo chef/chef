@@ -61,7 +61,9 @@ class Chef
             content.each_pair do |sect, opts|
               doc.section(sect) do |section|
                 opts.each_pair do |opt, val|
-                  section.option(opt, val)
+                  [val].flatten.each do |v|
+                    section.option(opt, v)
+                  end
                 end
               end
             end
