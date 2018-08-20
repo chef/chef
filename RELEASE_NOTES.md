@@ -26,6 +26,49 @@ $ knife config list-profiles
 *prod     myuser  ~/.chef/user.pem  https://example.com/organizations/prod
 ```
 
+## New Resources
+
+### Cron_d
+
+Use the cron_d resource to manage cron definitions in /etc/cron.d. This is similar to the `cron` resource, but it does not use the monolithic /etc/crontab. file."
+
+#### Actions
+
+- `create` - Add a cron definition file to /etc/cron.d.
+- `create_if_missing` - Add a cron definition file to /etc/cron.d, but do not update an existing file.
+- `delete` - Remove a cron definition file from /etc/cron.d if it exists.
+
+### Cron_access
+
+Use the cron_access resource to manage the /etc/cron.allow and /etc/cron.deny files. This resource previously shipped in the `cron` community cookbook and has fully backwards compatibility with the previous `cron_manage` definition in that cookbook.
+
+#### Actions
+
+- `allow` - Add the user to the cron.allow file.
+- `deny` - Add the user to the cron.deny file.
+
+## Resource improvements
+
+### windows_package
+
+The windows_package resource now supports setting the `sensitive` property to avoid showing errors if a package install fails.
+
+### sysctl
+
+The sysctl resource will now update the on-disk systctl.d file even if the current sysctl value matches the desired value.
+
+### windows_task
+
+The windows_task resource now supports setting the task priority of the scheduled task with a new `priority` property.
+
+### ifconfig
+
+The ifconfig resource now supports setting the interface's VLAN via a new `vlan` property on RHEL platform_family and setting the interface's gateway via a new `gateway` property on RHEL/Debian platform_family.
+
+### route
+
+The route resource has been improved to support additional RHEL platform_family systems as well as Amazon Linux.
+
 # Chef Client Release Notes 14.3:
 
 ## New Preview Resources Concept

@@ -35,7 +35,7 @@ class Chef
                name_property: true
 
       action :allow do
-        description "Add the user to the cron.deny file."
+        description "Add the user to the cron.allow file."
 
         with_run_context :root do
           edit_resource(:template, "/etc/cron.allow") do |new_resource|
@@ -51,7 +51,7 @@ class Chef
       end
 
       action :deny do
-        description "Add the user to the cron.allow file."
+        description "Add the user to the cron.deny file."
 
         with_run_context :root do
           edit_resource(:template, "/etc/cron.deny") do |new_resource|
