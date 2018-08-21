@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.41 -->
-## [v14.4.41](https://github.com/chef/chef/tree/v14.4.41) (2018-08-20)
+<!-- latest_release 14.4.42 -->
+## [v14.4.42](https://github.com/chef/chef/tree/v14.4.42) (2018-08-21)
 
 #### Merged Pull Requests
-- support repeated options in systemd_unit [#7560](https://github.com/chef/chef/pull/7560) ([dbresson](https://github.com/dbresson))
+- Validatorless bootstrap fix [#7562](https://github.com/chef/chef/pull/7562) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Validatorless bootstrap fix [#7562](https://github.com/chef/chef/pull/7562) ([coderanger](https://github.com/coderanger)) <!-- 14.4.42 -->
 - support repeated options in systemd_unit [#7560](https://github.com/chef/chef/pull/7560) ([dbresson](https://github.com/dbresson)) <!-- 14.4.41 -->
 - Support for battery power options in windows_task resource [#7483](https://github.com/chef/chef/pull/7483) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.4.40 -->
 - Restart Python yum helper before each repo enable/disable [#7558](https://github.com/chef/chef/pull/7558) ([cosinusoidally](https://github.com/cosinusoidally)) <!-- 14.4.39 -->
