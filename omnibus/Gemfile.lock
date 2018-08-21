@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 8369ed7b074102971c9e25e732001d8a3566423b
+  revision: 3511a7f7d237bf6875dce88e8627055d6cd61cbe
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -31,13 +31,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.11.107)
-      aws-sdk-resources (= 2.11.107)
-    aws-sdk-core (2.11.107)
+    aws-sdk (2.11.112)
+      aws-sdk-resources (= 2.11.112)
+    aws-sdk-core (2.11.112)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.107)
-      aws-sdk-core (= 2.11.107)
+    aws-sdk-resources (2.11.112)
+      aws-sdk-core (= 2.11.112)
     aws-sigv4 (1.0.3)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -84,7 +84,7 @@ GEM
       mixlib-config (>= 2.2.12, < 3.0)
       mixlib-shellout (~> 2.0)
       tomlrb (~> 1.2)
-    chef-sugar (4.0.1)
+    chef-sugar (4.1.0)
     citrus (3.0.2)
     cleanroom (1.0.0)
     coderay (1.1.2)
@@ -181,7 +181,7 @@ GEM
     pry-stack_explorer (0.4.9.2)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (3.0.2)
+    public_suffix (3.0.3)
     retryable (2.0.4)
     ridley (4.6.1)
       addressable
@@ -225,7 +225,7 @@ GEM
     thor (0.20.0)
     timers (4.0.4)
       hitimes
-    toml-rb (1.1.1)
+    toml-rb (1.1.2)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.2.7)
     varia_model (0.4.1)
