@@ -49,9 +49,7 @@ class Chef
 
           resource_name = filename_to_qualified_string(cookbook_name, filename)
 
-          # We load the class first to give it a chance to set its own name
           resource_class = Class.new(self)
-          resource_class.resource_name resource_name.to_sym
           resource_class.run_context = run_context
           resource_class.class_from_file(filename)
 
@@ -66,6 +64,8 @@ class Chef
           Chef::Log.trace("Loaded contents of #{filename} into resource #{resource_name} (#{resource_class})")
 
           LWRPBase.loaded_lwrps[filename] = true
+
+          resource_class.resource_name resource_name.to_sym if resource_class.resource_name.nil?
 
           resource_class
         end
