@@ -45,7 +45,7 @@ class Chef
         end
 
         def validation_key
-          if @chef_config.key?(:validation_key) &&
+          if @chef_config[:validation_key] &&
               File.exist?(File.expand_path(@chef_config[:validation_key]))
             IO.read(File.expand_path(@chef_config[:validation_key]))
           else
