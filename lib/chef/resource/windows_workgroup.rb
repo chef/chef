@@ -20,7 +20,7 @@ require "chef/mixin/powershell_out"
 
 class Chef
   class Resource
-    class Windowsworkgroupjoin < Chef::Resource
+    class WindowsWorkgroup < Chef::Resource
       resource_name :windows_workgroup
       provides :windows_workgroup
 
