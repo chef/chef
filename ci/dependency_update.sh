@@ -4,6 +4,6 @@
 
 set -evx
 
-bundle install --without omnibus_package test pry integration docgen maintenance travis aix bsd linux mac_os_x solaris windows development
+bundle install --without omnibus_package test pry integration docgen maintenance travis aix bsd linux mac_os_x solaris windows
 
 bundle exec rake dependencies_ci

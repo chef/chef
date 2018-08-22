@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +17,7 @@
 # limitations under the License.
 #
 
-VERSION = IO.read(File.expand_path("../VERSION", __FILE__)).strip
-
-require "rubygems"
-require "chef/version"
 require "chef-config/package_task"
-require "rdoc/task"
 require_relative "tasks/rspec"
 require_relative "tasks/maintainers"
 require_relative "tasks/cbgb"
