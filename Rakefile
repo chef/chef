@@ -23,6 +23,8 @@ require_relative "tasks/cbgb"
 require_relative "tasks/dependencies"
 require_relative "tasks/announce"
 
+Bundler::GemHelper.install_tasks name: 'chef'
+
 task :pedant, :chef_zero_spec
 
 task :build_eventlog do
