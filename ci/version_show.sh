@@ -1,3 +1,0 @@
-#!/bin/sh
-
-cat VERSION
