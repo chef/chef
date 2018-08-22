@@ -1,9 +1,3 @@
-require "chef-config/package_task"
-
-ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "ChefConfig", "chef-config") do |package|
-  package.module_path = "chef-config"
-end
-
 task default: :spec
 
 begin
