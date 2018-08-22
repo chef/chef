@@ -17,10 +17,6 @@
 # limitations under the License.
 #
 
-VERSION = IO.read(File.expand_path("../VERSION", __FILE__)).strip
-
-require "rubygems"
-require "chef/version"
 require "chef-config/package_task"
 require_relative "tasks/rspec"
 require_relative "tasks/maintainers"
