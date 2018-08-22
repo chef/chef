@@ -65,6 +65,8 @@ class Chef
 
           LWRPBase.loaded_lwrps[filename] = true
 
+          # wire up the default resource name after the class is parsed only if we haven't declared one.
+          # (this ordering is important for MapCollision deprecation warnings)
           resource_class.resource_name resource_name.to_sym if resource_class.resource_name.nil?
 
           resource_class
