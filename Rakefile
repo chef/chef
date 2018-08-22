@@ -17,19 +17,11 @@
 # limitations under the License.
 #
 
-require "rubygems"
-require "chef-config/package_task"
 require_relative "tasks/rspec"
 require_relative "tasks/maintainers"
 require_relative "tasks/cbgb"
 require_relative "tasks/dependencies"
 require_relative "tasks/announce"
-
-ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef", "chef") do |package|
-  package.component_paths = ["chef-config"]
-  package.generate_version_class = true
-  package.use_versionstring = true
-end
 
 task :pedant, :chef_zero_spec
 
