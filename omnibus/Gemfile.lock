@@ -31,13 +31,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.11.112)
-      aws-sdk-resources (= 2.11.112)
-    aws-sdk-core (2.11.112)
+    aws-sdk (2.11.113)
+      aws-sdk-resources (= 2.11.113)
+    aws-sdk-core (2.11.113)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.112)
-      aws-sdk-core (= 2.11.112)
+    aws-sdk-resources (2.11.113)
+      aws-sdk-core (= 2.11.113)
     aws-sigv4 (1.0.3)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -272,4 +272,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.16.3
+   1.16.4

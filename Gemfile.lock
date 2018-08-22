@@ -204,7 +204,7 @@ GEM
     netrc (0.11.0)
     octokit (4.10.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (14.4.1)
+    ohai (14.4.2)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -377,4 +377,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.16.3
+   1.16.4
