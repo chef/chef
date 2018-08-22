@@ -9,7 +9,7 @@ bundle install
 bundle exec rake dependencies:update
 
 git add .
-git commit --message "Bump $GEM_NAME to $VERSION" --message "This pull request was triggered automatically via Expeditor when $GEM_NAME $VERSION was promoted to Rubygems."
+git commit --message "Bump $GEM_NAME to $VERSION" --message "This pull request was triggered automatically via Expeditor when $GEM_NAME $VERSION was promoted to Rubygems." --message "Signed-off-by: Chef CI <oss@chef.io>"
 
 open_pull_request
 
