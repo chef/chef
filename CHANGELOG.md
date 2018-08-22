@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.45 -->
-## [v14.4.45](https://github.com/chef/chef/tree/v14.4.45) (2018-08-22)
+<!-- latest_release 14.4.46 -->
+## [v14.4.46](https://github.com/chef/chef/tree/v14.4.46) (2018-08-22)
 
 #### Merged Pull Requests
-- Update to Ohai 14.4.2 [#7570](https://github.com/chef/chef/pull/7570) ([tas50](https://github.com/tas50))
+- lazy the default resource_name until after parsing [#7566](https://github.com/chef/chef/pull/7566) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- lazy the default resource_name until after parsing [#7566](https://github.com/chef/chef/pull/7566) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.4.46 -->
 - Update to Ohai 14.4.2 [#7570](https://github.com/chef/chef/pull/7570) ([tas50](https://github.com/tas50)) <!-- 14.4.45 -->
 - switch shell_out to shell_out! in func tests [#7565](https://github.com/chef/chef/pull/7565) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.4.44 -->
 - Pull in the latest InSpec and Ohai [#7563](https://github.com/chef/chef/pull/7563) ([tas50](https://github.com/tas50)) <!-- 14.4.43 -->
