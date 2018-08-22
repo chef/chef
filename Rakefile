@@ -19,7 +19,6 @@
 
 require "rubygems"
 require "chef-config/package_task"
-require "rdoc/task"
 require_relative "tasks/rspec"
 require_relative "tasks/maintainers"
 require_relative "tasks/cbgb"
