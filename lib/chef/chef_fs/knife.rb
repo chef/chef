@@ -67,6 +67,15 @@ class Chef
           Chef::ChefFS::Config::INFLECTIONS.each_value do |variable_name|
             Chef::Config.delete("#{variable_name}_path".to_sym)
           end
+        elsif Chef::Config[:chef_repo_path] == Chef::Config.cache_path
+          Chef::Config[:chef_repo_path] = discover_repo_dir(Dir.pwd)
+          Chef::ChefFS::Config::INFLECTIONS.each_value do |variable_name|
+            # Only override paths based off of the cache_path
+            path = Chef::Config.public_send("#{variable_name}_path".to_sym)
+            if path.include?("#{Chef::Config.cache_path}/")
+              Chef::Config.delete("#{variable_name}_path".to_sym)
+            end
+          end
         end
 
         @chef_fs_config = Chef::ChefFS::Config.new(Chef::Config, Dir.pwd, config, ui)
