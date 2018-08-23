@@ -1,8 +1,13 @@
 #!/bin/sh
+
+############################################################################
+# What is this script?
 #
-# After a PR merge, Chef Expeditor will bump the PATCH version in the VERSION file.
-# It then executes this file to update any other files/components with that new version.
-#
+# Chef uses a workflow tool called Expeditor to manage version bumps, changelogs
+# and releases. After a PR is merged in Chef Expeditor calls this script to update
+# the PATCH version in the VERSION file as well as the version.rb file in both chef
+# and chef-config. When that's done it bundle updates to pull in that new chef-config.
+############################################################################
 
 set -evx
 
