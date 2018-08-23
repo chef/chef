@@ -32,7 +32,9 @@ end
 
 task install: :super_install
 
-Bundler::GemHelper.install_tasks name: "chef"
+# make sure we build the correct gemspec on windows
+gemspec = Gem.win_platform? ? "chef-universal-mingw32" : "chef"
+Bundler::GemHelper.install_tasks name: gemspec
 
 task :pedant, :chef_zero_spec
 
