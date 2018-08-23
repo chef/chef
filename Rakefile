@@ -23,7 +23,16 @@ require_relative "tasks/cbgb"
 require_relative "tasks/dependencies"
 require_relative "tasks/announce"
 
-Bundler::GemHelper.install_tasks name: 'chef'
+# hack the chef-config install to runon before the traditional install task
+task :super_install do
+  chef_config_path = ::File.join(::File.dirname(__FILE__), "chef-config")
+  Dir.chdir(chef_config_path)
+  sh("rake install")
+end
+
+task :install => :super_install
+
+Bundler::GemHelper.install_tasks name: "chef"
 
 task :pedant, :chef_zero_spec
 
