@@ -301,9 +301,9 @@ class Chef
         # we're just going to make cookbook_files out of these and make the
         # cookbook find them by filespecificity again. but it's the shortest
         # path to "success" for now.
-        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
+        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]*\/?#{Regexp.escape(dirname)})\/.+$/
           specificity_dirname = $1
-          non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)}\/(.+)$/, 1]
+          non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]*\/?#{Regexp.escape(dirname)}\/(.+)$/, 1]
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
           if filenames_by_pref[specificity_dirname]
