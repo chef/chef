@@ -30,7 +30,7 @@ task :super_install do
   sh("rake install")
 end
 
-task :install => :super_install
+task install: :super_install
 
 Bundler::GemHelper.install_tasks name: "chef"
 
