@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.49 -->
-## [v14.4.49](https://github.com/chef/chef/tree/v14.4.49) (2018-08-24)
+<!-- latest_release 14.4.50 -->
+## [v14.4.50](https://github.com/chef/chef/tree/v14.4.50) (2018-08-24)
 
 #### Merged Pull Requests
-- Pull in latest omnibus definitions + new inspec/train [#7581](https://github.com/chef/chef/pull/7581) ([tas50](https://github.com/tas50))
+- Simplify / fix our yard doc Rake task [#7580](https://github.com/chef/chef/pull/7580) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Simplify / fix our yard doc Rake task [#7580](https://github.com/chef/chef/pull/7580) ([tas50](https://github.com/tas50)) <!-- 14.4.50 -->
 - Pull in latest omnibus definitions + new inspec/train [#7581](https://github.com/chef/chef/pull/7581) ([tas50](https://github.com/tas50)) <!-- 14.4.49 -->
 - Fix rake task to build the correct gemspec on Chef [#7579](https://github.com/chef/chef/pull/7579) ([tas50](https://github.com/tas50)) <!-- 14.4.48 -->
 - Modernize our Rakefile / Version bumping system [#7574](https://github.com/chef/chef/pull/7574) ([tas50](https://github.com/tas50)) <!-- 14.4.47 -->
