@@ -16,7 +16,6 @@
 #
 
 require "spec_helper"
-require "chef/resource/windows_workgroup"
 
 describe Chef::Resource::WindowsWorkgroup do
   let(:resource) { Chef::Resource::WindowsWorkgroup.new("example") }
