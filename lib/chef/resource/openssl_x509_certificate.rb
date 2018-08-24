@@ -44,8 +44,7 @@ class Chef
                default: 365
 
       property :mode, [Integer, String],
-               description: "The permission mode of all files created by the resource.",
-               default: "0644"
+               description: "The permission mode of all files created by the resource."
 
       property :country, String,
                description: "Value for the C ssl field."
@@ -116,9 +115,9 @@ class Chef
           converge_by("Create #{@new_resource}") do
             file new_resource.path do
               action :create_if_missing
-              mode new_resource.mode
               owner new_resource.owner unless new_resource.owner.nil?
               group new_resource.group unless new_resource.group.nil?
+              mode new_resource.mode unless new_resource.mode.nil?
               sensitive true
               content cert.to_pem
             end
@@ -126,9 +125,9 @@ class Chef
             if new_resource.csr_file.nil?
               file new_resource.key_file do
                 action :create_if_missing
-                mode new_resource.mode
                 owner new_resource.owner unless new_resource.owner.nil?
                 group new_resource.group unless new_resource.group.nil?
+                mode new_resource.mode unless new_resource.mode.nil?
                 sensitive true
                 content key.to_pem
               end

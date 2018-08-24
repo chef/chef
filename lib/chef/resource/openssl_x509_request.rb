@@ -37,8 +37,8 @@ class Chef
       property :group, String,
                description: "The group of all files created by the resource."
 
-      property :mode, [Integer, String], default: "0644",
-               description: ""
+      property :mode, [Integer, String],
+               description: "The permission mode of all files created by the resource."
 
       property :country, String,
                description: "Value for the C ssl field."
@@ -90,15 +90,15 @@ class Chef
             file new_resource.name do
               owner new_resource.owner unless new_resource.owner.nil?
               group new_resource.group unless new_resource.group.nil?
-              mode new_resource.mode
+              mode new_resource.mode unless new_resource.mode.nil?
               content csr.to_pem
               action :create
             end
 
             file new_resource.key_file do
-              mode new_resource.mode
               owner new_resource.owner unless new_resource.owner.nil?
               group new_resource.group unless new_resource.group.nil?
+              mode new_resource.mode unless new_resource.mode.nil?
               content key.to_pem
               sensitive true
               action :create_if_missing
