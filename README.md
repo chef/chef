@@ -66,7 +66,6 @@ Once you have your development environment configured you can clone the Chef rep
 git clone https://github.com/chef/chef.git
 cd chef
 bundle install
-bundle exec rake gem
 bundle exec rake install
 ```
 
@@ -184,7 +183,7 @@ If there is a critical fix you believe should be backported from master to a sta
   2. Cherry Pick the SHA with the fix: `git cherry-pick SHA`
   3. Address any conflicts (if necessary)
   5. Push the new branch to your origin: `git push origin`
-5. Open a PR for your backport 
+5. Open a PR for your backport
   1. The PR title should be `Backport: ORIGINAL_PR_TEXT`
   2. The description should link to the original PR and include a description of why it needs to be backported
 
