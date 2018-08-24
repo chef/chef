@@ -57,21 +57,17 @@ begin
     task.options += ["--display-cop-names", "--no-color"]
   end
 rescue LoadError
-  puts "chefstyle/rubocop is not available.  gem install chefstyle to do style checking."
+  puts "chefstyle/rubocop is not available. bundle install first to make sure all dependencies are installed."
 end
 
 begin
   require "yard"
-  DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ].freeze
-  namespace :yard do
-    desc "Create YARD documentation"
+  DOC_FILES = [ "spec/tiny_server.rb", "lib/**/*.rb" ].freeze
 
-    YARD::Rake::YardocTask.new(:html) do |t|
-      t.files = DOC_FILES
-      t.options = ["--format", "html"]
-    end
+  YARD::Rake::YardocTask.new(:docs) do |t|
+    t.files = DOC_FILES
+    t.options = ["--format", "html"]
   end
-
 rescue LoadError
-  puts "yard is not available. (sudo) gem install yard to generate yard documentation."
+  puts "yard is not available. bundle install first to make sure all dependencies are installed."
 end
