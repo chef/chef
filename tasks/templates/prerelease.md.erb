@@ -24,3 +24,12 @@ $ curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -v <%= @ve
 # In Windows Powershell
 . { iwr -useb https://omnitruck.chef.io/install.ps1 } | iex; install -project chef -version <%= @version %> -channel current
 ```
+
+If you want to give this version a spin in Test Kitchen, create or add the following to your `kitchen.yml` file:
+
+```yaml
+provisioner:
+  product_name: chef
+  channel: current
+  product_version: <%= @version %>
+```
