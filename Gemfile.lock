@@ -300,7 +300,7 @@ GEM
     systemu (2.6.5)
     thor (0.20.0)
     tomlrb (1.2.7)
-    train-core (1.4.31)
+    train-core (1.4.35)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
     travis (1.8.9)
@@ -377,4 +377,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.16.4
+   1.16.3
