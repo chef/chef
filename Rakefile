@@ -23,7 +23,7 @@ require_relative "tasks/cbgb"
 require_relative "tasks/dependencies"
 require_relative "tasks/announce"
 
-# hack the chef-config install to runon before the traditional install task
+# hack the chef-config install to run before the traditional install task
 task :super_install do
   chef_config_path = ::File.join(::File.dirname(__FILE__), "chef-config")
   Dir.chdir(chef_config_path)
