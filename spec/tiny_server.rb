@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require "rubygems"
 require "webrick"
 require "webrick/https"
 require "rack"
