@@ -15,6 +15,11 @@ branch="expeditor/${GEM_NAME}_${VERSION}"
 git checkout -b "$branch"
 
 bundle install
+
+# it appears that the gem that triggers this script fires off this script before
+# the gem is actually available via bundler on rubygems.org.
+sleep 120
+
 bundle exec rake dependencies:update
 
 git add .
