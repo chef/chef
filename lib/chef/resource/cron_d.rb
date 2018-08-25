@@ -135,24 +135,24 @@ class Chef
                description: "The user to run the cron job as.",
                default: "root"
 
-      property :mailto, [String, NilClass],
+      property :mailto, String,
                description: "Set the MAILTO environment variable in the cron.d file."
 
-      property :path, [String, NilClass],
+      property :path, String,
                description: "Set the PATH environment variable in the cron.d file."
 
-      property :home, [String, NilClass],
+      property :home, String,
                description: "Set the HOME environment variable in the cron.d file."
 
-      property :shell, [String, NilClass],
+      property :shell, String,
                description: "Set the HOME environment variable in the cron.d file."
 
-      property :comment, [String, NilClass],
+      property :comment, String,
                description: "A comment to place in the cron.d file."
 
       property :environment, Hash,
                description: "A Hash containing additional arbitrary environment variables under which the cron job will be run.",
-               default: {}
+               default: lazy { Hash.new }
 
       property :mode, [String, Integer],
                description: "The octal mode of the generated crontab file.",
@@ -193,6 +193,7 @@ class Chef
       end
 
       action_class do
+        # @return [String] cron_name property with . replaced with -
         def sanitized_name
           new_resource.cron_name.tr(".", "-")
         end
