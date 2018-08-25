@@ -158,6 +158,9 @@ class Chef
                description: "The octal mode of the generated crontab file.",
                default: "0600"
 
+      property :random_delay, Integer
+               description: "Start the job with a random number of minutes with the upper limit being this property."
+
       # warn if someone passes the deprecated cookbook property
       def after_created
         raise ArgumentError, "The 'cookbook' property for the cron_d resource is no longer supported now that this resource ships in Chef itself." if new_resource.cookbook
@@ -222,6 +225,7 @@ class Chef
               home: new_resource.home,
               shell: new_resource.shell,
               comment: new_resource.comment,
+              random_delay: new_resource.random_delay,
               environment: new_resource.environment
             )
             action create_action
