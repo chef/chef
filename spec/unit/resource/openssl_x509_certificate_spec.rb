@@ -41,10 +41,6 @@ describe Chef::Resource::OpensslX509Certificate do
     expect(resource.expire).to eql(365)
   end
 
-  it "has a default mode of '0644'" do
-    expect(resource.mode).to eql("0644")
-  end
-
   it "has a default key_type of 'rsa'" do
     expect(resource.key_type).to eql("rsa")
   end
@@ -67,5 +63,10 @@ describe Chef::Resource::OpensslX509Certificate do
 
   it "only accepts valid key_curve values" do
     expect { resource.key_curve "fako" }.to raise_error(ArgumentError)
+  end
+
+  it "mode accepts both String and Integer values" do
+    expect { resource.mode "644" }.not_to raise_error
+    expect { resource.mode 644 }.not_to raise_error
   end
 end
