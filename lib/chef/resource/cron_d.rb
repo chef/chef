@@ -158,7 +158,7 @@ class Chef
                description: "The octal mode of the generated crontab file.",
                default: "0600"
 
-      property :random_delay, Integer
+      property :random_delay, Integer,
                description: "Start the job with a random number of minutes with the upper limit being this property."
 
       # warn if someone passes the deprecated cookbook property
