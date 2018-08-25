@@ -145,7 +145,7 @@ class Chef
                description: "Set the HOME environment variable in the cron.d file."
 
       property :shell, String,
-               description: "Set the HOME environment variable in the cron.d file."
+               description: "Set the SHELL environment variable in the cron.d file."
 
       property :comment, String,
                description: "A comment to place in the cron.d file."
@@ -159,7 +159,7 @@ class Chef
                default: "0600"
 
       property :random_delay, Integer,
-               description: "Start the job with a random number of minutes with the upper limit being this property."
+               description: "Set the RANDOM_DELAY environment variable in the cron.d file."
 
       # warn if someone passes the deprecated cookbook property
       def after_created
