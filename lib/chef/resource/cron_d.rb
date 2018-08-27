@@ -163,7 +163,7 @@ class Chef
 
       # warn if someone passes the deprecated cookbook property
       def after_created
-        raise ArgumentError, "The 'cookbook' property for the cron_d resource is no longer supported now that this resource ships in Chef itself." if new_resource.cookbook
+        raise ArgumentError, "The 'cookbook' property for the cron_d resource is no longer supported now that this resource ships in Chef itself." if cookbook
       end
 
       action :create do
