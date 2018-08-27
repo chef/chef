@@ -56,17 +56,20 @@ class Chef
       action :join do
         description "Update the workgroup."
 
-        cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.password}\' -AsPlainText -Force;"
-        cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.user}\",$pswd);"
-        cmd << "Add-Computer -WorkgroupName #{new_resource.workgroup_name} -Credential $credential" if new_resource.workgroup_name
-        cmd << " -Force"
-        converge_by("join workstation workgroup #{new_resource.workgroup_name}") do
-          ps_run = powershell_out(cmd)
-          raise "Failed to join the workgroup #{new_resource.workgroup_name}: #{ps_run.stderr}}" if ps_run.error?
-          unless new_resource.reboot == :never
-            reboot "Reboot to join workgroup #{new_resource.workgroup_name}" do
-              action clarify_reboot(new_resource.reboot)
-              reason "Reboot to join workgroup #{new_resource.workgroup_name}"
+        unless workgroup_member?
+          cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.password}\' -AsPlainText -Force;"
+          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.user}\",$pswd);"
+          cmd << "Add-Computer -WorkgroupName #{new_resource.workgroup_name} -Credential $credential" if new_resource.workgroup_name
+          cmd << " -Force"
+          workgroup_member?
+            converge_by("join workstation workgroup #{new_resource.workgroup_name}") do
+            ps_run = powershell_out(cmd) 
+            raise "Failed to join the workgroup #{new_resource.workgroup_name}: #{ps_run.stderr}}" if ps_run.error?
+            unless new_resource.reboot == :never
+              reboot "Reboot to join workgroup #{new_resource.workgroup_name}" do
+                action clarify_reboot(new_resource.reboot)
+                reason "Reboot to join workgroup #{new_resource.workgroup_name}"
+              end
             end
           end
         end
@@ -84,6 +87,12 @@ class Chef
           else
             reboot_action
           end
+        end
+
+        def workgroup_member?
+          node_workgroup = powershell_out!("Get-WmiObject -Class Win32_ComputerSystem).Workgroup")
+          raise "Failed to determine if system already a member of workgroup #{new_resource.workgroup_name}" if node_workgroup.error?
+          node_workgroup.stdout.downcase.strip == new_resource.workgroup_name.downcase
         end
       end
     end
