@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.54 -->
-## [v14.4.54](https://github.com/chef/chef/tree/v14.4.54) (2018-08-27)
+<!-- latest_release 14.4.55 -->
+## [v14.4.55](https://github.com/chef/chef/tree/v14.4.55) (2018-08-27)
 
 #### Merged Pull Requests
-- Resolve new_resource error with cron_d resource [#7588](https://github.com/chef/chef/pull/7588) ([tas50](https://github.com/tas50))
+- openssl resources: Improve descriptions and fix provides for Chef 14.X [#7590](https://github.com/chef/chef/pull/7590) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- openssl resources: Improve descriptions and fix provides for Chef 14.X [#7590](https://github.com/chef/chef/pull/7590) ([tas50](https://github.com/tas50)) <!-- 14.4.55 -->
 - Resolve new_resource error with cron_d resource [#7588](https://github.com/chef/chef/pull/7588) ([tas50](https://github.com/tas50)) <!-- 14.4.54 -->
 - Add missing description to windows_feature_powershell [#7587](https://github.com/chef/chef/pull/7587) ([tas50](https://github.com/tas50)) <!-- 14.4.53 -->
 -  Add openssl_x509_crl resource and fix default modes in x509_certificate / x509_request  [#7586](https://github.com/chef/chef/pull/7586) ([tas50](https://github.com/tas50)) <!-- 14.4.52 -->
