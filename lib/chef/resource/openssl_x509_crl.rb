@@ -25,7 +25,7 @@ class Chef
       preview_resource true
       resource_name :openssl_x509_crl
 
-      description "Use the openssl_x509_crl resource to generate PEM-formatted x509 CRL files."
+      description "Use the openssl_x509_crl resource to generate PEM-formatted x509 certificate revocation list (CRL) files."
       introduced "14.4"
 
       property :path, String,
