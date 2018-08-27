@@ -24,7 +24,7 @@ class Chef
 
       preview_resource true
       resource_name :openssl_x509_certificate
-      provides(:openssl_x509) { true } # legacy cookbook name. Cookbook will win. @todo Make this true in Chef 15
+      provides(:openssl_x509) { false } # legacy cookbook name. Cookbook will win. @todo Make this true in Chef 15
 
       description "Use the openssl_x509_certificate resource to generate signed or self-signed, PEM-formatted x509 certificates. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate. If a CA private key and certificate are provided, the certificate will be signed with them. Note: This resource was renamed from openssl_x509 to openssl_x509_certificate. The legacy name will continue to function, but cookbook code should be updated for the new resource name."
       introduced "14.4"
