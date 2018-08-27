@@ -1,5 +1,6 @@
 #
 # Copyright:: Copyright 2018, Chef Software Inc.
+# Author:: Julien Huon
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +27,7 @@ class Chef
       preview_resource true
       resource_name :openssl_ec_public_key
 
-      description "Use the openssl_ec_public_key resource to generate ec public key files given a private key."
+      description "Use the openssl_ec_public_key resource to generate elliptic curve (EC) public key files given a private key."
       introduced "14.4"
 
       property :path, String,
