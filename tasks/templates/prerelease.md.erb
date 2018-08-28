@@ -9,7 +9,7 @@ We have selected <%= @version %> as our Chef v<%= @maj_minor %> release candidat
 Please see the [CHANGELOG](https://github.com/chef/chef/blob/master/CHANGELOG.md) for the complete list of changes.
 
 # Get the Build
-As always, you can download binaries directly from [downloads.chef.io](https://downloads.chef.io/chef/current/<%= @version %>) or by using the new `mixlib-install` command line utility available in ChefDK 0.19.6 or greater.
+As always, you can download binaries directly from [downloads.chef.io](https://downloads.chef.io/chef/current/<%= @version %>) or by using the `mixlib-install` command line utility:
 
 ```shell
 $ mixlib-install download chef -v <%= @version %> -c current
