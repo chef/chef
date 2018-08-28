@@ -171,6 +171,14 @@ describe Chef::Provider::Package::Zypper do
       )
       provider.install_package(["emacs"], ["1.0"])
     end
+
+    it "should add multiple user provided global options" do
+      new_resource.global_options "--user-provided1 --user-provided2"
+      shell_out_expectation!(
+        "zypper", "--user-provided1", "--user-provided2", "--non-interactive", "install", "--auto-agree-with-licenses", "emacs=1.0"
+      )
+      provider.install_package(["emacs"], ["1.0"])
+    end
   end
 
   describe "upgrade_package" do
@@ -206,7 +214,7 @@ describe Chef::Provider::Package::Zypper do
       shell_out_expectation!(
         "zypper", "--user-provided", "--non-interactive", "install", "--auto-agree-with-licenses", "emacs=1.0"
       )
-      provider.install_package(["emacs"], ["1.0"])
+      provider.upgrade_package(["emacs"], ["1.0"])
     end
   end
 
