@@ -95,6 +95,7 @@ platforms:
       # mounts at `C:\vagrant\code` and the Chef source folder is available
       # at `C:\vagrant\code\chef`
       - ['../..', '/vagrant/code']
+      communicator: winrm
     provisioner:
       attributes:
         omnibus:
@@ -102,6 +103,9 @@ platforms:
           build_user_group:    Administrators
           build_user_password: vagrant
       chef_omnibus_root: /opscode/angrychef
+    transport:
+      name: winrm
+      elevated: true
 
   # Windows 32-bit
   # By adding an `i386` to the name the Omnibus cookbook's `load-omnibus-toolchain.bat`
@@ -111,6 +115,7 @@ platforms:
       box: chef/windows-<%= win_version %> # private
       synced_folders:
       - ['../..', '/vagrant/code']
+      communicator: winrm
     provisioner:
       attributes:
         omnibus:
@@ -118,6 +123,9 @@ platforms:
           build_user_group:    Administrators
           build_user_password: vagrant
       chef_omnibus_root: /opscode/angrychef
+    transport:
+      name: winrm
+      elevated: true
   <% end %>
 
 suites:
