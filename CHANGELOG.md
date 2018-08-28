@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.56 -->
-## [v14.4.56](https://github.com/chef/chef/tree/v14.4.56) (2018-08-27)
+<!-- latest_release 14.4.57 -->
+## [v14.4.57](https://github.com/chef/chef/tree/v14.4.57) (2018-08-28)
 
 #### Merged Pull Requests
-- Be more explicit in disabling provides for openssl_x509 [#7591](https://github.com/chef/chef/pull/7591) ([tas50](https://github.com/tas50))
+- Bump mixlib-archive to 0.4.16 [#7595](https://github.com/chef/chef/pull/7595) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.3.37 -->
 ### Changes since 14.3.37 release
 
 #### Merged Pull Requests
+- Bump mixlib-archive to 0.4.16 [#7595](https://github.com/chef/chef/pull/7595) ([chef-ci](https://github.com/chef-ci)) <!-- 14.4.57 -->
 - Be more explicit in disabling provides for openssl_x509 [#7591](https://github.com/chef/chef/pull/7591) ([tas50](https://github.com/tas50)) <!-- 14.4.56 -->
 - openssl resources: Improve descriptions and fix provides for Chef 14.X [#7590](https://github.com/chef/chef/pull/7590) ([tas50](https://github.com/tas50)) <!-- 14.4.55 -->
 - Resolve new_resource error with cron_d resource [#7588](https://github.com/chef/chef/pull/7588) ([tas50](https://github.com/tas50)) <!-- 14.4.54 -->
