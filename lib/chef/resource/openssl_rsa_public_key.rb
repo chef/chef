@@ -34,10 +34,10 @@ class Chef
                name_property: true
 
       property :private_key_path, String,
-               description: "The path to the private key."
+               description: "The path to the private key file."
 
       property :private_key_content, String,
-               description: "The content of the private key including new lines. Used instead of private_key_path to avoid having to first write a key to disk."
+               description: "The content of the private key including new lines. This property is used in place of private_key_path to avoid having to first write a key to disk."
 
       property :private_key_pass, String,
                description: "The passphrase of the provided private key."
@@ -49,7 +49,7 @@ class Chef
                description: "The group of all files created by the resource."
 
       property :mode, [Integer, String],
-               description: "The permission mode of all files created by the resource.",
+               description: "The permission mode applied to all files created by the resource.",
                default: "0640"
 
       action :create do

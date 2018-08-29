@@ -56,11 +56,11 @@ class Chef
                description: "The group of all files created by the resource."
 
       property :mode, [Integer, String],
-               description: "The permission mode of all files created by the resource.",
+               description: "The permission mode applied to all files created by the resource.",
                default: "0600"
 
       property :force, [TrueClass, FalseClass],
-               description: "Force creating the key even if the existing key exists.",
+               description: "Force creation of the key even if the same key already exists on the node.",
                default: false, desired_state: false
 
       action :create do

@@ -50,7 +50,7 @@ class Chef
                default: 1
 
       property :ca_cert_file, String,
-               description: "The path to the CA X509 Certificate on the filesystem. If the ca_cert_file attribute is specified, the ca_key_file attribute must also be specified, the CRL will be signed with them.",
+               description: "The path to the CA X509 Certificate on the filesystem. If the ca_cert_file property is specified, the ca_key_file property must also be specified, the CRL will be signed with them.",
                required: true
 
       property :ca_key_file, String,

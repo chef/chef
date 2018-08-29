@@ -52,7 +52,7 @@ class Chef
                description: "The group of all files created by the resource."
 
       property :mode, [Integer, String],
-               description: "The permission mode of all files created by the resource.",
+               description: "The permission mode applied to all files created by the resource.",
                default: "0640"
 
       action :create do
