@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.57 -->
-## [v14.4.57](https://github.com/chef/chef/tree/v14.4.57) (2018-08-28)
+<!-- latest_release 14.4.58 -->
+## [v14.4.58](https://github.com/chef/chef/tree/v14.4.58) (2018-08-29)
 
 #### Merged Pull Requests
-- Bump mixlib-archive to 0.4.16 [#7595](https://github.com/chef/chef/pull/7595) ([chef-ci](https://github.com/chef-ci))
+- Add additional property docs + update existing docs [#7600](https://github.com/chef/chef/pull/7600) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Add additional property docs + update existing docs [#7600](https://github.com/chef/chef/pull/7600) ([tas50](https://github.com/tas50)) <!-- 14.4.58 -->
 - Bump mixlib-archive to 0.4.16 [#7595](https://github.com/chef/chef/pull/7595) ([chef-ci](https://github.com/chef-ci)) <!-- 14.4.57 -->
 <!-- release_rollup -->
 
