@@ -41,14 +41,32 @@ class Chef
         super
       end
 
-      property :package_name, [ String, Array ], identity: true
+      property :package_name, [ String, Array ],
+               description: "The name of the package. Defaults to the name of the resourse block unless specified.",
+               identity: true
 
-      property :version, [ String, Array ]
-      property :options, [ String, Array ], coerce: proc { |x| x.is_a?(String) ? x.shellsplit : x }
-      property :response_file, String, desired_state: false
-      property :response_file_variables, Hash, default: lazy { {} }, desired_state: false
-      property :source, String, desired_state: false
-      property :timeout, [ String, Integer ], desired_state: false
+      property :version, [ String, Array ],
+               description: "The version of a package to be installed or upgraded."
+
+      property :options, [ String, Array ],
+               description: "One (or more) additional command options that are passed to the command.",
+               coerce: proc { |x| x.is_a?(String) ? x.shellsplit : x }
+
+      property :response_file, String,
+               description: "",
+               desired_state: false
+
+      property :response_file_variables, Hash,
+               description: "",
+               default: lazy { {} }, desired_state: false
+
+      property :source, String,
+               description: "The direct path to a the package on the host.",
+               desired_state: false
+
+      property :timeout, [ String, Integer ],
+               description: "The amount of time (in seconds) to wait before timing out.",
+               desired_state: false
 
     end
   end

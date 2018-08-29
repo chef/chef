@@ -25,7 +25,7 @@ class Chef
       provides(:sysctl_param) { true }
 
       description "Use the sysctl resource to set kernel parameters using the sysctl"\
-                  " command line tool and configuration files in the system's sysctl.d directory."\
+                  " command line tool and configuration files in the system's sysctl.d directory. "\
                   "Configuration files managed by this resource are named 99-chef-KEYNAME.conf. If"\
                   " an existing value was already set for the value it will be backed up to the node"\
                   " and restored if the :remove action is used later."
