@@ -27,7 +27,7 @@ class Chef
       include Chef::Mixin::PowershellOut
 
       description "Use the windows_workgroup resource to join change the workgroup of a machine."
-      introduced "14.0"
+      introduced "14.4"
 
       property :workgroup_name, String,
                description: "The name of the workgroup for the computer.",
@@ -36,12 +36,10 @@ class Chef
                name_property: true
 
       property :user, String,
-               description: "The local user to use to change the workgroup.",
-               required: true
+               description: "The local administrator user to use to change the workgroup.",
 
       property :password, String,
-               description: "The password for the local user.",
-               required: true
+               description: "The password for the local administrator user.",
 
       property :reboot, Symbol,
                equal_to: [:immediate, :delayed, :never, :request_reboot, :reboot_now],
@@ -57,9 +55,10 @@ class Chef
         description "Update the workgroup."
 
         unless workgroup_member?
-          cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.password}\' -AsPlainText -Force;"
-          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.user}\",$pswd);"
-          cmd << "Add-Computer -WorkgroupName #{new_resource.workgroup_name} -Credential $credential" if new_resource.workgroup_name
+          cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.password}\' -AsPlainText -Force;" if new_resource.password
+          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.user}\",$pswd);" if new_resource.password
+          cmd << "Add-Computer -WorkgroupName #{new_resource.workgroup_name}"
+          cmd << " -Credential $credential" if new_resource.password
           cmd << " -Force"
           workgroup_member?
             converge_by("join workstation workgroup #{new_resource.workgroup_name}") do
