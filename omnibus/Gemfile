@@ -11,10 +11,10 @@ gem "pedump"
 # by running `bundle install --without development` to speed up build times.
 group :development do
   # Use Berkshelf for resolving cookbook dependencies
-  gem "berkshelf", "~> 4.0"
+  gem "berkshelf", ">= 7.0"
 
-  # temp pin for chef 14 development
-  gem "ohai", "~> 13.0"
+  # We pin here to the last release Ohai so prevent more current chef coming in
+  gem "ohai", "~> 14.0"
 
   # Use Test Kitchen with Vagrant for converging the build environment
   gem "test-kitchen",    "~> 1.21"
