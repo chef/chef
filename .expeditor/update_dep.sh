@@ -20,7 +20,8 @@ bundle install
 # the gem is actually available via bundler on rubygems.org.
 sleep 120
 
-bundle exec rake dependencies:update
+gem install rake
+rake dependencies:update_gemfile_lock
 
 git add .
 
