@@ -38,7 +38,7 @@ class Chef
                description: "Serial of the X509 Certificate to revoke."
 
       property :revocation_reason, Integer,
-               description: "Reason for the revokation.",
+               description: "Reason for the revocation.",
                default: 0
 
       property :expire, Integer,

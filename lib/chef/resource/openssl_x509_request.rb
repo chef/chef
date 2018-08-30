@@ -34,10 +34,10 @@ class Chef
                description: "The optional path to write the file to if you'd like to specify it here instead of in the resource name."
 
       property :owner, String,
-               description: "The owner of all files created by the resource."
+               description: "The owner applied to all files created by the resource."
 
       property :group, String,
-               description: "The group of all files created by the resource."
+               description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],
                description: "The permission mode applied to all files created by the resource."
