@@ -31,14 +31,14 @@ class Chef
                name_property: true
 
       property :size, Integer,
-               description: "The size (in MBs) for the swap file."
+               description: "The size (in MBs) of the swap file."
 
       property :persist, [TrueClass, FalseClass],
                description: "Persist the swapon.",
                default: false
 
       property :timeout, Integer,
-               description: "Timeout for dd/fallocate.",
+               description: "Timeout for 'dd' / 'fallocate' commands.",
                default: 600
 
       property :swappiness, Integer,
