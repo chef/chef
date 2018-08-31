@@ -91,7 +91,7 @@ class Chef
                description: "For :on_idle frequency, the time (in minutes) without user activity that must pass to trigger the task, from 1 - 999."
 
       property :random_delay, [String, Integer],
-               description: "Delays the task upto given time (in seconds)."
+               description: "Delays the task up to a given time (in seconds)."
 
       property :execution_time_limit, [String, Integer],
                description: "The maximum time (in seconds) the task will run.",
