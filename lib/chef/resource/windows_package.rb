@@ -30,8 +30,7 @@ class Chef
       provides(:windows_package) { true }
       provides :package, os: "windows"
 
-      description "Use the windows_package resource to manage Microsoft Installer Package"\
-                  " (MSI) packages for the Microsoft Windows platform."
+      description "Use the windows_package resource to manage Microsoft Installer Package (MSI) packages for the Microsoft Windows platform."
       introduced "11.12"
 
       allowed_actions :install, :remove

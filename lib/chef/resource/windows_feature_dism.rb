@@ -25,20 +25,19 @@ class Chef
       resource_name :windows_feature_dism
       provides(:windows_feature_dism) { true }
 
-      description "Using the windows_feature_dism resource to add, remove or"\
-                  " delete Windows features and roles using DISM"
+      description "Use the windows_feature_dism resource to add, remove or delete Windows features and roles using DISM"
       introduced "14.0"
 
       property :feature_name, [Array, String],
-               description: "The name of the feature/role(s) to install if it differs from the resource name.",
+               description: "The name of the feature(s) or role(s) to install, if it differs from the resource name.",
                coerce: proc { |x| to_formatted_array(x) },
                name_property: true
 
       property :source, String,
-               description: "Use a local repository for the feature install."
+               description: "Specify a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
-               description: "Install all sub features. This is the equivalent of specifying the /All switch to dism.exe",
+               description: "Install all sub-features. When set to 'true', this is the equivalent of specifying the /All switch to dism.exe",
                default: false
 
       property :timeout, Integer,
