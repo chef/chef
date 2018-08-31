@@ -51,7 +51,7 @@ class Chef
         data = "\"#{new_resource.path}\""
         data << " #{new_resource.args}" if new_resource.args
 
-        declare_resource(:registry_key, registry_path) do
+        registry_key registry_path do
           values [{
             name: new_resource.program_name,
             type: :string,
@@ -64,7 +64,7 @@ class Chef
       action :remove do
         description "Remove an item that was previously setup to run at login"
 
-        declare_resource(:registry_key, registry_path) do
+        registry_key registry_path do
           values [{
             name: new_resource.program_name,
             type: :string,
