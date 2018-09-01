@@ -56,15 +56,15 @@ class Chef
                default: ["ALL"]
 
       property :host, String,
-               description: "The host to set in the sudo config.",
+               description: "The host to set in the sudo configuration.",
                default: "ALL"
 
       property :runas, String,
-               description: "User the command(s) can be run as.",
+               description: "User that the command(s) can be run as.",
                default: "ALL"
 
       property :nopasswd, [TrueClass, FalseClass],
-               description: "Allow running sudo without specifying a password sudo.",
+               description: "Allow sudo to be run without specifying a password.",
                default: false
 
       property :noexec, [TrueClass, FalseClass],
@@ -83,11 +83,11 @@ class Chef
                default: lazy { [] }
 
       property :command_aliases, Array,
-               description: "Command aliases that can be used as allowed commands later in the config.",
+               description: "Command aliases that can be used as allowed commands later in the configuration.",
                default: lazy { [] }
 
       property :setenv, [TrueClass, FalseClass],
-               description: "Whether to permit the preserving of environment with sudo -E.",
+               description: "Determines whether or not to permit preservation of the environment with 'sudo -E'.",
                default: false
 
       property :env_keep_add, Array,
@@ -102,11 +102,11 @@ class Chef
                description: "Deprecated property. Do not use."
 
       property :visudo_binary, String,
-               description: "The path to visudo for config verification.",
+               description: "The path to visudo for configuration verification.",
                default: "/usr/sbin/visudo"
 
       property :config_prefix, String,
-               description: "The directory containing the sudoers config file.",
+               description: "The directory that contains the sudoers configuration file",
                default: lazy { platform_config_prefix }
 
       # handle legacy cookbook property

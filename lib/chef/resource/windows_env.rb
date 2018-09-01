@@ -26,9 +26,7 @@ class Chef
       provides :windows_env
       provides :env # backwards compat with the pre-Chef 14 resource name
 
-      description "Use the env resource to manage environment keys in Microsoft Windows."\
-                  " After an environment key is set, Microsoft Windows must be restarted"\
-                  " before the environment key will be available to the Task Scheduler."
+      description "Use the env resource to manage environment keys in Microsoft Windows. After an environment key is set, Microsoft Windows must be restarted before the environment key will be available to the Task Scheduler."
 
       default_action :create
       allowed_actions :create, :delete, :modify

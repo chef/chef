@@ -36,10 +36,10 @@ class Chef
                name_property: true
 
       property :owner, String,
-               description: "The owner of all files created by the resource."
+               description: "The owner applied to all files created by the resource."
 
       property :group, String,
-               description: "The group of all files created by the resource."
+               description: "The group ownership applied to all files created by the resource."
 
       property :expire, Integer,
                description: "Value representing the number of days from now through which the issued certificate cert will remain valid. The certificate will expire after this period.",

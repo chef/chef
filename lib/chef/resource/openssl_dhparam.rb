@@ -45,11 +45,11 @@ class Chef
                description: "The desired Diffie-Hellmann generator.",
                default: 2
 
-      property :owner, [String, nil],
-               description: "The owner of all files created by the resource."
+      property :owner, String,
+               description: "The owner applied to all files created by the resource."
 
-      property :group, [String, nil],
-               description: "The group of all files created by the resource."
+      property :group, String,
+               description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],
                description: "The permission mode applied to all files created by the resource.",

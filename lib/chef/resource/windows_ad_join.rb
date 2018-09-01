@@ -30,21 +30,21 @@ class Chef
       introduced "14.0"
 
       property :domain_name, String,
-               description: "The FQDN of the AD domain to join.",
+               description: "The FQDN of the Active Directory domain to join.",
                validation_message: "The 'domain_name' property must be a FQDN.",
                regex: /.\../, # anything.anything
                name_property: true
 
       property :domain_user, String,
-               description: "The domain user to use to join the host to the domain.",
+               description: "The domain user that will be used to join the domain.",
                required: true
 
       property :domain_password, String,
-               description: "The password for the domain user.",
+               description: "The password for the domain user. Note that this resource is set to hide sensitive information by default. ",
                required: true
 
       property :ou_path, String,
-               description: "The path to the OU where you would like to place the host."
+               description: "The path to the Organizational Unit where the host will be placed."
 
       property :reboot, Symbol,
                equal_to: [:immediate, :delayed, :never, :request_reboot, :reboot_now],

@@ -24,8 +24,7 @@ class Chef
       resource_name :windows_task
       provides(:windows_task) { true }
 
-      description "Use the windows_task resource to create, delete or run a Windows"\
-                  " scheduled task. Requires Windows Server 2008 or later due to API usage."
+      description "Use the windows_task resource to create, delete or run a Windows scheduled task. Requires Windows Server 2008 or later due to API usage."
       introduced "13.0"
 
       allowed_actions :create, :delete, :run, :end, :enable, :disable, :change
@@ -36,7 +35,7 @@ class Chef
                name_property: true
 
       property :command, String,
-               description: ""
+               description: "The command to be executed by the windows scheduled task."
 
       property :cwd, String,
                description: "The directory the task will be run from."
@@ -57,7 +56,8 @@ class Chef
                default: false
 
       property :interactive_enabled, [TrueClass, FalseClass],
-               description: "", default: false
+               description: "Allow task to run interactively or non-interactively. Requires user and password to also be set.",
+               default: false
 
       property :frequency_modifier, [Integer, String],
                default: 1
@@ -90,7 +90,7 @@ class Chef
                description: "For :on_idle frequency, the time (in minutes) without user activity that must pass to trigger the task, from 1 - 999."
 
       property :random_delay, [String, Integer],
-               description: ""
+               description: "Delays the task up to a given time (in seconds)."
 
       property :execution_time_limit, [String, Integer],
                description: "The maximum time (in seconds) the task will run.",

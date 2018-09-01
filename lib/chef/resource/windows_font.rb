@@ -25,9 +25,7 @@ class Chef
       resource_name :windows_font
       provides(:windows_font) { true }
 
-      description "Use the windows_font resource to install font files on Windows."\
-                  " By default, the font is sourced from the cookbook using the resource, but a URI"\
-                  " source can be specified as well."
+      description "Use the windows_font resource to install font files on Windows. By default, the font is sourced from the cookbook using the resource, but a URI source can be specified as well."
       introduced "14.0"
 
       property :font_name, String,
@@ -35,7 +33,7 @@ class Chef
                name_property: true
 
       property :source, String,
-               description: "A local filesystem path or URI to source the font file from.",
+               description: "A local filesystem path or URI that is used to source the font file.",
                coerce: proc { |x| x =~ /^.:.*/ ? x.tr('\\', "/").gsub("//", "/") : x }
 
       action :install do

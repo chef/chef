@@ -25,8 +25,7 @@ class Chef
       resource_name :zypper_package
       provides :package, platform_family: "suse"
 
-      description "Use the zypper_package resource to install, upgrade, and remove"\
-                  " packages with Zypper for the SUSE Enterprise and OpenSUSE platforms."
+      description "Use the zypper_package resource to install, upgrade, and remove packages with Zypper for the SUSE Enterprise and OpenSUSE platforms."
 
       property :gpg_check, [ TrueClass, FalseClass ],
                description: "Verify the package's GPG signature",
