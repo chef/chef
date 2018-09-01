@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.60 -->
-## [v14.4.60](https://github.com/chef/chef/tree/v14.4.60) (2018-08-30)
+<!-- latest_release 14.4.61 -->
+## [v14.4.61](https://github.com/chef/chef/tree/v14.4.61) (2018-09-01)
 
 #### Merged Pull Requests
-- Build chef omnibus package with Chef 14 / Berkshelf 7 [#7603](https://github.com/chef/chef/pull/7603) ([tas50](https://github.com/tas50))
+- windows_auto_run: Avoid declare_resource where it&#39;s not needed [#7608](https://github.com/chef/chef/pull/7608) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- windows_auto_run: Avoid declare_resource where it&#39;s not needed [#7608](https://github.com/chef/chef/pull/7608) ([tas50](https://github.com/tas50)) <!-- 14.4.61 -->
 - Build chef omnibus package with Chef 14 / Berkshelf 7 [#7603](https://github.com/chef/chef/pull/7603) ([tas50](https://github.com/tas50)) <!-- 14.4.60 -->
 - Simplify the rake task to updating gem dependencies [#7602](https://github.com/chef/chef/pull/7602) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.4.59 -->
 - Add additional property docs + update existing docs [#7600](https://github.com/chef/chef/pull/7600) ([tas50](https://github.com/tas50)) <!-- 14.4.58 -->
