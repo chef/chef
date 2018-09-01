@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.4.62 -->
-## [v14.4.62](https://github.com/chef/chef/tree/v14.4.62) (2018-09-01)
+<!-- latest_release 14.4.63 -->
+## [v14.4.63](https://github.com/chef/chef/tree/v14.4.63) (2018-09-01)
 
 #### Merged Pull Requests
-- Allow resource_inspector be used outside the binary [#7609](https://github.com/chef/chef/pull/7609) ([tas50](https://github.com/tas50))
+- Update property descriptions and remove extra nil types [#7604](https://github.com/chef/chef/pull/7604) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Update property descriptions and remove extra nil types [#7604](https://github.com/chef/chef/pull/7604) ([tas50](https://github.com/tas50)) <!-- 14.4.63 -->
 - Allow resource_inspector be used outside the binary [#7609](https://github.com/chef/chef/pull/7609) ([tas50](https://github.com/tas50)) <!-- 14.4.62 -->
 - windows_auto_run: Avoid declare_resource where it&#39;s not needed [#7608](https://github.com/chef/chef/pull/7608) ([tas50](https://github.com/tas50)) <!-- 14.4.61 -->
 - Build chef omnibus package with Chef 14 / Berkshelf 7 [#7603](https://github.com/chef/chef/pull/7603) ([tas50](https://github.com/tas50)) <!-- 14.4.60 -->
