@@ -36,10 +36,10 @@ class Chef
                name_property: true
 
       property :user, String,
-               description: "The local administrator user to use to change the workgroup.",
+               description: "The local administrator user to use to change the workgroup."
 
       property :password, String,
-               description: "The password for the local administrator user.",
+               description: "The password for the local administrator user."
 
       property :reboot, Symbol,
                equal_to: [:immediate, :delayed, :never, :request_reboot, :reboot_now],
@@ -60,10 +60,11 @@ class Chef
           cmd << "Add-Computer -WorkgroupName #{new_resource.workgroup_name}"
           cmd << " -Credential $credential" if new_resource.password
           cmd << " -Force"
-          workgroup_member?
-            converge_by("join workstation workgroup #{new_resource.workgroup_name}") do
-            ps_run = powershell_out(cmd) 
+
+          converge_by("join workstation workgroup #{new_resource.workgroup_name}") do
+            ps_run = powershell_out(cmd)
             raise "Failed to join the workgroup #{new_resource.workgroup_name}: #{ps_run.stderr}}" if ps_run.error?
+
             unless new_resource.reboot == :never
               reboot "Reboot to join workgroup #{new_resource.workgroup_name}" do
                 action clarify_reboot(new_resource.reboot)
