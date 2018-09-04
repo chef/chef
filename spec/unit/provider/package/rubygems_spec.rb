@@ -27,6 +27,19 @@ module GemspecBackcompatCreator
   end
 end
 
+# this is a global variable we construct of the highest rspec-core version which is installed, using APIs which
+# will break out of the bundle -- and done this way so that we can mock all these internal Gem APIs later...
+class RspecVersionString
+  def self.rspec_version_string
+    @rspec_version_string ||= begin
+                                stubs = Gem::Specification.send(:installed_stubs, Gem::Specification.dirs, "rspec-core-*.gemspec")
+                                stubs.select! { |stub| stub.name == "rspec-core" && Gem::Dependency.new("rspec-core", ">= 0").requirement.satisfied_by?(stub.version) }
+                                stubs.max_by(&:version).version.to_s
+                              end
+  end
+end
+RspecVersionString.rspec_version_string
+
 require "spec_helper"
 require "ostruct"
 
@@ -57,7 +70,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   end
 
   it "determines the installed versions of gems from the source index (part2: the unmockening)" do
-    expected = ["rspec-core", Gem::Version.new(RSpec::Core::Version::STRING)]
+    expected = ["rspec-core", Gem::Version.new( RspecVersionString.rspec_version_string )]
     actual = @gem_env.installed_versions(Gem::Dependency.new("rspec-core", nil)).map { |spec| [spec.name, spec.version] }
     expect(actual).to include(expected)
   end
@@ -247,7 +260,7 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
                   end
     skip("cant find your gem executable") if path_to_gem.empty?
     gem_env = Chef::Provider::Package::Rubygems::AlternateGemEnvironment.new(path_to_gem)
-    expected = ["rspec-core", Gem::Version.new(RSpec::Core::Version::STRING)]
+    expected = ["rspec-core", Gem::Version.new( RspecVersionString.rspec_version_string )]
     actual = gem_env.installed_versions(Gem::Dependency.new("rspec-core", nil)).map { |s| [s.name, s.version] }
     expect(actual).to include(expected)
   end
@@ -400,7 +413,7 @@ describe Chef::Provider::Package::Rubygems do
   end
 
   describe "when new_resource version is an rspec version" do
-    let(:current_version) { RSpec::Core::Version::STRING }
+    let(:current_version) { RspecVersionString.rspec_version_string }
     let(:target_version) { current_version }
 
     it "triggers a gem configuration load so a later one will not stomp its config values" do

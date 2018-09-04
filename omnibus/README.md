@@ -70,6 +70,12 @@ Once you have tweaked your `kitchen.yml` (or `kitchen.local.yml`) to your liking
 $ bundle exec kitchen converge chef-ubuntu-1404
 ```
 
+Additional settings are required if using the kitchen-vagrant driver with the Hyper-V provider:
+
+```
+PS> $env:KITCHEN_LOCAL_YAML="kitchen.hyperv.yml"; kitchen converge chef-windows-server-2012r2-standard
+```
+
 Then login to the instance and build the project as described in the Usage section:
 
 ```shell
@@ -89,7 +95,7 @@ $ kitchen login chef-ubuntu-1404
 [vagrant@ubuntu...] $ bundle exec omnibus build chef -l internal
 ```
 
-You can also login to Windows instances but will have to manually call the `load-omnibus-toolchain.bat` script which initializes the build environment. Please note the mounted code directory is also at `C:\home\vagrant\chef\omnibus` as opposed to `C:\Users\vagrant\chef\omnibus`.
+You can also login to Windows instances but will have to manually call the `load-omnibus-toolchain.ps1` script from an administrative PowerShell session which initializes the build environment. You will also need to `git clone https://github.com/chef/chef` into the `c:\vagrant` folder to workaround the lack of a shared folder.
 
 ```shell
 $ bundle exec kitchen login <PROJECT>-windows-81-professional
@@ -97,13 +103,13 @@ Last login: Sat Sep 13 10:19:04 2014 from 172.16.27.1
 Microsoft Windows [Version 6.3.9600]
 (c) 2013 Microsoft Corporation. All rights reserved.
 
-C:\>C:\vagrant\load-omnibus-toolchain.bat
+C:\>C:\vagrant\load-omnibus-toolchain.ps1
 
-C:\>cd C:\vagrant\code\chef\omnibus
+C:\>cd C:\vagrant\chef\omnibus
 
-C:\vagrant\code\chef\omnibus>bundle install --without development
+C:\vagrant\chef\omnibus>bundle install --without development
 
-C:\vagrant\code\chef\omnibus>bundle exec omnibus build chef -l internal
+C:\vagrant\chef\omnibus>bundle exec omnibus build chef -l internal
 ```
 
 For a complete list of all commands and platforms, run `kitchen list` or `kitchen help`.

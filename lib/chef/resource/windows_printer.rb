@@ -27,20 +27,18 @@ class Chef
       resource_name :windows_printer
       provides(:windows_printer) { true }
 
-      description "Use the windows_printer resource to setup Windows printers. Note"\
-                  " that this doesn't currently install a printer driver. You must"\
-                  " already have the driver installed on the system."
+      description "Use the windows_printer resource to setup Windows printers. Note that this doesn't currently install a printer driver. You must already have the driver installed on the system."
       introduced "14.0"
 
       property :device_id, String,
-               description: "Printer queue name, e.g. 'HP LJ 5200 in fifth floor copy room'.",
+               description: "Printer queue name, such as 'HP LJ 5200 in fifth floor copy room'.",
                name_property: true
 
       property :comment, String,
                description: "Optional descriptor for the printer queue."
 
       property :default, [TrueClass, FalseClass],
-               description: "Should this be the system's default printer.",
+               description: "Determines whether or not this should be the system's default printer.",
                default: false
 
       property :driver_name, String,
@@ -48,17 +46,17 @@ class Chef
                required: true
 
       property :location, String,
-               description: "Printer location, e.g. 'Fifth floor copy room'."
+               description: "Printer location, such as 'Fifth floor copy room'."
 
       property :shared, [TrueClass, FalseClass],
-               description: "Should the printer be shared.",
+               description: "Determines whether or not the printer is shared.",
                default: false
 
       property :share_name, String,
-               description: "The name to share the printer as."
+               description: "The name used to identify the shared printer."
 
       property :ipv4_address, String,
-               description: "Printer IPv4 address, e.g. '10.4.64.23'.",
+               description: "The IPv4 address of the printer, such as '10.4.64.23'",
                validation_message: "The ipv4_address property must be in the IPv4 format of WWW.XXX.YYY.ZZZ",
                regex: Resolv::IPv4::Regex
 

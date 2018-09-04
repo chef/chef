@@ -26,7 +26,7 @@ class Chef
       resource_name :openssl_rsa_public_key
       provides(:openssl_rsa_public_key) { true }
 
-      description "Use the openssl_rsa_public_key resource to generate RSA public key files given a RSA private key"
+      description "Use the openssl_rsa_public_key resource to generate RSA public key files given a RSA private key."
       introduced "14.0"
 
       property :path, String,
@@ -34,22 +34,22 @@ class Chef
                name_property: true
 
       property :private_key_path, String,
-               description: "The path to the private key."
+               description: "The path to the private key file."
 
       property :private_key_content, String,
-               description: "The content of the private key including new lines. Used instead of private_key_path to avoid having to first write a key to disk."
+               description: "The content of the private key including new lines. This property is used in place of private_key_path to avoid having to first write a key to disk."
 
       property :private_key_pass, String,
                description: "The passphrase of the provided private key."
 
-      property :owner, [String, nil],
-               description: "The owner of all files created by the resource."
+      property :owner, String,
+               description: "The owner applied to all files created by the resource."
 
-      property :group, [String, nil],
-               description: "The group of all files created by the resource."
+      property :group, String,
+               description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],
-               description: "The permission mode of all files created by the resource.",
+               description: "The permission mode applied to all files created by the resource.",
                default: "0640"
 
       action :create do
@@ -61,7 +61,7 @@ class Chef
 
         rsa_key_content = gen_rsa_pub_key((new_resource.private_key_path || new_resource.private_key_content), new_resource.private_key_pass)
 
-        declare_resource(:file, new_resource.path) do
+        file new_resource.path do
           action :create
           owner new_resource.owner unless new_resource.owner.nil?
           group new_resource.group unless new_resource.group.nil?

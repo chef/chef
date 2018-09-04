@@ -81,7 +81,8 @@ module ResourceInspector
   # otherwise, if we have a path then extract all the resources from the cookbook
   # or else do a list of built in resources
   #
-  #  @param complete [TrueClass, FalseClass] Whether to show properties defined in the base Resource class
+  # @param complete [TrueClass, FalseClass] Whether to show properties defined in the base Resource class
+  # @return [String] JSON formatting of all resources
   def self.inspect(arguments = [], complete: false)
     output = if arguments.empty?
                ObjectSpace.each_object(Class).select { |k| k < Chef::Resource }.each_with_object({}) { |klass, acc| acc[klass.resource_name] = extract_resource(klass) }
@@ -96,11 +97,11 @@ module ResourceInspector
                end
              end
 
-    puts Chef::JSONCompat.to_json_pretty(output)
+    Chef::JSONCompat.to_json_pretty(output)
   end
 
   def self.start
-    inspect(ARGV, complete: true)
+    puts inspect(ARGV, complete: true)
   end
 
 end

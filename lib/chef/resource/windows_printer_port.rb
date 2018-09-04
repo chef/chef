@@ -47,7 +47,7 @@ class Chef
                description: "The description of the port."
 
       property :snmp_enabled, [TrueClass, FalseClass],
-               description: "Should SNMP be enabled on the port.",
+               description: "Determines if SNMP is enabled on the port.",
                default: false
 
       property :port_protocol, Integer,

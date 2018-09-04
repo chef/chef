@@ -36,18 +36,21 @@ class Chef
       provides(:windows_service) { true }
       provides :service, os: "windows"
 
-      description "Use the windows_service resource to manage a service on the Microsoft Windows platform."
+      description "Use the windows_service resource to create, delete, or manage a service on the Microsoft Windows platform."
       introduced "12.0"
 
       allowed_actions :configure_startup, :create, :delete, :configure
 
       state_attrs :enabled, :running
 
-      property :service_name, name_property: true, identity: true
+      property :service_name, String,
+               description: "The name of the service.",
+               name_property: true, identity: true
 
       # The display name to be used by user interface programs to identify the
       # service. This string has a maximum length of 256 characters.
-      property :display_name, String, regex: /^.{1,256}$/
+      property :display_name, String, regex: /^.{1,256}$/,
+               introduced: "14.0"
 
       # https://github.com/djberg96/win32-service/blob/ffi/lib/win32/windows/constants.rb#L19-L29
       property :desired_access, Integer, default: SERVICE_ALL_ACCESS
@@ -76,27 +79,26 @@ class Chef
       # This only applies if startup_type is :automatic
       # 1 == delayed start is enabled
       # 0 == NO delayed start
-      property :delayed_start, [TrueClass, FalseClass], default: false, coerce: proc { |x|
-        if x.is_a?(Integer)
-          x == 0 ? false : true
-        else
-          x
-        end
-      }
+      property :delayed_start, [TrueClass, FalseClass],
+               introduced: "14.0",
+               default: false, coerce: proc { |x|
+                 if x.is_a?(Integer)
+                   x == 0 ? false : true
+                 else
+                   x
+                 end
+               }
 
       # https://github.com/djberg96/win32-service/blob/ffi/lib/win32/windows/constants.rb#L43-L47
       property :error_control, Integer, default: SERVICE_ERROR_NORMAL
 
-      # The fully qualified path to the service binary file. The path can also
-      # include arguments for an auto-start service.
-      #
-      # This is required for :create and :configure actions -- intentionally
-      # not setting required: true here to support other actions
-      property :binary_path_name, String
+      property :binary_path_name, String,
+               introduced: "14.0",
+               description: "The fully qualified path to the service binary file. The path can also include arguments for an auto-start service. This is required for ':create' and ':configure' actions"
 
-      # The names of the load ordering group of which this service is a member.
-      # Specify nil or an empty string if the service does not belong to a group.
-      property :load_order_group, String
+      property :load_order_group, String,
+               introduced: "14.0",
+               description: "The names of the load ordering group of which this service is a member. Don't set this property if the service does not belong to a group."
 
       # A pointer to a double null-terminated array of null-separated names of
       # services or load ordering groups that the system must start before this
@@ -104,9 +106,12 @@ class Chef
       # dependencies. Dependency on a group means that this service can run if
       # at least one member of the group is running after an attempt to start
       # all members of the group.
-      property :dependencies, [String, Array]
+      property :dependencies, [String, Array],
+               introduced: "14.0"
 
-      property :description, String
+      property :description, String,
+               description: "Description of the service.",
+               introduced: "14.0"
 
       property :run_as_user, String, default: "LocalSystem"
       property :run_as_password, String, default: ""

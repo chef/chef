@@ -11,5 +11,5 @@ StackOverflow discussion that's relevant]
 
 - [ ] New functionality includes tests
 - [ ] All tests pass
-- [ ] RELEASE\_NOTES.md, has been updated if required (not required for bugfixes, required for API changes)
+- [ ] RELEASE\_NOTES.md has been updated if required (not required for bugfixes, required for API changes)
 - [ ] All commits have been signed-off for the Developer Certificate of Origin. See <https://github.com/chef/chef/blob/master/CONTRIBUTING.md#developer-certification-of-origin-dco>

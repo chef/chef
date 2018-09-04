@@ -44,6 +44,7 @@ class Chef
 
         execute "Install any #{new_resource.errata_level} errata" do
           command "yum update --sec-severity=#{new_resource.errata_level.capitalize} -y"
+          default_env true
           action :run
         end
       end

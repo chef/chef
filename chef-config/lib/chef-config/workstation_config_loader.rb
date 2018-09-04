@@ -225,12 +225,14 @@ module ChefConfig
       Config[:node_name] ||= Etc.getlogin
       # If we don't have a key (path or inline) check user.pem and $node_name.pem.
       unless Config.key?(:client_key) || Config.key?(:client_key_contents)
-        Config[:client_key] = find_default_key(["#{Config[:node_name]}.pem", "user.pem"])
+        key_path = find_default_key(["#{Config[:node_name]}.pem", "user.pem"])
+        Config[:client_key] = key_path if key_path
       end
       # Similarly look for a validation key file, though this should be less
       # common these days.
       unless Config.key?(:validation_key) || Config.key?(:validation_key_contents)
-        Config[:validation_key] = find_default_key(["#{Config[:validation_client_name]}.pem", "validator.pem", "validation.pem"])
+        key_path = find_default_key(["#{Config[:validation_client_name]}.pem", "validator.pem", "validation.pem"])
+        Config[:validation_key] = key_path if key_path
       end
     end
 

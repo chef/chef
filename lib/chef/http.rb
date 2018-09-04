@@ -215,7 +215,7 @@ class Chef
     # you to unlink the tempfile when you're done with it.
     #
     # @yield [tempfile] block to process the tempfile
-    # @yieldparams [tempfile<Tempfile>] tempfile
+    # @yieldparam [tempfile<Tempfile>] tempfile
     def streaming_request(path, headers = {}, tempfile = nil)
       http_attempts ||= 0
       url = create_url(path)

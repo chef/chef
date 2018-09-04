@@ -37,6 +37,7 @@ class Chef
 
         execute "Install errata packages for #{new_resource.errata_id}" do
           command "yum update --advisory #{new_resource.errata_id} -y"
+          default_env true
           action :run
         end
       end

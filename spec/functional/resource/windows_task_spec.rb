@@ -1096,6 +1096,90 @@ describe Chef::Resource::WindowsTask, :windows_only do
       end
     end
 
+    context "when battery options are passed" do
+      subject do
+        new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
+        new_resource.command task_name
+        new_resource.run_level :highest
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource
+      end
+
+      it "sets the default if options are not provided" do
+        subject.frequency :minute
+        call_for_create_action
+        # loading current resource again to check new task is created and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.stop_if_going_on_batteries).to eql(false)
+        expect(current_resource.disallow_start_if_on_batteries).to eql(false)
+      end
+
+      it "sets disallow_start_if_on_batteries to true" do
+        subject.frequency :minute
+        subject.disallow_start_if_on_batteries true
+        call_for_create_action
+        # loading current resource again to check new task is created and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.settings[:disallow_start_if_on_batteries]).to eql(true)
+      end
+
+      it "sets disallow_start_if_on_batteries to false" do
+        subject.frequency :minute
+        subject.disallow_start_if_on_batteries false
+        call_for_create_action
+        # loading current resource again to check new task is created and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.settings[:disallow_start_if_on_batteries]).to eql(false)
+      end
+
+      it "sets stop_if_going_on_batteries to true" do
+        subject.frequency :minute
+        subject.stop_if_going_on_batteries true
+        call_for_create_action
+        # loading current resource again to check new task is creted and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.settings[:stop_if_going_on_batteries]).to eql(true)
+      end
+
+      it "sets stop_if_going_on_batteries to false" do
+        subject.frequency :minute
+        subject.stop_if_going_on_batteries false
+        call_for_create_action
+        # loading current resource again to check new task is created and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.settings[:stop_if_going_on_batteries]).to eql(false)
+      end
+
+      it "sets the default if options are nil" do
+        subject.frequency :minute
+        subject.stop_if_going_on_batteries nil
+        subject.disallow_start_if_on_batteries nil
+        call_for_create_action
+        # loading current resource again to check new task is created and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.settings[:stop_if_going_on_batteries]).to eql(false)
+        expect(current_resource.task.settings[:disallow_start_if_on_batteries]).to eql(false)
+      end
+
+      it "does not converge the resource if it is already converged" do
+        subject.frequency :minute
+        subject.stop_if_going_on_batteries true
+        subject.disallow_start_if_on_batteries false
+        subject.run_action(:create)
+        subject.frequency :minute
+        subject.stop_if_going_on_batteries true
+        subject.disallow_start_if_on_batteries false
+        subject.run_action(:create)
+        expect(subject).not_to be_updated_by_last_action
+      end
+    end
+
     context "frequency :none" do
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)

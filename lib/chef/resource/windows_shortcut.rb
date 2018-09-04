@@ -24,15 +24,15 @@ class Chef
       resource_name :windows_shortcut
       provides(:windows_shortcut) { true }
 
-      description "Use the windows_shortcut resource to create shortcut files on Windows"
+      description "Use the windows_shortcut resource to create shortcut files on Windows."
       introduced "14.0"
 
       property :shortcut_name, String,
-               description: "The name for the shortcut if it differs from the resource name.",
+               description: "The name for the shortcut, if it differs from the resource name.",
                name_property: true
 
       property :target, String,
-               description: "Where the shortcut links to."
+               description: "The destination that the shortcut links to."
 
       property :arguments, String,
                description: "Arguments to pass to the target when the shortcut is executed."
@@ -44,7 +44,7 @@ class Chef
                description: "Working directory to use when the target is executed."
 
       property :iconlocation, String,
-               description: "Icon to use for the shortcut, in the format of 'path, index'. Index is the icon file to use. See https://msdn.microsoft.com/en-us/library/3s9bx7at.aspx for details"
+               description: "Icon to use for the shortcut. Accepts the format of 'path, index', where index is the icon file to use. See https://msdn.microsoft.com/en-us/library/3s9bx7at.aspx for details"
 
       load_current_value do |desired|
         require "win32ole" if RUBY_PLATFORM =~ /mswin|mingw32|windows/

@@ -69,6 +69,7 @@ platforms:
     image: dokken/centos-7
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
+      - RUN yum -y install e2fsprogs
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: fedora-latest
@@ -108,3 +109,9 @@ suites:
   - name: end-to-end
     run_list:
       - recipe[end_to_end::default]
+  - name: rspec
+    run_list:
+      - recipe[rspec]
+    lifecycle:
+      post_converge:
+        - remote: /usr/local/bin/run-chef-rspec

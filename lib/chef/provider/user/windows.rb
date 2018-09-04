@@ -45,7 +45,7 @@ class Chef
             user_info = @net_user.get_info
 
             current_resource.uid(user_info[:user_id])
-            current_resource.comment(user_info[:full_name])
+            current_resource.comment(user_info[:comment])
             current_resource.home(user_info[:home_dir])
             current_resource.shell(user_info[:script_path])
           rescue Chef::Exceptions::UserIDNotFound => e
@@ -100,7 +100,7 @@ class Chef
           opts = { name: new_resource.username }
 
           field_list = {
-            "comment" => "full_name",
+            "comment" => "comment",
             "home" => "home_dir",
             "uid" => "user_id",
             "shell" => "script_path",

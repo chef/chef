@@ -74,9 +74,12 @@ class Chef
       def values(arg = nil)
         if not arg.nil?
           if arg.is_a?(Hash)
-            @values = [ arg ]
+            @values = [ Mash.new(arg).symbolize_keys ]
           elsif arg.is_a?(Array)
-            @values = arg
+            @values = []
+            arg.each do |value|
+              @values << Mash.new(value).symbolize_keys
+            end
           else
             raise ArgumentError, "Bad type for RegistryKey resource, use Hash or Array"
           end

@@ -43,8 +43,7 @@ class Chef
                description: "Use a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
-               description: "Install all sub features. This is equivalent to using the"\
-                            " -InstallAllSubFeatures switch with Add-WindowsFeature.",
+               description: "Install all sub features. This is equivalent to using the -InstallAllSubFeatures switch with Add-WindowsFeature.",
                default: false
 
       property :timeout, Integer,
@@ -52,7 +51,7 @@ class Chef
                default: 600
 
       property :management_tools, [TrueClass, FalseClass],
-               description: "",
+               description: "Install all applicable management tools for the roles, role services, or features.",
                default: false
 
       # Converts strings of features into an Array. Array objects are lowercased unless we're on < 8/2k12+.

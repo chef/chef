@@ -25,7 +25,7 @@ class Chef
       provides(:sysctl_param) { true }
 
       description "Use the sysctl resource to set kernel parameters using the sysctl"\
-                  " command line tool and configuration files in the system's sysctl.d directory."\
+                  " command line tool and configuration files in the system's sysctl.d directory. "\
                   "Configuration files managed by this resource are named 99-chef-KEYNAME.conf. If"\
                   " an existing value was already set for the value it will be backed up to the node"\
                   " and restored if the :remove action is used later."
@@ -63,12 +63,12 @@ class Chef
         end
       end
 
-      # shellout to sysctl to get the current value
-      # ignore missing keys by using '-e'
-      # convert tabs to spaces since sysctl tab deliminates multivalue parameters
-      # strip the newline off the end of the output as well
       load_current_value do
-        value shell_out!("sysctl -n -e #{key}").stdout.tr("\t", " ").strip
+        begin
+          value get_sysctl_value(key)
+        rescue
+          current_value_does_not_exist!
+        end
       end
 
       action :apply do
@@ -115,6 +115,36 @@ class Chef
         def set_sysctl_param(key, value)
           shell_out!("sysctl #{'-e ' if new_resource.ignore_error}-w \"#{key}=#{value}\"")
         end
+      end
+
+      private
+
+      # shellout to sysctl to get the current value
+      # ignore missing keys by using '-e'
+      # convert tabs to spaces since sysctl tab deliminates multivalue parameters
+      # strip the newline off the end of the output as well
+      #
+      # Chef creates a file in sysctld with parameter configuration
+      # Thus this config will persists even after rebooting the system
+      # User can be in a half configured state, where he has already updated the value
+      # which he wants to be configured from the resource
+      # Therefore we need an extra check with sysctld to ensure a correct idempotency
+      #
+      def get_sysctl_value(key)
+        val = shell_out!("sysctl -n -e #{key}").stdout.tr("\t", " ").strip
+        raise unless val == get_sysctld_value(key)
+        val
+      end
+
+      # Check if chef has already configured a value for the given key and
+      # return the value. Raise in case this conf file needs to be created
+      # or updated
+      def get_sysctld_value(key)
+        raise unless ::File.exist?("/etc/sysctl.d/99-chef-#{key}.conf")
+        k, v = ::File.read("/etc/sysctl.d/99-chef-#{key}.conf").match(/(.*) = (.*)/).captures
+        raise "Unknown sysctl key!" if k.nil?
+        raise "Unknown sysctl value!" if v.nil?
+        v
       end
     end
   end

@@ -53,6 +53,14 @@ describe Chef::Resource::WindowsTask, :windows_only do
     expect(resource.frequency_modifier).to eql(1)
   end
 
+  it "sets the default value for disallow_start_if_on_batteries as false" do
+    expect(resource.disallow_start_if_on_batteries).to eql(false)
+  end
+
+  it "sets the default value for stop_if_going_on_batteries as false" do
+    expect(resource.stop_if_going_on_batteries).to eql(false)
+  end
+
   context "when frequency is not provided" do
     it "raises ArgumentError to provide frequency" do
       expect { resource.after_created }.to raise_error(ArgumentError, "Frequency needs to be provided. Valid frequencies are :minute, :hourly, :daily, :weekly, :monthly, :once, :on_logon, :onstart, :on_idle, :none." )

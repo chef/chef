@@ -26,10 +26,7 @@ class Chef
       resource_name :openssl_dhparam
       provides(:openssl_dhparam) { true }
 
-      description "Use the openssl_dhparam resource to generate dhparam.pem files. If a"\
-                  " valid dhparam.pem file is found at the specified location, no new file"\
-                  " will be created. If a file is found at the specified location but it is"\
-                  " not a valid dhparam file, it will be overwritten."
+      description "Use the openssl_dhparam resource to generate dhparam.pem files. If a valid dhparam.pem file is found at the specified location, no new file will be created. If a file is found at the specified location but it is not a valid dhparam file, it will be overwritten."
       introduced "14.0"
 
       property :path, String,
@@ -48,14 +45,14 @@ class Chef
                description: "The desired Diffie-Hellmann generator.",
                default: 2
 
-      property :owner, [String, nil],
-               description: "The owner of all files created by the resource."
+      property :owner, String,
+               description: "The owner applied to all files created by the resource."
 
-      property :group, [String, nil],
-               description: "The group of all files created by the resource."
+      property :group, String,
+               description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],
-               description: "The permission mode of all files created by the resource.",
+               description: "The permission mode applied to all files created by the resource.",
                default: "0640"
 
       action :create do
@@ -65,7 +62,7 @@ class Chef
           converge_by("Create a dhparam file #{new_resource.path}") do
             dhparam_content = gen_dhparam(new_resource.key_length, new_resource.generator).to_pem
 
-            declare_resource(:file, new_resource.path) do
+            file new_resource.path do
               action :create
               owner new_resource.owner unless new_resource.owner.nil?
               group new_resource.group unless new_resource.group.nil?

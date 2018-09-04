@@ -1,5 +1,7 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.4:
+
 ## Knife configuration profile management commands
 
 Several new commands have been added under `knife config` to help manage multiple
@@ -25,6 +27,102 @@ $ knife config list-profiles
  staging  myuser  ~/.chef/user.pem  https://example.com/organizations/staging
 *prod     myuser  ~/.chef/user.pem  https://example.com/organizations/prod
 ```
+
+Thank you [@coderanger](https://github.com/coderanger) for this contribution.
+
+## New Resources
+
+The following new previous resources were added to Chef 14.4. Cookbooks with the same resources will continue to take precedent until the Chef 15.0 release
+
+### Cron_d
+
+Use the cron_d resource to manage cron definitions in /etc/cron.d. This is similar to the `cron` resource, but it does not use the monolithic /etc/crontab. file.
+
+See [cron_d](https://docs.chef.io/resource_cron_d.html) resource documentation for full usage.
+
+### Cron_access
+
+Use the cron_access resource to manage the /etc/cron.allow and /etc/cron.deny files. This resource previously shipped in the `cron` community cookbook and has fully backwards compatibility with the previous `cron_manage` definition in that cookbook.
+
+See [cron_access](https://docs.chef.io/resource_cron_access.html) resource documentation for full usage.
+
+### openssl_x509_certificate
+
+Use the openssl_x509_certificate resourc to generate signed or self-signed, PEM-formatted x509 certificates. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate. If a CA private key and certificate are provided, the certificate will be signed with them. This resource previously shipped in the `openssl` cookbook as `openssl_x509` and is fully backwards compatible with the legacy resource name.
+
+See [openssl_x509_certificate](https://docs.chef.io/resource_openssl_x509_certificate.html) resource documentation for full usage.
+
+Thank you [@juju482](https://github.com/juju482) for updating this resource so it could be included here.
+
+### openssl_x509_request
+
+Use the openssl_x509_request resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate.
+
+See [openssl_x509_request](https://docs.chef.io/resource_openssl_x509_request.html) resource documentation for full usage.
+
+Thank you [@juju482](https://github.com/juju482) for contributing this resource.
+
+### openssl_x509_crl
+
+Use the openssl_x509_crl resource to generate PEM-formatted x509 certificate revocation list (CRL) files.
+
+See [openssl_x509_crl](https://docs.chef.io/resource_openssl_x509_crl.html) resource documentation for full usage.
+
+Thank you [@juju482](https://github.com/juju482) for contributing this resource.
+
+### openssl_ec_private_key
+
+Use the openssl_ec_private_key resource to generate ec private key files. If a valid ec key file can be opened at the specified location, no new file will be created.
+
+See [openssl_ec_private_key](https://docs.chef.io/resource_openssl_ec_private_key.html) resource documentation for full usage.
+
+Thank you [@juju482](https://github.com/juju482) for contributing this resource.
+
+### openssl_ec_public_key
+
+Use the openssl_ec_public_key resource to generate ec public key files given a private key.
+
+See [openssl_ec_public_key](https://docs.chef.io/resource_openssl_ec_public_key.html) resource documentation for full usage.
+
+Thank you [@juju482](https://github.com/juju482) for contributing this resource.
+
+## Resource improvements
+
+### windows_package
+
+The windows_package resource now supports setting the `sensitive` property to avoid showing errors if a package install fails.
+
+### sysctl
+
+The sysctl resource will now update the on-disk systctl.d file even if the current sysctl value matches the desired value.
+
+### windows_task
+
+The windows_task resource now supports setting the task priority of the scheduled task with a new `priority` property. Additionally windows_task now supports managing the behavior of task execution when a system is on battery using new `disallow_start_if_on_batteries` and `stop_if_going_on_batteries` properties.
+
+### ifconfig
+
+The ifconfig resource now supports setting the interface's VLAN via a new `vlan` property on RHEL platform_family and setting the interface's gateway via a new `gateway` property on RHEL/Debian platform_family.
+
+Thank you [@tomdoherty](https://github.com/tomdoherty) for this contribution.
+
+### route
+
+The route resource has been improved to support additional RHEL platform_family systems as well as Amazon Linux.
+
+### systemd_unit
+
+The systemd_unit resource now supports specifying options multiple times in the content hash. Instead of setting the value to a string you can now set it to an array of strings.
+
+Thank you [@dbresson](https://github.com/dbresson) for this contribution.
+
+## Security Updates
+
+### OpenSSL
+
+OpenSSL updated to 1.0.2p to resolve:
+- Client DoS due to large DH parameter ([CVE-2018-0732](https://nvd.nist.gov/vuln/detail/CVE-2018-0732))
+- Cache timing vulnerability in RSA Key Generation ([CVE-2018-0737](https://nvd.nist.gov/vuln/detail/CVE-2018-0737))
 
 # Chef Client Release Notes 14.3:
 

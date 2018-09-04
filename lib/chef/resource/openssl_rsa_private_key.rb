@@ -27,11 +27,7 @@ class Chef
       provides(:openssl_rsa_private_key) { true }
       provides(:openssl_rsa_key) { true } # legacy cookbook resource name
 
-      description "Use the openssl_rsa_private_key resource to generate RSA private key files."\
-                  " If a valid RSA key file can be opened at the specified location, no new file"\
-                  " will be created. If the RSA key file cannot be opened, either because it does"\
-                  " not exist or because the password to the RSA key file does not match the"\
-                  " password in the recipe, it will be overwritten."
+      description "Use the openssl_rsa_private_key resource to generate RSA private key files. If a valid RSA key file can be opened at the specified location, no new file will be created. If the RSA key file cannot be opened, either because it does not exist or because the password to the RSA key file does not match the password in the recipe, it will be overwritten."
       introduced "14.0"
 
       property :path, String,
@@ -53,18 +49,18 @@ class Chef
                description: "The designed cipher to use when generating your key. Run `openssl list-cipher-algorithms` to see available options.",
                default: "des3"
 
-      property :owner, [String, nil],
-               description: "The owner of all files created by the resource."
+      property :owner, String,
+               description: "The owner applied to all files created by the resource."
 
-      property :group, [String, nil],
-               description: "The group of all files created by the resource."
+      property :group, String,
+               description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],
-               description: "The permission mode of all files created by the resource.",
+               description: "The permission mode applied to all files created by the resource.",
                default: "0600"
 
       property :force, [TrueClass, FalseClass],
-               description: "Force creating the key even if the existing key exists.",
+               description: "Force creation of the key even if the same key already exists on the node.",
                default: false, desired_state: false
 
       action :create do
@@ -80,7 +76,7 @@ class Chef
             rsa_key_content = gen_rsa_priv_key(new_resource.key_length).to_pem
           end
 
-          declare_resource(:file, new_resource.path) do
+          file new_resource.path do
             action :create
             owner new_resource.owner unless new_resource.owner.nil?
             group new_resource.group unless new_resource.group.nil?

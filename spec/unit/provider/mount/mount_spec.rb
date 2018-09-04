@@ -43,6 +43,7 @@ describe Chef::Provider::Mount::Mount do
   describe "when discovering the current fs state" do
     before do
       allow(@provider).to receive(:shell_out_compacted!).and_return(OpenStruct.new(stdout: ""))
+      allow(::File).to receive(:exist?).with("/etc/fstab").and_return(true)
       allow(::File).to receive(:foreach).with("/etc/fstab")
     end
 

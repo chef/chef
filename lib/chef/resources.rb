@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software, Inc.
+# Copyright:: Copyright 2010-2018, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +31,8 @@ require "chef/resource/chocolatey_config"
 require "chef/resource/chocolatey_package"
 require "chef/resource/chocolatey_source"
 require "chef/resource/cron"
+require "chef/resource/cron_access"
+require "chef/resource/cron_d"
 require "chef/resource/csh"
 require "chef/resource/directory"
 require "chef/resource/dmg_package"
@@ -64,8 +66,13 @@ require "chef/resource/ohai"
 require "chef/resource/ohai_hint"
 require "chef/resource/openbsd_package"
 require "chef/resource/openssl_dhparam"
+require "chef/resource/openssl_ec_private_key"
+require "chef/resource/openssl_ec_public_key"
 require "chef/resource/openssl_rsa_private_key"
 require "chef/resource/openssl_rsa_public_key"
+require "chef/resource/openssl_x509_certificate"
+require "chef/resource/openssl_x509_crl"
+require "chef/resource/openssl_x509_request"
 require "chef/resource/package"
 require "chef/resource/pacman_package"
 require "chef/resource/paludis_package"

@@ -24,7 +24,7 @@ class Chef
       resource_name :windows_auto_run
       provides(:windows_auto_run) { true }
 
-      description "Use the windows_auto_run resource to set applications to run at logon."
+      description "Use the windows_auto_run resource to set applications to run at login."
       introduced "14.0"
 
       property :program_name, String,
@@ -33,10 +33,10 @@ class Chef
 
       property :path, String,
                coerce: proc { |x| x.tr("/", "\\") }, # make sure we have windows paths for the registry
-               description: "The path to the program to be run at login."
+               description: "The path to the program that will run at login. "
 
       property :args, String,
-               description: "Any arguments for the program."
+               description: "Any arguments to be used with the program."
 
       property :root, Symbol,
                description: "The registry root key to put the entry under.",
@@ -51,7 +51,7 @@ class Chef
         data = "\"#{new_resource.path}\""
         data << " #{new_resource.args}" if new_resource.args
 
-        declare_resource(:registry_key, registry_path) do
+        registry_key registry_path do
           values [{
             name: new_resource.program_name,
             type: :string,
@@ -64,7 +64,7 @@ class Chef
       action :remove do
         description "Remove an item that was previously setup to run at login"
 
-        declare_resource(:registry_key, registry_path) do
+        registry_key registry_path do
           values [{
             name: new_resource.program_name,
             type: :string,

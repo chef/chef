@@ -42,11 +42,11 @@ class Chef
                description: "The base of the Debian distribution."
 
       property :distribution, [ String, nil, FalseClass ],
-               description: "Usually a distribution’s codename, such as trusty, xenial or bionic. Default value: the codename of the node’s distro.",
+               description: "Usually a distribution's codename, such as trusty, xenial or bionic. Default value: the codename of the node's distro.",
                default: lazy { node["lsb"]["codename"] }
 
       property :components, Array,
-               description: "Package groupings, such as ‘main’ and ‘stable’.",
+               description: "Package groupings, such as 'main' and 'stable'.",
                default: lazy { [] }
 
       property :arch, [String, nil, FalseClass],

@@ -500,10 +500,12 @@ class Chef
                 end
 
               when :install
-
                 if new_version
                   if version_requirement_satisfied?(current_version, new_version)
                     logger.trace("#{new_resource} #{package_name} #{current_version} satisifies #{new_version} requirement")
+                    target_version_array.push(nil)
+                  elsif current_version && !allow_downgrade && version_compare(current_version, new_version) == 1
+                    logger.warn("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{new_version}. Skipping...)")
                     target_version_array.push(nil)
                   else
                     logger.trace("#{new_resource} #{package_name} #{current_version} needs updating to #{new_version}")

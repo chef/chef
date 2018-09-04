@@ -1,6 +1,9 @@
 # THIS IS NOW HAND MANAGED, JUST EDIT THE THING
 # .travis.yml and appveyor.yml consume this,
 # try to keep it machine-parsable.
+#
+# NOTE: You MUST update omnibus-software when adding new versions of
+# software here: bundle exec rake dependencies:update_omnibus_gemfile_lock
 override :rubygems, version: "2.7.6"
 override :bundler, version: "1.16.1"
 override "nokogiri", version: "1.8.2"
@@ -19,4 +22,4 @@ override "ruby-windows-devkit-bash", version: "3.1.23-4-msys-1.0.18"
 override "util-macros", version: "1.19.0"
 override "xproto", version: "7.0.28"
 override "zlib", version: "1.2.11"
-override "openssl", version: "1.0.2o"
+override "openssl", version: "1.0.2p"
