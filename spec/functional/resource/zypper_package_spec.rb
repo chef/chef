@@ -20,9 +20,7 @@ require "spec_helper"
 require "functional/resource/base"
 require "chef/mixin/shell_out"
 
-# run this test only for following platforms.
-exclude_test = !(%w{suse}.include?(ohai[:platform_family]) && !File.exist?("/usr/bin/zypper"))
-describe Chef::Resource::ZypperPackage, :requires_root, external: exclude_test do
+describe Chef::Resource::ZypperPackage, :requires_root, :suse_only do
   include Chef::Mixin::ShellOut
 
   # NOTE: every single test here needs to explicitly call preinstall.
@@ -97,7 +95,7 @@ describe Chef::Resource::ZypperPackage, :requires_root, external: exclude_test d
     end
   end
 
-  context "with versions or globs in the name" do
+  context "with versions" do
     it "works with a version" do
       zypper_package.package_name("chef_rpm")
       zypper_package.version("1.10")
