@@ -140,90 +140,31 @@ Then when we perform our yearly major release we'll remove the preview designati
 
 Use the chocolatey_config resource to add or remove Chocolatey configuration keys."
 
-#### Actions
-
-- `set` - Sets a Chocolatey config value.
-- `unset` - Unsets a Chocolatey config value.
-
-#### Properties
-
-- `config_key` - The name of the config. We'll use the resource's name if this isn't provided.
-- `value` - The value to set.
+See [chocolatey_config](https://docs.chef.io/resource_chocolatey_config.html) resource documentation for full usage.
 
 ### chocolatey_source
 
-Use the chocolatey_source resource to add or remove Chocolatey sources.
+Use the chocolatey_source resource to add or remove Chocolatey sources."
 
-#### Actions
-
-- `add` - Adds a Chocolatey source.
-- `remove` - Removes a Chocolatey source.
-
-#### Properties
-
-- `source_name` - The name of the source to add. We'll use the resource's name if this isn't provided.
-- `source` - The source URL.
-- `bypass_proxy` - Whether or not to bypass the system's proxy settings to access the source.
-- `priority` - The priority level of the source.
+See [chocolatey_source](https://docs.chef.io/resource_chocolatey_source.html) resource documentation for full usage.
 
 ### powershell_package_source
 
 Use the `powershell_package_source` resource to register a powershell package repository.
 
-### Actions
-
-- `register` - Registers and updates the powershell package source.
-- `unregister` - Unregisters the powershell package source.
-
-#### Properties
-
-- `source_name` - The name of the package source.
-- `url` - The url to the package source.
-- `trusted` - Whether or not to trust packages from this source.
-- `provider_name` - The package management provider for the source. It supports the following providers: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' and 'chocolatey'.
-- `publish_location` - The url where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'.
-- `script_source_location` - The url where scripts are located for this source. Only valid if the provider is 'PowerShellGet'.
-- `script_publish_location` - The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'.
+See [powershell_package_source](https://docs.chef.io/resource_powershell_package_source.html) resource documentation for full usage.
 
 ### kernel_module
 
 Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, install, and uninstall modules.
 
-#### Actions
-
-- `install` - Load kernel module, and ensure it loads on reboot.
-- `uninstall` - Unload a kernel module and remove module config, so it doesn't load on reboot.
-- `blacklist` - Blacklist a kernel module.
-- `load` - Load a kernel module.
-- `unload` - Unload kernel module
-
-#### Properties
-
-- `modname` - The name of the kernel module.
-- `load_dir` - The directory to load modules from.
-- `unload_dir` - The modprobe.d directory.
+See [kernel_module](https://docs.chef.io/resource_kernel_module.html) resource documentation for full usage.
 
 ### ssh_known_hosts_entry
 
 Use the ssh_known_hosts_entry resource to add an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified.
 
-#### Actions
-
-- `create` - Create an entry in the ssh_known_hosts file.
-- `flush` - Immediately flush the entries to the config file. Without this the actual writing of the file is delayed in the Chef run so all entries can be accumulated before writing the file out.
-
-#### Properties
-
-- `host` - The host to add to the known hosts file.
-- `key` - An optional key for the host. If not provided this will be automatically determined.
-- `key_type` - The type of key to store.
-- `port` - The server port that the ssh-keyscan command will use to gather the public key.
-- `timeout` - The timeout in seconds for ssh-keyscan.
-- `mode` - The file mode for the ssh_known_hosts file.
-- `owner`- The file owner for the ssh_known_hosts file.
-- `group` - The file group for the ssh_known_hosts file.
-- `hash_entries` - Hash the hostname and addresses in the ssh_known_hosts file for privacy.
-- `file_location` - The location of the ssh known hosts file. Change this to set a known host file for a particular user.
+See [ssh_known_hosts_entry](https://docs.chef.io/resource_ssh_known_hosts_entry.html) resource documentation for full usage.
 
 ## New `knife config get` command
 
@@ -439,73 +380,109 @@ Use the build_essential resource to install packages required for compiling C so
 
 `Note`: This resource no longer configures msys2 on Windows systems.
 
+See [build_essential](https://docs.chef.io/resource_build_essential.html) resource documentation for full usage.
+
 ### chef_handler
 
 Use the chef_handler resource to install or uninstall Chef reporting/exception handlers. This resource was ported from the `chef_handler` community cookbook.
+
+See [chef_handler](https://docs.chef.io/resource_chef_handler.html) resource documentation for full usage.
 
 ### dmg_package
 
 Use the dmg_package resource to install a dmg 'package'. The resource will retrieve the dmg file from a remote URL, mount it using hdiutil, copy the application (.app directory) to the specified destination (/Applications), and detach the image using hdiutil. The dmg file will be stored in the Chef::Config[:file_cache_path]. This resource was ported from the `dmg` community cookbook.
 
+See [dmg_package](https://docs.chef.io/resource_dmg_package.html) resource documentation for full usage.
+
 ### homebrew_cask
 
 Use the homebrew_cask resource to install binaries distributed via the Homebrew package manager. This resource was ported from the `homebrew` community cookbook.
+
+See [homebrew_cask](https://docs.chef.io/resource_homebrew_cask.html) resource documentation for full usage.
 
 ### homebrew_tap
 
 Use the homebrew_tap resource to add additional formula repositories to the Homebrew package manager. This resource was ported from the `homebrew` community cookbook.
 
+See [homebrew_tap](https://docs.chef.io/resource_homebrew_tap.html) resource documentation for full usage.
+
 ### hostname
 
 Use the hostname resource to set the system's hostname, configure hostname and hosts config file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks. This resource was ported from the `chef_hostname` community cookbook.
+
+See [hostname](https://docs.chef.io/resource_hostname.html) resource documentation for full usage.
 
 ### macos_userdefaults
 
 Use the macos_userdefaults resource to manage the macOS user defaults system. The properties of this resource are passed to the defaults command, and the parameters follow the convention of that command. See the defaults(1) man page for details on how the tool works. This resource was ported from the `mac_os_x` community cookbook.
 
+See [macos_userdefaults](https://docs.chef.io/resource_macos_userdefaults.html) resource documentation for full usage.
+
 ### ohai_hint
 
 Use the ohai_hint resource to pass hint data to Ohai to aid in configuration detection. This resource was ported from the `ohai` community cookbook.
+
+See [ohai_hint](https://docs.chef.io/resource_ohai_hint.html) resource documentation for full usage.
 
 ### openssl_dhparam
 
 Use the openssl_dhparam resource to generate dhparam.pem files. If a valid dhparam.pem file is found at the specified location, no new file will be created. If a file is found at the specified location but it is not a valid dhparam file, it will be overwritten. This resource was ported from the `openssl` community cookbook.
 
+See [openssl_dhparam](https://docs.chef.io/resource_openssl_dhparam.html) resource documentation for full usage.
+
 ### openssl_rsa_private_key
 
 Use the openssl_rsa_private_key resource to generate RSA private key files. If a valid RSA key file can be opened at the specified location, no new file will be created. If the RSA key file cannot be opened, either because it does not exist or because the password to the RSA key file does not match the password in the recipe, it will be overwritten. This resource was ported from the `openssl` community cookbook.
+
+See [openssl_rsa_private_key](https://docs.chef.io/resource_openssl_rsa_private_key.html) resource documentation for full usage.
 
 ### openssl_rsa_public_key
 
 Use the openssl_rsa_public_key resource to generate RSA public key files given a RSA private key. This resource was ported from the `openssl` community cookbook.
 
+See [openssl_rsa_public_key](https://docs.chef.io/resource_openssl_rsa_public_key.html) resource documentation for full usage.
+
 ### rhsm_errata
 
 Use the rhsm_errata resource to install packages associated with a given Red Hat Subscription Manager Errata ID. This is helpful if packages to mitigate a single vulnerability must be installed on your hosts. This resource was ported from the `redhat_subscription_manager` community cookbook.
+
+See [rhsm_errata](https://docs.chef.io/resource_rhsm_errata.html) resource documentation for full usage.
 
 ### rhsm_errata_level
 
 Use the rhsm_errata_level resource to install all packages of a specified errata level from the Red Hat Subscription Manager. For example, you can ensure that all packages associated with errata marked at a 'Critical' security level are installed. This resource was ported from the `redhat_subscription_manager` community cookbook.
 
+See [rhsm_errata_level](https://docs.chef.io/resource_rhsm_errata_level.html) resource documentation for full usage.
+
 ### rhsm_register
 
 Use the rhsm_register resource to register a node with the Red Hat Subscription Manager or a local Red Hat Satellite server. This resource was ported from the `redhat_subscription_manager` community cookbook.
+
+See [rhsm_register](https://docs.chef.io/resource_rhsm_register.html) resource documentation for full usage.
 
 ### rhsm_repo
 
 Use the rhsm_repo resource to enable or disable Red Hat Subscription Manager repositories that are made available via attached subscriptions. This resource was ported from the `redhat_subscription_manager` community cookbook.
 
+See [rhsm_repo](https://docs.chef.io/resource_rhsm_repo.html) resource documentation for full usage.
+
 ### rhsm_subscription
 
 Use the rhsm_subscription resource to add or remove Red Hat Subscription Manager subscriptions for your host. This can be used when a host's activation_key does not attach all necessary subscriptions to your host. This resource was ported from the `redhat_subscription_manager` community cookbook.
+
+See [rhsm_subscription](https://docs.chef.io/resource_rhsm_subscription.html) resource documentation for full usage.
 
 ### sudo
 
 Use the sudo resource to add or remove individual sudo entries using `sudoers.d` files. Sudo version 1.7.2 or newer is required to use the sudo resource, as it relies on the `#includedir` directive introduced in version 1.7.2\. This resource does not enforce installation of the required sudo version. Supported releases of Ubuntu, Debian, SuSE, and RHEL (6+) all support this feature. This resource was ported from the `sudo` community cookbook.
 
+See [sudo](https://docs.chef.io/resource_sudo.html) resource documentation for full usage.
+
 ### swap_file
 
 Use the swap_file resource to create or delete swap files on Linux systems, and optionally to manage the swappiness configuration for a host. This resource was ported from the `swap` community cookbook.
+
+See [swap_file](https://docs.chef.io/resource_swap_file.html) resource documentation for full usage.
 
 ### sysctl
 
@@ -513,13 +490,19 @@ Use the sysctl resource to set kernel parameters using the sysctl command line t
 
 `Note`: This resource no longer backs up existing key values to the node when changing values as we have done in the sysctl cookbook previously. The resource has also been renamed from `sysctl_param` to `sysctl` with backwards compatibility for the previous name.
 
+See [sysctl](https://docs.chef.io/resource_sysctl.html) resource documentation for full usage.
+
 ### windows_ad_join
 
 Use the windows_ad_join resource to join a Windows Active Directory domain and reboot the node. This resource is based on the `win_ad_client` resource in the `win_ad` community cookbook, but is not backwards compatible with that resource.
 
+See [windows_ad_join](https://docs.chef.io/resource_windows_ad_join.html) resource documentation for full usage.
+
 ### windows_auto_run
 
 Use the windows_auto_run resource to set applications to run at logon. This resource was ported from the `windows` community cookbook.
+
+See [windows_auto_run](https://docs.chef.io/resource_windows_auto_run.html) resource documentation for full usage.
 
 ### windows_feature
 
@@ -527,21 +510,31 @@ Use the windows_feature resource to add, remove or delete Windows features and r
 
 `Note`: These resources received significant refactoring in the 4.0 version of the windows cookbook (March 2018). windows_feature resources now fail if the installation of invalid features is requested and support for installation via server `servermanagercmd.exe` has been removed. If you are using a windows cookbook version less than 4.0 you may need to update cookbooks for Chef 14.
 
+See [windows_feature](https://docs.chef.io/resource_windows_feature.html) resource documentation for full usage.
+
 ### windows_font
 
 Use the windows_font resource to install or remove font files on Windows. By default, the font is sourced from the cookbook using the resource, but a URI source can be specified as well. This resource was ported from the `windows` community cookbook.
+
+See [windows_font](https://docs.chef.io/resource_windows_font.html) resource documentation for full usage.
 
 ### windows_printer
 
 Use the windows_printer resource to setup Windows printers. Note that this doesn't currently install a printer driver. You must already have the driver installed on the system. This resource was ported from the `windows` community cookbook.
 
+See [windows_printer](https://docs.chef.io/resource_windows_printer.html) resource documentation for full usage.
+
 ### windows_printer_port
 
 Use the windows_printer_port resource to create and delete TCP/IPv4 printer ports on Windows. This resource was ported from the `windows` community cookbook.
 
+See [windows_printer_port](https://docs.chef.io/resource_windows_printer_port.html) resource documentation for full usage.
+
 ### windows_shortcut
 
 Use the windows_shortcut resource to create shortcut files on Windows. This resource was ported from the `windows` community cookbook.
+
+See [windows_shortcut](https://docs.chef.io/resource_windows_shortcut.html) resource documentation for full usage.
 
 ## Custom Resource Improvements
 
@@ -1113,32 +1106,7 @@ end
 
 `windows_path` resource has been moved to core chef from windows cookbook. Use the `windows_path` resource to manage the path environment variable on Microsoft Windows.
 
-### Actions
-
-- `:add` - Add an item to the system path
-- `:remove` - Remove an item from the system path
-
-### Properties
-
-- `path` - Name attribute. The name of the value to add to the system path
-
-### Examples
-
-Add Sysinternals to the system path
-
-```ruby
-windows_path 'C:\Sysinternals' do
-  action :add
-end
-```
-
-Remove 7-Zip from the system path
-
-```ruby
-windows_path 'C:\7-Zip' do
-  action :remove
-end
-```
+See [windows_path](https://docs.chef.io/resource_windows_path.html) resource documentation for full usage.
 
 ## Ohai Release Notes 13.4
 
@@ -1245,85 +1213,13 @@ The apt_preference resource has been ported from the apt cookbook. This resource
 
 Further information regarding apt-pinning is available via <https://wiki.debian.org/AptPreferences> and <https://manpages.debian.org/stretch/apt/apt_preferences.5.en.html>
 
-### Actions
-
-- `:add`: creates a preferences file under /etc/apt/preferences.d
-- `:remove`: Removes the file, therefore unpin the package
-
-### Properties
-
-- `package_name`: name attribute. The name of the package
-- `glob`: Pin by glob() expression or regexp surrounded by /.
-- `pin`: The package version/repository to pin
-- `pin_priority`: The pinning priority aka "the highest package version wins"
-
-### Examples
-
-Pin libmysqlclient16 to version 5.1.49-3:
-
-```ruby
-apt_preference 'libmysqlclient16' do
-  pin          'version 5.1.49-3'
-  pin_priority '700'
-end
-```
-
-Unpin libmysqlclient16:
-
-```ruby
-apt_preference 'libmysqlclient16' do
-  action :remove
-end
-```
-
-Pin all packages from dotdeb.org:
-
-```ruby
-apt_preference 'dotdeb' do
-  glob         '*'
-  pin          'origin packages.dotdeb.org'
-  pin_priority '700'
-end
-```
+See [apt_preference](https://docs.chef.io/resource_apt_preference.html) resource documentation for full usage.
 
 ## zypper_repository Resource
 
 The zypper_repository resource allows for the creation of Zypper package repositories on SUSE Enterprise Linux and openSUSE systems. This resource maintains full compatibility with the resource in the existing [zypper](https://supermarket.chef.io/cookbooks/zypper) cookbooks
 
-### Actions
-
-- `:add` - adds a repo
-- `:delete` - removes a repo
-
-### Properties
-
-- `repo_name` - repository name if different from the resource name (name property)
-- `type` - the repository type. default: 'NONE'
-- `description` - the description of the repo that will be shown in `zypper repos`
-- `baseurl` - the base url of the repo
-- `path` - the relative path from the `baseurl`
-- `mirrorlist` - the url to the mirrorlist to use
-- `gpgcheck` - should we gpg check the repo (true/false). default: true
-- `gpgkey` - location of repo key to import
-- `priority` - priority of the repo. default: 99
-- `autorefresh` - should the repository be automatically refreshed (true/false). default: true
-- `keeppackages` - should packages be saved (true/false). default: false
-- `refresh_cache` - should package cache be refreshed (true/false). default: true
-- `enabled` - should this repository be enabled (true/false). default: true
-- `mode` - the file mode of the repository file. default: "0644"
-
-### Examples
-
-Add the Apache repository for openSUSE Leap 42.2
-
-```ruby
-zypper_repository 'apache' do
-  baseurl 'http://download.opensuse.org/repositories/Apache'
-  path '/openSUSE_Leap_42.2'
-  type 'rpm-md'
-  priority '100'
-end
-```
+See [zypper_repository](https://docs.chef.io/resource_zypper_repository.html) resource documentation for full usage.
 
 ## Ohai Release Notes 13.3:
 
