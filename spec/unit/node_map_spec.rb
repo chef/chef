@@ -223,7 +223,7 @@ describe Chef::NodeMap do
     context "while locked" do
       # Uncomment the commented `expect`s in 15.0.
       it "rejects setting the same key twice" do
-        expect(Chef).to receive(:deprecated).with(:map_collision, /resource foo/)
+        expect(Chef).to receive(:deprecated).with(:map_collision, /Resource foo/)
         node_map.set(:foo, FooResource)
         node_map.lock!
         node_map.set(:foo, BarResource)
@@ -247,7 +247,7 @@ describe Chef::NodeMap do
       end
 
       it "rejects setting the same key twice when the first has allow_cookbook_override with a past version" do
-        expect(Chef).to receive(:deprecated).with(:map_collision, /resource foo/)
+        expect(Chef).to receive(:deprecated).with(:map_collision, /Resource foo/)
         node_map.set(:foo, FooResource, allow_cookbook_override: "< 1")
         node_map.lock!
         node_map.set(:foo, BarResource)
@@ -263,7 +263,7 @@ describe Chef::NodeMap do
       end
 
       it "rejects setting the same key twice for a provider" do
-        expect(Chef).to receive(:deprecated).with(:map_collision, /provider foo/)
+        expect(Chef).to receive(:deprecated).with(:map_collision, /Provider foo/)
         node_map.set(:foo, FooProvider)
         node_map.lock!
         node_map.set(:foo, BarProvider)
