@@ -21,11 +21,11 @@ require "chef/resource/scm"
 class Chef
   class Resource
     class Git < Chef::Resource::Scm
-      description "Use the git resource to manage source control resources that exist"\
-                  " in a git repository. git version 1.6.5 (or higher) is required to"\
-                  " use all of the functionality in the git resource."
+      description "Use the git resource to manage source control resources that exist in a git repository. git version 1.6.5 (or higher) is required to use all of the functionality in the git resource."
 
-      property :additional_remotes, Hash, default: lazy { Hash.new }
+      property :additional_remotes, Hash,
+               description: "A Hash of additional remotes that are added to the git repository configuration.",
+               default: lazy { Hash.new }
 
       alias :branch :revision
       alias :reference :revision

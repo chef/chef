@@ -25,19 +25,24 @@ class Chef
       provides :osx_profile
       provides :osx_config_profile
 
-      description "Use the osx_profile resource to manage configuration profiles (.mobileconfig files)"\
-                  " on the macOS platform. The osx_profile resource installs profiles by using"\
-                  " the uuidgen library to generate a unique ProfileUUID, and then using the"\
-                  " profiles command to install the profile on the system."
+      description "Use the osx_profile resource to manage configuration profiles (.mobileconfig files) on the macOS platform. The osx_profile resource installs profiles by using the uuidgen library to generate a unique ProfileUUID, and then using the profiles command to install the profile on the system."
       introduced "12.7"
 
       default_action :install
       allowed_actions :install, :remove
 
-      property :profile_name, String, name_property: true, identity: true
-      property :profile, [ String, Hash ]
-      property :identifier, String
-      property :path, String
+      property :profile_name, String,
+               description: "Use to specify the name of the profile, if different from the name of the resource block.",
+               name_property: true, identity: true
+
+      property :profile, [ String, Hash ],
+               description: "Use to specify a profile. This may be the name of a profile contained in a cookbook or a Hash that contains the contents of the profile."
+
+      property :identifier, String,
+               description: "Use to specify the identifier for the profile, such as com.company.screensaver."
+
+      property :path, String,
+               description: "The path to write the profile to disk before loading it."
     end
   end
 end

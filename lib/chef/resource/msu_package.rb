@@ -34,13 +34,16 @@ class Chef
       default_action :install
 
       property :source, String,
-                coerce: (proc do |s|
-                  unless s.nil?
-                    uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
-                  end
-                end),
-                default: lazy { |r| r.package_name }
-      property :checksum, String, desired_state: false
+               description: "The local file path or URL for the MSU package.",
+               coerce: (proc do |s|
+                 unless s.nil?
+                   uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
+                 end
+               end),
+               default: lazy { |r| r.package_name }
+
+      property :checksum, String, desired_state: false,
+               description: "SHA-256 digest used to verify the checksum of the downloaded MSU package."
     end
   end
 end

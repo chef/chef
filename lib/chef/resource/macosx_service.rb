@@ -31,9 +31,8 @@ class Chef
 
       state_attrs :enabled, :running
 
-      # This will enable user to pass a plist in the case
-      # that the filename and label for the service dont match
-      property :plist, String
+      property :plist, String,
+               description: "A plist to use in the case where the filename and label for the service do not match."
 
       property :session_type, String
 

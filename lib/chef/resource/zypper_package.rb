@@ -28,11 +28,11 @@ class Chef
       description "Use the zypper_package resource to install, upgrade, and remove packages with Zypper for the SUSE Enterprise and OpenSUSE platforms."
 
       property :gpg_check, [ TrueClass, FalseClass ],
-               description: "Verify the package's GPG signature",
+               description: "Verify the package's GPG signature. Can also be controlled site-wide using the ``zypper_check_gpg`` config option.",
                default: lazy { Chef::Config[:zypper_check_gpg] }
 
       property :allow_downgrade, [ TrueClass, FalseClass ],
-               description: "",
+               description: "Allow downgrading a package to satisfy requested version requirements.",
                default: false
     end
   end

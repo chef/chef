@@ -23,10 +23,7 @@ class Chef
       resource_name :dmg_package
       provides(:dmg_package) { true }
 
-      description "Use the dmg_package resource to install a dmg 'package'. The resource will retrieve the"\
-                  " dmg file from a remote URL, mount it using OS X's hdidutil, copy the application (.app directory)"\
-                  " to the specified destination (/Applications), and detach the image using hdiutil. The dmg file"\
-                  " will be stored in the Chef::Config[:file_cache_path]."
+      description "Use the dmg_package resource to install a dmg 'package'. The resource will retrieve the dmg file from a remote URL, mount it using OS X's hdidutil, copy the application (.app directory) to the specified destination (/Applications), and detach the image using hdiutil. The dmg file will be stored in the Chef::Config[:file_cache_path]."
       introduced "14.0"
 
       property :app, String,

@@ -98,9 +98,12 @@ class Chef
                description: "Windows only: The password of the user specified by the user property. This property is mandatory if user is specified on Windows and may only be specified if user is specified. The sensitive property for this resource will automatically be set to true if password is specified."
 
       # lazy used to set default value of sensitive to true if password is set
-      property :sensitive, [ TrueClass, FalseClass ], default: lazy { |r| r.password ? true : false }
+      property :sensitive, [ TrueClass, FalseClass ],
+               description: "Ensure that sensitive resource data is not logged by the chef-client.",
+               default: lazy { |r| r.password ? true : false }
 
       property :elevated, [ TrueClass, FalseClass ], default: false,
+               description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running Chef needs the “Replace a process level token” and “Adjust Memory Quotas for a process” permissions. The user that is running the command needs the “Log on as a batch job” permission.\nBecause this requires a login, the user and password properties are required.",
                introduced: "13.3"
 
       def self.set_guard_inherited_attributes(*inherited_attributes)
