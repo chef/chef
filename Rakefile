@@ -19,7 +19,6 @@
 
 require_relative "tasks/rspec"
 require_relative "tasks/maintainers"
-require_relative "tasks/cbgb"
 require_relative "tasks/dependencies"
 require_relative "tasks/announce"
 
