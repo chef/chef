@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.1 -->
-## [v14.5.1](https://github.com/chef/chef/tree/v14.5.1) (2018-09-05)
+<!-- latest_release 14.5.2 -->
+## [v14.5.2](https://github.com/chef/chef/tree/v14.5.2) (2018-09-06)
 
 #### Merged Pull Requests
-- Shorten the resource collision deprecation message [#7601](https://github.com/chef/chef/pull/7601) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update rubyzip to 1.2.2 [#7618](https://github.com/chef/chef/pull/7618) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Update rubyzip to 1.2.2 [#7618](https://github.com/chef/chef/pull/7618) ([tas50](https://github.com/tas50)) <!-- 14.5.2 -->
 - Shorten the resource collision deprecation message [#7601](https://github.com/chef/chef/pull/7601) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.5.1 -->
 - Update inspec-core to 2.2.78 [#7606](https://github.com/chef/chef/pull/7606) ([tas50](https://github.com/tas50)) <!-- 14.5.0 -->
 - Update property descriptions and remove extra nil types [#7604](https://github.com/chef/chef/pull/7604) ([tas50](https://github.com/tas50)) <!-- 14.4.63 -->
