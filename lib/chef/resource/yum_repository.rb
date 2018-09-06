@@ -143,7 +143,7 @@ class Chef
                name_property: true
 
       property :skip_if_unavailable, [TrueClass, FalseClass],
-               description: ""
+               description: "Allow yum to continue if this repository cannot be contacted for any reason."
 
       property :source, String,
                description: "Use a custom template source instead of the default one."

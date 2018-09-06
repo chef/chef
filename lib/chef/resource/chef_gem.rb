@@ -37,10 +37,13 @@ class Chef
       resource_name :chef_gem
 
       property :gem_binary, default: "#{RbConfig::CONFIG['bindir']}/gem",
+                            description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by the chef-client will be installed.",
                             callbacks: {
                  "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { |v| v == "#{RbConfig::CONFIG['bindir']}/gem" },
                }
-      property :compile_time, [TrueClass, FalseClass], default: false, desired_state: false
+      property :compile_time, [TrueClass, FalseClass],
+               description: "Controls the phase during which a gem is installed on a node. Set to 'true' to install a gem while the resource collection is being built (the 'compile phase'). Set to 'false' to install a gem while the chef-client is configuring the node (the 'converge phase').",
+               default: false, desired_state: false
 
       # force the resource to compile time if the compile time property has been set
       def after_created
