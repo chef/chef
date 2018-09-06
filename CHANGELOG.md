@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.3 -->
-## [v14.5.3](https://github.com/chef/chef/tree/v14.5.3) (2018-09-06)
+<!-- latest_release 14.5.4 -->
+## [v14.5.4](https://github.com/chef/chef/tree/v14.5.4) (2018-09-06)
 
 #### Merged Pull Requests
-- Remove the CBGB [#7619](https://github.com/chef/chef/pull/7619) ([nathenharvey](https://github.com/nathenharvey))
+- Add additional resource descriptions [#7623](https://github.com/chef/chef/pull/7623) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Add additional resource descriptions [#7623](https://github.com/chef/chef/pull/7623) ([tas50](https://github.com/tas50)) <!-- 14.5.4 -->
 - Remove the CBGB [#7619](https://github.com/chef/chef/pull/7619) ([nathenharvey](https://github.com/nathenharvey)) <!-- 14.5.3 -->
 - Update rubyzip to 1.2.2 [#7618](https://github.com/chef/chef/pull/7618) ([tas50](https://github.com/tas50)) <!-- 14.5.2 -->
 - Shorten the resource collision deprecation message [#7601](https://github.com/chef/chef/pull/7601) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.5.1 -->
