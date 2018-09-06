@@ -271,7 +271,7 @@ GEM
     ruby-prof (0.17.0)
     ruby-progressbar (1.10.0)
     ruby-shadow (2.5.0)
-    rubyzip (1.2.1)
+    rubyzip (1.2.2)
     safe_yaml (1.0.4)
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
