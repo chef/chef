@@ -52,7 +52,8 @@ class Chef
                         default: true, desired_state: false
       property :unit_name, String, desired_state: false,
                                    identity: true,
-                                   name_property: true
+                                   name_property: true,
+                                   introduced: "13.7"
 
       def to_ini
         case content

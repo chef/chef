@@ -38,28 +38,38 @@ class Chef
       # its own arguments as unintended side-effects (and why functional languages that don't allow modifcations
       # of variables eliminate entire classes of bugs).
       # </lecture>
-      property :package_name, [ String, Array ], identity: true, coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
-      property :version, [ String, Array ], coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
-      property :arch, [ String, Array ], coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
+      property :package_name, [ String, Array ],
+               description: "One of the following: the name of a package, the name of a package and its architecture, the name of a dependency.",
+               identity: true, coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
 
-      property :flush_cache,
-        Hash,
-        default: { before: false, after: false },
-        coerce: proc { |v|
-          if v.is_a?(Hash)
-            v
-          elsif v.is_a?(Array)
-            v.each_with_object({}) { |arg, obj| obj[arg] = true }
-          elsif v.is_a?(TrueClass) || v.is_a?(FalseClass)
-            { before: v, after: v }
-          elsif v == :before
-            { before: true, after: false }
-          elsif v == :after
-            { after: true, before: false }
-          end
-        }
+      property :version, [ String, Array ],
+               description: "The version of a package to be installed or upgraded. This property is ignored when using the ':upgrade' action.",
+               coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
 
-      property :allow_downgrade, [ true, false ], default: false
+      property :arch, [ String, Array ],
+               description: "The architecture of the package to be installed or upgraded. This value can also be passed as part of the package name.",
+               coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
+
+      property :flush_cache, Hash,
+               description: "Flush the in-memory cache before or after a Yum operation that installs, upgrades, or removes a package. Accepts a Hash in the form: { :before => true/false, :after => true/false } or an Array in the form [ :before, :after ].\nYum automatically synchronizes remote metadata to a local cache. The chef-client creates a copy of the local cache, and then stores it in-memory during the chef-client run. The in-memory cache allows packages to be installed during the chef-client run without the need to continue synchronizing the remote metadata to the local cache while the chef-client run is in-progress.",
+               default: { before: false, after: false },
+               coerce: proc { |v|
+                 if v.is_a?(Hash)
+                   v
+                 elsif v.is_a?(Array)
+                   v.each_with_object({}) { |arg, obj| obj[arg] = true }
+                 elsif v.is_a?(TrueClass) || v.is_a?(FalseClass)
+                   { before: v, after: v }
+                 elsif v == :before
+                   { before: true, after: false }
+                 elsif v == :after
+                   { after: true, before: false }
+                 end
+               }
+
+      property :allow_downgrade, [ true, false ],
+               description: "Downgrade a package to satisfy requested version requirements.",
+               default: false
 
       property :yum_binary, String
     end
