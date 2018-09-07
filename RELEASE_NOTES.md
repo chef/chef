@@ -1454,7 +1454,7 @@ It is now possible to load Solaris services recursively, by ensuring the new `op
 
 This is the inverse of the pre-existing whitelisting functionality.
 
-## The guard interpreter for `powershell_script` is Powershell, again
+## The guard interpreter for `powershell_script` is PowerShell, again
 
 When writing `not_if` or `only_if` statements, by default we now run those statements using powershell, rather than forcing the user to set `guard_interpreter` each time.
 

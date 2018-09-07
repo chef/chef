@@ -129,7 +129,7 @@ EOH
           "-NonInteractive",
           "-NoProfile",
           "-ExecutionPolicy #{execution_policy}",
-          # Powershell will hang if STDIN is redirected
+          # PowerShell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
           "-InputFormat None",
         ]
@@ -137,10 +137,10 @@ EOH
 
       # A wrapper script is used to launch user-supplied script while
       # still obtaining useful process exit codes. Unless you
-      # explicitly call exit in Powershell, the powershell.exe
+      # explicitly call exit in PowerShell, the powershell.exe
       # interpreter returns only 0 for success or 1 for failure. Since
       # we'd like to get specific exit codes from executable tools run
-      # with Powershell, we do some work using the automatic variables
+      # with PowerShell, we do some work using the automatic variables
       # $? and $LASTEXITCODE to return the process exit code of the
       # last process run in the script if it is the last command
       # executed, otherwise 0 or 1 based on whether $? is set to true

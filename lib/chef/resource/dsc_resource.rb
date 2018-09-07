@@ -73,7 +73,7 @@ class Chef
 
       property :module_version, String,
                introduced: "12.21",
-               description: "The version number of the module to use. Powershell 5.0.10018.0 (or higher) supports having multiple versions of a module installed. This should be specified along with the module_name."
+               description: "The version number of the module to use. PowerShell 5.0.10018.0 (or higher) supports having multiple versions of a module installed. This should be specified along with the module_name."
 
       def property(property_name, value = nil)
         if not property_name.is_a?(Symbol)

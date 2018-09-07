@@ -24,7 +24,7 @@ class Chef
       preview_resource true
       resource_name "powershell_package_source"
 
-      description "Use the powershell_package_source resource to register a powershell package repository."
+      description "Use the powershell_package_source resource to register a PowerShell package repository."
       introduced "14.3"
 
       property :source_name, String,

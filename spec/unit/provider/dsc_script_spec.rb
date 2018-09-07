@@ -162,7 +162,7 @@ describe Chef::Provider::DscScript do
         end
       end
 
-      it "raises an exception if Powershell is not present" do
+      it "raises an exception if PowerShell is not present" do
         expect do
           provider.run_action(:run)
         end.to raise_error(Chef::Exceptions::ProviderNotFound)
