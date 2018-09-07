@@ -28,7 +28,7 @@ class Chef
       description "Use the route resource to manage the system routing table in a Linux environment."
 
       property :target, String, identity: true, name_property: true
-      property :comment, [String, nil]
+      property :comment, [String, nil], introduced: "14.0"
       property :metric, [Integer, nil]
       property :netmask, [String, nil]
       property :gateway, [String, nil]

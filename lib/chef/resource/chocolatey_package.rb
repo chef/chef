@@ -43,7 +43,8 @@ class Chef
 
       property :returns, [Integer, Array],
                 description: "The exit code(s) returned a chocolatey package that indicate success.",
-                default: [ 0 ], desired_state: false
+                default: [ 0 ], desired_state: false,
+                introduced: "12.18"
     end
   end
 end

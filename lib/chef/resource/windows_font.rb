@@ -29,7 +29,7 @@ class Chef
       introduced "14.0"
 
       property :font_name, String,
-               description: "The file name of the font file name to install if different than the resource name.",
+               description: "The name of the font file to install, if it differs from the resource name.",
                name_property: true
 
       property :source, String,

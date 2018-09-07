@@ -36,7 +36,7 @@ class Chef
                regex: [/^[^\/]+$/],
                description: "The name of the repository to configure, if it differs from the name of the resource block. The value of this setting must not contain spaces.",
                validation_message: "repo_name property cannot contain a forward slash '/'",
-               name_property: true
+               introduced: "14.1", name_property: true
 
       property :uri, String,
                description: "The base of the Debian distribution."

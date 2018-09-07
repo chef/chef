@@ -31,6 +31,7 @@ class Chef
                desired_state: false
 
       property :overwrite_config_files, [TrueClass, FalseClass],
+               introduced: "14.0",
                description: "Overwrite existing config files with those in the package if prompted by apt.",
                default: false
 
