@@ -18,7 +18,7 @@ bundle install
 
 # it appears that the gem that triggers this script fires off this script before
 # the gem is actually available via bundler on rubygems.org.
-sleep 120
+sleep 240
 
 gem install rake
 rake dependencies:update_gemfile_lock
