@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.6 -->
-## [v14.5.6](https://github.com/chef/chef/tree/v14.5.6) (2018-09-07)
+<!-- latest_release 14.5.7 -->
+## [v14.5.7](https://github.com/chef/chef/tree/v14.5.7) (2018-09-08)
 
 #### Merged Pull Requests
-- Add introduced versions for properties and more descriptions [#7627](https://github.com/chef/chef/pull/7627) ([tas50](https://github.com/tas50))
+- Properly capitalize PowerShell in descriptions and errors [#7630](https://github.com/chef/chef/pull/7630) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Properly capitalize PowerShell in descriptions and errors [#7630](https://github.com/chef/chef/pull/7630) ([tas50](https://github.com/tas50)) <!-- 14.5.7 -->
 - Add introduced versions for properties and more descriptions [#7627](https://github.com/chef/chef/pull/7627) ([tas50](https://github.com/tas50)) <!-- 14.5.6 -->
 - Remove unnecessary declare_resource usage in build_essential [#7624](https://github.com/chef/chef/pull/7624) ([tas50](https://github.com/tas50)) <!-- 14.5.5 -->
 - Add additional resource descriptions [#7623](https://github.com/chef/chef/pull/7623) ([tas50](https://github.com/tas50)) <!-- 14.5.4 -->
