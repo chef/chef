@@ -86,7 +86,7 @@ class Chef
           # always set the ExecutionPolicy flag
           # see http://technet.microsoft.com/en-us/library/ee176961.aspx
           "-ExecutionPolicy Unrestricted",
-          # Powershell will hang if STDIN is redirected
+          # PowerShell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
           "-InputFormat None",
         ]

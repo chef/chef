@@ -33,11 +33,11 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
     Chef::Resource::DscResource.new("dsc_resource_test", run_context)
   end
 
-  context "when Powershell does not support Invoke-DscResource"
-  context "when Powershell supports Invoke-DscResource" do
+  context "when PowerShell does not support Invoke-DscResource"
+  context "when PowerShell supports Invoke-DscResource" do
     before do
       if !Chef::Platform.supports_dsc_invoke_resource?(node)
-        skip "Requires Powershell >= 5.0.10018.0"
+        skip "Requires PowerShell >= 5.0.10018.0"
       elsif !Chef::Platform.supports_refresh_mode_enabled?(node) && !Chef::Platform.dsc_refresh_mode_disabled?(node)
         skip "Requires LCM RefreshMode is Disabled"
       end

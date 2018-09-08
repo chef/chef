@@ -27,7 +27,7 @@ describe Chef::Provider::DscResource do
     Chef::Provider::DscResource.new(resource, run_context)
   end
 
-  context "when Powershell does not support Invoke-DscResource" do
+  context "when PowerShell does not support Invoke-DscResource" do
     let (:node) do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = "4.0"
@@ -40,7 +40,7 @@ describe Chef::Provider::DscResource do
     end
   end
 
-  context "when Powershell supports Invoke-DscResource" do
+  context "when PowerShell supports Invoke-DscResource" do
 
     context "when RefreshMode is not set to Disabled" do
       context "and the WMF 5 is a preview release" do

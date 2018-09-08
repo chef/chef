@@ -36,7 +36,7 @@ describe "Chef::ReservedNames::Win32::Crypto", :windows_only do
 
     it "can be decrypted by powershell" do
       encrypted = Chef::ReservedNames::Win32::Crypto.encrypt(plaintext)
-      resource = Chef::Resource::WindowsScript::PowershellScript.new("Powershell resource functional test", @run_context)
+      resource = Chef::Resource::WindowsScript::PowershellScript.new("PowerShell resource functional test", @run_context)
       resource.code <<~EOF
         $encrypted = '#{encrypted}' | ConvertTo-SecureString
         $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($encrypted)

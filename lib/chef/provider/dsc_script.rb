@@ -63,11 +63,11 @@ class Chef
           err = [
             "Could not find PowerShell DSC support on the system",
             powershell_info_str,
-            "Powershell 4.0 or higher was not detected on your system and is required to use the dsc_script resource.",
+            "PowerShell 4.0 or higher was not detected on your system and is required to use the dsc_script resource.",
           ]
           a.assertion { supports_dsc? }
           a.failure_message Chef::Exceptions::ProviderNotFound, err.join(" ")
-          a.whyrun err + ["Assuming a previous resource installs Powershell 4.0 or higher."]
+          a.whyrun err + ["Assuming a previous resource installs PowerShell 4.0 or higher."]
           a.block_action!
         end
       end
@@ -175,9 +175,9 @@ class Chef
 
       def powershell_info_str
         if run_context && run_context.node[:languages] && run_context.node[:languages][:powershell]
-          install_info = "Powershell #{run_context.node[:languages][:powershell][:version]} was found on the system."
+          install_info = "PowerShell #{run_context.node[:languages][:powershell][:version]} was found on the system."
         else
-          install_info = "Powershell was not found."
+          install_info = "PowerShell was not found."
         end
       end
     end
