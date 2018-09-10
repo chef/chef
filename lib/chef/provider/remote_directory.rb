@@ -80,7 +80,24 @@ class Chef
       end
 
       private
+      
+      # Symbol defining the source of remote_directory content
+      #
+      # @return [Symbol] Either :files or :templates segment target
+      #
+      def segment_name
+        new_resource.segment
+      end
 
+      # Depending on the segment property definition, return the appropriate Resource class
+      #
+      # @return [Class] Either CookbookFile or Template resource class
+      #
+      def segment_resource
+        return segment_name == :files ? Chef::Resource::CookbookFile : Chef::Resource::Template
+        raise Chef::Exceptions::InvalidResourceSpecification, "Invalid segment name, #{segment_name}." 
+      end
+      
       # Add a file and its parent directories to the managed_files Hash.
       #
       # @param [String] cookbook_file_relative_path relative path to the file
@@ -156,7 +173,7 @@ class Chef
       #
       def files_to_transfer
         cookbook = run_context.cookbook_collection[resource_cookbook]
-        files = cookbook.relative_filenames_in_preferred_directory(node, :files, source)
+        files = cookbook.relative_filenames_in_preferred_directory(node, segment_name, source)
         files.sort_by! { |x| x.count(::File::SEPARATOR) }
       end
 
@@ -203,7 +220,7 @@ class Chef
       # @api private
       #
       def cookbook_file_resource(target_path, relative_source_path)
-        res = Chef::Resource::CookbookFile.new(target_path, run_context)
+        res = segment_resource.new(target_path, run_context)
         res.cookbook_name = resource_cookbook
         # Set the sensitivity level
         res.sensitive(new_resource.sensitive)
