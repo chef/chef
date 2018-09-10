@@ -100,9 +100,9 @@ platforms:
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
 
-- name: opensuse-leap
+- name: opensuse-leap-15
   driver:
-    image: dokken/opensuse-leap
+    image: dokken/opensuse-leap-15
     pid_one_command: /bin/systemd
 
 suites:
