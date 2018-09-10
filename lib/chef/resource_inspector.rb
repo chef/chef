@@ -56,6 +56,7 @@ module ResourceInspector
       acc << { name: n, description: opts[:description],
                introduced: opts[:introduced], is: opts[:is],
                deprecated: opts[:deprecated] || false,
+               required: opts[:required] || false,
                default: get_default(opts[:default]),
                name_property: opts[:name_property] || false }
     end
