@@ -68,13 +68,13 @@ merge_actions:
       only_if: built_in:bump_version
 
 subscriptions:
-  - workload: artifact_published:unstable:chef:*
+  - workload: artifact_published:unstable:chef:14*
     actions:
       - built_in:build_docker_image
-  - workload: artifact_published:current:chef:*
+  - workload: artifact_published:current:chef:14*
     actions:
       - built_in:tag_docker_image
-  - workload: artifact_published:stable:chef:*
+  - workload: artifact_published:stable:chef:14*
     actions:
       - built_in:rollover_changelog
       - bash:.expeditor/update_dockerfile.sh
