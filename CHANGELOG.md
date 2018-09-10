@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.8 -->
-## [v14.5.8](https://github.com/chef/chef/tree/v14.5.8) (2018-09-10)
+<!-- latest_release 14.5.9 -->
+## [v14.5.9](https://github.com/chef/chef/tree/v14.5.9) (2018-09-10)
 
 #### Merged Pull Requests
-- Add required properties to the resource inspector output [#7631](https://github.com/chef/chef/pull/7631) ([tas50](https://github.com/tas50))
+- Fix remote_directory does not obey removal of file specificity [#7551](https://github.com/chef/chef/pull/7551) ([thechile](https://github.com/thechile))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Fix remote_directory does not obey removal of file specificity [#7551](https://github.com/chef/chef/pull/7551) ([thechile](https://github.com/thechile)) <!-- 14.5.9 -->
 - Add required properties to the resource inspector output [#7631](https://github.com/chef/chef/pull/7631) ([tas50](https://github.com/tas50)) <!-- 14.5.8 -->
 - Properly capitalize PowerShell in descriptions and errors [#7630](https://github.com/chef/chef/pull/7630) ([tas50](https://github.com/tas50)) <!-- 14.5.7 -->
 - Add introduced versions for properties and more descriptions [#7627](https://github.com/chef/chef/pull/7627) ([tas50](https://github.com/tas50)) <!-- 14.5.6 -->
