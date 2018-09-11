@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.10 -->
-## [v14.5.10](https://github.com/chef/chef/tree/v14.5.10) (2018-09-10)
+<!-- latest_release 14.5.11 -->
+## [v14.5.11](https://github.com/chef/chef/tree/v14.5.11) (2018-09-11)
 
 #### Merged Pull Requests
-- Update expeditor config to use subscriptions [#7632](https://github.com/chef/chef/pull/7632) ([tas50](https://github.com/tas50))
+- paludis_package: Make sure timeout property is an Integer [#7625](https://github.com/chef/chef/pull/7625) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- paludis_package: Make sure timeout property is an Integer [#7625](https://github.com/chef/chef/pull/7625) ([tas50](https://github.com/tas50)) <!-- 14.5.11 -->
 - Update expeditor config to use subscriptions [#7632](https://github.com/chef/chef/pull/7632) ([tas50](https://github.com/tas50)) <!-- 14.5.10 -->
 - Fix remote_directory does not obey removal of file specificity [#7551](https://github.com/chef/chef/pull/7551) ([thechile](https://github.com/thechile)) <!-- 14.5.9 -->
 - Add required properties to the resource inspector output [#7631](https://github.com/chef/chef/pull/7631) ([tas50](https://github.com/tas50)) <!-- 14.5.8 -->
