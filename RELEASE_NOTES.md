@@ -543,6 +543,10 @@ Use the windows_printer_port resource to create and delete TCP/IPv4 printer port
 
 Use the windows_shortcut resource to create shortcut files on Windows. This resource was ported from the `windows` community cookbook.
 
+### windows_workgroup
+
+Use the windows_workgroup resource to join a Windows Workgroup and reboot the node. This resource is based on the `windows_ad_join` resource.
+
 ## Custom Resource Improvements
 
 We've expanded the DSL for custom resources with new functionality to better document your resources and help users with errors and upgrades. Many resources in Chef itself are now using this new functionality, and you'll see more updated to take advantage of this it in the future.
