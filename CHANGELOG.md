@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.16 -->
-## [v14.5.16](https://github.com/chef/chef/tree/v14.5.16) (2018-09-14)
+<!-- latest_release 14.5.17 -->
+## [v14.5.17](https://github.com/chef/chef/tree/v14.5.17) (2018-09-14)
 
 #### Merged Pull Requests
-- Update libarchive to 3.3.3 [#7641](https://github.com/chef/chef/pull/7641) ([tas50](https://github.com/tas50))
+- Rename windows_ad_join&#39;s newname to be new_hostname [#7643](https://github.com/chef/chef/pull/7643) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Rename windows_ad_join&#39;s newname to be new_hostname [#7643](https://github.com/chef/chef/pull/7643) ([tas50](https://github.com/tas50)) <!-- 14.5.17 -->
 - Update libarchive to 3.3.3 [#7641](https://github.com/chef/chef/pull/7641) ([tas50](https://github.com/tas50)) <!-- 14.5.16 -->
 - windows_workgroup Resource for joining Windows Workgroups [#7564](https://github.com/chef/chef/pull/7564) ([derekgroh](https://github.com/derekgroh)) <!-- 14.5.15 -->
 - Bump inspec-core to 2.2.101 [#7640](https://github.com/chef/chef/pull/7640) ([chef-ci](https://github.com/chef-ci)) <!-- 14.5.14 -->
