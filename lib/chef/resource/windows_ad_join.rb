@@ -52,8 +52,9 @@ class Chef
                description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the Chef run completes, or never. Note that a reboot is necessary for changes to take effect.",
                default: :immediate
 
-      property :new_name, String,
-               description: "Specifies a new name for the computer in the new domain."
+      property :new_hostname, String,
+               description: "Specifies a new hostname for the computer in the new domain.",
+               introduced: "14.5"
 
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
