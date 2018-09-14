@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.12 -->
-## [v14.5.12](https://github.com/chef/chef/tree/v14.5.12) (2018-09-12)
+<!-- latest_release 14.5.13 -->
+## [v14.5.13](https://github.com/chef/chef/tree/v14.5.13) (2018-09-14)
 
 #### Merged Pull Requests
-- Add locale resource more managing the system&#39;s locale [#7633](https://github.com/chef/chef/pull/7633) ([vincentaubert](https://github.com/vincentaubert))
+- windows_ad_join resource - add newname property [#7637](https://github.com/chef/chef/pull/7637) ([derekgroh](https://github.com/derekgroh))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- windows_ad_join resource - add newname property [#7637](https://github.com/chef/chef/pull/7637) ([derekgroh](https://github.com/derekgroh)) <!-- 14.5.13 -->
 - Add locale resource more managing the system&#39;s locale [#7633](https://github.com/chef/chef/pull/7633) ([vincentaubert](https://github.com/vincentaubert)) <!-- 14.5.12 -->
 - paludis_package: Make sure timeout property is an Integer [#7625](https://github.com/chef/chef/pull/7625) ([tas50](https://github.com/tas50)) <!-- 14.5.11 -->
 - Update expeditor config to use subscriptions [#7632](https://github.com/chef/chef/pull/7632) ([tas50](https://github.com/tas50)) <!-- 14.5.10 -->
