@@ -7,13 +7,13 @@ This file holds "in progress" release notes for the current release under develo
 Several new commands have been added under `knife config` to help manage multiple
 profiles in your `credentials` file.
 
-`knife config get-profile` will display the active profile.
+`knife config get-profile` displays the active profile.
 
-`knife config use-profile PROFILE` will set the workstation-level default
-profile. That default can still be overridden by the `--profile` command line
+`knife config use-profile PROFILE` sets the workstation-level default
+profile. You can still override this setting with the `--profile` command line
 option or the `$CHEF_PROFILE` environment variable.
 
-`knife config list-profiles` will display all your available profiles along with
+`knife config list-profiles` displays all your available profiles along with
 summary information on each.
 
 ```bash
@@ -36,53 +36,39 @@ The following new previous resources were added to Chef 14.4. Cookbooks with the
 
 ### Cron_d
 
-Use the cron_d resource to manage cron definitions in /etc/cron.d. This is similar to the `cron` resource, but it does not use the monolithic /etc/crontab. file.
-
-See [cron_d](https://docs.chef.io/resource_cron_d.html) resource documentation for full usage.
+Use the [cron_d](https://docs.chef.io/resource_cron_d.html) resource to manage cron definitions in /etc/cron.d. This is similar to the `cron` resource, but it does not use the monolithic `/etc/crontab`. file.
 
 ### Cron_access
 
-Use the cron_access resource to manage the /etc/cron.allow and /etc/cron.deny files. This resource previously shipped in the `cron` community cookbook and has fully backwards compatibility with the previous `cron_manage` definition in that cookbook.
-
-See [cron_access](https://docs.chef.io/resource_cron_access.html) resource documentation for full usage.
+Use the [cron_access](https://docs.chef.io/resource_cron_access.html) resource to manage the `/etc/cron.allow` and `/etc/cron.deny` files. This resource previously shipped in the `cron` community cookbook and has fully backwards compatibility with the previous `cron_manage` definition in that cookbook.
 
 ### openssl_x509_certificate
 
-Use the openssl_x509_certificate resourc to generate signed or self-signed, PEM-formatted x509 certificates. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate. If a CA private key and certificate are provided, the certificate will be signed with them. This resource previously shipped in the `openssl` cookbook as `openssl_x509` and is fully backwards compatible with the legacy resource name.
+Use the [openssl_x509_certificate](https://docs.chef.io/resource_openssl_x509_certificate.html) resource to generate signed or self-signed, PEM-formatted x509 certificates. If no existing key is specified, the resource automatically generates a passwordless key with the certificate. If a CA private key and certificate are provided, the certificate will be signed with them. This resource previously shipped in the `openssl` cookbook as `openssl_x509` and is fully backwards compatible with the legacy resource name.
 
-See [openssl_x509_certificate](https://docs.chef.io/resource_openssl_x509_certificate.html) resource documentation for full usage.
-
-Thank you [@juju482](https://github.com/juju482) for updating this resource so it could be included here.
+Thank you [@juju482](https://github.com/juju482) for updating this resource!
 
 ### openssl_x509_request
 
-Use the openssl_x509_request resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate.
-
-See [openssl_x509_request](https://docs.chef.io/resource_openssl_x509_request.html) resource documentation for full usage.
+Use the [openssl_x509_request](https://docs.chef.io/resource_openssl_x509_request.html) resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource automatically generates a passwordless key with the certificate.
 
 Thank you [@juju482](https://github.com/juju482) for contributing this resource.
 
 ### openssl_x509_crl
 
-Use the openssl_x509_crl resource to generate PEM-formatted x509 certificate revocation list (CRL) files.
-
-See [openssl_x509_crl](https://docs.chef.io/resource_openssl_x509_crl.html) resource documentation for full usage.
+Use the [openssl_x509_crl](https://docs.chef.io/resource_openssl_x509_crl.html)l resource to generate PEM-formatted x509 certificate revocation list (CRL) files.
 
 Thank you [@juju482](https://github.com/juju482) for contributing this resource.
 
 ### openssl_ec_private_key
 
-Use the openssl_ec_private_key resource to generate ec private key files. If a valid ec key file can be opened at the specified location, no new file will be created.
-
-See [openssl_ec_private_key](https://docs.chef.io/resource_openssl_ec_private_key.html) resource documentation for full usage.
+Use the [openssl_ec_private_key](https://docs.chef.io/resource_openssl_ec_private_key.html) resource to generate ec private key files. If a valid ec key file can be opened at the specified location, no new file will be created.
 
 Thank you [@juju482](https://github.com/juju482) for contributing this resource.
 
 ### openssl_ec_public_key
 
-Use the openssl_ec_public_key resource to generate ec public key files given a private key.
-
-See [openssl_ec_public_key](https://docs.chef.io/resource_openssl_ec_public_key.html) resource documentation for full usage.
+Use the [openssl_ec_public_key](https://docs.chef.io/resource_openssl_ec_public_key.html) resource to generate ec public key files given a private key.
 
 Thank you [@juju482](https://github.com/juju482) for contributing this resource.
 
@@ -94,7 +80,7 @@ The windows_package resource now supports setting the `sensitive` property to av
 
 ### sysctl
 
-The sysctl resource will now update the on-disk systctl.d file even if the current sysctl value matches the desired value.
+The sysctl resource will now update the on-disk `systctl.d` file even if the current sysctl value matches the desired value.
 
 ### windows_task
 
@@ -102,17 +88,17 @@ The windows_task resource now supports setting the task priority of the schedule
 
 ### ifconfig
 
-The ifconfig resource now supports setting the interface's VLAN via a new `vlan` property on RHEL platform_family and setting the interface's gateway via a new `gateway` property on RHEL/Debian platform_family.
+The ifconfig resource now supports setting the interface's VLAN via a new `vlan` property on RHEL `platform_family` and setting the interface's gateway via a new `gateway` property on RHEL/Debian `platform_family`.
 
 Thank you [@tomdoherty](https://github.com/tomdoherty) for this contribution.
 
 ### route
 
-The route resource has been improved to support additional RHEL platform_family systems as well as Amazon Linux.
+The route resource now supports additional RHEL platform_family systems as well as Amazon Linux.
 
 ### systemd_unit
 
-The systemd_unit resource now supports specifying options multiple times in the content hash. Instead of setting the value to a string you can now set it to an array of strings.
+The [systemd_unit](https://docs.chef.io/resource_systemd_unit.html) resource now supports specifying options multiple times in the content hash. Instead of setting the value to a string you can now set it to an array of strings.
 
 Thank you [@dbresson](https://github.com/dbresson) for this contribution.
 
@@ -1472,7 +1458,7 @@ It is now possible to load Solaris services recursively, by ensuring the new `op
 
 This is the inverse of the pre-existing whitelisting functionality.
 
-## The guard interpreter for `powershell_script` is Powershell, again
+## The guard interpreter for `powershell_script` is PowerShell, again
 
 When writing `not_if` or `only_if` statements, by default we now run those statements using powershell, rather than forcing the user to set `guard_interpreter` each time.
 

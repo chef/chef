@@ -9,10 +9,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (14.4.63)
+    chef (14.5.13)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.4.63)
+      chef-config (= 14.5.13)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -40,10 +40,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.4.63-universal-mingw32)
+    chef (14.5.13-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.4.63)
+      chef-config (= 14.5.13)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -86,7 +86,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (14.4.63)
+    chef-config (14.5.13)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -149,7 +149,7 @@ GEM
     highline (1.7.10)
     htmlentities (4.3.4)
     iniparse (1.4.4)
-    inspec-core (2.2.70)
+    inspec-core (2.2.78)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
@@ -167,7 +167,7 @@ GEM
       sslshake (~> 1.2)
       thor (~> 0.20)
       tomlrb (~> 1.2)
-      train-core (~> 1.4, >= 1.4.15)
+      train-core (~> 1.4, >= 1.4.35)
     ipaddress (0.8.3)
     iso8601 (0.11.0)
     json (2.1.0)
@@ -202,7 +202,7 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.2.0)
     netrc (0.11.0)
-    octokit (4.10.0)
+    octokit (4.11.0)
       sawyer (~> 0.8.0, >= 0.5.3)
     ohai (14.4.2)
       chef-config (>= 12.8, < 15)
@@ -271,7 +271,7 @@ GEM
     ruby-prof (0.17.0)
     ruby-progressbar (1.10.0)
     ruby-shadow (2.5.0)
-    rubyzip (1.2.1)
+    rubyzip (1.2.2)
     safe_yaml (1.0.4)
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)

@@ -23,10 +23,7 @@ class Chef
       resource_name :dsc_resource
       provides :dsc_resource
 
-      description "The dsc_resource resource allows any DSC resource to be used in a"\
-                  " Chef recipe, as well as any custom resources that have been added"\
-                  " to your Windows PowerShell environment. Microsoft frequently adds"\
-                  " new resources to the DSC resource collection."
+      description "The dsc_resource resource allows any DSC resource to be used in a Chef recipe, as well as any custom resources that have been added to your Windows PowerShell environment. Microsoft frequently adds new resources to the DSC resource collection."
       introduced "12.2"
 
       # This class will check if the object responds to
@@ -76,7 +73,7 @@ class Chef
 
       property :module_version, String,
                introduced: "12.21",
-               description: "The version number of the module to use. Powershell 5.0.10018.0 (or higher) supports having multiple versions of a module installed. This should be specified along with the module_name."
+               description: "The version number of the module to use. PowerShell 5.0.10018.0 (or higher) supports having multiple versions of a module installed. This should be specified along with the module_name."
 
       def property(property_name, value = nil)
         if not property_name.is_a?(Symbol)

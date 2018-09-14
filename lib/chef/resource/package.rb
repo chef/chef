@@ -53,12 +53,12 @@ class Chef
                coerce: proc { |x| x.is_a?(String) ? x.shellsplit : x }
 
       property :response_file, String,
-               description: "",
+               description: "The direct path to the file used to pre-seed a package.",
                desired_state: false
 
       property :response_file_variables, Hash,
-               description: "",
-               default: lazy { {} }, desired_state: false
+               description: "A Hash of response file variables in the form of {'VARIABLE' => 'VALUE'}.",
+               default: lazy { Hash.new }, desired_state: false
 
       property :source, String,
                description: "The direct path to a the package on the host.",

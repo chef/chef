@@ -34,8 +34,13 @@ class Chef
       allowed_actions :request_reboot, :reboot_now, :cancel
       default_action :nothing # make sure people are quite clear what they want
 
-      property :reason, String, default: "Reboot by Chef"
-      property :delay_mins, Integer, default: 0
+      property :reason, String,
+               description: "A string that describes the reboot action.",
+               default: "Reboot by Chef"
+
+      property :delay_mins, Integer,
+               description: "The amount of time (in minutes) to delay a reboot request.",
+               default: 0
     end
   end
 end

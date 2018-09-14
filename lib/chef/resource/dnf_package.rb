@@ -40,36 +40,33 @@ class Chef
 
       provides :dnf_package
 
-      description "Use the dnf_package resource to install, upgrade, and remove packages"\
-                  " with DNF for Fedora platforms. The dnf_package resource is able to"\
-                  " resolve provides data for packages much like DNF can do when it is"\
-                  " run from the command line. This allows a variety of options for"\
-                  " installing packages, like minimum versions, virtual provides,"\
-                  " and library names."
+      description "Use the dnf_package resource to install, upgrade, and remove packages with DNF for Fedora platforms. The dnf_package resource is able to resolve provides data for packages much like DNF can do when it is run from the command line. This allows a variety of options for installing packages, like minimum versions, virtual provides and library names."
       introduced "12.18"
 
       allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock, :flush_cache
 
       # Install a specific arch
-      property :arch, [String, Array], coerce: proc { |x| [x].flatten }
+      property :arch, [String, Array],
+               description: "The architecture of the package to be installed or upgraded. This value can also be passed as part of the package name.",
+               coerce: proc { |x| [x].flatten }
 
       # Flush the in-memory available/installed cache, this does not flush the dnf caches on disk
-      property :flush_cache,
-        Hash,
-        default: { before: false, after: false },
-        coerce: proc { |v|
-          if v.is_a?(Hash)
-            v
-          elsif v.is_a?(Array)
-            v.each_with_object({}) { |arg, obj| obj[arg] = true }
-          elsif v.is_a?(TrueClass) || v.is_a?(FalseClass)
-            { before: v, after: v }
-          elsif v == :before
-            { before: true, after: false }
-          elsif v == :after
-            { after: true, before: false }
-          end
-        }
+      property :flush_cache, Hash,
+               description: "Flush the in-memory cache before or after a DNF operation that installs, upgrades, or removes a package. DNF automatically synchronizes remote metadata to a local cache. The chef-client creates a copy of the local cache, and then stores it in-memory during the chef-client run. The in-memory cache allows packages to be installed during the chef-client run without the need to continue synchronizing the remote metadata to the local cache while the chef-client run is in-progress.",
+               default: { before: false, after: false },
+               coerce: proc { |v|
+                         if v.is_a?(Hash)
+                           v
+                         elsif v.is_a?(Array)
+                           v.each_with_object({}) { |arg, obj| obj[arg] = true }
+                         elsif v.is_a?(TrueClass) || v.is_a?(FalseClass)
+                           { before: v, after: v }
+                         elsif v == :before
+                           { before: true, after: false }
+                         elsif v == :after
+                           { after: true, before: false }
+                         end
+                       }
 
       def allow_downgrade(arg = nil)
         if !arg.nil?

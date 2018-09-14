@@ -139,13 +139,13 @@ describe "Chef::Platform#supports_msi?" do
 end
 
 describe "Chef::Platform#supports_dsc?" do
-  it "returns false if powershell is not present" do
+  it "returns false if PowerShell is not present" do
     node = Chef::Node.new
     expect(Chef::Platform.supports_dsc?(node)).to be_falsey
   end
 
   ["1.0", "2.0", "3.0"].each do |version|
-    it "returns false for Powershell #{version}" do
+    it "returns false for PowerShell #{version}" do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = version
       expect(Chef::Platform.supports_dsc?(node)).to be_falsey
@@ -153,7 +153,7 @@ describe "Chef::Platform#supports_dsc?" do
   end
 
   ["4.0", "5.0"].each do |version|
-    it "returns true for Powershell #{version}" do
+    it "returns true for PowerShell #{version}" do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = version
       expect(Chef::Platform.supports_dsc?(node)).to be_truthy
@@ -168,7 +168,7 @@ describe "Chef::Platform#supports_dsc_invoke_resource?" do
   end
 
   ["1.0", "2.0", "3.0", "4.0", "5.0.10017.9"].each do |version|
-    it "returns false for Powershell #{version}" do
+    it "returns false for PowerShell #{version}" do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = version
       expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_falsey

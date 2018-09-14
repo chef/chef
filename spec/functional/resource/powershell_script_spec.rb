@@ -42,7 +42,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
   let(:valid_powershell_interpreter_flag) { "-Sta" }
 
   let!(:resource) do
-    r = Chef::Resource::WindowsScript::PowershellScript.new("Powershell resource functional test", @run_context)
+    r = Chef::Resource::WindowsScript::PowershellScript.new("PowerShell resource functional test", @run_context)
     r.code(successful_executable_script_content)
     r
   end
@@ -154,7 +154,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     # This somewhat ambiguous case, two failures of different types,
     # seems to violate the principle of returning the status of the
     # last line executed -- in this case, we return the status of the
-    # second to last line. This happens because Powershell gives no
+    # second to last line. This happens because PowerShell gives no
     # way for us to determine whether the last operation was a cmdlet
     # or Windows process. Because the latter gives more specific
     # errors than 0 or 1, we return that instead, which is acceptable

@@ -93,7 +93,7 @@ describe Chef::Resource::DscResource do
       end
     end
 
-    context "Powershell DSL methods" do
+    context "PowerShell DSL methods" do
       it "responds to :ps_credential" do
         expect(dsc_test_resource.respond_to?(:ps_credential)).to be true
       end

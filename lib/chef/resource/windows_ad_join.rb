@@ -52,6 +52,9 @@ class Chef
                description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the Chef run completes, or never. Note that a reboot is necessary for changes to take effect.",
                default: :immediate
 
+      property :new_name, String,
+               description: "Specifies a new name for the computer in the new domain."
+
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
                default: true
@@ -64,6 +67,7 @@ class Chef
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.domain_user}\",$pswd);"
           cmd << "Add-Computer -DomainName #{new_resource.domain_name} -Credential $credential"
           cmd << " -OUPath \"#{new_resource.ou_path}\"" if new_resource.ou_path
+          cmd << " -NewName \"#{new_resource.new_name}\"" if new_resource.new_name
           cmd << " -Force"
 
           converge_by("join Active Directory domain #{new_resource.domain_name}") do
