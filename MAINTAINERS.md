@@ -113,6 +113,7 @@ To mention the team, use @chef/client-windows
 * [Stuart Preston](https://github.com/stuartpreston)
 * [Salim Alam](https://github.com/chefsalim)
 * [Matt Wrock](https://github.com/mwrock)
+* [Tim Smith](https://github.com/tas50)
 
 ## Solaris
 
@@ -146,6 +147,7 @@ To mention the team, use @chef/client-os-x
 
 * [Tyler Ball](https://github.com/tyler-ball)
 * [mikedodge04](https://github.com/mikedodge04)
+* [Tim Smith](https://github.com/tas50)
 
 ## Debian
 
@@ -172,10 +174,13 @@ To mention the team, use @chef/client-fedora
 
 To mention the team, use @chef/client-opensuse
 
+### Lieutenant
+
+* [Tim Smith](https://github.com/tas50)
+
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
-* [Tim Smith](https://github.com/tas50)
 
 ## SUSE Enterprise Linux Server
 

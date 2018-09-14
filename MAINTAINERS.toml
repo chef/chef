@@ -112,7 +112,8 @@ The specific components of Chef related to a given platform - including (but not
           "smurawski",
           "stuartpreston",
           "chefsalim",
-          "mwrock"
+          "mwrock",
+          "tas50"
         ]
 
       [Org.Components.Subsystems.Solaris]
@@ -139,7 +140,8 @@ The specific components of Chef related to a given platform - including (but not
 
         maintainers = [
           "tyler-ball",
-          "mikedodge04"
+          "mikedodge04",
+          "tas50"
         ]
 
       [Org.Components.Subsystems.Debian]
@@ -165,9 +167,10 @@ The specific components of Chef related to a given platform - including (but not
         title = "openSUSE"
         team = "client-opensuse"
 
+        lieutenant = "tas50"
+
         maintainers = [
-          "lamont-granquist",
-          "tas50"
+          "lamont-granquist"
         ]
 
       [Org.Components.Subsystems."SUSE Enterprise Linux"]
