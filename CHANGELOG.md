@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.14 -->
-## [v14.5.14](https://github.com/chef/chef/tree/v14.5.14) (2018-09-14)
+<!-- latest_release 14.5.15 -->
+## [v14.5.15](https://github.com/chef/chef/tree/v14.5.15) (2018-09-14)
 
 #### Merged Pull Requests
-- Bump inspec-core to 2.2.101 [#7640](https://github.com/chef/chef/pull/7640) ([chef-ci](https://github.com/chef-ci))
+- windows_workgroup Resource for joining Windows Workgroups [#7564](https://github.com/chef/chef/pull/7564) ([derekgroh](https://github.com/derekgroh))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- windows_workgroup Resource for joining Windows Workgroups [#7564](https://github.com/chef/chef/pull/7564) ([derekgroh](https://github.com/derekgroh)) <!-- 14.5.15 -->
 - Bump inspec-core to 2.2.101 [#7640](https://github.com/chef/chef/pull/7640) ([chef-ci](https://github.com/chef-ci)) <!-- 14.5.14 -->
 - windows_ad_join resource - add newname property [#7637](https://github.com/chef/chef/pull/7637) ([derekgroh](https://github.com/derekgroh)) <!-- 14.5.13 -->
 - Add locale resource more managing the system&#39;s locale [#7633](https://github.com/chef/chef/pull/7633) ([vincentaubert](https://github.com/vincentaubert)) <!-- 14.5.12 -->
