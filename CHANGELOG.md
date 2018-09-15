@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.20 -->
-## [v14.5.20](https://github.com/chef/chef/tree/v14.5.20) (2018-09-15)
+<!-- latest_release 14.5.21 -->
+## [v14.5.21](https://github.com/chef/chef/tree/v14.5.21) (2018-09-15)
 
 #### Merged Pull Requests
-- More Resource doc fixes [#7646](https://github.com/chef/chef/pull/7646) ([tas50](https://github.com/tas50))
+- Move subversion properties out of scm and into subversion [#7648](https://github.com/chef/chef/pull/7648) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Move subversion properties out of scm and into subversion [#7648](https://github.com/chef/chef/pull/7648) ([tas50](https://github.com/tas50)) <!-- 14.5.21 -->
 - More Resource doc fixes [#7646](https://github.com/chef/chef/pull/7646) ([tas50](https://github.com/tas50)) <!-- 14.5.20 -->
 - Fix resource descriptions for ohai_hint and rhsm_errata_level [#7645](https://github.com/chef/chef/pull/7645) ([tas50](https://github.com/tas50)) <!-- 14.5.19 -->
 - Bump ohai to 14.5.0 [#7644](https://github.com/chef/chef/pull/7644) ([chef-ci](https://github.com/chef-ci)) <!-- 14.5.18 -->
