@@ -78,16 +78,6 @@ describe Chef::Resource::Scm do
     expect(resource.group).to eq(23)
   end
 
-  it "has a svn_username String property" do
-    resource.svn_username "moartestsplz"
-    expect(resource.svn_username).to eql("moartestsplz")
-  end
-
-  it "has a svn_password String property" do
-    resource.svn_password "taftplz"
-    expect(resource.svn_password).to eql("taftplz")
-  end
-
   it "takes the depth as an integer for shallow clones" do
     resource.depth 5
     expect(resource.depth).to eq(5)

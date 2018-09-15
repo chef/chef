@@ -39,6 +39,13 @@ class Chef
       property :svn_binary, String,
                description: "The location of the svn binary."
 
+      property :svn_username, String,
+               description: "The username to use for interacting with subversion."
+
+      property :svn_password, String,
+               description: "The password to use for interacting with subversion.",
+               sensitive: true, desired_state: false
+
       # Override exception to strip password if any, so it won't appear in logs and different Chef notifications
       def custom_exception_message(e)
         "#{self} (#{defined_at}) had an error: #{e.class.name}: #{svn_password ? e.message.gsub(svn_password, "[hidden_password]") : e.message}"
