@@ -23,18 +23,18 @@ class Chef
       resource_name :ohai_hint
       provides(:ohai_hint) { true }
 
-      description "Use the ohai_hint resource to pass hint data to Ohai to aid in configuration detection."
+      description "Use the ohai_hint resource to aid in configuration detection by passing hint data to Ohai."
       introduced "14.0"
 
       property :hint_name, String,
-               description: "The name of hints file if different from the resource name.",
+               description: "The name of the hints file, if it differs from the resource name.",
                name_property: true
 
       property :content, Hash,
                description: "Values to include in the hint file."
 
       property :compile_time, [TrueClass, FalseClass],
-               description: "Whether the resource will execute during the compile time phase or not.",
+               description: "Determines whether or not the resource is executed during the compile time phase.",
                default: true, desired_state: false
 
       action :create do
