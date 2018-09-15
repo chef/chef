@@ -32,7 +32,7 @@ class Chef
       include Chef::Mixin::HomebrewUser
 
       property :cask_name, String,
-               description: "Cask name to override the resource name.",
+               description: "The name of the Homebrew cask, if it differs from the resource block name.",
                regex: %r{^[\w/-]+$},
                name_property: true
 
@@ -40,7 +40,7 @@ class Chef
                description: "Options to pass to the brew CLI during installation."
 
       property :install_cask, [TrueClass, FalseClass],
-               description: "Auto install cask tap if necessary.",
+               description: "Automatically install the Homebrew cask tap, if necessary.",
                default: true
 
       property :homebrew_path, String,

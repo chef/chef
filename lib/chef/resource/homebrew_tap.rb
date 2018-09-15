@@ -41,15 +41,15 @@ class Chef
                description: "URL to the tap."
 
       property :full, [TrueClass, FalseClass],
-               description: "Perform a full clone rather than a shallow clone on the tap.",
+               description: "Perform a full clone on the tap, as opposed to a shallow clone.",
                default: false
 
       property :homebrew_path, String,
-               description: "The path to the homebrew binary.",
+               description: "The path to the Homebrew binary.",
                default: "/usr/local/bin/brew"
 
       property :owner, String,
-               description: "The owner of the homebrew installation.",
+               description: "The owner of the Homebrew installation.",
                default: lazy { find_homebrew_username }
 
       action :tap do
