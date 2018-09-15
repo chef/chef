@@ -23,7 +23,7 @@ class Chef
       preview_resource true
       resource_name :locale
 
-      description "Use the locale resource to set the system's locale"
+      description "Use the locale resource to set the system's locale."
       introduced "14.5"
 
       property :lang, String,
@@ -34,7 +34,8 @@ class Chef
                description: "Sets the fallback system language."
 
       action :update do
-        description "Updates the system locale"
+        description "Update the system's locale."
+
         if node["init_package"] == "systemd"
           # on systemd settings LC_ALL is (correctly) reserved only for testing and cannot be set globally
           execute "localectl set-locale LANG=#{new_resource.lang}" do
