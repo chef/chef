@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.18 -->
-## [v14.5.18](https://github.com/chef/chef/tree/v14.5.18) (2018-09-14)
+<!-- latest_release 14.5.19 -->
+## [v14.5.19](https://github.com/chef/chef/tree/v14.5.19) (2018-09-15)
 
 #### Merged Pull Requests
-- Bump ohai to 14.5.0 [#7644](https://github.com/chef/chef/pull/7644) ([chef-ci](https://github.com/chef-ci))
+- Fix resource descriptions for ohai_hint and rhsm_errata_level [#7645](https://github.com/chef/chef/pull/7645) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Fix resource descriptions for ohai_hint and rhsm_errata_level [#7645](https://github.com/chef/chef/pull/7645) ([tas50](https://github.com/tas50)) <!-- 14.5.19 -->
 - Bump ohai to 14.5.0 [#7644](https://github.com/chef/chef/pull/7644) ([chef-ci](https://github.com/chef-ci)) <!-- 14.5.18 -->
 - Rename windows_ad_join&#39;s newname to be new_hostname [#7643](https://github.com/chef/chef/pull/7643) ([tas50](https://github.com/tas50)) <!-- 14.5.17 -->
 - Update libarchive to 3.3.3 [#7641](https://github.com/chef/chef/pull/7641) ([tas50](https://github.com/tas50)) <!-- 14.5.16 -->
