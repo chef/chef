@@ -27,15 +27,15 @@ class Chef
       introduced "14.0"
 
       property :hostname, String,
-               description: "The hostname if different than the resource's name.",
+               description: "Used to specify the hostname if it is different than the resource’s name.",
                name_property: true
 
       property :compile_time, [ TrueClass, FalseClass ],
-               description: "Whether the resource runs at compile time or not.",
+               description: "Determines whether or not the resource shoul be run at compile time.",
                default: true
 
       property :ipaddress, String,
-               description: "The ip address to use when configuring the hosts file.",
+               description: "The IP address to use when configuring the hosts file.",
                default: lazy { node["ipaddress"] }
 
       property :aliases, [ Array, nil ],
@@ -43,7 +43,7 @@ class Chef
                default: nil
 
       property :windows_reboot, [ TrueClass, FalseClass ],
-               description: "Whether Windows nodes will be rebooted upon changing the name so changes can take effect.",
+               description: "Determines whether or not Windows should be reboot after changing the hostname, as this is required for the change to take effect.",
                default: true
 
       action_class do
