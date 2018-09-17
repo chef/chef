@@ -40,9 +40,9 @@ github:
   # for building.
   release_branch:
     - master:
-        version_constraint: 14.*
+        version_constraint: 14*
     - chef-13:
-        version_constraint: 13.*
+        version_constraint: 13*
 
 # These actions are taken, in order they are specified, anytime a Pull Request is merged.
 merge_actions:
@@ -68,13 +68,13 @@ merge_actions:
       only_if: built_in:bump_version
 
 subscriptions:
-  - workload: artifact_published:unstable:chef:14*
+  - workload: artifact_published:unstable:chef:{{version_constraint}}
     actions:
       - built_in:build_docker_image
-  - workload: artifact_published:current:chef:14*
+  - workload: artifact_published:current:chef:{{version_constraint}}
     actions:
       - built_in:tag_docker_image
-  - workload: artifact_published:stable:chef:14*
+  - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
       - bash:.expeditor/update_dockerfile.sh
