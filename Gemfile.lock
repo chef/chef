@@ -149,7 +149,7 @@ GEM
     highline (1.7.10)
     htmlentities (4.3.4)
     iniparse (1.4.4)
-    inspec-core (2.2.101)
+    inspec-core (2.2.102)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
