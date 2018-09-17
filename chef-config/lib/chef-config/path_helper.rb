@@ -251,7 +251,7 @@ module ChefConfig
     # Determine if the given path is protected by OS X System Integrity Protection.
     def self.is_sip_path?(path, node)
       if node["platform"] == "mac_os_x" && Gem::Version.new(node["platform_version"]) >= Gem::Version.new("10.11")
-          # todo: parse rootless.conf for this?
+          # @todo: parse rootless.conf for this?
         sip_paths = [
           "/System", "/bin", "/sbin", "/usr"
         ]
