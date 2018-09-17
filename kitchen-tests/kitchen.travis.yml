@@ -105,7 +105,8 @@ platforms:
     image: dokken/opensuse-leap
     pid_one_command: /bin/systemd
     intermediate_instructions:
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN /usr/bin/zypper --non-interactive update
+      - RUN /usr/bin/zypper --non-interactive install cron
 
 suites:
   - name: end-to-end
