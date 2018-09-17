@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 2f7131e7ec2043041771e752072c92062e48864a
+  revision: 26628b89c8baf74568c4bf1eb049192d6bacea5c
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -171,7 +171,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.11.0)
     jmespath (1.4.0)
-    kitchen-vagrant (1.3.3)
+    kitchen-vagrant (1.3.4)
       test-kitchen (~> 1.4)
     libyajl2 (1.2.0)
     license_scout (1.0.15)
@@ -217,7 +217,7 @@ GEM
     nori (2.6.0)
     octokit (4.12.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (14.4.2)
+    ohai (14.5.0)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
