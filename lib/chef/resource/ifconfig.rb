@@ -28,7 +28,7 @@ class Chef
     class Ifconfig < Chef::Resource
       resource_name :ifconfig
 
-      description "Use the ifconfig resource to manage interfaces on *nix systems."
+      description "Use the ifconfig resource to manage interfaces on Unix and Linux systems."
 
       state_attrs :inet_addr, :mask
 
