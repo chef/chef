@@ -12,11 +12,15 @@ Use the windows_workgroup resource to join or change the workgroup of a Windows 
 
 See [windows_workgroup](https://docs.chef.io/resource_windows_workgroup.html) on the docs site for full usage documentation.
 
+Thanks [@derekgroh](https://github.com/derekgroh) for contributing this new resource.
+
 ### locale
 
 Use the locale resource to set the system's locale.
 
 See [locale](https://docs.chef.io/resource_locale.html) on the docs site for full usage documentation.
+
+Thanks [@vincentaubert](https://github.com/vincentaubert) for contributing this new resource.
 
 ## Updated Resources
 
@@ -24,9 +28,11 @@ See [locale](https://docs.chef.io/resource_locale.html) on the docs site for ful
 
 windows_ad_join now includes a new `new_hostnname` property for setting the hostname for the node upon joining the domain.
 
-## InSpec 2.2.101
+Thanks [@derekgroh](https://github.com/derekgroh) for contributing this new property.
 
-InSpec has been updated to from 2.2.70 to 2.2.101. This new version includes the following improvements:
+## InSpec 2.2.102
+
+InSpec has been updated to from 2.2.70 to 2.2.102. This new version includes the following improvements:
   - Support for using ERB templating within the .yml files
   - HTTP basic auth support for fetching dependent profiles
   - A new global attributes concept
