@@ -69,7 +69,8 @@ Chef Provisioning and Drivers.  Supported Drivers are listed in the [README](htt
         "jkeiser",
         "jjasghar",
         "stuartpreston",
-        "thehar"
+        "thehar",
+        "jjlimepoint"
       ]
 
     [Org.Components.Subsystems]
