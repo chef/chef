@@ -4,21 +4,21 @@ This file holds "in progress" release notes for the current release under develo
 
 ## New Resources
 
-The following new previous resources were added to Chef 14.5. Cookbooks with the same resources will continue to take precedent until the Chef 15.0 release
+We've added new resources to Chef 14.5. Cookbooks using these resources will continue to take precedent until the Chef 15.0 release
 
 ### windows_workgroup
 
-Use the windows_workgroup resource to join or change the workgroup of a Windows host.
+Use the `windows_workgroup` resource to join or change a Windows host workgroup.
 
-See [windows_workgroup](https://docs.chef.io/resource_windows_workgroup.html) on the docs site for full usage documentation.
+See the [windows_workgroup](https://docs.chef.io/resource_windows_workgroup.html) documentation for more information.
 
 Thanks [@derekgroh](https://github.com/derekgroh) for contributing this new resource.
 
 ### locale
 
-Use the locale resource to set the system's locale.
+Use the `locale` resource to set the system's locale.
 
-See [locale](https://docs.chef.io/resource_locale.html) on the docs site for full usage documentation.
+See the [locale](https://docs.chef.io/resource_locale.html) documentation for more information.
 
 Thanks [@vincentaubert](https://github.com/vincentaubert) for contributing this new resource.
 
@@ -26,7 +26,7 @@ Thanks [@vincentaubert](https://github.com/vincentaubert) for contributing this 
 
 ### windows_ad_join
 
-windows_ad_join now includes a new `new_hostnname` property for setting the hostname for the node upon joining the domain.
+`windows_ad_join` now includes a `new_hostnname` property for setting the hostname for the node upon joining the domain.
 
 Thanks [@derekgroh](https://github.com/derekgroh) for contributing this new property.
 
