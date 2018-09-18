@@ -64,6 +64,9 @@ class Chef
       def load_current_resource; end
 
       def define_resource_requirements
+        # Before install and upgrade we are validating package name
+        validate_package(new_resource.package_name)
+
         # XXX: upgrade with a specific version doesn't make a whole lot of sense, but why don't we throw this anyway if it happens?
         # if not, shouldn't we raise to tell the user to use install instead of upgrade if they want to pin a version?
         requirements.assert(:install) do |a|
@@ -302,6 +305,9 @@ class Chef
 
       def unlock_package(name, version)
         raise( Chef::Exceptions::UnsupportedAction, "#{self} does not support :unlock" )
+      end
+
+      def validate_package(name)
       end
 
       # used by subclasses.  deprecated.  use #a_to_s instead.

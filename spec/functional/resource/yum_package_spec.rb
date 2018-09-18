@@ -79,6 +79,34 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     context "vanilla use case" do
       let(:package_name) { "chef_rpm" }
 
+      it "raises error if the package name contain whitespace" do
+        flush_cache
+        yum_package.package_name("chef rpm")
+        expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
+      it "raises error if the package name contain tabs" do
+        flush_cache
+        yum_package.package_name("chef\trpm")
+        expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
+      it "raises error if the package name contain newlines" do
+        flush_cache
+        yum_package.package_name("chef\nrpm")
+        expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
+      it "raises error if the any package name contain spaces" do
+        flush_cache
+        yum_package.package_name(["chef_rpm", "foo bar"])
+        expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
       it "installs if the package is not installed" do
         flush_cache
         yum_package.run_action(:install)
@@ -308,7 +336,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     context "with constraints" do
       it "with nothing installed, it installs the latest version" do
         flush_cache
-        yum_package.package_name("chef_rpm >= 1.2")
+        yum_package.package_name("chef_rpm-1.10")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -316,7 +344,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "when it is met, it does nothing" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm >= 1.2")
+        yum_package.package_name("chef_rpm-1.2")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -324,7 +352,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "when it is met, it does nothing" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm >= 1.2")
+        yum_package.package_name("chef_rpm-1.10")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -332,7 +360,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with nothing intalled, it installs the latest version" do
         flush_cache
-        yum_package.package_name("chef_rpm > 1.2")
+        yum_package.package_name("chef_rpm-1.10")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -340,7 +368,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "when it is not met by an installed rpm, it upgrades" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm > 1.2")
+        yum_package.package_name("chef_rpm-1.10")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -348,7 +376,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with an equality constraint, when it is not met by an installed rpm, it upgrades" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm = 1.10")
+        yum_package.package_name("chef_rpm-1.10")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -356,7 +384,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with an equality constraint, when it is met by an installed rpm, it does nothing" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm = 1.2")
+        yum_package.package_name("chef_rpm-1.2")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -364,7 +392,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "when it is met by an installed rpm, it does nothing" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm > 1.2")
+        yum_package.package_name("chef_rpm-1.10")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -372,20 +400,20 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "when there is no solution to the contraint" do
         flush_cache
-        yum_package.package_name("chef_rpm > 2.0")
+        yum_package.package_name("chef_rpm-2.0")
         expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
       it "when there is no solution to the contraint but an rpm is preinstalled" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm > 2.0")
+        yum_package.package_name("chef_rpm-2.0")
         expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
       it "with a less than constraint, when nothing is installed, it installs" do
         flush_cache
         yum_package.allow_downgrade true
-        yum_package.package_name("chef_rpm < 1.10")
+        yum_package.package_name("chef_rpm-1.2")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -394,7 +422,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "with a less than constraint, when the install version matches, it does nothing" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.allow_downgrade true
-        yum_package.package_name("chef_rpm < 1.10")
+        yum_package.package_name("chef_rpm-1.2")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -403,7 +431,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "with a less than constraint, when the install version fails, it should downgrade" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.allow_downgrade true
-        yum_package.package_name("chef_rpm < 1.10")
+        yum_package.package_name("chef_rpm-1.2")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -636,6 +664,34 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   describe ":upgrade" do
 
     context "with source arguments" do
+      it "raises error if the package name contain whitespace" do
+        flush_cache
+        yum_package.package_name("chef rpm")
+        expect { yum_package.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
+      it "raises error if the package name contain tabs" do
+        flush_cache
+        yum_package.package_name("chef\trpm")
+        expect { yum_package.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
+      it "raises error if the package name contain newlines" do
+        flush_cache
+        yum_package.package_name("chef\nrpm")
+        expect { yum_package.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
+      it "raises error if the any package name contain spaces" do
+        flush_cache
+        yum_package.package_name(["chef_rpm", "foo bar"])
+        expect { yum_package.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
       it "installs the package when using the source argument" do
         flush_cache
         yum_package.name "something"
@@ -711,7 +767,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with a prco equality pin in the name it upgrades a prior package" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm == 1.10")
+        yum_package.package_name("chef_rpm-1.10")
         yum_package.run_action(:upgrade)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -729,7 +785,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "with a prco equality pin in the name it downgrades a later package" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.allow_downgrade true
-        yum_package.package_name("chef_rpm == 1.2")
+        yum_package.package_name("chef_rpm-1.2")
         yum_package.run_action(:upgrade)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -737,7 +793,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with a > pin in the name and no rpm installed it installs" do
         flush_cache
-        yum_package.package_name("chef_rpm > 1.2")
+        yum_package.package_name("chef_rpm-1.10")
         yum_package.run_action(:upgrade)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -745,7 +801,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with a < pin in the name and no rpm installed it installs" do
         flush_cache
-        yum_package.package_name("chef_rpm < 1.10")
+        yum_package.package_name("chef_rpm-1.2")
         yum_package.run_action(:upgrade)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -753,7 +809,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with a > pin in the name and matching rpm installed it does nothing" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm > 1.2")
+        yum_package.package_name("chef_rpm-1.10")
         yum_package.run_action(:upgrade)
         expect(yum_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -761,7 +817,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with a < pin in the name and no rpm installed it installs" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm < 1.10")
+        yum_package.package_name("chef_rpm-1.2")
         yum_package.run_action(:upgrade)
         expect(yum_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -769,7 +825,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with a > pin in the name and non-matching rpm installed it upgrades" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package.package_name("chef_rpm > 1.2")
+        yum_package.package_name("chef_rpm-1.10")
         yum_package.run_action(:upgrade)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -778,7 +834,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "with a < pin in the name and non-matching rpm installed it downgrades" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package.allow_downgrade true
-        yum_package.package_name("chef_rpm < 1.10")
+        yum_package.package_name("chef_rpm-1.2")
         yum_package.run_action(:upgrade)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -789,6 +845,34 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   describe ":remove" do
     context "vanilla use case" do
       let(:package_name) { "chef_rpm" }
+      it "raises error if the package name contain whitespace" do
+        flush_cache
+        yum_package.package_name("chef rpm")
+        expect { yum_package.run_action(:remove) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
+      it "raises error if the package name contain tabs" do
+        flush_cache
+        yum_package.package_name("chef\trpm")
+        expect { yum_package.run_action(:remove) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
+      it "raises error if the package name contain newlines" do
+        flush_cache
+        yum_package.package_name("chef\nrpm")
+        expect { yum_package.run_action(:remove) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
+      it "raises error if the any package name contain spaces" do
+        flush_cache
+        yum_package.package_name(["chef_rpm", "foo bar"])
+        expect { yum_package.run_action(:remove) }.to raise_error(Chef::Exceptions::Package, /Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed./)
+        expect(yum_package.updated_by_last_action?).to be false
+      end
+
       it "does nothing if the package is not installed" do
         flush_cache
         yum_package.run_action(:remove)

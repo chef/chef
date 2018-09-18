@@ -86,6 +86,14 @@ class Chef
           end
         end
 
+        def validate_package(name)
+          raise( Chef::Exceptions::Package, "Package names containing whitespace characters such as spaces, tabs, or newlines are not allowed." ) if valid_package_names?(name)
+        end
+
+        def valid_package_names?(package_name)
+          Array(package_name).any? { |name| name.index(/\s|\\t|\\n/) }
+        end
+
         def install_package(names, versions)
           method = nil
           methods = []
