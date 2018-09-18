@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.22 -->
-## [v14.5.22](https://github.com/chef/chef/tree/v14.5.22) (2018-09-17)
+<!-- latest_release 14.5.23 -->
+## [v14.5.23](https://github.com/chef/chef/tree/v14.5.23) (2018-09-18)
 
 #### Merged Pull Requests
-- Bump InSpec and Ohai to the latest [#7657](https://github.com/chef/chef/pull/7657) ([tas50](https://github.com/tas50))
+- Add Chef 14.5 release notes [#7652](https://github.com/chef/chef/pull/7652) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Add Chef 14.5 release notes [#7652](https://github.com/chef/chef/pull/7652) ([tas50](https://github.com/tas50)) <!-- 14.5.23 -->
 - Bump InSpec and Ohai to the latest [#7657](https://github.com/chef/chef/pull/7657) ([tas50](https://github.com/tas50)) <!-- 14.5.22 -->
 - Move subversion properties out of scm and into subversion [#7648](https://github.com/chef/chef/pull/7648) ([tas50](https://github.com/tas50)) <!-- 14.5.21 -->
 - More Resource doc fixes [#7646](https://github.com/chef/chef/pull/7646) ([tas50](https://github.com/tas50)) <!-- 14.5.20 -->
