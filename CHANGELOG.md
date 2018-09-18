@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.26 -->
-## [v14.5.26](https://github.com/chef/chef/tree/v14.5.26) (2018-09-18)
+<!-- latest_release 14.5.27 -->
+## [v14.5.27](https://github.com/chef/chef/tree/v14.5.27) (2018-09-18)
 
 #### Merged Pull Requests
-- Remove Bryant Lippert as a FreeBSD maintainer [#7654](https://github.com/chef/chef/pull/7654) ([tas50](https://github.com/tas50))
+- Wire up openssl_x509 [#7660](https://github.com/chef/chef/pull/7660) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- Wire up openssl_x509 [#7660](https://github.com/chef/chef/pull/7660) ([tas50](https://github.com/tas50)) <!-- 14.5.27 -->
 - Remove Bryant Lippert as a FreeBSD maintainer [#7654](https://github.com/chef/chef/pull/7654) ([tas50](https://github.com/tas50)) <!-- 14.5.26 -->
 - Update script resource deprecation waring [#7651](https://github.com/chef/chef/pull/7651) ([tas50](https://github.com/tas50)) <!-- 14.5.25 -->
 - Pull in updated omnibus-software [#7658](https://github.com/chef/chef/pull/7658) ([tas50](https://github.com/tas50)) <!-- 14.5.24 -->
