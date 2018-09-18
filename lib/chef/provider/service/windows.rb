@@ -74,7 +74,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       }.reject { |k, v| v.nil? || v.length == 0 }
 
       Win32::Service.configure(new_config)
-      Chef::Log.info "#{@new_resource} configured with #{new_config.inspect}"
+      Chef::Log.info "#{@new_resource} configured."
 
       if new_config.has_key?(:service_start_name)
         unless Chef::ReservedNames::Win32::Security.get_account_right(canonicalize_username(new_config[:service_start_name])).include?(SERVICE_RIGHT)
