@@ -26,7 +26,7 @@ class Chef
 
       include Chef::Mixin::PowershellOut
 
-      description "Use the windows_workgroup resource to join change the workgroup of a machine."
+      description "Use the windows_workgroup resource to join or change the workgroup of a Windows host."
       introduced "14.5"
 
       property :workgroup_name, String,

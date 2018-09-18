@@ -1,5 +1,50 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.5:
+
+## New Resources
+
+We've added new resources to Chef 14.5. Cookbooks using these resources will continue to take precedent until the Chef 15.0 release
+
+### windows_workgroup
+
+Use the `windows_workgroup` resource to join or change a Windows host workgroup.
+
+See the [windows_workgroup](https://docs.chef.io/resource_windows_workgroup.html) documentation for more information.
+
+Thanks [@derekgroh](https://github.com/derekgroh) for contributing this new resource.
+
+### locale
+
+Use the `locale` resource to set the system's locale.
+
+See the [locale](https://docs.chef.io/resource_locale.html) documentation for more information.
+
+Thanks [@vincentaubert](https://github.com/vincentaubert) for contributing this new resource.
+
+## Updated Resources
+
+### windows_ad_join
+
+`windows_ad_join` now includes a `new_hostnname` property for setting the hostname for the node upon joining the domain.
+
+Thanks [@derekgroh](https://github.com/derekgroh) for contributing this new property.
+
+## InSpec 2.2.102
+
+InSpec has been updated to from 2.2.70 to 2.2.102. This new version includes the following improvements:
+  - Support for using ERB templating within the .yml files
+  - HTTP basic auth support for fetching dependent profiles
+  - A new global attributes concept
+  - Better error handling with Automate reporting
+  - Vendor command now vendors profiles when using path://
+
+## Security updates
+
+### Rubyzip
+
+The rubyzip gem has been updated to 1.2.2 to resolve [CVE-2018-1000544](https://www.cvedetails.com/cve/CVE-2018-1000544/)
+
 # Chef Client Release Notes 14.4:
 
 ## Knife configuration profile management commands
