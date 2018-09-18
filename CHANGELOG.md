@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.27 -->
-## [v14.5.27](https://github.com/chef/chef/tree/v14.5.27) (2018-09-18)
+<!-- latest_release 14.5.28 -->
+## [v14.5.28](https://github.com/chef/chef/tree/v14.5.28) (2018-09-18)
 
 #### Merged Pull Requests
-- Wire up openssl_x509 [#7660](https://github.com/chef/chef/pull/7660) ([tas50](https://github.com/tas50))
+- windows_service: Remove potentially sensitive info from the log [#7659](https://github.com/chef/chef/pull/7659) ([stuartpreston](https://github.com/stuartpreston))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.4.56 -->
 ### Changes since 14.4.56 release
 
 #### Merged Pull Requests
+- windows_service: Remove potentially sensitive info from the log [#7659](https://github.com/chef/chef/pull/7659) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.5.28 -->
 - Wire up openssl_x509 [#7660](https://github.com/chef/chef/pull/7660) ([tas50](https://github.com/tas50)) <!-- 14.5.27 -->
 - Remove Bryant Lippert as a FreeBSD maintainer [#7654](https://github.com/chef/chef/pull/7654) ([tas50](https://github.com/tas50)) <!-- 14.5.26 -->
 - Update script resource deprecation waring [#7651](https://github.com/chef/chef/pull/7651) ([tas50](https://github.com/tas50)) <!-- 14.5.25 -->
