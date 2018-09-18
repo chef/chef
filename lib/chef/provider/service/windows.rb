@@ -91,7 +91,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       }.reject { |k, v| v.nil? || v.length == 0 }
 
       Win32::Service.configure(new_config)
-      logger.info "#{@new_resource} configured with #{new_config.inspect}"
+      logger.info "#{@new_resource} configured."
 
       # LocalSystem is the default runas user, which is a special service account that should ultimately have the rights of BUILTIN\Administrators, but we wouldn't see that from get_account_right
       if new_config.key?(:service_start_name) && new_config[:service_start_name].casecmp("localsystem") != 0
