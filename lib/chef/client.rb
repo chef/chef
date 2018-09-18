@@ -157,7 +157,7 @@ class Chef
       event_handlers += Array(Chef::Config[:event_handlers])
 
       @events = EventDispatch::Dispatcher.new(*event_handlers)
-      # TODO it seems like a bad idea to be deletin' other peoples' hashes.
+      # @todo it seems like a bad idea to be deletin' other peoples' hashes.
       @override_runlist = args.delete(:override_runlist)
       @specific_recipes = args.delete(:specific_recipes)
       @run_status = Chef::RunStatus.new(nil, events)
