@@ -78,6 +78,17 @@ module ResourceInspector
     end
   end
 
+  # is a resource blacklisted for the inspector tool?
+  #
+  # @private
+  # @param resource [Class]
+  # @return [TrueClass, FalseClass] true if the resource is a bogus resource or derived from Chef::Resource::User since we don't want each user resource documented
+  def self.blacklisted_resource?(resource)
+    return true if %w{ Chef::Resource::LWRPBase Chef::Resource::UnresolvedSubscribes }.include?(resource.name)
+    return true if resource < Chef::Resource::User
+    false
+  end
+
   # If we're given no resources, dump all of Chef's built ins
   # otherwise, if we have a path then extract all the resources from the cookbook
   # or else do a list of built in resources
@@ -86,7 +97,7 @@ module ResourceInspector
   # @return [String] JSON formatting of all resources
   def self.inspect(arguments = [], complete: false)
     output = if arguments.empty?
-               ObjectSpace.each_object(Class).select { |k| k < Chef::Resource }.each_with_object({}) { |klass, acc| acc[klass.resource_name] = extract_resource(klass) }
+               ObjectSpace.each_object(Class).select { |k| (k < Chef::Resource && !blacklisted_resource?(k)) }.each_with_object({}) { |klass, acc| acc[klass.resource_name] = extract_resource(klass) }
              else
                arguments.each_with_object({}) do |arg, acc|
                  if File.directory?(arg)
