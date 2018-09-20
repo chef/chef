@@ -6,49 +6,54 @@
 - windows_service: Remove potentially sensitive info from the log [#7659](https://github.com/chef/chef/pull/7659) ([stuartpreston](https://github.com/stuartpreston))
 <!-- latest_release -->
 
-<!-- release_rollup since=14.4.56 -->
-### Changes since 14.4.56 release
+<!-- release_rollup since=14.5.27 -->
+### Changes since 14.5.27 release
 
 #### Merged Pull Requests
 - windows_service: Remove potentially sensitive info from the log [#7659](https://github.com/chef/chef/pull/7659) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.5.28 -->
-- Wire up openssl_x509 [#7660](https://github.com/chef/chef/pull/7660) ([tas50](https://github.com/tas50)) <!-- 14.5.27 -->
-- Remove Bryant Lippert as a FreeBSD maintainer [#7654](https://github.com/chef/chef/pull/7654) ([tas50](https://github.com/tas50)) <!-- 14.5.26 -->
-- Update script resource deprecation waring [#7651](https://github.com/chef/chef/pull/7651) ([tas50](https://github.com/tas50)) <!-- 14.5.25 -->
-- Pull in updated omnibus-software [#7658](https://github.com/chef/chef/pull/7658) ([tas50](https://github.com/tas50)) <!-- 14.5.24 -->
-- Add Chef 14.5 release notes [#7652](https://github.com/chef/chef/pull/7652) ([tas50](https://github.com/tas50)) <!-- 14.5.23 -->
-- Bump InSpec and Ohai to the latest [#7657](https://github.com/chef/chef/pull/7657) ([tas50](https://github.com/tas50)) <!-- 14.5.22 -->
-- Move subversion properties out of scm and into subversion [#7648](https://github.com/chef/chef/pull/7648) ([tas50](https://github.com/tas50)) <!-- 14.5.21 -->
-- More Resource doc fixes [#7646](https://github.com/chef/chef/pull/7646) ([tas50](https://github.com/tas50)) <!-- 14.5.20 -->
-- Fix resource descriptions for ohai_hint and rhsm_errata_level [#7645](https://github.com/chef/chef/pull/7645) ([tas50](https://github.com/tas50)) <!-- 14.5.19 -->
-- Bump ohai to 14.5.0 [#7644](https://github.com/chef/chef/pull/7644) ([chef-ci](https://github.com/chef-ci)) <!-- 14.5.18 -->
-- Rename windows_ad_join&#39;s newname to be new_hostname [#7643](https://github.com/chef/chef/pull/7643) ([tas50](https://github.com/tas50)) <!-- 14.5.17 -->
-- Update libarchive to 3.3.3 [#7641](https://github.com/chef/chef/pull/7641) ([tas50](https://github.com/tas50)) <!-- 14.5.16 -->
-- windows_workgroup Resource for joining Windows Workgroups [#7564](https://github.com/chef/chef/pull/7564) ([derekgroh](https://github.com/derekgroh)) <!-- 14.5.15 -->
-- Bump inspec-core to 2.2.101 [#7640](https://github.com/chef/chef/pull/7640) ([chef-ci](https://github.com/chef-ci)) <!-- 14.5.14 -->
-- windows_ad_join resource - add newname property [#7637](https://github.com/chef/chef/pull/7637) ([derekgroh](https://github.com/derekgroh)) <!-- 14.5.13 -->
-- Add locale resource more managing the system&#39;s locale [#7633](https://github.com/chef/chef/pull/7633) ([vincentaubert](https://github.com/vincentaubert)) <!-- 14.5.12 -->
-- paludis_package: Make sure timeout property is an Integer [#7625](https://github.com/chef/chef/pull/7625) ([tas50](https://github.com/tas50)) <!-- 14.5.11 -->
-- Update expeditor config to use subscriptions [#7632](https://github.com/chef/chef/pull/7632) ([tas50](https://github.com/tas50)) <!-- 14.5.10 -->
-- Fix remote_directory does not obey removal of file specificity [#7551](https://github.com/chef/chef/pull/7551) ([thechile](https://github.com/thechile)) <!-- 14.5.9 -->
-- Add required properties to the resource inspector output [#7631](https://github.com/chef/chef/pull/7631) ([tas50](https://github.com/tas50)) <!-- 14.5.8 -->
-- Properly capitalize PowerShell in descriptions and errors [#7630](https://github.com/chef/chef/pull/7630) ([tas50](https://github.com/tas50)) <!-- 14.5.7 -->
-- Add introduced versions for properties and more descriptions [#7627](https://github.com/chef/chef/pull/7627) ([tas50](https://github.com/tas50)) <!-- 14.5.6 -->
-- Remove unnecessary declare_resource usage in build_essential [#7624](https://github.com/chef/chef/pull/7624) ([tas50](https://github.com/tas50)) <!-- 14.5.5 -->
-- Add additional resource descriptions [#7623](https://github.com/chef/chef/pull/7623) ([tas50](https://github.com/tas50)) <!-- 14.5.4 -->
-- Remove the CBGB [#7619](https://github.com/chef/chef/pull/7619) ([nathenharvey](https://github.com/nathenharvey)) <!-- 14.5.3 -->
-- Update rubyzip to 1.2.2 [#7618](https://github.com/chef/chef/pull/7618) ([tas50](https://github.com/tas50)) <!-- 14.5.2 -->
-- Shorten the resource collision deprecation message [#7601](https://github.com/chef/chef/pull/7601) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.5.1 -->
-- Update inspec-core to 2.2.78 [#7606](https://github.com/chef/chef/pull/7606) ([tas50](https://github.com/tas50)) <!-- 14.5.0 -->
-- Update property descriptions and remove extra nil types [#7604](https://github.com/chef/chef/pull/7604) ([tas50](https://github.com/tas50)) <!-- 14.4.63 -->
-- Allow resource_inspector be used outside the binary [#7609](https://github.com/chef/chef/pull/7609) ([tas50](https://github.com/tas50)) <!-- 14.4.62 -->
-- windows_auto_run: Avoid declare_resource where it&#39;s not needed [#7608](https://github.com/chef/chef/pull/7608) ([tas50](https://github.com/tas50)) <!-- 14.4.61 -->
-- Build chef omnibus package with Chef 14 / Berkshelf 7 [#7603](https://github.com/chef/chef/pull/7603) ([tas50](https://github.com/tas50)) <!-- 14.4.60 -->
-- Simplify the rake task to updating gem dependencies [#7602](https://github.com/chef/chef/pull/7602) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.4.59 -->
-- Add additional property docs + update existing docs [#7600](https://github.com/chef/chef/pull/7600) ([tas50](https://github.com/tas50)) <!-- 14.4.58 -->
-- Bump mixlib-archive to 0.4.16 [#7595](https://github.com/chef/chef/pull/7595) ([chef-ci](https://github.com/chef-ci)) <!-- 14.4.57 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.5.27](https://github.com/chef/chef/tree/v14.5.27) (2018-09-20)
+
+#### Merged Pull Requests
+- Bump mixlib-archive to 0.4.16 [#7595](https://github.com/chef/chef/pull/7595) ([chef-ci](https://github.com/chef-ci))
+- Add additional property docs + update existing docs [#7600](https://github.com/chef/chef/pull/7600) ([tas50](https://github.com/tas50))
+- Simplify the rake task to updating gem dependencies [#7602](https://github.com/chef/chef/pull/7602) ([lamont-granquist](https://github.com/lamont-granquist))
+- Build chef omnibus package with Chef 14 / Berkshelf 7 [#7603](https://github.com/chef/chef/pull/7603) ([tas50](https://github.com/tas50))
+- windows_auto_run: Avoid declare_resource where it&#39;s not needed [#7608](https://github.com/chef/chef/pull/7608) ([tas50](https://github.com/tas50))
+- Allow resource_inspector be used outside the binary [#7609](https://github.com/chef/chef/pull/7609) ([tas50](https://github.com/tas50))
+- Update property descriptions and remove extra nil types [#7604](https://github.com/chef/chef/pull/7604) ([tas50](https://github.com/tas50))
+- Update inspec-core to 2.2.78 [#7606](https://github.com/chef/chef/pull/7606) ([tas50](https://github.com/tas50))
+- Shorten the resource collision deprecation message [#7601](https://github.com/chef/chef/pull/7601) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update rubyzip to 1.2.2 [#7618](https://github.com/chef/chef/pull/7618) ([tas50](https://github.com/tas50))
+- Remove the CBGB [#7619](https://github.com/chef/chef/pull/7619) ([nathenharvey](https://github.com/nathenharvey))
+- Add additional resource descriptions [#7623](https://github.com/chef/chef/pull/7623) ([tas50](https://github.com/tas50))
+- Remove unnecessary declare_resource usage in build_essential [#7624](https://github.com/chef/chef/pull/7624) ([tas50](https://github.com/tas50))
+- Add introduced versions for properties and more descriptions [#7627](https://github.com/chef/chef/pull/7627) ([tas50](https://github.com/tas50))
+- Properly capitalize PowerShell in descriptions and errors [#7630](https://github.com/chef/chef/pull/7630) ([tas50](https://github.com/tas50))
+- Add required properties to the resource inspector output [#7631](https://github.com/chef/chef/pull/7631) ([tas50](https://github.com/tas50))
+- Fix remote_directory does not obey removal of file specificity [#7551](https://github.com/chef/chef/pull/7551) ([thechile](https://github.com/thechile))
+- Update expeditor config to use subscriptions [#7632](https://github.com/chef/chef/pull/7632) ([tas50](https://github.com/tas50))
+- paludis_package: Make sure timeout property is an Integer [#7625](https://github.com/chef/chef/pull/7625) ([tas50](https://github.com/tas50))
+- Add locale resource more managing the system&#39;s locale [#7633](https://github.com/chef/chef/pull/7633) ([vincentaubert](https://github.com/vincentaubert))
+- windows_ad_join resource - add newname property [#7637](https://github.com/chef/chef/pull/7637) ([derekgroh](https://github.com/derekgroh))
+- Bump inspec-core to 2.2.101 [#7640](https://github.com/chef/chef/pull/7640) ([chef-ci](https://github.com/chef-ci))
+- windows_workgroup Resource for joining Windows Workgroups [#7564](https://github.com/chef/chef/pull/7564) ([derekgroh](https://github.com/derekgroh))
+- Update libarchive to 3.3.3 [#7641](https://github.com/chef/chef/pull/7641) ([tas50](https://github.com/tas50))
+- Rename windows_ad_join&#39;s newname to be new_hostname [#7643](https://github.com/chef/chef/pull/7643) ([tas50](https://github.com/tas50))
+- Bump ohai to 14.5.0 [#7644](https://github.com/chef/chef/pull/7644) ([chef-ci](https://github.com/chef-ci))
+- Fix resource descriptions for ohai_hint and rhsm_errata_level [#7645](https://github.com/chef/chef/pull/7645) ([tas50](https://github.com/tas50))
+- More Resource doc fixes [#7646](https://github.com/chef/chef/pull/7646) ([tas50](https://github.com/tas50))
+- Move subversion properties out of scm and into subversion [#7648](https://github.com/chef/chef/pull/7648) ([tas50](https://github.com/tas50))
+- Bump InSpec and Ohai to the latest [#7657](https://github.com/chef/chef/pull/7657) ([tas50](https://github.com/tas50))
+- Add Chef 14.5 release notes [#7652](https://github.com/chef/chef/pull/7652) ([tas50](https://github.com/tas50))
+- Pull in updated omnibus-software [#7658](https://github.com/chef/chef/pull/7658) ([tas50](https://github.com/tas50))
+- Update script resource deprecation waring [#7651](https://github.com/chef/chef/pull/7651) ([tas50](https://github.com/tas50))
+- Remove Bryant Lippert as a FreeBSD maintainer [#7654](https://github.com/chef/chef/pull/7654) ([tas50](https://github.com/tas50))
+- Wire up openssl_x509 [#7660](https://github.com/chef/chef/pull/7660) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v14.4.56](https://github.com/chef/chef/tree/v14.4.56) (2018-08-29)
 
 #### Merged Pull Requests
@@ -116,7 +121,6 @@
 - Resolve new_resource error with cron_d resource [#7588](https://github.com/chef/chef/pull/7588) ([tas50](https://github.com/tas50))
 - openssl resources: Improve descriptions and fix provides for Chef 14.X [#7590](https://github.com/chef/chef/pull/7590) ([tas50](https://github.com/tas50))
 - Be more explicit in disabling provides for openssl_x509 [#7591](https://github.com/chef/chef/pull/7591) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.3.37](https://github.com/chef/chef/tree/v14.3.37) (2018-07-11)
 
