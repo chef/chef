@@ -64,7 +64,7 @@ class Chef
         @current_resource = current_resource
       end
 
-      # XXX: remove in Chef-14
+      # @todo: remove in Chef-15
       def self.include_resource_dsl?
         true
       end
