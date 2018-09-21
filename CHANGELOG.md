@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.28 -->
-## [v14.5.28](https://github.com/chef/chef/tree/v14.5.28) (2018-09-18)
+<!-- latest_release 14.5.29 -->
+## [v14.5.29](https://github.com/chef/chef/tree/v14.5.29) (2018-09-21)
 
 #### Merged Pull Requests
-- windows_service: Remove potentially sensitive info from the log [#7659](https://github.com/chef/chef/pull/7659) ([stuartpreston](https://github.com/stuartpreston))
+- windows_feature: Fix exception message grammar [#7669](https://github.com/chef/chef/pull/7669) ([dgreeninger](https://github.com/dgreeninger))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.27 -->
 ### Changes since 14.5.27 release
 
 #### Merged Pull Requests
+- windows_feature: Fix exception message grammar [#7669](https://github.com/chef/chef/pull/7669) ([dgreeninger](https://github.com/dgreeninger)) <!-- 14.5.29 -->
 - windows_service: Remove potentially sensitive info from the log [#7659](https://github.com/chef/chef/pull/7659) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.5.28 -->
 <!-- release_rollup -->
 
