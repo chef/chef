@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.30 -->
-## [v14.5.30](https://github.com/chef/chef/tree/v14.5.30) (2018-09-21)
+<!-- latest_release 14.5.31 -->
+## [v14.5.31](https://github.com/chef/chef/tree/v14.5.31) (2018-09-21)
 
 #### Merged Pull Requests
-- Add @jjlimepoint as a maintainer for chef-provisioning [#7649](https://github.com/chef/chef/pull/7649) ([jjlimepoint](https://github.com/jjlimepoint))
+- Deprecate ohai resource&#39;s ohai_name property [#7667](https://github.com/chef/chef/pull/7667) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.27 -->
 ### Changes since 14.5.27 release
 
 #### Merged Pull Requests
+- Deprecate ohai resource&#39;s ohai_name property [#7667](https://github.com/chef/chef/pull/7667) ([tas50](https://github.com/tas50)) <!-- 14.5.31 -->
 - Add @jjlimepoint as a maintainer for chef-provisioning [#7649](https://github.com/chef/chef/pull/7649) ([jjlimepoint](https://github.com/jjlimepoint)) <!-- 14.5.30 -->
 - windows_feature: Fix exception message grammar [#7669](https://github.com/chef/chef/pull/7669) ([dgreeninger](https://github.com/dgreeninger)) <!-- 14.5.29 -->
 - windows_service: Remove potentially sensitive info from the log [#7659](https://github.com/chef/chef/pull/7659) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.5.28 -->
