@@ -49,11 +49,6 @@ describe Chef::Application::Solo do
         expect(Chef::Config[:solo]).to be_truthy
       end
 
-      it "should set audit-mode to :disabled" do
-        app.reconfigure
-        expect(Chef::Config[:audit_mode]).to be :disabled
-      end
-
       describe "when configured to not fork the client process" do
         before do
           Chef::Config[:client_fork] = false

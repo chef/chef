@@ -577,11 +577,6 @@ describe Chef::Recipe do
   end
 
   describe "included DSL" do
-    it "should include features from Chef::DSL::Audit" do
-      expect(recipe.singleton_class.included_modules).to include(Chef::DSL::Audit)
-      expect(recipe.respond_to?(:control_group)).to be true
-    end
-
     it "should respond to :ps_credential from Chef::DSL::Powershell" do
       expect(recipe.respond_to?(:ps_credential)).to be true
     end

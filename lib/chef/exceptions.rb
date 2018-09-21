@@ -443,26 +443,7 @@ class Chef
       end
     end
 
-    class AuditError < RuntimeError; end
-
-    class AuditControlGroupDuplicate < AuditError
-      def initialize(name)
-        super "Control group with name '#{name}' has already been defined"
-      end
-    end
-    class AuditNameMissing < AuditError; end
-    class NoAuditsProvided < AuditError
-      def initialize
-        super "You must provide a block with controls"
-      end
-    end
-    class AuditsFailed < AuditError
-      def initialize(num_failed, num_total)
-        super "Audit phase found failures - #{num_failed}/#{num_total} controls failed"
-      end
-    end
-
-    # If a converge or audit fails, we want to wrap the output from those errors into 1 error so we can
+    # If a converge fails, we want to wrap the output from those errors into 1 error so we can
     # see both issues in the output.  It is possible that nil will be provided.  You must call `fill_backtrace`
     # to correctly populate the backtrace with the wrapped backtraces.
     class RunFailedWrappingError < RuntimeError

@@ -272,11 +272,6 @@ class Chef::Application::Client < Chef::Application
       boolean: true
   end
 
-  option :audit_mode,
-    long: "--audit-mode MODE",
-    description: "Enable audit-mode with `enabled`. Disable audit-mode with `disabled`. Skip converge and only perform audits with `audit-only`",
-    proc: lambda { |mo| mo.tr("-", "_").to_sym }
-
   option :minimal_ohai,
     long: "--minimal-ohai",
     description: "Only run the bare minimum ohai plugins chef needs to function",
@@ -373,13 +368,6 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config[:json_attribs]
       config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
       @chef_client_json = config_fetcher.fetch_json
-    end
-
-    if mode = config[:audit_mode] || Chef::Config[:audit_mode]
-      expected_modes = [:enabled, :disabled, :audit_only]
-      unless expected_modes.include?(mode)
-        Chef::Application.fatal!(unrecognized_audit_mode(mode))
-      end
     end
   end
 
@@ -519,17 +507,6 @@ class Chef::Application::Client < Chef::Application
       "\nConfiguration settings:" +
       ("\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]).to_s +
       "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
-  end
-
-  def audit_mode_settings_explanation
-    "\n* To enable audit mode after converge, use command line option `--audit-mode enabled` or set `audit_mode :enabled` in your config file." +
-      "\n* To disable audit mode, use command line option `--audit-mode disabled` or set `audit_mode :disabled` in your config file." +
-      "\n* To only run audit mode, use command line option `--audit-mode audit-only` or set `audit_mode :audit_only` in your config file." +
-      "\nAudit mode is disabled by default."
-  end
-
-  def unrecognized_audit_mode(mode)
-    "Unrecognized setting #{mode} for audit mode." + audit_mode_settings_explanation
   end
 
   def fetch_recipe_tarball(url, path)

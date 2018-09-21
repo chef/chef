@@ -482,14 +482,6 @@ module ChefConfig
     default :ez, false
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false
-    # Possible values for :audit_mode
-    # :enabled, :disabled, :audit_only,
-    #
-    # TODO: 11 Dec 2014: Currently audit-mode is an experimental feature
-    # and is disabled by default. When users choose to enable audit-mode,
-    # a warning is issued in application/client#reconfigure.
-    # This can be removed when audit-mode is enabled by default.
-    default :audit_mode, :disabled
 
     # Chef only needs ohai to run the hostname plugin for the most basic
     # functionality. If the rest of the ohai plugins are not needed (like in

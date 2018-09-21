@@ -108,8 +108,7 @@ shared_context "a client run" do
   let(:http_node_save)        { double("Chef::ServerAPI (node save)") }
   let(:reporting_rest_client) { double("Chef::ServerAPI (reporting client)") }
 
-  let(:runner)       { instance_double("Chef::Runner") }
-  let(:audit_runner) { instance_double("Chef::Audit::Runner", failed?: false) }
+  let(:runner) { instance_double("Chef::Runner") }
 
   def stub_for_register
     # --Client.register
@@ -131,7 +130,6 @@ shared_context "a client run" do
     expect(client.events).to receive(:register).with(instance_of(Chef::DataCollector::Reporter))
     expect(client.events).to receive(:register).with(instance_of(Chef::ResourceReporter))
     expect(client.events).to receive(:register).with(instance_of(Chef::ActionCollection))
-    expect(client.events).to receive(:register).with(instance_of(Chef::Audit::AuditReporter))
   end
 
   def stub_for_node_load
@@ -174,10 +172,6 @@ shared_context "a client run" do
     # define me
   end
 
-  def stub_for_audit
-    # define me
-  end
-
   def stub_for_node_save
     # define me
   end
@@ -190,7 +184,6 @@ shared_context "a client run" do
     Chef::Config[:client_fork] = enable_fork
     Chef::Config[:cache_path] = windows? ? 'C:\chef' : "/var/chef"
     Chef::Config[:why_run] = false
-    Chef::Config[:audit_mode] = :enabled
     Chef::Config[:chef_guid] = "default-guid"
 
     stub_rest_clean
@@ -200,7 +193,6 @@ shared_context "a client run" do
     stub_for_sync_cookbooks
     stub_for_required_recipe
     stub_for_converge
-    stub_for_audit
     stub_for_node_save
 
     expect_any_instance_of(Chef::RunLock).to receive(:acquire)
@@ -248,52 +240,6 @@ shared_context "converge failed" do
   end
 end
 
-shared_context "audit phase completed" do
-  def stub_for_audit
-    # -- Client#run_audits
-    expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
-    expect(audit_runner).to receive(:run).and_return(true)
-    expect(client.events).to receive(:audit_phase_complete)
-  end
-end
-
-shared_context "audit phase failed with error" do
-  let(:audit_error) do
-    err = RuntimeError.new("Unexpected audit error")
-    err.set_backtrace([ "/path/recipe.rb:57", "/path/recipe.rb:55" ])
-    err
-  end
-
-  def stub_for_audit
-    expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
-    expect(Chef::Audit::Logger).to receive(:read_buffer).and_return("Audit mode output!")
-    expect(audit_runner).to receive(:run).and_raise(audit_error)
-    expect(client.events).to receive(:audit_phase_failed).with(audit_error, "Audit mode output!")
-  end
-end
-
-shared_context "audit phase completed with failed controls" do
-  let(:audit_runner) do
-    instance_double("Chef::Audit::Runner", failed?: true,
-                                           num_failed: 1, num_total: 3) end
-
-  let(:audit_error) do
-    err = Chef::Exceptions::AuditsFailed.new(audit_runner.num_failed, audit_runner.num_total)
-    err.set_backtrace([ "/path/recipe.rb:108", "/path/recipe.rb:103" ])
-    err
-  end
-
-  def stub_for_audit
-    expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
-    expect(Chef::Audit::Logger).to receive(:read_buffer).and_return("Audit mode output!")
-    expect(audit_runner).to receive(:run)
-    expect(Chef::Exceptions::AuditsFailed).to receive(:new).with(
-      audit_runner.num_failed, audit_runner.num_total
-    ).and_return(audit_error)
-    expect(client.events).to receive(:audit_phase_failed).with(audit_error, "Audit mode output!")
-  end
-end
-
 shared_context "run completed" do
   def stub_for_run
     expect(client).to receive(:run_completed_successfully)
@@ -318,31 +264,9 @@ end
 shared_examples "a completed run" do
   include_context "run completed"
 
-  it "runs ohai, sets up authentication, loads node state, synchronizes policy, converges, and runs audits" do
+  it "runs ohai, sets up authentication, loads node state, synchronizes policy, converges" do
     # This is what we're testing.
     expect(client.run).to be true
-
-    # fork is stubbed, so we can see the outcome of the run
-    expect(node.automatic_attrs[:platform]).to eq(platform)
-    expect(node.automatic_attrs[:platform_version]).to eq(platform_version)
-  end
-end
-
-shared_examples "a completed run with audit failure" do
-  include_context "run completed"
-
-  before do
-    expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
-  end
-
-  it "converges, runs audits, saves the node and raises the error in a wrapping error" do
-    expect { client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-      expect(error.wrapped_errors.size).to eq(run_errors.size)
-      run_errors.each do |run_error|
-        expect(error.wrapped_errors).to include(run_error)
-        expect(error.backtrace).to include(*run_error.backtrace)
-      end
-    end
 
     # fork is stubbed, so we can see the outcome of the run
     expect(node.automatic_attrs[:platform]).to eq(platform)
@@ -497,7 +421,6 @@ describe Chef::Client do
     shared_examples_for "a successful client run" do
       include_context "a client run"
       include_context "converge completed"
-      include_context "audit phase completed"
 
       include_examples "a completed run"
     end
@@ -577,52 +500,11 @@ describe Chef::Client do
     describe "when converge completes successfully" do
       include_context "a client run"
       include_context "converge completed"
-      context "when audit mode is enabled" do
-        describe "when audit phase errors" do
-          include_context "audit phase failed with error"
-          include_examples "a completed run with audit failure" do
-            let(:run_errors) { [audit_error] }
-          end
-        end
-
-        describe "when audit phase completed" do
-          include_context "audit phase completed"
-          include_examples "a completed run"
-        end
-
-        describe "when audit phase completed with failed controls" do
-          include_context "audit phase completed with failed controls"
-          include_examples "a completed run with audit failure" do
-            let(:run_errors) { [audit_error] }
-          end
-        end
-      end
     end
 
     describe "when converge errors" do
       include_context "a client run"
       include_context "converge failed"
-
-      describe "when audit phase errors" do
-        include_context "audit phase failed with error"
-        include_examples "a failed run" do
-          let(:run_errors) { [converge_error, audit_error] }
-        end
-      end
-
-      describe "when audit phase completed" do
-        include_context "audit phase completed"
-        include_examples "a failed run" do
-          let(:run_errors) { [converge_error] }
-        end
-      end
-
-      describe "when audit phase completed with failed controls" do
-        include_context "audit phase completed with failed controls"
-        include_examples "a failed run" do
-          let(:run_errors) { [converge_error, audit_error] }
-        end
-      end
     end
   end
 
@@ -902,29 +784,6 @@ describe Chef::Client do
     before do
       # fail on the first thing in begin block
       allow_any_instance_of(Chef::RunLock).to receive(:save_pid).and_raise(NoMethodError)
-    end
-
-    context "when audit mode is enabled" do
-      before do
-        Chef::Config[:audit_mode] = :enabled
-      end
-      it "should run exception handlers on early fail" do
-        expect(subject).to receive(:run_failed)
-        expect { subject.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-          expect(error.wrapped_errors.size).to eq 1
-          expect(error.wrapped_errors).to include(NoMethodError)
-        end
-      end
-    end
-
-    context "when audit mode is disabled" do
-      before do
-        Chef::Config[:audit_mode] = :disabled
-      end
-      it "should run exception handlers on early fail" do
-        expect(subject).to receive(:run_failed)
-        expect { subject.run }.to raise_error(NoMethodError)
-      end
     end
   end
 end
