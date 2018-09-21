@@ -26,18 +26,32 @@ Thanks [@vincentaubert](https://github.com/vincentaubert) for contributing this 
 
 ### windows_ad_join
 
-`windows_ad_join` now includes a `new_hostnname` property for setting the hostname for the node upon joining the domain.
+`windows_ad_join` now includes a `new_hostname` property for setting the hostname for the node upon joining the domain.
 
 Thanks [@derekgroh](https://github.com/derekgroh) for contributing this new property.
 
 ## InSpec 2.2.102
 
-InSpec has been updated to from 2.2.70 to 2.2.102. This new version includes the following improvements:
+InSpec has been updated from 2.2.70 to 2.2.102. This new version includes the following improvements:
   - Support for using ERB templating within the .yml files
   - HTTP basic auth support for fetching dependent profiles
   - A new global attributes concept
   - Better error handling with Automate reporting
   - Vendor command now vendors profiles when using path://
+  
+## Ohai 14.5
+
+### Windows Improvements
+
+Detection for the `root_group` attribute on Windows has been simplified and improved to properly support non-English systems. With this change, we've also deprecated the `Ohai::Util::Win32::GroupHelper` helper, which is no longer necessary. Thanks to [@jugatsu](https://github.com/jugatsu) for putting this together.
+
+We've also added a new `encryption_status` attribute to volumes on Windows. Thanks to [@kmf](https://github.com/kmf) for suggesting this new feature.
+
+### Configuration Improvements
+
+The timeout period for communicating with OpenStack metadata servers can now be configured with the `openstack_metadata_timeout` config option. Thanks to [@sawanoboly](https://github.com/sawanoboly) for this improvement.
+
+Ohai now properly handles relative paths to config files when running on the command line. This means commands like `ohai -c ../client.rb` will now properly use your config values.
 
 ## Security updates
 
