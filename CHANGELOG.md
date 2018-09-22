@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.5.32 -->
-## [v14.5.32](https://github.com/chef/chef/tree/v14.5.32) (2018-09-21)
+<!-- latest_release 14.5.33 -->
+## [v14.5.33](https://github.com/chef/chef/tree/v14.5.33) (2018-09-22)
 
 #### Merged Pull Requests
-- Fix failures in windows_ad_join in 14.5.27 [#7673](https://github.com/chef/chef/pull/7673) ([tas50](https://github.com/tas50))
+- Update to the latest omnibus-software for builds [#7676](https://github.com/chef/chef/pull/7676) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.27 -->
 ### Changes since 14.5.27 release
 
 #### Merged Pull Requests
+- Update to the latest omnibus-software for builds [#7676](https://github.com/chef/chef/pull/7676) ([tas50](https://github.com/tas50)) <!-- 14.5.33 -->
 - Fix failures in windows_ad_join in 14.5.27 [#7673](https://github.com/chef/chef/pull/7673) ([tas50](https://github.com/tas50)) <!-- 14.5.32 -->
 - Deprecate ohai resource&#39;s ohai_name property [#7667](https://github.com/chef/chef/pull/7667) ([tas50](https://github.com/tas50)) <!-- 14.5.31 -->
 - Add @jjlimepoint as a maintainer for chef-provisioning [#7649](https://github.com/chef/chef/pull/7649) ([jjlimepoint](https://github.com/jjlimepoint)) <!-- 14.5.30 -->
