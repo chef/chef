@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 5ebd7db221c1f52d2732ffcddcc579871018be38
+  revision: 8773058b6cafc053159bbe24851bc7eeb407d492
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -31,13 +31,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.11.131)
-      aws-sdk-resources (= 2.11.131)
-    aws-sdk-core (2.11.131)
+    aws-sdk (2.11.135)
+      aws-sdk-resources (= 2.11.135)
+    aws-sdk-core (2.11.135)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.131)
-      aws-sdk-core (= 2.11.131)
+    aws-sdk-resources (2.11.135)
+      aws-sdk-core (= 2.11.135)
     aws-sigv4 (1.0.3)
     berkshelf (7.0.6)
       chef (>= 13.6.52)
@@ -56,10 +56,10 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
     byebug (10.0.2)
-    chef (14.4.56)
+    chef (14.5.27)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.4.56)
+      chef-config (= 14.5.27)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -87,10 +87,10 @@ GEM
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.4.56-universal-mingw32)
+    chef (14.5.27-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.4.56)
+      chef-config (= 14.5.27)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -129,7 +129,7 @@ GEM
       win32-taskscheduler (~> 1.0.0)
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
-    chef-config (14.4.56)
+    chef-config (14.5.27)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -149,7 +149,7 @@ GEM
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     erubis (2.7.0)
-    faraday (0.15.2)
+    faraday (0.15.3)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
     ffi (1.9.25-x64-mingw32)
@@ -370,4 +370,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.16.4
+   1.16.5
