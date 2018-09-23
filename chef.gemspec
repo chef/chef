@@ -51,6 +51,8 @@ Gem::Specification.new do |s|
 
   s.add_dependency "proxifier", "~> 1.0"
 
+  s.add_dependency "ffi-libarchive", "~> 0.4.2"
+
   # v1.10 is needed as a runtime dep now for 'bundler/inline'
   # very deliberately avoiding putting a ceiling on this to avoid depsolver conflicts.
   s.add_dependency "bundler", ">= 1.10"
