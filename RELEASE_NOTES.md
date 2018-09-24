@@ -1,6 +1,15 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
-# Chef Client Release Notes 14.5:
+# Chef Client Release Notes 14.5.33:
+
+This release resolves a regression that caused the ``windows_ad_join`` resource to fail to run. It also makes the following additional fixes:
+  - The ``ohai`` resource's unused ``ohai_name`` property has been deprecated. This will be removed in Chef 15.0.
+  - Error messages in the ``windows_feature`` resources have been improved.
+  - The ``windows_service`` resource will no longer log potentially sensitive information if the ``sensitive`` property is used.
+
+Thanks to @cpjones01, @kitforbes, and @dgreeninger for their help with this release.
+
+# Chef Client Release Notes 14.5.27:
 
 ## New Resources
 
@@ -38,7 +47,7 @@ InSpec has been updated from 2.2.70 to 2.2.102. This new version includes the fo
   - A new global attributes concept
   - Better error handling with Automate reporting
   - Vendor command now vendors profiles when using path://
-  
+
 ## Ohai 14.5
 
 ### Windows Improvements
