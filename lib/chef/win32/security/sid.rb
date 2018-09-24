@@ -246,6 +246,45 @@ class Chef
           SID.from_account("#{::ENV['USERDOMAIN']}\\#{::ENV['USERNAME']}")
         end
 
+        SERVICE_ACCOUNT_USERS = [self.LocalSystem,
+                                 self.NtLocal,
+                                 self.NtNetwork].flat_map do |user_type|
+          [user_type.account_simple_name.upcase,
+           user_type.account_name.upcase]
+        end.freeze
+
+        BUILT_IN_GROUPS = [self.BuiltinAdministrators,
+                           self.BuiltinUsers, self.Guests].flat_map do |user_type|
+          [user_type.account_simple_name.upcase,
+           user_type.account_name.upcase]
+        end.freeze
+
+        SYSTEM_USER = SERVICE_ACCOUNT_USERS + BUILT_IN_GROUPS
+
+        # Сheck if the user belongs to service accounts category
+        #
+        # @return [Boolean] True or False
+        #
+        def self.service_account_user?(user)
+          SERVICE_ACCOUNT_USERS.include?(user.to_s.upcase)
+        end
+
+        # Сheck if the user is in builtin system group
+        #
+        # @return [Boolean] True or False
+        #
+        def self.group_user?(user)
+          BUILT_IN_GROUPS.include?(user.to_s.upcase)
+        end
+
+        # Сheck if the user belongs to system users category
+        #
+        # @return [Boolean] True or False
+        #
+        def self.system_user?(user)
+          SYSTEM_USER.include?(user.to_s.upcase)
+        end
+
         # See https://technet.microsoft.com/en-us/library/cc961992.aspx
         # In practice, this is SID.Administrators if the current_user is an admin (even if not
         # running elevated), and is current_user otherwise.

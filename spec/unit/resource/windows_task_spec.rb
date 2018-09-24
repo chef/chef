@@ -73,7 +73,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
     end
     it "raises an error if the user is a non-system user" do
       resource.user "bob"
-      expect { resource.after_created }.to raise_error(ArgumentError, %q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', 'USERS'})
+      expect { resource.after_created }.to raise_error(ArgumentError, %q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'SYSTEM', 'NT AUTHORITY\SYSTEM', 'LOCAL SERVICE', 'NT AUTHORITY\LOCAL SERVICE', 'NETWORK SERVICE', 'NT AUTHORITY\NETWORK SERVICE', 'ADMINISTRATORS', 'BUILTIN\ADMINISTRATORS', 'USERS', 'BUILTIN\USERS', 'GUESTS', 'BUILTIN\GUESTS'})
     end
 
     it "does not raise an error if the user is a system user" do

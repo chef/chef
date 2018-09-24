@@ -416,6 +416,7 @@ describe Chef::Provider::WindowsTask, :windows_only do
     end
 
     it "return logon_type bindary value as 1 as if password is not nil" do
+      new_resource.user = "Administrator"
       new_resource.password = "abc"
       expect(provider.send(:logon_type)).to be(1)
     end
