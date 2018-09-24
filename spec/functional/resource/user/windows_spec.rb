@@ -36,7 +36,7 @@ describe Chef::Provider::User::Windows, :windows_only do
   let(:logger) { double("Mixlib::Log::Child").as_null_object }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:new_resource) do
-    Chef::Resource::User.new(username, run_context).tap do |r|
+    Chef::Resource::User::WindowsUser.new(username, run_context).tap do |r|
       r.provider(Chef::Provider::User::Windows)
       r.password(password)
     end

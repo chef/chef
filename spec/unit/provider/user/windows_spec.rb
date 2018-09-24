@@ -53,7 +53,8 @@ describe Chef::Provider::User::Windows do
 
   describe "when comparing the user's current properties to the desired properties" do
     before do
-      @new_resource.comment   "Adam Jacob"
+      @new_resource.full_name "Adam Jacob"
+      @new_resource.comment   "Some comments"
       @new_resource.uid       1000
       @new_resource.gid       1000
       @new_resource.home      "/home/adam"
@@ -88,12 +89,16 @@ describe Chef::Provider::User::Windows do
         expect(@provider.set_options).not_to have_key(:password)
       end
 
+      it "doesn't set the full_name to be updated" do
+        expect(@provider.set_options).not_to have_key(:full_name)
+      end
     end
 
     describe "and the properties do not match" do
       before do
         @current_resource = Chef::Resource::User::WindowsUser.new("adam")
-        @current_resource.comment   "Adam Jacob-foo"
+        @current_resource.full_name "Adam Jacob-foo"
+        @current_resource.comment   "some comments"
         @current_resource.uid       1111
         @current_resource.gid       1111
         @current_resource.home      "/home/adam-foo"
@@ -102,8 +107,12 @@ describe Chef::Provider::User::Windows do
         @provider.current_resource = @current_resource
       end
 
+      it "marks the full_name field to be updated" do
+        expect(@provider.set_options[:full_name]).to eq("Adam Jacob")
+      end
+
       it "marks the comment field to be updated" do
-        expect(@provider.set_options[:comment]).to eq("Adam Jacob")
+        expect(@provider.set_options[:comment]).to eq("Some comments")
       end
 
       it "marks the home_dir property to be updated" do
