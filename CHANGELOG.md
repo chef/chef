@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.11.1 -->
-## [v13.11.1](https://github.com/chef/chef/tree/v13.11.1) (2018-09-25)
+<!-- latest_release 13.11.2 -->
+## [v13.11.2](https://github.com/chef/chef/tree/v13.11.2) (2018-09-25)
 
 #### Merged Pull Requests
-- Fix remote_directory does not obey removal of file specificity [#7687](https://github.com/chef/chef/pull/7687) ([tas50](https://github.com/tas50))
+- windows_package: Avoid exposing sensitive data during package install failures if sensitive property set [#7684](https://github.com/chef/chef/pull/7684) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.10.4 -->
 ### Changes since 13.10.4 release
 
 #### Merged Pull Requests
+- windows_package: Avoid exposing sensitive data during package install failures if sensitive property set [#7684](https://github.com/chef/chef/pull/7684) ([tas50](https://github.com/tas50)) <!-- 13.11.2 -->
 - Fix remote_directory does not obey removal of file specificity [#7687](https://github.com/chef/chef/pull/7687) ([tas50](https://github.com/tas50)) <!-- 13.11.1 -->
 - Improve the error message when knife bootstrap windows isn&#39;t installed  [#7686](https://github.com/chef/chef/pull/7686) ([tas50](https://github.com/tas50)) <!-- 13.11.0 -->
 - windows_service: Remove potentially sensitive info from the log [#7688](https://github.com/chef/chef/pull/7688) ([tas50](https://github.com/tas50)) <!-- 13.10.7 -->
