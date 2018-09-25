@@ -43,7 +43,7 @@ github:
     - chef-13:
         version_constraint: 13*
 
-# These actions are taken, in order they are specified, anytime a Pull Request is merged.
+# These actions are taken, in order they are specified, anytime a PR is merged.
 merge_actions:
   - built_in:bump_version:
       ignore_labels:
@@ -75,4 +75,3 @@ subscriptions:
       - built_in:tag_docker_image
       - built_in:publish_rubygems
       - built_in:notify_chefio_slack_channels
-
