@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.0 -->
-## [v14.6.0](https://github.com/chef/chef/tree/v14.6.0) (2018-09-25)
+<!-- latest_release 14.6.1 -->
+## [v14.6.1](https://github.com/chef/chef/tree/v14.6.1) (2018-09-25)
 
 #### Merged Pull Requests
-- zypper_package: Add new global_options property [#7518](https://github.com/chef/chef/pull/7518) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Bump chef-vault to 3.4.2 [#7675](https://github.com/chef/chef/pull/7675) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Bump chef-vault to 3.4.2 [#7675](https://github.com/chef/chef/pull/7675) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.1 -->
 - zypper_package: Add new global_options property [#7518](https://github.com/chef/chef/pull/7518) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.6.0 -->
 <!-- release_rollup -->
 
