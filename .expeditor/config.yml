@@ -1,4 +1,4 @@
-# Documentation available at https://expeditor-docs.es.chef.io/
+# Documentation available at https://expeditor.chef.io/docs/getting-started/
 
 # The name of the product keys for this product (from mixlib-install)
 product_key:
@@ -31,16 +31,17 @@ github:
   enable_expire_cache: true
   # The tag format to use (e.g. v1.0.0)
   version_tag_format: "v{{version}}"
-  # The Github Team primarily responsible for handling incoming Pull Requests.
-  maintainer_group: chef/client-core
+  # allow bumping the minor release via label
+  minor_bump_labels:
+    - "Expeditor: Bump Minor Version"
   # Which Github branches to build Omnibus releases from, and what versions
   # (as determined by the value in the VERSION file) those branches are responsible
   # for building.
   release_branch:
     - master:
-        version_constraint: 14.*
+        version_constraint: 14*
     - chef-13:
-        version_constraint: 13.*
+        version_constraint: 13*
 
 # These actions are taken, in order they are specified, anytime a Pull Request is merged.
 merge_actions:
@@ -60,16 +61,18 @@ merge_actions:
         - "Expeditor: Skip All"
       only_if: built_in:bump_version
 
-# These actions are taken, in the order specified, when an Omnibus artifact is promoted
-# within Chef's internal artifact storage system.
-artifact_actions:
-  promoted_to_unstable:
-    - built_in:build_docker_image
-  promoted_to_current:
-    - built_in:tag_docker_image
-  promoted_to_stable:
-    - built_in:rollover_changelog
-    - bash:.expeditor/update_dockerfile.sh
-    - built_in:tag_docker_image
-    - built_in:publish_rubygems
-    - built_in:notify_chefio_slack_channels
+subscriptions:
+  - workload: artifact_published:unstable:chef:{{version_constraint}}
+    actions:
+      - built_in:build_docker_image
+  - workload: artifact_published:current:chef:{{version_constraint}}
+    actions:
+      - built_in:tag_docker_image
+  - workload: artifact_published:stable:chef:{{version_constraint}}
+    actions:
+      - built_in:rollover_changelog
+      - bash:.expeditor/update_dockerfile.sh
+      - built_in:tag_docker_image
+      - built_in:publish_rubygems
+      - built_in:notify_chefio_slack_channels
+
