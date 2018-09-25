@@ -37,7 +37,8 @@ class Chef
 
       property :global_options, [ String, Array ],
                description: "One (or more) additional options that are passed to the package resource other than options to the command.",
-               coerce: proc { |x| x.is_a?(String) ? x.shellsplit : x }
+               coerce: proc { |x| x.is_a?(String) ? x.shellsplit : x },
+               introduced: "14.5"
     end
   end
 end
