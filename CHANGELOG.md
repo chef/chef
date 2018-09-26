@@ -1,25 +1,23 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.11.3 -->
-## [v13.11.3](https://github.com/chef/chef/tree/v13.11.3) (2018-09-25)
-
-#### Merged Pull Requests
-- osx_profile: Use the full path to /usr/bin/profiles [#7683](https://github.com/chef/chef/pull/7683) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=13.10.4 -->
-### Changes since 13.10.4 release
-
-#### Merged Pull Requests
-- osx_profile: Use the full path to /usr/bin/profiles [#7683](https://github.com/chef/chef/pull/7683) ([tas50](https://github.com/tas50)) <!-- 13.11.3 -->
-- windows_package: Avoid exposing sensitive data during package install failures if sensitive property set [#7684](https://github.com/chef/chef/pull/7684) ([tas50](https://github.com/tas50)) <!-- 13.11.2 -->
-- Fix remote_directory does not obey removal of file specificity [#7687](https://github.com/chef/chef/pull/7687) ([tas50](https://github.com/tas50)) <!-- 13.11.1 -->
-- Improve the error message when knife bootstrap windows isn&#39;t installed  [#7686](https://github.com/chef/chef/pull/7686) ([tas50](https://github.com/tas50)) <!-- 13.11.0 -->
-- windows_service: Remove potentially sensitive info from the log [#7688](https://github.com/chef/chef/pull/7688) ([tas50](https://github.com/tas50)) <!-- 13.10.7 -->
-- Use the existing helper method for package resource classes that don&#39;t support allow_downgrade [#7548](https://github.com/chef/chef/pull/7548) ([tas50](https://github.com/tas50)) <!-- 13.10.6 -->
-- Update to openssl 1.0.2p [#7547](https://github.com/chef/chef/pull/7547) ([tas50](https://github.com/tas50)) <!-- 13.10.5 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.11.3](https://github.com/chef/chef/tree/v13.11.3) (2018-09-26)
+
+#### Merged Pull Requests
+- Update to openssl 1.0.2p [#7547](https://github.com/chef/chef/pull/7547) ([tas50](https://github.com/tas50))
+- Use the existing helper method for package resource classes that don&#39;t support allow_downgrade [#7548](https://github.com/chef/chef/pull/7548) ([tas50](https://github.com/tas50))
+- windows_service: Remove potentially sensitive info from the log [#7688](https://github.com/chef/chef/pull/7688) ([tas50](https://github.com/tas50))
+- Improve the error message when knife bootstrap windows isn&#39;t installed  [#7686](https://github.com/chef/chef/pull/7686) ([tas50](https://github.com/tas50))
+- Fix remote_directory does not obey removal of file specificity [#7687](https://github.com/chef/chef/pull/7687) ([tas50](https://github.com/tas50))
+- windows_package: Avoid exposing sensitive data during package install failures if sensitive property set [#7684](https://github.com/chef/chef/pull/7684) ([tas50](https://github.com/tas50))
+- osx_profile: Use the full path to /usr/bin/profiles [#7683](https://github.com/chef/chef/pull/7683) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v13.10.4](https://github.com/chef/chef/tree/v13.10.4) (2018-08-08)
 
 #### Merged Pull Requests
@@ -27,7 +25,6 @@
 - Backport for 13: scrub tempfile names [#7526](https://github.com/chef/chef/pull/7526) ([tyler-ball](https://github.com/tyler-ball))
 - Pin to rspec to &lt; 3.8 [#7528](https://github.com/chef/chef/pull/7528) ([cheeseplus](https://github.com/cheeseplus))
 - [SHACK-290] Unpacking tarball paths suffer from URI error [#7522](https://github.com/chef/chef/pull/7522) ([tyler-ball](https://github.com/tyler-ball))
-<!-- latest_stable_release -->
 
 ## [v13.10.0](https://github.com/chef/chef/tree/v13.10.0) (2018-07-11)
 
