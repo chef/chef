@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,8 +55,8 @@ describe Chef::RunContext::ChildRunContext do
         expect(child.resource_collection.object_id).not_to eq run_context.resource_collection.object_id
         f = Chef::Resource::File.new("hi", child)
         child.resource_collection.insert(f)
-        expect(child.resource_collection).to include f
-        expect(run_context.resource_collection).not_to include f
+        expect(child.resource_collection.include?(f)).to be true
+        expect(run_context.resource_collection.include?(f)).to be false
       end
 
       it "immediate_notification_collection is not the same as the parent" do

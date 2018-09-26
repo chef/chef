@@ -204,7 +204,7 @@ describe Shell::SoloLegacySession do
     allow(@session).to receive(:node_built?).and_return(true)
     kitteh = Chef::Resource::Cat.new("keyboard")
     @recipe.run_context.resource_collection << kitteh
-    expect(@session.resource_collection).to include(kitteh)
+    expect(@session.resource_collection.include?(kitteh)).to be true
   end
 
   it "returns definitions from its compilation object" do
@@ -224,7 +224,8 @@ describe Shell::SoloLegacySession do
     keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @recipe.run_context.resource_collection << keyboard_cat
     # @session.rebuild_collection
-    expect(@session.resource_collection).to include(kitteh_cat, keyboard_cat)
+    expect(@session.resource_collection.include?(kitteh_cat)).to be true
+    expect(@session.resource_collection.include?(keyboard_cat)).to be true
   end
 
   it "runs chef with a resource collection from the compiled cookbooks" do
