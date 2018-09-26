@@ -28,7 +28,7 @@ class Chef
 
         property :full_name, String,
                   description: "The full name of the user.",
-                  introduced: "14.5"
+                  introduced: "14.6"
       end
     end
   end
