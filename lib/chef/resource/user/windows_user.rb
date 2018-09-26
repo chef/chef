@@ -25,6 +25,10 @@ class Chef
 
         provides :windows_user
         provides :user, os: "windows"
+
+        property :full_name, String,
+                  description: "The full name of the user.",
+                  introduced: "14.5"
       end
     end
   end
