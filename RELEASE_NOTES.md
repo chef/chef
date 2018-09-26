@@ -1,5 +1,29 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 13.11
+
+### Sensitive Properties on Windows
+
+- `windows_service` no longer logs potentially sensitive information when a service is setup
+- `windows_package` now respects the `sensitive` property to avoid logging sensitive data in the event of a package installation failure
+
+### Other Fixes
+
+- `remote_directory` now properly loads files in the root of a cookbook's `files` directory
+- `osx_profile` now uses the full path the profiles CLI tool to avoid running other binaries of the same name in a users path
+- `package` resources that don't support the `allow_downgrade` property will no longer fail
+- `knife bootstrap windows` error messages have been improved
+
+## Security Updates
+
+### OpenSSL
+
+- OpenSSL has been updated to 1.0.2p to resolve [CVE-2018-0732](https://nvd.nist.gov/vuln/detail/CVE-2018-0732) and [CVE-2018-0737](https://nvd.nist.gov/vuln/detail/CVE-2018-0737)
+
+### Rubyzip
+
+- Updated Rubyzip to 1.2.2 to resolve [CVE-2018-1000544](https://nvd.nist.gov/vuln/detail/CVE-2018-1000544)
+
 # Chef Client Release Notes 13.10
 
 ## Bugfixes
