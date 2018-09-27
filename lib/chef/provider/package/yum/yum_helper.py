@@ -125,8 +125,9 @@ def query(command):
     #   - in order to fix this, something would have to happen where getProvides was called first and
     #     then the result was searchNevra'd.  please be extremely careful if attempting to fix that
     #     since searchNevra does not support prco tuples.
-    if any(elem in command['provides'] for elem in r"<=>"):
-        # handles flags (<, >, =, etc) and versions, but no wildcareds 
+    if bool(re.search('\\s+', command['provides'])):
+        # handles flags (<, >, =, etc) and versions, but no wildcareds
+        # raises error for any invalid input like: 'FOO BAR BAZ' 
         pkgs = obj.getProvides(*string_to_prco_tuple(command['provides']))
     elif do_nevra:
         # now if we're given version or arch properties explicitly, then we do a SearchNevra.
