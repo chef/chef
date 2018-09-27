@@ -171,7 +171,7 @@ describe Chef::Provider::Package do
 
     it "should print the word 'uninstalled' if there was no original version" do
       allow(current_resource).to receive(:version).and_return(nil)
-      expect(logger).to receive(:info).with("package[install emacs] upgraded emacs to 1.0")
+      expect(logger).to receive(:info).with("package[install emacs] upgraded(allow_downgrade) emacs to 1.0")
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -714,7 +714,15 @@ describe "Chef::Provider::Package - Multi" do
       expect(new_resource).not_to be_updated_by_last_action
     end
 
-    it "does not install older version" do
+    it "does install an older version by default" do
+      current_resource.version(["1.1", "6.2"])
+      new_resource.version(["1.0", "6.1"])
+      provider.run_action(:install)
+      expect(new_resource).to be_updated_by_last_action
+    end
+
+    it "does not install an older version if the resource subclass has allow_downgrade set to false" do
+      allow(new_resource).to receive(:allow_downgrade).and_return(false)
       current_resource.version(["1.1", "6.2"])
       new_resource.version(["1.0", "6.1"])
       provider.run_action(:install)
