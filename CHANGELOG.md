@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.4 -->
-## [v14.6.4](https://github.com/chef/chef/tree/v14.6.4) (2018-09-26)
+<!-- latest_release 14.6.5 -->
+## [v14.6.5](https://github.com/chef/chef/tree/v14.6.5) (2018-09-27)
 
 #### Merged Pull Requests
-- Fixed introduced version to 14.6 for newly added properties in zypper_package and windows_user resource as it got released in 14.6. [#7692](https://github.com/chef/chef/pull/7692) ([Vasu1105](https://github.com/Vasu1105))
+- Minor optimization in yum_helper.py to avoid RPM DB corruption under certain scenarios [#7696](https://github.com/chef/chef/pull/7696) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Minor optimization in yum_helper.py to avoid RPM DB corruption under certain scenarios [#7696](https://github.com/chef/chef/pull/7696) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 14.6.5 -->
 - Fixed introduced version to 14.6 for newly added properties in zypper_package and windows_user resource as it got released in 14.6. [#7692](https://github.com/chef/chef/pull/7692) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.6.4 -->
 - Upgrade to rspec 3.8.x [#7691](https://github.com/chef/chef/pull/7691) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.3 -->
 - Adds full_name property to user resource for Windows. [#7677](https://github.com/chef/chef/pull/7677) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.6.2 -->
