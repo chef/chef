@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,7 @@ describe Chef::Provider::Package::Rpm do
   let(:package_name) { "ImageMagick-c++" }
 
   let(:new_resource) do
-    Chef::Resource::Package.new(package_name).tap do |resource|
+    Chef::Resource::RpmPackage.new(package_name).tap do |resource|
       resource.source(package_source)
     end
   end
@@ -51,7 +51,7 @@ describe Chef::Provider::Package::Rpm do
   describe "when the package source is not valid" do
 
     context "when source is not defiend" do
-      let(:new_resource) { Chef::Resource::Package.new("ImageMagick-c++") }
+      let(:new_resource) { Chef::Resource::RpmPackage.new("ImageMagick-c++") }
 
       it "should raise an exception when attempting any action" do
         expect { provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
@@ -405,10 +405,10 @@ describe Chef::Provider::Package::Rpm do
       # let() bindings and such, we have to set the stub here and not in a
       # before block.
       allow(::File).to receive(:exist?).with(package_source).and_return(true)
-      Chef::Resource::Package.new("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
+      Chef::Resource::RpmPackage.new("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
     end
 
-    let(:current_resource) { Chef::Resource::Package.new("ImageMagick-c++") }
+    let(:current_resource) { Chef::Resource::RpmPackage.new("ImageMagick-c++") }
 
     it "should install from a path when the package is a path and the source is nil" do
       expect(new_resource.source).to eq("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
