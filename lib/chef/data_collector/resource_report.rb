@@ -2,7 +2,7 @@
 # Author:: Adam Leff (<adamleff@chef.io>)
 # Author:: Ryan Cragun (<ryan@chef.io>)
 #
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,7 +65,7 @@ class Chef
         %w{updated failed}.include?(status)
       end
 
-      def to_hash
+      def to_h
         hash = {
           "type"           => new_resource.resource_name.to_sym,
           "name"           => new_resource.name.to_s,
@@ -90,8 +90,8 @@ class Chef
 
         hash
       end
-      alias :to_h :to_hash
-      alias :for_json :to_hash
+      alias_method :to_hash, :to_h
+      alias_method :for_json, :to_h
 
       # We should be able to call the identity of a resource safely, but there
       # is an edge case where resources that have a lazy property that is both

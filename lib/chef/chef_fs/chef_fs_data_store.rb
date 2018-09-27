@@ -311,7 +311,7 @@ class Chef
             cookbook_type = path[0]
             result = nil
             begin
-              result = Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash
+              result = Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_h
             rescue Chef::ChefFS::FileSystem::NotFoundError => e
               raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
             end
@@ -334,7 +334,7 @@ class Chef
             end
 
             if cookbook_type == "cookbook_artifacts"
-              result["metadata"] = result["metadata"].to_hash
+              result["metadata"] = result["metadata"].to_h
               result["metadata"].delete_if do |key, value|
                 value == [] ||
                   (value == {} && !%w{dependencies attributes recipes}.include?(key)) ||

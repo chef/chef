@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (steve@chef.io)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,7 +77,7 @@ class Chef
                     arg, kind_of: String)
     end
 
-    def to_hash
+    def to_h
       result = {
         "name" => @name,
         "public_key" => @public_key,
@@ -88,8 +88,10 @@ class Chef
       result
     end
 
+    alias_method :to_hash, :to_h
+
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def destroy
@@ -100,7 +102,7 @@ class Chef
       payload = { name: name, admin: admin, password: password }
       payload[:public_key] = public_key if public_key
       new_user = chef_rest_v0.post("users", payload)
-      Chef::User.from_hash(to_hash.merge(new_user))
+      Chef::User.from_hash(to_h.merge(new_user))
     end
 
     def update(new_key = false)
@@ -108,7 +110,7 @@ class Chef
       payload[:private_key] = new_key if new_key
       payload[:password] = password if password
       updated_user = chef_rest_v0.put("users/#{name}", payload)
-      Chef::User.from_hash(to_hash.merge(updated_user))
+      Chef::User.from_hash(to_h.merge(updated_user))
     end
 
     def save(new_key = false)

@@ -465,7 +465,7 @@ class Chef
         end
       end
 
-      def to_hash
+      def to_h
         {
           NAME                   => name,
           DESCRIPTION            => description,
@@ -488,8 +488,10 @@ class Chef
         }
       end
 
+      alias_method :to_hash, :to_h
+
       def to_json(*a)
-        Chef::JSONCompat.to_json(to_hash, *a)
+        Chef::JSONCompat.to_json(to_h, *a)
       end
 
       def self.from_hash(o)

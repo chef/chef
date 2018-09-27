@@ -58,7 +58,7 @@ class Chef
       )
     end
 
-    def to_hash
+    def to_h
       result = {
         "name"       => @name,
         "json_class" => self.class.name,
@@ -67,9 +67,11 @@ class Chef
       result
     end
 
+    alias_method :to_hash, :to_h
+
     # Serialize this object as a hash
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def chef_server_rest

@@ -2,7 +2,7 @@
 # Author:: Adam Leff (<adamleff@chef.io>)
 # Author:: Ryan Cragun (<ryan@chef.io>)
 #
-# Copyright:: Copyright 2012-2017, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -428,7 +428,7 @@ class Chef
         @all_resource_reports << OpenStruct.new(
           resource: resource_report.new_resource,
           action: resource_report.action,
-          report_data: resource_report.to_hash
+          report_data: resource_report.to_h
         )
       end
 

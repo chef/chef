@@ -3,7 +3,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016 Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,7 @@ class Chef
         # interface we need to properly send this through to
         # events.run_list_expanded as it is expecting a RunListExpansion
         # object.
-        def to_hash
+        def to_h
           # It looks like version only gets populated in the expanded_run_list when
           # using a little used feature of roles to version lock cookbooks, so
           # version is not reliable in here anyway (places like Automate UI are
@@ -73,8 +73,10 @@ class Chef
           data_collector_hash
         end
 
+        alias_method :to_hash, :to_h
+
         def to_json(*opts)
-          to_hash.to_json(*opts)
+          to_h.to_json(*opts)
         end
       end
 

@@ -1,7 +1,7 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,15 +35,17 @@ class Chef
         control_groups << control_group
       end
 
-      def to_hash
+      def to_h
         {
             node_name: node_name,
             run_id: run_id,
             start_time: start_time,
             end_time: end_time,
-            control_groups: control_groups.collect { |c| c.to_hash },
+            control_groups: control_groups.collect { |c| c.to_h },
         }
       end
+
+      alias_method :to_hash, :to_h
     end
 
     class ControlGroupData
@@ -76,7 +78,7 @@ class Chef
         control
       end
 
-      def to_hash
+      def to_h
         # We sort it so the examples appear in the output in the same order
         # they appeared in the recipe
         controls.sort! { |x, y| x.line_number <=> y.line_number }
@@ -85,11 +87,13 @@ class Chef
               status: status,
               number_succeeded: number_succeeded,
               number_failed: number_failed,
-              controls: controls.collect { |c| c.to_hash },
+              controls: controls.collect { |c| c.to_h },
         }
         # If there is a duplicate key, metadata will overwrite it
         add_display_only_data(h).merge(metadata)
       end
+
+      alias_method :to_hash, :to_h
 
       private
 
@@ -122,7 +126,7 @@ class Chef
         end
       end
 
-      def to_hash
+      def to_h
         h = {
             name: name,
             status: status,
@@ -133,6 +137,8 @@ class Chef
         h[:context] = context || []
         h
       end
+
+      alias_method :to_hash, :to_h
     end
 
   end

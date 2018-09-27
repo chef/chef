@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ class Chef
   class ResourceCollection
     module ResourceCollectionSerialization
       # Serialize this object as a hash
-      def to_hash
+      def to_h
         instance_vars = Hash.new
         instance_variables.each do |iv|
           instance_vars[iv] = instance_variable_get(iv)
@@ -32,6 +32,8 @@ class Chef
             "instance_vars" => instance_vars,
         }
       end
+
+      alias_method :to_hash, :to_h
 
       def to_json(*a)
         Chef::JSONCompat.to_json(to_hash, *a)

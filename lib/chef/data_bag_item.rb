@@ -101,12 +101,14 @@ class Chef
       "data_bag_item_#{data_bag_name}_#{id}"
     end
 
-    def to_hash
+    def to_h
       result = raw_data.dup
       result["chef_type"] = "data_bag_item"
       result["data_bag"] = data_bag.to_s
       result
     end
+
+    alias_method :to_hash, :to_h
 
     # Serialize this object as a hash
     def to_json(*a)
@@ -180,9 +182,9 @@ class Chef
     end
 
     def ==(other)
-      other.respond_to?(:to_hash) &&
+      other.respond_to?(:to_h) &&
         other.respond_to?(:data_bag) &&
-        (other.to_hash == to_hash) &&
+        (other.to_h == to_h) &&
         (other.data_bag.to_s == data_bag.to_s)
     end
 

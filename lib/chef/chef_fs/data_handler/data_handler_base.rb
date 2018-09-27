@@ -114,7 +114,7 @@ class Chef
         def from_ruby(path)
           r = chef_class.new
           r.from_file(path)
-          r.to_hash
+          r.to_h
         end
 
         #

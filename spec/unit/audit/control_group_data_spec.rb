@@ -2,7 +2,7 @@
 # Author:: Tyler Ball (<tball@chef.io>)
 # Author:: Claire McQuin (<claire@chef.io>)
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,9 +57,9 @@ describe Chef::Audit::AuditData do
     end
   end
 
-  describe "#to_hash" do
+  describe "#to_h" do
 
-    let(:audit_data_hash) { audit_data.to_hash }
+    let(:audit_data_hash) { audit_data.to_h }
 
     it "returns a hash" do
       expect(audit_data_hash).to be_a(Hash)
@@ -90,7 +90,7 @@ describe Chef::Audit::AuditData do
         end
 
         it "is a one-element list containing the control group hash" do
-          expect(control_group_1).to receive(:to_hash).once.and_return(control_hash_1)
+          expect(control_group_1).to receive(:to_h).once.and_return(control_hash_1)
           expect(control_groups.size).to eq 1
           expect(control_groups).to include(control_hash_1)
         end
@@ -103,8 +103,8 @@ describe Chef::Audit::AuditData do
         end
 
         it "is a list of control group hashes" do
-          expect(control_group_1).to receive(:to_hash).and_return(control_hash_1)
-          expect(control_group_2).to receive(:to_hash).and_return(control_hash_2)
+          expect(control_group_1).to receive(:to_h).and_return(control_hash_1)
+          expect(control_group_2).to receive(:to_h).and_return(control_hash_2)
           expect(control_groups.size).to eq 2
           expect(control_groups).to include(control_hash_1)
           expect(control_groups).to include(control_hash_2)
@@ -127,9 +127,9 @@ describe Chef::Audit::ControlData do
                         resource_type: resource_type, resource_name: resource_name,
                         context: context, line_number: line_number) end
 
-  describe "#to_hash" do
+  describe "#to_h" do
 
-    let(:control_data_hash) { control_data.to_hash }
+    let(:control_data_hash) { control_data.to_h }
 
     it "returns a hash" do
       expect(control_data_hash).to be_a(Hash)
@@ -385,9 +385,9 @@ describe Chef::Audit::ControlGroupData do
     end
   end
 
-  describe "#to_hash" do
+  describe "#to_h" do
 
-    let(:control_group_data_hash) { control_group_data.to_hash }
+    let(:control_group_data_hash) { control_group_data.to_h }
 
     it "returns a hash" do
       expect(control_group_data_hash).to be_a(Hash)
@@ -413,11 +413,11 @@ describe Chef::Audit::ControlGroupData do
         include_context "control"
 
         let(:control_list) { [control_data] }
-        let(:control_hash) { control.to_hash }
+        let(:control_hash) { control.to_h }
 
         before do
           expect(control_group_data).to receive(:controls).twice.and_return(control_list)
-          expect(control_data).to receive(:to_hash).and_return(control_hash)
+          expect(control_data).to receive(:to_h).and_return(control_hash)
         end
 
         it "is a one-element list containing the control hash" do
@@ -426,7 +426,7 @@ describe Chef::Audit::ControlGroupData do
         end
 
         it "adds a sequence number to the control" do
-          control_group_data.to_hash
+          control_group_data.to_h
           expect(control_hash).to have_key(:sequence_number)
         end
 
@@ -441,15 +441,15 @@ describe Chef::Audit::ControlGroupData do
         let(:control_1) do
           double("control 1",
           line_number: control_hash_1[:line_number],
-          to_hash: control_hash_1) end
+          to_h: control_hash_1) end
         let(:control_2) do
           double("control 2",
           line_number: control_hash_2[:line_number],
-          to_hash: control_hash_2) end
+          to_h: control_hash_2) end
         let(:control_3) do
           double("control 3",
           line_number: control_hash_3[:line_number],
-          to_hash: control_hash_3) end
+          to_h: control_hash_3) end
 
         let(:control_list) { [control_1, control_2, control_3] }
         let(:ordered_control_hashes) { [control_hash_2, control_hash_1, control_hash_3] }
@@ -470,7 +470,7 @@ describe Chef::Audit::ControlGroupData do
         end
 
         it "assigns sequence numbers in order" do
-          control_group_data.to_hash
+          control_group_data.to_h
           ordered_control_hashes.each_with_index do |control_hash, idx|
             expect(control_hash[:sequence_number]).to eq idx + 1
           end
