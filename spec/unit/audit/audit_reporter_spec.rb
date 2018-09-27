@@ -53,7 +53,7 @@ describe Chef::Audit::AuditReporter do
   describe "#run_completed" do
 
     let(:audit_data) { Chef::Audit::AuditData.new(node.name, run_id) }
-    let(:run_data) { audit_data.to_hash }
+    let(:run_data) { audit_data.to_h }
 
     before do
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
@@ -61,7 +61,7 @@ describe Chef::Audit::AuditReporter do
       allow(rest).to receive(:post).and_return(true)
       allow(reporter).to receive(:audit_data).and_return(audit_data)
       allow(reporter).to receive(:run_status).and_return(run_status)
-      allow(audit_data).to receive(:to_hash).and_return(run_data)
+      allow(audit_data).to receive(:to_h).and_return(run_data)
     end
 
     describe "a successful run with auditing enabled" do
@@ -233,7 +233,7 @@ EOM
   describe "#run_failed" do
 
     let(:audit_data) { Chef::Audit::AuditData.new(node.name, run_id) }
-    let(:run_data) { audit_data.to_hash }
+    let(:run_data) { audit_data.to_h }
 
     let(:audit_error) do
       double("AuditError", class: "Chef::Exceptions::AuditError",
@@ -249,7 +249,7 @@ EOM
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
       allow(reporter).to receive(:run_status).and_return(run_status)
       allow(reporter).to receive(:audit_data).and_return(audit_data)
-      allow(audit_data).to receive(:to_hash).and_return(run_data)
+      allow(audit_data).to receive(:to_h).and_return(run_data)
     end
 
     context "when no prior exception is stored" do

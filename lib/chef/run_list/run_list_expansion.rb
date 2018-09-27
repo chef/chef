@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -144,13 +144,15 @@ class Chef
       end
 
       def to_json(*a)
-        Chef::JSONCompat.to_json(to_hash, *a)
+        Chef::JSONCompat.to_json(to_h, *a)
       end
 
-      def to_hash
+      def to_h
         seen_items = { recipe: {}, role: {} }
         { id: @environment, run_list: convert_run_list_trace("top level", seen_items) }
       end
+
+      alias_method :to_hash, :to_h
 
       private
 

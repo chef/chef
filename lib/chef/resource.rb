@@ -682,7 +682,7 @@ class Chef
       Chef::JSONCompat.to_json(results, *a)
     end
 
-    def to_hash
+    def to_h
       # Grab all current state, then any other ivars (backcompat)
       result = {}
       self.class.state_properties.each do |p|
@@ -696,6 +696,8 @@ class Chef
       end
       result
     end
+
+    alias_method :to_hash, :to_h
 
     def self.from_hash(o)
       resource = new(o["instance_vars"]["@name"])

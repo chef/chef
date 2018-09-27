@@ -115,7 +115,7 @@ class Chef
                     regex: /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|infinity)$/)
     end
 
-    def to_hash
+    def to_h
       result = {
         @actor_field_name => @actor,
       }
@@ -127,8 +127,10 @@ class Chef
       result
     end
 
+    alias_method :to_hash, :to_h
+
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def create
@@ -155,7 +157,7 @@ class Chef
       result = chef_rest.post("#{api_base}/#{@actor}/keys", payload)
       # append the private key to the current key if the server returned one,
       # since the POST endpoint just returns uri and private_key if needed.
-      new_key = to_hash
+      new_key = to_h
       new_key["private_key"] = result["private_key"] if result["private_key"]
       Chef::Key.from_hash(new_key)
     end
@@ -175,12 +177,12 @@ class Chef
       # to @name.
       put_name = @name if put_name.nil?
 
-      new_key = chef_rest.put("#{api_base}/#{@actor}/keys/#{put_name}", to_hash)
+      new_key = chef_rest.put("#{api_base}/#{@actor}/keys/#{put_name}", to_h)
       # if the server returned a public_key, remove the create_key field, as we now have a key
       if new_key["public_key"]
         delete_create_key
       end
-      Chef::Key.from_hash(to_hash.merge(new_key))
+      Chef::Key.from_hash(to_h.merge(new_key))
     end
 
     def save

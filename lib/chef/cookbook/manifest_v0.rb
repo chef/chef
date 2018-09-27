@@ -1,5 +1,5 @@
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,42 +26,47 @@ class Chef
 
       COOKBOOK_SEGMENTS = %w{ resources providers recipes definitions libraries attributes files templates root_files }.freeze
 
-      def self.from_hash(hash)
-        response = Mash.new(hash)
-        response[:all_files] = COOKBOOK_SEGMENTS.inject([]) do |memo, segment|
-          next memo if hash[segment].nil? || hash[segment].empty?
-          hash[segment].each do |file|
-            file["name"] = "#{segment}/#{file["name"]}"
-            memo << file
+      class << self
+
+        def from_hash(hash)
+          response = Mash.new(hash)
+          response[:all_files] = COOKBOOK_SEGMENTS.inject([]) do |memo, segment|
+            next memo if hash[segment].nil? || hash[segment].empty?
+            hash[segment].each do |file|
+              file["name"] = "#{segment}/#{file["name"]}"
+              memo << file
+            end
+            response.delete(segment)
+            memo
           end
-          response.delete(segment)
-          memo
+          response
         end
-        response
-      end
 
-      def self.to_hash(manifest)
-        result = manifest.manifest.dup
-        result.delete("all_files")
+        def to_h(manifest)
+          result = manifest.manifest.dup
+          result.delete("all_files")
 
-        files = manifest.by_parent_directory
-        files.keys.each_with_object(result) do |parent, memo|
-          if COOKBOOK_SEGMENTS.include?(parent)
-            memo[parent] ||= []
-            files[parent].each do |file|
-              file["name"] = file["name"].split("/")[1]
-              file.delete("full_path")
-              memo[parent] << file
+          files = manifest.by_parent_directory
+          files.keys.each_with_object(result) do |parent, memo|
+            if COOKBOOK_SEGMENTS.include?(parent)
+              memo[parent] ||= []
+              files[parent].each do |file|
+                file["name"] = file["name"].split("/")[1]
+                file.delete("full_path")
+                memo[parent] << file
+              end
             end
           end
-        end
-        # Ensure all segments are set to [] if they don't exist.
-        # See https://github.com/chef/chef/issues/6044
-        COOKBOOK_SEGMENTS.each do |segment|
-          result[segment] ||= []
+          # Ensure all segments are set to [] if they don't exist.
+          # See https://github.com/chef/chef/issues/6044
+          COOKBOOK_SEGMENTS.each do |segment|
+            result[segment] ||= []
+          end
+
+          result.merge({ "frozen?" => manifest.frozen_version?, "chef_type" => "cookbook_version" })
         end
 
-        result.merge({ "frozen?" => manifest.frozen_version?, "chef_type" => "cookbook_version" })
+        alias_method :to_hash, :to_h
       end
     end
   end

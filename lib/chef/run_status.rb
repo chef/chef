@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -102,7 +102,7 @@ class Chef::RunStatus
   # * :updated_resources
   # * :exception
   # * :backtrace
-  def to_hash
+  def to_h
     # use a flat hash here so we can't errors from intermediate values being nil
     { node: node,
       success: success?,
@@ -115,6 +115,8 @@ class Chef::RunStatus
       backtrace: backtrace,
       run_id: run_id }
   end
+
+  alias_method :to_hash, :to_h
 
   # Returns a string of the format "ExceptionClass: message" or +nil+ if no
   # +exception+ is set.
