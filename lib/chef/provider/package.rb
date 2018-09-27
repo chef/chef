@@ -666,7 +666,7 @@ class Chef
         if new_resource.respond_to?("allow_downgrade")
           new_resource.allow_downgrade
         else
-          false
+          true
         end
       end
 
