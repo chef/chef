@@ -57,7 +57,13 @@ class Chef
             # FIXME: this label should not be used.  It could be set to nil.  Probably what should happen is that
             # if the file hasn't been downloaded then load_current_resource must download the file here, and then
             # the else clause to set current_resource.version can always be run.  Relying on a side-effect here
-            # produces at least less readable code, if not outright buggy...
+            # produces at least less readable code, if not outright buggy...  (and I'm assuming that this isn't
+            # wholly just a bug -- since if we only need the package_name to determine if its installed then we
+            # need this, so I'm assuming we need to download the file to pull out the name in order to check
+            # the registry -- which it still feels like we get wrong in the sense we're forcing always downloading
+            # and then always installing(?) which violates idempotency -- and I'm having to think way too hard
+            # about this and would need to go surfing around the code to determine what actually happens, probably
+            # in every different package_provider...)
             current_resource.version(:unknown.to_s)
           else
             current_resource.version(package_provider.installed_version)
