@@ -361,9 +361,14 @@ class Chef
       #
       # By default, this function will use Gem::Version comparison. Subclasses can reimplement this method
       # for package-management system specific versions.
+      #
+      # (In other words, pull requests to introduce domain specific mangling of versions into this method
+      # will be closed -- that logic must go into the subclass -- we understand that this is far from perfect
+      # but it is a better default than outright buggy things like v1.to_f <=> v2.to_f)
+      #
       def version_compare(v1, v2)
-        gem_v1 = Gem::Version.new(v1)
-        gem_v2 = Gem::Version.new(v2)
+        gem_v1 = Gem::Version.new(v1.gsub(/\A\s*(#{Gem::Version::VERSION_PATTERN}).*/, '\1'))
+        gem_v2 = Gem::Version.new(v2.gsub(/\A\s*(#{Gem::Version::VERSION_PATTERN}).*/, '\1'))
 
         gem_v1 <=> gem_v2
       end
