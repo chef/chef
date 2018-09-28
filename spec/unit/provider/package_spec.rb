@@ -980,4 +980,26 @@ describe "Chef::Provider::Package - Multi" do
       end
     end
   end
+
+  describe "version_compare" do
+    it "tests equality" do
+      expect(provider.version_compare("1.3", "1.3")).to eql(0)
+    end
+
+    it "tests less than" do
+      expect(provider.version_compare("1.2", "1.3")).to eql(-1)
+    end
+
+    it "tests greater than" do
+      expect(provider.version_compare("1.5", "1.3")).to eql(1)
+    end
+
+    it "x.10 is greater than x.2 (so does not do floating point comparisons)" do
+      expect(provider.version_compare("1.10", "1.2")).to eql(1)
+    end
+
+    it "sanitizes inputs" do
+      expect(provider.version_compare("1.3_3", "1.3")).to eql(0)
+    end
+  end
 end
