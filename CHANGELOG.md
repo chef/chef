@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.7 -->
-## [v14.6.7](https://github.com/chef/chef/tree/v14.6.7) (2018-09-28)
+<!-- latest_release 14.6.8 -->
+## [v14.6.8](https://github.com/chef/chef/tree/v14.6.8) (2018-09-28)
 
 #### Merged Pull Requests
-- Sanitize inputs to Gem::Version in comparison operation of Package provider superclass [#7703](https://github.com/chef/chef/pull/7703) ([lamont-granquist](https://github.com/lamont-granquist))
+- Change the allow_downgrade pseudo-default in the package provider superclass to true [#7701](https://github.com/chef/chef/pull/7701) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Change the allow_downgrade pseudo-default in the package provider superclass to true [#7701](https://github.com/chef/chef/pull/7701) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.8 -->
 - Sanitize inputs to Gem::Version in comparison operation of Package provider superclass [#7703](https://github.com/chef/chef/pull/7703) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.7 -->
 - replace some instances of to_hash with to_h [#7697](https://github.com/chef/chef/pull/7697) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.6 -->
 - Minor optimization in yum_helper.py to avoid RPM DB corruption under certain scenarios [#7696](https://github.com/chef/chef/pull/7696) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 14.6.5 -->
