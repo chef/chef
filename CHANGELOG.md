@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.9 -->
-## [v14.6.9](https://github.com/chef/chef/tree/v14.6.9) (2018-09-28)
+<!-- latest_release 14.6.10 -->
+## [v14.6.10](https://github.com/chef/chef/tree/v14.6.10) (2018-09-29)
 
 #### Merged Pull Requests
-- short circuit before the version_compare call [#7705](https://github.com/chef/chef/pull/7705) ([lamont-granquist](https://github.com/lamont-granquist))
+- add some big FIXMEs [#7706](https://github.com/chef/chef/pull/7706) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- add some big FIXMEs [#7706](https://github.com/chef/chef/pull/7706) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.10 -->
 - short circuit before the version_compare call [#7705](https://github.com/chef/chef/pull/7705) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.9 -->
 - Change the allow_downgrade pseudo-default in the package provider superclass to true [#7701](https://github.com/chef/chef/pull/7701) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.8 -->
 - Sanitize inputs to Gem::Version in comparison operation of Package provider superclass [#7703](https://github.com/chef/chef/pull/7703) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.7 -->
