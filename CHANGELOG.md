@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.10 -->
-## [v14.6.10](https://github.com/chef/chef/tree/v14.6.10) (2018-09-29)
+<!-- latest_release 14.6.11 -->
+## [v14.6.11](https://github.com/chef/chef/tree/v14.6.11) (2018-10-02)
 
 #### Merged Pull Requests
-- add some big FIXMEs [#7706](https://github.com/chef/chef/pull/7706) ([lamont-granquist](https://github.com/lamont-granquist))
+- fixed typo in description property of rhsm_errata_level resource [#7710](https://github.com/chef/chef/pull/7710) ([freakinhippie](https://github.com/freakinhippie))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- fixed typo in description property of rhsm_errata_level resource [#7710](https://github.com/chef/chef/pull/7710) ([freakinhippie](https://github.com/freakinhippie)) <!-- 14.6.11 -->
 - add some big FIXMEs [#7706](https://github.com/chef/chef/pull/7706) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.10 -->
 - short circuit before the version_compare call [#7705](https://github.com/chef/chef/pull/7705) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.9 -->
 - Change the allow_downgrade pseudo-default in the package provider superclass to true [#7701](https://github.com/chef/chef/pull/7701) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.8 -->
