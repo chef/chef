@@ -33,7 +33,7 @@ class Chef
                name_property: true
 
       action :install do
-        descripton "Install all packages of the specified errata level."
+        description "Install all packages of the specified errata level."
 
         yum_package "yum-plugin-security" do
           action :install
