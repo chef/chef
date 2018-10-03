@@ -35,6 +35,12 @@ class Chef
       property :priority, Integer, default: 0,
                description: "The priority level of the source."
 
+      property :user, String,
+               description: "The username to authenticate to the source"
+
+      property :password, String,
+               description: "The password to authenticate to the source"
+
       load_current_value do
         element = fetch_source_element(source_name)
         current_value_does_not_exist! if element.nil?
@@ -43,6 +49,8 @@ class Chef
         source element["value"]
         bypass_proxy element["bypassProxy"] == "true"
         priority element["priority"].to_i
+        user element["user"]
+        password element["password"]
       end
 
       # @param [String] id the source name
@@ -78,6 +86,26 @@ class Chef
         end
       end
 
+      action :enable do
+        description "Enables a Chocolatey source."
+
+        if current_resource
+          converge_by("enable Chocolatey source '#{new_resource.source_name}'") do
+            shell_out!(choco_cmd("enable"))
+          end
+        end
+      end
+
+      action :disable do
+        description "Disables a Chocolatey source."
+
+        if current_resource
+          converge_by("disable Chocolatey source '#{new_resource.source_name}'") do
+            shell_out!(choco_cmd("disable"))
+          end
+        end
+      end
+
       action_class do
         # @param [String] action the name of the action to perform
         # @return [String] the choco source command string
@@ -86,6 +114,8 @@ class Chef
           if action == "add"
             cmd << " -s #{new_resource.source} --priority=#{new_resource.priority}"
             cmd << " --bypassproxy" if new_resource.bypass_proxy
+            cmd << " --user=#{new_resource.user}" if new_resource.user
+            cmd << " --password=#{new_resource.password}" if new_resource.password
           end
           cmd
         end

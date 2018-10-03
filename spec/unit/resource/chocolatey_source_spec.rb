@@ -66,9 +66,11 @@ CONFIG
     expect(resource.action).to eql([:add])
   end
 
-  it "supports :add and :remove actions" do
+  it "supports :add, :remove, :enable, :disable actions" do
     expect { resource.action :add }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :enable }.not_to raise_error
+    expect { resource.action :disable }.not_to raise_error
   end
 
   it "bypass_proxy property defaults to false" do
