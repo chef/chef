@@ -36,10 +36,12 @@ class Chef
                description: "The priority level of the source."
 
       property :user, String,
-               description: "The username to authenticate to the source"
+               introduced: "14.6",
+               description: "The username to authenticate to the source."
 
       property :password, String,
-               description: "The password to authenticate to the source"
+               introduced: "14.6",
+               description: "The password to authenticate to the source."
 
       load_current_value do
         element = fetch_source_element(source_name)
@@ -87,6 +89,7 @@ class Chef
       end
 
       action :enable do
+        introduced "14.6",
         description "Enables a Chocolatey source."
 
         if current_resource
@@ -97,6 +100,7 @@ class Chef
       end
 
       action :disable do
+        introduced "14.6",
         description "Disables a Chocolatey source."
 
         if current_resource
