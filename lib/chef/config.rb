@@ -80,5 +80,9 @@ class Chef
       end
     end
 
+    def self.default?(key)
+      key.is_a?(IO)
+    end
+
   end
 end
