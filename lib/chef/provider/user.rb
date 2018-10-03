@@ -23,7 +23,7 @@ class Chef
   class Provider
     class User < Chef::Provider
 
-      attr_accessor :user_exists, :locked
+      attr_accessor :user_exists, :locked, :change_desc
 
       def initialize(new_resource, run_context)
         super
@@ -101,19 +101,26 @@ class Chef
         end
       end
 
-      # Check to see if the user needs any changes
+      # Check to see if the user needs any changes. Populate
+      # @change_desc with a description of why a change must occur
       #
       # === Returns
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        return true if !new_resource.home.nil? && Pathname.new(new_resource.home).cleanpath != Pathname.new(current_resource.home).cleanpath
+        @change_desc = [ ]
 
-        [ :comment, :shell, :password, :uid, :gid ].each do |user_attrib|
-          return true if !new_resource.send(user_attrib).nil? && new_resource.send(user_attrib).to_s != current_resource.send(user_attrib).to_s
+        if !new_resource.home.nil? && Pathname.new(new_resource.home).cleanpath != Pathname.new(current_resource.home).cleanpath
+          @change_desc << "change homedir from #{Pathname.new(current_resource.home).cleanpath} to #{Pathname.new(new_resource.home).cleanpath}"
         end
 
-        false
+        [ :comment, :shell, :password, :uid, :gid ].each do |user_attrib|
+          if !new_resource.send(user_attrib).nil? && new_resource.send(user_attrib).to_s != current_resource.send(user_attrib).to_s
+            @change_desc << "change #{user_attrib} from #{current_resource.send(user_attrib)} to #{new_resource.send(user_attrib)}"
+          end
+        end
+
+        !@change_desc.empty?
       end
 
       def action_create
@@ -123,7 +130,7 @@ class Chef
             logger.info("#{new_resource} created")
           end
         elsif compare_user
-          converge_by("alter user #{new_resource.username}") do
+          converge_by(["alter user #{new_resource.username}"] + change_desc) do
             manage_user
             logger.info("#{new_resource} altered")
           end
@@ -140,7 +147,7 @@ class Chef
 
       def action_manage
         return unless @user_exists && compare_user
-        converge_by("manage user #{new_resource.username}") do
+        converge_by(["manage user #{new_resource.username}"] + change_desc) do
           manage_user
           logger.info("#{new_resource} managed")
         end
@@ -148,7 +155,7 @@ class Chef
 
       def action_modify
         return unless compare_user
-        converge_by("modify user #{new_resource.username}") do
+        converge_by(["modify user #{new_resource.username}"] + change_desc) do
           manage_user
           logger.info("#{new_resource} modified")
         end

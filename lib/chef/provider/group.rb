@@ -105,7 +105,7 @@ class Chef
             @change_desc << "remove existing member(s): #{members_to_be_removed.join(', ')}"
           end
         elsif new_resource.members != current_resource.members
-          @change_desc << "replace group members with new list of members"
+          @change_desc << "replace group members (#{current_resource.members}) with new list of members (#{new_resource.members})"
         end
 
         !@change_desc.empty?

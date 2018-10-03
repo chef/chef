@@ -267,7 +267,7 @@ describe Chef::Provider::User do
       @new_resource.members << "user1"
       allow(@new_resource).to receive(:append).and_return false
       expect(@provider.compare_group).to be_truthy
-      expect(@provider.change_desc).to eq([ "replace group members with new list of members" ])
+      expect(@provider.change_desc).to eq([ "replace group members (#{@current_resource.members}) with new list of members(#{new_resource.members})" ])
     end
 
     it "should report the gid will be changed when it does not match" do
