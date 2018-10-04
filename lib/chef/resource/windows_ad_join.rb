@@ -38,7 +38,7 @@ class Chef
       property :domain_user, String,
                description: "The domain user that will be used to join the domain.",
                validation_message: "The 'domain_user' property must be in the 'DOMAIN\\username' format.",
-               regex: /.+\\.+/, #anything\anything
+               regex: /.+\\.+/, # anything\anything
                required: true
 
       property :domain_password, String,
