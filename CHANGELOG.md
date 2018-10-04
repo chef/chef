@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.11 -->
-## [v14.6.11](https://github.com/chef/chef/tree/v14.6.11) (2018-10-02)
+<!-- latest_release 14.6.12 -->
+## [v14.6.12](https://github.com/chef/chef/tree/v14.6.12) (2018-10-04)
 
 #### Merged Pull Requests
-- fixed typo in description property of rhsm_errata_level resource [#7710](https://github.com/chef/chef/pull/7710) ([freakinhippie](https://github.com/freakinhippie))
+- Bump inspec-core to 2.3.5 [#7709](https://github.com/chef/chef/pull/7709) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Bump inspec-core to 2.3.5 [#7709](https://github.com/chef/chef/pull/7709) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.12 -->
 - fixed typo in description property of rhsm_errata_level resource [#7710](https://github.com/chef/chef/pull/7710) ([freakinhippie](https://github.com/freakinhippie)) <!-- 14.6.11 -->
 - add some big FIXMEs [#7706](https://github.com/chef/chef/pull/7706) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.10 -->
 - short circuit before the version_compare call [#7705](https://github.com/chef/chef/pull/7705) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.9 -->
