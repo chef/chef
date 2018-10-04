@@ -40,6 +40,10 @@ describe Chef::Resource::WindowsAdJoin do
     expect { resource.domain_name "example" }.to raise_error(ArgumentError)
   end
 
+  it "only accepts DOMAIN\\username as the domain_user property" do
+    expect { resource.domain_user "username" }.to raise_error(ArgumentError)
+  end
+
   it "accepts :immediate, :reboot_now, :request_reboot, :delayed, or :never values for 'reboot' property" do
     expect { resource.reboot :immediate }.not_to raise_error
     expect { resource.reboot :delayed }.not_to raise_error
