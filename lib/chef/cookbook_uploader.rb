@@ -77,7 +77,8 @@ class Chef
 
       queue.process(@concurrency)
 
-      sandbox_url = new_sandbox["uri"]
+      sandbox_url = URI.parse(Chef::Config[:chef_server_url])
+      sandbox_url.path = URI.parse(new_sandbox["uri"]).path
       Chef::Log.trace("Committing sandbox")
       # Retry if S3 is claims a checksum doesn't exist (the eventual
       # in eventual consistency)
