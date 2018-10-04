@@ -36,12 +36,13 @@ class Chef
                description: "The priority level of the source."
 
       property :user, String,
-               introduced: "14.6",
+               introduced: "14.6"
                description: "The username to authenticate to the source."
 
       property :password, String,
-               introduced: "14.6",
-               description: "The password to authenticate to the source."
+               introduced: "14.6"
+               description: "The password to authenticate to the source.",
+               sensitive: true
 
       load_current_value do
         element = fetch_source_element(source_name)
@@ -89,22 +90,22 @@ class Chef
       end
 
       action :enable do
-        introduced "14.6",
+        introduced "14.6"
         description "Enables a Chocolatey source."
 
         if current_resource
-          converge_by("enable Chocolatey source '#{new_resource.source_name}'") do
+          converge_if_changed("enable Chocolatey source '#{new_resource.source_name}'") do
             shell_out!(choco_cmd("enable"))
           end
         end
       end
 
       action :disable do
-        introduced "14.6",
+        introduced "14.6"
         description "Disables a Chocolatey source."
 
         if current_resource
-          converge_by("disable Chocolatey source '#{new_resource.source_name}'") do
+          converge_if_changed("disable Chocolatey source '#{new_resource.source_name}'") do
             shell_out!(choco_cmd("disable"))
           end
         end
