@@ -68,6 +68,8 @@ if windows?
   dependency "ruby-windows-devkit-bash"
 end
 
+dependency "chef-cleanup"
+
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
   compression_level 1
