@@ -409,7 +409,13 @@ class Chef
         end
       end
 
-      # make sure policyfile values are set correctly
+      # Ensure options are valid by checking policyfile values.
+      #
+      # The method call will cause the program to exit(1) if:
+      #   * Only one of --policy-name and --policy-group is specified
+      #   * Policyfile options are set and --run-list is set as well
+      #
+      # @return [TrueClass] If options are valid.
       def validate_options!
         if incomplete_policyfile_options?
           ui.error("--policy-name and --policy-group must be specified together")
