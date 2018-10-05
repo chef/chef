@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.15 -->
-## [v14.6.15](https://github.com/chef/chef/tree/v14.6.15) (2018-10-05)
+<!-- latest_release 14.6.16 -->
+## [v14.6.16](https://github.com/chef/chef/tree/v14.6.16) (2018-10-05)
 
 #### Merged Pull Requests
-- better docs for Chef::Knife::Bootstrap#validate_options! [#7719](https://github.com/chef/chef/pull/7719) ([bankair](https://github.com/bankair))
+- Cleanup the Test Kitchen setup in omnibus [#7726](https://github.com/chef/chef/pull/7726) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Cleanup the Test Kitchen setup in omnibus [#7726](https://github.com/chef/chef/pull/7726) ([tas50](https://github.com/tas50)) <!-- 14.6.16 -->
 - better docs for Chef::Knife::Bootstrap#validate_options! [#7719](https://github.com/chef/chef/pull/7719) ([bankair](https://github.com/bankair)) <!-- 14.6.15 -->
 - Add chef-cleanup omnibus-software defn [#7725](https://github.com/chef/chef/pull/7725) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.14 -->
 - Bump inspec-core to 2.3.10 [#7723](https://github.com/chef/chef/pull/7723) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.13 -->
