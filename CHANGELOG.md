@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.13 -->
-## [v14.6.13](https://github.com/chef/chef/tree/v14.6.13) (2018-10-04)
+<!-- latest_release 14.6.14 -->
+## [v14.6.14](https://github.com/chef/chef/tree/v14.6.14) (2018-10-05)
 
 #### Merged Pull Requests
-- Bump inspec-core to 2.3.10 [#7723](https://github.com/chef/chef/pull/7723) ([chef-ci](https://github.com/chef-ci))
+- Add chef-cleanup omnibus-software defn [#7725](https://github.com/chef/chef/pull/7725) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Add chef-cleanup omnibus-software defn [#7725](https://github.com/chef/chef/pull/7725) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.14 -->
 - Bump inspec-core to 2.3.10 [#7723](https://github.com/chef/chef/pull/7723) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.13 -->
 - Bump inspec-core to 2.3.5 [#7709](https://github.com/chef/chef/pull/7709) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.12 -->
 - fixed typo in description property of rhsm_errata_level resource [#7710](https://github.com/chef/chef/pull/7710) ([freakinhippie](https://github.com/freakinhippie)) <!-- 14.6.11 -->
