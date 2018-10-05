@@ -17,10 +17,6 @@ driver:
 
 provisioner:
   name: chef_zero
-  # Always install the latest version of Chef.
-  # This is not the version of chef that we're building - this is the version
-  # of chef that omnibus needs to build chef/chef.
-  require_chef_omnibus: true
   attributes:
     vagrant:
       this_key_exists_so_we_have_a_vagrant_key: true
@@ -39,8 +35,8 @@ platforms:
     run_list: yum-epel::default
   - name: debian-8
     run_list: apt::default
-  - name: freebsd-10
-    run_list: freebsd::portsnap
+  - name: debian-9
+    run_list: apt::default
   - name: freebsd-11
     run_list: freebsd::portsnap
   - name: ubuntu-14.04
@@ -49,31 +45,33 @@ platforms:
     run_list: apt::default
   - name: ubuntu-18.04
     run_list: apt::default
-  # The following (private) boxes are shared via Atlas and are only
+  # The following (private) boxes are shared via Vagrant Cloud and are only
   # available to users working for Chef. Sorry, it's about software licensing.
   #
   # Chef-internal users, you will need to:
-  # 1.  Create an Atlas account:  https://atlas.hashicorp.com/
-  # 2.  Ping #eng-services-support with your Atlas account name
-  #     to be added to the relevant team in Atlas,
-  # 3.  Do `vagrant login` with your Atlas creds so that you can download
-  #     the private boxes.
+  # 1.  Create an Vagrant Cloud account:  http://vagrantcloud.com/
+  # 2.  Ping #releng-support with your account name to be added to the relevant team.
+  # 3.  Do `vagrant login` with your creds so that you can download the private boxes.
   #
-  # The Mac OS X boxes are VMware only also. You can enable VMware Fusion
+  # The macOS boxes are VMware only also. You can enable VMware Fusion
   # by activating the `kitchen.vmware.yml` file with the `KITCHEN_LOCAL_YAML`
   # environment variable:
   #
-  #   KITCHEN_LOCAL_YAML=kitchen.vmware.yml kitchen converge chefdk-macosx-109
+  #   KITCHEN_LOCAL_YAML=kitchen.vmware.yml kitchen converge chef-macosx-1011
   #
 
   # OSX
   <% %w(
-    10.9
-    10.10
-    10.11
+    macosx-10.11
+    macos-10.12
+    macos-10.13
   ).each do |mac_version| %>
-  - name: macosx-<%= mac_version %>
+  - name: <%= mac_version %>
     driver:
+      provider: vmware_fusion
+      customize:
+        numvcpus: 4
+        memsize: 4096
       box: chef/macosx-<%= mac_version %> # private
       synced_folders:
       - ['..', '/Users/vagrant/chef']
