@@ -178,7 +178,9 @@ class Chef
           to_be.each do |tb|
             return true if value == tb
           end
-          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}.")
+          # Ruby will print :something as something, which confuses users so make sure to print them as symbols
+          corrected_type_array = to_be.collect { |x| x.kind_of?(Symbol) ? ":#{x}" : x }
+          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be equal to one of: #{corrected_type_array.join(", ")}!  You passed #{value.inspect}.")
         end
       end
 
