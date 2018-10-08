@@ -13,6 +13,17 @@ environment:
 
 clone_folder: c:\projects\chef
 clone_depth: 1
+
+skip_commits:
+  # version bumps by Expeditor happen as a separate commit after the merge, we can skip
+  author: Chef Expeditor
+  # if ONLY the files listed below are changed in a commit, skip
+  files:
+    - MAINTAINERS.md
+    - MAINTAINERS.toml
+    - CHANGELOG.md
+    - RELEASE_NOTES.md
+
 skip_tags: true
 branches:
   only:
