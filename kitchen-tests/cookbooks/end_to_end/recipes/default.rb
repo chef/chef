@@ -9,6 +9,11 @@ hostname "chef-travis-ci.chef.io"
 
 apt_update
 
+locale "Set locale to en_US" do
+  lang "en_US.utf8"
+  lc_all "en_US.utf8"
+end
+
 include_recipe "ubuntu" if platform?("ubuntu")
 
 if platform_family?("rhel", "fedora", "amazon")
