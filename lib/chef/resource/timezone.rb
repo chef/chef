@@ -41,11 +41,7 @@ class Chef
 
         if node["init_package"] == "systemd"
           # Modern Amazon, Fedora, CentOS, RHEL, Ubuntu & Debian
-          cmd_set_tz = "/usr/bin/timedatectl"
-          cmd_set_tz += " "
-          cmd_set_tz += "--no-ask-password"
-          cmd_set_tz += " "
-          cmd_set_tz += "set-timezone #{new_resource.timezone}"
+          cmd_set_tz = "/usr/bin/timedatectl --no-ask-password set-timezone #{new_resource.timezone}"
 
           cmd_check_if_set = "/usr/bin/timedatectl status"
           cmd_check_if_set += " | /usr/bin/awk '/Time.*zone/{print}'"
