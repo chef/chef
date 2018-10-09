@@ -5,7 +5,7 @@
 [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
 [![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef-rfc/blob/master/rfc086-chef-oss-project-policies.md#cadence-release)
 
-## Getting Started
+## Getting Started with Chef
 
 Want to try Chef?
 For Chef user, please refer to [Quick Start](https://docs.chef.io/quick_start.html)
