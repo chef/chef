@@ -53,7 +53,7 @@ class Chef
         bypass_proxy element["bypassProxy"] == "true"
         priority element["priority"].to_i
         user element["user"]
-        password element["password"]
+        password unprotect_password(element["password"])
       end
 
       # @param [String] id the source name
@@ -67,6 +67,12 @@ class Chef
         config_contents = REXML::Document.new(::File.read(config_file))
         data = REXML::XPath.first(config_contents, "//sources/source[@id=\"#{id}\"]")
         data ? data.attributes : nil # REXML just returns nil if it can't find anything so avoid an undefined method error
+      end
+
+      # @param [String] base64 string to unprotect
+      # @return [String] unprotected password
+      def unprotect_password(base64_protected)
+        powershell_out!("Add-Type -AssemblyName System.Security;$enc = [system.Text.Encoding]::UTF8;$input = \"#{base64_protected}\";$salt=\"Chocolatey\";$decryptedBytes=[System.Security.Cryptography.ProtectedData]::Unprotect([System.Convert]::FromBase64String($input),$enc.GetBytes($salt),[System.Security.Cryptography.DataProtectionScope]::LocalMachine); write-output $enc.GetString($decryptedBytes)").stdout.chomp
       end
 
       action :add do
@@ -93,10 +99,10 @@ class Chef
         introduced "14.6"
         description "Enables a Chocolatey source."
 
-        if current_resource
-          converge_if_changed("enable Chocolatey source '#{new_resource.source_name}'") do
-            shell_out!(choco_cmd("enable"))
-          end
+        raise "#{new_resource}: When enabling a Chocolatey source you must pass the 'source' property!" unless new_resource.source
+
+        converge_if_changed do
+          shell_out!(choco_cmd("enable"))
         end
       end
 
@@ -104,10 +110,10 @@ class Chef
         introduced "14.6"
         description "Disables a Chocolatey source."
 
-        if current_resource
-          converge_if_changed("disable Chocolatey source '#{new_resource.source_name}'") do
-            shell_out!(choco_cmd("disable"))
-          end
+        raise "#{new_resource}: When disabling a Chocolatey source you must pass the 'source' property!" unless new_resource.source
+
+        converge_if_changed do
+          shell_out!(choco_cmd("disable"))
         end
       end
 
