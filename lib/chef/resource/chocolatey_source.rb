@@ -36,11 +36,11 @@ class Chef
                description: "The priority level of the source."
 
       property :user, String,
-               introduced: "14.6"
+               introduced: "14.6",
                description: "The username to authenticate to the source."
 
       property :password, String,
-               introduced: "14.6"
+               introduced: "14.6",
                description: "The password to authenticate to the source.",
                sensitive: true
 
