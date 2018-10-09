@@ -593,6 +593,7 @@ describe Chef::ProviderResolver do
         ruby:                   [ Chef::Resource::Ruby, Chef::Provider::Script ],
         script:                 [ Chef::Resource::Script, Chef::Provider::Script ],
         smartos_package:        [ Chef::Resource::SmartosPackage, Chef::Provider::Package::SmartOS ],
+        snap_package:           [ Chef::Resource::SnapPackage, Chef::Provider::Package::Snap ],
         solaris_package:        [ Chef::Resource::SolarisPackage, Chef::Provider::Package::Solaris ],
         solaris_user:           [ Chef::Resource::User::SolarisUser, Chef::Provider::User::Solaris ],
         subversion:             [ Chef::Resource::Subversion, Chef::Provider::Subversion ],
