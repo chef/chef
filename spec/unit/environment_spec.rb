@@ -317,7 +317,7 @@ describe Chef::Environment do
 
     it "validates the name given in the params" do
       expect(@environment.update_from_params(name: "@$%^&*()")).to be_falsey
-      expect(@environment.invalid_fields[:name]).to eq(%q{Option name's value @$%^&*() does not match regular expression /^[\-[:alnum:]_]+$/})
+      expect(@environment.invalid_fields[:name]).to eq(%q{Property name's value @$%^&*() does not match regular expression /^[\-[:alnum:]_]+$/})
     end
 
     it "updates the description from parameters[:description]" do

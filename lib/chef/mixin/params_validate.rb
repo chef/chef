@@ -300,7 +300,7 @@ class Chef
           Array(regex).flatten.each do |r|
             return true if r.match(value.to_s)
           end
-          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}")
+          raise Exceptions::ValidationFailed, _validation_message(key, "Property #{key}'s value #{value} does not match regular expression #{regex.inspect}")
         end
       end
 
