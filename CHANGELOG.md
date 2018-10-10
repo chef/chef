@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.18 -->
-## [v14.6.18](https://github.com/chef/chef/tree/v14.6.18) (2018-10-09)
+<!-- latest_release 14.6.19 -->
+## [v14.6.19](https://github.com/chef/chef/tree/v14.6.19) (2018-10-10)
 
 #### Merged Pull Requests
-- Add the timezone resource from the timezone_lwrp cookbook [#7736](https://github.com/chef/chef/pull/7736) ([tas50](https://github.com/tas50))
+- Enable x86_64-linux-kernel2 habitat builds for chef-client [#7722](https://github.com/chef/chef/pull/7722) ([smacfarlane](https://github.com/smacfarlane))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Enable x86_64-linux-kernel2 habitat builds for chef-client [#7722](https://github.com/chef/chef/pull/7722) ([smacfarlane](https://github.com/smacfarlane)) <!-- 14.6.19 -->
 - Add the timezone resource from the timezone_lwrp cookbook [#7736](https://github.com/chef/chef/pull/7736) ([tas50](https://github.com/tas50)) <!-- 14.6.18 -->
 - Only include the Windows distro files on Windows [#7727](https://github.com/chef/chef/pull/7727) ([tas50](https://github.com/tas50)) <!-- 14.6.17 -->
 - Cleanup the Test Kitchen setup in omnibus [#7726](https://github.com/chef/chef/pull/7726) ([tas50](https://github.com/tas50)) <!-- 14.6.16 -->
