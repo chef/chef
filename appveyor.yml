@@ -16,7 +16,7 @@ clone_depth: 1
 
 skip_commits:
   # version bumps by Expeditor happen as a separate commit after the merge, we can skip
-  author: Chef Expeditor
+  message: /Bump version to [0-9.]+ by Chef Expeditor/
   # if ONLY the files listed below are changed in a commit, skip
   files:
     - MAINTAINERS.md
