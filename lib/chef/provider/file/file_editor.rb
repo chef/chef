@@ -68,11 +68,12 @@ class Chef
 
         # repetetive "append_if_no_such_line"
         def append_lines(lines, replace: false, unique: false)
-          chkarg 1, lines, Array
+          chkarg 1, lines, [ Array, String, Hash ]
           chkarg :replace, replace, [ true, false ]
           chkarg :unique, unique, [ true, false ]
 
           unless lines.is_a?(Hash)
+            lines = Array(lines)
             lines = lines.split("\n") unless lines.is_a?(Array)
             lines.map(&:chomp!)
             lines = lines.each_with_object({}) do |line, hash|
@@ -80,6 +81,7 @@ class Chef
               hash[regex] = line
             end
           end
+          modified = false
           lines.each do |regex, line|
             append_line_unless_match(regex, line, replace: replace, unique: unique) && modified = true
           end
