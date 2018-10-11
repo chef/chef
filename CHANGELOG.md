@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.19 -->
-## [v14.6.19](https://github.com/chef/chef/tree/v14.6.19) (2018-10-10)
+<!-- latest_release 14.6.20 -->
+## [v14.6.20](https://github.com/chef/chef/tree/v14.6.20) (2018-10-11)
 
 #### Merged Pull Requests
-- Enable x86_64-linux-kernel2 habitat builds for chef-client [#7722](https://github.com/chef/chef/pull/7722) ([smacfarlane](https://github.com/smacfarlane))
+- Bump win32-taskscheduler to 1.0.12 [#7740](https://github.com/chef/chef/pull/7740) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Bump win32-taskscheduler to 1.0.12 [#7740](https://github.com/chef/chef/pull/7740) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.20 -->
 - Enable x86_64-linux-kernel2 habitat builds for chef-client [#7722](https://github.com/chef/chef/pull/7722) ([smacfarlane](https://github.com/smacfarlane)) <!-- 14.6.19 -->
 - Add the timezone resource from the timezone_lwrp cookbook [#7736](https://github.com/chef/chef/pull/7736) ([tas50](https://github.com/tas50)) <!-- 14.6.18 -->
 - Only include the Windows distro files on Windows [#7727](https://github.com/chef/chef/pull/7727) ([tas50](https://github.com/tas50)) <!-- 14.6.17 -->
