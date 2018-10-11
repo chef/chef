@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.21 -->
-## [v14.6.21](https://github.com/chef/chef/tree/v14.6.21) (2018-10-11)
+<!-- latest_release 14.6.22 -->
+## [v14.6.22](https://github.com/chef/chef/tree/v14.6.22) (2018-10-11)
 
 #### Merged Pull Requests
-- Bump ohai to 14.6.2 [#7742](https://github.com/chef/chef/pull/7742) ([chef-ci](https://github.com/chef-ci))
+- Bump win32-taskscheduler to 2.0 [#7743](https://github.com/chef/chef/pull/7743) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Bump win32-taskscheduler to 2.0 [#7743](https://github.com/chef/chef/pull/7743) ([btm](https://github.com/btm)) <!-- 14.6.22 -->
 - Bump ohai to 14.6.2 [#7742](https://github.com/chef/chef/pull/7742) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.21 -->
 - Bump win32-taskscheduler to 1.0.12 [#7740](https://github.com/chef/chef/pull/7740) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.20 -->
 - Enable x86_64-linux-kernel2 habitat builds for chef-client [#7722](https://github.com/chef/chef/pull/7722) ([smacfarlane](https://github.com/smacfarlane)) <!-- 14.6.19 -->
