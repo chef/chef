@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2017, Chef Software Inc.
+# Copyright 2012-2018, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ overrides_path = File.expand_path("../../../../omnibus_overrides.rb", current_fi
 instance_eval(IO.read(overrides_path), overrides_path)
 
 dependency "preparation"
+
 dependency "chef"
 
 #
@@ -67,13 +68,12 @@ if windows?
   dependency "ruby-windows-devkit-bash"
 end
 
+dependency "chef-cleanup"
+
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
-
-  unless rhel? && platform_version.satisfies?("< 6")
-    compression_level 1
-    compression_type :xz
-  end
+  compression_level 1
+  compression_type :xz
 end
 
 package :deb do
