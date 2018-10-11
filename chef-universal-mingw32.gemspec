@@ -14,7 +14,7 @@ gemspec.add_dependency "win32-process", "~> 0.8.2"
 gemspec.add_dependency "win32-service", "~> 1.0"
 gemspec.add_dependency "windows-api", "~> 0.4.4"
 gemspec.add_dependency "wmi-lite", "~> 1.0"
-gemspec.add_dependency "win32-taskscheduler", "~> 1.0.0"
+gemspec.add_dependency "win32-taskscheduler", "~> 2.0"
 gemspec.extensions << "ext/win32-eventlog/Rakefile"
 gemspec.files += Dir.glob("{distro,ext}/**/*")
 
