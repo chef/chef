@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 13.11.4 -->
+## [v13.11.4](https://github.com/chef/chef/tree/v13.11.4) (2018-10-11)
+
+#### Merged Pull Requests
+- Backport omnibus cleanup + MSI speedup logic from Chef 14 [#7739](https://github.com/chef/chef/pull/7739) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=13.11.3 -->
+### Changes since 13.11.3 release
+
+#### Merged Pull Requests
+- Backport omnibus cleanup + MSI speedup logic from Chef 14 [#7739](https://github.com/chef/chef/pull/7739) ([tas50](https://github.com/tas50)) <!-- 13.11.4 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
