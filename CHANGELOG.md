@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.22 -->
-## [v14.6.22](https://github.com/chef/chef/tree/v14.6.22) (2018-10-11)
+<!-- latest_release 14.6.23 -->
+## [v14.6.23](https://github.com/chef/chef/tree/v14.6.23) (2018-10-12)
 
 #### Merged Pull Requests
-- Bump win32-taskscheduler to 2.0 [#7743](https://github.com/chef/chef/pull/7743) ([btm](https://github.com/btm))
+- When a property regex fails don&#39;t call it an option [#7745](https://github.com/chef/chef/pull/7745) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- When a property regex fails don&#39;t call it an option [#7745](https://github.com/chef/chef/pull/7745) ([tas50](https://github.com/tas50)) <!-- 14.6.23 -->
 - Bump win32-taskscheduler to 2.0 [#7743](https://github.com/chef/chef/pull/7743) ([btm](https://github.com/btm)) <!-- 14.6.22 -->
 - Bump ohai to 14.6.2 [#7742](https://github.com/chef/chef/pull/7742) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.21 -->
 - Bump win32-taskscheduler to 1.0.12 [#7740](https://github.com/chef/chef/pull/7740) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.20 -->
