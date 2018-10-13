@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.24 -->
-## [v14.6.24](https://github.com/chef/chef/tree/v14.6.24) (2018-10-12)
+<!-- latest_release 14.6.25 -->
+## [v14.6.25](https://github.com/chef/chef/tree/v14.6.25) (2018-10-13)
 
 #### Merged Pull Requests
-- Bump inspec-core to 2.3.23 [#7747](https://github.com/chef/chef/pull/7747) ([chef-ci](https://github.com/chef-ci))
+- Bump inspec-core to 2.3.24 [#7748](https://github.com/chef/chef/pull/7748) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Bump inspec-core to 2.3.24 [#7748](https://github.com/chef/chef/pull/7748) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.25 -->
 - Bump inspec-core to 2.3.23 [#7747](https://github.com/chef/chef/pull/7747) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.24 -->
 - When a property regex fails don&#39;t call it an option [#7745](https://github.com/chef/chef/pull/7745) ([tas50](https://github.com/tas50)) <!-- 14.6.23 -->
 - Bump win32-taskscheduler to 2.0 [#7743](https://github.com/chef/chef/pull/7743) ([btm](https://github.com/btm)) <!-- 14.6.22 -->
