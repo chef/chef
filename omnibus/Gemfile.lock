@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 386cd17f6a6365bd4585761a2738b4561fbaea97
+  revision: 6cfec3a04de67aea335c23b5a3bd334a3a68fafe
   branch: master
   specs:
-    omnibus (6.0.1)
-      aws-sdk (~> 2)
+    omnibus (6.0.4)
+      aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
       ffi-yajl (~> 2.2)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 67a458d2e8a55b267fe0b47f6e1ec9c01e097137
+  revision: a2ee7a44bfb67203001e82b893cbab4cd3e33a75
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -31,13 +31,20 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.11.144)
-      aws-sdk-resources (= 2.11.144)
-    aws-sdk-core (2.11.144)
+    aws-eventstream (1.0.1)
+    aws-partitions (1.105.0)
+    aws-sdk-core (3.30.0)
+      aws-eventstream (~> 1.0)
+      aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.144)
-      aws-sdk-core (= 2.11.144)
+    aws-sdk-kms (1.9.0)
+      aws-sdk-core (~> 3, >= 3.26.0)
+      aws-sigv4 (~> 1.0)
+    aws-sdk-s3 (1.21.0)
+      aws-sdk-core (~> 3, >= 3.26.0)
+      aws-sdk-kms (~> 1)
+      aws-sigv4 (~> 1.0)
     aws-sigv4 (1.0.3)
     berkshelf (7.0.6)
       chef (>= 13.6.52)
@@ -215,9 +222,9 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.1.1)
     nori (2.6.0)
-    octokit (4.12.0)
+    octokit (4.13.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (14.5.4)
+    ohai (14.6.2)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -326,7 +333,7 @@ GEM
     win32-service (1.0.1)
       ffi
       ffi-win32-extensions
-    win32-taskscheduler (1.0.10)
+    win32-taskscheduler (1.0.12)
       ffi
       structured_warnings
     windows-api (0.4.4)
@@ -343,7 +350,7 @@ GEM
     winrm-elevated (1.1.0)
       winrm (~> 2.0)
       winrm-fs (~> 1.0)
-    winrm-fs (1.3.0)
+    winrm-fs (1.3.1)
       erubis (~> 2.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 1.1)
