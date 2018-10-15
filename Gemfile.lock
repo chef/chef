@@ -176,7 +176,7 @@ GEM
       addressable (~> 2.3)
     libyajl2 (1.2.0)
     method_source (0.9.0)
-    mixlib-archive (0.4.16)
+    mixlib-archive (0.4.18)
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
