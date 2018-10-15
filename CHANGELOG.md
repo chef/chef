@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.26 -->
-## [v14.6.26](https://github.com/chef/chef/tree/v14.6.26) (2018-10-15)
+<!-- latest_release 14.6.27 -->
+## [v14.6.27](https://github.com/chef/chef/tree/v14.6.27) (2018-10-15)
 
 #### Merged Pull Requests
-- Update omnibus deps [#7749](https://github.com/chef/chef/pull/7749) ([tas50](https://github.com/tas50))
+- Update Nokogiri to 1.8.5 [#7750](https://github.com/chef/chef/pull/7750) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Update Nokogiri to 1.8.5 [#7750](https://github.com/chef/chef/pull/7750) ([tas50](https://github.com/tas50)) <!-- 14.6.27 -->
 - Update omnibus deps [#7749](https://github.com/chef/chef/pull/7749) ([tas50](https://github.com/tas50)) <!-- 14.6.26 -->
 - Bump inspec-core to 2.3.24 [#7748](https://github.com/chef/chef/pull/7748) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.25 -->
 - Bump inspec-core to 2.3.23 [#7747](https://github.com/chef/chef/pull/7747) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.24 -->
