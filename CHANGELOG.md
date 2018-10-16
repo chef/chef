@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.27 -->
-## [v14.6.27](https://github.com/chef/chef/tree/v14.6.27) (2018-10-15)
+<!-- latest_release 14.6.28 -->
+## [v14.6.28](https://github.com/chef/chef/tree/v14.6.28) (2018-10-16)
 
 #### Merged Pull Requests
-- Update Nokogiri to 1.8.5 [#7750](https://github.com/chef/chef/pull/7750) ([tas50](https://github.com/tas50))
+- Node Attributes: Build ImmutableMash properly in deep_merge! [#7752](https://github.com/chef/chef/pull/7752) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Node Attributes: Build ImmutableMash properly in deep_merge! [#7752](https://github.com/chef/chef/pull/7752) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.28 -->
 - Update Nokogiri to 1.8.5 [#7750](https://github.com/chef/chef/pull/7750) ([tas50](https://github.com/tas50)) <!-- 14.6.27 -->
 - Update omnibus deps [#7749](https://github.com/chef/chef/pull/7749) ([tas50](https://github.com/tas50)) <!-- 14.6.26 -->
 - Bump inspec-core to 2.3.24 [#7748](https://github.com/chef/chef/pull/7748) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.25 -->
