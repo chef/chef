@@ -298,6 +298,15 @@ class Chef::Application::Client < Chef::Application
     description: "Use cached cookbooks without overwriting local differences from the #{Chef::Dist::SERVER_PRODUCT}.",
     boolean: false
 
+  option :target,
+    short: "-t TARGET",
+    long: "--target TARGET",
+    description: "Target the Chef Client run against a remote system or device",
+    proc: lambda { |target|
+      Chef::Log.warn "-- EXPERIMENTAL -- Target mode activated, resources and dsl may change without warning -- EXPERIMENTAL --"
+      target
+    }
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
   RECONFIGURE_SIGNAL = "H".freeze
 
@@ -347,6 +356,12 @@ class Chef::Application::Client < Chef::Application
 
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
+
+    if config[:target] || Chef::Config.target
+      Chef::Config.target_mode.enabled = true
+      Chef::Config.target_mode.host = config[:target] || Chef::Config.target
+      Chef::Config.node_name = Chef::Config.target_mode.host unless Chef::Config.node_name
+    end
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800

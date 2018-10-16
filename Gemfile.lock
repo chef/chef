@@ -55,6 +55,7 @@ PATH
       syslog-logger (~> 1.6)
       train-core (~> 2.0, >= 2.0.12)
       tty-screen (~> 0.6)
+      train-core
       uuidtools (~> 2.1.5)
     chef (15.0.263-universal-mingw32)
       addressable
@@ -85,6 +86,7 @@ PATH
       syslog-logger (~> 1.6)
       train-core (~> 2.0, >= 2.0.12)
       tty-screen (~> 0.6)
+      train-core
       uuidtools (~> 2.1.5)
       win32-api (~> 1.5.3)
       win32-certstore (~> 0.3)

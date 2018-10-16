@@ -25,7 +25,7 @@ class Chef
     class Execute < Chef::Provider
       extend Forwardable
 
-      provides :execute
+      provides :execute, target_mode: true
 
       def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env
 
@@ -55,7 +55,7 @@ class Chef
 
         converge_by("execute #{description}") do
           begin
-            shell_out!(command, opts)
+            train_or_shell!(command, opts)
           rescue Mixlib::ShellOut::ShellCommandFailed
             if sensitive?
               ex = Mixlib::ShellOut::ShellCommandFailed.new("Command execution failed. STDOUT/STDERR suppressed for sensitive resource")

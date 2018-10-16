@@ -17,11 +17,13 @@
 #
 
 require "chef/mixin/shell_out"
+require "chef/mixin/train_or_shell"
 
 class Chef
   class GuardInterpreter
     class DefaultGuardInterpreter
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::TrainOrShell
 
       protected
 
@@ -33,7 +35,7 @@ class Chef
       public
 
       def evaluate
-        result = shell_out(@command, default_env: false, **@command_opts)
+        result = train_or_shell(@command, default_env: false, **@command_opts)
         Chef::Log.debug "Command failed: #{result.stderr}" unless result.status.success?
         result.status.success?
       # Timeout fails command rather than chef-client run, see:

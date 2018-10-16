@@ -24,7 +24,8 @@ class Chef
   class Resource
     class Execute < Chef::Resource
       resource_name :execute
-      provides :execute
+      provides :execute, target_mode: true
+
       description "Use the execute resource to execute a single command. Commands that"\
                   " are executed with this resource are (by their nature) not idempotent,"\
                   " as they are typically unique to the environment in which they are run."\
