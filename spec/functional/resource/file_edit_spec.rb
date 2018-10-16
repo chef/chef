@@ -383,6 +383,25 @@ describe "edit property of the file resource" do
       expect(IO.read(path).lines).to eql(%W{prepended\n stuff})
     end
 
+    it "when not prepending, preserves files that do not end in a newline, when the matching pattern is the line without the newline" do
+      File.open(path, "a+") { |f| f.write "matching\nstuff" }
+      r.edit do
+        prepend_lines "stuff"
+      end
+      r.run_action(:create)
+      expect(IO.read(path).lines).to eql(%W{matching\n stuff})
+    end
+
+    it "does not prepend multiple times, where file does not already have a newline" do
+      File.open(path, "a+") { |f| f.write "stuff" }
+      r.edit do
+        prepend_lines "prepended"
+      end
+      r.run_action(:create)
+      r.run_action(:create)
+      expect(IO.read(path).lines).to eql(%W{prepended\n stuff})
+    end
+
     it "prepends with a multi line string" do
       r.edit do
         prepend_lines <<~EOF
@@ -471,6 +490,80 @@ describe "edit property of the file resource" do
       r.run_action(:create)
       r.run_action(:create)
       expect(IO.read(path).lines).to eql(%W{prepend1\n prepend2\n stuff})
+    end
+
+    it "hashes prepend lines that don't match, and doesn't update lines that do match" do
+      File.open(path, "a+") { |f| f.write "FOO=noreplace1\nBAR=noreplace2" }
+      r.edit do
+        prepend_lines({
+          "FOO=" => "FOO=shouldntreplace1",
+          "BAR=prepended1" => "BAR=prepended1",
+        })
+      end
+      r.run_action(:create)
+      expect(IO.read(path).lines).to eql(%W{BAR=prepended1\n FOO=noreplace1\n BAR=noreplace2})
+    end
+
+    it "hashes prepend lines that don't match, and doesn't update lines that do match when using regexp keys" do
+      File.open(path, "a+") { |f| f.write "FOO=noreplace1\nBAR=noreplace2" }
+      r.edit do
+        prepend_lines({
+          /^.*FOO=/ => "FOO=shouldntreplace1",
+          /^.*BAR=prepended1/ => "BAR=prepended1",
+        })
+      end
+      r.run_action(:create)
+      expect(IO.read(path).lines).to eql(%W{BAR=prepended1\n FOO=noreplace1\n BAR=noreplace2})
+    end
+
+    it "hashes prepend lines that don't match, and does update lines that do match, when replace is true" do
+      File.open(path, "a+") { |f| f.write "FOO=replace\nBAR=noreplace2" }
+      r.edit do
+        prepend_lines({
+          "FOO=" => "FOO=replaced",
+          "BAR=prepended1" => "BAR=prepended1",
+        }, replace: true)
+      end
+      r.run_action(:create)
+      expect(IO.read(path).lines).to eql(%W{BAR=prepended1\n FOO=replaced\n BAR=noreplace2})
+    end
+
+    it "hashes prepend lines that don't match, and does update lines that do match when using regexp keys, when replace is true" do
+      File.open(path, "a+") { |f| f.write "FOO=replace\nBAR=noreplace2" }
+      r.edit do
+        prepend_lines({
+          /^.*FOO=/ => "FOO=replaced",
+          /^.*BAR=prepended1/ => "BAR=prepended1",
+        }, replace: true)
+      end
+      r.run_action(:create)
+      expect(IO.read(path).lines).to eql(%W{BAR=prepended1\n FOO=replaced\n BAR=noreplace2})
+    end
+
+    it "hashes replace all the matching lines when replace is true" do
+      # note that substrings match, and a regexp has to be used to anchor
+      File.open(path, "a+") { |f| f.write "FOO=replace1\nBAR=noreplace2\nFIZZFOO=replace2" }
+      r.edit do
+        prepend_lines({
+          "FOO=" => "FOO=replaced",
+          "BAR=prepended1" => "BAR=prepended1",
+        }, replace: true)
+      end
+      r.run_action(:create)
+      expect(IO.read(path).lines).to eql(%W{BAR=prepended1\n FOO=replaced\n BAR=noreplace2\n FOO=replaced\n})
+    end
+
+    it "hashes delete all matches except the first line which is replaced when replace is true and unique is true" do
+      # note that substrings match, and a regexp has to be used to anchor
+      File.open(path, "a+") { |f| f.write "FOO=replace1\nBAR=noreplace2\nFIZZFOO=replace2" }
+      r.edit do
+        prepend_lines({
+          "FOO=" => "FOO=replaced",
+          "BAR=prepended1" => "BAR=prepended1",
+        }, replace: true, unique: true)
+      end
+      r.run_action(:create)
+      expect(IO.read(path).lines).to eql(%W{BAR=prepended1\n FOO=replaced\n BAR=noreplace2\n})
     end
 
   end

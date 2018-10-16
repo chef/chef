@@ -34,6 +34,46 @@ class Chef
         #
 
         #
+        # CFEngine v2 notes:
+        #
+        # - AppendIfNoLineMatching
+        # - AppendIfNoSuchLine
+        # - AppendIfNoSuchLinesFromFile
+        # - CommentLinesContaining
+        # - CommentLinesMatching
+        # - CommentLinesStarting
+        # - DeleteLinesAfterThisMatching
+        # - DeleteLinesContaining / DeleteLinesNotContaining
+        # - DeleteLinesMatching / DeleteLinesNotMatching
+        # - DeleteLinesStarting / DeteleLinesNotStarting
+        # - DeleteLinesNotContainingFileItems
+        # - DeleteLinesNotMatchingFileItems
+        # - DeleteLinesNotStartingFileItems
+        # - FixEndOfLine
+        # - HashCommentLinesContaining
+        # - HashCommentLinesMatching
+        # - HashCommentLinesStarting
+        # - InsertFile (change to InsertFileBeforeMatch/AfterMatch w/N lines)
+        # - InsertLine (change to InsertLineBeforeMatch/AfterMatch w/N lines)
+        # - PercentCommentLinesContaining
+        # - PercentCommentLinesMatching
+        # - PercentCommentLinesStarting
+        # - PrependIfNoLineMatching
+        # - PrependIfNoSuchLine
+        # - ReplaceAll/With
+        # - ReplaceFirst/With
+        # - SetCommentStart/End
+        # - SlashCommentLinesContaining
+        # - SlashCommentLinesMatching
+        # - SlashCommentLinesStarting
+        # - UnCommentLinesContaining
+        # - UnCommentLinesMatching
+
+        #
+        # ADD:
+        #
+        # - remove_if_empty (true/false) : remove the file if the contents are all deleted (default false)
+        #
         # WARNING:  Chef Software Inc owns all methods in this namespace, you MUST NOT monkeypatch or inject
         # methods directly into this class.  You may create your own module of helper functions and `extend`
         # those directly into the blocks where you use the helpers.
@@ -57,6 +97,8 @@ class Chef
         # It is still recommended that you namespace your custom helpers so as not to have collisions with future
         # methods added to this class.
         #
+        # FIXME: it feels like we should add DSL sugar for this?
+        #
 
         def empty!
           @file_contents = []
@@ -64,16 +106,30 @@ class Chef
 
         # set the eol string for the file
         def eol(val)
+          # FIXME: yeah, windows stuff is all totes broken right now
         end
 
         # repetetive "append_if_no_such_line"
+        #
+        # Examples:
+        #
+        # append_lines({
+        #   /NETWORLKING.*=/ => "NETWORKING=yes"
+        #   /HOSTNAME.*=/ => "HOSTNAME=foo.acme.com"
+        # }, replace: true, unique: true)
+        #
+        # @param lines [ String, Array<String>, Hash{Regexp,String => String} ] lines to append
+        # @param replace [ true, false ] If set to true, all existing lines will be replaced
+        # @param unique [ true, false ] If unique is false, all lines are replaced.  If unique is true only the
+        #        last match is replaced and the other matches are deleted from the file.
+        # @return [ Array<String> ] the file_contets array, or nil if there was no modifications
+        #
         def append_lines(lines, replace: false, unique: false)
           chkarg 1, lines, [ Array, String, Hash ]
           chkarg :replace, replace, [ true, false ]
           chkarg :unique, unique, [ true, false ]
 
           unless lines.is_a?(Hash)
-            lines = Array(lines)
             lines = lines.split("\n") unless lines.is_a?(Array)
             lines.map(&:chomp!)
             lines = lines.each_with_object({}) do |line, hash|
@@ -88,18 +144,9 @@ class Chef
           modified ? file_contents : nil
         end
 
-        # requires first line to be delimiter match
-        # def append_block(lines)
-        #  lines = lines.split("\n") unless lines.is_a?(Array)
-        #  lines.map(&:chomp!)
-        #  regex = /#{Regexp.escape(lines[0])}/
-        #  i = file_contents.find_index { |l| l =~ regex }
-        #  return unless i
-        #  return if file_contents.size > i + 1 && file_contents[i + 1] == line
-        #  file_contents.insert(i + 1, line + "\n")
-        # end
-
         # lower level one-line-at-a-time
+        # @return [ Array<String> ] the file_contets array, or nil if there was no modifications
+        #
         def append_line_unless_match(pattern, line, replace: false, unique: false)
           chkarg 1, pattern, [ String, Regexp ]
           chkarg 2, line, String
@@ -124,28 +171,46 @@ class Chef
         end
 
         # repetitive "prepend_if_no_such_line"
-        def prepend_lines(lines)
-          lines = lines.split("\n") unless lines.is_a?(Array)
-          lines.map(&:chomp!)
-          lines.reverse.each do |line|
-            regex = /^#{Regexp.escape(line)}$/
-            prepend_line_unless_match(regex, line)
+        # @return [ Array<String> ] the file_contets array, or nil if there was no modifications
+        #
+        def prepend_lines(lines, replace: false, unique: false)
+          chkarg 1, lines, [ Array, String, Hash ]
+          chkarg :replace, replace, [ true, false ]
+          chkarg :unique, unique, [ true, false ]
+
+          unless lines.is_a?(Hash)
+            lines = lines.split("\n") unless lines.is_a?(Array)
+            lines.map(&:chomp!)
+            lines = lines.reverse.each_with_object({}) do |line, hash|
+              regex = /^#{Regexp.escape(line)}$/
+              hash[regex] = line
+            end
+          end
+          modified = false
+          lines.each do |regex, line|
+            prepend_line_unless_match(regex, line, replace: replace, unique: unique) && modified = true
           end
         end
 
-        # requires last line to be delimiter match
-        # def prepend_block(lines)
-        #  regex = pattern.is_a?(String) ? /#{Regexp.escape(pattern)}/ : pattern
-        #  i = file_contents.find_index { |l| l =~ regex }
-        #  return unless i
-        #  i = 1 if i == 0
-        #  return if file_contents[i - 1] == line
-        #  file_contents.insert(i - 1, line + "\n")
-        # end
+        # @return [ Array<String> ] the file_contets array, or nil if there was no modifications
+        #
+        def prepend_line_unless_match(pattern, line, replace: false, unique: false)
+          chkarg 1, pattern, [ String, Regexp ]
+          chkarg 2, line, String
+          chkarg :replace, replace, [ true, false ]
+          chkarg :unique, unique, [ true, false ]
 
-        def prepend_line_unless_match(pattern, line)
+          modified = false
           regex = pattern.is_a?(String) ? /#{Regexp.escape(pattern)}/ : pattern
-          file_contents.unshift(line + "\n") if file_contents.grep(regex).empty?
+          if file_contents.grep(regex).empty?
+            file_contents.unshift(line + "\n")
+            modified = true
+          else
+            if replace
+              replace_lines(regex, line, unique: unique ? :first : false) && modified = true
+            end
+          end
+          modified ? file_contents : nil
         end
 
         # mass delete
@@ -192,14 +257,23 @@ class Chef
 
           regex = match.is_a?(String) ? /#{Regexp.escape(match)}/ : match
           modified = false
+          file_contents.reverse! if unique == :last # FIXME: this is probably expensive
+          found = false
           file_contents.map! do |l|
-            if l != line + "\n" && regex.match?(l)
-              modified = true
-              line + "\n"
-            else
-              l
-            end
-          end
+            ret = if l != line + "\n" && regex.match?(l)
+                    modified = true
+                    if !(unique && found)
+                      line + "\n"
+                    else
+                      nil
+                    end
+                  else
+                    l
+                  end
+            found = true if regex.match?(l)
+            ret
+          end.compact!
+          file_contents.reverse! if unique == :last
           modified ? file_contents : nil
         end
 
@@ -207,7 +281,7 @@ class Chef
         def substitute_lines(match, replace, global: false)
           chkarg 1, match, [ String, Regexp ]
           chkarg 2, replace, String
-          chkarg :global, global, [ false, :first, :last ]
+          chkarg :global, global, [ false, true ]
 
           regex = match.is_a?(String) ? /#{Regexp.escape(match)}/ : match
           modified = false
@@ -259,7 +333,8 @@ class Chef
         # want to use a file provider directly or fix your own code to provide a tempfile to this
         # one and handle the atomicity yourself.
         #
-        # This is not intended as a DSL method for end users.
+        # This is not intended as a DSL method for end users, it has to be public visibility, but you
+        # should not use it.
         #
         # @api private
         def finish!
