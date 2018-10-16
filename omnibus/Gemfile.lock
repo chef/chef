@@ -191,7 +191,7 @@ GEM
       multi_json (~> 1.10)
     method_source (0.9.0)
     minitar (0.6.1)
-    mixlib-archive (0.4.16)
+    mixlib-archive (0.4.18)
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
@@ -338,7 +338,7 @@ GEM
       structured_warnings
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    winrm (2.2.3)
+    winrm (2.3.0)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
