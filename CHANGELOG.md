@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.30 -->
-## [v14.6.30](https://github.com/chef/chef/tree/v14.6.30) (2018-10-16)
+<!-- latest_release 14.6.31 -->
+## [v14.6.31](https://github.com/chef/chef/tree/v14.6.31) (2018-10-17)
 
 #### Merged Pull Requests
-- Run more Travis tests on Ruby 2.5.1 [#7755](https://github.com/chef/chef/pull/7755) ([tas50](https://github.com/tas50))
+- Add support for localized system account to windows_task resource [#7679](https://github.com/chef/chef/pull/7679) ([jugatsu](https://github.com/jugatsu))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Add support for localized system account to windows_task resource [#7679](https://github.com/chef/chef/pull/7679) ([jugatsu](https://github.com/jugatsu)) <!-- 14.6.31 -->
 - Run more Travis tests on Ruby 2.5.1 [#7755](https://github.com/chef/chef/pull/7755) ([tas50](https://github.com/tas50)) <!-- 14.6.30 -->
 - File provider:  fix sticky bits management / preservation [#7753](https://github.com/chef/chef/pull/7753) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.29 -->
 - Node Attributes: Build ImmutableMash properly in deep_merge! [#7752](https://github.com/chef/chef/pull/7752) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.28 -->
