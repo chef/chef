@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.31 -->
-## [v14.6.31](https://github.com/chef/chef/tree/v14.6.31) (2018-10-17)
+<!-- latest_release 14.6.32 -->
+## [v14.6.32](https://github.com/chef/chef/tree/v14.6.32) (2018-10-17)
 
 #### Merged Pull Requests
-- Add support for localized system account to windows_task resource [#7679](https://github.com/chef/chef/pull/7679) ([jugatsu](https://github.com/jugatsu))
+- Update omnibus to use ruby-cleanup definition [#7757](https://github.com/chef/chef/pull/7757) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Update omnibus to use ruby-cleanup definition [#7757](https://github.com/chef/chef/pull/7757) ([tas50](https://github.com/tas50)) <!-- 14.6.32 -->
 - Add support for localized system account to windows_task resource [#7679](https://github.com/chef/chef/pull/7679) ([jugatsu](https://github.com/jugatsu)) <!-- 14.6.31 -->
 - Run more Travis tests on Ruby 2.5.1 [#7755](https://github.com/chef/chef/pull/7755) ([tas50](https://github.com/tas50)) <!-- 14.6.30 -->
 - File provider:  fix sticky bits management / preservation [#7753](https://github.com/chef/chef/pull/7753) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.29 -->
