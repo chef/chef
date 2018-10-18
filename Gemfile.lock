@@ -303,7 +303,7 @@ GEM
     systemu (2.6.5)
     thor (0.20.0)
     tomlrb (1.2.7)
-    train-core (1.5.0)
+    train-core (1.5.4)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
     travis (1.8.9)
