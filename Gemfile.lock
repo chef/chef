@@ -178,6 +178,8 @@ GEM
     method_source (0.9.0)
     mixlib-archive (0.4.18)
       mixlib-log
+    mixlib-archive (0.4.18-universal-mingw32)
+      mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
     mixlib-config (2.2.13)
