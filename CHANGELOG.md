@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.32 -->
-## [v14.6.32](https://github.com/chef/chef/tree/v14.6.32) (2018-10-17)
+<!-- latest_release 14.6.33 -->
+## [v14.6.33](https://github.com/chef/chef/tree/v14.6.33) (2018-10-18)
 
 #### Merged Pull Requests
-- Update omnibus to use ruby-cleanup definition [#7757](https://github.com/chef/chef/pull/7757) ([tas50](https://github.com/tas50))
+- Bump mixlib-archive to 0.4.18 [#7759](https://github.com/chef/chef/pull/7759) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Bump mixlib-archive to 0.4.18 [#7759](https://github.com/chef/chef/pull/7759) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.33 -->
 - Update omnibus to use ruby-cleanup definition [#7757](https://github.com/chef/chef/pull/7757) ([tas50](https://github.com/tas50)) <!-- 14.6.32 -->
 - Add support for localized system account to windows_task resource [#7679](https://github.com/chef/chef/pull/7679) ([jugatsu](https://github.com/jugatsu)) <!-- 14.6.31 -->
 - Run more Travis tests on Ruby 2.5.1 [#7755](https://github.com/chef/chef/pull/7755) ([tas50](https://github.com/tas50)) <!-- 14.6.30 -->
