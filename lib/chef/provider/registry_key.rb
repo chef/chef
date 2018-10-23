@@ -126,16 +126,22 @@ class Chef
               value[:data] = value[:data].to_i
             end
             unless current_value[:type] == value[:type] && current_value[:data] == value[:data]
-              converge_by_value = value
-              converge_by_value[:data] = "*sensitive value suppressed*" if new_resource.sensitive
+              converge_by_value = if new_resource.sensitive
+                                    value.merge(data: "*sensitive value suppressed*")
+                                  else
+                                    value
+                                  end
 
               converge_by("set value #{converge_by_value}") do
                 registry.set_value(new_resource.key, value)
               end
             end
           else
-            converge_by_value = value
-            converge_by_value[:data] = "*sensitive value suppressed*" if new_resource.sensitive
+            converge_by_value = if new_resource.sensitive
+                                  value.merge(data: "*sensitive value suppressed*")
+                                else
+                                  value
+                                end
 
             converge_by("set value #{converge_by_value}") do
               registry.set_value(new_resource.key, value)
@@ -152,8 +158,11 @@ class Chef
         end
         new_resource.unscrubbed_values.each do |value|
           unless @name_hash.key?(value[:name].downcase)
-            converge_by_value = value
-            converge_by_value[:data] = "*sensitive value suppressed*" if new_resource.sensitive
+            converge_by_value = if new_resource.sensitive
+                                  value.merge(data: "*sensitive value suppressed*")
+                                else
+                                  value
+                                end
 
             converge_by("create value #{converge_by_value}") do
               registry.set_value(new_resource.key, value)
