@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.35 -->
-## [v14.6.35](https://github.com/chef/chef/tree/v14.6.35) (2018-10-23)
+<!-- latest_release 14.6.36 -->
+## [v14.6.36](https://github.com/chef/chef/tree/v14.6.36) (2018-10-23)
 
 #### Merged Pull Requests
-- Update Ruby to 2.5.3 [#7766](https://github.com/chef/chef/pull/7766) ([tas50](https://github.com/tas50))
+- [chef/chef]Fix duplicate logs [#7698](https://github.com/chef/chef/pull/7698) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- [chef/chef]Fix duplicate logs [#7698](https://github.com/chef/chef/pull/7698) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.6.36 -->
 - Update Ruby to 2.5.3 [#7766](https://github.com/chef/chef/pull/7766) ([tas50](https://github.com/tas50)) <!-- 14.6.35 -->
 - Bump train-core to 1.5.4 [#7760](https://github.com/chef/chef/pull/7760) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.34 -->
 - Bump mixlib-archive to 0.4.18 [#7759](https://github.com/chef/chef/pull/7759) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.33 -->
