@@ -16,10 +16,12 @@
 # limitations under the License.
 #
 
+require "chef/provider/file/editable_file"
+
 class Chef
   class Provider
     class File < Chef::Provider
-      class FileEditor
+      class EditDSL
         # Array<String> lines
         attr_accessor :file_contents
         attr_accessor :path

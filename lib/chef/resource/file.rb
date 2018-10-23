@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,7 @@ require_relative "../mixin/securable"
 require_relative "file/verification"
 require "pathname" unless defined?(Pathname)
 require_relative "../dist"
+require_relative "../provider/file/edit_dsl"
 
 class Chef
   class Resource
@@ -77,9 +78,11 @@ class Chef
 
       property :verifications, Array, default: lazy { [] }
 
+      property :editor_class, Class, default: Chef::Provider::File::EditDSL, description: "You can inherit from the default file editing DSL class, add methods to your own private DSL class for customization, and inject that into your file resources via this property"
+
       def edit(arg = nil, &block)
         arg ||= block
-        set_or_return(:edit, arg, :kind_of => [Proc])
+        set_or_return(:edit, arg, kind_of: [Proc])
       end
 
       def verify(command = nil, opts = {}, &block)

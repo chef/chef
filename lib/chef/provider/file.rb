@@ -32,7 +32,7 @@ require_relative "../util/diff"
 require_relative "../util/selinux"
 require_relative "../file_content_management/deploy"
 require_relative "../dist"
-require_relative "file/file_editor"
+require_relative "file/edit_dsl"
 
 # The Tao of File Providers:
 #  - the content provider must always return a tempfile that we can delete/mv
@@ -336,7 +336,7 @@ class Chef
 
       def do_file_editing
         if new_resource.edit && tempfile
-          editor = Chef::Provider::File::FileEditor.new(tempfile.path)
+          editor = new_resource.file_editor_class.from_file(tempfile.path)
           editor.instance_exec(&new_resource.edit)
           editor.finish!
         end
