@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 1736d68a4efe36db6287c34b1d9d3c8226dfd4f3
+  revision: ec8df13fa165b7d3866ee61fc05f060283adc642
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,8 +32,8 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
     aws-eventstream (1.0.1)
-    aws-partitions (1.105.0)
-    aws-sdk-core (3.31.0)
+    aws-partitions (1.106.0)
+    aws-sdk-core (3.33.0)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
@@ -192,6 +192,8 @@ GEM
     method_source (0.9.0)
     minitar (0.6.1)
     mixlib-archive (0.4.18)
+      mixlib-log
+    mixlib-archive (0.4.18-universal-mingw32)
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
@@ -377,4 +379,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.16.5
+   1.16.6
