@@ -52,7 +52,7 @@ group(:development, :test) do
   gem "webmock"
 
   # for testing new chefstyle rules
-  gem "chefstyle"
+  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
 
 group(:travis) do
