@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/chef/chefstyle.git
+  revision: 5e596babac0e107170ce7c5cc706646bf609ab25
+  branch: master
+  specs:
+    chefstyle (0.11.0)
+      rubocop (= 0.55.0)
+
 PATH
   remote: .
   specs:
@@ -108,8 +116,6 @@ GEM
     cheffish (14.0.1)
       chef-zero (~> 14.0)
       net-ssh
-    chefstyle (0.11.0)
-      rubocop (= 0.55.0)
     coderay (1.1.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -355,7 +361,7 @@ DEPENDENCIES
   chef-config!
   chef-vault
   cheffish (~> 14)
-  chefstyle
+  chefstyle!
   inspec-core (~> 2)
   netrc
   octokit
