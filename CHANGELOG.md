@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.38 -->
-## [v14.6.38](https://github.com/chef/chef/tree/v14.6.38) (2018-10-24)
+<!-- latest_release 14.6.39 -->
+## [v14.6.39](https://github.com/chef/chef/tree/v14.6.39) (2018-10-24)
 
 #### Merged Pull Requests
-- Don&#39;t ship contributing.md and VERSION file in the gem [#7769](https://github.com/chef/chef/pull/7769) ([tas50](https://github.com/tas50))
+- Fix registry key bug when sensitive is true [#7767](https://github.com/chef/chef/pull/7767) ([josh-barker](https://github.com/josh-barker))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Fix registry key bug when sensitive is true [#7767](https://github.com/chef/chef/pull/7767) ([josh-barker](https://github.com/josh-barker)) <!-- 14.6.39 -->
 - Don&#39;t ship contributing.md and VERSION file in the gem [#7769](https://github.com/chef/chef/pull/7769) ([tas50](https://github.com/tas50)) <!-- 14.6.38 -->
 - Throw better error on invalid resources actions [#7729](https://github.com/chef/chef/pull/7729) ([tas50](https://github.com/tas50)) <!-- 14.6.37 -->
 - [chef/chef]Fix duplicate logs [#7698](https://github.com/chef/chef/pull/7698) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.6.36 -->
