@@ -309,6 +309,80 @@ describe Chef::Provider::RegistryKey do
         @provider.action_create
       end
     end
+
+    context "when sensitive is true" do
+      before(:each) do
+        @new_resource.sensitive(true)
+      end
+
+      context "and key exists" do
+        let(:keyname) { 'hklm\\software\\opscode\\testing\\sensitive\exists' }
+        before(:each) do
+          expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)
+          expect(@double_registry).to receive(:get_values).with(keyname).and_return(
+            [
+              { name: "one", type: :string, data: "initial value" },
+              { name: "two", type: :dword, data: 9001 }
+            ]
+          )
+        end
+
+        context "and type is a string" do
+          let(:testval1) { { name: "one", type: :string, data: "first_value" } }
+
+          it "sets the unscrubbed value" do
+            expect(@double_registry).to receive(:set_value).with(keyname, testval1)
+            @provider.load_current_resource
+            @provider.action_create
+          end
+        end
+
+        context "and type is a dword" do
+          let(:testval1) { { name: "two", type: :dword, data: 12345 } }
+
+          it "sets the unscrubbed value" do
+            expect(@double_registry).to receive(:set_value).with(keyname, testval1)
+            @provider.load_current_resource
+            @provider.action_create
+          end
+        end
+      end
+
+      context "and key does not exist" do
+        let(:keyname) { 'hklm\\software\\opscode\\testing\\sensitive\missing' }
+        let(:testval1) { { name: "one", type: :string, data: "first_value" } }
+
+        before(:each) do
+          expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(false)
+          expect(@double_registry).to receive(:create_key).with(keyname, false)
+        end
+
+        it "sets the unscrubbed value" do
+          expect(@double_registry).to receive(:set_value).with(keyname, testval1)
+          @provider.load_current_resource
+          @provider.action_create
+        end
+      end
+    end
+  end
+
+  describe "action_create_if_missing" do
+    context "when sensitive is true" do
+      let(:keyname) { 'hklm\\software\\opscode\\testing\\create_if_missing\\sensitive' }
+      let(:testval1) { { name: "one", type: :string, data: "first_value" } }
+
+      before(:each) do
+        expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return([])
+        @new_resource.sensitive(true)
+      end
+
+      it "sets the unscrubbed value" do
+        expect(@double_registry).to receive(:set_value).with(keyname, testval1)
+        @provider.load_current_resource
+        @provider.action_create_if_missing
+      end
+    end
   end
 end
 
