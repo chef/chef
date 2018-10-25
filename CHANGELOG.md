@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.43 -->
-## [v14.6.43](https://github.com/chef/chef/tree/v14.6.43) (2018-10-25)
+<!-- latest_release 14.6.44 -->
+## [v14.6.44](https://github.com/chef/chef/tree/v14.6.44) (2018-10-25)
 
 #### Merged Pull Requests
-- Update chef-vault and serverspec to the latest [#7774](https://github.com/chef/chef/pull/7774) ([tas50](https://github.com/tas50))
+- Move iso8601 gem to windows only gemspec [#7778](https://github.com/chef/chef/pull/7778) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Move iso8601 gem to windows only gemspec [#7778](https://github.com/chef/chef/pull/7778) ([tas50](https://github.com/tas50)) <!-- 14.6.44 -->
 - Update chef-vault and serverspec to the latest [#7774](https://github.com/chef/chef/pull/7774) ([tas50](https://github.com/tas50)) <!-- 14.6.43 -->
 - Update InSpec to 3.0 [#7773](https://github.com/chef/chef/pull/7773) ([tas50](https://github.com/tas50)) <!-- 14.6.42 -->
 - Switch back to chefstyle from git and use the updated chef omnibus def [#7772](https://github.com/chef/chef/pull/7772) ([tas50](https://github.com/tas50)) <!-- 14.6.41 -->
