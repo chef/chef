@@ -116,6 +116,10 @@ class Chef
                  introduced: "14.4", default: false,
                  description: "Scheduled task option when system is switching on battery."
 
+        property :description, String,
+                 introduced: "14.7",
+                 description: "The task description."
+
         attr_accessor :exists, :task, :command_arguments
 
         VALID_WEEK_DAYS = %w{ mon tue wed thu fri sat sun * }.freeze
