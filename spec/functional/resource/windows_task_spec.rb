@@ -132,6 +132,45 @@ describe Chef::Resource::WindowsTask, :windows_only do
       end
     end
 
+    context "when description is passed" do
+      subject do
+        new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.command task_name
+        # Make sure MM/DD/YYYY is accepted
+        new_resource.start_day "09/20/2017"
+        new_resource.frequency :hourly
+        new_resource
+      end
+
+      let(:some_description) { "this is test description" }
+
+      it "create the task and sets its description" do
+        subject.description some_description
+        call_for_create_action
+        # loading current resource again to check new task is creted and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.description).to eq(some_description)
+      end
+
+      it "does not converge the resource if it is already converged" do
+        subject.description some_description
+        subject.run_action(:create)
+        subject.description some_description
+        subject.run_action(:create)
+        expect(subject).not_to be_updated_by_last_action
+      end
+
+      it "updates task with new description if task already exist" do
+        subject.description some_description
+        subject.run_action(:create)
+        subject.description "test description"
+        subject.run_action(:create)
+        expect(subject).to be_updated_by_last_action
+      end
+    end
+
     context "when frequency_modifier are not passed" do
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
