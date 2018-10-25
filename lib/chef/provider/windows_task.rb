@@ -147,6 +147,7 @@ class Chef
               task.configure_principals(principal_settings)
               task.set_account_information(new_resource.user, new_resource.password)
               task.creator = new_resource.user
+              task.description = new_resource.description unless new_resource.description.nil?
               task.activate(new_resource.task_name)
             end
           end
@@ -252,6 +253,7 @@ class Chef
             task.trigger = trigger unless new_resource.frequency == :none
             task.configure_settings(config_settings)
             task.creator = new_resource.user
+            task.description = new_resource.description unless new_resource.description.nil?
             task.configure_principals(principal_settings)
           end
         end
@@ -329,6 +331,7 @@ class Chef
           if new_resource.frequency == :none
             flag = (task.account_information != new_resource.user ||
             task.application_name != new_resource.command ||
+            description_needs_update?(task) ||
             task.parameters != new_resource.command_arguments.to_s ||
             task.principals[:run_level] != run_level ||
             task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_if_on_batteries ||
@@ -351,6 +354,7 @@ class Chef
                   current_task_trigger[:minutes_interval].to_i != new_task_trigger[:minutes_interval].to_i ||
                   task.account_information != new_resource.user ||
                   task.application_name != new_resource.command ||
+                  description_needs_update?(task) ||
                   task.parameters != new_resource.command_arguments.to_s ||
                   task.working_directory != new_resource.cwd.to_s ||
                   task.principals[:logon_type] != logon_type ||
@@ -565,6 +569,10 @@ class Chef
           settings [:run_level] = run_level
           settings[:logon_type] = logon_type
           settings
+        end
+
+        def description_needs_update?(task)
+          task.description != new_resource.description unless new_resource.description.nil?
         end
 
         def logon_type
