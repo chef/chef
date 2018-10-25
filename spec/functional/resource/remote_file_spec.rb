@@ -29,8 +29,8 @@ describe Chef::Resource::RemoteFile do
     @old_file_cache = Chef::Config[:file_cache_path]
     Chef::Config[:file_cache_path] = file_cache_path
     Chef::Config[:rest_timeout] = 2
-    Chef::Config[:http_retry_delay] = 0
-    Chef::Config[:http_retry_count] = 0
+    Chef::Config[:http_retry_delay] = 1
+    Chef::Config[:http_retry_count] = 2
   end
 
   after(:each) do
