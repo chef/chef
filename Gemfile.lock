@@ -106,7 +106,7 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
     byebug (10.0.2)
-    chef-vault (3.4.2)
+    chef-vault (3.4.3)
     chef-zero (14.0.6)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
