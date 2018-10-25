@@ -1,5 +1,73 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.6:
+
+## Smaller Package and Install Size
+
+Both Chef packages and on disk installations have been greatly reduced in size by trimming unnecessary installation files. This has reduced our package size on macOS/Linux by ~50% and Windows by ~12%. With this change Chef 14 is now smaller than a legacy Chef 10 package.
+
+## New Resources
+
+### Timezone
+
+Chef now includes the `timezone` resource from [@dragonsmith](http://github.com/dragonsmith)'s `timezone_lwrp` cookbook. This resource supports setting a Linux node's timezone. Thank you [@dragonsmith](http://github.com/dragonsmith) for allowing us to include this out of the box in Chef.
+
+Example:
+
+```ruby
+timezone 'UTC'
+```
+
+## Updated Resources
+
+### windows_task
+
+The `windows_task` resource has been updated to support localized system users and groups on non-English nodes. Thanks [@jugatsu](http://github.com/jugatsu) for making this possible.
+
+### user
+
+The `user` resource now includes a new `full_name` property for Windows hosts, which allows specifying a user's full name.
+
+Example:
+
+```ruby
+  user 'jdoe' do
+    full_name 'John Doe'
+  end
+```
+
+### zypper_package
+
+The `zypper_package` resource now includes a new `global_options` property. This property can be used to specify one or more options for the zypper command line that are global in context.
+
+Example:
+
+```ruby
+package 'sssd' do
+   global_options '-D /tmp/repos.d/'
+end
+```
+
+## InSpec 3.0
+
+Inspec has been updated to version 3.0 with addition resources, exception handling, and a new plugin system. See https://blog.chef.io/2018/10/16/announcing-inspec-3-0/ for details.
+
+## Important Bugfixes
+
+- Multiple bugfixes in Chef Vault have been resolved by updating chef-vault to 3.4.2
+- Invalid yum package names now gracefully fail
+- `windows_ad_join` now properly executes. Thank you [@cpjones01](https://github.com/cpjones01) for reporting this.
+- `rhsm_errata_level` now properly executes. Thank you [@freakinhippie](https://github.com/freakinhippie) for this fix.
+- `registry_key` now properly writes out the correct value when `sensitive` is specified. Thank you [@josh-barker](https://github.com/josh-barker) for this fix.
+
+## Security Updates
+
+### Ruby 2.5.3
+
+Ruby has been updated to from 2.5.1 to 2.5.3 to resolve multiple CVEs and bugs:
+- [CVE-2018-16396](https://www.ruby-lang.org/en/news/2018/10/17/not-propagated-taint-flag-in-some-formats-of-pack-cve-2018-16396/)
+- [CVE-2018-16395](https://www.ruby-lang.org/en/news/2018/10/17/openssl-x509-name-equality-check-does-not-work-correctly-cve-2018-16395/)
+
 # Chef Client Release Notes 14.5.33:
 
 This release resolves a regression that caused the ``windows_ad_join`` resource to fail to run. It also makes the following additional fixes:
