@@ -36,8 +36,13 @@ base = None
 
 def get_base():
     global base
+    ## Try to catch a database lock failure and exit if one is caught
     if base is None:
-        base = yum.YumBase()
+        try:
+            base = yum.YumBase()
+        except yum.Errors.LockError:
+            rc = shell_out()
+            sys.exit(rc)
     setup_exit_handler()
     return base
 
