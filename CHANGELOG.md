@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.45 -->
-## [v14.6.45](https://github.com/chef/chef/tree/v14.6.45) (2018-10-25)
+<!-- latest_release 14.6.46 -->
+## [v14.6.46](https://github.com/chef/chef/tree/v14.6.46) (2018-10-25)
 
 #### Merged Pull Requests
-- Add some retry/delay in HTTP functional tests [#7780](https://github.com/chef/chef/pull/7780) ([schisamo](https://github.com/schisamo))
+- Pin rake to 12.3.0 to prevent installing 2 copies in our install [#7779](https://github.com/chef/chef/pull/7779) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Pin rake to 12.3.0 to prevent installing 2 copies in our install [#7779](https://github.com/chef/chef/pull/7779) ([tas50](https://github.com/tas50)) <!-- 14.6.46 -->
 - Add some retry/delay in HTTP functional tests [#7780](https://github.com/chef/chef/pull/7780) ([schisamo](https://github.com/schisamo)) <!-- 14.6.45 -->
 - Move iso8601 gem to windows only gemspec [#7778](https://github.com/chef/chef/pull/7778) ([tas50](https://github.com/tas50)) <!-- 14.6.44 -->
 - Update chef-vault and serverspec to the latest [#7774](https://github.com/chef/chef/pull/7774) ([tas50](https://github.com/tas50)) <!-- 14.6.43 -->
