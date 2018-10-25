@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.41 -->
-## [v14.6.41](https://github.com/chef/chef/tree/v14.6.41) (2018-10-24)
+<!-- latest_release 14.6.42 -->
+## [v14.6.42](https://github.com/chef/chef/tree/v14.6.42) (2018-10-25)
 
 #### Merged Pull Requests
-- Switch back to chefstyle from git and use the updated chef omnibus def [#7772](https://github.com/chef/chef/pull/7772) ([tas50](https://github.com/tas50))
+- Update InSpec to 3.0 [#7773](https://github.com/chef/chef/pull/7773) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Update InSpec to 3.0 [#7773](https://github.com/chef/chef/pull/7773) ([tas50](https://github.com/tas50)) <!-- 14.6.42 -->
 - Switch back to chefstyle from git and use the updated chef omnibus def [#7772](https://github.com/chef/chef/pull/7772) ([tas50](https://github.com/tas50)) <!-- 14.6.41 -->
 - Use the Chefstyle gem instead of a git checkout [#7770](https://github.com/chef/chef/pull/7770) ([tas50](https://github.com/tas50)) <!-- 14.6.40 -->
 - Fix registry key bug when sensitive is true [#7767](https://github.com/chef/chef/pull/7767) ([josh-barker](https://github.com/josh-barker)) <!-- 14.6.39 -->
