@@ -18,7 +18,7 @@
 
 require "chef/mixin/shell_out"
 require "rexml/document"
-require "iso8601"
+require "iso8601" if Chef::Platform.windows?
 require "chef/mixin/powershell_out"
 require "chef/provider"
 require "chef/util/path_helper"
