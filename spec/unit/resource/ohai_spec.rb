@@ -26,10 +26,6 @@ describe Chef::Resource::Ohai do
     expect(resource.resource_name).to eql(:ohai)
   end
 
-  it "the ohai_name property is the name_property" do
-    expect(resource.ohai_name).to eql("fakey_fakerton")
-  end
-
   it "sets the default action as :reload" do
     expect(resource.action).to eql([:reload])
   end
