@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 15.0.1 -->
+## [v15.0.1](https://github.com/chef/chef/tree/v15.0.1) (2018-10-26)
 
 #### Merged Pull Requests
+- Remove the deprecated knife bootstrap --identity-file flag [#7489](https://github.com/chef/chef/pull/7489) ([tas50](https://github.com/tas50))
 - Start Chef 15 development [#7785](https://github.com/chef/chef/pull/7785) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Remove the deprecated knife bootstrap --identity-file flag [#7489](https://github.com/chef/chef/pull/7489) ([tas50](https://github.com/tas50)) <!-- 15.0.1 -->
 - Start Chef 15 development [#7785](https://github.com/chef/chef/pull/7785) ([tas50](https://github.com/tas50)) <!-- 15.0.0 -->
 <!-- release_rollup -->
 
