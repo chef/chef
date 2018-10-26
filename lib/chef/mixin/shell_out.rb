@@ -46,65 +46,6 @@ class Chef
       # a thousand unit tests.
       #
 
-      def shell_out_compact(*args, **options)
-        Chef.deprecated(:shell_out, "shell_out_compact should be replaced by shell_out")
-        if options.empty?
-          shell_out(*args)
-        else
-          shell_out(*args, **options)
-        end
-      end
-
-      def shell_out_compact!(*args, **options)
-        Chef.deprecated(:shell_out, "shell_out_compact! should be replaced by shell_out!")
-        if options.empty?
-          shell_out!(*args)
-        else
-          shell_out!(*args, **options)
-        end
-      end
-
-      def shell_out_compact_timeout(*args, **options)
-        Chef.deprecated(:shell_out, "shell_out_compact_timeout should be replaced by shell_out")
-        if options.empty?
-          shell_out(*args, argument_that_will_go_away_in_chef_15_so_do_not_use_it: true)
-        else
-          shell_out(*args, argument_that_will_go_away_in_chef_15_so_do_not_use_it: true, **options)
-        end
-      end
-
-      def shell_out_compact_timeout!(*args, **options)
-        Chef.deprecated(:shell_out, "shell_out_compact_timeout! should be replaced by shell_out!")
-        if options.empty?
-          shell_out!(*args, argument_that_will_go_away_in_chef_15_so_do_not_use_it: true)
-        else
-          shell_out!(*args, argument_that_will_go_away_in_chef_15_so_do_not_use_it: true, **options)
-        end
-      end
-
-      def shell_out_with_systems_locale(*args, **options)
-        Chef.deprecated(:shell_out, "shell_out_with_systems_locale should be replaced by shell_out with the default_env option set to false")
-        if options.empty?
-          shell_out(*args, default_env: false)
-        else
-          shell_out(*args, default_env: false, **options)
-        end
-      end
-
-      def shell_out_with_systems_locale!(*args, **options)
-        Chef.deprecated(:shell_out, "shell_out_with_systems_locale! should be replaced by shell_out! with the default_env option set to false")
-        if options.empty?
-          shell_out!(*args, default_env: false)
-        else
-          shell_out!(*args, default_env: false, **options)
-        end
-      end
-
-      def a_to_s(*args)
-        Chef.deprecated(:shell_out, "a_to_s is deprecated use shell_out with splat-args")
-        args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s).join(" ")
-      end
-
       def shell_out(*args, **options)
         options = options.dup
         options = Chef::Mixin::ShellOut.maybe_add_timeout(self, options)
@@ -131,19 +72,10 @@ class Chef
       # @api private
       def self.maybe_add_timeout(obj, options)
         options = options.dup
-        force = options.delete(:argument_that_will_go_away_in_chef_15_so_do_not_use_it) # remove in Chef-15
         # historically resources have not properly declared defaults on their timeouts, so a default default of 900s was enforced here
         default_val = 900
-        if !force
-          return options if options.key?(:timeout) # leave this line in Chef-15, delete the rest of the conditional
-        else
-          default_val = options[:timeout] if options.key?(:timeout) # delete in Chef-15
-        end
-        # note that we can't define an empty Chef::Resource::LWRPBase because that breaks descendants tracker, so we'd have to instead require the file here, which would pull in half
-        # of chef, so instead convert to using strings.  once descendants tracker is gone, we can just declare the empty classes instead and use `is_a?` against the symbols.
-        # (be nice if ruby supported strings in `is_a?` for looser coupling).
-        # FIXME: just use `if obj.respond_to?(:new_resource) && obj.new_resource.respond_to?(:timeout) && !options.key?(:timeout)` in Chef 15
-        if obj.respond_to?(:new_resource) && ( force || ( obj.class.ancestors.map(&:name).include?("Chef::Provider") && !obj.class.ancestors.map(&:name).include?("Chef::Resource::LWRPBase") && !obj.class.ancestors.map(&:name).include?("Chef::Resource::ActionClass") && obj.new_resource.respond_to?(:timeout) && !options.key?(:timeout) ) )
+        return options if options.key?(:timeout)
+        if obj.respond_to?(:new_resource) && obj.new_resource.respond_to?(:timeout) && !options.key?(:timeout)
           options[:timeout] = obj.new_resource.timeout ? obj.new_resource.timeout.to_f : default_val
         end
         options
@@ -166,11 +98,6 @@ class Chef
           }.update(options[env_key] || {})
         end
         options
-      end
-
-      def clean_array(*args)
-        Chef.deprecated(:shell_out, "do not call clean_array directly, just use shell_out with splat args or an array")
-        Chef::Mixin::ShellOut.clean_array(*args)
       end
 
       private

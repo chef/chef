@@ -674,14 +674,6 @@ class Chef
           true
         end
       end
-
-      def shell_out_with_timeout(*command_args)
-        shell_out_compact_timeout(*command_args)
-      end
-
-      def shell_out_with_timeout!(*command_args)
-        shell_out_compact_timeout!(*command_args)
-      end
     end
   end
 end
