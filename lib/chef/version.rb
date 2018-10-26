@@ -1,4 +1,4 @@
-# Copyright:: Copyright 2010-2016, Chef Software, Inc.
+# Copyright:: Copyright 2010-2018, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ require "chef/version_string"
 
 class Chef
   CHEF_ROOT = File.expand_path("../..", __FILE__)
-  VERSION = Chef::VersionString.new("14.6.47")
+  VERSION = Chef::VersionString.new("15.0.0")
 end
 
 #
