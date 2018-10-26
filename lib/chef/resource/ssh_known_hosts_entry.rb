@@ -22,7 +22,6 @@ require "chef/resource"
 class Chef
   class Resource
     class SshKnownHostsEntry < Chef::Resource
-      preview_resource true
       resource_name :ssh_known_hosts_entry
 
       description "Use the ssh_known_hosts_entry resource to add an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified."

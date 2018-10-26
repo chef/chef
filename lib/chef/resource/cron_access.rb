@@ -23,7 +23,6 @@ require "chef/resource"
 class Chef
   class Resource
     class CronAccess < Chef::Resource
-      preview_resource true
       resource_name :cron_access
       provides(:cron_manage) # legacy name @todo in Chef 15 we should { true } this so it wins over the cookbook
 

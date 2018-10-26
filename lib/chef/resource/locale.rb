@@ -20,7 +20,6 @@ require "chef/resource"
 class Chef
   class Resource
     class Locale < Chef::Resource
-      preview_resource true
       resource_name :locale
 
       description "Use the locale resource to set the system's locale."

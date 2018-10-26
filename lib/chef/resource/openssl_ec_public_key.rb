@@ -24,7 +24,6 @@ class Chef
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      preview_resource true
       resource_name :openssl_ec_public_key
 
       description "Use the openssl_ec_public_key resource to generate elliptic curve (EC) public key files given a private key."

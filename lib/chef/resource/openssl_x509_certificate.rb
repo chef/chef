@@ -24,7 +24,6 @@ class Chef
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      preview_resource true
       resource_name :openssl_x509_certificate
       provides(:openssl_x509) { true } # legacy cookbook name.
 

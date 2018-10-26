@@ -17,7 +17,6 @@
 class Chef
   class Resource
     class ChocolateyConfig < Chef::Resource
-      preview_resource true
       resource_name :chocolatey_config
 
       description "Use the chocolatey_config resource to add or remove Chocolatey configuration keys."

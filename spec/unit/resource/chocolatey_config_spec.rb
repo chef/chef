@@ -53,11 +53,6 @@ CONFIG
     expect(resource.resource_name).to eql(:chocolatey_config)
   end
 
-  it "is not a preview resource in Chef 15" do
-    pending("Chef 15") unless Chef::VERSION.start_with?("15")
-    expect(resource.class.preview_resource).to be_falsey
-  end
-
   it "has a name property of config_key" do
     expect(resource.config_key).to eql("fakey_fakerton")
   end

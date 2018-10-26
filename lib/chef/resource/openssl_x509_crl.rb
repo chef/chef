@@ -24,7 +24,6 @@ class Chef
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      preview_resource true
       resource_name :openssl_x509_crl
 
       description "Use the openssl_x509_crl resource to generate PEM-formatted x509 certificate revocation list (CRL) files."
