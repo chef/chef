@@ -13,7 +13,7 @@ gem "cheffish", "~> 14"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core", "~> 2"
+  gem "inspec-core", "~> 3"
   gem "chef-vault"
 end
 
@@ -52,7 +52,6 @@ group(:development, :test) do
   gem "webmock"
 
   # for testing new chefstyle rules
-  # gem 'chefstyle', github: 'chef/chefstyle'
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
 

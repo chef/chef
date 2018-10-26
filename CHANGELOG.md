@@ -1,15 +1,41 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.6.17 -->
-## [v14.6.17](https://github.com/chef/chef/tree/v14.6.17) (2018-10-06)
+<!-- latest_release 14.6.43 -->
+## [v14.6.43](https://github.com/chef/chef/tree/v14.6.43) (2018-10-25)
 
 #### Merged Pull Requests
-- Only include the Windows distro files on Windows [#7727](https://github.com/chef/chef/pull/7727) ([tas50](https://github.com/tas50))
+- Update chef-vault and serverspec to the latest [#7774](https://github.com/chef/chef/pull/7774) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.5.33 -->
 ### Changes since 14.5.33 release
 
 #### Merged Pull Requests
+- Update chef-vault and serverspec to the latest [#7774](https://github.com/chef/chef/pull/7774) ([tas50](https://github.com/tas50)) <!-- 14.6.43 -->
+- Update InSpec to 3.0 [#7773](https://github.com/chef/chef/pull/7773) ([tas50](https://github.com/tas50)) <!-- 14.6.42 -->
+- Switch back to chefstyle from git and use the updated chef omnibus def [#7772](https://github.com/chef/chef/pull/7772) ([tas50](https://github.com/tas50)) <!-- 14.6.41 -->
+- Use the Chefstyle gem instead of a git checkout [#7770](https://github.com/chef/chef/pull/7770) ([tas50](https://github.com/tas50)) <!-- 14.6.40 -->
+- Fix registry key bug when sensitive is true [#7767](https://github.com/chef/chef/pull/7767) ([josh-barker](https://github.com/josh-barker)) <!-- 14.6.39 -->
+- Don&#39;t ship contributing.md and VERSION file in the gem [#7769](https://github.com/chef/chef/pull/7769) ([tas50](https://github.com/tas50)) <!-- 14.6.38 -->
+- Throw better error on invalid resources actions [#7729](https://github.com/chef/chef/pull/7729) ([tas50](https://github.com/tas50)) <!-- 14.6.37 -->
+- [chef/chef]Fix duplicate logs [#7698](https://github.com/chef/chef/pull/7698) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.6.36 -->
+- Update Ruby to 2.5.3 [#7766](https://github.com/chef/chef/pull/7766) ([tas50](https://github.com/tas50)) <!-- 14.6.35 -->
+- Bump train-core to 1.5.4 [#7760](https://github.com/chef/chef/pull/7760) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.34 -->
+- Bump mixlib-archive to 0.4.18 [#7759](https://github.com/chef/chef/pull/7759) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.33 -->
+- Update omnibus to use ruby-cleanup definition [#7757](https://github.com/chef/chef/pull/7757) ([tas50](https://github.com/tas50)) <!-- 14.6.32 -->
+- Add support for localized system account to windows_task resource [#7679](https://github.com/chef/chef/pull/7679) ([jugatsu](https://github.com/jugatsu)) <!-- 14.6.31 -->
+- Run more Travis tests on Ruby 2.5.1 [#7755](https://github.com/chef/chef/pull/7755) ([tas50](https://github.com/tas50)) <!-- 14.6.30 -->
+- File provider:  fix sticky bits management / preservation [#7753](https://github.com/chef/chef/pull/7753) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.29 -->
+- Node Attributes: Build ImmutableMash properly in deep_merge! [#7752](https://github.com/chef/chef/pull/7752) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.6.28 -->
+- Update Nokogiri to 1.8.5 [#7750](https://github.com/chef/chef/pull/7750) ([tas50](https://github.com/tas50)) <!-- 14.6.27 -->
+- Update omnibus deps [#7749](https://github.com/chef/chef/pull/7749) ([tas50](https://github.com/tas50)) <!-- 14.6.26 -->
+- Bump inspec-core to 2.3.24 [#7748](https://github.com/chef/chef/pull/7748) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.25 -->
+- Bump inspec-core to 2.3.23 [#7747](https://github.com/chef/chef/pull/7747) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.24 -->
+- When a property regex fails don&#39;t call it an option [#7745](https://github.com/chef/chef/pull/7745) ([tas50](https://github.com/tas50)) <!-- 14.6.23 -->
+- Bump win32-taskscheduler to 2.0 [#7743](https://github.com/chef/chef/pull/7743) ([btm](https://github.com/btm)) <!-- 14.6.22 -->
+- Bump ohai to 14.6.2 [#7742](https://github.com/chef/chef/pull/7742) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.21 -->
+- Bump win32-taskscheduler to 1.0.12 [#7740](https://github.com/chef/chef/pull/7740) ([chef-ci](https://github.com/chef-ci)) <!-- 14.6.20 -->
+- Enable x86_64-linux-kernel2 habitat builds for chef-client [#7722](https://github.com/chef/chef/pull/7722) ([smacfarlane](https://github.com/smacfarlane)) <!-- 14.6.19 -->
+- Add the timezone resource from the timezone_lwrp cookbook [#7736](https://github.com/chef/chef/pull/7736) ([tas50](https://github.com/tas50)) <!-- 14.6.18 -->
 - Only include the Windows distro files on Windows [#7727](https://github.com/chef/chef/pull/7727) ([tas50](https://github.com/tas50)) <!-- 14.6.17 -->
 - Cleanup the Test Kitchen setup in omnibus [#7726](https://github.com/chef/chef/pull/7726) ([tas50](https://github.com/tas50)) <!-- 14.6.16 -->
 - better docs for Chef::Knife::Bootstrap#validate_options! [#7719](https://github.com/chef/chef/pull/7719) ([bankair](https://github.com/bankair)) <!-- 14.6.15 -->

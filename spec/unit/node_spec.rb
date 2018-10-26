@@ -1818,4 +1818,37 @@ describe Chef::Node do
       expect(node["a"]["key"]).to eql(1)
     end
   end
+
+  describe "when abusing the deep merge cache" do
+    # https://github.com/chef/chef/issues/7738
+    it "do not corrupt VividMashes that are part of the merge set and not the merge_onto set" do
+      # need to have a merge two-deep (not at the top-level) between at least two default (or two override)
+      # levels where the lowest priority one is the one that is going to be corrupted
+      node.default["foo"]["bar"]["baz"] = "fizz"
+      node.env_default["foo"]["bar"]["quux"] = "buzz"
+      node.default["foo"]["bar"].tap do |bar|
+        bar["test"] = "wrong"
+        # this triggers a deep merge
+        node["foo"]["bar"]["test"]
+        # this should correctly write and dirty the cache so the next read does another deep merge on the correct __root__
+        bar["test"] = "right"
+      end
+      expect(node["foo"]["bar"]["test"]).to eql("right")
+    end
+
+    it "do not corrupt VividMashes that are part of the merge set and not the merge_onto set (when priorities are reversed)" do
+      # need to have a merge two-deep (not at the top-level) between at least two default (or two override)
+      # levels where the *HIGHEST* priority one is the one that is going to be corrupted
+      node.env_default["foo"]["bar"]["baz"] = "fizz"
+      node.default["foo"]["bar"]["quux"] = "buzz"
+      node.env_default["foo"]["bar"].tap do |bar|
+        bar["test"] = "wrong"
+        # this triggers a deep merge
+        node["foo"]["bar"]["test"]
+        # this should correctly write and dirty the cache so the next read does another deep merge on the correct __root__
+        bar["test"] = "right"
+      end
+      expect(node["foo"]["bar"]["test"]).to eql("right")
+    end
+  end
 end

@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,9 +44,6 @@ class Chef
 
           Chef::Log.trace("Applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{src}")
 
-          # i own the inode, so should be able to at least chmod it
-          ::File.chmod(mode, src)
-
           # we may be running as non-root in which case because we are doing an mv we cannot preserve
           # the file modes.  after the mv we have a different inode and if we don't have rights to
           # chown/chgrp on the inode then we can't fix the ownership.
@@ -66,6 +63,10 @@ class Chef
           rescue Errno::EPERM
             Chef::Log.warn("Could not set gid = #{gid} on #{src}, file modes not preserved")
           end
+
+          # i own the inode, so should be able to at least chmod it
+          # NOTE: this must come last due to POSIX stripping sticky mode bits on chown/chgrp
+          ::File.chmod(mode, src)
 
           Chef::Log.trace("Moving temporary file #{src} into place at #{dst}")
           FileUtils.mv(src, dst)

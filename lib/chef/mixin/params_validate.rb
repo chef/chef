@@ -174,7 +174,9 @@ class Chef
           to_be.each do |tb|
             return true if value == tb
           end
-          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}.")
+          # Ruby will print :something as something, which confuses users so make sure to print them as symbols
+          # by inspecting the value instead of just printing it
+          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be equal to one of: #{to_be.map { |v| v.inspect }.join(", ")}!  You passed #{value.inspect}.")
         end
       end
 
@@ -300,7 +302,7 @@ class Chef
           Array(regex).flatten.each do |r|
             return true if r.match(value.to_s)
           end
-          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}")
+          raise Exceptions::ValidationFailed, _validation_message(key, "Property #{key}'s value #{value} does not match regular expression #{regex.inspect}")
         end
       end
 

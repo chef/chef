@@ -9,6 +9,8 @@ hostname "chef-travis-ci.chef.io"
 
 apt_update
 
+timezone "UTC"
+
 include_recipe "ubuntu" if platform?("ubuntu")
 
 if platform_family?("rhel", "fedora", "amazon")
