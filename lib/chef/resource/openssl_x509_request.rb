@@ -24,7 +24,6 @@ class Chef
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      preview_resource true
       resource_name :openssl_x509_request
 
       description "Use the openssl_x509_request resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate."

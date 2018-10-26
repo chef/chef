@@ -22,7 +22,6 @@ require "chef/resource"
 class Chef
   class Resource
     class Timezone < Chef::Resource
-      preview_resource true
       resource_name :timezone
 
       description "Use the timezone resource to change the system timezone."
