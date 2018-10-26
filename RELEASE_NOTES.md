@@ -63,6 +63,27 @@ Chef is now tested against macOS Mojave, and packages are now available at downl
 - `windows_ad_join` now properly executes. Thank you [@cpjones01](https://github.com/cpjones01) for reporting this.
 - `rhsm_errata_level` now properly executes. Thank you [@freakinhippie](https://github.com/freakinhippie) for this fix.
 - `registry_key` now properly writes out the correct value when `sensitive` is specified. Thank you [@josh-barker](https://github.com/josh-barker) for this fix.
+- `locale` now properly executes on RHEL 6 and Amazon Linux 201X.
+
+## Ohai 14.6
+
+### Filesystem Plugin on AIX and Solaris
+
+AIX and Solaris now ship with a filesystem2 plugin that updates the filesystem data to match that of Linux, macOS, amd BSD hosts. This new data structure makes accessing filesystem data in recipes easier and especially improves the layout and depth of data on ZFS filesystems. In Chef 15 (April 2019) we will begin wrting this same format of data to the existing `node['filesystem']` namespace. In Chef 16 (April 2020) we will remove the `node['filesystem2']` namspace, completing the transition to the new format. Thank you [@jaymzh](https://github.com/jaymzh) for continuing the updates to our filesystem plugins with this change.
+
+### macOS Improvements
+
+The system_profile plugin has been improved to skip over uncessary data, which reduces macOS node sizes on the Chef Server. Additionally the CPU plugin has been updated to limit what sysctl values it polls, which prevents hanging on some system configurations.
+
+### SLES 15 Detection
+
+SLES 15 is now correctly detected as the platform "suse" instead of "sles". This matches the behavior of SLES 11 and 12 hosts.
+
+## New Deprecations
+
+### system_profile Ohai plugin removal
+
+The system_profile plugin will be removed from Chef/Ohai 15 in April 2019. This plugin does not correctly return data on modern Mac systems. Additionally the same data is provided by the hardware plugin, which has a format that is simpler to consume. Removing this plugin will reduce Ohai return by ~3 seconds and greatly reduce the size of the node object on the Chef server.
 
 ## Security Updates
 
