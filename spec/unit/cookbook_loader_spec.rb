@@ -24,7 +24,6 @@ describe Chef::CookbookLoader do
   end
   let(:repo_paths) do
     [
-      File.expand_path(File.join(CHEF_SPEC_DATA, "kitchen")),
       File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")),
     ]
   end
@@ -49,26 +48,25 @@ describe Chef::CookbookLoader do
         .once
         .and_call_original
     end
-    expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
     cookbook_loader.load_cookbooks
+  end
+
+  context "removed cookbook merging" do
+    let(:repo_paths) do
+      [
+        File.expand_path(File.join(CHEF_SPEC_DATA, "kitchen")),
+        File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")),
+      ]
+    end
+    it "should not support multiple merged cookbooks in the cookbook path" do
+      start_merged_cookbooks = cookbook_loader.merged_cookbooks
+      expect { cookbook_loader.load_cookbooks }.to raise_error(Chef::Exceptions::CookbookMergingError)
+    end
   end
 
   context "after loading all cookbooks" do
     before(:each) do
-      expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
       cookbook_loader.load_cookbooks
-    end
-
-    it "should be possible to reload all the cookbooks without triggering deprecation warnings on all of them", chef: "< 15" do
-      start_merged_cookbooks = cookbook_loader.merged_cookbooks
-      expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
-      cookbook_loader.load_cookbooks
-      expect(cookbook_loader.merged_cookbooks).to eql(start_merged_cookbooks)
-    end
-
-    it "should not support multiple merged cookbooks in the cookbook path", chef: ">= 15" do
-      start_merged_cookbooks = cookbook_loader.merged_cookbooks
-      expect { cookbook_loader.load_cookbooks }.to raise_error("FIXME WITH THE CLASS YOU DECIDE TO USE HERE")
     end
 
     describe "[]" do
@@ -114,55 +112,22 @@ describe Chef::CookbookLoader do
         expect(cookbook_loader).to have_key(:apache2)
       end
 
-      it "should allow you to override an attribute file via cookbook_path" do
-        expect(full_paths_for_part(:openldap, "attributes").detect do |f|
-          f =~ /cookbooks\/openldap\/attributes\/default.rb/
-        end).not_to eql(nil)
-        expect(full_paths_for_part(:openldap, "attributes").detect do |f|
-          f =~ /kitchen\/openldap\/attributes\/default.rb/
-        end).to eql(nil)
-      end
-
       it "should load different attribute files from deeper paths" do
         expect(full_paths_for_part(:openldap, "attributes").detect do |f|
-          f =~ /kitchen\/openldap\/attributes\/robinson.rb/
+          f =~ /cookbooks\/openldap\/attributes\/smokey.rb/
         end).not_to eql(nil)
-      end
-
-      it "should allow you to override a definition file via cookbook_path" do
-        expect(full_paths_for_part(:openldap, "definitions").detect do |f|
-          f =~ /cookbooks\/openldap\/definitions\/client.rb/
-        end).not_to eql(nil)
-        expect(full_paths_for_part(:openldap, "definitions").detect do |f|
-          f =~ /kitchen\/openldap\/definitions\/client.rb/
-        end).to eql(nil)
       end
 
       it "should load definition files from deeper paths" do
         expect(full_paths_for_part(:openldap, "definitions").detect do |f|
-          f =~ /kitchen\/openldap\/definitions\/drewbarrymore.rb/
+          f =~ /cookbooks\/openldap\/definitions\/server.rb/
         end).not_to eql(nil)
-      end
-
-      it "should allow you to override a recipe file via cookbook_path" do
-        expect(full_paths_for_part(:openldap, "recipes").detect do |f|
-          f =~ /cookbooks\/openldap\/recipes\/gigantor.rb/
-        end).not_to eql(nil)
-        expect(full_paths_for_part(:openldap, "recipes").detect do |f|
-          f =~ /kitchen\/openldap\/recipes\/gigantor.rb/
-        end).to eql(nil)
       end
 
       it "should load recipe files from deeper paths" do
         expect(full_paths_for_part(:openldap, "recipes").detect do |f|
-          f =~ /kitchen\/openldap\/recipes\/woot.rb/
+          f =~ /cookbooks\/openldap\/recipes\/one.rb/
         end).not_to eql(nil)
-      end
-
-      it "should allow you to have an 'ignore' file, which skips loading files in later cookbooks" do
-        expect(full_paths_for_part(:openldap, "recipes").detect do |f|
-          f =~ /kitchen\/openldap\/recipes\/ignoreme.rb/
-        end).to eql(nil)
       end
 
       it "should find files that start with a ." do
@@ -187,7 +152,7 @@ describe Chef::CookbookLoader do
 
     let(:repo_paths) do
       [
-        File.join(CHEF_SPEC_DATA, "kitchen"),
+#        File.join(CHEF_SPEC_DATA, "kitchen"),
         File.join(CHEF_SPEC_DATA, "cookbooks"),
         File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo"),
       ]
@@ -253,7 +218,6 @@ describe Chef::CookbookLoader do
 
       let(:repo_paths) do
         [
-          File.join(CHEF_SPEC_DATA, "kitchen"),
           File.join(CHEF_SPEC_DATA, "cookbooks"),
           File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo"),
         ]
@@ -271,7 +235,6 @@ describe Chef::CookbookLoader do
 
     describe "loading all cookbooks after loading only one cookbook" do
       before(:each) do
-        expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
         cookbook_loader.load_cookbooks
       end
 

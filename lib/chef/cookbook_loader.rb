@@ -44,7 +44,6 @@ class Chef
       @cookbooks_by_name = Mash.new
       @loaded_cookbooks = {}
       @metadata = Mash.new
-      @cookbooks_paths = Hash.new { |h, k| h[k] = [] } # for deprecation warnings
       @chefignores = {}
       @repo_paths = repo_paths.map do |repo_path|
         File.expand_path(repo_path)
@@ -52,42 +51,14 @@ class Chef
 
       @preloaded_cookbooks = false
       @loaders_by_name = {}
-
-      # Used to track which cookbooks appear in multiple places in the cookbook repos
-      # and are merged in to a single cookbook by file shadowing. This behavior is
-      # deprecated, so users of this class may issue warnings to the user by checking
-      # this variable
-      @merged_cookbooks = []
     end
 
-    def merged_cookbook_paths # for deprecation warnings
-      merged_cookbook_paths = {}
-      @merged_cookbooks.each { |c| merged_cookbook_paths[c] = @cookbooks_paths[c] }
-      merged_cookbook_paths
-    end
-
-    def warn_about_cookbook_shadowing
-      unless merged_cookbooks.empty?
-        Chef::Log.deprecation "The cookbook(s): #{merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path. " +
-          "A composite version has been compiled.  This has been deprecated since 0.10.4, in Chef 13 this behavior will be REMOVED."
-      end
-    end
-
-    # Will be removed when cookbook shadowing is removed, do NOT create new consumers of this API.
-    #
-    # @api private
-    def load_cookbooks_without_shadow_warning
+    def load_cookbooks
       preload_cookbooks
       @loaders_by_name.each_key do |cookbook_name|
         load_cookbook(cookbook_name)
       end
       @cookbooks_by_name
-    end
-
-    def load_cookbooks
-      ret = load_cookbooks_without_shadow_warning
-      warn_about_cookbook_shadowing
-      ret
     end
 
     def load_cookbook(cookbook_name)
@@ -102,11 +73,8 @@ class Chef
 
         next if loader.empty?
 
-        @cookbooks_paths[cookbook_name] << loader.cookbook_path # for deprecation warnings
-
         if @loaded_cookbooks.key?(cookbook_name)
-          @merged_cookbooks << cookbook_name # for deprecation warnings
-          @loaded_cookbooks[cookbook_name].merge!(loader)
+          raise Chef::Exceptions::CookbookMergingError, "Cookbook merging is no longer supported, the cookbook named #{cookbook_name} can only appear once in the cookbook_path"
         else
           @loaded_cookbooks[cookbook_name] = loader
         end

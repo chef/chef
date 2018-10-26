@@ -1,7 +1,7 @@
 #
 # Author:: Matthew Kent (<mkent@magoazul.com>)
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ describe Chef::Knife::CookbookUpload do
   let(:cookbook_loader) do
     cookbook_loader = cookbooks_by_name.dup
     allow(cookbook_loader).to receive(:merged_cookbooks).and_return([])
-    allow(cookbook_loader).to receive(:load_cookbooks_without_shadow_warning).and_return(cookbook_loader)
+    allow(cookbook_loader).to receive(:load_cookbooks).and_return(cookbook_loader)
     cookbook_loader
   end
 
@@ -102,31 +102,6 @@ describe Chef::Knife::CookbookUpload do
       end
     end
 
-    context "when uploading a cookbook that uses deprecated overlays" do
-
-      before do
-        allow(cookbook_loader).to receive(:merged_cookbooks).and_return(["test_cookbook"])
-        allow(cookbook_loader).to receive(:merged_cookbook_paths)
-          .and_return({ "test_cookbook" => %w{/path/one/test_cookbook /path/two/test_cookbook} })
-      end
-
-      it "emits a warning" do
-        knife.run
-        expected_message = <<~E
-          WARNING: The cookbooks: test_cookbook exist in multiple places in your cookbook_path.
-          A composite version of these cookbooks has been compiled for uploading.
-
-          IMPORTANT: In a future version of Chef, this behavior will be removed and you will no longer
-          be able to have the same version of a cookbook in multiple places in your cookbook_path.
-          WARNING: The affected cookbooks are located:
-          test_cookbook:
-            /path/one/test_cookbook
-            /path/two/test_cookbook
-E
-        expect(output.string).to include(expected_message)
-      end
-    end
-
     describe "when specifying a cookbook name among many" do
       let(:name_args) { ["test_cookbook1"] }
 
@@ -145,7 +120,6 @@ E
 
       it "should not read all cookbooks" do
         expect(cookbook_loader).not_to receive(:load_cookbooks)
-        expect(cookbook_loader).not_to receive(:load_cookbooks_without_shadow_warning)
         knife.run
       end
 
@@ -209,7 +183,6 @@ E
       it "should exit and not upload the cookbook" do
         expect(cookbook_loader).to receive(:[]).once.with("test_cookbook")
         expect(cookbook_loader).not_to receive(:load_cookbooks)
-        expect(cookbook_loader).not_to receive(:load_cookbooks_without_shadow_warning)
         expect(cookbook_uploader).not_to receive(:upload_cookbooks)
         expect { knife.run }.to raise_error(SystemExit)
       end
