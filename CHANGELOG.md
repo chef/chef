@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.4 -->
-## [v15.0.4](https://github.com/chef/chef/tree/v15.0.4) (2018-10-26)
+<!-- latest_release 15.0.5 -->
+## [v15.0.5](https://github.com/chef/chef/tree/v15.0.5) (2018-10-26)
 
 #### Merged Pull Requests
-- Do the shell_out deprecations for Chef-15. [#7788](https://github.com/chef/chef/pull/7788) ([lamont-granquist](https://github.com/lamont-granquist))
+- Remove legacy require_recipe DSL method [#7790](https://github.com/chef/chef/pull/7790) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Remove legacy require_recipe DSL method [#7790](https://github.com/chef/chef/pull/7790) ([tas50](https://github.com/tas50)) <!-- 15.0.5 -->
 - Do the shell_out deprecations for Chef-15. [#7788](https://github.com/chef/chef/pull/7788) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.4 -->
 - Update description fields from the docs site [#7784](https://github.com/chef/chef/pull/7784) ([tas50](https://github.com/tas50)) <!-- 15.0.3 -->
 - Make all Chef 14 preview resources into full resources [#7786](https://github.com/chef/chef/pull/7786) ([tas50](https://github.com/tas50)) <!-- 15.0.2 -->
