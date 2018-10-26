@@ -52,6 +52,10 @@ end
 
 Inspec has been updated to version 3.0 with addition resources, exception handling, and a new plugin system. See https://blog.chef.io/2018/10/16/announcing-inspec-3-0/ for details.
 
+## macOS Mojave (10.14)
+
+Chef is now tested against macOS Mojave, and packages are now available at downloads.chef.io.
+
 ## Important Bugfixes
 
 - Multiple bugfixes in Chef Vault have been resolved by updating chef-vault to 3.4.2
