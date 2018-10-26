@@ -152,7 +152,6 @@ describe Chef::CookbookLoader do
 
     let(:repo_paths) do
       [
-#        File.join(CHEF_SPEC_DATA, "kitchen"),
         File.join(CHEF_SPEC_DATA, "cookbooks"),
         File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo"),
       ]

@@ -75,9 +75,9 @@ class Chef
 
         if @loaded_cookbooks.key?(cookbook_name)
           raise Chef::Exceptions::CookbookMergingError, "Cookbook merging is no longer supported, the cookbook named #{cookbook_name} can only appear once in the cookbook_path"
-        else
-          @loaded_cookbooks[cookbook_name] = loader
         end
+
+        @loaded_cookbooks[cookbook_name] = loader
       end
 
       if @loaded_cookbooks.key?(cookbook_name)
@@ -101,6 +101,7 @@ class Chef
     def has_key?(cookbook_name)
       not self[cookbook_name.to_sym].nil?
     end
+
     alias :cookbook_exists? :has_key?
     alias :key? :has_key?
 
@@ -125,6 +126,7 @@ class Chef
     def values
       @cookbooks_by_name.values
     end
+
     alias :cookbooks :values
 
     private
