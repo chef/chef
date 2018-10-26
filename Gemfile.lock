@@ -6,13 +6,31 @@ GIT
     chefstyle (0.11.0)
       rubocop (= 0.55.0)
 
+GIT
+  remote: https://github.com/chef/ohai.git
+  revision: 2dd9de9143afac54de475d730572897ab4730a06
+  branch: master
+  specs:
+    ohai (15.0.0)
+      chef-config (>= 12.8, < 16)
+      ffi (~> 1.9)
+      ffi-yajl (~> 2.2)
+      ipaddress
+      mixlib-cli (>= 1.7.0)
+      mixlib-config (~> 2.0)
+      mixlib-log (~> 2.0, >= 2.0.1)
+      mixlib-shellout (~> 2.0)
+      plist (~> 3.1)
+      systemu (~> 2.6.4)
+      wmi-lite (~> 1.0)
+
 PATH
   remote: .
   specs:
-    chef (14.6.47)
+    chef (15.0.0)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.6.47)
+      chef-config (= 15.0.0)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -28,7 +46,7 @@ PATH
       net-sftp (~> 2.1, >= 2.1.2)
       net-ssh (~> 4.2)
       net-ssh-multi (~> 1.2, >= 1.2.1)
-      ohai (~> 14.0)
+      ohai (~> 15.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       rspec-core (~> 3.5)
@@ -39,10 +57,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.6.47-universal-mingw32)
+    chef (15.0.0-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.6.47)
+      chef-config (= 15.0.0)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -59,7 +77,7 @@ PATH
       net-sftp (~> 2.1, >= 2.1.2)
       net-ssh (~> 4.2)
       net-ssh-multi (~> 1.2, >= 1.2.1)
-      ohai (~> 14.0)
+      ohai (~> 15.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       rspec-core (~> 3.5)
@@ -85,7 +103,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (14.6.47)
+    chef-config (15.0.0)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -206,18 +224,6 @@ GEM
     netrc (0.11.0)
     octokit (4.13.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (14.6.2)
-      chef-config (>= 12.8, < 15)
-      ffi (~> 1.9)
-      ffi-yajl (~> 2.2)
-      ipaddress
-      mixlib-cli (>= 1.7.0)
-      mixlib-config (~> 2.0)
-      mixlib-log (~> 2.0, >= 2.0.1)
-      mixlib-shellout (~> 2.0)
-      plist (~> 3.1)
-      systemu (~> 2.6.4)
-      wmi-lite (~> 1.0)
     parallel (1.12.1)
     parser (2.5.1.2)
       ast (~> 2.4.0)
@@ -364,6 +370,7 @@ DEPENDENCIES
   inspec-core (~> 3)
   netrc
   octokit
+  ohai!
   pry
   pry-byebug
   pry-remote
