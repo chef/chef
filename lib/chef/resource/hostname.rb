@@ -27,7 +27,7 @@ class Chef
       introduced "14.0"
 
       property :hostname, String,
-               description: "Used to specify the hostname if it is different than the resource’s name.",
+               description: "Used to specify the hostname if it is different than the resource's name.",
                name_property: true
 
       property :compile_time, [ TrueClass, FalseClass ],
