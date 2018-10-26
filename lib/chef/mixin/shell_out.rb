@@ -72,7 +72,6 @@ class Chef
       # @api private
       def self.maybe_add_timeout(obj, options)
         options = options.dup
-        force = options.delete(:argument_that_will_go_away_in_chef_15_so_do_not_use_it) # remove in Chef-15
         # historically resources have not properly declared defaults on their timeouts, so a default default of 900s was enforced here
         default_val = 900
         return options if options.key?(:timeout)
