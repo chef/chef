@@ -38,7 +38,7 @@ class Chef
                name_property: true
 
       property :url, String,
-               description: "URL to the tap."
+               description: "The URL of the tap."
 
       property :full, [TrueClass, FalseClass],
                description: "Perform a full clone on the tap, as opposed to a shallow clone.",

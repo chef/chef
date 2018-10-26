@@ -26,18 +26,18 @@ class Chef
       resource_name :openssl_rsa_public_key
       provides(:openssl_rsa_public_key) { true }
 
-      description "Use the openssl_rsa_public_key resource to generate RSA public key files given a RSA private key."
+      description "Use the openssl_rsa_public_key resource to generate RSA public key files for a given RSA private key."
       introduced "14.0"
 
       property :path, String,
-               description: "The path to write the file to if different than the resource's name.",
+               description: "The path to the public key file, if it differs from the resource name.",
                name_property: true
 
       property :private_key_path, String,
                description: "The path to the private key file."
 
       property :private_key_content, String,
-               description: "The content of the private key including new lines. This property is used in place of private_key_path to avoid having to first write a key to disk."
+               description: "The content of the private key, including new lines. This property is used in place of private_key_path in instances where you want to avoid having to first write the private key to disk."
 
       property :private_key_pass, String,
                description: "The passphrase of the provided private key."
