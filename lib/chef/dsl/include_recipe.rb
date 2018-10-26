@@ -29,12 +29,6 @@ class Chef
       def load_recipe(recipe_name)
         run_context.load_recipe(recipe_name, current_cookbook: cookbook_name)
       end
-
-      def require_recipe(*args)
-        Chef::Log.warn("require_recipe is deprecated and will be removed in a future release, please use include_recipe")
-        include_recipe(*args)
-      end
-
     end
   end
 end
