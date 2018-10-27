@@ -228,6 +228,49 @@ class Chef
           wait_for_completion(id)
         end
 
+        # Constructs the multipart/form-data required to sideload packages
+        # https://github.com/snapcore/snapd/wiki/REST-API#sideload-request
+        #
+        #   @param snap_name [String] An array of snap package names to install
+        #   @param action [String] The action. Valid: install or try
+        #   @param options [Hash] Misc configuration Options
+        #   @param path [String] Path to the package on disk
+        #   @param content_length [Integer] byte size of the snap file
+        def generate_multipart_form_data(snap_name, action, options, path, content_length)
+
+          # Get the bytes of the file on disk
+          #content_length = IO.binread(path)
+
+          snap_options = []
+          options.each do | k,v |
+            snap_option = <<~SNAP_OPTION
+Content-Disposition: form-data; name="#{k}"
+
+#{v}
+--#{snap_name}
+            SNAP_OPTION
+            snap_options.push(snap_option)
+          end
+
+          multipart_form_data = <<~SNAP_S
+Host:
+Content-Type: multipart/form-data; boundary=#{snap_name}
+Content-Length: #{content_length}
+
+--#{snap_name}
+Content-Disposition: form-data; name="action"
+
+#{action}
+--#{snap_name}
+#{snap_options.join("\n")}
+Content-Disposition: form-data; name="snap"; filename="#{path}"
+
+<#{content_length} bytes of snap file data>
+--#{snap_name}
+          SNAP_S
+          multipart_form_data
+        end
+
         # Constructs json to post for snap changes
         #
         #   @param snap_names [Array] An array of snap package names to install

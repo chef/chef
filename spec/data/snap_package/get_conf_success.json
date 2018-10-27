@@ -1,0 +1,10 @@
+{
+  "type": "sync",
+  "status-code": 200,
+  "status": "OK",
+  "result": {
+    "address": "0.0.0.0",
+    "allow-privileged": true,
+    "anonymous-auth": false
+  }
+}

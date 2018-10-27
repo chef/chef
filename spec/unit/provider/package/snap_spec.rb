@@ -49,29 +49,14 @@ describe Chef::Provider::Package::Snap do
   end
 
   # Example output from https://github.com/snapcore/snapd/wiki/REST-API
-  find_result_success = JSON.parse({"type" => "sync", "status-code" => 200, "status" => "OK", "result" => [{"id" => "mVyGrEwiqSi5PugCwyH7WgpoQLemtTd6", "title" => "hello", "summary" => "GNU Hello, the \"hello world\" snap", "description" => "GNU hello prints a friendly greeting. This is part of the snapcraft tour at https://snapcraft.io/", "download-size" => 65536, "name" => "hello", "publisher" => {"id" => "canonical", "username" => "canonical", "display-name" => "Canonical", "validation" => "verified"}, "developer" => "canonical", "status" => "available", "type" => "app", "version" => "2.10", "channel" => "stable", "ignore-validation" => false, "revision" => "20", "confinement" => "strict", "private" => false, "devmode" => false, "jailmode" => false, "contact" => "mailto:snaps@canonical.com", "license" => "GPL-3.0", "channels" => {"latest/beta" => {"revision" => "29", "confinement" => "strict", "version" => "2.10.1", "channel" => "beta", "epoch" => "0", "size" => 65536}, "latest/candidate" => {"revision" => "20", "confinement" => "strict", "version" => "2.10", "channel" => "candidate", "epoch" => "0", "size" => 65536}, "latest/edge" => {"revision" => "34", "confinement" => "strict", "version" => "2.10.42", "channel" => "edge", "epoch" => "0", "size" => 65536}, "latest/stable" => {"revision" => "20", "confinement" => "strict", "version" => "2.10", "channel" => "stable", "epoch" => "0", "size" => 65536}}, "tracks" => ["latest"]}], "sources" => ["store"], "suggested-currency" => "USD"}.to_json)
-  find_result_fail = JSON.parse({"type" => "error", "status-code" => 404, "status" => "Not Found", "result" => {"message" => "snap not found", "kind" => "snap-not-found", "value" => "hello2"}}.to_json)
-  get_by_name_result_success = JSON.parse({"type" => "sync", "status-code" => 200, "status" => "OK", "result" => {"id" => "CRrJViJiSuDcCkU31G0xpNRVNaj4P960", "summary" => "Universal Command Line Interface for Amazon Web Services", "description" => "This package provides a unified command line interface to Amazon Web\nServices.\n", "installed-size" => 15851520, "name" => "aws-cli", "publisher" => {"id" => "S7iQ7mKDXBDliQqRcgefvc2TKXIH9pYk", "username" => "aws", "display-name" => "Amazon Web Services", "validation" => "verified"}, "developer" => "aws", "status" => "active", "type" => "app", "version" => "1.15.71", "channel" => "", "tracking-channel" => "stable", "ignore-validation" => false, "revision" => "135", "confinement" => "classic", "private" => false, "devmode" => false, "jailmode" => false, "apps" => [{"snap" => "aws-cli", "name" => "aws"}], "contact" => "", "mounted-from" => "/var/lib/snapd/snaps/aws-cli_135.snap", "install-date" => "2018-09-17T20:39:38.516Z"}}.to_json)
-  get_by_name_result_fail = JSON.parse({"type" => "error", "status-code" => 404, "status" => "Not Found", "result" => {"message" => "snap not installed", "kind" => "snap-not-found", "value" => "aws-cliasdfasdf"}}.to_json)
-  async_result_success = JSON.parse({
-                                        "type" => "async",
-                                        "status-code" => 202,
-                                        "status" => "Accepted",
-                                        "change" => "401",
-                                    }.to_json)
-  result_fail = JSON.parse({
-                               "type" => "error",
-                               "status-code" => 401,
-                               "status" => "Unauthorized",
-                               "result" => {
-                                   "message" => "access denied",
-                                   "kind" => "login-required",
-                               }
-                           }.to_json)
-
-  change_id_result = JSON.parse({"type" => "sync", "status-code" => 200, "status" => "OK", "result" => {"id" => "15", "kind" => "install-snap", "summary" => "Install snap \"hello\"", "status" => "Done", "tasks" => [{"id" => "165", "kind" => "prerequisites", "summary" => "Ensure prerequisites for \"hello\" are available", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.22104314Z", "ready-time" => "2018-09-22T20:25:25.231090966Z"}, {"id" => "166", "kind" => "download-snap", "summary" => "Download snap \"hello\" (20) from channel \"stable\"", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221070859Z", "ready-time" => "2018-09-22T20:25:25.24321909Z"}, {"id" => "167", "kind" => "validate-snap", "summary" => "Fetch and check assertions for snap \"hello\" (20)", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221080163Z", "ready-time" => "2018-09-22T20:25:25.55308904Z"}, {"id" => "168", "kind" => "mount-snap", "summary" => "Mount snap \"hello\" (20)", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221082984Z", "ready-time" => "2018-09-22T20:25:25.782452658Z"}, {"id" => "169", "kind" => "copy-snap-data", "summary" => "Copy snap \"hello\" data", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221085677Z", "ready-time" => "2018-09-22T20:25:25.790911883Z"}, {"id" => "170", "kind" => "setup-profiles", "summary" => "Setup snap \"hello\" (20) security profiles", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221088261Z", "ready-time" => "2018-09-22T20:25:25.972796111Z"}, {"id" => "171", "kind" => "link-snap", "summary" => "Make snap \"hello\" (20) available to the system", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221090669Z", "ready-time" => "2018-09-22T20:25:25.986931331Z"}, {"id" => "172", "kind" => "auto-connect", "summary" => "Automatically connect eligible plugs and slots of snap \"hello\"", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221093357Z", "ready-time" => "2018-09-22T20:25:25.996914144Z"}, {"id" => "173", "kind" => "set-auto-aliases", "summary" => "Set automatic aliases for snap \"hello\"", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221097651Z", "ready-time" => "2018-09-22T20:25:26.009155888Z"}, {"id" => "174", "kind" => "setup-aliases", "summary" => "Setup snap \"hello\" aliases", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221100379Z", "ready-time" => "2018-09-22T20:25:26.021062388Z"}, {"id" => "175", "kind" => "run-hook", "summary" => "Run install hook of \"hello\" snap if present", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221103116Z", "ready-time" => "2018-09-22T20:25:26.031383884Z"}, {"id" => "176", "kind" => "start-snap-services", "summary" => "Start snap \"hello\" (20) services", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221110251Z", "ready-time" => "2018-09-22T20:25:26.039564637Z"}, {"id" => "177", "kind" => "run-hook", "summary" => "Run configure hook of \"hello\" snap if present", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221115952Z", "ready-time" => "2018-09-22T20:25:26.05069451Z"}], "ready" => true, "spawn-time" => "2018-09-22T20:25:25.221130149Z", "ready-time" => "2018-09-22T20:25:26.050696298Z", "data" => {"snap-names" => ["hello"]}}}.to_json)
-
-  get_conf_success = JSON.parse({"type" => "sync", "status-code" => 200, "status" => "OK", "result" => {"address" => "0.0.0.0", "allow-privileged" => true, "anonymous-auth" => false}}.to_json)
+  find_result_success = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "find_result_success.json")))
+  find_result_fail = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "find_result_failure.json")))
+  get_by_name_result_success = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "get_by_name_result_success.json")))
+  get_by_name_result_fail = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "get_by_name_result_failure.json")))
+  async_result_success = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "async_result_success.json")))
+  result_fail = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "result_failure.json")))
+  change_id_result = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "change_id_result.json")))
+  get_conf_success = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "get_conf_success.json")))
 
   describe "#define_resource_requirements" do
 
@@ -114,6 +99,39 @@ describe Chef::Provider::Package::Snap do
       it "checks the installed and local candidate versions" do
         check_version("2.10")
       end
+
+      it 'generates multipart form data' do
+        expected = <<~SNAP_S
+          Host:
+          Content-Type: multipart/form-data; boundary=foo
+          Content-Length: 20480
+
+          --foo
+          Content-Disposition: form-data; name="action"
+
+          install
+          --foo
+          Content-Disposition: form-data; name="devmode"
+
+          true
+          --foo
+          Content-Disposition: form-data; name="snap"; filename="hello-world_27.snap"
+
+          <20480 bytes of snap file data>
+          --foo
+        SNAP_S
+
+        options = {"devmode" => true}
+        path = "hello-world_27.snap"
+        content_length = "20480"
+
+        result = provider.send(:generate_multipart_form_data, "foo", "install", options, path, content_length)
+puts result
+
+        expect(result).to eq(expected)
+
+      end
+
     end
   end
 
