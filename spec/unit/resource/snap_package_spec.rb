@@ -18,7 +18,7 @@
 
 require "spec_helper"
 require "chef/resource/snap_package"
-require 'chef/provider/package/snap'
+require "chef/provider/package/snap"
 require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::SnapPackage, "initialize" do

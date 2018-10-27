@@ -16,9 +16,9 @@
 #
 
 require "spec_helper"
-require 'chef/provider/package'
-require 'chef/provider/package/snap'
-require 'json'
+require "chef/provider/package"
+require "chef/provider/package/snap"
+require "json"
 
 describe Chef::Provider::Package::Snap do
   let(:node) { Chef::Node.new }
@@ -57,7 +57,7 @@ describe Chef::Provider::Package::Snap do
                                         "type" => "async",
                                         "status-code" => 202,
                                         "status" => "Accepted",
-                                        "change" => "401"
+                                        "change" => "401",
                                     }.to_json)
   result_fail = JSON.parse({
                                "type" => "error",
@@ -71,7 +71,7 @@ describe Chef::Provider::Package::Snap do
 
   change_id_result = JSON.parse({"type" => "sync", "status-code" => 200, "status" => "OK", "result" => {"id" => "15", "kind" => "install-snap", "summary" => "Install snap \"hello\"", "status" => "Done", "tasks" => [{"id" => "165", "kind" => "prerequisites", "summary" => "Ensure prerequisites for \"hello\" are available", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.22104314Z", "ready-time" => "2018-09-22T20:25:25.231090966Z"}, {"id" => "166", "kind" => "download-snap", "summary" => "Download snap \"hello\" (20) from channel \"stable\"", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221070859Z", "ready-time" => "2018-09-22T20:25:25.24321909Z"}, {"id" => "167", "kind" => "validate-snap", "summary" => "Fetch and check assertions for snap \"hello\" (20)", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221080163Z", "ready-time" => "2018-09-22T20:25:25.55308904Z"}, {"id" => "168", "kind" => "mount-snap", "summary" => "Mount snap \"hello\" (20)", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221082984Z", "ready-time" => "2018-09-22T20:25:25.782452658Z"}, {"id" => "169", "kind" => "copy-snap-data", "summary" => "Copy snap \"hello\" data", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221085677Z", "ready-time" => "2018-09-22T20:25:25.790911883Z"}, {"id" => "170", "kind" => "setup-profiles", "summary" => "Setup snap \"hello\" (20) security profiles", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221088261Z", "ready-time" => "2018-09-22T20:25:25.972796111Z"}, {"id" => "171", "kind" => "link-snap", "summary" => "Make snap \"hello\" (20) available to the system", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221090669Z", "ready-time" => "2018-09-22T20:25:25.986931331Z"}, {"id" => "172", "kind" => "auto-connect", "summary" => "Automatically connect eligible plugs and slots of snap \"hello\"", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221093357Z", "ready-time" => "2018-09-22T20:25:25.996914144Z"}, {"id" => "173", "kind" => "set-auto-aliases", "summary" => "Set automatic aliases for snap \"hello\"", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221097651Z", "ready-time" => "2018-09-22T20:25:26.009155888Z"}, {"id" => "174", "kind" => "setup-aliases", "summary" => "Setup snap \"hello\" aliases", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221100379Z", "ready-time" => "2018-09-22T20:25:26.021062388Z"}, {"id" => "175", "kind" => "run-hook", "summary" => "Run install hook of \"hello\" snap if present", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221103116Z", "ready-time" => "2018-09-22T20:25:26.031383884Z"}, {"id" => "176", "kind" => "start-snap-services", "summary" => "Start snap \"hello\" (20) services", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221110251Z", "ready-time" => "2018-09-22T20:25:26.039564637Z"}, {"id" => "177", "kind" => "run-hook", "summary" => "Run configure hook of \"hello\" snap if present", "status" => "Done", "progress" => {"label" => "", "done" => 1, "total" => 1}, "spawn-time" => "2018-09-22T20:25:25.221115952Z", "ready-time" => "2018-09-22T20:25:26.05069451Z"}], "ready" => true, "spawn-time" => "2018-09-22T20:25:25.221130149Z", "ready-time" => "2018-09-22T20:25:26.050696298Z", "data" => {"snap-names" => ["hello"]}}}.to_json)
 
-  get_conf_success  = JSON.parse({"type" => "sync", "status-code" => 200, "status" => "OK", "result" =>{"address" =>"0.0.0.0","allow-privileged" =>true,"anonymous-auth" => false}}.to_json)
+  get_conf_success = JSON.parse({"type" => "sync", "status-code" => 200, "status" => "OK", "result" => {"address" => "0.0.0.0", "allow-privileged" => true, "anonymous-auth" => false}}.to_json)
 
   describe "#define_resource_requirements" do
 
@@ -91,7 +91,7 @@ describe Chef::Provider::Package::Snap do
   end
 
   describe "when using a local file source" do
-    let(:source) { '/tmp/hello_20.snap' }
+    let(:source) { "/tmp/hello_20.snap" }
 
     before do
       allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with('GET', "/v2/snaps/#{package}").and_return(get_by_name_result_success)
@@ -146,7 +146,7 @@ describe Chef::Provider::Package::Snap do
 
       it "throws an error if candidate version not found" do
         provider.load_current_resource
-        expect{provider.candidate_version}.to raise_error(Chef::Exceptions::Package)
+        expect { provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
       end
 
       it "does not throw an error if installed version not found" do
@@ -176,9 +176,9 @@ describe Chef::Provider::Package::Snap do
   describe Chef::Provider::Package::Snap do
 
     it "should post the correct json" do
-      snap_names = ['hello']
-      action = 'install'
-      channel = 'stable'
+      snap_names = ["hello"]
+      action = "install"
+      channel = "stable"
       options = {}
       revision = nil
       actual = provider.send(:generate_snap_json, snap_names, action, channel, options, revision)

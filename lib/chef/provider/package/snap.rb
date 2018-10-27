@@ -19,8 +19,8 @@
 require "chef/provider/package"
 require "chef/resource/snap_package"
 require "chef/mixin/shell_out"
-require 'socket'
-require 'json'
+require "socket"
+require "json"
 
 class Chef
   class Provider
@@ -130,14 +130,14 @@ class Chef
               "Accept: application/json\r\n" +
               "Content-Type: application/json\r\n"
           if method == "POST"
-            request.concat("Content-Length: #{post_data.bytesize.to_s}\r\n\r\n#{post_data}")
+            request.concat("Content-Length: #{post_data.bytesize}\r\n\r\n#{post_data}")
           end
           request.concat("\r\n")
           # While it is expected to allow clients to connect using HTTPS over a TCP socket,
           # at this point only a UNIX socket is supported. The socket is /run/snapd.socket
           # Note - UNIXSocket is not defined on windows systems
           if defined?(::UNIXSocket)
-            UNIXSocket.open('/run/snapd.socket') do |socket|
+            UNIXSocket.open("/run/snapd.socket") do |socket|
               # Send request, read the response, split the response and parse the body
               socket.print(request)
               response = socket.read
@@ -148,14 +148,14 @@ class Chef
         end
 
         def get_change_id(id)
-          call_snap_api('GET', "/v2/changes/#{id}")
+          call_snap_api("GET", "/v2/changes/#{id}")
         end
 
         def get_id_from_async_response(response)
-          if response['type'] == 'error'
-            raise "status: #{response['status']}, kind: #{response['result']['kind']}, message: #{response['result']['message']}"
+          if response["type"] == "error"
+            raise "status: #{response["status"]}, kind: #{response["result"]["kind"]}, message: #{response["result"]["message"]}"
           end
-          response['change']
+          response["change"]
         end
 
         def wait_for_completion(id)
@@ -163,8 +163,8 @@ class Chef
           waiting = true
           while waiting do
             result = get_change_id(id)
-            puts "STATUS: #{result['result']['status']}"
-            case result['result']['status']
+            puts "STATUS: #{result["result"]["status"]}"
+            case result["result"]["status"]
             when "Do", "Doing", "Undoing", "Undo"
               # Continue
             when "Abort"
@@ -189,7 +189,7 @@ class Chef
         def get_snap_version_from_source(path)
           body = {
               "context-id" => "get_snap_version_from_source_#{path}",
-              "args" => ["info", path]
+              "args" => ["info", path,]
           }.to_json
 
           #json = call_snap_api('POST', '/v2/snapctl', body)
@@ -211,19 +211,19 @@ class Chef
         end
 
         def install_snaps(snap_names)
-          response = post_snaps(snap_names, 'install', new_resource.channel, new_resource.options)
+          response = post_snaps(snap_names, "install", new_resource.channel, new_resource.options)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
 
         def update_snaps(snap_names)
-          response = post_snaps(snap_names, 'refresh', new_resource.channel, new_resource.options)
+          response = post_snaps(snap_names, "refresh", new_resource.channel, new_resource.options)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
 
         def uninstall_snaps(snap_names)
-          response = post_snaps(snap_names, 'remove', new_resource.channel, new_resource.options)
+          response = post_snaps(snap_names, "remove", new_resource.channel, new_resource.options)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
@@ -240,18 +240,18 @@ class Chef
               "action" => action,
               "snaps" => snap_names
           }
-          if ['install', 'refresh', 'switch'].include?(action)
-            request['channel'] = channel
+          if %w(install refresh switch).include?(action)
+            request["channel"] = channel
           end
 
           # No defensive handling of params
           # Snap will throw the proper exception if called improperly
           # And we can provide that exception to the end user
-          request['classic'] = true if options['classic']
-          request['devmode'] = true if options['devmode']
-          request['jailmode'] = true if options['jailmode']
-          request['revision'] = revision unless revision.nil?
-          request['ignore_validation'] = true if options['ignore-validation']
+          request["classic"] = true if options["classic"]
+          request["devmode"] = true if options["devmode"]
+          request["jailmode"] = true if options["jailmode"]
+          request["revision"] = revision unless revision.nil?
+          request["ignore_validation"] = true if options["ignore-validation"]
           request
         end
 
@@ -264,26 +264,26 @@ class Chef
         #   @param revision [String] A revision/version
         def post_snaps(snap_names, action, channel, options, revision = nil)
           json = generate_snap_json(snap_names, action, channel, options, revision = nil)
-          call_snap_api('POST', '/v2/snaps', json)
+          call_snap_api("POST", "/v2/snaps", json)
         end
 
         def get_latest_package_version(name, channel)
-          json = call_snap_api('GET', "/v2/find?name=#{name}")
+          json = call_snap_api("GET", "/v2/find?name=#{name}")
           if json["status-code"] != 200
             raise Chef::Exceptions::Package, json["result"], caller
           end
 
           # Return the version matching the channel
-          json['result'][0]['channels']["latest/#{channel}"]['version']
+          json["result"][0]["channels"]["latest/#{channel}"]["version"]
         end
 
         def get_installed_packages
-          json = call_snap_api('GET', '/v2/snaps')
+          json = call_snap_api("GET", "/v2/snaps")
           # We only allow 200 or 404s
           unless [200, 404].include? json["status-code"]
             raise Chef::Exceptions::Package, json["result"], caller
           end
-          json['result']
+          json["result"]
         end
 
         def get_installed_package_version_by_name(name)
@@ -297,21 +297,21 @@ class Chef
         end
 
         def get_installed_package_by_name(name)
-          json = call_snap_api('GET', "/v2/snaps/#{name}")
+          json = call_snap_api("GET", "/v2/snaps/#{name}")
           # We only allow 200 or 404s
           unless [200, 404].include? json["status-code"]
             raise Chef::Exceptions::Package, json["result"], caller
           end
-          json['result']
+          json["result"]
         end
 
         def get_installed_package_conf(name)
-          json = call_snap_api('GET', "/v2/snaps/#{name}/conf")
-          json['result']
+          json = call_snap_api("GET", "/v2/snaps/#{name}/conf")
+          json["result"]
         end
 
         def set_installed_package_conf(name, value)
-          response = call_snap_api('PUT', "/v2/snaps/#{name}/conf", value)
+          response = call_snap_api("PUT", "/v2/snaps/#{name}/conf", value)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
