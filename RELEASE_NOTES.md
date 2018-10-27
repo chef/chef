@@ -1,6 +1,112 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
-# Chef Client Release Notes 14.5:
+# UNRELEASED (Chef 15)
+
+Chef 15 release notes will be added here as development progresses.
+
+# Chef Client Release Notes 14.6:
+
+## Smaller Package and Install Size
+
+Both Chef packages and on disk installations have been greatly reduced in size by trimming unnecessary installation files. This has reduced our package size on macOS/Linux by ~50% and Windows by ~12%. With this change Chef 14 is now smaller than a legacy Chef 10 package.
+
+## New Resources
+
+### Timezone
+
+Chef now includes the `timezone` resource from [@dragonsmith](http://github.com/dragonsmith)'s `timezone_lwrp` cookbook. This resource supports setting a Linux node's timezone. Thank you [@dragonsmith](http://github.com/dragonsmith) for allowing us to include this out of the box in Chef.
+
+Example:
+
+```ruby
+timezone 'UTC'
+```
+
+## Updated Resources
+
+### windows_task
+
+The `windows_task` resource has been updated to support localized system users and groups on non-English nodes. Thanks [@jugatsu](http://github.com/jugatsu) for making this possible.
+
+### user
+
+The `user` resource now includes a new `full_name` property for Windows hosts, which allows specifying a user's full name.
+
+Example:
+
+```ruby
+  user 'jdoe' do
+    full_name 'John Doe'
+  end
+```
+
+### zypper_package
+
+The `zypper_package` resource now includes a new `global_options` property. This property can be used to specify one or more options for the zypper command line that are global in context.
+
+Example:
+
+```ruby
+package 'sssd' do
+   global_options '-D /tmp/repos.d/'
+end
+```
+
+## InSpec 3.0
+
+Inspec has been updated to version 3.0 with addition resources, exception handling, and a new plugin system. See https://blog.chef.io/2018/10/16/announcing-inspec-3-0/ for details.
+
+## macOS Mojave (10.14)
+
+Chef is now tested against macOS Mojave, and packages are now available at downloads.chef.io.
+
+## Important Bugfixes
+
+- Multiple bugfixes in Chef Vault have been resolved by updating chef-vault to 3.4.2
+- Invalid yum package names now gracefully fail
+- `windows_ad_join` now properly executes. Thank you [@cpjones01](https://github.com/cpjones01) for reporting this.
+- `rhsm_errata_level` now properly executes. Thank you [@freakinhippie](https://github.com/freakinhippie) for this fix.
+- `registry_key` now properly writes out the correct value when `sensitive` is specified. Thank you [@josh-barker](https://github.com/josh-barker) for this fix.
+- `locale` now properly executes on RHEL 6 and Amazon Linux 201X.
+
+## Ohai 14.6
+
+### Filesystem Plugin on AIX and Solaris
+
+AIX and Solaris now ship with a filesystem2 plugin that updates the filesystem data to match that of Linux, macOS, amd BSD hosts. This new data structure makes accessing filesystem data in recipes easier and especially improves the layout and depth of data on ZFS filesystems. In Chef 15 (April 2019) we will begin wrting this same format of data to the existing `node['filesystem']` namespace. In Chef 16 (April 2020) we will remove the `node['filesystem2']` namspace, completing the transition to the new format. Thank you [@jaymzh](https://github.com/jaymzh) for continuing the updates to our filesystem plugins with this change.
+
+### macOS Improvements
+
+The system_profile plugin has been improved to skip over uncessary data, which reduces macOS node sizes on the Chef Server. Additionally the CPU plugin has been updated to limit what sysctl values it polls, which prevents hanging on some system configurations.
+
+### SLES 15 Detection
+
+SLES 15 is now correctly detected as the platform "suse" instead of "sles". This matches the behavior of SLES 11 and 12 hosts.
+
+## New Deprecations
+
+### system_profile Ohai plugin removal
+
+The system_profile plugin will be removed from Chef/Ohai 15 in April 2019. This plugin does not correctly return data on modern Mac systems. Additionally the same data is provided by the hardware plugin, which has a format that is simpler to consume. Removing this plugin will reduce Ohai return by ~3 seconds and greatly reduce the size of the node object on the Chef server.
+
+## Security Updates
+
+### Ruby 2.5.3
+
+Ruby has been updated to from 2.5.1 to 2.5.3 to resolve multiple CVEs and bugs:
+- [CVE-2018-16396](https://www.ruby-lang.org/en/news/2018/10/17/not-propagated-taint-flag-in-some-formats-of-pack-cve-2018-16396/)
+- [CVE-2018-16395](https://www.ruby-lang.org/en/news/2018/10/17/openssl-x509-name-equality-check-does-not-work-correctly-cve-2018-16395/)
+
+# Chef Client Release Notes 14.5.33:
+
+This release resolves a regression that caused the ``windows_ad_join`` resource to fail to run. It also makes the following additional fixes:
+  - The ``ohai`` resource's unused ``ohai_name`` property has been deprecated. This will be removed in Chef 15.0.
+  - Error messages in the ``windows_feature`` resources have been improved.
+  - The ``windows_service`` resource will no longer log potentially sensitive information if the ``sensitive`` property is used.
+
+Thanks to @cpjones01, @kitforbes, and @dgreeninger for their help with this release.
+
+# Chef Client Release Notes 14.5.27:
 
 ## New Resources
 
@@ -26,18 +132,32 @@ Thanks [@vincentaubert](https://github.com/vincentaubert) for contributing this 
 
 ### windows_ad_join
 
-`windows_ad_join` now includes a `new_hostnname` property for setting the hostname for the node upon joining the domain.
+`windows_ad_join` now includes a `new_hostname` property for setting the hostname for the node upon joining the domain.
 
 Thanks [@derekgroh](https://github.com/derekgroh) for contributing this new property.
 
 ## InSpec 2.2.102
 
-InSpec has been updated to from 2.2.70 to 2.2.102. This new version includes the following improvements:
+InSpec has been updated from 2.2.70 to 2.2.102. This new version includes the following improvements:
   - Support for using ERB templating within the .yml files
   - HTTP basic auth support for fetching dependent profiles
   - A new global attributes concept
   - Better error handling with Automate reporting
   - Vendor command now vendors profiles when using path://
+
+## Ohai 14.5
+
+### Windows Improvements
+
+Detection for the `root_group` attribute on Windows has been simplified and improved to properly support non-English systems. With this change, we've also deprecated the `Ohai::Util::Win32::GroupHelper` helper, which is no longer necessary. Thanks to [@jugatsu](https://github.com/jugatsu) for putting this together.
+
+We've also added a new `encryption_status` attribute to volumes on Windows. Thanks to [@kmf](https://github.com/kmf) for suggesting this new feature.
+
+### Configuration Improvements
+
+The timeout period for communicating with OpenStack metadata servers can now be configured with the `openstack_metadata_timeout` config option. Thanks to [@sawanoboly](https://github.com/sawanoboly) for this improvement.
+
+Ohai now properly handles relative paths to config files when running on the command line. This means commands like `ohai -c ../client.rb` will now properly use your config values.
 
 ## Security updates
 

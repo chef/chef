@@ -118,7 +118,7 @@ class Chef
 
         audit_history_url = "controls"
         Chef::Log.trace("Sending audit report (run-id: #{audit_data.run_id})")
-        run_data = audit_data.to_hash
+        run_data = audit_data.to_h
 
         if @audit_phase_error
           error_info = "#{@audit_phase_error.class}: #{@audit_phase_error.message}"

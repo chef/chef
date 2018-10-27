@@ -17,7 +17,6 @@
 class Chef
   class Resource
     class ChocolateySource < Chef::Resource
-      preview_resource true
       resource_name :chocolatey_source
 
       description "Use the chocolatey_source resource to add or remove Chocolatey sources."

@@ -407,7 +407,7 @@ class Chef
       output["cookbook_name"] = name
       output["name"] = full_name
       output["frozen?"] = frozen_version?
-      output["metadata"] = metadata.to_hash
+      output["metadata"] = metadata.to_h
       output["version"] = version
       output.merge(cookbook_manifest.by_parent_directory)
     end

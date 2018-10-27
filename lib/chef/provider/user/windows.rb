@@ -39,12 +39,12 @@ class Chef
             logger.warn("The 'gid' (or 'group') property is not implemented on the Windows platform. Please use the `members` property of the  'group' resource to assign a user to a group.")
           end
 
-          @current_resource = Chef::Resource::User.new(new_resource.name)
+          @current_resource = Chef::Resource::User::WindowsUser.new(new_resource.name)
           current_resource.username(new_resource.username)
           begin
             user_info = @net_user.get_info
-
             current_resource.uid(user_info[:user_id])
+            current_resource.full_name(user_info[:full_name])
             current_resource.comment(user_info[:comment])
             current_resource.home(user_info[:home_dir])
             current_resource.shell(user_info[:script_path])
@@ -67,7 +67,7 @@ class Chef
             logger.trace("#{new_resource} password has changed")
             return true
           end
-          [ :uid, :comment, :home, :shell ].any? do |user_attrib|
+          [ :uid, :comment, :home, :shell, :full_name ].any? do |user_attrib|
             !new_resource.send(user_attrib).nil? && new_resource.send(user_attrib) != current_resource.send(user_attrib)
           end
         end
@@ -100,6 +100,7 @@ class Chef
           opts = { name: new_resource.username }
 
           field_list = {
+            "full_name" => "full_name",
             "comment" => "comment",
             "home" => "home_dir",
             "uid" => "user_id",

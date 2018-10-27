@@ -1,5 +1,5 @@
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ class Chef
     def_delegator :@cookbook_version, :frozen_version?
 
     # Create a new CookbookManifest object for the given `cookbook_version`.
-    # You can subsequently call #to_hash to get a Hash representation of the
+    # You can subsequently call #to_h to get a Hash representation of the
     # cookbook_version in the "manifest" format, or #to_json to get a JSON
     # representation of the cookbook_version.
     #
@@ -119,12 +119,14 @@ class Chef
       @policy_mode
     end
 
-    def to_hash
-      CookbookManifestVersions.to_hash(self)
+    def to_h
+      CookbookManifestVersions.to_h(self)
     end
 
+    alias_method :to_hash, :to_h
+
     def to_json(*a)
-      result = to_hash
+      result = to_h
       result["json_class"] = "Chef::CookbookVersion"
       Chef::JSONCompat.to_json(result, *a)
     end
@@ -321,5 +323,6 @@ class Chef
 
     def_versioned_delegator :from_hash
     def_versioned_delegator :to_hash
+    def_versioned_delegator :to_h
   end
 end

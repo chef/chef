@@ -40,12 +40,12 @@ class Chef
       action :create do
         description "Create an Ohai hint file."
 
-        declare_resource(:directory, ::Ohai::Config.ohai.hints_path.first) do
+        directory ::Ohai::Config.ohai.hints_path.first do
           action :create
           recursive true
         end
 
-        declare_resource(:file, ohai_hint_file_path(new_resource.hint_name)) do
+        file ohai_hint_file_path(new_resource.hint_name) do
           action :create
           content format_content(new_resource.content)
         end
@@ -54,12 +54,12 @@ class Chef
       action :delete do
         description "Delete an Ohai hint file."
 
-        declare_resource(:file, ohai_hint_file_path(new_resource.hint_name)) do
+        file ohai_hint_file_path(new_resource.hint_name) do
           action :delete
           notifies :reload, ohai[reload ohai post hint removal]
         end
 
-        declare_resource(:ohai, "reload ohai post hint removal") do
+        ohai "reload ohai post hint removal" do
           action :nothing
         end
       end

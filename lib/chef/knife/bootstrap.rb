@@ -78,10 +78,6 @@ class Chef
         description: "Enable SSH agent forwarding",
         boolean: true
 
-      option :identity_file,
-        long: "--identity-file IDENTITY_FILE",
-        description: "The SSH identity file used for authentication. [DEPRECATED] Use --ssh-identity-file instead."
-
       option :ssh_identity_file,
         short: "-i IDENTITY_FILE",
         long: "--ssh-identity-file IDENTITY_FILE",
@@ -409,7 +405,13 @@ class Chef
         end
       end
 
-      # make sure policyfile values are set correctly
+      # Ensure options are valid by checking policyfile values.
+      #
+      # The method call will cause the program to exit(1) if:
+      #   * Only one of --policy-name and --policy-group is specified
+      #   * Policyfile options are set and --run-list is set as well
+      #
+      # @return [TrueClass] If options are valid.
       def validate_options!
         if incomplete_policyfile_options?
           ui.error("--policy-name and --policy-group must be specified together")
@@ -434,7 +436,7 @@ class Chef
         ssh.config[:ssh_gateway] = config[:ssh_gateway]
         ssh.config[:ssh_gateway_identity] = config[:ssh_gateway_identity]
         ssh.config[:forward_agent] = config[:forward_agent]
-        ssh.config[:ssh_identity_file] = config[:ssh_identity_file] || config[:identity_file]
+        ssh.config[:ssh_identity_file] = config[:ssh_identity_file]
         ssh.config[:manual] = true
         ssh.config[:host_key_verify] = config[:host_key_verify]
         ssh.config[:on_error] = true

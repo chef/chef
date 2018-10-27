@@ -130,7 +130,7 @@ class Chef
       )
     end
 
-    def to_hash
+    def to_h
       env_run_lists_without_default = @env_run_lists.dup
       env_run_lists_without_default.delete("_default")
       result = {
@@ -152,9 +152,11 @@ class Chef
       result
     end
 
+    alias_method :to_hash, :to_h
+
     # Serialize this object as a hash
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def update_from!(o)

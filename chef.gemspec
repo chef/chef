@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.name = "chef"
   s.version = Chef::VERSION
   s.platform = Gem::Platform::RUBY
-  s.extra_rdoc_files = ["README.md", "CONTRIBUTING.md", "LICENSE" ]
+  s.extra_rdoc_files = ["README.md", "LICENSE" ]
   s.summary = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
   s.description = s.summary
   s.license = "Apache-2.0"
@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-authentication", "~> 2.1"
   s.add_dependency "mixlib-shellout", "~> 2.4"
   s.add_dependency "mixlib-archive", "~> 0.4"
-  s.add_dependency "ohai", "~> 14.0"
+  s.add_dependency "ohai", "~> 15.0"
 
   s.add_dependency "ffi", "~> 1.9", ">= 1.9.25"
   s.add_dependency "ffi-yajl", "~> 2.2"
@@ -38,10 +38,9 @@ Gem::Specification.new do |s|
   s.add_dependency "plist", "~> 3.2"
   s.add_dependency "iniparse", "~> 1.4"
   s.add_dependency "addressable"
-  s.add_dependency "iso8601", "~> 0.11.0"
 
   # Audit mode requires these, so they are non-developmental dependencies now
-  %w{rspec-core rspec-expectations rspec-mocks}.each { |gem| s.add_dependency gem, "~> 3.5", "< 3.8" }
+  %w{rspec-core rspec-expectations rspec-mocks}.each { |gem| s.add_dependency gem, "~> 3.5" }
   s.add_dependency "rspec_junit_formatter", "~> 0.2.0"
   s.add_dependency "serverspec", "~> 2.7"
   s.add_dependency "specinfra", "~> 2.10"
@@ -59,5 +58,5 @@ Gem::Specification.new do |s|
   s.executables  = %w{ chef-client chef-solo knife chef-shell chef-apply chef-resource-inspector }
 
   s.require_paths = %w{ lib }
-  s.files = %w{Gemfile Rakefile LICENSE README.md CONTRIBUTING.md VERSION} + Dir.glob("{distro,lib,lib-backcompat,tasks,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } + Dir.glob("*.gemspec")
+  s.files = %w{Gemfile Rakefile LICENSE README.md} + Dir.glob("{lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } + Dir.glob("*.gemspec")
 end

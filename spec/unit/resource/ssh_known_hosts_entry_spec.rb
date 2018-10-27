@@ -26,11 +26,6 @@ describe Chef::Resource::SshKnownHostsEntry do
   end
   let(:resource) { Chef::Resource::SshKnownHostsEntry.new("example.com", run_context) }
 
-  it "is not a preview resource in Chef 15" do
-    pending("Chef 15") unless Chef::VERSION.start_with?("15")
-    expect(resource.class.preview_resource).to be_falsey
-  end
-
   it "sets resource name as :ssh_known_hosts_entry" do
     expect(resource.resource_name).to eql(:ssh_known_hosts_entry)
   end

@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,6 +54,16 @@ class Chef
           @current_resource = Chef::Resource::WindowsPackage.new(new_resource.name)
           if downloadable_file_missing?
             logger.trace("We do not know the version of #{new_resource.source} because the file is not downloaded")
+            # FIXME: this label should not be used.  It could be set to nil.  Probably what should happen is that
+            # if the file hasn't been downloaded then load_current_resource must download the file here, and then
+            # the else clause to set current_resource.version can always be run.  Relying on a side-effect here
+            # produces at least less readable code, if not outright buggy...  (and I'm assuming that this isn't
+            # wholly just a bug -- since if we only need the package_name to determine if its installed then we
+            # need this, so I'm assuming we need to download the file to pull out the name in order to check
+            # the registry -- which it still feels like we get wrong in the sense we're forcing always downloading
+            # and then always installing(?) which violates idempotency -- and I'm having to think way too hard
+            # about this and would need to go surfing around the code to determine what actually happens, probably
+            # in every different package_provider...)
             current_resource.version(:unknown.to_s)
           else
             current_resource.version(package_provider.installed_version)
@@ -164,6 +174,18 @@ class Chef
         # this package provider does not support package arrays
         # However, There may be multiple versions for a single
         # package so the first element may be a nested array
+        #
+        # FIXME: this breaks the semantics of the superclass and needs to get unwound.  Since these package
+        # providers don't support multipackage they can't put multiple versions into this array.  The windows
+        # package managers need this in order to uninstall multiple installed version, and they should track
+        # that in something like an `uninstall_version_array` of their own.  The superclass does not implement
+        # this kind of feature.  Doing this here breaks LSP and will create bugs since the superclass will not
+        # expect it at all.  The `current_resource.version` also MUST NOT be an array if the package provider
+        # is not multipackage.  The existing implementation of package_provider.installed_version should probably
+        # be what `uninstall_version_array` is, and then that list should be sorted and last/first'd into the
+        # current_resource.version.  The current_version_array method was not intended to be overwritten by
+        # sublasses (but ruby provides no feature to block doing so -- it is already marked as private).
+        #
         def current_version_array
           [ current_resource.version ]
         end

@@ -171,7 +171,7 @@ describe Chef::Provider::Package do
 
     it "should print the word 'uninstalled' if there was no original version" do
       allow(current_resource).to receive(:version).and_return(nil)
-      expect(logger).to receive(:info).with("package[install emacs] upgraded emacs to 1.0")
+      expect(logger).to receive(:info).with("package[install emacs] upgraded(allow_downgrade) emacs to 1.0")
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -543,24 +543,6 @@ describe "Subclass with use_multipackage_api" do
     expect(provider.use_multipackage_api?).to be true
   end
 
-  context "#a_to_s utility for subclasses" do
-    before(:each) do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-    end
-
-    it "converts varargs of strings to a single string" do
-      expect(provider.send(:a_to_s, "a", nil, "b", "", "c", " ", "d e", "f-g")).to eq("a b c   d e f-g")
-    end
-
-    it "converts an array of strings to a single string" do
-      expect(provider.send(:a_to_s, ["a", nil, "b", "", "c", " ", "d e", "f-g"])).to eq("a b c   d e f-g")
-    end
-
-    it "converts a mishmash of array args to a single string" do
-      expect(provider.send(:a_to_s, "a", [ nil, "b", "", [ "c" ] ], " ", [ "d e", "f-g" ])).to eq("a b c   d e f-g")
-    end
-  end
-
   it "when user passes string to package_name, passes arrays to install_package" do
     new_resource.package_name "vim"
     new_resource.version nil
@@ -714,7 +696,15 @@ describe "Chef::Provider::Package - Multi" do
       expect(new_resource).not_to be_updated_by_last_action
     end
 
-    it "does not install older version" do
+    it "does install an older version by default" do
+      current_resource.version(["1.1", "6.2"])
+      new_resource.version(["1.0", "6.1"])
+      provider.run_action(:install)
+      expect(new_resource).to be_updated_by_last_action
+    end
+
+    it "does not install an older version if the resource subclass has allow_downgrade set to false" do
+      allow(new_resource).to receive(:allow_downgrade).and_return(false)
       current_resource.version(["1.1", "6.2"])
       new_resource.version(["1.0", "6.1"])
       provider.run_action(:install)
@@ -943,41 +933,25 @@ describe "Chef::Provider::Package - Multi" do
     end
   end
 
-  describe "shell_out helpers" do
-    before(:each) do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+  describe "version_compare" do
+    it "tests equality" do
+      expect(provider.version_compare("1.3", "1.3")).to eql(0)
     end
 
-    [ :shell_out_with_timeout, :shell_out_with_timeout! ].each do |method|
-      stubbed_method = method == :shell_out_with_timeout! ? :shell_out_compacted! : :shell_out_compacted
-      [ %w{command arg1 arg2}, "command arg1 arg2" ].each do |command|
-        it "#{method} defaults to 900 seconds" do
-          expect(provider).to receive(stubbed_method).with(*command, timeout: 900)
-          provider.send(method, *command)
-        end
-        it "#{method} overrides the default timeout with its options" do
-          expect(provider).to receive(stubbed_method).with(*command, timeout: 1)
-          provider.send(method, *command, timeout: 1)
-        end
-        it "#{method} overrides both timeouts with the new_resource.timeout" do
-          new_resource.timeout(99)
-          expect(provider).to receive(stubbed_method).with(*command, timeout: 99)
-          provider.send(method, *command, timeout: 1)
-        end
-        it "#{method} defaults to 900 seconds and preserves options" do
-          expect(provider).to receive(stubbed_method).with(*command, env: nil, timeout: 900)
-          provider.send(method, *command, env: nil)
-        end
-        it "#{method} overrides the default timeout with its options and preserves options" do
-          expect(provider).to receive(stubbed_method).with(*command, timeout: 1, env: nil)
-          provider.send(method, *command, timeout: 1, env: nil)
-        end
-        it "#{method} overrides both timeouts with the new_resource.timeout and preseves options" do
-          new_resource.timeout(99)
-          expect(provider).to receive(stubbed_method).with(*command, timeout: 99, env: nil)
-          provider.send(method, *command, timeout: 1, env: nil)
-        end
-      end
+    it "tests less than" do
+      expect(provider.version_compare("1.2", "1.3")).to eql(-1)
+    end
+
+    it "tests greater than" do
+      expect(provider.version_compare("1.5", "1.3")).to eql(1)
+    end
+
+    it "x.10 is greater than x.2 (so does not do floating point comparisons)" do
+      expect(provider.version_compare("1.10", "1.2")).to eql(1)
+    end
+
+    it "sanitizes inputs" do
+      expect(provider.version_compare("1.3_3", "1.3")).to eql(0)
     end
   end
 end

@@ -20,7 +20,6 @@ require "chef/resource"
 class Chef
   class Resource
     class Locale < Chef::Resource
-      preview_resource true
       resource_name :locale
 
       description "Use the locale resource to set the system's locale."
@@ -61,7 +60,7 @@ class Chef
           end
 
           execute "reload root's lang profile script" do
-            command "source source /etc/sysconfig/i18n; source /etc/profile.d/lang.sh"
+            command "source /etc/sysconfig/i18n; source /etc/profile.d/lang.sh"
             not_if { updated }
           end
         elsif ::File.exist?("/usr/sbin/update-locale")

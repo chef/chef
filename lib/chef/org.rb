@@ -58,7 +58,7 @@ class Chef
                     arg, kind_of: String)
     end
 
-    def to_hash
+    def to_h
       result = {
         "name" => @name,
         "full_name" => @full_name,
@@ -68,20 +68,22 @@ class Chef
       result
     end
 
+    alias_method :to_hash, :to_h
+
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def create
       payload = { name: name, full_name: full_name }
       new_org = chef_rest.post("organizations", payload)
-      Chef::Org.from_hash(to_hash.merge(new_org))
+      Chef::Org.from_hash(to_h.merge(new_org))
     end
 
     def update
       payload = { name: name, full_name: full_name }
       new_org = chef_rest.put("organizations/#{name}", payload)
-      Chef::Org.from_hash(to_hash.merge(new_org))
+      Chef::Org.from_hash(to_h.merge(new_org))
     end
 
     def destroy

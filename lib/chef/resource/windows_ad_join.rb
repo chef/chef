@@ -68,7 +68,7 @@ class Chef
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.domain_user}\",$pswd);"
           cmd << "Add-Computer -DomainName #{new_resource.domain_name} -Credential $credential"
           cmd << " -OUPath \"#{new_resource.ou_path}\"" if new_resource.ou_path
-          cmd << " -NewName \"#{new_resource.new_name}\"" if new_resource.new_name
+          cmd << " -NewName \"#{new_resource.new_hostname}\"" if new_resource.new_hostname
           cmd << " -Force"
 
           converge_by("join Active Directory domain #{new_resource.domain_name}") do

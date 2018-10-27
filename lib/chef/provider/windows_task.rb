@@ -18,7 +18,7 @@
 
 require "chef/mixin/shell_out"
 require "rexml/document"
-require "iso8601"
+require "iso8601" if Chef::Platform.windows?
 require "chef/mixin/powershell_out"
 require "chef/provider"
 require "chef/util/path_helper"
@@ -570,7 +570,16 @@ class Chef
         def logon_type
           # Ref: https://msdn.microsoft.com/en-us/library/windows/desktop/aa383566(v=vs.85).aspx
           # if nothing is passed as logon_type the TASK_LOGON_SERVICE_ACCOUNT is getting set as default so using that for comparision.
-          new_resource.password.nil? ? TaskScheduler::TASK_LOGON_SERVICE_ACCOUNT : TaskScheduler::TASK_LOGON_PASSWORD
+          user_id = new_resource.user
+          if Chef::ReservedNames::Win32::Security::SID.service_account_user?(user_id)
+            TaskScheduler::TASK_LOGON_SERVICE_ACCOUNT
+          elsif Chef::ReservedNames::Win32::Security::SID.group_user?(user_id)
+            TaskScheduler::TASK_LOGON_GROUP
+          elsif !new_resource.password.to_s.empty? # password is present
+            TaskScheduler::TASK_LOGON_PASSWORD
+          else
+            TaskScheduler::TASK_LOGON_INTERACTIVE_TOKEN
+          end
         end
 
         # This method checks if task and command properties exist since those two are mandatory properties to create a schedules task.

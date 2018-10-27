@@ -7,13 +7,16 @@ source "https://rubygems.org"
 # of bundler versions prior to 1.12.0 (https://github.com/bundler/bundler/commit/193a14fe5e0d56294c7b370a0e59f93b2c216eed)
 gem "chef", path: "."
 
+# necessary until we release ohai 15
+gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
+
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
 gem "cheffish", "~> 14"
 
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core", "~> 2"
+  gem "inspec-core", "~> 3"
   gem "chef-vault"
 end
 
@@ -47,12 +50,14 @@ group(:ruby_shadow) do
 end
 
 group(:development, :test) do
-  gem "rake"
+  # we pin rake as a copy of rake is installed from the ruby source
+  # if you bump the ruby version you should confirm we don't end up with
+  # two rake gems installed again
+  gem "rake", "<= 12.3.0"
   gem "simplecov"
   gem "webmock"
 
   # for testing new chefstyle rules
-  # gem 'chefstyle', github: 'chef/chefstyle'
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
 

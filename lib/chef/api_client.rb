@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -110,7 +110,7 @@ class Chef
     # Private key is included if available.
     #
     # @return [Hash]
-    def to_hash
+    def to_h
       result = {
         "name" => @name,
         "public_key" => @public_key,
@@ -123,11 +123,13 @@ class Chef
       result
     end
 
+    alias_method :to_hash, :to_h
+
     # The JSON representation of the object.
     #
     # @return [String] the JSON string.
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def self.from_hash(o)

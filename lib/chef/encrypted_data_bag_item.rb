@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -84,9 +84,11 @@ class Chef::EncryptedDataBagItem
     raise ArgumentError, "assignment not supported for #{self.class}"
   end
 
-  def to_hash
+  def to_h
     @enc_hash.keys.inject({}) { |hash, key| hash[key] = self[key]; hash }
   end
+
+  alias_method :to_hash, :to_h
 
   def self.encrypt_data_bag_item(plain_hash, secret)
     plain_hash.inject({}) do |h, (key, val)|

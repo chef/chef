@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,7 +57,7 @@ EOF
           exit 1
         end
 
-        original_user = Chef::UserV1.load(@user_name).to_hash
+        original_user = Chef::UserV1.load(@user_name).to_h
         # DEPRECATION NOTE
         # Remove this if statement and corrosponding code post OSC 11 support.
         #

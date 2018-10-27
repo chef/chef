@@ -24,10 +24,9 @@ class Chef
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      preview_resource true
       resource_name :openssl_ec_public_key
 
-      description "Use the openssl_ec_public_key resource to generate elliptic curve (EC) public key files given a private key."
+      description "Use the openssl_ec_public_key resource to generate elliptic curve (EC) public key files from a given EC private key."
       introduced "14.4"
 
       property :path, String,
@@ -38,7 +37,7 @@ class Chef
                description: "The path to the private key file."
 
       property :private_key_content, String,
-               description: "The content of the private key including new lines. This property is used in place of private_key_path to avoid having to first write a key to disk."
+               description: "The content of the private key including new lines. This property is used in place of private_key_path in instances where you want to avoid having to first write the private key to disk"
 
       property :private_key_pass, String,
                description: "The passphrase of the provided private key."

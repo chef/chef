@@ -93,7 +93,6 @@ class Chef
         end
 
         assert_environment_valid!
-        warn_about_cookbook_shadowing
         version_constraints_to_update = {}
         upload_failures = 0
         upload_ok = 0
@@ -103,7 +102,7 @@ class Chef
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
         justify_width = @server_side_cookbooks.map { |name| name.size }.max.to_i + 2
         if config[:all]
-          cookbook_repo.load_cookbooks_without_shadow_warning
+          cookbook_repo.load_cookbooks
           cookbooks_for_upload = []
           cookbook_repo.each do |cookbook_name, cookbook|
             cookbooks_for_upload << cookbook
@@ -164,7 +163,7 @@ class Chef
       def cookbooks_to_upload
         @cookbooks_to_upload ||=
           if config[:all]
-            cookbook_repo.load_cookbooks_without_shadow_warning
+            cookbook_repo.load_cookbooks
           else
             upload_set = {}
             @name_args.each do |cookbook_name|
@@ -200,26 +199,6 @@ class Chef
 
       def environment
         @environment ||= config[:environment] ? Environment.load(config[:environment]) : nil
-      end
-
-      def warn_about_cookbook_shadowing
-        # because cookbooks are lazy-loaded, we have to force the loader
-        # to load the cookbooks the user intends to upload here:
-        cookbooks_to_upload
-
-        unless cookbook_repo.merged_cookbooks.empty?
-          ui.warn "* " * 40
-          ui.warn(<<~WARNING)
-            The cookbooks: #{cookbook_repo.merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path.
-            A composite version of these cookbooks has been compiled for uploading.
-
-            #{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this behavior will be removed and you will no longer
-            be able to have the same version of a cookbook in multiple places in your cookbook_path.
-WARNING
-          ui.warn "The affected cookbooks are located:"
-          ui.output ui.format_for_display(cookbook_repo.merged_cookbook_paths)
-          ui.warn "* " * 40
-        end
       end
 
       private

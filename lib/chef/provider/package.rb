@@ -361,9 +361,14 @@ class Chef
       #
       # By default, this function will use Gem::Version comparison. Subclasses can reimplement this method
       # for package-management system specific versions.
+      #
+      # (In other words, pull requests to introduce domain specific mangling of versions into this method
+      # will be closed -- that logic must go into the subclass -- we understand that this is far from perfect
+      # but it is a better default than outright buggy things like v1.to_f <=> v2.to_f)
+      #
       def version_compare(v1, v2)
-        gem_v1 = Gem::Version.new(v1)
-        gem_v2 = Gem::Version.new(v2)
+        gem_v1 = Gem::Version.new(v1.gsub(/\A\s*(#{Gem::Version::VERSION_PATTERN}).*/, '\1'))
+        gem_v2 = Gem::Version.new(v2.gsub(/\A\s*(#{Gem::Version::VERSION_PATTERN}).*/, '\1'))
 
         gem_v1 <=> gem_v2
       end
@@ -491,7 +496,7 @@ class Chef
                 elsif current_version.nil?
                   logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
                   target_version_array.push(candidate_version)
-                elsif version_compare(current_version, candidate_version) == 1 && !allow_downgrade
+                elsif !allow_downgrade && version_compare(current_version, candidate_version) == 1
                   logger.trace("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{candidate_version}. Skipping...)")
                   target_version_array.push(nil)
                 else
@@ -666,16 +671,8 @@ class Chef
         if new_resource.respond_to?("allow_downgrade")
           new_resource.allow_downgrade
         else
-          false
+          true
         end
-      end
-
-      def shell_out_with_timeout(*command_args)
-        shell_out_compact_timeout(*command_args)
-      end
-
-      def shell_out_with_timeout!(*command_args)
-        shell_out_compact_timeout!(*command_args)
       end
     end
   end

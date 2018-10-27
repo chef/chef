@@ -21,7 +21,6 @@ require "shellwords"
 class Chef
   class Resource
     class CronD < Chef::Resource
-      preview_resource true
       resource_name :cron_d
 
       introduced "14.4"

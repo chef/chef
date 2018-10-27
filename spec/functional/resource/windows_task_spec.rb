@@ -1571,7 +1571,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "raises error" do
         subject.user "Administrator"
         subject.frequency :onstart
-        expect { subject.after_created }.to raise_error(%q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', 'USERS'})
+        expect { subject.after_created }.to raise_error(%q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'SYSTEM', 'NT AUTHORITY\SYSTEM', 'LOCAL SERVICE', 'NT AUTHORITY\LOCAL SERVICE', 'NETWORK SERVICE', 'NT AUTHORITY\NETWORK SERVICE', 'ADMINISTRATORS', 'BUILTIN\ADMINISTRATORS', 'USERS', 'BUILTIN\USERS', 'GUESTS', 'BUILTIN\GUESTS'})
       end
     end
 

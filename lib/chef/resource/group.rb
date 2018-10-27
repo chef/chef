@@ -36,7 +36,7 @@ class Chef
 
       property :members, [String, Array], default: lazy { [] },
                coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
-               description: "Which users should be set or appended to a group. This can be either an array or a comma separated list."
+               description: "Which users should be set or appended to a group. When more than one group member is identified, the list of members should be an array: members ['user1', 'user2']."
 
       property :excluded_members, [String, Array], default: lazy { [] },
                coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
@@ -46,7 +46,7 @@ class Chef
                description: "How members should be appended and/or removed from a group. When true, members are appended and excluded_members are removed. When false, group members are reset to the value of the members property."
 
       property :system, [ TrueClass, FalseClass ], default: false,
-               description: "Sets the group to belong to the system group."
+               description: "Set if a group belongs to a system group. Set to true if the group belongs to a system group."
 
       property :non_unique, [ TrueClass, FalseClass ], default: false,
                description: "Allow gid duplication. May only be used with the Groupadd provider."

@@ -32,8 +32,8 @@ describe Chef::HTTP::Simple do
 
   before(:each) do
     Chef::Config[:rest_timeout] = 2
-    Chef::Config[:http_retry_delay] = 0
-    Chef::Config[:http_retry_count] = 0
+    Chef::Config[:http_retry_delay] = 1
+    Chef::Config[:http_retry_count] = 2
   end
 
   after(:all) do

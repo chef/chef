@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +43,7 @@ class Chef
           exit 1
         end
 
-        original_user = Chef::User.load(@user_name).to_hash
+        original_user = Chef::User.load(@user_name).to_h
         edited_user = edit_hash(original_user)
         if original_user != edited_user
           user = Chef::User.from_hash(edited_user)

@@ -24,11 +24,6 @@ describe Chef::Resource::KernelModule do
     expect(resource.resource_name).to eql(:kernel_module)
   end
 
-  it "is not a preview resource in Chef 15" do
-    pending("Chef 15") unless Chef::VERSION.start_with?("15")
-    expect(resource.class.preview_resource).to be_falsey
-  end
-
   it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
   end

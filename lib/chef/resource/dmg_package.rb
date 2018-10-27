@@ -75,7 +75,7 @@ class Chef
                default: nil
 
       property :allow_untrusted, [TrueClass, FalseClass],
-               description: "Allows packages with untrusted certs to be installed.",
+               description: "Allow installation of packages that do not have trusted certificates.",
                default: false
 
       load_current_value do |new_resource|

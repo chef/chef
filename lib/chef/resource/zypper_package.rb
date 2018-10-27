@@ -34,6 +34,11 @@ class Chef
       property :allow_downgrade, [ TrueClass, FalseClass ],
                description: "Allow downgrading a package to satisfy requested version requirements.",
                default: false, introduced: "13.6"
+
+      property :global_options, [ String, Array ],
+               description: "One (or more) additional options that are passed to the package resource other than options to the command.",
+               coerce: proc { |x| x.is_a?(String) ? x.shellsplit : x },
+               introduced: "14.6"
     end
   end
 end

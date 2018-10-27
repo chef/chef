@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software, Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,7 @@ class Chef
                       raw = Chef::EncryptedDataBagItem.load(@name_args[0],
                                                             @name_args[1],
                                                             secret)
-                      format_for_display(raw.to_hash)
+                      format_for_display(raw.to_h)
                     elsif encrypted && !secret
                       ui.warn("Encrypted data bag detected, but no secret provided for decoding. Displaying encrypted data.")
                       format_for_display(raw_data)
