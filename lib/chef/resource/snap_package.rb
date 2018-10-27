@@ -29,7 +29,7 @@ class Chef
       property :channel, String,
                description: "The default channel. For example: stable.",
                default: "stable",
-               equal_to: ["edge", "beta", "candidate", "stable"],
+               equal_to: %w{edge beta candidate stable},
                desired_state: false
     end
   end

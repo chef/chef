@@ -61,7 +61,7 @@ describe Chef::Provider::Package::Snap do
   describe "#define_resource_requirements" do
 
     before do
-      allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with('GET', "/v2/snaps/#{package}").and_return(get_by_name_result_success)
+      allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/snaps/#{package}").and_return(get_by_name_result_success)
     end
 
     it "should raise an exception if a source is supplied but not found when :install" do
@@ -79,7 +79,7 @@ describe Chef::Provider::Package::Snap do
     let(:source) { "/tmp/hello_20.snap" }
 
     before do
-      allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with('GET', "/v2/snaps/#{package}").and_return(get_by_name_result_success)
+      allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/snaps/#{package}").and_return(get_by_name_result_success)
     end
 
     it "should create a current resource with the name of the new_resource" do
@@ -100,7 +100,7 @@ describe Chef::Provider::Package::Snap do
         check_version("2.10")
       end
 
-      it 'generates multipart form data' do
+      it "generates multipart form data" do
         expected = <<~SNAP_S
           Host:
           Content-Type: multipart/form-data; boundary=foo
@@ -121,12 +121,12 @@ describe Chef::Provider::Package::Snap do
           --foo
         SNAP_S
 
-        options = {"devmode" => true}
+        options = {}
+        options["devmode"] = true
         path = "hello-world_27.snap"
         content_length = "20480"
 
         result = provider.send(:generate_multipart_form_data, "foo", "install", options, path, content_length)
-puts result
 
         expect(result).to eq(expected)
 
@@ -139,8 +139,8 @@ puts result
     let(:source) { nil }
     describe "gets the candidate version from the snap store" do
       before do
-        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with('GET', "/v2/find?name=#{package}").and_return(find_result_success)
-        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with('GET', "/v2/snaps/#{package}").and_return(get_by_name_result_success)
+        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/find?name=#{package}").and_return(find_result_success)
+        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/snaps/#{package}").and_return(get_by_name_result_success)
       end
 
       def check_version(version)
@@ -158,8 +158,8 @@ puts result
 
     describe "fails to get the candidate version from the snap store" do
       before do
-        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with('GET', "/v2/find?name=#{package}").and_return(find_result_fail)
-        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with('GET', "/v2/snaps/#{package}").and_return(get_by_name_result_fail)
+        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/find?name=#{package}").and_return(find_result_fail)
+        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/snaps/#{package}").and_return(get_by_name_result_fail)
       end
 
       it "throws an error if candidate version not found" do
@@ -201,7 +201,7 @@ puts result
       revision = nil
       actual = provider.send(:generate_snap_json, snap_names, action, channel, options, revision)
 
-      expect(actual).to eq({"action" => "install", "snaps" => ["hello"], "channel" => "stable"})
+      expect(actual).to eq("action" => "install", "snaps" => ["hello"], "channel" => "stable")
     end
 
   end

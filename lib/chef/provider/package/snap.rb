@@ -192,7 +192,7 @@ class Chef
               "args" => ["info", path,]
           }.to_json
 
-          #json = call_snap_api('POST', '/v2/snapctl', body)
+          # json = call_snap_api('POST', '/v2/snapctl', body)
           response = snapctl(["info", path])
           Chef::Log.trace(response)
           response.error!
@@ -204,7 +204,7 @@ class Chef
         end
 
         def install_snap_from_source(name, path)
-          #json = call_snap_api('POST', '/v2/snapctl', body)
+          # json = call_snap_api('POST', '/v2/snapctl', body)
           response = snapctl(["install", path])
           Chef::Log.trace(response)
           response.error!
@@ -237,14 +237,10 @@ class Chef
         #   @param path [String] Path to the package on disk
         #   @param content_length [Integer] byte size of the snap file
         def generate_multipart_form_data(snap_name, action, options, path, content_length)
-
-          # Get the bytes of the file on disk
-          #content_length = IO.binread(path)
-
           snap_options = []
-          options.each do | k,v |
+          options.each do |k, v|
             snap_option = <<~SNAP_OPTION
-Content-Disposition: form-data; name="#{k}"
+  Content-Disposition: form-data; name="#{k}"
 
 #{v}
 --#{snap_name}
@@ -253,7 +249,7 @@ Content-Disposition: form-data; name="#{k}"
           end
 
           multipart_form_data = <<~SNAP_S
-Host:
+  Host:
 Content-Type: multipart/form-data; boundary=#{snap_name}
 Content-Length: #{content_length}
 
@@ -281,9 +277,9 @@ Content-Disposition: form-data; name="snap"; filename="#{path}"
         def generate_snap_json(snap_names, action, channel, options, revision = nil)
           request = {
               "action" => action,
-              "snaps" => snap_names
+              "snaps" => snap_names,
           }
-          if %w(install refresh switch).include?(action)
+          if %w{install refresh switch}.include?(action)
             request["channel"] = channel
           end
 
