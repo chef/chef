@@ -87,20 +87,21 @@ matrix:
       TEST_GEM: sethvargo/chef-sugar
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
     rvm: 2.5.3
-  - env:
-      - PEDANT_OPTS=--skip-oc_id
-      - TEST_GEM=chef/chef-zero
-      - CHEF_FS=true
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake pedant
-    rvm: 2.5.3
-  - env:
-      TEST_GEM: chef/cheffish
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
-    rvm: 2.5.3
-  - env:
-      TEST_GEM: chefspec/chefspec
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
-    rvm: 2.5.3
+  # pending the release of ohai 15
+  # - env:
+  #     - PEDANT_OPTS=--skip-oc_id
+  #     - TEST_GEM=chef/chef-zero
+  #     - CHEF_FS=true
+  #   script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake pedant
+  #   rvm: 2.5.3
+  # - env:
+  #     TEST_GEM: chef/cheffish
+  #   script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
+  #   rvm: 2.5.3
+  # - env:
+  #     TEST_GEM: chefspec/chefspec
+  #   script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
+  #   rvm: 2.5.3
   - env:
       TEST_GEM: poise/halite
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
