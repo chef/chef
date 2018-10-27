@@ -5,7 +5,12 @@ platform:
   - x64
 
 cache:
-- vendor/bundle
+  - vendor/bundle
+
+configuration:
+  - integration
+  - functional
+  - unit
 
 environment:
   matrix:
@@ -47,6 +52,7 @@ install:
   - SET BUNDLE_WITHOUT=server:docgen:maintenance:pry:travis:integration:ci
   - bundle config --local path vendor/bundle # use the cache we define above
   - bundle install || bundle install || bundle install
+  - SET SPEC_OPTS=--format progress
 
 build: off
 
@@ -56,6 +62,23 @@ before_test:
   - bundler --version
   - bundle env
 
-test_script:
-  - SET SPEC_OPTS=--format progress
-  - bundle exec rake spec
+for:
+  -
+    matrix:
+      only:
+        - configuration: integration
+    build_script:
+      - bundle exec rake spec:integration
+  -
+    matrix:
+      only:
+        - configuration: functional
+    build_script:
+      - bundle exec rake spec:functional
+  -
+    matrix:
+      only:
+        - configuration: unit
+    build_script:
+      - bundle exec rake spec:unit
+      - bundle exec rake component_specs
