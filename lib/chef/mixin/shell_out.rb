@@ -75,7 +75,9 @@ class Chef
         # historically resources have not properly declared defaults on their timeouts, so a default default of 900s was enforced here
         default_val = 900
         return options if options.key?(:timeout)
-        if obj.respond_to?(:new_resource) && obj.new_resource.respond_to?(:timeout) && !options.key?(:timeout)
+        # FIXME: need to nuke descendents tracker out of Chef::Provider so we can just define that class here without requiring the
+        # world, and then just use symbol lookup
+        if obj.class.ancestors.map(&:name).include?("Chef::Provider") && obj.respond_to?(:new_resource) && obj.new_resource.respond_to?(:timeout) && !options.key?(:timeout)
           options[:timeout] = obj.new_resource.timeout ? obj.new_resource.timeout.to_f : default_val
         end
         options
