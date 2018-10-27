@@ -25,7 +25,7 @@ class Chef
       preview_resource true
       resource_name :timezone
 
-      description "Use the timezone resource to change the system timezone."
+      description "Use the timezone resource to change the system timezone on Linux and macOS hosts. Timezones are specified in tz database format, with a complete list of available TZ values here https://en.wikipedia.org/wiki/List_of_tz_database_time_zones."
       introduced "14.6"
 
       property :timezone, String,
@@ -35,12 +35,15 @@ class Chef
       action :set do
         description "Set the timezone."
 
-        package "tzdata" do
-          package_name platform_family?("suse") ? "timezone" : "tzdata"
+        # some linux systems may be missing the timezone data
+        if node["os"] == "linux"
+          package "tzdata" do
+            package_name platform_family?("suse") ? "timezone" : "tzdata"
+          end
         end
 
+        # Modern Amazon, Fedora, RHEL, Ubuntu & Debian
         if node["init_package"] == "systemd"
-          # Modern Amazon, Fedora, CentOS, RHEL, Ubuntu & Debian
           cmd_set_tz = "/usr/bin/timedatectl --no-ask-password set-timezone #{new_resource.timezone}"
 
           cmd_check_if_set = "/usr/bin/timedatectl status"
@@ -51,38 +54,63 @@ class Chef
             action :run
             not_if cmd_check_if_set
           end
-        elsif platform_family?("rhel", "amazon")
-          # Old version of RHEL & CentOS
-          file "/etc/sysconfig/clock" do
-            owner "root"
-            group "root"
-            mode "0644"
-            action :create
-            content %{ZONE="#{new_resource.timezone}"\nUTC="true"\n}
-          end
+        else
+          case node["platform_family"]
+          # Old version of RHEL < 7 and Amazon 201X
+          when "rhel", "amazon"
+            file "/etc/sysconfig/clock" do
+              owner "root"
+              group "root"
+              mode "0644"
+              action :create
+              content %{ZONE="#{new_resource.timezone}"\nUTC="true"\n}
+            end
 
-          execute "tzdata-update" do
-            command "/usr/sbin/tzdata-update"
-            action :nothing
-            only_if { ::File.executable?("/usr/sbin/tzdata-update") }
-            subscribes :run, "file[/etc/sysconfig/clock]", :immediately
-          end
+            execute "tzdata-update" do
+              command "/usr/sbin/tzdata-update"
+              action :nothing
+              only_if { ::File.executable?("/usr/sbin/tzdata-update") }
+              subscribes :run, "file[/etc/sysconfig/clock]", :immediately
+            end
 
-          link "/etc/localtime" do
-            to "/usr/share/zoneinfo/#{new_resource.timezone}"
-            not_if { ::File.executable?("/usr/sbin/tzdata-update") }
-          end
-        elsif platform_family?("debian")
-          file "/etc/timezone" do
-            action :create
-            content "#{new_resource.timezone}\n"
-          end
+            link "/etc/localtime" do
+              to "/usr/share/zoneinfo/#{new_resource.timezone}"
+              not_if { ::File.executable?("/usr/sbin/tzdata-update") }
+            end
+          # debian < 8 and Ubuntu < 16.04
+          when "debian"
+            file "/etc/timezone" do
+              action :create
+              content "#{new_resource.timezone}\n"
+            end
 
-          bash "dpkg-reconfigure tzdata" do
-            user "root"
-            code "/usr/sbin/dpkg-reconfigure -f noninteractive tzdata"
-            action :nothing
-            subscribes :run, "file[/etc/timezone]", :immediately
+            bash "dpkg-reconfigure tzdata" do
+              user "root"
+              code "/usr/sbin/dpkg-reconfigure -f noninteractive tzdata"
+              action :nothing
+              subscribes :run, "file[/etc/timezone]", :immediately
+            end
+          when "mac_os_x"
+            unless current_darwin_tz == new_resource.timezone
+              converge_by("set timezone to #{new_resource.timezone}") do
+                shell_out!("sudo systemsetup -settimezone #{new_resource.timezone}")
+              end
+            end
+          end
+        end
+      end
+
+      action_class do
+        # detect the current TZ on darwin hosts
+        #
+        # @since 14.7
+        # @return [String] TZ database value
+        def current_darwin_tz
+          tz_shellout = shell_out!("systemsetup -gettimezone")
+          if /You need administrator access/.match?(tz_shellout.stdout)
+            raise "The timezone resource requires adminstrative priveleges to run on macOS hosts!"
+          else
+            /Time Zone: (.*)/.match(tz_shellout.stdout)[1]
           end
         end
       end
