@@ -13,7 +13,7 @@ git_thing = ARGV.shift
 
 build_dir = File.expand_path(ENV["TRAVIS_BUILD_DIR"] || Dir.pwd)
 
-env = { "GEMFILE_MOD" => "gem 'chef', path: '#{build_dir}'" }
+env = { "GEMFILE_MOD" => "gem 'chef', path: '#{build_dir}'; gem 'ohai', git: 'https://github.com/chef/ohai.git', branch: 'master'" }
 
 Dir.mktmpdir("chef-external-test") do |dir|
   git_url = "https://github.com/#{github_repo}"
