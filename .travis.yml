@@ -1,6 +1,5 @@
 language: ruby
 cache: bundler
-dist: trusty
 
 # Early warning system to catch if Rubygems breaks something
 before_install:
@@ -36,30 +35,35 @@ matrix:
   include:
   - env:
       INTEGRATION_SPECS_24: 1
+    os: linux
     rvm: 2.4.5
     sudo: true
     script: sudo -E $(which bundle) exec rake spec:integration;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
       INTEGRATION_SPECS_25: 1
+    os: linux
     rvm: 2.5.3
     sudo: true
     script: sudo -E $(which bundle) exec rake spec:integration;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
       FUNCTIONAL_SPECS_24: 1
+    os: linux
     rvm: 2.4.5
     sudo: true
     script: sudo -E $(which bundle) exec rake spec:functional;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
       FUNCTIONAL_SPECS_25: 1
+    os: linux
     rvm: 2.5.3
     sudo: true
     script: sudo -E $(which bundle) exec rake spec:functional;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
       UNIT_SPECS_24: 1
+    os: linux
     rvm: 2.4.5
     sudo: true
     script:
@@ -67,7 +71,8 @@ matrix:
       - sudo -E $(which bundle) exec rake component_specs
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
-      UNIT_SPECS_25: 1
+      UNIT_SPECS_25_LINUX: 1
+    os: linux
     rvm: 2.5.3
     sudo: true
     script:
@@ -75,7 +80,15 @@ matrix:
       - sudo -E $(which bundle) exec rake component_specs
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
+      UNIT_SPECS_25_WINDOWS: 1
+    os: windows
+    script:
+      - sudo -E $(which bundle) exec rake spec:unit;
+      - sudo -E $(which bundle) exec rake component_specs
+    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
+  - env:
       CHEFSTYLE: 1
+    os: linux
     rvm: 2.5.3
     script: bundle exec rake style
     # also remove integration / external tests
@@ -85,28 +98,34 @@ matrix:
   #
   - env:
       TEST_GEM: sethvargo/chef-sugar
+    os: linux
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
     rvm: 2.5.3
   - env:
       - PEDANT_OPTS=--skip-oc_id
       - TEST_GEM=chef/chef-zero
       - CHEF_FS=true
+    os: linux
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake pedant
     rvm: 2.5.3
   - env:
       TEST_GEM: chef/cheffish
+    os: linux
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
     rvm: 2.5.3
   - env:
       TEST_GEM: chefspec/chefspec
+    os: linux
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
     rvm: 2.5.3
   - env:
       TEST_GEM: poise/halite
+    os: linux
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
     rvm: 2.5.3
   - env:
       TEST_GEM: chef/knife-windows
+    os: linux
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
     rvm: 2.5.3
   # disable this pending a Chef 14 compat version of poise
@@ -116,6 +135,7 @@ matrix:
   #   rvm: 2.5.3
   ### START TEST KITCHEN ONLY ###
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -133,6 +153,7 @@ matrix:
       - AMAZON=2
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -150,6 +171,7 @@ matrix:
       - AMAZON=201X
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -167,6 +189,7 @@ matrix:
       - UBUNTU=14.04
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -184,6 +207,7 @@ matrix:
       - UBUNTU=16.04
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -201,6 +225,7 @@ matrix:
       - UBUNTU=18.04
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -218,6 +243,7 @@ matrix:
       - DEBIAN=8
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -235,6 +261,7 @@ matrix:
       - DEBIAN=9
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -252,6 +279,7 @@ matrix:
       - CENTOS=6
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -269,6 +297,7 @@ matrix:
       - CENTOS=7
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -286,6 +315,7 @@ matrix:
       - FEDORA=latest
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -303,6 +333,7 @@ matrix:
      - OPENSUSELEAP=42
      - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     sudo: required
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -324,6 +355,7 @@ matrix:
   # Use test-kitchen to launch a centos docker container to run the full rspec tests against.  This catches
   # errors in travis, before PRs are merged, hopefully before they become errors in jenkins.
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -341,6 +373,7 @@ matrix:
       - RSPEC_CENTOS=7
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
+    os: linux
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
