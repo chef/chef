@@ -32,9 +32,6 @@ class Chef
         allow_nils
         use_multipackage_api
 
-        # Todo: support non-debian platforms
-        provides :package, platform_family: "debian"
-
         provides :snap_package
 
         def load_current_resource
@@ -47,7 +44,7 @@ class Chef
 
         def define_resource_requirements
           requirements.assert(:install, :upgrade, :remove, :purge) do |a|
-            a.assertion {!new_resource.source || ::File.exist?(new_resource.source)}
+            a.assertion { !new_resource.source || ::File.exist?(new_resource.source) }
             a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
             a.whyrun "assuming #{new_resource.source} would have previously been created"
           end
@@ -71,7 +68,7 @@ class Chef
           if new_resource.source
             install_snap_from_source(names, new_resource.source)
           else
-            resolved_names = names.each_with_index.map {|name, i| available_version(i).to_s unless name.nil?}
+            resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
             install_snaps(resolved_names)
           end
         end
@@ -80,13 +77,13 @@ class Chef
           if new_resource.source
             install_snap_from_source(names, new_resource.source)
           else
-            resolved_names = names.each_with_index.map {|name, i| available_version(i).to_s unless name.nil?}
+            resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
             update_snaps(resolved_names)
           end
         end
 
         def remove_package(names, versions)
-          resolved_names = names.each_with_index.map {|name, i| installed_version(i).to_s unless name.nil?}
+          resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }
           uninstall_snaps(resolved_names)
         end
 
@@ -118,7 +115,7 @@ class Chef
           if new_resource.version.is_a?(Array)
             new_resource.version
           elsif new_resource.version.nil?
-            package_name_array.map {nil}
+            package_name_array.map { nil }
           else
             [new_resource.version]
           end
@@ -283,6 +280,10 @@ class Chef
 
         def get_installed_packages
           json = call_snap_api('GET', '/v2/snaps')
+          # We only allow 200 or 404s
+          unless [200, 404].include? json["status-code"]
+            raise Chef::Exceptions::Package, json["result"], caller
+          end
           json['result']
         end
 
