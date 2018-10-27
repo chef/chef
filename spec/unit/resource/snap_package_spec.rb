@@ -48,7 +48,6 @@ describe Chef::Resource::SnapPackage, "initialize" do
   end
 
   it "channel defaults to stable" do
-    "#{resource.channel("stable")}" # the default
     expect(resource.channel).to eql("stable")
   end
 
