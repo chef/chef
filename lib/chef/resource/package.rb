@@ -61,7 +61,7 @@ class Chef
                default: lazy { Hash.new }, desired_state: false
 
       property :source, String,
-               description: "The direct path to a the package on the host.",
+               description: "The direct path to a package on the host.",
                desired_state: false
 
       property :timeout, [ String, Integer ],
