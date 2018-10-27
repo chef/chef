@@ -20,6 +20,7 @@ require "chef/dsl/reboot_pending"
 require "chef/log"
 require "chef/platform"
 require "chef/application/exit_code"
+require "chef/mixin/shell_out"
 
 class Chef
   class Platform
