@@ -26,7 +26,6 @@ class Chef
   class Provider
     class Package
       class Snap < Chef::Provider::Package
-        extend Chef::Mixin::Which
         extend Chef::Mixin::ShellOut
 
         allow_nils
@@ -299,6 +298,10 @@ class Chef
 
         def get_installed_package_by_name(name)
           json = call_snap_api('GET', "/v2/snaps/#{name}")
+          # We only allow 200 or 404s
+          unless [200, 404].include? json["status-code"]
+            raise Chef::Exceptions::Package, json["result"], caller
+          end
           json['result']
         end
 
