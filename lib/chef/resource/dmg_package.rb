@@ -94,8 +94,7 @@ class Chef
           dmg_name = new_resource.dmg_name ? new_resource.dmg_name : new_resource.app
 
           if new_resource.source
-            declare_resource(:remote_file, "#{dmg_file} - #{new_resource.name}") do
-              path dmg_file
+            remote_file dmg_file do
               source new_resource.source
               headers new_resource.headers if new_resource.headers
               checksum new_resource.checksum if new_resource.checksum
