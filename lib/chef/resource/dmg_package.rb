@@ -106,12 +106,12 @@ class Chef
           ruby_block "attach #{dmg_file}" do
             block do
               # example hdiutil imageinfo output: http://rubular.com/r/0xvOaA6d8B
-              software_license_agreement = /Software License Agreement: true/.match?(shell_out!("hdiutil imageinfo #{passphrase_cmd} '#{dmg_file}'").stdout)
+              software_license_agreement = /Software License Agreement: true/.match?(shell_out!("/usr/bin/hdiutil imageinfo #{passphrase_cmd} '#{dmg_file}'").stdout)
               raise "Requires EULA Acceptance; add 'accept_eula true' to dmg_package resource" if software_license_agreement && !new_resource.accept_eula
               accept_eula_cmd = new_resource.accept_eula ? "echo Y | PAGER=true" : ""
-              shell_out!("#{accept_eula_cmd} hdiutil attach #{passphrase_cmd} '#{dmg_file}' -mountpoint '/Volumes/#{volumes_dir}' -quiet")
+              shell_out!("#{accept_eula_cmd} /usr/bin/hdiutil attach #{passphrase_cmd} '#{dmg_file}' -nobrowse -mountpoint '/Volumes/#{volumes_dir}' -quiet")
             end
-            not_if "hdiutil info #{passphrase_cmd} | grep -q 'image-path.*#{dmg_file}'"
+            not_if "/usr/bin/hdiutil info #{passphrase_cmd} | grep -q 'image-path.*#{dmg_file}'"
           end
 
           case new_resource.type
@@ -134,7 +134,7 @@ class Chef
             end
           end
 
-          execute "hdiutil detach '/Volumes/#{volumes_dir}' || hdiutil detach '/Volumes/#{volumes_dir}' -force"
+          execute "/usr/bin/hdiutil detach '/Volumes/#{volumes_dir}' || /usr/bin/hdiutil detach '/Volumes/#{volumes_dir}' -force"
         end
       end
 
