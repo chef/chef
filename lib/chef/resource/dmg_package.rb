@@ -57,9 +57,6 @@ class Chef
                equal_to: %w{app pkg mpkg},
                default: "app"
 
-      property :installed, [TrueClass, FalseClass],
-               default: false, desired_state: false
-
       property :package_id, String,
                description: "The package id registered with pkgutil when a pkg or mpkg is installed"
 
@@ -81,20 +78,17 @@ class Chef
       load_current_value do |new_resource|
         if ::File.directory?("#{new_resource.destination}/#{new_resource.app}.app")
           Chef::Log.info "Already installed; to upgrade, remove \"#{new_resource.destination}/#{new_resource.app}.app\""
-          installed true
         elsif shell_out("pkgutil --pkgs='#{new_resource.package_id}'").exitstatus == 0
           Chef::Log.info "Already installed; to upgrade, try \"sudo pkgutil --forget '#{new_resource.package_id}'\""
-          installed true
         else
-          installed false
+          current_value_does_not_exist! # allows us to check for current_resource.nil? below
         end
       end
 
       action :install do
         description "Installs the application."
 
-        unless current_resource.installed
-
+        if current_resource.nil?
           volumes_dir = new_resource.volumes_dir ? new_resource.volumes_dir : new_resource.app
           dmg_name = new_resource.dmg_name ? new_resource.dmg_name : new_resource.app
 
