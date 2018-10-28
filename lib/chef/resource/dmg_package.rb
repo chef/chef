@@ -116,11 +116,11 @@ class Chef
 
           case new_resource.type
           when "app"
-            declare_resource(:execute, "rsync --force --recursive --links --perms --executability --owner --group --times '/Volumes/#{volumes_dir}/#{new_resource.app}.app' '#{new_resource.destination}'") do
+            execute "rsync --force --recursive --links --perms --executability --owner --group --times '/Volumes/#{volumes_dir}/#{new_resource.app}.app' '#{new_resource.destination}'" do
               user new_resource.owner if new_resource.owner
             end
 
-            declare_resource(:file, "#{new_resource.destination}/#{new_resource.app}.app/Contents/MacOS/#{new_resource.app}") do
+            file "#{new_resource.destination}/#{new_resource.app}.app/Contents/MacOS/#{new_resource.app}" do
               mode "755"
               ignore_failure true
             end
@@ -128,17 +128,18 @@ class Chef
             install_cmd = "installation_file=$(ls '/Volumes/#{volumes_dir}' | grep '.#{new_resource.type}$') && sudo installer -pkg \"/Volumes/#{volumes_dir}/$installation_file\" -target /"
             install_cmd += " -allowUntrusted" if new_resource.allow_untrusted
 
-            declare_resource(:execute, install_cmd) do
+            execute install_cmd do
               # Prevent cfprefsd from holding up hdiutil detach for certain disk images
               environment("__CFPREFERENCES_AVOID_DAEMON" => "1")
             end
           end
 
-          declare_resource(:execute, "hdiutil detach '/Volumes/#{volumes_dir}' || hdiutil detach '/Volumes/#{volumes_dir}' -force")
+          execute "hdiutil detach '/Volumes/#{volumes_dir}' || hdiutil detach '/Volumes/#{volumes_dir}' -force"
         end
       end
 
       action_class do
+        # @return [String] the path to the dmg file
         def dmg_file
           @dmg_file ||= begin
             if new_resource.file.nil?
