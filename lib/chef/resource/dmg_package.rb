@@ -105,9 +105,9 @@ class Chef
           passphrase_cmd = new_resource.dmg_passphrase ? "-passphrase #{new_resource.dmg_passphrase}" : ""
           ruby_block "attach #{dmg_file}" do
             block do
-              cmd = shell_out("hdiutil imageinfo #{passphrase_cmd} '#{dmg_file}' | grep -q 'Software License Agreement: true'")
-              software_license_agreement = cmd.exitstatus == 0
-              raise "Requires EULA Acceptance; add 'accept_eula true' to package resource" if software_license_agreement && !new_resource.accept_eula
+              # example hdiutil imageinfo output: http://rubular.com/r/0xvOaA6d8B
+              software_license_agreement = /Software License Agreement: true/.match?(shell_out!("hdiutil imageinfo #{passphrase_cmd} '#{dmg_file}'").stdout)
+              raise "Requires EULA Acceptance; add 'accept_eula true' to dmg_package resource" if software_license_agreement && !new_resource.accept_eula
               accept_eula_cmd = new_resource.accept_eula ? "echo Y | PAGER=true" : ""
               shell_out!("#{accept_eula_cmd} hdiutil attach #{passphrase_cmd} '#{dmg_file}' -mountpoint '/Volumes/#{volumes_dir}' -quiet")
             end
