@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2009-2017, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ class Chef
       allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable
 
       # this is a poor API please do not re-use this pattern
-      property :supports, Hash,
+      property :supports, [Array, Hash],
                description: "Specify a Hash of supported mount features.",
                default: lazy { { remount: false } },
                coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
