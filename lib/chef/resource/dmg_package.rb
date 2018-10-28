@@ -50,7 +50,9 @@ class Chef
                description: "The Directory under /Volumes where the dmg is mounted as not all dmgs are mounted into a /Volumes location matching the name of the dmg."
 
       property :dmg_name, String,
-               description: "The name of the dmg if it is not the same as app, or if the name has spaces."
+               description: "The name of the dmg if it is not the same as app, or if the name has spaces.",
+               desired_state: false,
+               default: lazy { |r| r.app }
 
       property :type, String,
                description: "The type of package.",
@@ -91,7 +93,6 @@ class Chef
 
         if current_resource.nil?
           volumes_dir = new_resource.volumes_dir ? new_resource.volumes_dir : new_resource.app
-          dmg_name = new_resource.dmg_name ? new_resource.dmg_name : new_resource.app
 
           if new_resource.source
             remote_file dmg_file do
