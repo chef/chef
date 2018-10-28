@@ -55,25 +55,26 @@ class Chef
       property :type, String,
                description: "The type of package.",
                equal_to: %w{app pkg mpkg},
-               default: "app"
+               default: "app", desired_state: false
 
       property :package_id, String,
                description: "The package id registered with pkgutil when a pkg or mpkg is installed."
 
       property :dmg_passphrase, String,
-               description: "Specify a passphrase to use to unencrypt the dmg while mounting."
+               description: "Specify a passphrase to use to unencrypt the dmg while mounting.",
+               desired_state: false
 
       property :accept_eula, [TrueClass, FalseClass],
                description: "Specify whether to accept the EULA. Certain dmgs require acceptance of EULA before mounting.",
-               default: false
+               default: false, desired_state: false
 
       property :headers, [Hash, nil],
                description: "Allows custom HTTP headers (like cookies) to be set on the remote_file resource.",
-               default: nil
+               default: nil, desired_state: false
 
       property :allow_untrusted, [TrueClass, FalseClass],
                description: "Allow installation of packages that do not have trusted certificates.",
-               default: false
+               default: false, desired_state: false
 
       load_current_value do |new_resource|
         if ::File.directory?("#{new_resource.destination}/#{new_resource.app}.app")
