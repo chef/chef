@@ -44,7 +44,7 @@ class Chef
                default: "/Applications"
 
       property :checksum, String,
-               description: "The sha256 checksum of the dmg to download"
+               description: "The sha256 checksum of the dmg to download."
 
       property :volumes_dir, String,
                description: "The Directory under /Volumes where the dmg is mounted as not all dmgs are mounted into a /Volumes location matching the name of the dmg."
@@ -58,7 +58,7 @@ class Chef
                default: "app"
 
       property :package_id, String,
-               description: "The package id registered with pkgutil when a pkg or mpkg is installed"
+               description: "The package id registered with pkgutil when a pkg or mpkg is installed."
 
       property :dmg_passphrase, String,
                description: "Specify a passphrase to use to unencrypt the dmg while mounting."
