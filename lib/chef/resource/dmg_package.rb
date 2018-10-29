@@ -71,9 +71,9 @@ class Chef
                description: "Specify whether to accept the EULA. Certain dmgs require acceptance of EULA before mounting.",
                default: false, desired_state: false
 
-      property :headers, [Hash, nil],
+      property :headers, Hash,
                description: "Allows custom HTTP headers (like cookies) to be set on the remote_file resource.",
-               default: nil, desired_state: false
+               desired_state: false
 
       property :allow_untrusted, [TrueClass, FalseClass],
                description: "Allow installation of packages that do not have trusted certificates.",
