@@ -121,26 +121,23 @@ matrix:
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
     rvm: 2.4.5
   ### START TEST KITCHEN ONLY ###
-  #
-  # Temporarily Disable Amazon Linux 2
-  #
-  # - rvm: 2.4.5
-  #   services: docker
-  #   sudo: required
-  #   gemfile: kitchen-tests/Gemfile
-  #   before_install:
-  #     - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-  #     - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
-  #   before_script:
-  #     - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-  #     - cd kitchen-tests
-  #   script:
-  #     - bundle exec kitchen test end-to-end-amazonlinux
-  #   after_failure:
-  #     - cat .kitchen/logs/kitchen.log
-  #   env:
-  #     - AMAZON=LATEST
-  #     - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.5
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-amazonlinux
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - AMAZON=201X
+      - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.4.5
     services: docker
     sudo: required
@@ -174,6 +171,23 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - UBUNTU=16.04
+      - KITCHEN_YAML=kitchen.travis.yml
+  - rvm: 2.4.5
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-ubuntu-1804
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - UBUNTU=18.04
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.4.5
     services: docker
@@ -277,40 +291,6 @@ matrix:
     env:
      - OPENSUSELEAP=42
      - KITCHEN_YAML=kitchen.travis.yml
-#  - rvm: 2.4.5
-#    services: docker
-#    sudo: required
-#    gemfile: kitchen-tests/Gemfile
-#    before_install:
-#      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-#      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
-#    before_script:
-#      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-#      - cd kitchen-tests
-#    script:
-#      - bundle exec kitchen test awesome-customers-ubuntu-ubuntu-1404
-#    after_failure:
-#      - cat .kitchen/logs/kitchen.log
-#    env:
-#      - AWESOME_CUSTOMERS_UBUNTU=1
-#      - KITCHEN_YAML=kitchen.travis.yml
-#  - rvm: 2.4.5
-#    services: docker
-#    sudo: required
-#    gemfile: kitchen-tests/Gemfile
-#    before_install:
-#      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-#      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
-#    before_script:
-#      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-#      - cd kitchen-tests
-#    script:
-#      - bundle exec kitchen test awesome-customers-rhel-centos-7
-#    after_failure:
-#      - cat .kitchen/logs/kitchen.log
-#    env:
-#      - AWESOME_CUSTOMERS_RHEL=1
-#      - KITCHEN_YAML=kitchen.travis.yml
 #    ### END TEST KITCHEN ONLY ###
   - rvm: 2.4.5
     sudo: required
