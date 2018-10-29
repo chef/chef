@@ -249,7 +249,7 @@ GEM
     rack (2.0.5)
     rainbow (2.2.2)
       rake
-    rake (12.3.0)
+    rake (12.0.0)
     rb-readline (0.5.5)
     rspec (3.7.0)
       rspec-core (~> 3.7.0)
@@ -392,7 +392,7 @@ DEPENDENCIES
   pry-byebug
   pry-remote
   pry-stack_explorer
-  rake (<= 12.3.0)
+  rake (<= 12.0.0)
   rb-readline
   ruby-prof
   ruby-shadow
@@ -403,4 +403,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.17.1
+   1.16.6
