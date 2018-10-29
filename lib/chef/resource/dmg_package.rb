@@ -148,7 +148,7 @@ class Chef
 
         # @return [String] the hdiutil flag for handling DMGs with a password
         def passphrase_cmd
-          new_resource.dmg_passphrase ? "-passphrase #{new_resource.dmg_passphrase}" : ""
+          @passphrase_cmd ||= new_resource.dmg_passphrase ? "-passphrase #{new_resource.dmg_passphrase}" : ""
         end
 
         # @return [Boolean] does the DMG require a software license agreement
