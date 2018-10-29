@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.12 -->
-## [v15.0.12](https://github.com/chef/chef/tree/v15.0.12) (2018-10-29)
+<!-- latest_release 15.0.13 -->
+## [v15.0.13](https://github.com/chef/chef/tree/v15.0.13) (2018-10-29)
 
 #### Merged Pull Requests
-- Remove deprecated support for FreeBSD pkg provider [#7789](https://github.com/chef/chef/pull/7789) ([tas50](https://github.com/tas50))
+- Refactor Cookbook loader logic now that we don&#39;t support merging [#7794](https://github.com/chef/chef/pull/7794) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Refactor Cookbook loader logic now that we don&#39;t support merging [#7794](https://github.com/chef/chef/pull/7794) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.13 -->
 - Remove deprecated support for FreeBSD pkg provider [#7789](https://github.com/chef/chef/pull/7789) ([tas50](https://github.com/tas50)) <!-- 15.0.12 -->
 - Multiple fixes to dmg_package [#7802](https://github.com/chef/chef/pull/7802) ([tas50](https://github.com/tas50)) <!-- 15.0.11 -->
 - Allow passing array to supports in mount again [#7803](https://github.com/chef/chef/pull/7803) ([tas50](https://github.com/tas50)) <!-- 15.0.10 -->
