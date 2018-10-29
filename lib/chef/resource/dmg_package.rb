@@ -104,8 +104,11 @@ class Chef
           ruby_block "attach #{dmg_file}" do
             block do
               raise "This DMG package requires EULA acceptance. Add 'accept_eula true' to dmg_package resource to accept the EULA during installation." if software_license_agreement? && !new_resource.accept_eula
-              accept_eula_cmd = new_resource.accept_eula ? "echo Y | echo Y | PAGER=true " : ""
-              shell_out!("#{accept_eula_cmd} /usr/bin/hdiutil attach #{passphrase_cmd} '#{dmg_file}' -nobrowse -mountpoint '/Volumes/#{new_resource.volumes_dir}' -quiet", env: { "PAGER" => "true" })
+
+              attach_cmd = new_resource.accept_eula ? "yes | " : ""
+              attach_cmd << "/usr/bin/hdiutil attach #{passphrase_cmd} '#{dmg_file}' -nobrowse -mountpoint '/Volumes/#{new_resource.volumes_dir}'"
+
+              shell_out!(attach_cmd, env: { "PAGER" => "true" })
             end
             not_if { dmg_attached? }
           end
