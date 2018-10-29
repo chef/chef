@@ -38,10 +38,10 @@ class Chef
                       :reload_or_try_restart
 
       # Internal provider-managed properties
-      property :enabled, [TrueClass, FalseClass]
-      property :active, [TrueClass, FalseClass]
-      property :masked, [TrueClass, FalseClass]
-      property :static, [TrueClass, FalseClass]
+      property :enabled, [TrueClass, FalseClass], skip_docs: true
+      property :active, [TrueClass, FalseClass], skip_docs: true
+      property :masked, [TrueClass, FalseClass], skip_docs: true
+      property :static, [TrueClass, FalseClass], skip_docs: true
 
       # User-provided properties
       property :user, String, desired_state: false
