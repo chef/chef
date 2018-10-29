@@ -81,9 +81,9 @@ class Chef
 
       load_current_value do |new_resource|
         if ::File.directory?("#{new_resource.destination}/#{new_resource.app}.app")
-          Chef::Log.info "Already installed; to upgrade, remove \"#{new_resource.destination}/#{new_resource.app}.app\""
-        elsif shell_out("pkgutil --pkgs='#{new_resource.package_id}'").exitstatus == 0
-          Chef::Log.info "Already installed; to upgrade, try \"sudo pkgutil --forget '#{new_resource.package_id}'\""
+          Chef::Log.info "#{new_resource.app} is already installed. To upgrade, remove \"#{new_resource.destination}/#{new_resource.app}.app\""
+        elsif shell_out("pkgutil --pkg-info '#{new_resource.package_id}'").exitstatus == 0
+          Chef::Log.info "#{new_resource.app} is already installed. To upgrade, try \"sudo pkgutil --forget '#{new_resource.package_id}'\""
         else
           current_value_does_not_exist! # allows us to check for current_resource.nil? below
         end
