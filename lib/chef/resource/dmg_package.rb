@@ -107,7 +107,7 @@ class Chef
               accept_eula_cmd = new_resource.accept_eula ? "echo Y | echo Y | PAGER=true " : ""
               shell_out!("#{accept_eula_cmd} /usr/bin/hdiutil attach #{passphrase_cmd} '#{dmg_file}' -nobrowse -mountpoint '/Volumes/#{new_resource.volumes_dir}' -quiet", env: { "PAGER" => "true" })
             end
-            not_if "/usr/bin/hdiutil info #{passphrase_cmd} | grep -q 'image-path.*#{dmg_file}'"
+            not_if { dmg_attached? }
           end
 
           case new_resource.type
@@ -155,6 +155,12 @@ class Chef
         def software_license_agreement?
           # example hdiutil imageinfo output: http://rubular.com/r/0xvOaA6d8B
           /Software License Agreement: true/.match?(shell_out!("/usr/bin/hdiutil imageinfo #{passphrase_cmd} '#{dmg_file}'").stdout)
+        end
+
+        # @return [Boolean] is the dmg file currently attached?
+        def dmg_attached?
+          # example hdiutil imageinfo output: http://rubular.com/r/CDcqenkixg
+          /image-path.*#{dmg_file}/.match?(shell_out!("/usr/bin/hdiutil info #{passphrase_cmd}").stdout)
         end
       end
     end
