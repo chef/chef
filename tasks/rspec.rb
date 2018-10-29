@@ -35,9 +35,9 @@ begin
     end
   end
 
-  task :default => :spec
+  task default: :spec
 
-  task :spec => :component_specs
+  task spec: :component_specs
 
   desc "Run standard specs (minus long running specs)"
   RSpec::Core::RakeTask.new(:spec) do |t|

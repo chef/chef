@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ REPOSITORIES = ["chef/chef", "chef/chef-dk", "chef/chef-census", "chef/chef-repo
                 "chef/client-docs", "chef/ffi-yajl", "chef/libyajl2-gem",
                 "chef/mixlib-authentication", "chef/mixlib-cli",
                 "chef/mixlib-config", "chef/mixlib-install", "chef/mixlib-log",
-                "chef/mixlib-shellout", "chef/ohai", "chef/omnibus-chef"]
+                "chef/mixlib-shellout", "chef/ohai", "chef/omnibus-chef"].freeze
 
 begin
   require "tomlrb"
@@ -33,7 +33,7 @@ begin
   require "pp"
 
   namespace :maintainers do
-    task :default => :generate
+    task default: :generate
 
     desc "Generate MarkDown version of MAINTAINERS file"
     task :generate do
@@ -63,7 +63,7 @@ begin
   end
 
   def github
-    @github ||= Octokit::Client.new(:netrc => true)
+    @github ||= Octokit::Client.new(netrc: true)
   end
 
   def source
@@ -131,7 +131,7 @@ begin
     else
       %w{maintainers lieutenant title}.each { |k| cmp.delete(k) }
     end
-    cmp.each { |_k, v| prepare_teams(v) }
+    cmp.each_value { |v| prepare_teams(v) }
   end
 
   def update_team(team, additions, deletions)
@@ -181,15 +181,15 @@ begin
 
   def format_components(cmp)
     out = "## " + cmp.delete("title") + "\n\n"
-    out << cmp.delete("text") + "\n" if cmp.has_key?("text")
-    out << "To mention the team, use @chef/#{cmp.delete("team")}\n\n" if cmp.has_key?("team")
-    if cmp.has_key?("lieutenant")
+    out << cmp.delete("text") + "\n" if cmp.key?("text")
+    out << "To mention the team, use @chef/#{cmp.delete("team")}\n\n" if cmp.key?("team")
+    if cmp.key?("lieutenant")
       out << "### Lieutenant\n\n"
       out << format_person(cmp.delete("lieutenant")) + "\n\n"
     end
-    out << format_maintainers(cmp.delete("maintainers")) + "\n" if cmp.has_key?("maintainers")
+    out << format_maintainers(cmp.delete("maintainers")) + "\n" if cmp.key?("maintainers")
     cmp.delete("paths")
-    cmp.each { |k, v| out << format_components(v) }
+    cmp.each_value { |v| out << format_components(v) }
     out
   end
 
