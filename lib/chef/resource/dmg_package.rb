@@ -47,7 +47,8 @@ class Chef
                description: "The sha256 checksum of the dmg to download."
 
       property :volumes_dir, String,
-               description: "The Directory under /Volumes where the dmg is mounted as not all dmgs are mounted into a /Volumes location matching the name of the dmg."
+               description: "The Directory under /Volumes where the dmg is mounted as not all dmgs are mounted into a /Volumes location matching the name of the dmg.",
+               default: lazy { |r| r.app }
 
       property :dmg_name, String,
                description: "The name of the dmg if it is not the same as app, or if the name has spaces.",
@@ -92,8 +93,6 @@ class Chef
         description "Installs the application."
 
         if current_resource.nil?
-          volumes_dir = new_resource.volumes_dir ? new_resource.volumes_dir : new_resource.app
-
           if new_resource.source
             remote_file dmg_file do
               source new_resource.source
@@ -102,30 +101,27 @@ class Chef
             end
           end
 
-          passphrase_cmd = new_resource.dmg_passphrase ? "-passphrase #{new_resource.dmg_passphrase}" : ""
           ruby_block "attach #{dmg_file}" do
             block do
-              # example hdiutil imageinfo output: http://rubular.com/r/0xvOaA6d8B
-              software_license_agreement = /Software License Agreement: true/.match?(shell_out!("/usr/bin/hdiutil imageinfo #{passphrase_cmd} '#{dmg_file}'").stdout)
-              raise "Requires EULA Acceptance; add 'accept_eula true' to dmg_package resource" if software_license_agreement && !new_resource.accept_eula
-              accept_eula_cmd = new_resource.accept_eula ? "echo Y | PAGER=true" : ""
-              shell_out!("#{accept_eula_cmd} /usr/bin/hdiutil attach #{passphrase_cmd} '#{dmg_file}' -nobrowse -mountpoint '/Volumes/#{volumes_dir}' -quiet")
+              raise "This DMG package requires EULA acceptance. Add 'accept_eula true' to dmg_package resource to accept the EULA during installation." if software_license_agreement? && !new_resource.accept_eula
+              accept_eula_cmd = new_resource.accept_eula ? "echo Y | echo Y | PAGER=true " : ""
+              shell_out!("#{accept_eula_cmd} /usr/bin/hdiutil attach #{passphrase_cmd} '#{dmg_file}' -nobrowse -mountpoint '/Volumes/#{new_resource.volumes_dir}' -quiet", env: { "PAGER" => "true" })
             end
             not_if "/usr/bin/hdiutil info #{passphrase_cmd} | grep -q 'image-path.*#{dmg_file}'"
           end
 
           case new_resource.type
           when "app"
-            execute "rsync --force --recursive --links --perms --executability --owner --group --times '/Volumes/#{volumes_dir}/#{new_resource.app}.app' '#{new_resource.destination}'" do
+            execute "rsync --force --recursive --links --perms --executability --owner --group --times '/Volumes/#{new_resource.volumes_dir}/#{new_resource.app}.app' '#{new_resource.destination}'" do
               user new_resource.owner if new_resource.owner
             end
 
             file "#{new_resource.destination}/#{new_resource.app}.app/Contents/MacOS/#{new_resource.app}" do
-              mode "755"
+              mode "0755"
               ignore_failure true
             end
           when "mpkg", "pkg"
-            install_cmd = "installation_file=$(ls '/Volumes/#{volumes_dir}' | grep '.#{new_resource.type}$') && sudo installer -pkg \"/Volumes/#{volumes_dir}/$installation_file\" -target /"
+            install_cmd = "installation_file=$(ls '/Volumes/#{new_resource.volumes_dir}' | grep '.#{new_resource.type}$') && sudo installer -pkg \"/Volumes/#{new_resource.volumes_dir}/$installation_file\" -target /"
             install_cmd += " -allowUntrusted" if new_resource.allow_untrusted
 
             execute install_cmd do
@@ -134,7 +130,7 @@ class Chef
             end
           end
 
-          execute "/usr/bin/hdiutil detach '/Volumes/#{volumes_dir}' || /usr/bin/hdiutil detach '/Volumes/#{volumes_dir}' -force"
+          execute "/usr/bin/hdiutil detach '/Volumes/#{new_resource.volumes_dir}' || /usr/bin/hdiutil detach '/Volumes/#{new_resource.volumes_dir}' -force"
         end
       end
 
@@ -148,6 +144,17 @@ class Chef
               new_resource.file
             end
           end
+        end
+
+        # @return [String] the hdiutil flag for handling DMGs with a password
+        def passphrase_cmd
+          new_resource.dmg_passphrase ? "-passphrase #{new_resource.dmg_passphrase}" : ""
+        end
+
+        # @return [Boolean] does the DMG require a software license agreement
+        def software_license_agreement?
+          # example hdiutil imageinfo output: http://rubular.com/r/0xvOaA6d8B
+          /Software License Agreement: true/.match?(shell_out!("/usr/bin/hdiutil imageinfo #{passphrase_cmd} '#{dmg_file}'").stdout)
         end
       end
     end
