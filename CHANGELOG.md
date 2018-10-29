@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.10 -->
-## [v15.0.10](https://github.com/chef/chef/tree/v15.0.10) (2018-10-29)
+<!-- latest_release 15.0.11 -->
+## [v15.0.11](https://github.com/chef/chef/tree/v15.0.11) (2018-10-29)
 
 #### Merged Pull Requests
-- Allow passing array to supports in mount again [#7803](https://github.com/chef/chef/pull/7803) ([tas50](https://github.com/tas50))
+- Multiple fixes to dmg_package [#7802](https://github.com/chef/chef/pull/7802) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Multiple fixes to dmg_package [#7802](https://github.com/chef/chef/pull/7802) ([tas50](https://github.com/tas50)) <!-- 15.0.11 -->
 - Allow passing array to supports in mount again [#7803](https://github.com/chef/chef/pull/7803) ([tas50](https://github.com/tas50)) <!-- 15.0.10 -->
 - Require mixin::shellout where we use it [#7798](https://github.com/chef/chef/pull/7798) ([tas50](https://github.com/tas50)) <!-- 15.0.9 -->
 - add GEMFILE_MOD to pin ohai to github master [#7796](https://github.com/chef/chef/pull/7796) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.8 -->
