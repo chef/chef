@@ -49,7 +49,10 @@ group(:ruby_shadow) do
 end
 
 group(:development, :test) do
-  gem "rake"
+  # we pin rake as a copy of rake is installed from the ruby source
+  # if you bump the ruby version you should confirm we don't end up with
+  # two rake gems installed again
+  gem "rake", "<= 12.3.0"
   gem "simplecov"
   gem "webmock"
   gem "chefstyle", "0.6.0"

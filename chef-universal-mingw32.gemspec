@@ -15,8 +15,9 @@ gemspec.add_dependency "win32-process", "~> 0.8.2"
 gemspec.add_dependency "win32-service", "~> 1.0"
 gemspec.add_dependency "windows-api", "~> 0.4.4"
 gemspec.add_dependency "wmi-lite", "~> 1.0"
+gemspec.add_dependency "iso8601", "~> 0.12.1"
 gemspec.extensions << "ext/win32-eventlog/Rakefile"
-gemspec.files += %w{ext/win32-eventlog/Rakefile ext/win32-eventlog/chef-log.man}
+gemspec.files += Dir.glob("{distro,ext}/**/*")
 
 gemspec.executables += %w{ chef-service-manager chef-windows-service }
 
