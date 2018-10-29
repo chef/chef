@@ -1,3 +1,0 @@
-source "https://supermarket.chef.io"
-
-cookbook "data-collector-test", path: File.join(File.expand_path(File.dirname(__FILE__)), ".acceptance", "data-collector-test")

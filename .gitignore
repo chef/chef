@@ -49,12 +49,15 @@ spec/data/test-dir
 spec/data/nodes
 /config/
 
-# acceptance binstubs
-acceptance/bin/*
-
 vendor/
-acceptance/vendor
 kitchen-tests/vendor
 
 # Visual Studio Code files
 .vscode
+
+# ignore nodes generated during local testing
+nodes/
+
+# chef-config
+chef-config/.bundle
+chef-config/Gemfile.lock

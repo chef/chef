@@ -1,7 +1,0 @@
-DEPENDENCIES
-  audit_test
-    path: .
-    metadata: true
-
-GRAPH
-  audit_test (0.1.0)

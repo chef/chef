@@ -31,6 +31,7 @@ To mention the team, use @chef/client-core
 * [Adam Leff](https://github.com/adamleff)
 * [Bryan McLellan](https://github.com/btm)
 * [Noah Kantrowitz](https://github.com/coderanger)
+* [Seth Thomas](https://github.com/cheeseplus)
 * [Daniel DeLeo](https://github.com/danielsdeleo)
 * [AJ Christensen](https://github.com/fujin)
 * [Phil Dibowitz](https://github.com/jaymzh)
@@ -39,11 +40,10 @@ To mention the team, use @chef/client-core
 * [Jon Cowie](https://github.com/jonlives)
 * [Joshua Timberman](https://github.com/jtimberman)
 * [Lamont Granquist](https://github.com/lamont-granquist)
-* [Claire McQuin](https://github.com/mcquin)
-* [Matt Wrock](https://github.com/mwrock)
 * [Ranjib Dey](https://github.com/ranjib)
 * [Steven Murawski](https://github.com/smurawski)
 * [Steven Danna](https://github.com/stevendanna)
+* [Stuart Preston](https://github.com/stuartpreston)
 * [Tim Smith](https://github.com/tas50)
 * [Tom Duffield](https://github.com/tduffield)
 * [Tyler Ball](https://github.com/tyler-ball)
@@ -110,8 +110,10 @@ To mention the team, use @chef/client-windows
 * [Jay Mundrawala](https://github.com/jaym)
 * [Kartik Cating-Subramanian](https://github.com/ksubrama)
 * [Steven Murawski](https://github.com/smurawski)
+* [Stuart Preston](https://github.com/stuartpreston)
 * [Salim Alam](https://github.com/chefsalim)
 * [Matt Wrock](https://github.com/mwrock)
+* [Tim Smith](https://github.com/tas50)
 
 ## Solaris
 
@@ -145,6 +147,7 @@ To mention the team, use @chef/client-os-x
 
 * [Tyler Ball](https://github.com/tyler-ball)
 * [mikedodge04](https://github.com/mikedodge04)
+* [Tim Smith](https://github.com/tas50)
 
 ## Debian
 
@@ -171,10 +174,13 @@ To mention the team, use @chef/client-fedora
 
 To mention the team, use @chef/client-opensuse
 
+### Lieutenant
+
+* [Tim Smith](https://github.com/tas50)
+
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
-* [Tim Smith](https://github.com/tas50)
 
 ## SUSE Enterprise Linux Server
 
@@ -196,7 +202,6 @@ To mention the team, use @chef/client-freebsd
 
 * [Cory Stephenson](https://github.com/Aevin1387)
 * [David Aronsohn](https://github.com/OnlyHaveCans)
-* [Bryant Lippert](https://github.com/AgentMeerkat)
 
 ## OpenBSD
 
@@ -230,4 +235,3 @@ To mention the team, use @chef/client-archlinux
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Ryan Cragun](https://github.com/ryancragun)
-
