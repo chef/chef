@@ -43,7 +43,7 @@ class Chef
 
       property :distribution, [ String, nil, FalseClass ],
                description: "Usually a distribution's codename, such as trusty, xenial or bionic. Default value: the codename of the node's distro.",
-               default: lazy { node["lsb"]["codename"] }
+               default: lazy { node["lsb"]["codename"] }, default_description: "The LSB codename of the host such as 'bionic'."
 
       property :components, Array,
                description: "Package groupings, such as 'main' and 'stable'.",

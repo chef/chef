@@ -58,7 +58,8 @@ class Chef
       # @todo this should get refactored away: https://github.com/chef/chef/issues/7622
       property :is_set, [TrueClass, FalseClass],
                default: false,
-               desired_state: false
+               desired_state: false,
+               skip_docs: true
 
        # coerce various ways of representing a boolean into either 0 (false) or 1 (true)
        # which is what the defaults CLI expects. Why? Well defaults itself accepts a few
