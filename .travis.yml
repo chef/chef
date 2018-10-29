@@ -80,12 +80,6 @@ matrix:
     script: bundle exec rake style
     # also remove integration / external tests
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
-  - env:
-      AUDIT_CHECK: 1
-    rvm: 2.4.4
-    script: bundle exec bundle-audit check --update
-    # also remove integration / external tests
-    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   #
   # External tests
   #
