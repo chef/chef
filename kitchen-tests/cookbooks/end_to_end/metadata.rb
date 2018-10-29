@@ -1,10 +1,7 @@
-name             "base"
-maintainer       ""
-maintainer_email ""
+name             "end_to_end"
 license          "Apache-2.0"
 description      "Installs/Configures base"
-long_description "Installs/Configures base"
-version          "0.1.0"
+version          "1.0.0"
 
 gem              "chef-sugar"
 
