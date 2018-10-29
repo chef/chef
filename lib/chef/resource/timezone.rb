@@ -95,12 +95,18 @@ class Chef
                 shell_out!("sudo systemsetup -settimezone #{new_resource.timezone}")
               end
             end
+          when "windows"
+            unless current_windows_tz.casecmp?(new_resource.timezone)
+              converge_by("set timezone to \"#{new_resource.timezone}\"") do
+                shell_out!("tzutil /s \"#{new_resource.timezone}\"")
+              end
+            end
           end
         end
       end
 
       action_class do
-        # detect the current TZ on darwin hosts
+        # detect the current TZ on darwin hosts & windows hosts
         #
         # @since 14.7
         # @return [String] TZ database value
@@ -110,6 +116,14 @@ class Chef
             raise "The timezone resource requires adminstrative priveleges to run on macOS hosts!"
           else
             /Time Zone: (.*)/.match(tz_shellout.stdout)[1]
+          end
+        end
+        def current_windows_tz
+          tz_shellout = shell_out!("tzutil /g")
+          if /is not recognized as an internal/.match?(tz_shellout.stderr)
+            raise "The timezone resource requires tzutil to run on windows hosts!"
+          else
+            tz_shellout.stdout.strip
           end
         end
       end
