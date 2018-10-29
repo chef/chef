@@ -59,7 +59,6 @@ describe Chef::CookbookLoader do
       ]
     end
     it "should not support multiple merged cookbooks in the cookbook path" do
-      start_merged_cookbooks = cookbook_loader.merged_cookbooks
       expect { cookbook_loader.load_cookbooks }.to raise_error(Chef::Exceptions::CookbookMergingError)
     end
   end

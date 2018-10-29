@@ -30,67 +30,49 @@ require "chef/cookbook/metadata"
 #
 class Chef
   class CookbookLoader
-
-    attr_reader :cookbooks_by_name
-    attr_reader :merged_cookbooks
+    # FIXME: doc public api
     attr_reader :cookbook_paths
-    attr_reader :metadata
 
     include Enumerable
 
     def initialize(*repo_paths)
-      repo_paths = repo_paths.flatten
-      raise ArgumentError, "You must specify at least one cookbook repo path" if repo_paths.empty?
-      @cookbooks_by_name = Mash.new
-      @loaded_cookbooks = {}
-      @metadata = Mash.new
-      @chefignores = {}
-      @repo_paths = repo_paths.map do |repo_path|
-        File.expand_path(repo_path)
-      end
+      @repo_paths = repo_paths.flatten.map { |p| File.expand_path(p) }
+      raise ArgumentError, "You must specify at least one cookbook repo path" if @repo_paths.empty?
+    end
 
-      @preloaded_cookbooks = false
-      @loaders_by_name = {}
+    def cookbooks_by_name
+      @cookbooks_by_name ||= Mash.new
+    end
+
+    def metadata
+      @metadata ||= Mash.new
     end
 
     def load_cookbooks
-      preload_cookbooks
-      @loaders_by_name.each_key do |cookbook_name|
+      cookbook_loaders.each_key do |cookbook_name|
         load_cookbook(cookbook_name)
       end
-      @cookbooks_by_name
+      cookbooks_by_name
     end
 
     def load_cookbook(cookbook_name)
-      preload_cookbooks
+      return nil unless cookbook_loaders.key?(cookbook_name)
 
-      return @cookbooks_by_name[cookbook_name] if @cookbooks_by_name.key?(cookbook_name)
+      return cookbooks_by_name[cookbook_name] if cookbooks_by_name.key?(cookbook_name)
 
-      return nil unless @loaders_by_name.key?(cookbook_name.to_s)
+      loader = cookbook_loaders[cookbook_name]
 
-      cookbook_loaders_for(cookbook_name).each do |loader|
-        loader.load
+      loader.load
 
-        next if loader.empty?
-
-        if @loaded_cookbooks.key?(cookbook_name)
-          raise Chef::Exceptions::CookbookMergingError, "Cookbook merging is no longer supported, the cookbook named #{cookbook_name} can only appear once in the cookbook_path"
-        end
-
-        @loaded_cookbooks[cookbook_name] = loader
-      end
-
-      if @loaded_cookbooks.key?(cookbook_name)
-        cookbook_version = @loaded_cookbooks[cookbook_name].cookbook_version
-        @cookbooks_by_name[cookbook_name] = cookbook_version
-        @metadata[cookbook_name] = cookbook_version.metadata
-      end
-      @cookbooks_by_name[cookbook_name]
+      cookbook_version = loader.cookbook_version
+      cookbooks_by_name[cookbook_name] = cookbook_version
+      metadata[cookbook_name] = cookbook_version.metadata
+      cookbook_version
     end
 
     def [](cookbook)
-      if @cookbooks_by_name.key?(cookbook.to_sym) || load_cookbook(cookbook.to_sym)
-        @cookbooks_by_name[cookbook.to_sym]
+      if cookbooks_by_name.key?(cookbook.to_sym) || load_cookbook(cookbook.to_sym)
+        cookbooks_by_name[cookbook.to_sym]
       else
         raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook}; did you forget to add metadata to a cookbook? (https://docs.chef.io/config_rb_metadata.html)"
       end
@@ -106,8 +88,8 @@ class Chef
     alias :key? :has_key?
 
     def each
-      @cookbooks_by_name.keys.sort_by(&:to_s).each do |cname|
-        yield(cname, @cookbooks_by_name[cname])
+      cookbooks_by_name.keys.sort_by(&:to_s).each do |cname|
+        yield(cname, cookbooks_by_name[cname])
       end
     end
 
@@ -120,32 +102,20 @@ class Chef
     end
 
     def cookbook_names
-      @cookbooks_by_name.keys.sort
+      cookbooks_by_name.keys.sort
     end
 
     def values
-      @cookbooks_by_name.values
+      cookbooks_by_name.values
     end
 
     alias :cookbooks :values
 
     private
 
-    def preload_cookbooks
-      return false if @preloaded_cookbooks
-
-      all_directories_in_repo_paths.each do |cookbook_path|
-        preload_cookbook(cookbook_path)
-      end
-      @preloaded_cookbooks = true
-      true
-    end
-
-    def preload_cookbook(cookbook_path)
-      repo_path = File.dirname(cookbook_path)
+    def chefignore(repo_path)
+      @chefignores ||= {}
       @chefignores[repo_path] ||= Cookbook::Chefignore.new(repo_path)
-      loader = Cookbook::CookbookVersionLoader.new(cookbook_path, @chefignores[repo_path])
-      add_cookbook_loader(loader)
     end
 
     def all_directories_in_repo_paths
@@ -162,17 +132,20 @@ class Chef
         end
     end
 
-    def add_cookbook_loader(loader)
-      cookbook_name = loader.cookbook_name
-
-      @loaders_by_name[cookbook_name.to_s] ||= []
-      @loaders_by_name[cookbook_name.to_s] << loader
-      loader
+    def cookbook_loaders
+      @cookbook_loaders ||=
+        begin
+          mash = Mash.new
+          all_directories_in_repo_paths.each do |cookbook_path|
+            loader = Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore(File.dirname(cookbook_path)))
+            cookbook_name = loader.cookbook_name
+            if mash.key?(cookbook_name)
+              raise Chef::Exceptions::CookbookMergingError, "Cookbook merging is no longer supported, the cookbook named #{cookbook_name} can only appear once in the cookbook_path"
+            end
+            mash[cookbook_name] = loader
+          end
+          mash
+        end
     end
-
-    def cookbook_loaders_for(cookbook_name)
-      @loaders_by_name[cookbook_name.to_s]
-    end
-
   end
 end
