@@ -37,6 +37,7 @@ Gem::Specification.new do |s|
   s.add_dependency "plist", "~> 3.2"
   s.add_dependency "iniparse", "~> 1.4"
   s.add_dependency "addressable"
+  s.add_dependency "iso8601", "~> 0.12.1"
 
   # Audit mode requires these, so they are non-developmental dependencies now
   %w{rspec-core rspec-expectations rspec-mocks}.each { |gem| s.add_dependency gem, "~> 3.5", "< 3.8" }

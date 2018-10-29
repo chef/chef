@@ -11,6 +11,7 @@ PATH
       ffi-yajl (~> 2.2)
       highline (~> 1.6, >= 1.6.9)
       iniparse (~> 1.4)
+      iso8601 (~> 0.12.1)
       mixlib-archive (~> 0.4)
       mixlib-authentication (~> 1.4)
       mixlib-cli (~> 1.7)
