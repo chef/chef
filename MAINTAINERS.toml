@@ -37,6 +37,7 @@ Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, ch
         "adamleff",
         "btm",
         "coderanger",
+        "cheeseplus",
         "danielsdeleo",
         "fujin",
         "jaymzh",
@@ -45,11 +46,10 @@ Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, ch
         "jonlives",
         "jtimberman",
         "lamont-granquist",
-        "mcquin",
-        "mwrock",
         "ranjib",
         "smurawski",
         "stevendanna",
+        "stuartpreston",
         "tas50",
         "tduffield",
         "tyler-ball",
@@ -69,7 +69,8 @@ Chef Provisioning and Drivers.  Supported Drivers are listed in the [README](htt
         "jkeiser",
         "jjasghar",
         "stuartpreston",
-        "thehar"
+        "thehar",
+        "jjlimepoint"
       ]
 
     [Org.Components.Subsystems]
@@ -110,8 +111,10 @@ The specific components of Chef related to a given platform - including (but not
           "jaym",
           "ksubrama",
           "smurawski",
+          "stuartpreston",
           "chefsalim",
-          "mwrock"
+          "mwrock",
+          "tas50"
         ]
 
       [Org.Components.Subsystems.Solaris]
@@ -138,7 +141,8 @@ The specific components of Chef related to a given platform - including (but not
 
         maintainers = [
           "tyler-ball",
-          "mikedodge04"
+          "mikedodge04",
+          "tas50"
         ]
 
       [Org.Components.Subsystems.Debian]
@@ -164,9 +168,10 @@ The specific components of Chef related to a given platform - including (but not
         title = "openSUSE"
         team = "client-opensuse"
 
+        lieutenant = "tas50"
+
         maintainers = [
-          "lamont-granquist",
-          "tas50"
+          "lamont-granquist"
         ]
 
       [Org.Components.Subsystems."SUSE Enterprise Linux"]
@@ -185,8 +190,7 @@ The specific components of Chef related to a given platform - including (but not
 
         maintainers = [
           "Aevin1387",
-          "OnlyHaveCans",
-          "AgentMeerkat"
+          "OnlyHaveCans"
         ]
 
       [Org.Components.Subsystems.OpenBSD]
@@ -273,17 +277,9 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Aaron Kalin"
     GitHub = "martinisoft"
 
-  [people.mcquin]
-    Name = "Claire McQuin"
-    GitHub = "mcquin"
-
   [people.ranjib]
     Name = "Ranjib Dey"
     GitHub = "ranjib"
-
-  [people.sethvargo]
-    Name = "Seth Vargo"
-    GitHub = "sethvargo"
 
   [people.smurawski]
     Name = "Steven Murawski"
@@ -372,3 +368,7 @@ The specific components of Chef related to a given platform - including (but not
     GitHub = "itmustbejj"
     Twitter = "itmustbejj"
     IRC = "itmustbejj"
+
+  [people.cheeseplus]
+    Name = "Seth Thomas"
+    GitHub = "cheeseplus"
