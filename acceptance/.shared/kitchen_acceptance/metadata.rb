@@ -1,1 +1,0 @@
-name "kitchen_acceptance"
