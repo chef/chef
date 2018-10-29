@@ -99,7 +99,7 @@ class Chef
                default: lazy { [] }
 
       property :visudo_path, String,
-               description: "Deprecated property. Do not use."
+               deprecated: true
 
       property :visudo_binary, String,
                description: "The path to visudo for configuration verification.",
