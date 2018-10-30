@@ -25,7 +25,6 @@ require "chef/json_compat"
 class Chef
   class Resource
     class WindowsShare < Chef::Resource
-      preview_resource true
       resource_name :windows_share
 
       description "Use the windows_share resource to create, modify and remove Windows shares."
