@@ -85,7 +85,8 @@ class Chef
                description: "The name of the template for the repository file. Only necessary if you're not using the built in template."
 
       property :cookbook, String,
-               description: "The cookbook to source the repository template file from. Only necessary if you're not using the built in template."
+               description: "The cookbook to source the repository template file from. Only necessary if you're not using the built in template.",
+               desired_state: false
 
       property :gpgautoimportkeys, [TrueClass, FalseClass],
                description: "Automatically import the specified key when setting up the repository.",

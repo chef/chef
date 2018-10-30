@@ -58,7 +58,7 @@ class Chef
 
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
-               default: true
+               default: true, desired_state: false
 
       action :join do
         description "Join the Active Directory domain."
