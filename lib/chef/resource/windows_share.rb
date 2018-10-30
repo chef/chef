@@ -33,12 +33,12 @@ class Chef
 
       # Specifies a name for the SMB share. The name may be composed of any valid file name characters, but must be less than 80 characters long. The names pipe and mailslot are reserved for use by the computer.
       property :share_name, String,
-               description: "The share to assign to the share.",
+               description: "The name to assign to the share.",
                name_property: true
 
       # Specifies the path of the location of the folder to share. The path must be fully qualified. Relative paths or paths that contain wildcard characters are not permitted.
       property :path, String,
-               description: "The path of the location of the folder to share. Required when creating. If the share already exists on a different path then it is deleted and re-created."
+               description: "The path of the folder to share. Required when creating. If the share already exists on a different path then it is deleted and re-created."
 
       # Specifies an optional description of the SMB share. A description of the share is displayed by running the Get-SmbShare cmdlet. The description may not contain more than 256 characters.
       property :description, String,
@@ -47,17 +47,17 @@ class Chef
 
       # Specifies which accounts are granted full permission to access the share. Use a comma-separated list to specify multiple accounts. An account may not be specified more than once in the FullAccess, ChangeAccess, or ReadAccess parameter lists, but may be specified once in the FullAccess, ChangeAccess, or ReadAccess parameter list and once in the NoAccess parameter list.
       property :full_users, Array,
-               description: "The users which should have 'Full control' permissions on the share..",
+               description: "The users that should have 'Full control' permissions on the share in domain\username format.",
                default: [], coerce: proc { |u| u.sort }
 
       # Specifies which users are granted modify permission to access the share
       property :change_users, Array,
-               description: "The users which should have 'modify' permission on the share.",
+               description: "The users that should have 'modify' permission on the share in domain\username format".",
                default: [], coerce: proc { |u| u.sort }
 
       # Specifies which users are granted read permission to access the share. Multiple users can be specified by supplying a comma-separated list.
       property :read_users, Array,
-               description: "The users which should have 'read' permission on the share.",
+               description: "The users that should have 'read' permission on the share in domain\username format".",
                default: [], coerce: proc { |u| u.sort }
 
       # Specifies the lifetime of the new SMB share. A temporary share does not persist beyond the next restart of the computer. By default, new SMB shares are persistent, and non-temporary.
