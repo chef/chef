@@ -29,7 +29,7 @@ class Chef
       resource_name :windows_share
 
       description "Use the windows_share resource to create, modify and remove Windows shares."
-      introduced "14.6"
+      introduced "14.7"
 
       # Specifies a name for the SMB share. The name may be composed of any valid file name characters, but must be less than 80 characters long. The names pipe and mailslot are reserved for use by the computer.
       property :share_name, String,
