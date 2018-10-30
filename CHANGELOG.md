@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.12.0 -->
-## [v13.12.0](https://github.com/chef/chef/tree/v13.12.0) (2018-10-29)
+<!-- latest_release 13.12.1 -->
+## [v13.12.1](https://github.com/chef/chef/tree/v13.12.1) (2018-10-30)
 
 #### Merged Pull Requests
-- Bump dependencies / slim the package size [#7805](https://github.com/chef/chef/pull/7805) ([tas50](https://github.com/tas50))
+- Pin rake to 12.0 to prevent shipping 2 copies [#7812](https://github.com/chef/chef/pull/7812) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.11.3 -->
 ### Changes since 13.11.3 release
 
 #### Merged Pull Requests
+- Pin rake to 12.0 to prevent shipping 2 copies [#7812](https://github.com/chef/chef/pull/7812) ([tas50](https://github.com/tas50)) <!-- 13.12.1 -->
 - Bump dependencies / slim the package size [#7805](https://github.com/chef/chef/pull/7805) ([tas50](https://github.com/tas50)) <!-- 13.12.0 -->
 - Backport omnibus cleanup + MSI speedup logic from Chef 14 [#7739](https://github.com/chef/chef/pull/7739) ([tas50](https://github.com/tas50)) <!-- 13.11.4 -->
 <!-- release_rollup -->
