@@ -1,5 +1,18 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Unreleased
+
+## Ohai Release Nots 13.12
+
+### macOS Improvements
+
+- sysctl commands have been modified to gather only the bare minimum required data, which prevents sysctl hanging in some scenarios
+- Extra data has been removed from the system_profile plugin, reducing the amount of data stored on the chef-server for each node
+
+### SUSE Linux Enterprise Server 15
+
+- Ohai now properly detects SLES 15
+
 # Chef Client Release Notes 13.11
 
 ### Sensitive Properties on Windows
