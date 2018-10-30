@@ -212,7 +212,7 @@ GEM
     nori (2.6.0)
     octokit (4.13.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (13.10.0)
+    ohai (13.12.4)
       chef-config (>= 12.5.0.alpha.1, < 14)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
