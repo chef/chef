@@ -51,6 +51,11 @@ class Chef
       property :cert_path, String,
                description: ""
 
+      # lazy used to set default value of sensitive to true if password is set
+      property :sensitive, [ TrueClass, FalseClass ],
+               description: "Ensure that sensitive resource data is not logged by the chef-client.",
+               default: lazy { |r| r.pfx_password ? true : false }, skip_docs: true
+
       action :create do
         description "Creates or updates a certificate."
 
@@ -79,6 +84,7 @@ class Chef
           convert_boolean_return true
           code code_script
           only_if guard_script
+          sensitive if new_resource.sensitive
         end
       end
 

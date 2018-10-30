@@ -38,4 +38,9 @@ describe Chef::Resource::WindowsCertificate do
     expect { resource.action :delete }.not_to raise_error
     expect { resource.action :verify }.not_to raise_error
   end
+
+  it "sets sensitive to true if the pfx_password property is set" do
+    resource.pfx_password "foo"
+    expect(resource.sensitive).to be_truthy
+  end
 end
