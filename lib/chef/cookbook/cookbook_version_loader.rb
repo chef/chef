@@ -7,6 +7,16 @@ require "find"
 
 class Chef
   class Cookbook
+    # This class is only used drectly from the Chef::CookbookLoader and from chef-fs,
+    # so it only affects legacy-mode chef-client runs and knife.  It is not used by
+    # server or zolo/zero modes.
+    #
+    # This seems to be mostly a glorified factory method for creating CookbookVersion
+    # objects now, with creating Metadata objects bolted onto the side?  It used
+    # to be also responsible for the merging of multiple objects when creating
+    # shadowed/merged cookbook versions from multiple sources.  It also handles
+    # Chefignore files.
+    #
     class CookbookVersionLoader
 
       UPLOADED_COOKBOOK_VERSION_FILE = ".uploaded-cookbook-version.json".freeze
@@ -160,18 +170,6 @@ class Chef
 
       def empty?
         cookbook_settings.values.all? { |files_hash| files_hash.empty? } && metadata_filenames.size == 0
-      end
-
-      def merge!(other_cookbook_loader)
-        other_cookbook_settings = other_cookbook_loader.cookbook_settings
-        cookbook_settings.each do |file_type, file_list|
-          file_list.merge!(other_cookbook_settings[file_type])
-        end
-        metadata_filenames.concat(other_cookbook_loader.metadata_filenames)
-        @cookbook_paths += other_cookbook_loader.cookbook_paths
-        @frozen = true if other_cookbook_loader.frozen
-        @metadata = nil # reset metadata so it gets reloaded and all metadata files applied.
-        self
       end
 
       def chefignore
