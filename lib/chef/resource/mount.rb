@@ -50,7 +50,7 @@ class Chef
                equal_to: RUBY_PLATFORM =~ /solaris/i ? %i{ device } : %i{ device label uuid }
 
       # @todo this should get refactored away: https://github.com/chef/chef/issues/7621
-      property :mounted, [TrueClass, FalseClass], default: false
+      property :mounted, [TrueClass, FalseClass], default: false, skip_docs: true
 
       property :fsck_device, String,
                description: "Solaris only: The fsck device.",

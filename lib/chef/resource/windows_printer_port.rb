@@ -56,7 +56,7 @@ class Chef
                default: 1, equal_to: [1, 2]
 
       property :exists, [TrueClass, FalseClass],
-               desired_state: true
+               skip_docs: true
 
       PORTS_REG_KEY = 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\\'.freeze unless defined?(PORTS_REG_KEY)
 

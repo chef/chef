@@ -62,7 +62,7 @@ class Chef
                description: "Prevent a command from creating a file when that file already exists."
 
       property :cwd, String,
-               description: "Set the current working directory before running a command."
+               description: "The current working directory from which the command will be run."
 
       property :environment, Hash,
                description: "Specify a Hash of environment variables to be set."
