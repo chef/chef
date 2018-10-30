@@ -56,8 +56,13 @@ describe Chef::Resource::Route do
     expect(resource.device).to eql("eth0")
   end
 
-  it "allows you to specify the route type" do
-    resource.route_type "host"
+  it "allows you to specify the route type as a symbol" do
+    resource.route_type :host
+    expect(resource.route_type).to eql(:host)
+  end
+
+  it "allows you to specify the route type as a string" do
+    resource.route_type :host
     expect(resource.route_type).to eql(:host)
   end
 
