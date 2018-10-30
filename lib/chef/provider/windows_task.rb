@@ -135,10 +135,10 @@ class Chef
             converge_by("#{new_resource} task created") do
               task = TaskScheduler.new
               if new_resource.frequency == :none
-                task.new_work_item(new_resource.task_name, {}, { user: new_resource.user, password: new_resource.password })
+                task.new_work_item(new_resource.task_name, {}, { user: new_resource.user, password: new_resource.password, interactive: new_resource.interactive_enabled })
                 task.activate(new_resource.task_name)
               else
-                task.new_work_item(new_resource.task_name, trigger, { user: new_resource.user, password: new_resource.password })
+                task.new_work_item(new_resource.task_name, trigger, { user: new_resource.user, password: new_resource.password, interactive: new_resource.interactive_enabled })
               end
               task.application_name = new_resource.command
               task.parameters = new_resource.command_arguments if new_resource.command_arguments
@@ -349,7 +349,7 @@ class Chef
                   current_task_trigger[:type] != new_task_trigger[:type] ||
                   current_task_trigger[:random_minutes_interval].to_i != new_task_trigger[:random_minutes_interval].to_i ||
                   current_task_trigger[:minutes_interval].to_i != new_task_trigger[:minutes_interval].to_i ||
-                  task.account_information != new_resource.user ||
+                  task.account_information.to_s.casecmp(new_resource.user.to_s) != 0 ||
                   task.application_name != new_resource.command ||
                   task.parameters != new_resource.command_arguments.to_s ||
                   task.working_directory != new_resource.cwd.to_s ||
@@ -570,13 +570,18 @@ class Chef
         def logon_type
           # Ref: https://msdn.microsoft.com/en-us/library/windows/desktop/aa383566(v=vs.85).aspx
           # if nothing is passed as logon_type the TASK_LOGON_SERVICE_ACCOUNT is getting set as default so using that for comparision.
-          user_id = new_resource.user
+          user_id = new_resource.user.to_s
+          password = new_resource.password.to_s
           if Chef::ReservedNames::Win32::Security::SID.service_account_user?(user_id)
             TaskScheduler::TASK_LOGON_SERVICE_ACCOUNT
           elsif Chef::ReservedNames::Win32::Security::SID.group_user?(user_id)
             TaskScheduler::TASK_LOGON_GROUP
-          elsif !new_resource.password.to_s.empty? # password is present
-            TaskScheduler::TASK_LOGON_PASSWORD
+          elsif !user_id.empty? && !password.empty?
+            if new_resource.interactive_enabled
+              TaskScheduler::TASK_LOGON_INTERACTIVE_TOKEN
+            else
+              TaskScheduler::TASK_LOGON_PASSWORD
+            end
           else
             TaskScheduler::TASK_LOGON_INTERACTIVE_TOKEN
           end
