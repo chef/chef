@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.3 -->
-## [v14.7.3](https://github.com/chef/chef/tree/v14.7.3) (2018-10-31)
+<!-- latest_release 14.7.4 -->
+## [v14.7.4](https://github.com/chef/chef/tree/v14.7.4) (2018-10-31)
 
 #### Merged Pull Requests
-- Backport: Fix SLES 15 upgrades removing the symlinks [#7827](https://github.com/chef/chef/pull/7827) ([tas50](https://github.com/tas50))
+- Backport: Add windows_share and windows_certificate resources [#7833](https://github.com/chef/chef/pull/7833) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.6.47 -->
 ### Changes since 14.6.47 release
 
 #### Merged Pull Requests
+- Backport: Add windows_share and windows_certificate resources [#7833](https://github.com/chef/chef/pull/7833) ([tas50](https://github.com/tas50)) <!-- 14.7.4 -->
 - Backport: Fix SLES 15 upgrades removing the symlinks [#7827](https://github.com/chef/chef/pull/7827) ([tas50](https://github.com/tas50)) <!-- 14.7.3 -->
 - Backport: Fix inspector to properly handle defaults that are symbols [#7826](https://github.com/chef/chef/pull/7826) ([tas50](https://github.com/tas50)) <!-- 14.7.2 -->
 - Backport: Add macOS support to the timezone resource [#7830](https://github.com/chef/chef/pull/7830) ([tas50](https://github.com/tas50)) <!-- 14.7.1 -->
