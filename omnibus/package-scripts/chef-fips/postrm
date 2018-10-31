@@ -17,8 +17,8 @@ is_darwin() {
 
 is_suse() {
   if [ -f /etc/os-release ]; then
-    source /etc/os-release
-    [ $ID_LIKE == "sles" ] || [ $ID_LIKE == "suse" ]
+    . /etc/os-release
+    [ "$ID_LIKE" = "sles" ] || [ "$ID_LIKE" = "suse" ]
   else
     [ -f /etc/SuSE-release ]
   fi
