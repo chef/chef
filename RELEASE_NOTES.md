@@ -1,17 +1,52 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
-# Unreleased
+# Chef Client Release Notes 13.12
 
-## Ohai Release Nots 13.12
+## Smaller Package and Install Size
+
+Both Chef packages and on disk installations have been greatly reduced in size by trimming unnecessary installation files. This has reduced our package size on macOS/Linux by ~50% and Windows by ~12%. With this change Chef 13 is now smaller than a legacy Chef 10 package.
+
+## macOS Mojave (10.14)
+
+Chef is now tested against macOS Mojave, and packages are now available at downloads.chef.io.
+
+## SUSE Linux Enterprise Server 15
+
+- Ohai now properly detects SLES 15
+- The Chef package will no longer remove symlinks to chef-client and ohai when upgrading on SLES 15
+
+## Updated Chef-Vault
+
+Multiple bugfixes in Chef Vault have been resolved by updating chef-vault to 3.4.2
+
+## Faster Windows Installations
+
+Windows installation speeds have been improved by using skipping unnecessary steps when Windows Installer 5+ is available.
+
+## Ohai Release Notes 13.12
 
 ### macOS Improvements
 
 - sysctl commands have been modified to gather only the bare minimum required data, which prevents sysctl hanging in some scenarios
 - Extra data has been removed from the system_profile plugin, reducing the amount of data stored on the chef-server for each node
 
-### SUSE Linux Enterprise Server 15
+## New Deprecations
 
-- Ohai now properly detects SLES 15
+### system_profile Ohai plugin removal
+
+The system_profile plugin will be removed from Chef/Ohai 15 in April 2019. This plugin does not correctly return data on modern Mac systems. Additionally the same data is provided by the hardware plugin, which has a format that is simpler to consume. Removing this plugin will reduce Ohai return by ~3 seconds and greatly reduce the size of the node object on the Chef server.
+
+### ohai_name property in ohai resource
+
+The ``ohai`` resource's unused ``ohai_name`` property has been deprecated. This will be removed in Chef 15.0.
+
+## Security Updates
+
+### Ruby 2.4.5
+
+Ruby has been updated to from 2.4.4 to 2.4.5 to resolve multiple CVEs as well as bugs:
+- [CVE-2018-16396](https://www.ruby-lang.org/en/news/2018/10/17/not-propagated-taint-flag-in-some-formats-of-pack-cve-2018-16396/)
+- [CVE-2018-16395](https://www.ruby-lang.org/en/news/2018/10/17/openssl-x509-name-equality-check-does-not-work-correctly-cve-2018-16395/)
 
 # Chef Client Release Notes 13.11
 
