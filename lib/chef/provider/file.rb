@@ -148,6 +148,7 @@ class Chef
         do_acl_changes
         do_selinux
         load_resource_attributes_from_file(new_resource) unless Chef::Config[:why_run]
+        # FIXME: we may need to add a callback for remote_file to save the file-edited checksum for network-level idempotency
       end
 
       def action_create_if_missing
@@ -336,7 +337,7 @@ class Chef
 
       def do_file_editing
         if new_resource.edit && tempfile
-          editor = new_resource.file_editor_class.from_file(tempfile.path)
+          editor = new_resource.editor_class.from_file(tempfile.path)
           editor.instance_exec(&new_resource.edit)
           editor.finish!
         end
