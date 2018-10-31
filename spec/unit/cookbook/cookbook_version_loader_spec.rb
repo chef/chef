@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -173,7 +173,7 @@ describe Chef::Cookbook::CookbookVersionLoader do
       let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "incomplete-metadata-chef-repo/incomplete-metadata") }
 
       let(:error_message) do
-        "Cookbook loaded at path(s) [#{cookbook_path}] has invalid metadata: The `name' attribute is required in cookbook metadata"
+        "Cookbook loaded at path [#{cookbook_path}] has invalid metadata: The `name' attribute is required in cookbook metadata"
       end
 
       it "raises an error when loading with #load!" do
