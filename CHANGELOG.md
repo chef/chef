@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.6.48 -->
+## [v14.6.48](https://github.com/chef/chef/tree/v14.6.48) (2018-10-31)
+
+#### Merged Pull Requests
+- Allow passing array to supports in mount resource again [#7809](https://github.com/chef/chef/pull/7809) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.6.47 -->
+### Changes since 14.6.47 release
+
+#### Merged Pull Requests
+- Allow passing array to supports in mount resource again [#7809](https://github.com/chef/chef/pull/7809) ([tas50](https://github.com/tas50)) <!-- 14.6.48 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
