@@ -41,7 +41,7 @@ class Chef
         @inferred_cookbook_name = File.basename( path )
         @chefignore = chefignore
         @metadata = nil
-        @relative_path = /#{Regexp.escape(@cookbook_path)}\/(.+)$/
+        @relative_path = /#{Regexp.escape(cookbook_path)}\/(.+)$/
         @metadata_loaded = false
         @cookbook_settings = {
           all_files: {},
@@ -78,29 +78,10 @@ class Chef
         if empty?
           Chef::Log.warn "Found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
         end
-        @cookbook_settings
+        cookbook_settings
       end
 
       alias :load_cookbooks :load
-
-      def metadata_filenames
-        return @metadata_filenames unless @metadata_filenames.empty?
-        if File.exists?(File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
-          @uploaded_cookbook_version_file = File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
-        end
-
-        if File.exists?(File.join(cookbook_path, "metadata.json"))
-          @metadata_filenames << File.join(cookbook_path, "metadata.json")
-        elsif File.exists?(File.join(cookbook_path, "metadata.rb"))
-          @metadata_filenames << File.join(cookbook_path, "metadata.rb")
-        elsif @uploaded_cookbook_version_file
-          @metadata_filenames << @uploaded_cookbook_version_file
-        end
-
-        # Set frozen based on .uploaded-cookbook-version.json
-        set_frozen
-        @metadata_filenames
-      end
 
       def cookbook_version
         return nil if empty?
@@ -109,20 +90,8 @@ class Chef
           c.all_files            = cookbook_settings[:all_files].values
           c.metadata             = metadata
 
-          c.freeze_version if @frozen
+          c.freeze_version if frozen
         end
-      end
-
-      def cookbook_name
-        # The `name` attribute is now required in metadata, so
-        # inferred_cookbook_name generally should not be used. Per CHEF-2923,
-        # we have to not raise errors in cookbook metadata immediately, so that
-        # users can still `knife cookbook upload some-cookbook` when an
-        # unrelated cookbook has an error in its metadata.  This situation
-        # could prevent us from reading the `name` attribute from the metadata
-        # entirely, but the name is used as a hash key in CookbookLoader, so we
-        # fall back to the inferred name here.
-        (metadata.name || @inferred_cookbook_name).to_sym
       end
 
       # Generates the Cookbook::Metadata object
@@ -135,7 +104,7 @@ class Chef
           case metadata_file
           when /\.rb$/
             apply_ruby_metadata(metadata_file)
-          when @uploaded_cookbook_version_file
+          when uploaded_cookbook_version_file
             apply_json_cookbook_version_metadata(metadata_file)
           when /\.json$/
             apply_json_metadata(metadata_file)
@@ -156,13 +125,46 @@ class Chef
         @metadata
       end
 
+      def cookbook_name
+        # The `name` attribute is now required in metadata, so
+        # inferred_cookbook_name generally should not be used. Per CHEF-2923,
+        # we have to not raise errors in cookbook metadata immediately, so that
+        # users can still `knife cookbook upload some-cookbook` when an
+        # unrelated cookbook has an error in its metadata.  This situation
+        # could prevent us from reading the `name` attribute from the metadata
+        # entirely, but the name is used as a hash key in CookbookLoader, so we
+        # fall back to the inferred name here.
+        (metadata.name || inferred_cookbook_name).to_sym
+      end
+
+      private
+
+      def metadata_filenames
+        return @metadata_filenames unless @metadata_filenames.empty?
+        if File.exists?(File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
+          @uploaded_cookbook_version_file = File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
+        end
+
+        if File.exists?(File.join(cookbook_path, "metadata.json"))
+          @metadata_filenames << File.join(cookbook_path, "metadata.json")
+        elsif File.exists?(File.join(cookbook_path, "metadata.rb"))
+          @metadata_filenames << File.join(cookbook_path, "metadata.rb")
+        elsif uploaded_cookbook_version_file
+          @metadata_filenames << uploaded_cookbook_version_file
+        end
+
+        # Set frozen based on .uploaded-cookbook-version.json
+        set_frozen
+        @metadata_filenames
+      end
+
       def raise_metadata_error!
-        raise @metadata_error unless @metadata_error.nil?
+        raise metadata_error unless metadata_error.nil?
         # Metadata won't be valid if the cookbook is empty. If the cookbook is
         # actually empty, a metadata error here would be misleading, so don't
         # raise it (if called by #load!, a different error is raised).
         if !empty? && !metadata.valid?
-          message = "Cookbook loaded at path(s) [#{@cookbook_paths.join(', ')}] has invalid metadata: #{metadata.errors.join('; ')}"
+          message = "Cookbook loaded at path(s) [#{cookbook_paths.join(', ')}] has invalid metadata: #{metadata.errors.join('; ')}"
           raise Exceptions::MetadataNotValid, message
         end
         false
@@ -221,14 +223,14 @@ class Chef
       def apply_ruby_metadata(file)
         @metadata.from_file(file)
       rescue Chef::Exceptions::JSON::ParseError
-        Chef::Log.error("Error evaluating metadata.rb for #{@inferred_cookbook_name} in " + file)
+        Chef::Log.error("Error evaluating metadata.rb for #{inferred_cookbook_name} in " + file)
         raise
       end
 
       def apply_json_metadata(file)
         @metadata.from_json(IO.read(file))
       rescue Chef::Exceptions::JSON::ParseError
-        Chef::Log.error("Couldn't parse cookbook metadata JSON for #{@inferred_cookbook_name} in " + file)
+        Chef::Log.error("Couldn't parse cookbook metadata JSON for #{inferred_cookbook_name} in " + file)
         raise
       end
 
@@ -245,7 +247,7 @@ class Chef
         # metadata contains a name key.
         @metadata.name(data["cookbook_name"]) unless data["metadata"].key?("name")
       rescue Chef::Exceptions::JSON::ParseError
-        Chef::Log.error("Couldn't parse cookbook metadata JSON for #{@inferred_cookbook_name} in " + file)
+        Chef::Log.error("Couldn't parse cookbook metadata JSON for #{inferred_cookbook_name} in " + file)
         raise
       end
 
@@ -255,7 +257,7 @@ class Chef
             data = Chef::JSONCompat.parse(IO.read(uploaded_cookbook_version_file))
             @frozen = data["frozen?"]
           rescue Chef::Exceptions::JSON::ParseError
-            Chef::Log.error("Couldn't parse cookbook metadata JSON for #{@inferred_cookbook_name} in #{uploaded_cookbook_version_file}")
+            Chef::Log.error("Couldn't parse cookbook metadata JSON for #{inferred_cookbook_name} in #{uploaded_cookbook_version_file}")
             raise
           end
         end
