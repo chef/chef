@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.1 -->
-## [v14.7.1](https://github.com/chef/chef/tree/v14.7.1) (2018-10-31)
+<!-- latest_release 14.7.2 -->
+## [v14.7.2](https://github.com/chef/chef/tree/v14.7.2) (2018-10-31)
 
 #### Merged Pull Requests
-- Backport: Add macOS support to the timezone resource [#7830](https://github.com/chef/chef/pull/7830) ([tas50](https://github.com/tas50))
+- Backport: Fix inspector to properly handle defaults that are symbols [#7826](https://github.com/chef/chef/pull/7826) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.6.47 -->
 ### Changes since 14.6.47 release
 
 #### Merged Pull Requests
+- Backport: Fix inspector to properly handle defaults that are symbols [#7826](https://github.com/chef/chef/pull/7826) ([tas50](https://github.com/tas50)) <!-- 14.7.2 -->
 - Backport: Add macOS support to the timezone resource [#7830](https://github.com/chef/chef/pull/7830) ([tas50](https://github.com/tas50)) <!-- 14.7.1 -->
 - Automated resource documentation improvements [#7811](https://github.com/chef/chef/pull/7811) ([tas50](https://github.com/tas50)) <!-- 14.7.0 -->
 - Allow passing array to supports in mount resource again [#7809](https://github.com/chef/chef/pull/7809) ([tas50](https://github.com/tas50)) <!-- 14.6.48 -->
