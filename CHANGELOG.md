@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.19 -->
-## [v15.0.19](https://github.com/chef/chef/tree/v15.0.19) (2018-10-31)
+<!-- latest_release 15.0.20 -->
+## [v15.0.20](https://github.com/chef/chef/tree/v15.0.20) (2018-10-31)
 
 #### Merged Pull Requests
-- More cookbook loader cleanup and documentation [#7820](https://github.com/chef/chef/pull/7820) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump win32-certstore to 0.1.11 [#7823](https://github.com/chef/chef/pull/7823) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Bump win32-certstore to 0.1.11 [#7823](https://github.com/chef/chef/pull/7823) ([tas50](https://github.com/tas50)) <!-- 15.0.20 -->
 - More cookbook loader cleanup and documentation [#7820](https://github.com/chef/chef/pull/7820) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.19 -->
 - Fix testing / installing on SLES 15 [#7819](https://github.com/chef/chef/pull/7819) ([tas50](https://github.com/tas50)) <!-- 15.0.18 -->
 - Update win32-certstore to include a license [#7822](https://github.com/chef/chef/pull/7822) ([tas50](https://github.com/tas50)) <!-- 15.0.17 -->
