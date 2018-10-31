@@ -22,7 +22,6 @@ class Chef
       UPLOADED_COOKBOOK_VERSION_FILE = ".uploaded-cookbook-version.json".freeze
 
       attr_reader :cookbook_settings
-      attr_reader :cookbook_paths
       attr_reader :frozen
       attr_reader :uploaded_cookbook_version_file
 
@@ -35,8 +34,6 @@ class Chef
 
       def initialize(path, chefignore = nil)
         @cookbook_path = File.expand_path( path ) # cookbook_path from which this was loaded
-        # We keep a list of all cookbook paths that have been merged in
-        @cookbook_paths = [ cookbook_path ]
 
         @inferred_cookbook_name = File.basename( path )
         @chefignore = chefignore
@@ -86,7 +83,7 @@ class Chef
       def cookbook_version
         return nil if empty?
 
-        Chef::CookbookVersion.new(cookbook_name, *cookbook_paths).tap do |c|
+        Chef::CookbookVersion.new(cookbook_name, cookbook_path).tap do |c|
           c.all_files            = cookbook_settings[:all_files].values
           c.metadata             = metadata
 
@@ -164,7 +161,7 @@ class Chef
         # actually empty, a metadata error here would be misleading, so don't
         # raise it (if called by #load!, a different error is raised).
         if !empty? && !metadata.valid?
-          message = "Cookbook loaded at path(s) [#{cookbook_paths.join(', ')}] has invalid metadata: #{metadata.errors.join('; ')}"
+          message = "Cookbook loaded at path [#{cookbook_path}] has invalid metadata: #{metadata.errors.join('; ')}"
           raise Exceptions::MetadataNotValid, message
         end
         false
