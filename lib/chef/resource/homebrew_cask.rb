@@ -37,7 +37,7 @@ class Chef
                name_property: true
 
       property :options, String,
-               description: "Options to pass to the brew CLI during installation."
+               description: "Options to pass to the brew command during installation."
 
       property :install_cask, [TrueClass, FalseClass],
                description: "Automatically install the Homebrew cask tap, if necessary.",
@@ -48,7 +48,7 @@ class Chef
                default: "/usr/local/bin/brew"
 
       property :owner, String,
-               description: "The owner of the homebrew installation.",
+               description: "The owner of the Homebrew installation.",
                default: lazy { find_homebrew_username }
 
       action :install do

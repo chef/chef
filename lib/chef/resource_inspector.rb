@@ -46,9 +46,9 @@ module ResourceInspector
     data[:preview] = resource.preview_resource
 
     properties = unless complete
-                   resource.properties.reject { |_, k| k.options[:declared_in] == Chef::Resource }
+                   resource.properties.reject { |_, k| k.options[:declared_in] == Chef::Resource || k.options[:skip_docs] }
                  else
-                   resource.properties
+                   resource.properties.reject { |_, k| k.options[:skip_docs] }
                  end
 
     data[:properties] = properties.each_with_object([]) do |(n, k), acc|
@@ -57,7 +57,7 @@ module ResourceInspector
                introduced: opts[:introduced], is: opts[:is],
                deprecated: opts[:deprecated] || false,
                required: opts[:required] || false,
-               default: get_default(opts[:default]),
+               default: opts[:default_description] || get_default(opts[:default]),
                name_property: opts[:name_property] || false }
     end
     data

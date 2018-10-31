@@ -29,11 +29,11 @@ class Chef
       introduced "14.0"
 
       property :domain, String,
-               description: "The domain the defaults belong to.",
+               description: "The domain that the user defaults belong to.",
                required: true
 
       property :global, [TrueClass, FalseClass],
-               description: "Whether the domain is global.",
+               description: "Determines whether or not the domain is global.",
                default: false
 
       property :key, String,
@@ -44,21 +44,22 @@ class Chef
                required: true
 
       property :type, String,
-               description: "Value type of the preference key.",
+               description: "The value type of the preference key.",
                default: ""
 
       property :user, String,
-               description: "User for which to set the default."
+               description: "The system user that the default will be applied to."
 
       property :sudo, [TrueClass, FalseClass],
-               description: "Set to true if the setting requires privileged access to modify.",
+               description: "Set to true if the setting you wish to modify requires privileged access.",
                default: false,
                desired_state: false
 
       # @todo this should get refactored away: https://github.com/chef/chef/issues/7622
       property :is_set, [TrueClass, FalseClass],
                default: false,
-               desired_state: false
+               desired_state: false,
+               skip_docs: true
 
        # coerce various ways of representing a boolean into either 0 (false) or 1 (true)
        # which is what the defaults CLI expects. Why? Well defaults itself accepts a few
