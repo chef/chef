@@ -191,10 +191,12 @@ class Chef::Application::Apply < Chef::Application
     recipe, run_context = get_recipe_and_run_context
     recipe.instance_eval(@recipe_text, @recipe_filename, 1)
     runner = Chef::Runner.new(run_context)
-    begin
-      runner.converge
-    ensure
-      @recipe_fh.close
+    catch(:end_client_run_early) do
+      begin
+        runner.converge
+      ensure
+        @recipe_fh.close
+      end
     end
     Chef::Platform::Rebooter.reboot_if_needed!(runner)
   end
