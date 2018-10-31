@@ -331,7 +331,7 @@ GEM
       hashdiff
     websocket (1.2.8)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.1.10)
+    win32-certstore (0.1.11)
       ffi
       mixlib-shellout
     win32-dir (0.5.1)
