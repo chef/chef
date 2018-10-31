@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.16 -->
-## [v15.0.16](https://github.com/chef/chef/tree/v15.0.16) (2018-10-30)
+<!-- latest_release 15.0.17 -->
+## [v15.0.17](https://github.com/chef/chef/tree/v15.0.17) (2018-10-31)
 
 #### Merged Pull Requests
-- Add windows_certificate and windows_share resources [#7731](https://github.com/chef/chef/pull/7731) ([tas50](https://github.com/tas50))
+- Update win32-certstore to include a license [#7822](https://github.com/chef/chef/pull/7822) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update win32-certstore to include a license [#7822](https://github.com/chef/chef/pull/7822) ([tas50](https://github.com/tas50)) <!-- 15.0.17 -->
 - Add windows_certificate and windows_share resources [#7731](https://github.com/chef/chef/pull/7731) ([tas50](https://github.com/tas50)) <!-- 15.0.16 -->
 - Remove unused route resource properties [#7240](https://github.com/chef/chef/pull/7240) ([tas50](https://github.com/tas50)) <!-- 15.0.15 -->
 - Fix inspector to properly handle defaults that are symbols [#7813](https://github.com/chef/chef/pull/7813) ([tas50](https://github.com/tas50)) <!-- 15.0.14 -->
