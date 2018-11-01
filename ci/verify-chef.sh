@@ -2,6 +2,18 @@
 
 set -evx
 
+# Our tests hammer YUM pretty hard and the EL6 testers get corrupted
+# after some period of time. Rebuilding the RPM database clears
+# up the underlying corruption. We'll do this each test run just to
+# be safe.
+if [ -f /etc/redhat-release ]; then
+  major_version=`sed 's/^.\+ release \([0-9]\+\).*/\1/' /etc/redhat-release`
+  if [ "$major_version" -lt "7" ]; then
+    sudo rm -rf /var/lib/rpm/__db.00*
+    sudo rpm --rebuilddb
+  fi
+fi
+
 # Set up a custom tmpdir, and clean it up before and after the tests
 TMPDIR="${TMPDIR:-/tmp}/cheftest"
 export TMPDIR
