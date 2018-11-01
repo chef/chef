@@ -1,7 +1,3 @@
-#
-# Cookbook Name:: windows_firewall
-# Resource:: rule
-#
 # Author:: Matt Clifton (spartacus003@hotmail.com)
 # Author:: Matt Stratton (matt.stratton@gmail.com)
 # Author:: Tor Magnus Rakvåg (tor.magnus@outlook.com)
