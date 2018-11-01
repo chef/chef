@@ -334,7 +334,7 @@ GEM
     win32-service (1.0.1)
       ffi
       ffi-win32-extensions
-    win32-taskscheduler (2.0.0)
+    win32-taskscheduler (2.0.1)
       ffi
       structured_warnings
     windows-api (0.4.4)
