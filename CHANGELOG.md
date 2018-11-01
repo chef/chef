@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.8 -->
-## [v14.7.8](https://github.com/chef/chef/tree/v14.7.8) (2018-11-01)
+<!-- latest_release 14.7.9 -->
+## [v14.7.9](https://github.com/chef/chef/tree/v14.7.9) (2018-11-01)
 
 #### Merged Pull Requests
-- Update win32-taskscheduler to 2.0.1 [#7844](https://github.com/chef/chef/pull/7844) ([tas50](https://github.com/tas50))
+- Backport: Added `description` property on windows_task resource [#7848](https://github.com/chef/chef/pull/7848) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.6.47 -->
 ### Changes since 14.6.47 release
 
 #### Merged Pull Requests
+- Backport: Added `description` property on windows_task resource [#7848](https://github.com/chef/chef/pull/7848) ([btm](https://github.com/btm)) <!-- 14.7.9 -->
 - Update win32-taskscheduler to 2.0.1 [#7844](https://github.com/chef/chef/pull/7844) ([tas50](https://github.com/tas50)) <!-- 14.7.8 -->
 - Backport: Fix chef-apply crash for reboot [#7828](https://github.com/chef/chef/pull/7828) ([tas50](https://github.com/tas50)) <!-- 14.7.7 -->
 - Backport: Multiple fixes to dmg_package including functional EULA acceptance [#7831](https://github.com/chef/chef/pull/7831) ([tas50](https://github.com/tas50)) <!-- 14.7.6 -->
