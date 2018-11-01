@@ -9,8 +9,10 @@ set -evx
 if [ -f /etc/redhat-release ]; then
   major_version=`sed 's/^.\+ release \([0-9]\+\).*/\1/' /etc/redhat-release`
   if [ "$major_version" -lt "7" ]; then
-    sudo rm -rf /var/lib/rpm/__db.00*
+    sudo rm -rf /var/lib/rpm/__db*
+    sudo db_verify /var/lib/rpm/Packages
     sudo rpm --rebuilddb
+    sudo yum clean all
   fi
 fi
 
