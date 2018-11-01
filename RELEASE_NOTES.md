@@ -4,11 +4,11 @@ _This file holds "in progress" release notes for the current release under devel
 
 ## Smaller Package and Install Size
 
-Both Chef packages and on disk installations have been greatly reduced in size by trimming unnecessary installation files. This has reduced our package size on macOS/Linux by ~50% and Windows by ~12%. With this change Chef 13 is now smaller than a legacy Chef 10 package.
+We trimmed unnecessary installation files, greatly reducing the sizes of both Chef packages and on disk installations. MacOS/Linux/FreeBSD packages are ~50% smaller and Windows are ~12% smaller. Chef 13 is now smaller than a legacy Chef 10 package.
 
 ## macOS Mojave (10.14)
 
-Chef is now tested against macOS Mojave, and packages are now available at downloads.chef.io.
+Chef is now tested against macOS Mojave and packages are now available at downloads.chef.io.
 
 ## SUSE Linux Enterprise Server 15
 
@@ -17,11 +17,11 @@ Chef is now tested against macOS Mojave, and packages are now available at downl
 
 ## Updated Chef-Vault
 
-Multiple bugfixes in Chef Vault have been resolved by updating chef-vault to 3.4.2
+Updating chef-vault to 3.4.2 resolved multiple bugs.
 
 ## Faster Windows Installations
 
-Windows installation speeds have been improved by using skipping unnecessary steps when Windows Installer 5+ is available.
+Improved Windows installation speed by skipping unnecessary steps when Windows Installer 5.0 or later is available.
 
 ## Ohai Release Notes 13.12
 
@@ -34,7 +34,7 @@ Windows installation speeds have been improved by using skipping unnecessary ste
 
 ### system_profile Ohai plugin removal
 
-The system_profile plugin will be removed from Chef/Ohai 15 in April 2019. This plugin does not correctly return data on modern Mac systems. Additionally the same data is provided by the hardware plugin, which has a format that is simpler to consume. Removing this plugin will reduce Ohai return by ~3 seconds and greatly reduce the size of the node object on the Chef server.
+The system_profile plugin will be removed from Chef/Ohai 15 in April, 2019. This plugin incorrectly returns data on modern Mac systems. Further, the hardware plugin returns the same data in a more readily consumable format. Removing this plugin reduces the speed of the Ohai return by ~3 seconds and also greatly reduces the node object size on the Chef server
 
 ### ohai_name property in ohai resource
 
