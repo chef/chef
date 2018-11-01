@@ -33,8 +33,7 @@ describe Chef::Knife::UserDelete do
   end
 
   it "deletes the user" do
-    # expect(knife).to receive(:delete_object).with(Chef::UserV1, 'my_user')
-    expect(knife).to receive(:delete_object).with("my_user")
+    expect(knife).to receive(:delete_object).with(Chef::UserV1, "my_user")
     knife.run
   end
 
