@@ -1,23 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.12.3 -->
-## [v13.12.3](https://github.com/chef/chef/tree/v13.12.3) (2018-11-01)
-
-#### Merged Pull Requests
-- Backport:  Throw better error on invalid resources actions  [#7836](https://github.com/chef/chef/pull/7836) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=13.11.3 -->
-### Changes since 13.11.3 release
-
-#### Merged Pull Requests
-- Backport:  Throw better error on invalid resources actions  [#7836](https://github.com/chef/chef/pull/7836) ([tas50](https://github.com/tas50)) <!-- 13.12.3 -->
-- Update Ohai to 13.12.4 [#7817](https://github.com/chef/chef/pull/7817) ([tas50](https://github.com/tas50)) <!-- 13.12.2 -->
-- Pin rake to 12.0 to prevent shipping 2 copies [#7812](https://github.com/chef/chef/pull/7812) ([tas50](https://github.com/tas50)) <!-- 13.12.1 -->
-- Bump dependencies / slim the package size [#7805](https://github.com/chef/chef/pull/7805) ([tas50](https://github.com/tas50)) <!-- 13.12.0 -->
-- Backport omnibus cleanup + MSI speedup logic from Chef 14 [#7739](https://github.com/chef/chef/pull/7739) ([tas50](https://github.com/tas50)) <!-- 13.11.4 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.12.3](https://github.com/chef/chef/tree/v13.12.3) (2018-11-01)
+
+#### Merged Pull Requests
+- Backport omnibus cleanup + MSI speedup logic from Chef 14 [#7739](https://github.com/chef/chef/pull/7739) ([tas50](https://github.com/tas50))
+- Bump dependencies / slim the package size [#7805](https://github.com/chef/chef/pull/7805) ([tas50](https://github.com/tas50))
+- Pin rake to 12.0 to prevent shipping 2 copies [#7812](https://github.com/chef/chef/pull/7812) ([tas50](https://github.com/tas50))
+- Update Ohai to 13.12.4 [#7817](https://github.com/chef/chef/pull/7817) ([tas50](https://github.com/tas50))
+- Backport:  Throw better error on invalid resources actions  [#7836](https://github.com/chef/chef/pull/7836) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v13.11.3](https://github.com/chef/chef/tree/v13.11.3) (2018-09-26)
 
 #### Merged Pull Requests
@@ -28,7 +26,6 @@
 - Fix remote_directory does not obey removal of file specificity [#7687](https://github.com/chef/chef/pull/7687) ([tas50](https://github.com/tas50))
 - windows_package: Avoid exposing sensitive data during package install failures if sensitive property set [#7684](https://github.com/chef/chef/pull/7684) ([tas50](https://github.com/tas50))
 - osx_profile: Use the full path to /usr/bin/profiles [#7683](https://github.com/chef/chef/pull/7683) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v13.10.4](https://github.com/chef/chef/tree/v13.10.4) (2018-08-08)
 
