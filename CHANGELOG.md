@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.26 -->
-## [v15.0.26](https://github.com/chef/chef/tree/v15.0.26) (2018-11-01)
+<!-- latest_release 15.0.27 -->
+## [v15.0.27](https://github.com/chef/chef/tree/v15.0.27) (2018-11-01)
 
 #### Merged Pull Requests
-- Remove deprecated knife status --hide-healthy flag [#7791](https://github.com/chef/chef/pull/7791) ([tas50](https://github.com/tas50))
+- Remove the deprecated ohai_name property from the ohai resource [#7787](https://github.com/chef/chef/pull/7787) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Remove the deprecated ohai_name property from the ohai resource [#7787](https://github.com/chef/chef/pull/7787) ([tas50](https://github.com/tas50)) <!-- 15.0.27 -->
 - Remove deprecated knife status --hide-healthy flag [#7791](https://github.com/chef/chef/pull/7791) ([tas50](https://github.com/tas50)) <!-- 15.0.26 -->
 - Update win32-taskscheduler to 2.0.1 [#7843](https://github.com/chef/chef/pull/7843) ([tas50](https://github.com/tas50)) <!-- 15.0.24 -->
 - Handle `interactive_enabled` property in windows_task resource [#7814](https://github.com/chef/chef/pull/7814) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.23 -->
