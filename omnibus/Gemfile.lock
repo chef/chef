@@ -151,7 +151,7 @@ GEM
     citrus (3.0.2)
     cleanroom (1.0.0)
     coderay (1.1.2)
-    concurrent-ruby (1.0.5)
+    concurrent-ruby (1.1.0)
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     erubis (2.7.0)
@@ -334,7 +334,7 @@ GEM
     win32-service (1.0.1)
       ffi
       ffi-win32-extensions
-    win32-taskscheduler (2.0.0)
+    win32-taskscheduler (2.0.1)
       ffi
       structured_warnings
     windows-api (0.4.4)
