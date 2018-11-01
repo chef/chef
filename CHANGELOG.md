@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.27 -->
-## [v15.0.27](https://github.com/chef/chef/tree/v15.0.27) (2018-11-01)
+<!-- latest_release 15.0.28 -->
+## [v15.0.28](https://github.com/chef/chef/tree/v15.0.28) (2018-11-01)
 
 #### Merged Pull Requests
-- Remove the deprecated ohai_name property from the ohai resource [#7787](https://github.com/chef/chef/pull/7787) ([tas50](https://github.com/tas50))
+- Added property `description` on windows_task resource [#7777](https://github.com/chef/chef/pull/7777) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Added property `description` on windows_task resource [#7777](https://github.com/chef/chef/pull/7777) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.28 -->
 - Remove the deprecated ohai_name property from the ohai resource [#7787](https://github.com/chef/chef/pull/7787) ([tas50](https://github.com/tas50)) <!-- 15.0.27 -->
 - Remove deprecated knife status --hide-healthy flag [#7791](https://github.com/chef/chef/pull/7791) ([tas50](https://github.com/tas50)) <!-- 15.0.26 -->
 - Update win32-taskscheduler to 2.0.1 [#7843](https://github.com/chef/chef/pull/7843) ([tas50](https://github.com/tas50)) <!-- 15.0.24 -->
