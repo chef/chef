@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 12.22.6 -->
+## [v12.22.6](https://github.com/chef/chef/tree/v12.22.6) (2018-11-02)
+
+#### Merged Pull Requests
+- update the Chef::REST deprecation warning [#7854](https://github.com/chef/chef/pull/7854) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=12.22.5 -->
+### Changes since 12.22.5 release
+
+#### Merged Pull Requests
+- update the Chef::REST deprecation warning [#7854](https://github.com/chef/chef/pull/7854) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 12.22.6 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
