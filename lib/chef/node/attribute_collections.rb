@@ -18,6 +18,9 @@
 
 require "chef/node/common_api"
 require "chef/node/mixin/state_tracking"
+require "chef/node/mixin/immutablize_array"
+require "chef/node/mixin/immutablize_hash"
+require "chef/node/mixin/mashy_array"
 
 class Chef
   class Node
@@ -26,36 +29,9 @@ class Chef
     # "root" (Chef::Node::Attribute) object, and will trigger a cache
     # invalidation on that object when mutated.
     class AttrArray < Array
-      MUTATOR_METHODS = [
-        :<<,
-        :[]=,
-        :clear,
-        :collect!,
-        :compact!,
-        :default=,
-        :default_proc=,
-        :delete_at,
-        :delete_if,
-        :fill,
-        :flatten!,
-        :insert,
-        :keep_if,
-        :map!,
-        :merge!,
-        :pop,
-        :push,
-        :update,
-        :reject!,
-        :reverse!,
-        :replace,
-        :select!,
-        :shift,
-        :slice!,
-        :sort!,
-        :sort_by!,
-        :uniq!,
-        :unshift,
-      ].freeze
+      include Chef::Node::Mixin::MashyArray
+
+      MUTATOR_METHODS = Chef::Node::Mixin::ImmutablizeArray::DISALLOWED_MUTATOR_METHODS
 
       # For all of the methods that may mutate an Array, we override them to
       # also invalidate the cached merged_attributes on the root
@@ -130,32 +106,21 @@ class Chef
       # Methods that mutate a VividMash. Each of them is overridden so that it
       # also invalidates the cached merged_attributes on the root Attribute
       # object.
-      MUTATOR_METHODS = [
-        :clear,
-        :delete_if,
-        :keep_if,
-        :merge!,
-        :update,
-        :reject!,
-        :replace,
-        :select!,
-        :shift,
-      ].freeze
+      MUTATOR_METHODS = Chef::Node::Mixin::ImmutablizeHash::DISALLOWED_MUTATOR_METHODS - [ :write, :write!, :unlink, :unlink! ]
 
       # For all of the mutating methods on Mash, override them so that they
       # also invalidate the cached `merged_attributes` on the root Attribute
       # object.
-
-      def delete(key, &block)
-        send_reset_cache(__path__, key)
-        super
-      end
-
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
           send_reset_cache
           super(*args, &block)
         end
+      end
+
+      def delete(key, &block)
+        send_reset_cache(__path__, key)
+        super
       end
 
       def initialize(data = {})
