@@ -2,8 +2,8 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,7 +96,7 @@ describe Chef::REST do
   it "emits a deprecation warning" do
     Chef::Config[:treat_deprecation_warnings_as_errors] = true
     expect { Chef::REST.new(base_url) }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-      /Chef::REST is deprecated. Please use Chef::ServerAPI, or investigate Ridley or ChefAPI./
+      /Chef::REST is deprecated/
   end
 
   context "when created with a chef zero URL" do
