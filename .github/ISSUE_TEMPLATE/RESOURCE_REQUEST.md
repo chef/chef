@@ -7,8 +7,8 @@ about: I have a suggestion for a new resource in Chef (and may want to implement
 ### Core Chef Resource Checklist
 
 Before suggesting a resource for inclusion please make sure your suggestion meets these criteria for resources built into Chef:
- - [ ] New functionality includes testsAutomates an operating system component that ships by default on systems such as authentication, raid, disk partitions, firewalls, containers, or virtualization systems.
- - [ ] New functionality includes testsDoes not attempt automate 3rd party applications such as database, web, or application servers, which are best suited for cookbooks due to their fast moving nature.
+ - [ ] Automates an operating system component that ships by default on systems such as authentication, raid, disk partitions, firewalls, containers, or virtualization systems.
+ - [ ] Does not attempt automate 3rd party applications such as database, web, or application servers, which are best suited for cookbooks due to their fast moving nature.
 
 ### Describe the resource:
 <!---  Tell us about the resource -->
