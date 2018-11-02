@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.29 -->
-## [v15.0.29](https://github.com/chef/chef/tree/v15.0.29) (2018-11-01)
+<!-- latest_release 15.0.30 -->
+## [v15.0.30](https://github.com/chef/chef/tree/v15.0.30) (2018-11-02)
 
 #### Merged Pull Requests
-- Remove knife cookbook test feature [#7323](https://github.com/chef/chef/pull/7323) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 3.0.25 [#7853](https://github.com/chef/chef/pull/7853) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Bump inspec-core to 3.0.25 [#7853](https://github.com/chef/chef/pull/7853) ([chef-ci](https://github.com/chef-ci)) <!-- 15.0.30 -->
 - Remove knife cookbook test feature [#7323](https://github.com/chef/chef/pull/7323) ([tas50](https://github.com/tas50)) <!-- 15.0.29 -->
 - Added property `description` on windows_task resource [#7777](https://github.com/chef/chef/pull/7777) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.28 -->
 - Remove the deprecated ohai_name property from the ohai resource [#7787](https://github.com/chef/chef/pull/7787) ([tas50](https://github.com/tas50)) <!-- 15.0.27 -->
