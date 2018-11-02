@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.33 -->
-## [v15.0.33](https://github.com/chef/chef/tree/v15.0.33) (2018-11-02)
+<!-- latest_release 15.0.34 -->
+## [v15.0.34](https://github.com/chef/chef/tree/v15.0.34) (2018-11-02)
 
 #### Merged Pull Requests
-- Remove the check for nil code property in the script provider [#7855](https://github.com/chef/chef/pull/7855) ([tas50](https://github.com/tas50))
+- Chef 15 node attribute array fixes [#7840](https://github.com/chef/chef/pull/7840) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Chef 15 node attribute array fixes [#7840](https://github.com/chef/chef/pull/7840) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.34 -->
 - Remove the check for nil code property in the script provider [#7855](https://github.com/chef/chef/pull/7855) ([tas50](https://github.com/tas50)) <!-- 15.0.33 -->
 - powershell_package doc update [#7857](https://github.com/chef/chef/pull/7857) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.32 -->
 - Set http_disable_auth_on_redirect to true [#7856](https://github.com/chef/chef/pull/7856) ([tas50](https://github.com/tas50)) <!-- 15.0.31 -->
