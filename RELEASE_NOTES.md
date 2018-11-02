@@ -4,6 +4,75 @@ This file holds "in progress" release notes for the current release under develo
 
 Chef 15 release notes will be added here as development progresses.
 
+## Breaking Changes
+
+### http_disable_auth_on_redirect now enabled
+
+The Chef config ``http_disable_auth_on_redirect`` has been changed from `false` to `true`. In Chef 16 this config option will be removed alltogether and Chef will always disable auth on redirect.
+
+### knife cookbook test removal
+
+The ``knife cookbook test`` command has been removed. This command would often report non-functional cookbook as functional and has been superceded by functionality in other testing tools such as ``cookstyle``, ``foodcritic``, and ``chefspec``.
+
+### ohai resource's ohai_name property removal
+
+The ohai resource contained a non-functional ohai_name property, which has been removed.
+
+### knife status --hide-healthy flag removal
+
+The ``knife status --hide-healthy`` flag has been removed. Users should run ``knife status --hide-by-mins MINS`` instead.
+
+### Cookbook shadowing in Chef Solo Legacy Mode Removed
+
+Previously if a user provided multiple cookbook path's to Chef Solo that contained cookbooks with the same name, Chef would combine these into a single cookbook. This merging of two cookbooks often caused unexpected outcomes and has been removed.
+
+### Removal of unused Route properties
+
+The route resource contained multiple unused properties that have been removed. If you previously set ``networking``, ``networking_ipv6``, ``hostname``, ``domainname``, or ``domain`` they would be ignored. In Chef 15 setting these properties will throw an error.
+
+### FreeBSD pkg provider removal
+
+Support for the FreeBSD ``pkg`` package system in the ``freebsd_package`` resource has been removed. FreeBSD 10 replaced the ``pkg`` system with ``pkg-ng`` system so this only impacts users of EOL FreeBSD releases.
+
+### require_recipe removal
+
+The legacy ``require_recipe`` method in recipes has been removed. This method was replaced with ``include_recipe`` in the Chef 10 era, and a FoodCritic rule has been warning to update cookbooks for multiple years.
+
+### Legacy shell_out methods removed
+
+In Chef 14 many of the more obscure ``shell_out`` methods used in LWRPs and custom resources were combined into the standard ``shell_out`` and ``shell_out!`` methods. The legacy methods were infrequently and Chef 14/Foodcritic both contained deprecation warnings for these methods. The following methods will now throw an error: ``shell_out_compact``, ``shell_out_compact!``, ``shell_out_compact_timeout``, ``shell_out_compact_timeout!``, ``shell_out_with_systems_locale``, ``shell_out_with_systems_locale!``,
+
+### knife bootstrap --identity_file removal
+
+The ``knife bootstrap --identity_file`` flag has been removed. This flag was deprecated in Chef 12 and users should now use the ``--ssh-identity-file`` flag instead.
+
+### knife user support for Chef Server < 12 removed
+
+The `knife user` command no longer supports open source Chef Server version prior to 12.
+
+### Node attributes array bugfix
+
+Chef 15 includes a bugfix for incorrect node attribute behavior with a rare usage of arrays that may impact users that depended on the incorrect behavior.
+
+Previous setting an attribute like this:
+
+```
+node.default["foo"] = []
+node.default["foo"] << { "bar" => "baz }
+```
+
+Would result in a Hash instead of a VividMash inserted into the
+AttrArray, so that:
+
+```
+node.default["foo"][0]["bar"] # gives the correct result
+node.default["foo"][0][:bar]  # does not work due to the sub-Hash not
+                              # converting keys
+```
+
+The new behavior uses a Mash so that the attributes will work as expected.
+
+
 # Chef Client Release Notes 14.6:
 
 ## Smaller Package and Install Size
