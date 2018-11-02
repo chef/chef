@@ -4,7 +4,7 @@
 # Author:: Nuo Yan (<nuo@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,7 +59,7 @@ class Chef
     # http://localhost:4000, a call to +get_rest+ with 'nodes' will make an
     # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, client_name = Chef::Config[:node_name], signing_key_filename = Chef::Config[:client_key], options = {})
-      Chef.deprecated(:chef_rest, "Chef::REST is deprecated. Please use Chef::ServerAPI, or investigate Ridley or ChefAPI.")
+      Chef.deprecated(:chef_rest, "Chef::REST is deprecated. Please use Chef::ServerAPI (and see Chef::HTTP and the related derived classes).")
 
       signing_key_filename = nil if chef_zero_uri?(url)
 
