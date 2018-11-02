@@ -1,4 +1,10 @@
-<!--- 
+---
+name: 🐛 Bug Report
+about: If something isn't working as expected 🤔.
+
+---
+
+<!---
 !!!!!! NOTE: CHEF CLIENT BUGS ONLY !!!!!!
 
 This issue tracker is for the code contained within this repo -- `chef-client`, base `knife` functionality (not
