@@ -50,6 +50,7 @@ class Chef
       # The display name to be used by user interface programs to identify the
       # service. This string has a maximum length of 256 characters.
       property :display_name, String, regex: /^.{1,256}$/,
+               validation_message: "The display_name can only be a maximum of 256 characters!",
                introduced: "14.0"
 
       # https://github.com/djberg96/win32-service/blob/ffi/lib/win32/windows/constants.rb#L19-L29
