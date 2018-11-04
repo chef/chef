@@ -19,7 +19,7 @@ require "chef/chef_fs/knife"
 class Chef
   class Knife
     class List < Chef::ChefFS::Knife
-      banner "knife list [-dfR1p] [PATTERN1 ... PATTERNn]"
+      banner "knife list [-dfR1p] [PATTERN1 ... PATTERNn] (options)"
 
       category "path-based"
 

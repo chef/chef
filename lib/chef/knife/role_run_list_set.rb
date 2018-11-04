@@ -27,7 +27,7 @@ class Chef
         require "chef/role"
       end
 
-      banner "knife role run_list set [ROLE] [ENTRIES]"
+      banner "knife role run_list set [ROLE] [ENTRIES] (options)"
 
       # Clears out any existing env_run_list_items and sets them to the
       # specified entries

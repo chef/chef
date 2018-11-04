@@ -21,7 +21,7 @@ require "chef/workstation_config_loader"
 class Chef
   class Knife
     class ConfigListProfiles < Knife
-      banner "knife config list-profiles"
+      banner "knife config list-profiles (options)"
 
       option :ignore_knife_rb,
              short: "-i",
