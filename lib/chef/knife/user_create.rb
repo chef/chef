@@ -18,7 +18,6 @@
 #
 
 require "chef/knife"
-require "chef/knife/osc_user_create"
 
 class Chef
   class Knife
