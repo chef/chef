@@ -20,7 +20,7 @@ require "chef/http"
 class Chef
   class Knife
     class Raw < Chef::Knife
-      banner "knife raw REQUEST_PATH"
+      banner "knife raw REQUEST_PATH (options)"
 
       deps do
         require "chef/json_compat"

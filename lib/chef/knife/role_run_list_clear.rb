@@ -28,7 +28,7 @@ class Chef
         require "chef/json_compat"
       end
 
-      banner "knife role run_list clear [ROLE]"
+      banner "knife role run_list clear [ROLE] (options)"
       def clear_env_run_list(role, environment)
         nlist = []
         role.env_run_lists_add(environment => nlist)

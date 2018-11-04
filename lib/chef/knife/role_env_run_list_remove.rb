@@ -27,7 +27,7 @@ class Chef
         require "chef/json_compat"
       end
 
-      banner "knife role env_run_list remove [ROLE] [ENVIRONMENT] [ENTRIES]"
+      banner "knife role env_run_list remove [ROLE] [ENVIRONMENT] [ENTRIES] (options)"
 
       def remove_from_env_run_list(role, environment, item_to_remove)
         nlist = []
