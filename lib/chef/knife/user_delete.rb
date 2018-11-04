@@ -28,42 +28,6 @@ class Chef
 
       banner "knife user delete USER (options)"
 
-      def osc_11_warning
-        <<~EOF
-          The Chef Server you are using does not support the username field.
-          This means it is an Open Source 11 Server.
-          knife user delete for Open Source 11 Server is being deprecated.
-          Open Source 11 Server user commands now live under the knife osc_user namespace.
-          For backwards compatibility, we will forward this request to knife osc_user delete.
-          If you are using an Open Source 11 Server, please use that command to avoid this warning.
-          NOTE: Backwards compatibility for Open Source 11 Server in these commands will be removed
-          in Chef 15 which will be released April 2019.
-EOF
-      end
-
-      def run_osc_11_user_delete
-        # run osc_user_delete with our input
-        ARGV.delete("user")
-        ARGV.unshift("osc_user")
-        Chef::Knife.run(ARGV, Chef::Application::Knife.options)
-      end
-
-      # DEPRECATION NOTE
-      # Delete this override method after OSC 11 support is dropped
-      def delete_object(user_name)
-        confirm("Do you really want to delete #{user_name}")
-
-        if Kernel.block_given?
-          object = block.call
-        else
-          object = Chef::UserV1.load(user_name)
-          object.destroy
-        end
-
-        output(format_for_display(object)) if config[:print_after]
-        msg("Deleted #{user_name}")
-      end
-
       def run
         @user_name = @name_args[0]
 
@@ -73,23 +37,7 @@ EOF
           exit 1
         end
 
-        # DEPRECATION NOTE
-        #
-        # Below is modification of Chef::Knife.delete_object to detect OSC 11 server.
-        # When OSC 11 is deprecated, simply delete all this and go back to:
-        #
-        # delete_object(Chef::UserV1, @user_name)
-        #
-        # Also delete our override of delete_object above
-        object = Chef::UserV1.load(@user_name)
-
-        # OSC 11 case
-        if object.username.nil?
-          ui.warn(osc_11_warning)
-          run_osc_11_user_delete
-        else # proceed with EC / CS delete
-          delete_object(@user_name)
-        end
+        delete_object(Chef::UserV1, @user_name)
       end
     end
   end
