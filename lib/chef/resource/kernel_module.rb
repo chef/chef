@@ -41,12 +41,14 @@ class Chef
 
         file "#{new_resource.load_dir}/#{new_resource.modname}.conf" do
           content "#{new_resource.modname}\n"
-          notifies :run, "execute[update initramfs]"
+          notifies :run, "execute[update initramfs]", :delayed
         end
 
-        execute "update initramfs" do
-          command initramfs_command
-          action :nothing
+        with_run_context :root do
+          find_resource(:execute, "update initramfs") do
+            command initramfs_command
+            action :nothing
+          end
         end
       end
 
@@ -55,17 +57,19 @@ class Chef
 
         file "#{new_resource.load_dir}/#{new_resource.modname}.conf" do
           action :delete
-          notifies :run, "execute[update initramfs]"
+          notifies :run, "execute[update initramfs]", :delayed
         end
 
         file "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf" do
           action :delete
-          notifies :run, "execute[update initramfs]"
+          notifies :run, "execute[update initramfs]", :delayed
         end
 
-        execute "update initramfs" do
-          command initramfs_command
-          action :nothing
+        with_run_context :root do
+          find_resource(:execute, "update initramfs") do
+            command initramfs_command
+            action :nothing
+          end
         end
 
         new_resource.run_action(:unload)
@@ -76,12 +80,14 @@ class Chef
 
         file "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf" do
           content "blacklist #{new_resource.modname}"
-          notifies :run, "execute[update initramfs]"
+          notifies :run, "execute[update initramfs]", :delayed
         end
 
-        execute "update initramfs" do
-          command initramfs_command
-          action :nothing
+        with_run_context :root do
+          find_resource(:execute, "update initramfs") do
+            command initramfs_command
+            action :nothing
+          end
         end
 
         new_resource.run_action(:unload)
