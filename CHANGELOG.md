@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.11 -->
-## [v14.7.11](https://github.com/chef/chef/tree/v14.7.11) (2018-11-05)
+<!-- latest_release 14.7.12 -->
+## [v14.7.12](https://github.com/chef/chef/tree/v14.7.12) (2018-11-05)
 
 #### Merged Pull Requests
-- Backport: Make knife command banners consistent [#7874](https://github.com/chef/chef/pull/7874) ([tas50](https://github.com/tas50))
+- Add more validation_messages to properties [#7875](https://github.com/chef/chef/pull/7875) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.6.47 -->
 ### Changes since 14.6.47 release
 
 #### Merged Pull Requests
+- Add more validation_messages to properties [#7875](https://github.com/chef/chef/pull/7875) ([tas50](https://github.com/tas50)) <!-- 14.7.12 -->
 - Backport: Make knife command banners consistent [#7874](https://github.com/chef/chef/pull/7874) ([tas50](https://github.com/tas50)) <!-- 14.7.11 -->
 - Backport: Add default_descriptions to properties [#7873](https://github.com/chef/chef/pull/7873) ([tas50](https://github.com/tas50)) <!-- 14.7.10 -->
 - Backport: Added `description` property on windows_task resource [#7848](https://github.com/chef/chef/pull/7848) ([btm](https://github.com/btm)) <!-- 14.7.9 -->
