@@ -19,7 +19,7 @@ require "chef/chef_fs/knife"
 class Chef
   class Knife
     class Show < Chef::ChefFS::Knife
-      banner "knife show [PATTERN1 ... PATTERNn]"
+      banner "knife show [PATTERN1 ... PATTERNn] (options)"
 
       category "path-based"
 

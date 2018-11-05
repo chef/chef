@@ -28,7 +28,7 @@ class Chef
         require "chef/json_compat"
       end
 
-      banner "knife role env_run_list set [ROLE] [ENVIRONMENT] [ENTRIES]"
+      banner "knife role env_run_list set [ROLE] [ENVIRONMENT] [ENTRIES] (optionss)"
 
       # Clears out any existing env_run_list_items and sets them to the
       # specified entries

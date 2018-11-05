@@ -19,7 +19,7 @@ require "chef/chef_fs/knife"
 class Chef
   class Knife
     class Xargs < Chef::ChefFS::Knife
-      banner "knife xargs [COMMAND]"
+      banner "knife xargs [COMMAND] (options)"
 
       category "path-based"
 
