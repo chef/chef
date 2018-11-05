@@ -24,6 +24,7 @@ require "chef/json_compat"
 class Chef
   class Resource
     class WindowsFirewallRule < Chef::Resource
+      preview_resource true
       resource_name :windows_firewall_rule
 
       description "Use the windows_firewall_rule resource to create, change or remove windows firewall rules."
