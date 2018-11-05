@@ -28,7 +28,7 @@ class Chef
         require "chef/json_compat"
       end
 
-      banner "knife role env_run_list replace [ROLE] [ENVIRONMENT] [OLD_ENTRY] [NEW_ENTRY] "
+      banner "knife role env_run_list replace [ROLE] [ENVIRONMENT] [OLD_ENTRY] [NEW_ENTRY] (options)"
 
       def replace_in_env_run_list(role, environment, old_entry, new_entry)
         nlist = []

@@ -19,7 +19,7 @@ require "chef/chef_fs/knife"
 class Chef
   class Knife
     class Upload < Chef::ChefFS::Knife
-      banner "knife upload PATTERNS"
+      banner "knife upload PATTERNS (options)"
 
       category "path-based"
 
