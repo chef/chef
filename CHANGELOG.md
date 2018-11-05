@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.36 -->
-## [v15.0.36](https://github.com/chef/chef/tree/v15.0.36) (2018-11-04)
+<!-- latest_release 15.0.37 -->
+## [v15.0.37](https://github.com/chef/chef/tree/v15.0.37) (2018-11-05)
 
 #### Merged Pull Requests
-- Remove knife user support for open source Chef Server &lt; 12 [#7841](https://github.com/chef/chef/pull/7841) ([tas50](https://github.com/tas50))
+- Remove the remaining OSC 11 knife user commands [#7868](https://github.com/chef/chef/pull/7868) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Remove the remaining OSC 11 knife user commands [#7868](https://github.com/chef/chef/pull/7868) ([tas50](https://github.com/tas50)) <!-- 15.0.37 -->
 - Remove knife user support for open source Chef Server &lt; 12 [#7841](https://github.com/chef/chef/pull/7841) ([tas50](https://github.com/tas50)) <!-- 15.0.36 -->
 - Add additional github issue templates [#7859](https://github.com/chef/chef/pull/7859) ([tas50](https://github.com/tas50)) <!-- 15.0.35 -->
 - Chef 15 node attribute array fixes [#7840](https://github.com/chef/chef/pull/7840) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.34 -->
