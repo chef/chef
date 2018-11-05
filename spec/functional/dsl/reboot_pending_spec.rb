@@ -17,7 +17,6 @@
 #
 
 require "chef/dsl/reboot_pending"
-require "chef/win32/registry"
 require "spec_helper"
 
 describe Chef::DSL::RebootPending, :windows_only do
@@ -45,7 +44,6 @@ describe Chef::DSL::RebootPending, :windows_only do
       let(:original_set) { registry.value_exists?(reg_key, { name: "PendingFileRenameOperations" }) }
 
       it "returns true if the registry value exists" do
-        skip "found existing registry key" if original_set
         registry.set_value(reg_key,
             { name: "PendingFileRenameOperations", type: :multi_string, data: ['\??\C:\foo.txt|\??\C:\bar.txt'] })
 
@@ -64,8 +62,6 @@ describe Chef::DSL::RebootPending, :windows_only do
       let(:original_set) { registry.key_exists?(reg_key) }
 
       it "returns true if the registry key exists" do
-        skip "found existing registry key" if original_set
-        pending "Permissions are limited to 'TrustedInstaller' by default"
         registry.create_key(reg_key, false)
 
         expect(recipe.reboot_pending?).to be_truthy
@@ -83,7 +79,6 @@ describe Chef::DSL::RebootPending, :windows_only do
       let(:original_set) { registry.key_exists?(reg_key) }
 
       it "returns true if the registry key exists" do
-        skip "found existing registry key" if original_set
         registry.create_key(reg_key, false)
 
         expect(recipe.reboot_pending?).to be_truthy
@@ -98,7 +93,6 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe "when there is nothing to indicate a reboot is pending" do
       it "should return false" do
-        skip "reboot pending" if @any_flag.any? { |_, v| v == true }
         expect(recipe.reboot_pending?).to be_falsey
       end
     end
