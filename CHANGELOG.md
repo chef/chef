@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.38 -->
-## [v15.0.38](https://github.com/chef/chef/tree/v15.0.38) (2018-11-05)
+<!-- latest_release 15.0.39 -->
+## [v15.0.39](https://github.com/chef/chef/tree/v15.0.39) (2018-11-05)
 
 #### Merged Pull Requests
-- Improve resource descriptions for resource documentation automation [#7808](https://github.com/chef/chef/pull/7808) ([tas50](https://github.com/tas50))
+- Add windows_firewall_rule [#7842](https://github.com/chef/chef/pull/7842) ([Happycoil](https://github.com/Happycoil))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add windows_firewall_rule [#7842](https://github.com/chef/chef/pull/7842) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.39 -->
 - Improve resource descriptions for resource documentation automation [#7808](https://github.com/chef/chef/pull/7808) ([tas50](https://github.com/tas50)) <!-- 15.0.38 -->
 - Remove the remaining OSC 11 knife user commands [#7868](https://github.com/chef/chef/pull/7868) ([tas50](https://github.com/tas50)) <!-- 15.0.37 -->
 - Remove knife user support for open source Chef Server &lt; 12 [#7841](https://github.com/chef/chef/pull/7841) ([tas50](https://github.com/tas50)) <!-- 15.0.36 -->
