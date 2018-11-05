@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.44 -->
-## [v15.0.44](https://github.com/chef/chef/tree/v15.0.44) (2018-11-05)
+<!-- latest_release 15.0.45 -->
+## [v15.0.45](https://github.com/chef/chef/tree/v15.0.45) (2018-11-05)
 
 #### Merged Pull Requests
-- Fully remove knife cookbook create command [#7852](https://github.com/chef/chef/pull/7852) ([tas50](https://github.com/tas50))
+- Defer running initramfs_command until end of run [#7871](https://github.com/chef/chef/pull/7871) ([tomdoherty](https://github.com/tomdoherty))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Defer running initramfs_command until end of run [#7871](https://github.com/chef/chef/pull/7871) ([tomdoherty](https://github.com/tomdoherty)) <!-- 15.0.45 -->
 - Fully remove knife cookbook create command [#7852](https://github.com/chef/chef/pull/7852) ([tas50](https://github.com/tas50)) <!-- 15.0.42 -->
 - Add more validation_messages to properties [#7867](https://github.com/chef/chef/pull/7867) ([tas50](https://github.com/tas50)) <!-- 15.0.41 -->
 - Make knife command banners consistent [#7869](https://github.com/chef/chef/pull/7869) ([tas50](https://github.com/tas50)) <!-- 15.0.40 -->
