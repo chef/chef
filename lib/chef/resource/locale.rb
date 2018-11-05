@@ -29,6 +29,7 @@ class Chef
       property :lang, String,
                default: "en_US.utf8",
                description: "Sets the default system language."
+
       property :lc_all, String,
                default: "en_US.utf8",
                description: "Sets the fallback system language."

@@ -30,7 +30,7 @@ class Chef
 
       property :compile_time, [TrueClass, FalseClass],
                description: "Install the build essential packages at compile time.",
-               default: false
+               default: false, desired_state: false
 
       action :install do
 

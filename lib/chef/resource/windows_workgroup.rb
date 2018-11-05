@@ -36,20 +36,22 @@ class Chef
                name_property: true
 
       property :user, String,
-               description: "The local administrator user to use to change the workgroup."
+               description: "The local administrator user to use to change the workgroup.",
+               desired_state: false
 
       property :password, String,
-               description: "The password for the local administrator user."
+               description: "The password for the local administrator user.",
+               desired_state: false
 
       property :reboot, Symbol,
                equal_to: [:immediate, :delayed, :never, :request_reboot, :reboot_now],
                validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the Chef run completes), and :never (Don't reboot)",
                description: "Controls the system reboot behavior post workgroup joining. Reboot immediately, after the Chef run completes, or never. Note that a reboot is necessary for changes to take effect.",
-               default: :immediate
+               default: :immediate, desired_state: false
 
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
-               default: true
+               default: true, desired_state: false
 
       action :join do
         description "Update the workgroup."

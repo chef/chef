@@ -37,7 +37,7 @@ class Chef
       # acording to the sudo man pages sudo will ignore files in an include dir that have a `.` or `~`
       # We convert either to `__`
       property :filename, String,
-               description: "The name of the sudoers.d file.",
+               description: "The name of the sudoers.d file, if it differs from the name of the resource block",
                name_property: true,
                coerce: proc { |x| x.gsub(/[\.~]/, "__") }
 
@@ -99,15 +99,15 @@ class Chef
                default: lazy { [] }
 
       property :visudo_path, String,
-               description: "Deprecated property. Do not use."
+               deprecated: true
 
       property :visudo_binary, String,
                description: "The path to visudo for configuration verification.",
                default: "/usr/sbin/visudo"
 
       property :config_prefix, String,
-               description: "The directory that contains the sudoers configuration file",
-               default: lazy { platform_config_prefix }
+               description: "The directory that contains the sudoers configuration file.",
+               default: lazy { platform_config_prefix }, default_description: "Prefix values based on the node's platform"
 
       # handle legacy cookbook property
       def after_created

@@ -66,7 +66,7 @@ class Chef
       property :content, [ String, nil ], desired_state: false,
                description: "A string that is written to the file. The contents of this property replace any previous content when this property has something other than the default value. The default behavior will not modify content."
 
-      property :diff, [ String, nil ], desired_state: false
+      property :diff, [ String, nil ], desired_state: false, skip_docs: true
 
       property :force_unlink, [ TrueClass, FalseClass ], desired_state: false, default: false,
                description: "How the chef-client handles certain situations when the target file turns out not to be a file. For example, when a target file is actually a symlink. Set to true for the chef-client delete the non-file target and replace it with the specified file. Set to false for the chef-client to raise an error."

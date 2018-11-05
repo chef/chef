@@ -40,9 +40,10 @@ class Chef
                default: lazy { [] },
                description: "The devices to be part of a RAID array."
 
+      # @todo this should get refactored away
       property :exists, [ TrueClass, FalseClass ],
                default: false,
-               description: "Indicates whether the RAID array exists."
+               skip_docs: true
 
       property :level, Integer,
                default: 1,
