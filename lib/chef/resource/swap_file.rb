@@ -27,7 +27,7 @@ class Chef
       introduced "14.0"
 
       property :path, String,
-               description: "The path to put the swap file on the system.",
+               description: "The path where the swap file will be created on the system, if it differs from the resource block name.",
                name_property: true
 
       property :size, Integer,

@@ -45,7 +45,7 @@ class Chef
 
       property :skip_publisher_check, [true, false],
                description: "Skip validating module author.",
-               default: false, introduced: "14.3"
+               default: false, introduced: "14.3", desired_state: false
 
     end
   end

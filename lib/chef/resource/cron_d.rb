@@ -90,7 +90,7 @@ class Chef
                description: "Set the name of the cron job. If this isn't specified we'll use the resource name.",
                name_property: true
 
-      property :cookbook, String
+      property :cookbook, String, desired_state: false
 
       property :predefined_value, String,
                description: 'Schedule your cron job with one of the special predefined value instead of ** * pattern. This correspond to "@reboot", "@yearly", "@annually", "@monthly", "@weekly", "@daily", "@midnight" or "@hourly".',

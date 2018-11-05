@@ -33,7 +33,7 @@ class Chef
       introduced "14.0"
 
       property :key, String,
-               description: "The kernel parameter key in dotted format.",
+               description: "The kernel parameter key in dotted format, if it differs from the resource block name.",
                name_property: true
 
       property :ignore_error, [TrueClass, FalseClass],

@@ -32,7 +32,7 @@ class Chef
 
       property :compile_time, [ TrueClass, FalseClass ],
                description: "Determines whether or not the resource shoul be run at compile time.",
-               default: true
+               default: true, desired_state: false
 
       property :ipaddress, String,
                description: "The IP address to use when configuring the hosts file.",

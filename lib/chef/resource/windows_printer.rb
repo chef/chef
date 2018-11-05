@@ -61,7 +61,7 @@ class Chef
                regex: Resolv::IPv4::Regex
 
       property :exists, [TrueClass, FalseClass],
-               desired_state: true
+               skip_docs: true
 
       PRINTERS_REG_KEY = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\\'.freeze unless defined?(PRINTERS_REG_KEY)
 

@@ -48,12 +48,12 @@ class Chef
 
       property :volumes_dir, String,
                description: "The Directory under /Volumes where the dmg is mounted as not all dmgs are mounted into a /Volumes location matching the name of the dmg.",
-               default: lazy { |r| r.app }
+               default: lazy { |r| r.app }, default_description: "The value passed for the application name."
 
       property :dmg_name, String,
                description: "The name of the dmg if it is not the same as app, or if the name has spaces.",
                desired_state: false,
-               default: lazy { |r| r.app }
+               default: lazy { |r| r.app }, default_description: "The value passed for the application name."
 
       property :type, String,
                description: "The type of package.",
