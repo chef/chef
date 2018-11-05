@@ -31,7 +31,8 @@ class Chef
       property :package_name, String,
                name_property: true,
                description: "The name of the package.",
-               regex: [/^([a-z]|[A-Z]|[0-9]|_|-|\.|\*|\+)+$/]
+               regex: [/^([a-z]|[A-Z]|[0-9]|_|-|\.|\*|\+)+$/],
+               validation_message: "The provided package name is not valid. Package names can only contain alphanumeric characters as well as _, -, +, or *!"
 
       property :glob, String,
                description: "Pin by glob() expression or with regular expressions surrounded by /."
