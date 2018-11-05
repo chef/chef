@@ -1,6 +1,6 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.42 -->
-## [v15.0.42](https://github.com/chef/chef/tree/v15.0.42) (2018-11-05)
+<!-- latest_release 15.0.43 -->
+## [v15.0.43](https://github.com/chef/chef/tree/v15.0.43) (2018-11-05)
 
 #### Merged Pull Requests
 - Fully remove knife cookbook create command [#7852](https://github.com/chef/chef/pull/7852) ([tas50](https://github.com/tas50))
