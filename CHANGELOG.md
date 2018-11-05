@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.41 -->
-## [v15.0.41](https://github.com/chef/chef/tree/v15.0.41) (2018-11-05)
+<!-- latest_release 15.0.42 -->
+## [v15.0.42](https://github.com/chef/chef/tree/v15.0.42) (2018-11-05)
 
 #### Merged Pull Requests
-- Add more validation_messages to properties [#7867](https://github.com/chef/chef/pull/7867) ([tas50](https://github.com/tas50))
+- Fully remove knife cookbook create command [#7852](https://github.com/chef/chef/pull/7852) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Fully remove knife cookbook create command [#7852](https://github.com/chef/chef/pull/7852) ([tas50](https://github.com/tas50)) <!-- 15.0.42 -->
 - Add more validation_messages to properties [#7867](https://github.com/chef/chef/pull/7867) ([tas50](https://github.com/tas50)) <!-- 15.0.41 -->
 - Make knife command banners consistent [#7869](https://github.com/chef/chef/pull/7869) ([tas50](https://github.com/tas50)) <!-- 15.0.40 -->
 - Add windows_firewall_rule [#7842](https://github.com/chef/chef/pull/7842) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.39 -->
