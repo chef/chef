@@ -1,6 +1,6 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.45 -->
-## [v15.0.45](https://github.com/chef/chef/tree/v15.0.45) (2018-11-05)
+<!-- latest_release 15.0.46 -->
+## [v15.0.46](https://github.com/chef/chef/tree/v15.0.46) (2018-11-06)
 
 #### Merged Pull Requests
 - Defer running initramfs_command until end of run [#7871](https://github.com/chef/chef/pull/7871) ([tomdoherty](https://github.com/tomdoherty))

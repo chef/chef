@@ -27,10 +27,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (15.0.45)
+    chef (15.0.46)
       addressable
       bundler (>= 1.10)
-      chef-config (= 15.0.45)
+      chef-config (= 15.0.46)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -57,10 +57,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (15.0.45-universal-mingw32)
+    chef (15.0.46-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 15.0.45)
+      chef-config (= 15.0.46)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -104,7 +104,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (15.0.45)
+    chef-config (15.0.46)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -247,7 +247,7 @@ GEM
     pusher-client (0.6.2)
       json
       websocket (~> 1.0)
-    rack (2.0.5)
+    rack (2.0.6)
     rainbow (3.0.0)
     rake (12.3.0)
     rb-readline (0.5.5)
