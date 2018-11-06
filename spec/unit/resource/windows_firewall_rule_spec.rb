@@ -55,7 +55,7 @@ describe Chef::Resource::WindowsFirewallRule do
 
   it "the local_port property accepts integers" do
     resource.local_port(8080)
-    expect(resource.local_port).to eql([8080])
+    expect(resource.local_port).to eql(["8080"])
   end
 
   it "the local_port property accepts strings" do
@@ -73,6 +73,11 @@ describe Chef::Resource::WindowsFirewallRule do
     expect(resource.local_port).to eql(%w{8080 8081})
   end
 
+  it "the local_port property accepts arrays and coerces to a sorta array of strings" do
+    resource.local_port([8081, 8080])
+    expect(resource.local_port).to eql(%w{8080 8081})
+  end
+
   it "the remote_address property accepts strings" do
     resource.remote_address("8.8.4.4")
     expect(resource.remote_address).to eql("8.8.4.4")
@@ -85,7 +90,7 @@ describe Chef::Resource::WindowsFirewallRule do
 
   it "the remote_port property accepts integers" do
     resource.remote_port(8081)
-    expect(resource.remote_port).to eql([8081])
+    expect(resource.remote_port).to eql(["8081"])
   end
 
   it "the remote_port property accepts comma separated lists without spaces" do
@@ -98,9 +103,9 @@ describe Chef::Resource::WindowsFirewallRule do
     expect(resource.remote_port).to eql(%w{8080 8081})
   end
 
-  it "the remote_port property accepts arrays and sorts the array" do
+  it "the remote_port property accepts arrays and coerces to a sorta array of strings" do
     resource.remote_port([8081, 8080])
-    expect(resource.remote_port).to eql([8080, 8081])
+    expect(resource.remote_port).to eql(%w{8080 8081})
   end
 
   it "the direction property accepts :inbound and :outbound" do
