@@ -77,7 +77,7 @@ AIX and Solaris now ship with a filesystem2 plugin that updates the filesystem d
 
 ### macOS Improvements
 
-The system_profile plugin has been improved to skip over uncessary data, which reduces macOS node sizes on the Chef Server. Additionally the CPU plugin has been updated to limit what sysctl values it polls, which prevents hanging on some system configurations.
+The system_profile plugin has been improved to skip over unnecessary data, which reduces macOS node sizes on the Chef Server. Additionally the CPU plugin has been updated to limit what sysctl values it polls, which prevents hanging on some system configurations.
 
 ### SLES 15 Detection
 
