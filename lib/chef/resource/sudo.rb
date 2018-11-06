@@ -42,12 +42,12 @@ class Chef
                coerce: proc { |x| x.gsub(/[\.~]/, "__") }
 
       property :users, [String, Array],
-               description: "User(s) to provide sudo privileges to. This accepts either an array or a comma separated.",
+               description: "User(s) to provide sudo privileges to. This property accepts either an array or a comma separated list.",
                default: lazy { [] },
                coerce: proc { |x| x.is_a?(Array) ? x : x.split(/\s*,\s*/) }
 
       property :groups, [String, Array],
-               description: "Group(s) to provide sudo privileges to. This accepts either an array or a comma separated list. Leading % on group names is optional.",
+               description: "Group(s) to provide sudo privileges to. This property accepts either an array or a comma separated list. Leading % on group names is optional.",
                default: lazy { [] },
                coerce: proc { |x| coerce_groups(x) }
 
@@ -72,10 +72,10 @@ class Chef
                default: false
 
       property :template, String,
-               description: "The name of the erb template in your cookbook if you wish to supply your own template."
+               description: "The name of the erb template in your cookbook, if you wish to supply your own template."
 
       property :variables, [Hash, nil],
-               description: "The variables to pass to the custom template. Ignored if not using a custom template.",
+               description: "The variables to pass to the custom template. This property is ignored if not using a custom template.",
                default: nil
 
       property :defaults, Array,

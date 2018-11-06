@@ -24,9 +24,7 @@ class Chef
       resource_name :windows_feature
       provides(:windows_feature) { true }
 
-      description "Use the windows_feature resource to add, remove or delete Windows features and roles. This resource calls"\
-                  " the 'windows_feature_dism' or 'windows_feature_powershell' resources depending on the specified installation"\
-                  " method and defaults to dism, which is available on both Workstation and Server editions of Windows."
+      description "Use the windows_feature resource to add, remove or entirely delete Windows features and roles. This resource calls the 'windows_feature_dism' or 'windows_feature_powershell' resources depending on the specified installation method and defaults to dism, which is available on both Workstation and Server editions of Windows."
       introduced "14.0"
 
       property :feature_name, [Array, String],
@@ -36,7 +34,7 @@ class Chef
                name_property: true
 
       property :source, String,
-               description: "Use a local repository for the feature install."
+               description: "Specify a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
                description: "Install all sub features.",

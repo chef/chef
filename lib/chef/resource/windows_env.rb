@@ -31,9 +31,18 @@ class Chef
       default_action :create
       allowed_actions :create, :delete, :modify
 
-      property :key_name, String, identity: true, name_property: true
-      property :value, String, required: true
-      property :delim, [ String, nil, false ], desired_state: false
+      property :key_name, String,
+               description: "The name of the key that is to be created, deleted, or modified.",
+               identity: true, name_property: true
+
+      property :value, String,
+               description: "The value of the environmental variable to set.",
+               required: true
+
+      property :delim, [ String, nil, false ],
+               description: "The delimiter that is used to separate multiple values for a single key.",
+               desired_state: false
+
       property :user, String, default: "<System>"
     end
   end
