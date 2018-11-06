@@ -30,7 +30,9 @@ class Chef
       allowed_actions :add, :remove
       default_action :add
 
-      property :path, String, name_property: true
+      property :path, String,
+               description: "The name of the value to add to the system path",
+               name_property: true
     end
   end
 end
