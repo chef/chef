@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.46 -->
-## [v15.0.46](https://github.com/chef/chef/tree/v15.0.46) (2018-11-06)
+<!-- latest_release 15.0.47 -->
+## [v15.0.47](https://github.com/chef/chef/tree/v15.0.47) (2018-11-06)
 
 #### Merged Pull Requests
-- Defer running initramfs_command until end of run [#7871](https://github.com/chef/chef/pull/7871) ([tomdoherty](https://github.com/tomdoherty))
+- resource inspector: don&#39;t convert nil to &quot;nil&quot; in default values [#7880](https://github.com/chef/chef/pull/7880) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- resource inspector: don&#39;t convert nil to &quot;nil&quot; in default values [#7880](https://github.com/chef/chef/pull/7880) ([tas50](https://github.com/tas50)) <!-- 15.0.47 -->
 - Defer running initramfs_command until end of run [#7871](https://github.com/chef/chef/pull/7871) ([tomdoherty](https://github.com/tomdoherty)) <!-- 15.0.45 -->
 - Fully remove knife cookbook create command [#7852](https://github.com/chef/chef/pull/7852) ([tas50](https://github.com/tas50)) <!-- 15.0.42 -->
 - Add more validation_messages to properties [#7867](https://github.com/chef/chef/pull/7867) ([tas50](https://github.com/tas50)) <!-- 15.0.41 -->
