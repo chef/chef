@@ -30,22 +30,22 @@ class Chef
 
       property :activation_key, [String, Array],
                coerce: proc { |x| Array(x) },
-               description: "A String or array of the activation keys to use when registering. You must also specify the organization property if using activation_key."
+               description: "A string or array of activation keys to use when registering; you must also specify the 'organization' property when using this property."
 
       property :satellite_host, String,
-               description: "The FQDN of the Satellite host to register with. If not specified, the host will be registered with Red Hat's public RHSM service."
+               description: "The FQDN of the Satellite host to register with. If this property is not specified, the host will register with Red Hat's public RHSM service."
 
       property :organization, String,
-               description: "The organization to use when registering, required when using an activation key."
+               description: "The organization to use when registering; required when using the 'activation_key' property."
 
       property :environment, String,
-               description: "The environment to use when registering, required when using username and password."
+               description: "The environment to use when registering; required when using the username and password properties."
 
       property :username, String,
-               description: "The username to use when registering. Not applicable if using an activation key. If specified, password and environment are also required."
+               description: "The username to use when registering. This property is not applicable if using an activation key. If specified, password and environment properties are also required."
 
       property :password, String,
-               description: "The password to use when registering. Not applicable if using an activation key. If specified, username and environment are also required."
+               description: "The password to use when registering. This property is not applicable if using an activation key. If specified, username and environment are also required."
 
       property :auto_attach,
                [TrueClass, FalseClass],
@@ -57,7 +57,7 @@ class Chef
                default: true
 
       property :force, [TrueClass, FalseClass],
-               description: "If true, the system will be registered even if it is already registered. Normally, any register operations will fail if the machine is has already registered.",
+               description: "If true, the system will be registered even if it is already registered. Normally, any register operations will fail if the machine has already been registered.",
                default: false, desired_state: false
 
       action :register do

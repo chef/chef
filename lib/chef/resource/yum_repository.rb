@@ -74,7 +74,7 @@ class Chef
                default: true
 
       property :gpgkey, [String, Array],
-               description: "URL pointing to the ASCII-armored GPG key file for the repository. This is used if Yum needs a public key to verify a package and the required key hasn't been imported into the RPM database. If this option is set, Yum will automatically import the key from the specified URL. Multiple URLs may be specified in the same manner as the baseurl option. If a GPG key is required to install a package from a repository, all keys specified for that repository will be installed."
+               description: "URL pointing to the ASCII-armored GPG key file for the repository. This is used if Yum needs a public key to verify a package and the required key hasn't been imported into the RPM database. If this option is set, Yum will automatically import the key from the specified URL. Multiple URLs may be specified in the same manner as the baseurl option. If a GPG key is required to install a package from a repository, all keys specified for that repository will be installed.\nMultiple URLs may be specified in the same manner as the baseurl option. If a GPG key is required to install a package from a repository, all keys specified for that repository will be installed."
 
       property :http_caching, String, equal_to: %w{packages all none},
                description: "Determines how upstream HTTP caches are instructed to handle any HTTP downloads that Yum does. This option can take the following values: all (all HTTP downloads should be cached), packages (only RPM package downloads should be cached, but not repository metadata downloads), or none (no HTTP downloads should be cached)"

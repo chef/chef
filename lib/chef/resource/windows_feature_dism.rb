@@ -25,7 +25,7 @@ class Chef
       resource_name :windows_feature_dism
       provides(:windows_feature_dism) { true }
 
-      description "Use the windows_feature_dism resource to add, remove or delete Windows features and roles using DISM"
+      description "Use the windows_feature_dism resource to add, remove, or entirely delete Windows features and roles using DISM."
       introduced "14.0"
 
       property :feature_name, [Array, String],
@@ -41,7 +41,7 @@ class Chef
                default: false
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for feature install.",
+               description: "Specifies a timeout (in seconds) for the feature installation.",
                default: 600
 
       # @return [Array] lowercase the array unless we're on < Windows 2012

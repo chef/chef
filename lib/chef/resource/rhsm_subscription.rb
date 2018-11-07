@@ -29,7 +29,7 @@ class Chef
       introduced "14.0"
 
       property :pool_id, String,
-               description: "An optional property for specifying the Pool ID if not using the resource's name.",
+               description: "An optional property for specifying the Pool ID if it differs from the resource block's name.",
                name_property: true
 
       action :attach do

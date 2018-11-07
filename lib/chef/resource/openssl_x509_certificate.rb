@@ -32,7 +32,7 @@ class Chef
       introduced "14.4"
 
       property :path, String,
-               description: "Optional path to write the file to if you'd like to specify it here instead of in the resource name.",
+               description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
                name_property: true
 
       property :owner, String,

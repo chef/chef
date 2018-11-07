@@ -31,7 +31,7 @@ module ResourceInspector
       # code for the resource ourselves and just no
       "lazy default"
     else
-      default.inspect # inspect properly returns symbols
+      default.is_a?(Symbol) ? default.inspect : default # inspect properly returns symbols
     end
   end
 
