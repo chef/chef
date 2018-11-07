@@ -598,11 +598,11 @@ class Chef
         elsif merge_onto.kind_of?(Array) && merge_with.kind_of?(Array)
           merge_onto |= merge_with
 
-          # If merge_with is nil, don't replace merge_onto
+        # If merge_with is NIL, don't replace merge_onto
         elsif merge_with == NIL
           merge_onto
 
-          # In all other cases, replace merge_onto with merge_with
+        # In all other cases, replace merge_onto with merge_with
         else
           if merge_with.kind_of?(Hash)
             Chef::Node::ImmutableMash.new(merge_with)
@@ -631,11 +631,11 @@ class Chef
           end
           merge_onto
 
-          # If merge_with is nil, don't replace merge_onto
+        # If merge_with is NIL, don't replace merge_onto
         elsif merge_with == NIL
           merge_onto
 
-          # In all other cases, replace merge_onto with merge_with
+        # In all other cases, replace merge_onto with merge_with
         else
           if merge_with.kind_of?(Hash)
             Chef::Node::ImmutableMash.new(merge_with)
