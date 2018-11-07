@@ -488,7 +488,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "is idempotent when the package is already installed and there is a version string" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_packger.version "1.2-1"
+        yum_package.version "1.2-1"
         yum_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be false
@@ -497,7 +497,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "is idempotent when the package is already installed and there is a version string with arch" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_packger.version "1.2-1.#{pkg_arch}"
+        yum_package.version "1.2-1.#{pkg_arch}"
         yum_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be false
