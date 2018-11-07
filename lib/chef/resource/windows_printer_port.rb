@@ -34,7 +34,7 @@ class Chef
                name_property: true,
                regex: Resolv::IPv4::Regex,
                validation_message: "The ipv4_address property must be in the format of WWW.XXX.YYY.ZZZ!",
-               description: "The IPv4 address of the printer port."
+               description: "An optional property for the IPv4 address of the printer if it differs from the resource block's name."
 
       property :port_name, String,
                description: "The port name."
@@ -51,7 +51,7 @@ class Chef
                default: false
 
       property :port_protocol, Integer,
-               description: "The printer port protocol, 1 (RAW), or 2 (LPR).",
+               description: "The printer port protocol: 1 (RAW) or 2 (LPR).",
                validation_message: "port_protocol must be either 1 for RAW or 2 for LPR!",
                default: 1, equal_to: [1, 2]
 

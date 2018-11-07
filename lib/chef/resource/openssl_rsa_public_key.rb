@@ -30,7 +30,7 @@ class Chef
       introduced "14.0"
 
       property :path, String,
-               description: "The path to the public key file, if it differs from the resource name.",
+               description: "An optional property for specifying the path to the public key if it differs from the resource block's name.",
                name_property: true
 
       property :private_key_path, String,

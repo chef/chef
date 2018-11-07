@@ -42,7 +42,7 @@ class Chef
                default: false
 
       property :driver_name, String,
-               description: "Exact name of printer driver. Note that the printer driver must already be installed on the node.",
+               description: "The exact name of printer driver installed on the system.",
                required: true
 
       property :location, String,

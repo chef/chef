@@ -28,7 +28,7 @@ class Chef
       introduced "14.0"
 
       property :repo_name, String,
-               description: "An optional property for specifying the repository name if not using the resource's name.",
+               description: "An optional property for specifying the repository name if it differs from the resource block's name.",
                name_property: true
 
       action :enable do
