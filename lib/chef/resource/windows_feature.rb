@@ -43,8 +43,8 @@ class Chef
                default: false
 
       property :install_method, Symbol,
-               equal_to: [:windows_feature_dism, :windows_feature_powershell, :windows_feature_servermanagercmd]
                description: "The underlying installation method to use for feature installation. Specify ':windows_feature_dism' for DISM or ':windows_feature_powershell' for PowerShell.",
+               equal_to: [:windows_feature_dism, :windows_feature_powershell, :windows_feature_servermanagercmd]
 
       property :timeout, Integer,
                description: "Specifies a timeout (in seconds) for the feature installation.",
