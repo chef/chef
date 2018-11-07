@@ -406,11 +406,13 @@ class Chef
       end
 
       def combined_override(*path)
-        merge_overrides(path)
+        ret = merge_overrides(path)
+        ret == NIL ? nil : ret
       end
 
       def combined_default(*path)
-        merge_defaults(path)
+        ret = merge_defaults(path)
+        ret == NIL ? nil : ret
       end
 
       def normal_unless(*args)
@@ -505,10 +507,10 @@ class Chef
               # Hash-like thing (must check has_key? first to protect against Autovivification)
               val[path_arg]
             else
-              nil
+              NIL
             end
           else
-            nil
+            NIL
           end
         end
       end
@@ -552,7 +554,7 @@ class Chef
           component_value = apply_path(instance_variable_get(component_ivar), path)
           deep_merge!(merged, component_value)
         end
-        ret == NIL ? nil : ret
+        ret
       end
 
       # Deep merge the override attribute levels with array merging.
@@ -566,7 +568,7 @@ class Chef
           component_value = apply_path(instance_variable_get(component_ivar), path)
           deep_merge!(merged, component_value)
         end
-        ret == NIL ? nil : ret
+        ret
       end
 
       # needed for __path__
@@ -597,7 +599,7 @@ class Chef
           merge_onto |= merge_with
 
           # If merge_with is nil, don't replace merge_onto
-        elsif merge_with.nil?
+        elsif merge_with == NIL
           merge_onto
 
           # In all other cases, replace merge_onto with merge_with
@@ -630,7 +632,7 @@ class Chef
           merge_onto
 
           # If merge_with is nil, don't replace merge_onto
-        elsif merge_with.nil?
+        elsif merge_with == NIL
           merge_onto
 
           # In all other cases, replace merge_onto with merge_with
