@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.15 -->
-## [v14.7.15](https://github.com/chef/chef/tree/v14.7.15) (2018-11-07)
+<!-- latest_release 14.7.16 -->
+## [v14.7.16](https://github.com/chef/chef/tree/v14.7.16) (2018-11-07)
 
 #### Merged Pull Requests
-- Backport: Allow multiple local and remote ports in the windows_firewall_rule resource [#7888](https://github.com/chef/chef/pull/7888) ([tas50](https://github.com/tas50))
+- Backport: Defer running initramfs_command until end of run [#7889](https://github.com/chef/chef/pull/7889) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.6.47 -->
 ### Changes since 14.6.47 release
 
 #### Merged Pull Requests
+- Backport: Defer running initramfs_command until end of run [#7889](https://github.com/chef/chef/pull/7889) ([tas50](https://github.com/tas50)) <!-- 14.7.16 -->
 - Backport: Allow multiple local and remote ports in the windows_firewall_rule resource [#7888](https://github.com/chef/chef/pull/7888) ([tas50](https://github.com/tas50)) <!-- 14.7.15 -->
 - Backport: Resource property description updates [#7887](https://github.com/chef/chef/pull/7887) ([tas50](https://github.com/tas50)) <!-- 14.7.14 -->
 - Backport: Add windows_firewall_rule resource [#7876](https://github.com/chef/chef/pull/7876) ([tas50](https://github.com/tas50)) <!-- 14.7.13 -->
