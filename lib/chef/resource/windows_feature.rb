@@ -28,9 +28,7 @@ class Chef
       introduced "14.0"
 
       property :feature_name, [Array, String],
-               description: "The name of the feature/role(s) to install. The same feature may have different"\
-                            " names depending on the underlying resource being used (ie DHCPServer vs DHCP;"\
-                            " DNS-Server-Full-Role vs DNS).",
+               description: "The name of the feature(s) or role(s) to install, if it differs from the resource block name. The same feature may have different names depending on the underlying installation method being used (ie DHCPServer vs DHCP; DNS-Server-Full-Role vs DNS).",
                name_property: true
 
       property :source, String,
@@ -41,16 +39,15 @@ class Chef
                default: false
 
       property :management_tools, [TrueClass, FalseClass],
-               description: "Install all applicable management tools of the roles, role services, or features (PowerShell only).",
+               description: "Install all applicable management tools for the roles, role services, or features (PowerShell-only).",
                default: false
 
       property :install_method, Symbol,
-               description: "If DISM or PowerShell should be used for the installation. Note feature names differ"\
-                            " between the two installation methods.",
                equal_to: [:windows_feature_dism, :windows_feature_powershell, :windows_feature_servermanagercmd]
+               description: "The underlying installation method to use for feature installation. Specify ':windows_feature_dism' for DISM or ':windows_feature_powershell' for PowerShell.",
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for feature install.",
+               description: "Specifies a timeout (in seconds) for the feature installation.",
                default: 600
 
       action :install do

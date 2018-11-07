@@ -41,7 +41,7 @@ class Chef
                default: false
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for feature install.",
+               description: "Specifies a timeout (in seconds) for the feature installation.",
                default: 600
 
       # @return [Array] lowercase the array unless we're on < Windows 2012
