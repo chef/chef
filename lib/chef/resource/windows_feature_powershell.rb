@@ -43,7 +43,7 @@ class Chef
                default: false
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for feature install.",
+               description: "Specifies a timeout (in seconds) for the feature installation.",
                default: 600
 
       property :management_tools, [TrueClass, FalseClass],

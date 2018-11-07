@@ -58,7 +58,7 @@ class Chef
 
       property :raid_device, String,
                identity: true, name_property: true,
-               description: "The name of the RAID device. We'll use the resource's name if this isn't specified."
+               description: "An optional property to specify the name of the RAID device if it differs from the resource block's name."
 
       property :layout, String,
                description: "The RAID5 parity algorithm. Possible values: left-asymmetric (or la), left-symmetric (or ls), right-asymmetric (or ra), or right-symmetric (or rs)."
