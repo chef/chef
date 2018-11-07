@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.48 -->
-## [v15.0.48](https://github.com/chef/chef/tree/v15.0.48) (2018-11-06)
+<!-- latest_release 15.0.49 -->
+## [v15.0.49](https://github.com/chef/chef/tree/v15.0.49) (2018-11-07)
 
 #### Merged Pull Requests
-- Add additional descriptions to resource and update others [#7881](https://github.com/chef/chef/pull/7881) ([tas50](https://github.com/tas50))
+- Allow passing multiple ports in windows_firewall [#7879](https://github.com/chef/chef/pull/7879) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Allow passing multiple ports in windows_firewall [#7879](https://github.com/chef/chef/pull/7879) ([tas50](https://github.com/tas50)) <!-- 15.0.49 -->
 - Add additional descriptions to resource and update others [#7881](https://github.com/chef/chef/pull/7881) ([tas50](https://github.com/tas50)) <!-- 15.0.48 -->
 - resource inspector: don&#39;t convert nil to &quot;nil&quot; in default values [#7880](https://github.com/chef/chef/pull/7880) ([tas50](https://github.com/tas50)) <!-- 15.0.47 -->
 - Defer running initramfs_command until end of run [#7871](https://github.com/chef/chef/pull/7871) ([tomdoherty](https://github.com/tomdoherty)) <!-- 15.0.45 -->
