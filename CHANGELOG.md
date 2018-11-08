@@ -1,37 +1,35 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.17 -->
-## [v14.7.17](https://github.com/chef/chef/tree/v14.7.17) (2018-11-07)
-
-#### Merged Pull Requests
-- fix whitespace in node attributes [ci skip] [#7891](https://github.com/chef/chef/pull/7891) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.6.47 -->
-### Changes since 14.6.47 release
-
-#### Merged Pull Requests
-- fix whitespace in node attributes [ci skip] [#7891](https://github.com/chef/chef/pull/7891) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.7.17 -->
-- Backport: Defer running initramfs_command until end of run [#7889](https://github.com/chef/chef/pull/7889) ([tas50](https://github.com/tas50)) <!-- 14.7.16 -->
-- Backport: Allow multiple local and remote ports in the windows_firewall_rule resource [#7888](https://github.com/chef/chef/pull/7888) ([tas50](https://github.com/tas50)) <!-- 14.7.15 -->
-- Backport: Resource property description updates [#7887](https://github.com/chef/chef/pull/7887) ([tas50](https://github.com/tas50)) <!-- 14.7.14 -->
-- Backport: Add windows_firewall_rule resource [#7876](https://github.com/chef/chef/pull/7876) ([tas50](https://github.com/tas50)) <!-- 14.7.13 -->
-- Add more validation_messages to properties [#7875](https://github.com/chef/chef/pull/7875) ([tas50](https://github.com/tas50)) <!-- 14.7.12 -->
-- Backport: Make knife command banners consistent [#7874](https://github.com/chef/chef/pull/7874) ([tas50](https://github.com/tas50)) <!-- 14.7.11 -->
-- Backport: Add default_descriptions to properties [#7873](https://github.com/chef/chef/pull/7873) ([tas50](https://github.com/tas50)) <!-- 14.7.10 -->
-- Backport: Added `description` property on windows_task resource [#7848](https://github.com/chef/chef/pull/7848) ([btm](https://github.com/btm)) <!-- 14.7.9 -->
-- Update win32-taskscheduler to 2.0.1 [#7844](https://github.com/chef/chef/pull/7844) ([tas50](https://github.com/tas50)) <!-- 14.7.8 -->
-- Backport: Fix chef-apply crash for reboot [#7828](https://github.com/chef/chef/pull/7828) ([tas50](https://github.com/tas50)) <!-- 14.7.7 -->
-- Backport: Multiple fixes to dmg_package including functional EULA acceptance [#7831](https://github.com/chef/chef/pull/7831) ([tas50](https://github.com/tas50)) <!-- 14.7.6 -->
-- Backport: Handle `interactive_enabled` property in windows_task resource [#7832](https://github.com/chef/chef/pull/7832) ([tas50](https://github.com/tas50)) <!-- 14.7.5 -->
-- Backport: Add windows_share and windows_certificate resources [#7833](https://github.com/chef/chef/pull/7833) ([tas50](https://github.com/tas50)) <!-- 14.7.4 -->
-- Backport: Fix SLES 15 upgrades removing the symlinks [#7827](https://github.com/chef/chef/pull/7827) ([tas50](https://github.com/tas50)) <!-- 14.7.3 -->
-- Backport: Fix inspector to properly handle defaults that are symbols [#7826](https://github.com/chef/chef/pull/7826) ([tas50](https://github.com/tas50)) <!-- 14.7.2 -->
-- Backport: Add macOS support to the timezone resource [#7830](https://github.com/chef/chef/pull/7830) ([tas50](https://github.com/tas50)) <!-- 14.7.1 -->
-- Automated resource documentation improvements [#7811](https://github.com/chef/chef/pull/7811) ([tas50](https://github.com/tas50)) <!-- 14.7.0 -->
-- Allow passing array to supports in mount resource again [#7809](https://github.com/chef/chef/pull/7809) ([tas50](https://github.com/tas50)) <!-- 14.6.48 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.7.17](https://github.com/chef/chef/tree/v14.7.17) (2018-11-08)
+
+#### Merged Pull Requests
+- Allow passing array to supports in mount resource again [#7809](https://github.com/chef/chef/pull/7809) ([tas50](https://github.com/tas50))
+- Automated resource documentation improvements [#7811](https://github.com/chef/chef/pull/7811) ([tas50](https://github.com/tas50))
+- Backport: Add macOS support to the timezone resource [#7830](https://github.com/chef/chef/pull/7830) ([tas50](https://github.com/tas50))
+- Backport: Fix inspector to properly handle defaults that are symbols [#7826](https://github.com/chef/chef/pull/7826) ([tas50](https://github.com/tas50))
+- Backport: Fix SLES 15 upgrades removing the symlinks [#7827](https://github.com/chef/chef/pull/7827) ([tas50](https://github.com/tas50))
+- Backport: Add windows_share and windows_certificate resources [#7833](https://github.com/chef/chef/pull/7833) ([tas50](https://github.com/tas50))
+- Backport: Handle `interactive_enabled` property in windows_task resource [#7832](https://github.com/chef/chef/pull/7832) ([tas50](https://github.com/tas50))
+- Backport: Multiple fixes to dmg_package including functional EULA acceptance [#7831](https://github.com/chef/chef/pull/7831) ([tas50](https://github.com/tas50))
+- Backport: Fix chef-apply crash for reboot [#7828](https://github.com/chef/chef/pull/7828) ([tas50](https://github.com/tas50))
+- Update win32-taskscheduler to 2.0.1 [#7844](https://github.com/chef/chef/pull/7844) ([tas50](https://github.com/tas50))
+- Backport: Added `description` property on windows_task resource [#7848](https://github.com/chef/chef/pull/7848) ([btm](https://github.com/btm))
+- Backport: Add default_descriptions to properties [#7873](https://github.com/chef/chef/pull/7873) ([tas50](https://github.com/tas50))
+- Backport: Make knife command banners consistent [#7874](https://github.com/chef/chef/pull/7874) ([tas50](https://github.com/tas50))
+- Add more validation_messages to properties [#7875](https://github.com/chef/chef/pull/7875) ([tas50](https://github.com/tas50))
+- Backport: Add windows_firewall_rule resource [#7876](https://github.com/chef/chef/pull/7876) ([tas50](https://github.com/tas50))
+- Backport: Resource property description updates [#7887](https://github.com/chef/chef/pull/7887) ([tas50](https://github.com/tas50))
+- Backport: Allow multiple local and remote ports in the windows_firewall_rule resource [#7888](https://github.com/chef/chef/pull/7888) ([tas50](https://github.com/tas50))
+- Backport: Defer running initramfs_command until end of run [#7889](https://github.com/chef/chef/pull/7889) ([tas50](https://github.com/tas50))
+- fix whitespace in node attributes [ci skip] [#7891](https://github.com/chef/chef/pull/7891) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v14.6.47](https://github.com/chef/chef/tree/v14.6.47) (2018-10-26)
 
 #### Merged Pull Requests
@@ -83,7 +81,6 @@
 - Add some retry/delay in HTTP functional tests [#7780](https://github.com/chef/chef/pull/7780) ([schisamo](https://github.com/schisamo))
 - Pin rake to 12.3.0 to prevent installing 2 copies in our install [#7779](https://github.com/chef/chef/pull/7779) ([tas50](https://github.com/tas50))
 - Fix locale on RHEL 6 / Amazon Linux [#7782](https://github.com/chef/chef/pull/7782) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.5.33](https://github.com/chef/chef/tree/v14.5.33) (2018-09-25)
 
