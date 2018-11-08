@@ -1,5 +1,51 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.7:
+
+## New Resources
+
+### windows_firewall_rule
+
+Use the `windows_firewall_rule` resource create or delete Windows Firewall rules.
+
+See the [windows_firewall_rule](https://docs.chef.io/resource_windows_firewall_rule.html) documentation for more information.
+
+Thank you [Schuberg Philis](https://schubergphilis.com/) for transferring us the [windows_firewall cookbook](https://supermarket.chef.io/cookbooks/windows_firewall) and to [@Happycoil](https://github.com/Happycoil) for porting it to chef-client with a signifcant refactoring.
+
+### windows_share
+
+Use the `windows_share` resource create or delete Windows file shares.
+
+See the [windows_share](https://docs.chef.io/resource_windows_share.html) documentation for more information.
+
+### windows_certificate
+
+Use the `windows_certificate` resource add, remove, or verify certificates in the system or user certificate stores.
+
+See the [windows_certificate](https://docs.chef.io/resource_windows_certificate.html) documentation for more information.
+
+## Updated Resources
+
+### dmg_package
+
+The dmg_package resource has been refactored to improve idempotency and properly support accepting a DMG's EULA with the `accept_eula` property.
+
+### kernel_module
+
+Kernel_module now only runs the `initramfs` update once per Chef run to greatly speed up chef-client runs when multiple kernel_module resources are used. Thank you [@tomdoherty](https://github.com/tomdoherty) for this improvement.
+
+### mount
+
+The `supports` property once again allows passing supports data as an array. This matches the behavior present in Chef 12.
+
+### timezone
+
+macOS support has been added to the timezone resource.
+
+### windows_task
+
+A regression in Chef 14.6’s windows_task resource which resulted in tasks being created with the "Run only when user is logged on" option being set when created with a specific user other than SYSTEM, has been resolved.
+
 # Chef Client Release Notes 14.6:
 
 ## Smaller Package and Install Size
