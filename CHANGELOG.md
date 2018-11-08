@@ -12,6 +12,8 @@
 
 ## [v14.7.17](https://github.com/chef/chef/tree/v14.7.17) (2018-11-08)
 
+## [v14.7.17](https://github.com/chef/chef/tree/v14.7.17) (2018-11-08)
+
 #### Merged Pull Requests
 - Allow passing array to supports in mount resource again [#7809](https://github.com/chef/chef/pull/7809) ([tas50](https://github.com/tas50))
 - Automated resource documentation improvements [#7811](https://github.com/chef/chef/pull/7811) ([tas50](https://github.com/tas50))
