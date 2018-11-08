@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.53 -->
-## [v15.0.53](https://github.com/chef/chef/tree/v15.0.53) (2018-11-07)
+<!-- latest_release 15.0.54 -->
+## [v15.0.54](https://github.com/chef/chef/tree/v15.0.54) (2018-11-08)
 
 #### Merged Pull Requests
-- fix whitespace in node attributes [ci skip] [#7890](https://github.com/chef/chef/pull/7890) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix the knife integration spec timeouts [#7896](https://github.com/chef/chef/pull/7896) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Fix the knife integration spec timeouts [#7896](https://github.com/chef/chef/pull/7896) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.54 -->
 - fix whitespace in node attributes [ci skip] [#7890](https://github.com/chef/chef/pull/7890) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.53 -->
 - add tests for yum version with package_source bug [#7886](https://github.com/chef/chef/pull/7886) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.52 -->
 - Remove Chef provisioning lazy loading [#7866](https://github.com/chef/chef/pull/7866) ([tas50](https://github.com/tas50)) <!-- 15.0.51 -->
