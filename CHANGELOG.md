@@ -2,10 +2,14 @@
 <!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.7.17 -->
+### Changes since 14.7.17 release
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.7.17](https://github.com/chef/chef/tree/v14.7.17) (2018-11-08)
+<!-- latest_stable_release -->
+
 ## [v14.7.17](https://github.com/chef/chef/tree/v14.7.17) (2018-11-08)
 
 #### Merged Pull Requests
@@ -28,7 +32,6 @@
 - Backport: Allow multiple local and remote ports in the windows_firewall_rule resource [#7888](https://github.com/chef/chef/pull/7888) ([tas50](https://github.com/tas50))
 - Backport: Defer running initramfs_command until end of run [#7889](https://github.com/chef/chef/pull/7889) ([tas50](https://github.com/tas50))
 - fix whitespace in node attributes [ci skip] [#7891](https://github.com/chef/chef/pull/7891) ([lamont-granquist](https://github.com/lamont-granquist))
-<!-- latest_stable_release -->
 
 ## [v14.6.47](https://github.com/chef/chef/tree/v14.6.47) (2018-10-26)
 
