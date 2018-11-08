@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -190,12 +190,14 @@ EOM
         app = lambda do |env|
           [200, { "Content-Type" => "application/json" }, ['{ "x": "y", "a": "b" }'] ]
         end
-        @raw_server, @raw_server_thread = start_app_server(app, 9018)
+        @raw_server_thread = start_app_server(app, 9018)
       end
 
       after :each do
-        @raw_server.shutdown if @raw_server
-        @raw_server_thread.kill if @raw_server_thread
+        if @raw_server_thread
+          @raw_server_thread.kill
+          @raw_server_thread.join(30)
+        end
       end
 
       it "knife raw /blah returns the prettified json", skip: (RUBY_VERSION < "1.9") do
@@ -220,12 +222,14 @@ EOM
         app = lambda do |env|
           [200, { "Content-Type" => "text" }, ['{ "x": "y", "a": "b" }'] ]
         end
-        @raw_server, @raw_server_thread = start_app_server(app, 9018)
+        @raw_server_thread = start_app_server(app, 9018)
       end
 
       after :each do
-        @raw_server.shutdown if @raw_server
-        @raw_server_thread.kill if @raw_server_thread
+        if @raw_server_thread
+          @raw_server_thread.kill
+          @raw_server_thread.join(30)
+        end
       end
 
       it "knife raw /blah returns the raw text" do

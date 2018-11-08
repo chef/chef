@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,12 +36,14 @@ describe "redirection", :workstation do
         app = lambda do |env|
           [302, { "Content-Type" => "text", "Location" => "#{real_chef_server_url}#{env['PATH_INFO']}" }, ["302 found"] ]
         end
-        @redirector_server, @redirector_server_thread = start_app_server(app, 9018)
+        @redirector_server_thread = start_app_server(app, 9018)
       end
 
       after :each do
-        @redirector_server.shutdown if @redirector_server
-        @redirector_thread.kill if @redirector_thread
+        if @redirector_thread
+          @redirector_thread.kill
+          @redirector_thread.join(30)
+        end
       end
 
       it "knife list /roles returns the role" do
