@@ -1,9 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.7.18 -->
+## [v14.7.18](https://github.com/chef/chef/tree/v14.7.18) (2018-11-09)
+
+#### Merged Pull Requests
+- Chef 14 Backport: fix the knife integration spec timeouts [#7899](https://github.com/chef/chef/pull/7899) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
+
+#### Merged Pull Requests
+- Chef 14 Backport: fix the knife integration spec timeouts [#7899](https://github.com/chef/chef/pull/7899) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.7.18 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
