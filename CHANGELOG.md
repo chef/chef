@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.54 -->
-## [v15.0.54](https://github.com/chef/chef/tree/v15.0.54) (2018-11-08)
+<!-- latest_release 15.0.55 -->
+## [v15.0.55](https://github.com/chef/chef/tree/v15.0.55) (2018-11-09)
 
 #### Merged Pull Requests
-- Fix the knife integration spec timeouts [#7896](https://github.com/chef/chef/pull/7896) ([lamont-granquist](https://github.com/lamont-granquist))
+- windows_ad_join: Switch to UPN format usernames for use with AD cmdlets [#7895](https://github.com/chef/chef/pull/7895) ([stuartpreston](https://github.com/stuartpreston))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- windows_ad_join: Switch to UPN format usernames for use with AD cmdlets [#7895](https://github.com/chef/chef/pull/7895) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.55 -->
 - Fix the knife integration spec timeouts [#7896](https://github.com/chef/chef/pull/7896) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.54 -->
 - fix whitespace in node attributes [ci skip] [#7890](https://github.com/chef/chef/pull/7890) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.53 -->
 - add tests for yum version with package_source bug [#7886](https://github.com/chef/chef/pull/7886) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.52 -->
