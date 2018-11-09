@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.56 -->
-## [v15.0.56](https://github.com/chef/chef/tree/v15.0.56) (2018-11-09)
+<!-- latest_release 15.0.58 -->
+## [v15.0.58](https://github.com/chef/chef/tree/v15.0.58) (2018-11-09)
 
 #### Merged Pull Requests
-- Make sure we define windows_task resource on *nix systems [#7903](https://github.com/chef/chef/pull/7903) ([tas50](https://github.com/tas50))
+- Add nillability to attribute deep merging [#7892](https://github.com/chef/chef/pull/7892) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add nillability to attribute deep merging [#7892](https://github.com/chef/chef/pull/7892) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.58 -->
 - Make sure we define windows_task resource on *nix systems [#7903](https://github.com/chef/chef/pull/7903) ([tas50](https://github.com/tas50)) <!-- 15.0.56 -->
 - windows_ad_join: Switch to UPN format usernames for use with AD cmdlets [#7895](https://github.com/chef/chef/pull/7895) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.55 -->
 - Fix the knife integration spec timeouts [#7896](https://github.com/chef/chef/pull/7896) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.54 -->
