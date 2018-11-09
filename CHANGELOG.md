@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.19 -->
-## [v14.7.19](https://github.com/chef/chef/tree/v14.7.19) (2018-11-09)
+<!-- latest_release 14.7.20 -->
+## [v14.7.20](https://github.com/chef/chef/tree/v14.7.20) (2018-11-09)
 
 #### Merged Pull Requests
-- Chef 14 Backport: windows_ad_join: Switch to UPN format usernames for use with AD cmdlets [#7906](https://github.com/chef/chef/pull/7906) ([stuartpreston](https://github.com/stuartpreston))
+- Chef 14 Backport: Make sure we define windows_task resource on *nix systems [#7907](https://github.com/chef/chef/pull/7907) ([stuartpreston](https://github.com/stuartpreston))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- Chef 14 Backport: Make sure we define windows_task resource on *nix systems [#7907](https://github.com/chef/chef/pull/7907) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.7.20 -->
 - Chef 14 Backport: windows_ad_join: Switch to UPN format usernames for use with AD cmdlets [#7906](https://github.com/chef/chef/pull/7906) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.7.19 -->
 - Chef 14 Backport: fix the knife integration spec timeouts [#7899](https://github.com/chef/chef/pull/7899) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.7.18 -->
 <!-- release_rollup -->
