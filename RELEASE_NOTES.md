@@ -10,7 +10,7 @@ Use the `windows_firewall_rule` resource create or delete Windows Firewall rules
 
 See the [windows_firewall_rule](https://docs.chef.io/resource_windows_firewall_rule.html) documentation for more information.
 
-Thank you [Schuberg Philis](https://schubergphilis.com/) for transferring us the [windows_firewall cookbook](https://supermarket.chef.io/cookbooks/windows_firewall) and to [@Happycoil](https://github.com/Happycoil) for porting it to chef-client with a signifcant refactoring.
+Thank you [Schuberg Philis](https://schubergphilis.com/) for transferring us the [windows_firewall cookbook](https://supermarket.chef.io/cookbooks/windows_firewall) and to [@Happycoil](https://github.com/Happycoil) for porting it to chef-client with a significant refactoring.
 
 ### windows_share
 
