@@ -6,6 +6,24 @@ Chef 15 release notes will be added here as development progresses.
 
 ## Breaking Changes
 
+### Node Attributes deep merge nil values
+
+Writing a nil to a precedence level in the node object now acts like any other value and can be used to override values back to nil.
+
+For example:
+
+```
+chef (15.0.53)> node.default["foo"] = "bar"
+ => "bar"
+chef (15.0.53)> node.override["foo"] = nil
+ => nil
+chef (15.0.53)> node["foo"]
+ => nil
+```
+
+In prior versions of chef-client the nil set in the override level would be completely ignored and the value of `node["foo"]` would have
+been "bar".
+
 ### http_disable_auth_on_redirect now enabled
 
 The Chef config ``http_disable_auth_on_redirect`` has been changed from `false` to `true`. In Chef 16 this config option will be removed alltogether and Chef will always disable auth on redirect.
