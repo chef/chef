@@ -1273,4 +1273,34 @@ describe Chef::Node::Attribute do
       expect { @attributes["foo"]["bar"][0] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
     end
   end
+
+  describe "deep merging with nils" do
+    it "nils when deep merging between default levels knocks out values" do
+      @attributes.default["foo"] = "bar"
+      expect(@attributes["foo"]).to eql("bar")
+      @attributes.force_default["foo"] = nil
+      expect(@attributes["foo"]).to be nil
+    end
+
+    it "nils when deep merging between override levels knocks out values" do
+      @attributes.override["foo"] = "bar"
+      expect(@attributes["foo"]).to eql("bar")
+      @attributes.force_override["foo"] = nil
+      expect(@attributes["foo"]).to be nil
+    end
+
+    it "nils when deep merging between default+override levels knocks out values" do
+      @attributes.default["foo"] = "bar"
+      expect(@attributes["foo"]).to eql("bar")
+      @attributes.override["foo"] = nil
+      expect(@attributes["foo"]).to be nil
+    end
+
+    it "nils when deep merging between normal+automatic levels knocks out values" do
+      @attributes.normal["foo"] = "bar"
+      expect(@attributes["foo"]).to eql("bar")
+      @attributes.automatic["foo"] = nil
+      expect(@attributes["foo"]).to be nil
+    end
+  end
 end
