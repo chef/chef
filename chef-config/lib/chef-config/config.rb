@@ -436,8 +436,6 @@ module ChefConfig
     end
 
     default :rest_timeout, 300
-    default :yum_timeout, 900
-    default :yum_lock_timeout, 30
     default :solo, false
 
     # Are we running in old Chef Solo legacy mode?
