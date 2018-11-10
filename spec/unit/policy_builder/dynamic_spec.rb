@@ -131,18 +131,6 @@ describe Chef::PolicyBuilder::Dynamic do
 
         end
 
-        context "and :use_policyfile is set in Chef::Config" do
-
-          before do
-            Chef::Config[:use_policyfile] = true
-          end
-
-          it "uses the Policyfile implementation" do
-            expect(implementation).to be_a(Chef::PolicyBuilder::Policyfile)
-          end
-
-        end
-
         context "and policy_name and policy_group are set on Chef::Config" do
 
           before do
