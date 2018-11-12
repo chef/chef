@@ -160,8 +160,7 @@ C5986B4F1257FFA86632CBA746181433FBB75451
     end
   end
 
-  describe "#
-" do
+ describe "#keyserver_install_cmd" do
     it "returns keyserver install command" do
       expect(provider.keyserver_install_cmd("ABC", "gpg.mit.edu")).to eq("apt-key adv --no-tty --recv --keyserver hkp://gpg.mit.edu:80 ABC")
     end
