@@ -67,23 +67,70 @@ describe Chef::Resource::WindowsTask, :windows_only do
     end
   end
 
-  context "when user is set but password is not" do
-    before do
-      resource.frequency :hourly
-    end
-    it "raises an error if the user is a non-system user" do
-      resource.user "bob"
-      expect { resource.after_created }.to raise_error(ArgumentError, %q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'SYSTEM', 'NT AUTHORITY\SYSTEM', 'LOCAL SERVICE', 'NT AUTHORITY\LOCAL SERVICE', 'NETWORK SERVICE', 'NT AUTHORITY\NETWORK SERVICE', 'ADMINISTRATORS', 'BUILTIN\ADMINISTRATORS', 'USERS', 'BUILTIN\USERS', 'GUESTS', 'BUILTIN\GUESTS'})
+  describe "#validate_user_and_password" do
+    context "a System User" do
+      before do
+        resource.frequency :hourly
+        resource.user 'NT AUTHORITY\SYSTEM'
+      end
+
+      context "for an interactive task" do
+        before { resource.interactive_enabled true }
+        it "does not require a password" do
+          expect { resource.after_created }.to_not raise_error
+        end
+        it "raises an error when a password is given" do
+          resource.password "XXXX"
+          expect { resource.after_created }.to raise_error(ArgumentError, "Password is not required for system users.")
+        end
+        it "does not raises an error even when user is in lowercase" do
+          resource.user 'nt authority\system'
+          expect { resource.after_created }.to_not raise_error
+        end
+      end
+
+      context "for a non-interactive task" do
+        before { resource.interactive_enabled false }
+        it "does not require a password" do
+          expect { resource.after_created }.to_not raise_error
+        end
+        it "raises an error when a password is given" do
+          resource.password "XXXX"
+          expect { resource.after_created }.to raise_error(ArgumentError, "Password is not required for system users.")
+        end
+        it "does not raises an error even when user is in lowercase" do
+          resource.user 'nt authority\system'
+          expect { resource.after_created }.to_not raise_error
+        end
+      end
     end
 
-    it "does not raise an error if the user is a system user" do
-      resource.user 'NT AUTHORITY\SYSTEM'
-      expect { resource.after_created }.to_not raise_error
-    end
+    context "a Non-System User" do
+      before do
+        resource.frequency :hourly
+        resource.user "bob"
+      end
+      context "for an interactive task" do
+        before { resource.interactive_enabled true }
+        it "does not require a password" do
+          expect { resource.after_created }.to_not raise_error
+        end
+        it "does not raises an error when a password is given" do
+          resource.password "XXXX"
+          expect { resource.after_created }.to_not raise_error
+        end
+      end
 
-    it "does not raise an error if the user is a system user even if lowercase" do
-      resource.user 'nt authority\system'
-      expect { resource.after_created }.to_not raise_error
+      context "for a non-interactive task" do
+        before { resource.interactive_enabled false }
+        it "require a password" do
+          expect { resource.after_created }.to raise_error(ArgumentError, %q{Please provide a password or check if this task needs to be interactive! Valid passwordless users are: 'SYSTEM', 'NT AUTHORITY\SYSTEM', 'LOCAL SERVICE', 'NT AUTHORITY\LOCAL SERVICE', 'NETWORK SERVICE', 'NT AUTHORITY\NETWORK SERVICE', 'ADMINISTRATORS', 'BUILTIN\ADMINISTRATORS', 'USERS', 'BUILTIN\USERS', 'GUESTS', 'BUILTIN\GUESTS'})
+        end
+        it "does not raises an error when a password is given" do
+          resource.password "XXXX"
+          expect { resource.after_created }.to_not raise_error
+        end
+      end
     end
   end
 
@@ -228,12 +275,6 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
     it "raise error if start_day is passed with invalid date format (MM/DD/YY)" do
       expect { resource.send(:validate_start_day, "02/07/84", :weekly) }.to raise_error(ArgumentError, "`start_day` property must be in the MM/DD/YYYY format.")
-    end
-  end
-
-  context "#validate_interactive_setting" do
-    it "raises error when interactive_enabled is passed without password" do
-      expect { resource.send(:validate_interactive_setting, true, nil) }.to raise_error("Please provide the password when attempting to set interactive/non-interactive.")
     end
   end
 

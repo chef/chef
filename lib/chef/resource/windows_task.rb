@@ -143,7 +143,6 @@ class Chef
         validate_start_time(start_time, frequency)
         validate_start_day(start_day, frequency) if start_day
         validate_user_and_password(user, password)
-        validate_interactive_setting(interactive_enabled, password)
         validate_create_frequency_modifier(frequency, frequency_modifier) if frequency_modifier
         validate_create_day(day, frequency, frequency_modifier) if day
         validate_create_months(months, frequency) if months
@@ -226,20 +225,30 @@ class Chef
         end
       end
 
+      # System users will not require a password
+      # Other users will require a password if the task is non-interactive.
+      #
+      # @param [String] user
+      # @param [String] password
+      #
       def validate_user_and_password(user, password)
-        if password_required?(user) && password.nil?
-          raise ArgumentError, "Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: '#{Chef::ReservedNames::Win32::Security::SID::SYSTEM_USER.join("', '")}'"
+        if non_system_user?(user)
+          if password.nil? && !interactive_enabled
+            raise ArgumentError, "Please provide a password or check if this task needs to be interactive! Valid passwordless users are: '#{Chef::ReservedNames::Win32::Security::SID::SYSTEM_USER.join("', '")}'"
+          end
+        else
+          unless password.nil?
+            raise ArgumentError, "Password is not required for system users."
+          end
         end
       end
 
+      # Password is not required for system user and required for non-system user.
       def password_required?(user)
-        return false if user.nil?
-        @password_required ||= !Chef::ReservedNames::Win32::Security::SID.system_user?(user)
+        @password_required ||= (!user.nil? && !Chef::ReservedNames::Win32::Security::SID.system_user?(user))
       end
 
-      def validate_interactive_setting(interactive_enabled, password)
-        raise ArgumentError, "Please provide the password when attempting to set interactive/non-interactive." if interactive_enabled && password.nil?
-      end
+      alias non_system_user? password_required?
 
       def validate_create_frequency_modifier(frequency, frequency_modifier)
         if ([:on_logon, :onstart, :on_idle, :none].include?(frequency)) && ( frequency_modifier != 1)
