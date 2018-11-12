@@ -160,18 +160,19 @@ C5986B4F1257FFA86632CBA746181433FBB75451
     end
   end
 
-  describe "#keyserver_install_cmd" do
+  describe "#
+" do
     it "returns keyserver install command" do
-      expect(provider.keyserver_install_cmd("ABC", "gpg.mit.edu")).to eq("apt-key adv --recv --keyserver hkp://gpg.mit.edu:80 ABC")
+      expect(provider.keyserver_install_cmd("ABC", "gpg.mit.edu")).to eq("apt-key adv --no-tty --recv --keyserver hkp://gpg.mit.edu:80 ABC")
     end
 
     it "uses proxy if key_proxy property is set" do
       new_resource.key_proxy("proxy.mycorp.dmz:3128")
-      expect(provider.keyserver_install_cmd("ABC", "gpg.mit.edu")).to eq("apt-key adv --recv --keyserver-options http-proxy=proxy.mycorp.dmz:3128 --keyserver hkp://gpg.mit.edu:80 ABC")
+      expect(provider.keyserver_install_cmd("ABC", "gpg.mit.edu")).to eq("apt-key adv --no-tty --recv --keyserver-options http-proxy=proxy.mycorp.dmz:3128 --keyserver hkp://gpg.mit.edu:80 ABC")
     end
 
     it "properly handles keyservers passed with hkp:// URIs" do
-      expect(provider.keyserver_install_cmd("ABC", "hkp://gpg.mit.edu")).to eq("apt-key adv --recv --keyserver hkp://gpg.mit.edu ABC")
+      expect(provider.keyserver_install_cmd("ABC", "hkp://gpg.mit.edu")).to eq("apt-key adv --no-tty --recv --keyserver hkp://gpg.mit.edu ABC")
     end
   end
 
