@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.60 -->
-## [v15.0.60](https://github.com/chef/chef/tree/v15.0.60) (2018-11-10)
+<!-- latest_release 15.0.61 -->
+## [v15.0.61](https://github.com/chef/chef/tree/v15.0.61) (2018-11-12)
 
 #### Merged Pull Requests
-- Always run policy_file if a policy_file or policy_group exists [#7910](https://github.com/chef/chef/pull/7910) ([tas50](https://github.com/tas50))
+- windows_feature: Move provider logic into the default of the install_method property [#7912](https://github.com/chef/chef/pull/7912) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- windows_feature: Move provider logic into the default of the install_method property [#7912](https://github.com/chef/chef/pull/7912) ([tas50](https://github.com/tas50)) <!-- 15.0.61 -->
 - Always run policy_file if a policy_file or policy_group exists [#7910](https://github.com/chef/chef/pull/7910) ([tas50](https://github.com/tas50)) <!-- 15.0.60 -->
 - Update deps to bring in the new ca-certs [#7897](https://github.com/chef/chef/pull/7897) ([tas50](https://github.com/tas50)) <!-- 15.0.59 -->
 - Add nillability to attribute deep merging [#7892](https://github.com/chef/chef/pull/7892) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.58 -->
