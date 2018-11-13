@@ -50,6 +50,10 @@ describe Chef::Resource::WindowsFeature do
     expect(resource.timeout).to eql(600)
   end
 
+  it "install_method property defaults to :windows_feature_dism" do
+    expect(resource.install_method).to eql(:windows_feature_dism)
+  end
+
   it "install_method accepts :windows_feature_dism, :windows_feature_powershell, and :windows_feature_servermanagercmd" do
     expect { resource.install_method :windows_feature_dism }.not_to raise_error
     expect { resource.install_method :windows_feature_powershell }.not_to raise_error
