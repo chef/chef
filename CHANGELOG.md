@@ -1,6 +1,6 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.61 -->
-## [v15.0.61](https://github.com/chef/chef/tree/v15.0.61) (2018-11-12)
+<!-- latest_release 15.0.62 -->
+## [v15.0.62](https://github.com/chef/chef/tree/v15.0.62) (2018-11-13)
 
 #### Merged Pull Requests
 - windows_feature: Move provider logic into the default of the install_method property [#7912](https://github.com/chef/chef/pull/7912) ([tas50](https://github.com/tas50))
