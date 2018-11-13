@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.62 -->
-## [v15.0.62](https://github.com/chef/chef/tree/v15.0.62) (2018-11-13)
+<!-- latest_release 15.0.63 -->
+## [v15.0.63](https://github.com/chef/chef/tree/v15.0.63) (2018-11-13)
 
 #### Merged Pull Requests
-- windows_feature: Move provider logic into the default of the install_method property [#7912](https://github.com/chef/chef/pull/7912) ([tas50](https://github.com/tas50))
+- Update inspec-core to 3.0.46 [#7924](https://github.com/chef/chef/pull/7924) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update inspec-core to 3.0.46 [#7924](https://github.com/chef/chef/pull/7924) ([tas50](https://github.com/tas50)) <!-- 15.0.63 -->
 - windows_feature: Move provider logic into the default of the install_method property [#7912](https://github.com/chef/chef/pull/7912) ([tas50](https://github.com/tas50)) <!-- 15.0.61 -->
 - Always run policy_file if a policy_file or policy_group exists [#7910](https://github.com/chef/chef/pull/7910) ([tas50](https://github.com/tas50)) <!-- 15.0.60 -->
 - Update deps to bring in the new ca-certs [#7897](https://github.com/chef/chef/pull/7897) ([tas50](https://github.com/tas50)) <!-- 15.0.59 -->
