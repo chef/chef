@@ -29,7 +29,7 @@ git add .
 # DCO sign-off is needed for this sort of PR since it contains no intellectual property
 git commit --message "Bump $GEM_NAME to $VERSION" --message "This pull request was triggered automatically via Expeditor when $GEM_NAME $VERSION was promoted to Rubygems." --message "This change falls under the obvious fix policy so no Developer Certificate of Origin (DCO) sign-off is required."
 
-open_pull_request
+open_pull_request "chef-14"
 
 # Get back to master and cleanup the leftovers - any changed files left over at the end of this script will get committed to master.
 git checkout -
