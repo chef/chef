@@ -32,7 +32,7 @@ class Chef
 
       property :overwrite_config_files, [TrueClass, FalseClass],
                introduced: "14.0",
-               description: "Overwrite existing config files with those in the package if prompted by apt.",
+               description: "Overwrite existing configuration files with those supplied by the package, if prompted by APT.",
                default: false
 
     end
