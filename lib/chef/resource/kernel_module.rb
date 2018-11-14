@@ -18,7 +18,7 @@ class Chef
       introduced "14.3"
 
       property :modname, String,
-               description: "The name of the kernel module.",
+               description: "An optional property to set the kernel module name if it differs from the resource block's name.",
                name_property: true, identity: true
 
       property :load_dir, String,

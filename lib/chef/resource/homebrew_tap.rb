@@ -32,7 +32,7 @@ class Chef
       include Chef::Mixin::HomebrewUser
 
       property :tap_name, String,
-               description: "Optional tap name to override the resource name",
+               description: "An optional property to set the tap name if it differs from the resource block's name.",
                validation_message: "Homebrew tap names must be in the form REPO/TAP format!",
                regex: %r{^[\w-]+(?:\/[\w-]+)+$},
                name_property: true
