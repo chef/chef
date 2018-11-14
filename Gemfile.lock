@@ -113,7 +113,7 @@ GEM
       mixlib-log (~> 2.0)
       rack (~> 2.0)
       uuidtools (~> 2.1)
-    cheffish (14.0.1)
+    cheffish (14.0.4)
       chef-zero (~> 14.0)
       net-ssh
     coderay (1.1.2)
