@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.22 -->
-## [v14.7.22](https://github.com/chef/chef/tree/v14.7.22) (2018-11-13)
+<!-- latest_release 14.7.23 -->
+## [v14.7.23](https://github.com/chef/chef/tree/v14.7.23) (2018-11-14)
 
 #### Merged Pull Requests
-- Backport: windows_feature: Move provider logic into the default of the install_method property [#7920](https://github.com/chef/chef/pull/7920) ([tas50](https://github.com/tas50))
+- Bump InSpec to 3.0.46 [#7931](https://github.com/chef/chef/pull/7931) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- Bump InSpec to 3.0.46 [#7931](https://github.com/chef/chef/pull/7931) ([tas50](https://github.com/tas50)) <!-- 14.7.23 -->
 - Backport: windows_feature: Move provider logic into the default of the install_method property [#7920](https://github.com/chef/chef/pull/7920) ([tas50](https://github.com/tas50)) <!-- 14.7.22 -->
 - Update inspec and ca-certs to the latest [#7898](https://github.com/chef/chef/pull/7898) ([tas50](https://github.com/tas50)) <!-- 14.7.21 -->
 - Chef 14 Backport: Make sure we define windows_task resource on *nix systems [#7907](https://github.com/chef/chef/pull/7907) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.7.20 -->
