@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.63 -->
-## [v15.0.63](https://github.com/chef/chef/tree/v15.0.63) (2018-11-13)
+<!-- latest_release 15.0.64 -->
+## [v15.0.64](https://github.com/chef/chef/tree/v15.0.64) (2018-11-14)
 
 #### Merged Pull Requests
-- Update inspec-core to 3.0.46 [#7924](https://github.com/chef/chef/pull/7924) ([tas50](https://github.com/tas50))
+- Replace usage of win_friendly_path helper in windows_certificate [#7927](https://github.com/chef/chef/pull/7927) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Replace usage of win_friendly_path helper in windows_certificate [#7927](https://github.com/chef/chef/pull/7927) ([tas50](https://github.com/tas50)) <!-- 15.0.64 -->
 - Update inspec-core to 3.0.46 [#7924](https://github.com/chef/chef/pull/7924) ([tas50](https://github.com/tas50)) <!-- 15.0.63 -->
 - windows_feature: Move provider logic into the default of the install_method property [#7912](https://github.com/chef/chef/pull/7912) ([tas50](https://github.com/tas50)) <!-- 15.0.61 -->
 - Always run policy_file if a policy_file or policy_group exists [#7910](https://github.com/chef/chef/pull/7910) ([tas50](https://github.com/tas50)) <!-- 15.0.60 -->
