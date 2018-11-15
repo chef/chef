@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.68 -->
-## [v15.0.68](https://github.com/chef/chef/tree/v15.0.68) (2018-11-15)
+<!-- latest_release 15.0.69 -->
+## [v15.0.69](https://github.com/chef/chef/tree/v15.0.69) (2018-11-15)
 
 #### Merged Pull Requests
-- Improve resource descriptions for documentation [#7929](https://github.com/chef/chef/pull/7929) ([tas50](https://github.com/tas50))
+- Add additional resource description fields [#7938](https://github.com/chef/chef/pull/7938) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add additional resource description fields [#7938](https://github.com/chef/chef/pull/7938) ([tas50](https://github.com/tas50)) <!-- 15.0.69 -->
 - Improve resource descriptions for documentation [#7929](https://github.com/chef/chef/pull/7929) ([tas50](https://github.com/tas50)) <!-- 15.0.68 -->
 - windows_feature_dism: support installed deleted features [#7905](https://github.com/chef/chef/pull/7905) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.67 -->
 - use --no-tty during apt-keys fro gpg - fixes #7913 [#7914](https://github.com/chef/chef/pull/7914) ([EugenMayer](https://github.com/EugenMayer)) <!-- 15.0.66 -->
