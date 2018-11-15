@@ -103,7 +103,7 @@ class Chef
                }
 
       property :hour, [Integer, String],
-               description: "The hour at which the cron entry is to run (0 - 23).",
+               description: "The hour at which the cron entry should run (0 - 23).",
                default: "*", callbacks: {
                  "should be a valid hour spec" => ->(spec) { validate_numeric(spec, 0, 23) },
                }
@@ -150,7 +150,7 @@ class Chef
                description: "A comment to place in the cron.d file."
 
       property :environment, Hash,
-               description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``. (These variables must exist for a command to be run successfully.)",
+               description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
                default: lazy { Hash.new }
 
       property :mode, [String, Integer],
