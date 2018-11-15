@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.65 -->
-## [v15.0.65](https://github.com/chef/chef/tree/v15.0.65) (2018-11-14)
+<!-- latest_release 15.0.66 -->
+## [v15.0.66](https://github.com/chef/chef/tree/v15.0.66) (2018-11-15)
 
 #### Merged Pull Requests
-- Update Cheffish to 14.0.4 [#7936](https://github.com/chef/chef/pull/7936) ([tas50](https://github.com/tas50))
+- use --no-tty during apt-keys fro gpg - fixes #7913 [#7914](https://github.com/chef/chef/pull/7914) ([EugenMayer](https://github.com/EugenMayer))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- use --no-tty during apt-keys fro gpg - fixes #7913 [#7914](https://github.com/chef/chef/pull/7914) ([EugenMayer](https://github.com/EugenMayer)) <!-- 15.0.66 -->
 - Update Cheffish to 14.0.4 [#7936](https://github.com/chef/chef/pull/7936) ([tas50](https://github.com/tas50)) <!-- 15.0.65 -->
 - Replace usage of win_friendly_path helper in windows_certificate [#7927](https://github.com/chef/chef/pull/7927) ([tas50](https://github.com/tas50)) <!-- 15.0.64 -->
 - Update inspec-core to 3.0.46 [#7924](https://github.com/chef/chef/pull/7924) ([tas50](https://github.com/tas50)) <!-- 15.0.63 -->
