@@ -44,7 +44,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { !new_resource.source }
-            a.failure_message(Chef::Exceptions::Package, "apt package provider cannot handle source attribute. Use dpkg provider instead")
+            a.failure_message(Chef::Exceptions::Package, "apt package provider cannot handle source property. Use dpkg provider instead")
           end
         end
 
