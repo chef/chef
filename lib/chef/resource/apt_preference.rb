@@ -30,7 +30,7 @@ class Chef
 
       property :package_name, String,
                name_property: true,
-               description: "The name of the package.",
+               description: "An optional property to set the package name if it differs from the resource block's name.",
                regex: [/^([a-z]|[A-Z]|[0-9]|_|-|\.|\*|\+)+$/],
                validation_message: "The provided package name is not valid. Package names can only contain alphanumeric characters as well as _, -, +, or *!"
 

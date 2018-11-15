@@ -65,7 +65,7 @@ class Chef
                description: "The current working directory from which the command will be run."
 
       property :environment, Hash,
-               description: "Specify a Hash of environment variables to be set."
+               description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}). (These variables must exist for a command to be run successfully.)"
 
       alias :env :environment
 
