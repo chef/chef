@@ -159,7 +159,7 @@ class Chef
                default: "root"
 
       property :environment, Hash,
-               description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}). (These variables must exist for a command to be run successfully.)",
+               description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}).",
                default: lazy { Hash.new }
 
       private

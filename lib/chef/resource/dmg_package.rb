@@ -27,7 +27,7 @@ class Chef
       introduced "14.0"
 
       property :app, String,
-               description: "The name of the application as it appears in the /Volumes directory, if it differs from the resource block name.",
+               description: "The name of the application as it appears in the /Volumes directory, if it differs from the resource block's name.",
                name_property: true
 
       property :source, String,

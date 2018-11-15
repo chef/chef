@@ -66,7 +66,7 @@ class Chef
                default: "deploy"
 
       property :environment, [Hash, nil],
-               description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}). (These variables must exist for a command to be run successfully.)",
+               description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}).",
                default: nil
 
       alias :env :environment
