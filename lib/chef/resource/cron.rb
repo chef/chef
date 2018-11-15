@@ -134,14 +134,33 @@ class Chef
         )
       end
 
-      property :time, Symbol, equal_to: Chef::Provider::Cron::SPECIAL_TIME_VALUES
-      property :mailto, String
-      property :path, String
-      property :home, String
-      property :shell, String
-      property :command, String, identity: true
-      property :user, String, default: "root"
-      property :environment, Hash, default: lazy { Hash.new }
+      property :time, Symbol,
+               description: "A time interval. Possible values: :annually, :daily, :hourly, :midnight, :monthly, :reboot, :weekly, or :yearly.",
+               equal_to: Chef::Provider::Cron::SPECIAL_TIME_VALUES
+
+      property :mailto, String,
+               description: "Set the MAILTO environment variable."
+
+      property :path, String,
+               description: "Set the PATH environment variable."
+
+      property :home, String,
+               description: "Set the HOME environment variable."
+
+      property :shell, String,
+               description: "Set the SHELL environment variable."
+
+      property :command, String,
+               description: "The command to be run, or the path to a file that contains the command to be run.",
+               identity: true
+
+      property :user, String,
+               description: "The name of the user that runs the command. If the user property is changed, the original user for the crontab program continues to run until that crontab program is deleted. This property is not applicable on the AIX platform.",
+               default: "root"
+
+      property :environment, Hash,
+               description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}). (These variables must exist for a command to be run successfully.)",
+               default: lazy { Hash.new }
 
       private
 
