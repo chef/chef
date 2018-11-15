@@ -52,14 +52,6 @@ class Chef
                description: "One (or more) additional command options that are passed to the command.",
                coerce: proc { |x| x.is_a?(String) ? x.shellsplit : x }
 
-      property :response_file, String,
-               description: "The direct path to the file used to pre-seed a package.",
-               desired_state: false
-
-      property :response_file_variables, Hash,
-               description: "A Hash of response file variables in the form of {'VARIABLE' => 'VALUE'}.",
-               default: lazy { Hash.new }, desired_state: false
-
       property :source, String,
                description: "The optional path to a package on the local file system.",
                desired_state: false
