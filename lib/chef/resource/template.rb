@@ -57,9 +57,17 @@ class Chef
         )
       end
 
-      property :variables, Hash, default: lazy { Hash.new }
-      property :cookbook, String
-      property :local, [ TrueClass, FalseClass ], default: false
+      property :variables, Hash,
+               description: "The variables property of the template resource can be used to reference a partial template file by using a Hash.",
+               default: lazy { Hash.new }
+
+      property :cookbook, String,
+               description: "The cookbook in which a file is located (if it is not located in the current cookbook). The default value is the current cookbook.",
+               desired_state: false
+
+      property :local, [ TrueClass, FalseClass ],
+               default: false, desired_state: false,
+               description: "Load a template from a local path. By default, the chef-client loads templates from a cookbook’s /templates directory. When this property is set to true, use the source property to specify the path to a template on the local node."
 
       # Declares a helper method to be defined in the template context when
       # rendering.
