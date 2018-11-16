@@ -33,33 +33,51 @@ class Chef
 
       # this is a poor API please do not re-use this pattern
       property :supports, Hash, default: { restart: nil, reload: nil, status: nil },
-                                coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
+               description: "A list of properties that controls how the chef-client is to attempt to manage a service: :restart, :reload, :status. For :restart, the init script or other service provider can use a restart command; if :restart is not specified, the chef-client attempts to stop and then start a service. For :reload, the init script or other service provider can use a reload command. For :status, the init script or other service provider can use a status command to determine if the service is running; if :status is not specified, the chef-client attempts to match the service_name against the process table as a regular expression, unless a pattern is specified as a parameter property. Default value: { restart: false, reload: false, status: false } for all platforms (except for the Red Hat platform family, which defaults to { restart: false, reload: false, status: true }.)",
+               coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
-      property :service_name, String, name_property: true, identity: true
+      property :service_name, String,
+               description: "An optional property to set the service name if it differs from the resource block's name.",
+               name_property: true, identity: true
 
       # regex for match against ps -ef when !supports[:has_status] && status == nil
-      property :pattern, String, default: lazy { service_name }, desired_state: false
+      property :pattern, String,
+               description: "The pattern to look for in the process table.",
+               default_description: "The value provided to 'service_name' or the resource block's name",
+               default: lazy { service_name }, desired_state: false
 
       # command to call to start service
-      property :start_command, [ String, NilClass, FalseClass ], desired_state: false
+      property :start_command, [ String, nil, FalseClass ],
+               description: "The command used to start a service.",
+               desired_state: false
 
       # command to call to stop service
-      property :stop_command, [ String, NilClass, FalseClass ], desired_state: false
+      property :stop_command, [ String, nil, FalseClass ],
+               description: "The command used to stop a service.",
+               desired_state: false
 
       # command to call to get status of service
-      property :status_command, [ String, NilClass, FalseClass ], desired_state: false
+      property :status_command, [ String, nil, FalseClass ],
+               description: "The command used to check the run status for a service.",
+               desired_state: false
 
       # command to call to restart service
-      property :restart_command, [ String, NilClass, FalseClass ], desired_state: false
+      property :restart_command, [ String, nil, FalseClass ],
+               description: "The command used to restart a service.",
+               desired_state: false
 
-      property :reload_command, [ String, NilClass, FalseClass ], desired_state: false
+      property :reload_command, [ String, nil, FalseClass ],
+               description: "The command used to tell a service to reload its configuration.",
+               desired_state: false
 
       # The path to the init script associated with the service. On many
       # distributions this is '/etc/init.d/SERVICE_NAME' by default. In
       # non-standard configurations setting this value will save having to
       # specify overrides for the start_command, stop_command and
       # restart_command properties.
-      property :init_command, String, desired_state: false
+      property :init_command, String,
+               description: "The path to the init script that is associated with the service. Use init_command to prevent the need to specify overrides for the start_command, stop_command, and restart_command properties. When this property is not specified, the chef-client will use the default init command for the service provider being used.",
+               desired_state: false
 
       # if the service is enabled or not
       property :enabled, [ TrueClass, FalseClass ], skip_docs: true
@@ -70,7 +88,9 @@ class Chef
       # if the service is masked or not
       property :masked, [ TrueClass, FalseClass ], skip_docs: true
 
-      property :options, [ Array, String ], coerce: proc { |x| x.respond_to?(:split) ? x.shellsplit : x }
+      property :options, [ Array, String ],
+               description: "Solaris platform only. Options to pass to the service command. See the svcadm manual for details of possible options.",
+               coerce: proc { |x| x.respond_to?(:split) ? x.shellsplit : x }
 
       # Priority arguments can have two forms:
       #
@@ -82,16 +102,23 @@ class Chef
       #   runlevel 2, stopped in 3 with priority 55 and no symlinks or
       #   similar for other runlevels
       #
-      property :priority, [ Integer, String, Hash ]
+      property :priority, [ Integer, String, Hash ],
+               description: "Debian platform only. The relative priority of the program for start and shutdown ordering. May be an integer or a Hash. An integer is used to define the start run levels; stop run levels are then 100-integer. A Hash is used to define values for specific run levels. For example, { 2 => [:start, 20], 3 => [:stop, 55] } will set a priority of twenty for run level two and a priority of fifty-five for run level three."
 
       # timeout only applies to the windows service manager
-      property :timeout, Integer, desired_state: false
+      property :timeout, Integer,
+               description: "Microsoft Windows platform only. The amount of time (in seconds) to wait before timing out.",
+               desired_state: false
 
-      property :parameters, Hash
+      property :parameters, Hash,
+               description: "Upstart only: A hash of parameters to pass to the service command for use in the service definition."
 
-      property :run_levels, Array
+      property :run_levels, Array,
+               description: "RHEL platforms only: Specific run_levels the service will run under."
 
-      property :user, String
+      property :user, String,
+               description: "systemd only: A username to run the service under.",
+               introduced: "12.21"
     end
   end
 end
