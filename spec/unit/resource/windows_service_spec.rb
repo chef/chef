@@ -19,14 +19,6 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsService, "initialize" do
-  static_provider_resolution(
-    resource: Chef::Resource::WindowsService,
-    provider: Chef::Provider::Service::Windows,
-    os: "windows",
-    name: :windows_service,
-    action: :start
-  )
-
   let(:resource) { Chef::Resource::WindowsService.new("fakey_fakerton") }
 
   it "sets the resource_name to :windows_service" do
