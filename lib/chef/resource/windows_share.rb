@@ -101,7 +101,7 @@ class Chef
         # this command selects individual objects because EncryptData & CachingMode have underlying
         # types that get converted to their Integer values by ConvertTo-Json & we need to make sure
         # those get written out as strings
-        share_state_cmd = "Get-SmbShare -Name '#{desired.share_name}' | Select-Object Name,Path, Description, Temporary, CATimeout, ContinuouslyAvailable, ConcurrentUserLimit, EncryptData | ConvertTo-Json"
+        share_state_cmd = "Get-SmbShare -Name '#{desired.share_name}' | Select-Object Name,Path, Description, Temporary, CATimeout, ContinuouslyAvailable, ConcurrentUserLimit, EncryptData | ConvertTo-Json -Compress"
 
         Chef::Log.debug("Running '#{share_state_cmd}' to determine share state'")
         ps_results = powershell_out(share_state_cmd)
@@ -125,7 +125,7 @@ class Chef
         encrypt_data results["EncryptData"]
         # folder_enumeration_mode results['FolderEnumerationMode']
 
-        perm_state_cmd = %{Get-SmbShareAccess -Name "#{desired.share_name}" | Select-Object AccountName,AccessControlType,AccessRight | ConvertTo-Json}
+        perm_state_cmd = %{Get-SmbShareAccess -Name "#{desired.share_name}" | Select-Object AccountName,AccessControlType,AccessRight | ConvertTo-Json -Compress}
 
         Chef::Log.debug("Running '#{perm_state_cmd}' to determine share permissions state'")
         ps_perm_results = powershell_out(perm_state_cmd)
