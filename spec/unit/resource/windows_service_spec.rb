@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,9 +48,32 @@ describe Chef::Resource::WindowsService, "initialize" do
     expect { resource.action :unmask }.not_to raise_error
   end
 
-  it "supports setting startup_type" do
-    resource.startup_type(:manual)
-    expect(resource.startup_type).to eql(:manual)
+  [:automatic, :manual, :disabled].each do |type|
+    it "supports setting startup_type property to #{type.inspect}" do
+      resource.startup_type type
+      expect(resource.startup_type).to eql(type)
+    end
+  end
+
+  { 2 => :automatic, 3 => :manual, 4 => :disabled }.each_pair do |k, v|
+    it "it coerces startup_type property #{k} to #{v.inspect}" do
+      resource.startup_type k
+      expect(resource.startup_type).to eql(v)
+    end
+  end
+
+  %w{automatic manual disabled}.each do |type|
+    it "it coerces startup_type property #{type} to :#{type}" do
+      resource.startup_type type
+      expect(resource.startup_type).to eql(type.to_sym)
+    end
+  end
+
+  [:automatic, :manual, :disabled].each do |type|
+    it "supports setting startup_type property to #{type.inspect}" do
+      resource.startup_type type
+      expect(resource.startup_type).to eql(type)
+    end
   end
 
   it "allows the action to be 'configure_startup'" do
@@ -61,7 +84,7 @@ describe Chef::Resource::WindowsService, "initialize" do
   # Properties that are Strings
   %i{description service_name binary_path_name load_order_group dependencies
      run_as_user run_as_password display_name}.each do |prop|
-    it "support setting #{prop}" do
+    it "support setting #{prop} property with a String" do
       resource.send("#{prop}=", "some value")
       expect(resource.send(prop)).to eq("some value")
     end
@@ -69,7 +92,7 @@ describe Chef::Resource::WindowsService, "initialize" do
 
   # Properties that are Integers
   %i{desired_access error_control service_type}.each do |prop|
-    it "support setting #{prop}" do
+    it "support setting #{prop} property with an Integer" do
       resource.send("#{prop}=", 1)
       expect(resource.send(prop)).to eq(1)
     end
