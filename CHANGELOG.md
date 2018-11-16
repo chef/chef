@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.25 -->
-## [v14.7.25](https://github.com/chef/chef/tree/v14.7.25) (2018-11-14)
+<!-- latest_release 14.7.26 -->
+## [v14.7.26](https://github.com/chef/chef/tree/v14.7.26) (2018-11-16)
 
 #### Merged Pull Requests
-- Update cheffish to 14.0.4 [#7937](https://github.com/chef/chef/pull/7937) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 3.0.52 [#7945](https://github.com/chef/chef/pull/7945) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- Bump inspec-core to 3.0.52 [#7945](https://github.com/chef/chef/pull/7945) ([chef-ci](https://github.com/chef-ci)) <!-- 14.7.26 -->
 - Update cheffish to 14.0.4 [#7937](https://github.com/chef/chef/pull/7937) ([tas50](https://github.com/tas50)) <!-- 14.7.25 -->
 - Replace usage of win_friendly_path helper in windows_certificate [#7932](https://github.com/chef/chef/pull/7932) ([tas50](https://github.com/tas50)) <!-- 14.7.24 -->
 - Bump InSpec to 3.0.46 [#7931](https://github.com/chef/chef/pull/7931) ([tas50](https://github.com/tas50)) <!-- 14.7.23 -->
