@@ -41,10 +41,6 @@ class Chef
 
       allowed_actions :configure_startup, :create, :delete, :configure
 
-      property :service_name, String,
-               description: "The name of the service.",
-               name_property: true, identity: true
-
       # The display name to be used by user interface programs to identify the
       # service. This string has a maximum length of 256 characters.
       property :display_name, String, regex: /^.{1,256}$/,
