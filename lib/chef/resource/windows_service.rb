@@ -41,8 +41,6 @@ class Chef
 
       allowed_actions :configure_startup, :create, :delete, :configure
 
-      state_attrs :enabled, :running
-
       property :service_name, String,
                description: "The name of the service.",
                name_property: true, identity: true
