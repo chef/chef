@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@ describe Chef::Resource::Service do
     expect(resource.provider).to eq(nil)
   end
 
-  it "sets the service_name to the first argument to new" do
+  it "sets the service_name property as the name_property" do
     expect(resource.service_name).to eql("chef")
   end
 
@@ -45,16 +45,17 @@ describe Chef::Resource::Service do
     expect { resource.action :unmask }.not_to raise_error
   end
 
-  it "sets the pattern to be the service name by default" do
-    expect(resource.pattern).to eql("chef")
+  it "Uses the service_name property as the default for the pattern property" do
+    resource.service_name "something"
+    expect(resource.pattern).to eql("something")
   end
 
-  it "accepts a string for the service name" do
+  it "accepts a String for the service name property" do
     resource.service_name "something"
     expect(resource.service_name).to eql("something")
   end
 
-  it "accepts a string for the service pattern" do
+  it "accepts a String for the service pattern" do
     resource.pattern ".*"
     expect(resource.pattern).to eql(".*")
   end
@@ -65,7 +66,7 @@ describe Chef::Resource::Service do
     end.to raise_error(ArgumentError)
   end
 
-  it "accepts a string for the service start command" do
+  it "accepts a String for the service_start command" do
     resource.start_command "/etc/init.d/chef start"
     expect(resource.start_command).to eql("/etc/init.d/chef start")
   end
@@ -76,7 +77,7 @@ describe Chef::Resource::Service do
     end.to raise_error(ArgumentError)
   end
 
-  it "accepts a string for the service stop command" do
+  it "accepts a String for the service stop command" do
     resource.stop_command "/etc/init.d/chef stop"
     expect(resource.stop_command).to eql("/etc/init.d/chef stop")
   end
@@ -87,7 +88,23 @@ describe Chef::Resource::Service do
     end.to raise_error(ArgumentError)
   end
 
-  it "accepts a string for the service status command" do
+  it "accepts a String for the user property" do
+    resource.user "fakey_fakerton"
+    expect(resource.user).to eql("fakey_fakerton")
+  end
+
+  it "accepts an Array for the run_levels property" do
+    resource.run_levels ["foo"]
+    expect(resource.run_levels).to eql(["foo"])
+  end
+
+  it "accepts a Hash for the parameters property" do
+    param_hash = { something: nil }
+    resource.parameters param_hash
+    expect(resource.parameters).to eql(param_hash)
+  end
+
+  it "accepts a String for the service status command" do
     resource.status_command "/etc/init.d/chef status"
     expect(resource.status_command).to eql("/etc/init.d/chef status")
   end
@@ -98,7 +115,7 @@ describe Chef::Resource::Service do
     end.to raise_error(ArgumentError)
   end
 
-  it "accepts a string for the service restart command" do
+  it "accepts a String for the service restart command" do
     resource.restart_command "/etc/init.d/chef restart"
     expect(resource.restart_command).to eql("/etc/init.d/chef restart")
   end
@@ -109,7 +126,7 @@ describe Chef::Resource::Service do
     end.to raise_error(ArgumentError)
   end
 
-  it "accepts a string for the service reload command" do
+  it "accepts a String for the service reload command" do
     resource.reload_command "/etc/init.d/chef reload"
     expect(resource.reload_command).to eql("/etc/init.d/chef reload")
   end
@@ -120,7 +137,7 @@ describe Chef::Resource::Service do
     end.to raise_error(ArgumentError)
   end
 
-  it "accepts a string for the service init command" do
+  it "accepts a String for the service init command" do
     resource.init_command "/etc/init.d/chef"
     expect(resource.init_command).to eql("/etc/init.d/chef")
   end
@@ -136,12 +153,12 @@ describe Chef::Resource::Service do
     expect(resource.options).to eql(["-r", "-s"])
   end
 
-  it "accepts a string for options" do
+  it "accepts a String for options" do
     resource.options "-r"
     expect(resource.options).to eql(["-r"])
   end
 
-  it "accepts a string with multiple flags for options" do
+  it "accepts a String with multiple flags for options" do
     resource.options "-r -s"
     expect(resource.options).to eql(["-r", "-s"])
   end
@@ -163,7 +180,7 @@ describe Chef::Resource::Service do
       expect(resource.send(attrib)).to eql(false)
     end
 
-    it "does not accept a string for #{attrib}" do
+    it "does not accept a String for #{attrib}" do
       expect { resource.send(attrib, "poop") }.to raise_error(ArgumentError)
     end
 
