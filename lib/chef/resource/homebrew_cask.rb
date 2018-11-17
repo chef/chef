@@ -48,7 +48,7 @@ class Chef
                description: "The path to the homebrew binary.",
                default: "/usr/local/bin/brew"
 
-      property :owner, String,
+      property :owner, [String, Integer],
                description: "The owner of the Homebrew installation.",
                default: lazy { find_homebrew_username }
 

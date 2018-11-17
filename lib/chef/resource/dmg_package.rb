@@ -36,7 +36,7 @@ class Chef
       property :file, String,
                description: "The full path to the .dmg file on the local system."
 
-      property :owner, String,
+      property :owner, [String, Integer],
                description: "The user that should own the package installation."
 
       property :destination, String,

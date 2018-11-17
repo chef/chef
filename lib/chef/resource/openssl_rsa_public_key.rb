@@ -42,10 +42,10 @@ class Chef
       property :private_key_pass, String,
                description: "The passphrase of the provided private key."
 
-      property :owner, String,
+      property :owner, [String, Integer],
                description: "The owner applied to all files created by the resource."
 
-      property :group, String,
+      property :group, [String, Integer],
                description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],

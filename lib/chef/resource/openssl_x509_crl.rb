@@ -59,10 +59,10 @@ class Chef
       property :ca_key_pass, String,
                description: "The passphrase for CA private key's passphrase."
 
-      property :owner, String,
+      property :owner, [String, Integer],
                description: "The owner permission for the CRL file."
 
-      property :group, String,
+      property :group, [String, Integer],
                description: "The group permission for the CRL file."
 
       property :mode, [Integer, String],
