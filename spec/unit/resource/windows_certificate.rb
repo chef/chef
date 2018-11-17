@@ -28,6 +28,36 @@ describe Chef::Resource::WindowsCertificate do
     expect(resource.source).to eql("foobar")
   end
 
+  it "the store_name property defaults to 'MY'" do
+    expect(resource.store_name).to eql("MY")
+  end
+
+  it 'the store_name property accepts "TRUSTEDPUBLISHER", "TrustedPublisher", "CLIENTAUTHISSUER", "REMOTE DESKTOP", "ROOT", "TRUSTEDDEVICES", "WEBHOSTING", "CA", "AUTHROOT", "TRUSTEDPEOPLE", "MY", "SMARTCARDROOT", "TRUST", or "DISALLOWED"' do
+    expect { resource.store_name("TRUSTEDPUBLISHER") }.not_to raise_error
+    expect { resource.store_name("TrustedPublisher") }.not_to raise_error
+    expect { resource.store_name("CLIENTAUTHISSUER") }.not_to raise_error
+    expect { resource.store_name("REMOTE DESKTOP") }.not_to raise_error
+    expect { resource.store_name("ROOT") }.not_to raise_error
+    expect { resource.store_name("TRUSTEDDEVICES") }.not_to raise_error
+    expect { resource.store_name("WEBHOSTING") }.not_to raise_error
+    expect { resource.store_name("CA") }.not_to raise_error
+    expect { resource.store_name("AUTHROOT") }.not_to raise_error
+    expect { resource.store_name("TRUSTEDPEOPLE") }.not_to raise_error
+    expect { resource.store_name("MY") }.not_to raise_error
+    expect { resource.store_name("SMARTCARDROOT") }.not_to raise_error
+    expect { resource.store_name("TRUST") }.not_to raise_error
+    expect { resource.store_name("DISALLOWED") }.not_to raise_error
+  end
+
+  it "the resource is marked sensitive if pfx_password is specified" do
+    resource.pfx_password("1234")
+    expect(resource.sensitive).to be true
+  end
+
+  it "the user_store property defaults to false" do
+    expect(resource.user_store).to be false
+  end
+
   it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
