@@ -120,14 +120,14 @@ describe Chef::Provider::Package::Zypper do
   describe "install_package" do
     it "should run zypper install with the package name and version" do
       shell_out_expectation!(
-        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
 
     it "should run zypper install with gpg checks" do
       shell_out_expectation!(
-        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
@@ -135,7 +135,7 @@ describe Chef::Provider::Package::Zypper do
     it "setting the property should disable gpg checks" do
       new_resource.gpg_check false
       shell_out_expectation!(
-        "zypper", "--non-interactive", "--no-gpg-checks", "install", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--non-interactive", "--no-gpg-checks", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
@@ -143,15 +143,15 @@ describe Chef::Provider::Package::Zypper do
     it "setting the config variable should disable gpg checks" do
       Chef::Config[:zypper_check_gpg] = false
       shell_out_expectation!(
-        "zypper", "--non-interactive", "--no-gpg-checks", "install", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--non-interactive", "--no-gpg-checks", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
 
-    it "setting the property should allow downgrade" do
-      new_resource.allow_downgrade true
+    it "setting the property should disallow downgrade" do
+      new_resource.allow_downgrade false
       shell_out_expectation!(
-        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "emacs=1.0"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
@@ -159,7 +159,7 @@ describe Chef::Provider::Package::Zypper do
     it "should add user provided options to the command" do
       new_resource.options "--user-provided"
       shell_out_expectation!(
-        "zypper", "--non-interactive", "install", "--user-provided", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--non-interactive", "install", "--user-provided", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
@@ -167,7 +167,7 @@ describe Chef::Provider::Package::Zypper do
     it "should add user provided global options" do
       new_resource.global_options "--user-provided"
       shell_out_expectation!(
-        "zypper", "--user-provided", "--non-interactive", "install", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--user-provided", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
@@ -175,7 +175,7 @@ describe Chef::Provider::Package::Zypper do
     it "should add multiple user provided global options" do
       new_resource.global_options "--user-provided1 --user-provided2"
       shell_out_expectation!(
-        "zypper", "--user-provided1", "--user-provided2", "--non-interactive", "install", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--user-provided1", "--user-provided2", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
@@ -184,35 +184,35 @@ describe Chef::Provider::Package::Zypper do
   describe "upgrade_package" do
     it "should run zypper update with the package name and version" do
       shell_out_expectation!(
-        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end
     it "should run zypper update without gpg checks when setting the property" do
       new_resource.gpg_check false
       shell_out_expectation!(
-        "zypper", "--non-interactive", "--no-gpg-checks", "install", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--non-interactive", "--no-gpg-checks", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end
     it "should run zypper update without gpg checks when setting the config variable" do
       Chef::Config[:zypper_check_gpg] = false
       shell_out_expectation!(
-        "zypper", "--non-interactive", "--no-gpg-checks", "install", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--non-interactive", "--no-gpg-checks", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end
     it "should add user provided options to the command" do
       new_resource.options "--user-provided"
       shell_out_expectation!(
-        "zypper", "--non-interactive", "install", "--user-provided", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--non-interactive", "install", "--user-provided", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end
     it "should add user provided global options" do
       new_resource.global_options "--user-provided"
       shell_out_expectation!(
-        "zypper", "--user-provided", "--non-interactive", "install", "--auto-agree-with-licenses", "emacs=1.0"
+        "zypper", "--user-provided", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end
@@ -435,7 +435,7 @@ describe Chef::Provider::Package::Zypper do
     describe "install_package" do
       it "should run zypper install with the package name and version" do
         shell_out_expectation!(
-          "zypper", "install", "--auto-agree-with-licenses", "-y", "emacs"
+          "zypper", "install", "--auto-agree-with-licenses", "--oldpackage", "-y", "emacs"
         )
         provider.install_package(["emacs"], ["1.0"])
       end
@@ -444,7 +444,7 @@ describe Chef::Provider::Package::Zypper do
     describe "upgrade_package" do
       it "should run zypper update with the package name and version" do
         shell_out_expectation!(
-          "zypper", "install", "--auto-agree-with-licenses", "-y", "emacs"
+          "zypper", "install", "--auto-agree-with-licenses", "--oldpackage", "-y", "emacs"
         )
         provider.upgrade_package(["emacs"], ["1.0"])
       end
@@ -463,7 +463,7 @@ describe Chef::Provider::Package::Zypper do
   describe "when installing multiple packages" do # https://github.com/chef/chef/issues/3570
     it "should install an array of package names and versions" do
       shell_out_expectation!(
-        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "emacs=1.0", "vim=2.0"
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0", "vim=2.0"
       )
       provider.install_package(%w{emacs vim}, ["1.0", "2.0"])
     end
