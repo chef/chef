@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.71 -->
-## [v15.0.71](https://github.com/chef/chef/tree/v15.0.71) (2018-11-17)
+<!-- latest_release 15.0.72 -->
+## [v15.0.72](https://github.com/chef/chef/tree/v15.0.72) (2018-11-19)
 
 #### Merged Pull Requests
-- windows_certificate: Add testing of the defaults and allowed properties [#7917](https://github.com/chef/chef/pull/7917) ([tas50](https://github.com/tas50))
+- Fully convert remote_directory to use properties [#7947](https://github.com/chef/chef/pull/7947) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Fully convert remote_directory to use properties [#7947](https://github.com/chef/chef/pull/7947) ([tas50](https://github.com/tas50)) <!-- 15.0.72 -->
 - windows_certificate: Add testing of the defaults and allowed properties [#7917](https://github.com/chef/chef/pull/7917) ([tas50](https://github.com/tas50)) <!-- 15.0.71 -->
 - Require chef-zero 14.0.11 or later to resolve Rack gem CVEs [#7940](https://github.com/chef/chef/pull/7940) ([tas50](https://github.com/tas50)) <!-- 15.0.70 -->
 - Add additional resource description fields [#7938](https://github.com/chef/chef/pull/7938) ([tas50](https://github.com/tas50)) <!-- 15.0.69 -->
