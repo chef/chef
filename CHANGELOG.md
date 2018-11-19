@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.74 -->
-## [v15.0.74](https://github.com/chef/chef/tree/v15.0.74) (2018-11-19)
+<!-- latest_release 15.0.75 -->
+## [v15.0.75](https://github.com/chef/chef/tree/v15.0.75) (2018-11-19)
 
 #### Merged Pull Requests
-- Convert service resource to use properties [#7946](https://github.com/chef/chef/pull/7946) ([tas50](https://github.com/tas50))
+- windows_workgroup: Coerce the provided reboot property and add more tests [#7916](https://github.com/chef/chef/pull/7916) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- windows_workgroup: Coerce the provided reboot property and add more tests [#7916](https://github.com/chef/chef/pull/7916) ([tas50](https://github.com/tas50)) <!-- 15.0.75 -->
 - Convert service resource to use properties [#7946](https://github.com/chef/chef/pull/7946) ([tas50](https://github.com/tas50)) <!-- 15.0.74 -->
 - Replace several uses of attribute with property in resources [#7943](https://github.com/chef/chef/pull/7943) ([tas50](https://github.com/tas50)) <!-- 15.0.73 -->
 - Fully convert remote_directory to use properties [#7947](https://github.com/chef/chef/pull/7947) ([tas50](https://github.com/tas50)) <!-- 15.0.72 -->
