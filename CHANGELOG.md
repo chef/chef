@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.77 -->
-## [v15.0.77](https://github.com/chef/chef/tree/v15.0.77) (2018-11-19)
+<!-- latest_release 15.0.78 -->
+## [v15.0.78](https://github.com/chef/chef/tree/v15.0.78) (2018-11-19)
 
 #### Merged Pull Requests
-- Allow Integers for all group / owner properties [#7948](https://github.com/chef/chef/pull/7948) ([tas50](https://github.com/tas50))
+- Chef-15:  require instead of load libraries [#7954](https://github.com/chef/chef/pull/7954) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Chef-15:  require instead of load libraries [#7954](https://github.com/chef/chef/pull/7954) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.78 -->
 - Allow Integers for all group / owner properties [#7948](https://github.com/chef/chef/pull/7948) ([tas50](https://github.com/tas50)) <!-- 15.0.77 -->
 - Remove unused yum_timeout and yum_lock_timeout configs [#7909](https://github.com/chef/chef/pull/7909) ([tas50](https://github.com/tas50)) <!-- 15.0.76 -->
 - windows_workgroup: Coerce the provided reboot property and add more tests [#7916](https://github.com/chef/chef/pull/7916) ([tas50](https://github.com/tas50)) <!-- 15.0.75 -->
