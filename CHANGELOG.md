@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.76 -->
-## [v15.0.76](https://github.com/chef/chef/tree/v15.0.76) (2018-11-19)
+<!-- latest_release 15.0.77 -->
+## [v15.0.77](https://github.com/chef/chef/tree/v15.0.77) (2018-11-19)
 
 #### Merged Pull Requests
-- Remove unused yum_timeout and yum_lock_timeout configs [#7909](https://github.com/chef/chef/pull/7909) ([tas50](https://github.com/tas50))
+- Allow Integers for all group / owner properties [#7948](https://github.com/chef/chef/pull/7948) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Allow Integers for all group / owner properties [#7948](https://github.com/chef/chef/pull/7948) ([tas50](https://github.com/tas50)) <!-- 15.0.77 -->
 - Remove unused yum_timeout and yum_lock_timeout configs [#7909](https://github.com/chef/chef/pull/7909) ([tas50](https://github.com/tas50)) <!-- 15.0.76 -->
 - windows_workgroup: Coerce the provided reboot property and add more tests [#7916](https://github.com/chef/chef/pull/7916) ([tas50](https://github.com/tas50)) <!-- 15.0.75 -->
 - Convert service resource to use properties [#7946](https://github.com/chef/chef/pull/7946) ([tas50](https://github.com/tas50)) <!-- 15.0.74 -->
