@@ -8,8 +8,7 @@ Chef 15 release notes will be added here as development progresses.
 
 ### Package provider allow_downgrade is now true by default
 
-The behavior of the package provider without any allow_downgrade flag is now to allow downgrades.  This will mostly
-affect users of the rpm and zypper package providers.
+A package provider without any `allow_downgrade` flag now will allow downgrades, which is opposite from previous versions. This behavior change will mostly affect users of the rpm and zypper package providers.
 
 ```
 package "foo" do
@@ -26,8 +25,7 @@ package "foo" do
 end
 ```
 
-That code is now what is necessary to specify that `foo` must be version `1.2.3` or higher.  Note that the yum provider
-supports syntax like `package "foo > 1.2.3"` which is preferred to using allow_downgrade and should be used instead.
+That code is now what is necessary to specify that `foo` must be version `1.2.3` or higher.  Note that the yum provider supports syntax like `package "foo > 1.2.3"` which should be used and is preferred over using allow_downgrade.
 
 ### Node Attributes deep merge nil values
 
