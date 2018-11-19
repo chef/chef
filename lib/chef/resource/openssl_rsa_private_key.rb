@@ -49,10 +49,10 @@ class Chef
                description: "The designed cipher to use when generating your key. Run `openssl list-cipher-algorithms` to see available options.",
                default: "des3"
 
-      property :owner, String,
+      property :owner, [String, Integer],
                description: "The owner applied to all files created by the resource."
 
-      property :group, String,
+      property :group, [String, Integer],
                description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],

@@ -60,7 +60,7 @@ class Chef
                equal_to: [ :symbolic, :hard ], default: :symbolic
 
       property :group, [String, Integer],
-               description: "A string or ID that identifies the group associated with a symbolic link.",
+               description: "A group name or ID number that identifies the group associated with a symbolic link.",
                regex: [Chef::Config[:group_valid_regex]]
 
       property :owner, [String, Integer],
