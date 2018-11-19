@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -106,6 +106,10 @@ describe Chef::RunContext::CookbookCompiler do
     it "loads libraries in run list order" do
       node.run_list("test-with-deps::default", "test-with-circular-deps::default")
 
+      compiler.compile_libraries
+      expect(LibraryLoadOrder.load_order).to eq(["dependency1", "dependency2", "test-with-deps", "circular-dep2", "circular-dep1", "test-with-circular-deps"])
+
+      # additionally test that we only load them once
       compiler.compile_libraries
       expect(LibraryLoadOrder.load_order).to eq(["dependency1", "dependency2", "test-with-deps", "circular-dep2", "circular-dep1", "test-with-circular-deps"])
     end
