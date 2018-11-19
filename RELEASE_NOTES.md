@@ -6,6 +6,29 @@ Chef 15 release notes will be added here as development progresses.
 
 ## Breaking Changes
 
+### Package provider allow_downgrade is now true by default
+
+The behavior of the package provider without any allow_downgrade flag is now to allow downgrades.  This will mostly
+affect users of the rpm and zypper package providers.
+
+```
+package "foo" do
+  version "1.2.3"
+end
+```
+
+That code should now be read as asserting that the package `foo` must be version `1.2.3` after that resource is run.
+
+```
+package "foo" do
+  allow_downgrade false
+  version "1.2.3"
+end
+```
+
+That code is now what is necessary to specify that `foo` must be version `1.2.3` or higher.  Note that the yum provider
+supports syntax like `package "foo > 1.2.3"` which is preferred to using allow_downgrade and should be used instead.
+
 ### Node Attributes deep merge nil values
 
 Writing a nil to a precedence level in the node object now acts like any other value and can be used to override values back to nil.
