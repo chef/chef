@@ -1,6 +1,6 @@
 #
-# Author:: Mike Dodge (<mikedodge04@gmail.com>)
-# Copyright:: Copyright 2015-2016, Facebook, Inc.
+# Author:: Tim Smith (tsmith@chef.io>)
+# Copyright:: Copyright 2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,22 +16,22 @@
 # limitations under the License.
 #
 
-require "chef/resource/service"
+require "spec_helper"
 
-class Chef
-  class Resource
-    class MacosxService < Chef::Resource::Service
-      resource_name :macosx_service
-      provides :macosx_service
-      provides :service, os: "darwin"
+describe Chef::Resource::MacosxService do
+  let(:resource) { Chef::Resource::MacosxService.new("chef") }
 
-      description "Use the macosx_service resource to manage services on the macOS platform."
+  it "sets the resource_name to :macosx_service" do
+    expect(resource.resource_name).to eql(:macosx_service)
+  end
 
-      property :plist, String,
-               description: "A plist to use in the case where the filename and label for the service do not match."
+  it "accepts a String for the session_type property" do
+    resource.session_type "foo"
+    expect(resource.session_type).to eql("foo")
+  end
 
-      property :session_type, String
-
-    end
+  it "accepts a String for the plist property" do
+    resource.plist "foo"
+    expect(resource.plist).to eql("foo")
   end
 end

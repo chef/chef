@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +25,6 @@ class Chef
     class Service < Chef::Resource
       identity_attr :service_name
 
-      state_attrs :enabled, :running, :masked
-
       description "Use the service resource to manage a service."
 
       default_action :nothing
@@ -35,137 +33,64 @@ class Chef
 
       # this is a poor API please do not re-use this pattern
       property :supports, Hash, default: { restart: nil, reload: nil, status: nil },
-                                coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
+               description: "A list of properties that controls how the chef-client is to attempt to manage a service: :restart, :reload, :status. For :restart, the init script or other service provider can use a restart command; if :restart is not specified, the chef-client attempts to stop and then start a service. For :reload, the init script or other service provider can use a reload command. For :status, the init script or other service provider can use a status command to determine if the service is running; if :status is not specified, the chef-client attempts to match the service_name against the process table as a regular expression, unless a pattern is specified as a parameter property. Default value: { restart: false, reload: false, status: false } for all platforms (except for the Red Hat platform family, which defaults to { restart: false, reload: false, status: true }.)",
+               coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
-      def initialize(name, run_context = nil)
-        super
-        @service_name = name
-        @enabled = nil
-        @running = nil
-        @masked = nil
-        @options = nil
-        @parameters = nil
-        @pattern = service_name
-        @start_command = nil
-        @stop_command = nil
-        @status_command = nil
-        @restart_command = nil
-        @reload_command = nil
-        @init_command = nil
-        @priority = nil
-        @timeout = nil
-        @run_levels = nil
-        @user = nil
-      end
-
-      def service_name(arg = nil)
-        set_or_return(
-          :service_name,
-          arg,
-          kind_of: [ String ]
-        )
-      end
+      property :service_name, String,
+               description: "An optional property to set the service name if it differs from the resource block's name.",
+               name_property: true, identity: true
 
       # regex for match against ps -ef when !supports[:has_status] && status == nil
-      def pattern(arg = nil)
-        set_or_return(
-          :pattern,
-          arg,
-          kind_of: [ String ]
-        )
-      end
+      property :pattern, String,
+               description: "The pattern to look for in the process table.",
+               default_description: "The value provided to 'service_name' or the resource block's name",
+               default: lazy { service_name }, desired_state: false
 
       # command to call to start service
-      def start_command(arg = nil)
-        set_or_return(
-          :start_command,
-          arg,
-          kind_of: [ String, NilClass, FalseClass ]
-        )
-      end
+      property :start_command, [ String, nil, FalseClass ],
+               description: "The command used to start a service.",
+               desired_state: false
 
       # command to call to stop service
-      def stop_command(arg = nil)
-        set_or_return(
-          :stop_command,
-          arg,
-          kind_of: [ String, NilClass, FalseClass ]
-        )
-      end
+      property :stop_command, [ String, nil, FalseClass ],
+               description: "The command used to stop a service.",
+               desired_state: false
 
       # command to call to get status of service
-      def status_command(arg = nil)
-        set_or_return(
-          :status_command,
-          arg,
-          kind_of: [ String, NilClass, FalseClass ]
-        )
-      end
+      property :status_command, [ String, nil, FalseClass ],
+               description: "The command used to check the run status for a service.",
+               desired_state: false
 
       # command to call to restart service
-      def restart_command(arg = nil)
-        set_or_return(
-          :restart_command,
-          arg,
-          kind_of: [ String, NilClass, FalseClass ]
-        )
-      end
+      property :restart_command, [ String, nil, FalseClass ],
+               description: "The command used to restart a service.",
+               desired_state: false
 
-      def reload_command(arg = nil)
-        set_or_return(
-          :reload_command,
-          arg,
-          kind_of: [ String, NilClass, FalseClass ]
-        )
-      end
+      property :reload_command, [ String, nil, FalseClass ],
+               description: "The command used to tell a service to reload its configuration.",
+               desired_state: false
 
       # The path to the init script associated with the service. On many
       # distributions this is '/etc/init.d/SERVICE_NAME' by default. In
       # non-standard configurations setting this value will save having to
       # specify overrides for the start_command, stop_command and
       # restart_command properties.
-      def init_command(arg = nil)
-        set_or_return(
-          :init_command,
-          arg,
-          kind_of: [ String ]
-        )
-      end
+      property :init_command, String,
+               description: "The path to the init script that is associated with the service. Use init_command to prevent the need to specify overrides for the start_command, stop_command, and restart_command properties. When this property is not specified, the chef-client will use the default init command for the service provider being used.",
+               desired_state: false
 
       # if the service is enabled or not
-      def enabled(arg = nil)
-        set_or_return(
-          :enabled,
-          arg,
-          kind_of: [ TrueClass, FalseClass ]
-        )
-      end
+      property :enabled, [ TrueClass, FalseClass ], skip_docs: true
 
       # if the service is running or not
-      def running(arg = nil)
-        set_or_return(
-          :running,
-          arg,
-          kind_of: [ TrueClass, FalseClass ]
-        )
-      end
+      property :running, [ TrueClass, FalseClass ], skip_docs: true
 
       # if the service is masked or not
-      def masked(arg = nil)
-        set_or_return(
-          :masked,
-          arg,
-          kind_of: [ TrueClass, FalseClass ]
-        )
-      end
+      property :masked, [ TrueClass, FalseClass ], skip_docs: true
 
-      def options(arg = nil)
-        set_or_return(
-          :options,
-          arg.respond_to?(:split) ? arg.shellsplit : arg,
-          kind_of: [ Array, String ]
-        )
-      end
+      property :options, [ Array, String ],
+               description: "Solaris platform only. Options to pass to the service command. See the svcadm manual for details of possible options.",
+               coerce: proc { |x| x.respond_to?(:split) ? x.shellsplit : x }
 
       # Priority arguments can have two forms:
       #
@@ -177,45 +102,23 @@ class Chef
       #   runlevel 2, stopped in 3 with priority 55 and no symlinks or
       #   similar for other runlevels
       #
-      def priority(arg = nil)
-        set_or_return(
-          :priority,
-          arg,
-          kind_of: [ Integer, String, Hash ]
-        )
-      end
+      property :priority, [ Integer, String, Hash ],
+               description: "Debian platform only. The relative priority of the program for start and shutdown ordering. May be an integer or a Hash. An integer is used to define the start run levels; stop run levels are then 100-integer. A Hash is used to define values for specific run levels. For example, { 2 => [:start, 20], 3 => [:stop, 55] } will set a priority of twenty for run level two and a priority of fifty-five for run level three."
 
       # timeout only applies to the windows service manager
-      def timeout(arg = nil)
-        set_or_return(
-          :timeout,
-          arg,
-          kind_of: Integer
-        )
-      end
+      property :timeout, Integer,
+               description: "Microsoft Windows platform only. The amount of time (in seconds) to wait before timing out.",
+               desired_state: false
 
-      def parameters(arg = nil)
-        set_or_return(
-          :parameters,
-          arg,
-          kind_of: [ Hash ]
-        )
-      end
+      property :parameters, Hash,
+               description: "Upstart only: A hash of parameters to pass to the service command for use in the service definition."
 
-      def run_levels(arg = nil)
-        set_or_return(
-          :run_levels,
-          arg,
-          kind_of: [ Array ] )
-      end
+      property :run_levels, Array,
+               description: "RHEL platforms only: Specific run_levels the service will run under."
 
-      def user(arg = nil)
-        set_or_return(
-          :user,
-          arg,
-          kind_of: [ String ]
-        )
-      end
+      property :user, String,
+               description: "systemd only: A username to run the service under.",
+               introduced: "12.21"
     end
   end
 end

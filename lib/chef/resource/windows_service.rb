@@ -41,29 +41,23 @@ class Chef
 
       allowed_actions :configure_startup, :create, :delete, :configure
 
-      state_attrs :enabled, :running
-
-      property :service_name, String,
-               description: "The name of the service.",
-               name_property: true, identity: true
-
       # The display name to be used by user interface programs to identify the
       # service. This string has a maximum length of 256 characters.
       property :display_name, String, regex: /^.{1,256}$/,
                validation_message: "The display_name can only be a maximum of 256 characters!",
                introduced: "14.0"
 
-      # https://github.com/djberg96/win32-service/blob/ffi/lib/win32/windows/constants.rb#L19-L29
+      # https://github.com/chef/win32-service/blob/ffi/lib/win32/windows/constants.rb#L19-L29
       property :desired_access, Integer, default: SERVICE_ALL_ACCESS
 
-      # https://github.com/djberg96/win32-service/blob/ffi/lib/win32/windows/constants.rb#L31-L41
+      # https://github.com/chef/win32-service/blob/ffi/lib/win32/windows/constants.rb#L31-L41
       property :service_type, Integer, default: SERVICE_WIN32_OWN_PROCESS
 
       # Valid options:
       #   - :automatic
       #   - :manual
       #   - :disabled
-      # Reference: https://github.com/djberg96/win32-service/blob/ffi/lib/win32/windows/constants.rb#L49-L54
+      # Reference: https://github.com/chef/win32-service/blob/ffi/lib/win32/windows/constants.rb#L49-L54
       property :startup_type, [Symbol], equal_to: [:automatic, :manual, :disabled], default: :automatic, coerce: proc { |x|
         if x.is_a?(Integer)
           ALLOWED_START_TYPES.invert.fetch(x) do
@@ -90,7 +84,7 @@ class Chef
                  end
                }
 
-      # https://github.com/djberg96/win32-service/blob/ffi/lib/win32/windows/constants.rb#L43-L47
+      # https://github.com/chef/win32-service/blob/ffi/lib/win32/windows/constants.rb#L43-L47
       property :error_control, Integer, default: SERVICE_ERROR_NORMAL
 
       property :binary_path_name, String,
