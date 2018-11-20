@@ -37,7 +37,7 @@ class Chef
       def define_resource_requirements
         if creates && creates_relative? && !cwd
           # FIXME? move this onto the resource?
-          raise Chef::Exceptions::Execute, "Please either specify a full path for the creates attribute, or specify a cwd property to the #{new_resource} resource"
+          raise Chef::Exceptions::Execute, "Please either specify a full path for the creates property, or specify a cwd property to the #{new_resource} resource"
         end
       end
 

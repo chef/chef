@@ -87,7 +87,7 @@ class Chef
                description: "The amount of time (in seconds) a command is to wait before timing out."
 
       property :user, [ String, Integer ],
-               description: "The user name of the user identity with which to launch the new process. The user name may optionally be specifed with a domain, i.e. domainuser or user@my.dns.domain.com via Universal Principal Name (UPN)format. It can also be specified without a domain simply as user if the domain is instead specified using the domain attribute. On Windows only, if this property is specified, the password property must be specified."
+               description: "The user name of the user identity with which to launch the new process. The user name may optionally be specifed with a domain, i.e. domainuser or user@my.dns.domain.com via Universal Principal Name (UPN)format. It can also be specified without a domain simply as user if the domain is instead specified using the domain property. On Windows only, if this property is specified, the password property must be specified."
 
       property :domain, String,
                introduced: "12.21",
