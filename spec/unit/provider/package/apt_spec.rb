@@ -256,7 +256,26 @@ describe Chef::Provider::Package::Apt do
       })
     end
 
+    def ubuntu1804downgrade_stubs
+      so = instance_double(Mixlib::ShellOut, stdout: "apt 1.6~beta1 (amd64)\notherstuff\n")
+      so2 = instance_double(Mixlib::ShellOut, error?: false)
+      allow(@provider).to receive(:shell_out).with("apt-get --version").and_return(so)
+      allow(@provider).to receive(:shell_out).with("dpkg", "--compare-versions", "1.6~beta1", "gt", "1.1.0").and_return(so2)
+    end
+
+    def ubuntu1404downgrade_stubs
+      so = instance_double(Mixlib::ShellOut, stdout: "apt 1.0.1ubuntu2 for amd64 compiled on Dec  8 2016 16:23:38\notherstuff\n")
+      so2 = instance_double(Mixlib::ShellOut, error?: true)
+      allow(@provider).to receive(:shell_out).with("apt-get --version").and_return(so)
+      allow(@provider).to receive(:shell_out).with("dpkg", "--compare-versions", "1.0.1ubuntu2", "gt", "1.1.0").and_return(so2)
+      allow(@provider).to receive(:shell_out).with("dpkg", "--compare-versions", "1.0.1ubuntu2", "eq", "1.1.0").and_return(so2)
+    end
+
     describe "install_package" do
+      before(:each) do
+        ubuntu1804downgrade_stubs
+      end
+
       it "should run apt-get install with the package name and version" do
         expect(@provider).to receive(:shell_out_compacted!). with(
           "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "irssi=0.8.12-7",
@@ -295,6 +314,58 @@ describe Chef::Provider::Package::Apt do
       it "should run apt-get install with the package name and quotes options if specified" do
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "--allow-downgrades", "--force-yes", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confnew", "install", "irssi=0.8.12-7",
+          env: { "DEBIAN_FRONTEND" => "noninteractive" },
+          timeout: @timeout
+        )
+        @new_resource.options('--force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew"')
+        @provider.install_package(["irssi"], ["0.8.12-7"])
+      end
+    end
+
+    describe "install_package with old apt-get" do
+      # tests apt-get on 1404 that does not support --allow-downgrades
+      before(:each) do
+        ubuntu1404downgrade_stubs
+      end
+
+      it "should run apt-get install with the package name and version" do
+        expect(@provider).to receive(:shell_out_compacted!). with(
+          "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "irssi=0.8.12-7",
+          env: { "DEBIAN_FRONTEND" => "noninteractive" },
+          timeout: @timeout
+        )
+        @provider.install_package(["irssi"], ["0.8.12-7"])
+      end
+
+      it "should run apt-get install with the package name and version and options if specified" do
+        expect(@provider).to receive(:shell_out_compacted!).with(
+          "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "--force-yes", "install", "irssi=0.8.12-7",
+          env: { "DEBIAN_FRONTEND" => "noninteractive" },
+          timeout: @timeout
+        )
+        @new_resource.options("--force-yes")
+        @provider.install_package(["irssi"], ["0.8.12-7"])
+      end
+
+      it "should run apt-get install with the package name and version and default_release if there is one and provider is explicitly defined" do
+        @new_resource = nil
+        @new_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
+        @new_resource.default_release("lenny-backports")
+        @new_resource.provider = nil
+        @provider.new_resource = @new_resource
+
+        expect(@provider).to receive(:shell_out_compacted!).with(
+          "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "-o", "APT::Default-Release=lenny-backports", "install", "irssi=0.8.12-7",
+          env: { "DEBIAN_FRONTEND" => "noninteractive" },
+          timeout: @timeout
+        )
+
+        @provider.install_package(["irssi"], ["0.8.12-7"])
+      end
+
+      it "should run apt-get install with the package name and quotes options if specified" do
+        expect(@provider).to receive(:shell_out_compacted!).with(
+          "apt-get", "-q", "-y", "--force-yes", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confnew", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout
         )
@@ -449,6 +520,7 @@ describe Chef::Provider::Package::Apt do
 
     describe "when installing a virtual package" do
       it "should install the package without specifying a version" do
+        ubuntu1804downgrade_stubs
         @provider.package_data["libmysqlclient15-dev"][:virtual] = true
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient15-dev",
@@ -485,6 +557,7 @@ describe Chef::Provider::Package::Apt do
 
     describe "when installing multiple packages" do
       it "can install a virtual package followed by a non-virtual package" do
+        ubuntu1804downgrade_stubs
         # https://github.com/chef/chef/issues/2914
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient15-dev", "irssi=0.8.12-7",
@@ -506,9 +579,11 @@ describe Chef::Provider::Package::Apt do
       end
 
       it "should install the package if the installed version is older" do
+        ubuntu1804downgrade_stubs
+        expect(@provider).to receive(:version_compare).with("1.6~beta1", "1.1.0").and_return(1)
         allow(@provider).to receive(:get_current_versions).and_return("0.4.0")
         allow(@new_resource).to receive(:allow_downgrade).and_return(false)
-        expect(@provider).to receive(:version_compare).and_return(-1)
+        expect(@provider).to receive(:version_compare).with("0.4.0", any_args).and_return(-1)
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -518,9 +593,11 @@ describe Chef::Provider::Package::Apt do
       end
 
       it "should not compare versions if an existing version is not installed" do
+        ubuntu1804downgrade_stubs
+        expect(@provider).to receive(:version_compare).with("1.6~beta1", "1.1.0").and_return(1)
         allow(@provider).to receive(:get_current_versions).and_return(nil)
         allow(@new_resource).to receive(:allow_downgrade).and_return(false)
-        expect(@provider).not_to receive(:version_compare)
+        expect(@provider).not_to receive(:version_compare).with("0.4.0", any_args)
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
