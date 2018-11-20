@@ -60,7 +60,7 @@ class Chef
 
       property :unit_name, String, desired_state: false,
                identity: true, name_property: true,
-               description: "The name of the unit file if it differs from the resource block name.",
+               description: "The name of the unit file if it differs from the resource block's name.",
                introduced: "13.7"
 
       def to_ini

@@ -42,7 +42,7 @@ class Chef
       end
 
       property :package_name, [ String, Array ],
-               description: "The name of the package. Defaults to the name of the resourse block unless specified.",
+               description: "An optional property to set the package name if it differs from the resource block's name.",
                identity: true
 
       property :version, [ String, Array ],

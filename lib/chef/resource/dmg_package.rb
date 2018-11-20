@@ -27,31 +27,31 @@ class Chef
       introduced "14.0"
 
       property :app, String,
-               description: "The name of the application used by default for the /Volumes directory and the .app directory copied to /Applications.",
+               description: "The name of the application as it appears in the /Volumes directory, if it differs from the resource block's name.",
                name_property: true
 
       property :source, String,
-               description: "The remote URL for the dmg to download if specified."
+               description: "The remote URL that is used to download the .dmg file, if specified."
 
       property :file, String,
-               description: "The local dmg full file path."
+               description: "The full path to the .dmg file on the local system."
 
       property :owner, String,
-               description: "The owner that should own the package installation."
+               description: "The user that should own the package installation."
 
       property :destination, String,
                description: "The directory to copy the .app into.",
                default: "/Applications"
 
       property :checksum, String,
-               description: "The sha256 checksum of the dmg to download."
+               description: "The sha256 checksum of the .dmg file to download."
 
       property :volumes_dir, String,
-               description: "The Directory under /Volumes where the dmg is mounted as not all dmgs are mounted into a /Volumes location matching the name of the dmg.",
+               description: "The directory under /Volumes where the dmg is mounted, if it differs from the name of the .dmg file.",
                default: lazy { |r| r.app }, default_description: "The value passed for the application name."
 
       property :dmg_name, String,
-               description: "The name of the dmg if it is not the same as app, or if the name has spaces.",
+               description: "The name of the .dmg file if it differs from that of the app, or if the name has spaces.",
                desired_state: false,
                default: lazy { |r| r.app }, default_description: "The value passed for the application name."
 
@@ -61,10 +61,10 @@ class Chef
                default: "app", desired_state: false
 
       property :package_id, String,
-               description: "The package id registered with pkgutil when a pkg or mpkg is installed."
+               description: "The package ID that is registered with pkgutil when a pkg or mpkg is installed."
 
       property :dmg_passphrase, String,
-               description: "Specify a passphrase to use to unencrypt the dmg while mounting.",
+               description: "Specify a passphrase to be used to decrypt the .dmg file during the mount process.",
                desired_state: false
 
       property :accept_eula, [TrueClass, FalseClass],
