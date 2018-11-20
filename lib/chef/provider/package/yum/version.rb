@@ -40,6 +40,10 @@ class Chef
             "#{version}.#{arch}" unless version.nil?
           end
 
+          def name_with_arch
+            "#{name}.#{arch}" unless name.nil?
+          end
+
           def matches_name_and_arch?(other)
             other.version == version && other.arch == arch
           end

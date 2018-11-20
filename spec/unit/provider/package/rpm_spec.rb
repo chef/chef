@@ -162,23 +162,28 @@ describe Chef::Provider::Package::Rpm do
             let(:rpm_q_stdout) { "imagemagick-c++ 0.5.4.7-7.el6_5" }
 
             it "runs rpm -u with the package source to upgrade" do
-              expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "--oldpackage", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
               provider.action_install
             end
           end
 
           context "when an older version is desired" do
             let(:new_resource) do
-              Chef::Resource::RpmPackage.new(package_name).tap do |r|
-                r.source(package_source)
-                r.allow_downgrade(true)
-              end
+              r = Chef::Resource::RpmPackage.new(package_name)
+              r.source(package_source)
+              r
             end
 
             let(:rpm_q_stdout) { "imagemagick-c++ 21.4-19.el6_5" }
 
             it "should run rpm -u --oldpackage with the package source to downgrade" do
               expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "--oldpackage", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              provider.action_install
+            end
+
+            it "if downgrades are not allowed it should not downgrade" do
+              new_resource.allow_downgrade(false)
+              expect(provider).not_to receive(:shell_out_compacted!)
               provider.action_install
             end
 
@@ -203,7 +208,7 @@ describe Chef::Provider::Package::Rpm do
             let(:rpm_q_stdout) { "imagemagick-c++ 0.5.4.7-7.el6_5" }
 
             it "runs rpm -u with the package source to upgrade" do
-              expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "--oldpackage", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
               provider.action_upgrade
             end
           end
@@ -220,6 +225,12 @@ describe Chef::Provider::Package::Rpm do
 
             it "should run rpm -u --oldpackage with the package source to downgrade" do
               expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "--oldpackage", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              provider.action_upgrade
+            end
+
+            it "should run rpm -u --oldpackage with the package source to downgrade" do
+              new_resource.allow_downgrade(false)
+              expect(provider).not_to receive(:shell_out_compacted!).with("rpm", "-U", any_args)
               provider.action_upgrade
             end
 
@@ -421,7 +432,7 @@ describe Chef::Provider::Package::Rpm do
       expect(new_resource.source).to eq("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
       current_resource.version("21.4-19.el5")
       provider.current_resource = current_resource
-      expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+      expect(provider).to receive(:shell_out_compacted!).with("rpm", "-U", "--oldpackage", "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
       provider.upgrade_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
     end
   end
