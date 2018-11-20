@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.26 -->
-## [v14.7.26](https://github.com/chef/chef/tree/v14.7.26) (2018-11-16)
+<!-- latest_release 14.7.27 -->
+## [v14.7.27](https://github.com/chef/chef/tree/v14.7.27) (2018-11-20)
 
 #### Merged Pull Requests
-- Bump inspec-core to 3.0.52 [#7945](https://github.com/chef/chef/pull/7945) ([chef-ci](https://github.com/chef-ci))
+- Chef 14: Replace several uses of attribute with property in resources [#7967](https://github.com/chef/chef/pull/7967) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- Chef 14: Replace several uses of attribute with property in resources [#7967](https://github.com/chef/chef/pull/7967) ([tas50](https://github.com/tas50)) <!-- 14.7.27 -->
 - Bump inspec-core to 3.0.52 [#7945](https://github.com/chef/chef/pull/7945) ([chef-ci](https://github.com/chef-ci)) <!-- 14.7.26 -->
 - Update cheffish to 14.0.4 [#7937](https://github.com/chef/chef/pull/7937) ([tas50](https://github.com/tas50)) <!-- 14.7.25 -->
 - Replace usage of win_friendly_path helper in windows_certificate [#7932](https://github.com/chef/chef/pull/7932) ([tas50](https://github.com/tas50)) <!-- 14.7.24 -->
