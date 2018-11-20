@@ -8,7 +8,7 @@ Chef 15 release notes will be added here as development progresses.
 
 ### Omnibus chef packages now removes /opt/chef before installation
 
-The intent of this is that on upgrading packages the /opt/chef directory is removed of any stray `chef_gem` installed gem versions and other
+The intent of this change is that on upgrading packages the /opt/chef directory is removed of any stray `chef_gem` installed gem versions and other
 modifications to /opt/chef that might be preserved and cause issues on upgrades.  Due to technical details with rpm script execution order
 the way this was implemented was that a pre-installation script wipes /opt/chef before every install (done consistently this way on
 every package manager).
