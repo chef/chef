@@ -259,7 +259,7 @@ describe Chef::Provider::Package::Apt do
     describe "install_package" do
       it "should run apt-get install with the package name and version" do
         expect(@provider).to receive(:shell_out_compacted!). with(
-          "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "irssi=0.8.12-7",
+          "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout
         )
@@ -268,7 +268,7 @@ describe Chef::Provider::Package::Apt do
 
       it "should run apt-get install with the package name and version and options if specified" do
         expect(@provider).to receive(:shell_out_compacted!).with(
-          "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "--force-yes", "install", "irssi=0.8.12-7",
+          "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "--force-yes", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout
         )
@@ -284,7 +284,7 @@ describe Chef::Provider::Package::Apt do
         @provider.new_resource = @new_resource
 
         expect(@provider).to receive(:shell_out_compacted!).with(
-          "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "-o", "APT::Default-Release=lenny-backports", "install", "irssi=0.8.12-7",
+          "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "-o", "APT::Default-Release=lenny-backports", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout
         )
@@ -294,7 +294,7 @@ describe Chef::Provider::Package::Apt do
 
       it "should run apt-get install with the package name and quotes options if specified" do
         expect(@provider).to receive(:shell_out_compacted!).with(
-          "apt-get", "-q", "-y", "--force-yes", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confnew", "install", "irssi=0.8.12-7",
+          "apt-get", "-q", "-y", "--allow-downgrades", "--force-yes", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confnew", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout
         )
@@ -451,7 +451,7 @@ describe Chef::Provider::Package::Apt do
       it "should install the package without specifying a version" do
         @provider.package_data["libmysqlclient15-dev"][:virtual] = true
         expect(@provider).to receive(:shell_out_compacted!).with(
-          "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient15-dev",
+          "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient15-dev",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout
         )
@@ -487,7 +487,7 @@ describe Chef::Provider::Package::Apt do
       it "can install a virtual package followed by a non-virtual package" do
         # https://github.com/chef/chef/issues/2914
         expect(@provider).to receive(:shell_out_compacted!).with(
-          "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient15-dev", "irssi=0.8.12-7",
+          "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient15-dev", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout
         )
