@@ -298,7 +298,7 @@ class Chef
         end
 
         def revoke_user_permissions(users)
-          revoke_command = "Revoke-SmbShareAccess -Name '#{new_resource.share_name}' -AccountName \"#{users.join(',')}\" -Force"
+          revoke_command = "Revoke-SmbShareAccess -Name '#{new_resource.share_name}' -AccountName \"#{users.join('","')}\" -Force"
           Chef::Log.debug("Running '#{revoke_command}' to revoke share permissions")
           powershell_out!(revoke_command)
         end
