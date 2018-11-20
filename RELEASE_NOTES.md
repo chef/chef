@@ -111,6 +111,14 @@ node.default["foo"][0][:bar]  # does not work due to the sub-Hash not
 
 The new behavior uses a Mash so that the attributes will work as expected.
 
+### Ohai's system_profile plugin for macOS removed
+
+The system_profile plugin no longer ships in Ohai. This plugin did not correctly return data on modern Mac systems. Additionally the same data is provided by the hardware plugin, which has a format that is simpler to consume. Removing this plugin speeds up Ohai (and Chef) by ~3 seconds and greatly reduces the size of the node object on the Chef server.
+
+### Ohai's Ohai::Util::Win32::GroupHelper class has been removed
+
+The Ohai::Util::Win32::GroupHelper helper class has been removed from Ohai. This class was only meant to be used internally within several Windows plugins, but it was never marked private in the codebase. If any Ohai plugins rely on this helper class, you will need to update your plugins for Ohai 15.
+
 # Chef Client Release Notes 14.7:
 
 ## New Resources
