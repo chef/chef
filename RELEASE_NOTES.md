@@ -20,7 +20,7 @@ The package installation emits a message that /opt/chef is being removed to info
 
 ### Package provider allow_downgrade is now true by default
 
-We reversed the default behavior to `allow_downgrade true` for our package providers. To override this setting to ignore downgrades, use the `allow_downgrade false` flag. This behavior change will mostly affect users of the rpm and zypper package providers.
+We reversed the default behavior to `allow_downgrade true` for our package providers. To override this setting to prevent downgrades, use the `allow_downgrade false` flag. This behavior change will mostly affect users of the rpm and zypper package providers.
 
 ```
 package "foo" do
