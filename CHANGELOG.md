@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.81 -->
-## [v15.0.81](https://github.com/chef/chef/tree/v15.0.81) (2018-11-20)
+<!-- latest_release 15.0.82 -->
+## [v15.0.82](https://github.com/chef/chef/tree/v15.0.82) (2018-11-20)
 
 #### Merged Pull Requests
-- windows_share: Accounts to be revoked should be provided as an individually quoted string array [#7959](https://github.com/chef/chef/pull/7959) ([stuartpreston](https://github.com/stuartpreston))
+- wipe the installer direction before installation [#7964](https://github.com/chef/chef/pull/7964) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- wipe the installer direction before installation [#7964](https://github.com/chef/chef/pull/7964) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.82 -->
 - windows_share: Accounts to be revoked should be provided as an individually quoted string array [#7959](https://github.com/chef/chef/pull/7959) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.81 -->
 - windows_share: Fix idempotency by removing the &quot;everyone&quot; access [#7956](https://github.com/chef/chef/pull/7956) ([tas50](https://github.com/tas50)) <!-- 15.0.80 -->
 - Chef-15: switch default of allow_downgrade to true [#7953](https://github.com/chef/chef/pull/7953) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.79 -->
