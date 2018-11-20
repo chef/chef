@@ -8,7 +8,7 @@ Chef 15 release notes will be added here as development progresses.
 
 ### Package provider allow_downgrade is now true by default
 
-A package provider without any `allow_downgrade` flag now will allow downgrades, which is opposite from previous versions. This behavior change will mostly affect users of the rpm and zypper package providers.
+We reversed the default behavior to `allow_downgrade true` for our package providers. To override this setting to refuse downgrades, use the `allow_downgrade —false` flag. This behavior change will mostly affect users of the rpm and zypper package providers.
 
 ```
 package "foo" do
