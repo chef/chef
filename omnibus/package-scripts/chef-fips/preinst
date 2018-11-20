@@ -9,4 +9,4 @@
 
 INSTALLER_DIR=/opt/chef-fips
 echo "removing $INSTALLER_DIR..."
-rm -f $INSTALLER_DIR
+rm -rf $INSTALLER_DIR
