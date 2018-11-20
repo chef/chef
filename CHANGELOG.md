@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.7.29 -->
-## [v14.7.29](https://github.com/chef/chef/tree/v14.7.29) (2018-11-20)
+<!-- latest_release 14.7.30 -->
+## [v14.7.30](https://github.com/chef/chef/tree/v14.7.30) (2018-11-20)
 
 #### Merged Pull Requests
-- Chef 14: Improve resource descriptions [#7969](https://github.com/chef/chef/pull/7969) ([tas50](https://github.com/tas50))
+- Chef 14: windows_workgroup: Coerce the provided reboot property and add more t ests [#7972](https://github.com/chef/chef/pull/7972) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- Chef 14: windows_workgroup: Coerce the provided reboot property and add more t ests [#7972](https://github.com/chef/chef/pull/7972) ([tas50](https://github.com/tas50)) <!-- 14.7.30 -->
 - Chef 14: Improve resource descriptions [#7969](https://github.com/chef/chef/pull/7969) ([tas50](https://github.com/tas50)) <!-- 14.7.29 -->
 - Chef 14: windows_certificate: Add testing of the defaults and allowed properties [#7968](https://github.com/chef/chef/pull/7968) ([tas50](https://github.com/tas50)) <!-- 14.7.28 -->
 - Chef 14: Replace several uses of attribute with property in resources [#7967](https://github.com/chef/chef/pull/7967) ([tas50](https://github.com/tas50)) <!-- 14.7.27 -->
