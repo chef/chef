@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.8.1 -->
-## [v14.8.1](https://github.com/chef/chef/tree/v14.8.1) (2018-11-21)
+<!-- latest_release 14.8.2 -->
+## [v14.8.2](https://github.com/chef/chef/tree/v14.8.2) (2018-11-21)
 
 #### Merged Pull Requests
-- Chef 14: windows_share: Fix idempotency by removing the &quot;everyone&quot; access [#7973](https://github.com/chef/chef/pull/7973) ([tas50](https://github.com/tas50))
+- Chef 14: removed features are also available for installation in windows_feature_dism [#7970](https://github.com/chef/chef/pull/7970) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- Chef 14: removed features are also available for installation in windows_feature_dism [#7970](https://github.com/chef/chef/pull/7970) ([tas50](https://github.com/tas50)) <!-- 14.8.2 -->
 - Chef 14: windows_share: Fix idempotency by removing the &quot;everyone&quot; access [#7973](https://github.com/chef/chef/pull/7973) ([tas50](https://github.com/tas50)) <!-- 14.8.1 -->
 - Chef 14: apt_repository: prevent gpg key import on newer Debian releases [#7971](https://github.com/chef/chef/pull/7971) ([tas50](https://github.com/tas50)) <!-- 14.8.0 -->
 - Chef 14: windows_share: Properly split the users to be revoked using quotes [#7974](https://github.com/chef/chef/pull/7974) ([tas50](https://github.com/tas50)) <!-- 14.7.31 -->
