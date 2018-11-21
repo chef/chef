@@ -225,7 +225,7 @@ class Chef
       #
       # @return [String] the full apt-key command to run
       def keyserver_install_cmd(key, keyserver)
-        cmd = "apt-key adv --recv"
+        cmd = "apt-key adv --no-tty --recv"
         cmd << " --keyserver-options http-proxy=#{new_resource.key_proxy}" if new_resource.key_proxy
         cmd << " --keyserver "
         cmd << if keyserver.start_with?("hkp://")
