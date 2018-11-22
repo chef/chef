@@ -148,6 +148,16 @@ describe Chef::Provider::Package::Homebrew do
     end
   end
 
+  describe "#initialize" do
+    it "should return the correct class" do
+      expect(provider).to be_kind_of(Chef::Provider::Package::Homebrew)
+    end
+
+    it "should support arrays" do
+      expect(provider.use_multipackage_api?).to be true
+    end
+  end
+
   describe "current_installed_version" do
     it "returns the latest version from brew info if the package is keg only" do
       allow(provider).to receive(:brew_info).and_return(keg_only_brew_info)

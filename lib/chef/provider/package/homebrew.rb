@@ -29,6 +29,8 @@ class Chef
         provides :package, os: "darwin", override: true
         provides :homebrew_package
 
+        use_multipackage_api
+
         include Chef::Mixin::HomebrewUser
 
         def load_current_resource
