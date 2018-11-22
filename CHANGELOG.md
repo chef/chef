@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.83 -->
-## [v15.0.83](https://github.com/chef/chef/tree/v15.0.83) (2018-11-20)
+<!-- latest_release 15.0.84 -->
+## [v15.0.84](https://github.com/chef/chef/tree/v15.0.84) (2018-11-22)
 
 #### Merged Pull Requests
-- need -rf to remove dirs [#7966](https://github.com/chef/chef/pull/7966) ([lamont-granquist](https://github.com/lamont-granquist))
+- windows_share: Avoid ConvertTo-Json errors on Windows 2012r2 with powershell 4  [#7961](https://github.com/chef/chef/pull/7961) ([derekgroh](https://github.com/derekgroh))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- windows_share: Avoid ConvertTo-Json errors on Windows 2012r2 with powershell 4  [#7961](https://github.com/chef/chef/pull/7961) ([derekgroh](https://github.com/derekgroh)) <!-- 15.0.84 -->
 - need -rf to remove dirs [#7966](https://github.com/chef/chef/pull/7966) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.83 -->
 - wipe the installer direction before installation [#7964](https://github.com/chef/chef/pull/7964) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.82 -->
 - windows_share: Accounts to be revoked should be provided as an individually quoted string array [#7959](https://github.com/chef/chef/pull/7959) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.81 -->
