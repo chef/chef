@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,7 +92,8 @@ class Chef
           package_name = name.zip(version).map do |n, v|
             package_data[n][:virtual] ? n : "#{n}=#{v}"
           end
-          run_noninteractive("apt-get", "-q", "-y", config_file_options, default_release_options, options, "install", package_name)
+          dgrade = "--allow-downgrades" if supports_allow_downgrade? && allow_downgrade
+          run_noninteractive("apt-get", "-q", "-y", dgrade, config_file_options, default_release_options, options, "install", package_name)
         end
 
         def upgrade_package(name, version)
@@ -132,6 +133,17 @@ class Chef
         end
 
         private
+
+        # @return [String] version of apt-get which is installed
+        def apt_version
+          @apt_version ||= shell_out("apt-get --version").stdout.match(/^apt (\S+)/)[1]
+        end
+
+        # @return [Boolean] if apt-get supports --allow-downgrades
+        def supports_allow_downgrade?
+          return @supports_allow_downgrade unless @supports_allow_downgrade.nil?
+          @supports_allow_downgrade = ( version_compare(apt_version, "1.1.0") >= 0 )
+        end
 
         # compare 2 versions to each other to see which is newer.
         # this differs from the standard package method because we
