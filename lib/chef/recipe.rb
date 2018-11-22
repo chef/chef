@@ -71,21 +71,6 @@ class Chef
       run_context.node.tag(*tags)
     end
 
-    # Returns true if the node is tagged with *all* of the supplied +tags+.
-    #
-    # === Parameters
-    # tags<Array>:: A list of tags
-    #
-    # === Returns
-    # true<TrueClass>:: If all the parameters are present
-    # false<FalseClass>:: If any of the parameters are missing
-    def tagged?(*tags)
-      tags.each do |tag|
-        return false unless run_context.node.tags.include?(tag)
-      end
-      true
-    end
-
     # Removes the list of tags from the node.
     #
     # === Parameters

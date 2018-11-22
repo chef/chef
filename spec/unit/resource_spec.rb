@@ -1204,4 +1204,27 @@ describe Chef::Resource do
       klass.provides(:test_resource, allow_cookbook_override: false)
     end
   end
+
+  describe "tagged" do
+    let(:recipe) do
+      Chef::Recipe.new("hjk", "test", run_context)
+    end
+
+    describe "with the default node object" do
+      let(:node) { Chef::Node.new }
+
+      it "should return false for any tags" do
+        expect(resource.tagged?("foo")).to be(false)
+      end
+    end
+
+    it "should return true from tagged? if node is tagged" do
+      recipe.tag "foo"
+      expect(resource.tagged?("foo")).to be(true)
+    end
+
+    it "should return false from tagged? if node is not tagged" do
+      expect(resource.tagged?("foo")).to be(false)
+    end
+  end
 end
