@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.86 -->
-## [v15.0.86](https://github.com/chef/chef/tree/v15.0.86) (2018-11-22)
+<!-- latest_release 15.0.87 -->
+## [v15.0.87](https://github.com/chef/chef/tree/v15.0.87) (2018-11-22)
 
 #### Merged Pull Requests
-- Update openssl to 1.0.2q [#7979](https://github.com/chef/chef/pull/7979) ([tas50](https://github.com/tas50))
+- Support apt-get --allow-downgrades [#7963](https://github.com/chef/chef/pull/7963) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Support apt-get --allow-downgrades [#7963](https://github.com/chef/chef/pull/7963) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.87 -->
 - Update openssl to 1.0.2q [#7979](https://github.com/chef/chef/pull/7979) ([tas50](https://github.com/tas50)) <!-- 15.0.86 -->
 - Update inspec to 3.0.52 [#7978](https://github.com/chef/chef/pull/7978) ([tas50](https://github.com/tas50)) <!-- 15.0.85 -->
 - windows_share: Avoid ConvertTo-Json errors on Windows 2012r2 with powershell 4  [#7961](https://github.com/chef/chef/pull/7961) ([derekgroh](https://github.com/derekgroh)) <!-- 15.0.84 -->
