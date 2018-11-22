@@ -23,7 +23,7 @@ class Chef
       introduced "14.3"
 
       property :config_key, String, name_property: true,
-               description: "The name of the config. The resource's name will be used if this isn't provided."
+               description: "An optional property to set the config key name if it differs from the resource block's name."
 
       property :value, String,
                description: "The value to set."

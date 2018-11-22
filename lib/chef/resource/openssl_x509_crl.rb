@@ -30,7 +30,7 @@ class Chef
       introduced "14.4"
 
       property :path, String,
-               description: "Optional path to write the file to if you'd like to specify it here instead of in the resource name.",
+               description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
                name_property: true
 
       property :serial_to_revoke, [Integer, String],
@@ -59,10 +59,10 @@ class Chef
       property :ca_key_pass, String,
                description: "The passphrase for CA private key's passphrase."
 
-      property :owner, String,
+      property :owner, [String, Integer],
                description: "The owner permission for the CRL file."
 
-      property :group, String,
+      property :group, [String, Integer],
                description: "The group permission for the CRL file."
 
       property :mode, [Integer, String],

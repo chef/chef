@@ -27,27 +27,23 @@ class Chef
       resource_name :windows_feature_powershell
       provides(:windows_feature_powershell) { true }
 
-      description "Use the windows_feature_powershell resource to add, remove or"\
-                  " delete Windows features and roles using PowerShell. This resource"\
-                  " offers significant speed benefits over the windows_feature_dism resource,"\
-                  " but requires installing the Remote Server Administration Tools on"\
-                  " non-server releases of Windows"
+      description "Use the windows_feature_powershell resource to add, remove, or entirely delete Windows features and roles using PowerShell. This resource offers significant speed benefits over the windows_feature_dism resource, but requires installing the Remote Server Administration Tools on non-server releases of Windows."
       introduced "14.0"
 
       property :feature_name, [Array, String],
-               description: "The name of the feature/role(s) to install if it differs from the resource name.",
+               description: "The name of the feature(s) or role(s) to install, if it differs from the resource block's name.",
                coerce: proc { |x| to_formatted_array(x) },
                name_property: true
 
       property :source, String,
-               description: "Use a local repository for the feature install."
+               description: "Specify a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
-               description: "Install all sub features. This is equivalent to using the -InstallAllSubFeatures switch with Add-WindowsFeature.",
+               description: "Install all subfeatures. When set to 'true', this is the equivalent of specifying the '-InstallAllSubFeatures' switch with 'Add-WindowsFeature'.",
                default: false
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for feature install.",
+               description: "Specifies a timeout (in seconds) for the feature installation.",
                default: 600
 
       property :management_tools, [TrueClass, FalseClass],

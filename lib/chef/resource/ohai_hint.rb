@@ -27,7 +27,7 @@ class Chef
       introduced "14.0"
 
       property :hint_name, String,
-               description: "The name of the hints file, if it differs from the resource name.",
+               description: "An optional property to set the hint name if it differs from the resource block's name.",
                name_property: true
 
       property :content, Hash,

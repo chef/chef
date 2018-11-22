@@ -25,7 +25,7 @@ class Chef
       resource_name :windows_feature_dism
       provides(:windows_feature_dism) { true }
 
-      description "Use the windows_feature_dism resource to add, remove or delete Windows features and roles using DISM"
+      description "Use the windows_feature_dism resource to add, remove, or entirely delete Windows features and roles using DISM."
       introduced "14.0"
 
       property :feature_name, [Array, String],
@@ -41,7 +41,7 @@ class Chef
                default: false
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for feature install.",
+               description: "Specifies a timeout (in seconds) for the feature installation.",
                default: 600
 
       # @return [Array] lowercase the array unless we're on < Windows 2012
@@ -57,7 +57,6 @@ class Chef
 
         reload_cached_dism_data unless node["dism_features_cache"]
         fail_if_unavailable # fail if the features don't exist
-        fail_if_removed # fail if the features are in removed state
 
         logger.trace("Windows features needing installation: #{features_to_install.empty? ? 'none' : features_to_install.join(',')}")
         unless features_to_install.empty?
@@ -66,8 +65,12 @@ class Chef
             install_command = "dism.exe /online /enable-feature #{features_to_install.map { |f| "/featurename:#{f}" }.join(' ')} /norestart"
             install_command << " /LimitAccess /Source:\"#{new_resource.source}\"" if new_resource.source
             install_command << " /All" if new_resource.all
-
-            shell_out!(install_command, returns: [0, 42, 127, 3010], timeout: new_resource.timeout)
+            begin
+              shell_out!(install_command, returns: [0, 42, 127, 3010], timeout: new_resource.timeout)
+            rescue Mixlib::ShellOut::ShellCommandFailed => e
+              raise "Error 50 returned by DISM related to parent features, try setting the 'all' property to 'true' on the 'windows_feature_dism' resource." if required_parent_feature?(e.inspect)
+              raise e.message
+            end
 
             reload_cached_dism_data # Reload cached dism feature state
           end
@@ -118,10 +121,10 @@ class Chef
             # disabled features are always available to install
             available_for_install = node["dism_features_cache"]["disabled"].dup
 
-            # if the user passes a source then removed features are also available for installation
-            available_for_install.concat(node["dism_features_cache"]["removed"]) if new_resource.source
+            # removed features are also available for installation
+            available_for_install.concat(node["dism_features_cache"]["removed"])
 
-            # the intersection of the features to install & disabled/removed(if passing source) features are what needs installing
+            # the intersection of the features to install & disabled/removed features are what needs installing
             new_resource.feature_name & available_for_install
           end
         end
@@ -204,21 +207,14 @@ class Chef
           node.override["dism_features_cache"][feature_type] << feature_details
         end
 
-        # Fail if any of the packages are in a removed state
-        # @return [void]
-        def fail_if_removed
-          return if new_resource.source # if someone provides a source then all is well
-          if node["platform_version"].to_f > 6.2 # 2012R2 or later
-            return if registry_key_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing') && registry_value_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing', name: "LocalSourcePath") # if source is defined in the registry, still fine
-          end
-          removed = new_resource.feature_name & node["dism_features_cache"]["removed"]
-          raise "The Windows feature#{'s' if removed.count > 1} #{removed.join(',')} #{removed.count > 1 ? 'are' : 'is'} removed from the host and cannot be installed." unless removed.empty?
-        end
-
         # Fail unless we're on windows 8+ / 2012+ where deleting a feature is supported
         # @return [void]
         def raise_if_delete_unsupported
           raise Chef::Exceptions::UnsupportedAction, "#{self} :delete action not supported on Windows releases before Windows 8/2012. Cannot continue!" if older_than_win_2012_or_8?
+        end
+
+        def required_parent_feature?(error_message)
+          error_message.include?("Error: 50") && error_message.include?("required parent feature")
         end
       end
     end

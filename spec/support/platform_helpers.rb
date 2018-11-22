@@ -220,7 +220,8 @@ def selinux_enabled?
 end
 
 def suse?
-  File.exists?("/etc/SuSE-release")
+  ::File.exists?("/etc/SuSE-release") ||
+    ( ::File.exists?("/etc/os-release") && /sles|suse/.match?(File.read("/etc/os-release")) )
 end
 
 def root?

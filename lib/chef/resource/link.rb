@@ -48,7 +48,7 @@ class Chef
       end
 
       property :target_file, String,
-               description: "The name of the link. Default value: the name of the resource block.",
+               description: "An optional property to set the target file if it differs from the resource block's name.",
                name_property: true, identity: true
 
       property :to, String,
@@ -60,7 +60,7 @@ class Chef
                equal_to: [ :symbolic, :hard ], default: :symbolic
 
       property :group, [String, Integer],
-               description: "A string or ID that identifies the group associated with a symbolic link.",
+               description: "A group name or ID number that identifies the group associated with a symbolic link.",
                regex: [Chef::Config[:group_valid_regex]]
 
       property :owner, [String, Integer],

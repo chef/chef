@@ -159,7 +159,6 @@ class Chef
           :sort_by!,
           :uniq!,
           :unshift,
-          :update,
         ].freeze
 
         # Redefine all of the methods that mutate a Hash to raise an error when called.

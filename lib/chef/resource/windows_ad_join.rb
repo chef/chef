@@ -58,14 +58,14 @@ class Chef
 
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
-               default: true
+               default: true, desired_state: false
 
       action :join do
         description "Join the Active Directory domain."
 
         unless on_domain?
           cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
-          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.domain_user}\",$pswd);"
+          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.domain_user}@#{new_resource.domain_name}\",$pswd);"
           cmd << "Add-Computer -DomainName #{new_resource.domain_name} -Credential $credential"
           cmd << " -OUPath \"#{new_resource.ou_path}\"" if new_resource.ou_path
           cmd << " -NewName \"#{new_resource.new_hostname}\"" if new_resource.new_hostname

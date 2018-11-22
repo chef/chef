@@ -30,26 +30,6 @@ class Chef
 
       banner "knife user show USER (options)"
 
-      def osc_11_warning
-        <<~EOF
-          The Chef Server you are using does not support the username field.
-          This means it is an Open Source 11 Server.
-          knife user show for Open Source 11 Server is being deprecated.
-          Open Source 11 Server user commands now live under the knife osc_user namespace.
-          For backwards compatibility, we will forward this request to knife osc_user show.
-          If you are using an Open Source 11 Server, please use that command to avoid this warning.
-          NOTE: Backwards compatibility for Open Source 11 Server in these commands will be removed
-          in Chef 15 which will be released April 2019.
-EOF
-      end
-
-      def run_osc_11_user_show
-        # run osc_user_edit with our input
-        ARGV.delete("user")
-        ARGV.unshift("osc_user")
-        Chef::Knife.run(ARGV, Chef::Application::Knife.options)
-      end
-
       def run
         @user_name = @name_args[0]
 
@@ -60,18 +40,7 @@ EOF
         end
 
         user = Chef::UserV1.load(@user_name)
-
-        # DEPRECATION NOTE
-        # Remove this if statement and corrosponding code post OSC 11 support.
-        #
-        # if username is nil, we are in the OSC 11 case,
-        # forward to deprecated command
-        if user.username.nil?
-          ui.warn(osc_11_warning)
-          run_osc_11_user_show
-        else
-          output(format_for_display(user))
-        end
+        output(format_for_display(user))
       end
 
     end

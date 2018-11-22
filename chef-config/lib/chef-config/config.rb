@@ -358,7 +358,7 @@ module ChefConfig
     # Whether or not to send the Authorization header again on http redirects.
     # As per the plan in https://github.com/chef/chef/pull/7006, this will be
     # False in Chef 14, True in Chef 15, and will be removed entirely in Chef 16.
-    default :http_disable_auth_on_redirect, false
+    default :http_disable_auth_on_redirect, true
 
     default :interval, nil
     default :once, nil
@@ -436,8 +436,6 @@ module ChefConfig
     end
 
     default :rest_timeout, 300
-    default :yum_timeout, 900
-    default :yum_lock_timeout, 30
     default :solo, false
 
     # Are we running in old Chef Solo legacy mode?
@@ -490,12 +488,6 @@ module ChefConfig
     # but it could be set in client.rb if desired.
 
     default :named_run_list, nil
-
-    # During initial development, users were required to set `use_policyfile true`
-    # in `client.rb` to opt-in to policyfile use. Chef Client now examines
-    # configuration, node json, and the stored node to determine if policyfile
-    # usage is desired. This flag is still honored if set, but is unnecessary.
-    default :use_policyfile, false
 
     # Policyfiles can be used in a native mode (default) or compatibility mode.
     # Native mode requires Chef Server 12.1 (it can be enabled via feature flag

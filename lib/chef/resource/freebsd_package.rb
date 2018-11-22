@@ -20,7 +20,6 @@
 
 require "chef/resource/package"
 require "chef/provider/package/freebsd/port"
-require "chef/provider/package/freebsd/pkg"
 require "chef/provider/package/freebsd/pkgng"
 require "chef/mixin/shell_out"
 
@@ -42,30 +41,13 @@ class Chef
         assign_provider
       end
 
-      # Is the system at least version 1000017 or is the make variable WITH_PKGNG set
-      #
-      # @return [Boolean] do we support pkgng
-      def supports_pkgng?
-        ships_with_pkgng? || !!shell_out!("make", "-V", "WITH_PKGNG", env: nil).stdout.match(/yes/i)
-      end
-
       private
-
-      # It was not until __FreeBSD_version 1000017 that pkgng became
-      # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
-      def ships_with_pkgng?
-        node[:os_version].to_i >= 1000017
-      end
 
       def assign_provider
         @provider = if source.to_s =~ /^ports$/i
                       Chef::Provider::Package::Freebsd::Port
-                    elsif supports_pkgng?
-                      Chef::Provider::Package::Freebsd::Pkgng
                     else
-                      Chef.deprecated(:freebsd_package_provider, "The freebsd_package provider for pkg (Chef::Provider::Package::Freebsd::Pkg) is deprecated and will be removed from Chef core in 15.0 (April 2019).")
-
-                      Chef::Provider::Package::Freebsd::Pkg
+                      Chef::Provider::Package::Freebsd::Pkgng
                     end
       end
     end

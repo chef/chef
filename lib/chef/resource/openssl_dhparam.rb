@@ -30,7 +30,7 @@ class Chef
       introduced "14.0"
 
       property :path, String,
-               description: "The path to write the file to if it's different than the resource name.",
+               description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
                name_property: true
 
       property :key_length, Integer,
@@ -45,10 +45,10 @@ class Chef
                description: "The desired Diffie-Hellmann generator.",
                default: 2
 
-      property :owner, String,
+      property :owner, [String, Integer],
                description: "The owner applied to all files created by the resource."
 
-      property :group, String,
+      property :group, [String, Integer],
                description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],

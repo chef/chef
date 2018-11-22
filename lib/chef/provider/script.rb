@@ -49,10 +49,6 @@ class Chef
 
       def load_current_resource
         super
-        # @todo Chef-15: change this to an exception
-        if code.nil?
-          logger.warn "#{new_resource}: No code attribute was given, resource does nothing, this behavior is deprecated and will be removed in Chef 15 (April 2019)"
-        end
       end
 
       def action_run

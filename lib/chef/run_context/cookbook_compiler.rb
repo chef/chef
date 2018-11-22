@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -226,7 +226,7 @@ class Chef
           begin
             # FIXME(log): should be trace
             logger.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
-            Kernel.load(filename)
+            Kernel.require(filename)
             @events.library_file_loaded(filename)
           rescue Exception => e
             @events.library_file_load_failed(filename, e)

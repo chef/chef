@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Author:: Tim Smith (tsmith@chef.io>)
+# Copyright:: Copyright 2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,20 +18,20 @@
 
 require "spec_helper"
 
-# DEPRECATION NOTE
-# This code only remains to support users still operating with
-# Open Source Chef Server 11 and should be removed once support
-# for OSC 11 ends. New development should occur in user_list_spec.rb.
+describe Chef::Resource::MacosxService do
+  let(:resource) { Chef::Resource::MacosxService.new("chef") }
 
-describe Chef::Knife::OscUserList do
-  before(:each) do
-    Chef::Knife::OscUserList.load_deps
-    @knife = Chef::Knife::OscUserList.new
+  it "sets the resource_name to :macosx_service" do
+    expect(resource.resource_name).to eql(:macosx_service)
   end
 
-  it "lists the users" do
-    expect(Chef::User).to receive(:list)
-    expect(@knife).to receive(:format_list_for_display)
-    @knife.run
+  it "accepts a String for the session_type property" do
+    resource.session_type "foo"
+    expect(resource.session_type).to eql("foo")
+  end
+
+  it "accepts a String for the plist property" do
+    resource.plist "foo"
+    expect(resource.plist).to eql("foo")
   end
 end

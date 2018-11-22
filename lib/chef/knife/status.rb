@@ -41,11 +41,6 @@ class Chef
         long: "--sort-reverse",
         description: "Sort the status list by last run time descending"
 
-      option :hide_healthy,
-        short: "-H",
-        long: "--hide-healthy",
-        description: "Hide nodes that have run chef in the last hour. [DEPRECATED] Use --hide-by-mins MINS instead"
-
       option :hide_by_mins,
         long: "--hide-by-mins MINS",
         description: "Hide nodes that have run chef in the last MINS minutes"
@@ -70,14 +65,6 @@ class Chef
         @query ||= ""
         append_to_query(@name_args[0]) if @name_args[0]
         append_to_query("chef_environment:#{config[:environment]}") if config[:environment]
-
-        if config[:hide_healthy]
-          ui.warn("-H / --hide-healthy is deprecated and will be removed in Chef 15. Use --hide-by-mins MINS instead")
-          time = Time.now.to_i
-          # AND NOT is not valid lucene syntax, so don't use append_to_query
-          @query << " " unless @query.empty?
-          @query << "NOT ohai_time:[#{(time - 60 * 60)} TO #{time}]"
-        end
 
         if config[:hide_by_mins]
           hidemins = config[:hide_by_mins].to_i

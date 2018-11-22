@@ -131,6 +131,7 @@ class Chef
       @only_if = []
       @source_line = nil
       @deprecated = false
+      @skip_docs = false
       # We would like to raise an error when the user gives us a guard
       # interpreter and a ruby_block to the guard. In order to achieve this
       # we need to understand when the user overrides the default guard
@@ -1183,8 +1184,8 @@ class Chef
     # Internal Resource Interface (for Chef)
     #
 
-    FORBIDDEN_IVARS = [:@run_context, :@logger, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message, :@deprecated].freeze
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@logger, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message, :@deprecated].freeze
+    FORBIDDEN_IVARS = [:@run_context, :@logger, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message, :@deprecated, :@default_description, :@skip_docs].freeze
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@logger, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message, :@deprecated, :@default_description, :@skip_docs].freeze
 
     include Chef::Mixin::ConvertToClassName
     extend Chef::Mixin::ConvertToClassName
@@ -1446,6 +1447,20 @@ class Chef
         @deprecated_message = deprecated
       end
       @deprecated
+    end
+
+    def self.skip_docs(skip_docs = "NOT_PASSED")
+      if skip_docs != "NOT_PASSED"
+        @skip_docs = skip_docs
+      end
+      @skip_docs
+    end
+
+    def self.default_description(default_description = "NOT_PASSED")
+      if default_description != "NOT_PASSED"
+        @default_description = default_description
+      end
+      @default_description
     end
 
     #

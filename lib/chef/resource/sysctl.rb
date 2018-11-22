@@ -24,7 +24,7 @@ class Chef
       provides(:sysctl) { true }
       provides(:sysctl_param) { true }
 
-      description "Use the sysctl resource to set kernel parameters using the sysctl"\
+      description "Use the sysctl resource to set or remove kernel parameters using the sysctl"\
                   " command line tool and configuration files in the system's sysctl.d directory. "\
                   "Configuration files managed by this resource are named 99-chef-KEYNAME.conf. If"\
                   " an existing value was already set for the value it will be backed up to the node"\
@@ -33,7 +33,7 @@ class Chef
       introduced "14.0"
 
       property :key, String,
-               description: "The kernel parameter key in dotted format.",
+               description: "The kernel parameter key in dotted format, if it differs from the resource block's name.",
                name_property: true
 
       property :ignore_error, [TrueClass, FalseClass],

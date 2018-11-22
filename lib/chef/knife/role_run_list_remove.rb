@@ -26,7 +26,7 @@ class Chef
         require "chef/role"
       end
 
-      banner "knife role run_list remove [ROLE] [ENTRY]"
+      banner "knife role run_list remove [ROLE] [ENTRY] (options)"
 
       def remove_from_env_run_list(role, environment, item_to_remove)
         nlist = []

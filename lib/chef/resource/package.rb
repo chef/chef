@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ class Chef
       end
 
       property :package_name, [ String, Array ],
-               description: "The name of the package. Defaults to the name of the resourse block unless specified.",
+               description: "An optional property to set the package name if it differs from the resource block's name.",
                identity: true
 
       property :version, [ String, Array ],
@@ -61,7 +61,7 @@ class Chef
                default: lazy { Hash.new }, desired_state: false
 
       property :source, String,
-               description: "The direct path to a the package on the host.",
+               description: "The optional path to a package on the local file system.",
                desired_state: false
 
       property :timeout, [ String, Integer ],

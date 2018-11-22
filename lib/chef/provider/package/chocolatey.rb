@@ -54,7 +54,7 @@ EOS
 
           # The check that Chocolatey is installed is in #choco_exe.
 
-          # Chocolatey source attribute points to an alternate feed
+          # Chocolatey source property points to an alternate feed
           # and not a package specific alternate source like other providers
           # so we want to assert candidates exist for the alternate source
           requirements.assert(:upgrade, :install) do |a|

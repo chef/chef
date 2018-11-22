@@ -1,15 +1,84 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.8 -->
-## [v15.0.8](https://github.com/chef/chef/tree/v15.0.8) (2018-10-27)
+<!-- latest_release 15.0.83 -->
+## [v15.0.83](https://github.com/chef/chef/tree/v15.0.83) (2018-11-20)
 
 #### Merged Pull Requests
-- add GEMFILE_MOD to pin ohai to github master [#7796](https://github.com/chef/chef/pull/7796) ([lamont-granquist](https://github.com/lamont-granquist))
+- need -rf to remove dirs [#7966](https://github.com/chef/chef/pull/7966) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- need -rf to remove dirs [#7966](https://github.com/chef/chef/pull/7966) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.83 -->
+- wipe the installer direction before installation [#7964](https://github.com/chef/chef/pull/7964) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.82 -->
+- windows_share: Accounts to be revoked should be provided as an individually quoted string array [#7959](https://github.com/chef/chef/pull/7959) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.81 -->
+- windows_share: Fix idempotency by removing the &quot;everyone&quot; access [#7956](https://github.com/chef/chef/pull/7956) ([tas50](https://github.com/tas50)) <!-- 15.0.80 -->
+- Chef-15: switch default of allow_downgrade to true [#7953](https://github.com/chef/chef/pull/7953) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.79 -->
+- Chef-15:  require instead of load libraries [#7954](https://github.com/chef/chef/pull/7954) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.78 -->
+- Allow Integers for all group / owner properties [#7948](https://github.com/chef/chef/pull/7948) ([tas50](https://github.com/tas50)) <!-- 15.0.77 -->
+- Remove unused yum_timeout and yum_lock_timeout configs [#7909](https://github.com/chef/chef/pull/7909) ([tas50](https://github.com/tas50)) <!-- 15.0.76 -->
+- windows_workgroup: Coerce the provided reboot property and add more tests [#7916](https://github.com/chef/chef/pull/7916) ([tas50](https://github.com/tas50)) <!-- 15.0.75 -->
+- Convert service resource to use properties [#7946](https://github.com/chef/chef/pull/7946) ([tas50](https://github.com/tas50)) <!-- 15.0.74 -->
+- Replace several uses of attribute with property in resources [#7943](https://github.com/chef/chef/pull/7943) ([tas50](https://github.com/tas50)) <!-- 15.0.73 -->
+- Fully convert remote_directory to use properties [#7947](https://github.com/chef/chef/pull/7947) ([tas50](https://github.com/tas50)) <!-- 15.0.72 -->
+- windows_certificate: Add testing of the defaults and allowed properties [#7917](https://github.com/chef/chef/pull/7917) ([tas50](https://github.com/tas50)) <!-- 15.0.71 -->
+- Require chef-zero 14.0.11 or later to resolve Rack gem CVEs [#7940](https://github.com/chef/chef/pull/7940) ([tas50](https://github.com/tas50)) <!-- 15.0.70 -->
+- Add additional resource description fields [#7938](https://github.com/chef/chef/pull/7938) ([tas50](https://github.com/tas50)) <!-- 15.0.69 -->
+- Improve resource descriptions for documentation [#7929](https://github.com/chef/chef/pull/7929) ([tas50](https://github.com/tas50)) <!-- 15.0.68 -->
+- windows_feature_dism: support installed deleted features [#7905](https://github.com/chef/chef/pull/7905) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.67 -->
+- use --no-tty during apt-keys fro gpg - fixes #7913 [#7914](https://github.com/chef/chef/pull/7914) ([EugenMayer](https://github.com/EugenMayer)) <!-- 15.0.66 -->
+- Update Cheffish to 14.0.4 [#7936](https://github.com/chef/chef/pull/7936) ([tas50](https://github.com/tas50)) <!-- 15.0.65 -->
+- Replace usage of win_friendly_path helper in windows_certificate [#7927](https://github.com/chef/chef/pull/7927) ([tas50](https://github.com/tas50)) <!-- 15.0.64 -->
+- Update inspec-core to 3.0.46 [#7924](https://github.com/chef/chef/pull/7924) ([tas50](https://github.com/tas50)) <!-- 15.0.63 -->
+- windows_feature: Move provider logic into the default of the install_method property [#7912](https://github.com/chef/chef/pull/7912) ([tas50](https://github.com/tas50)) <!-- 15.0.61 -->
+- Always run policy_file if a policy_file or policy_group exists [#7910](https://github.com/chef/chef/pull/7910) ([tas50](https://github.com/tas50)) <!-- 15.0.60 -->
+- Update deps to bring in the new ca-certs [#7897](https://github.com/chef/chef/pull/7897) ([tas50](https://github.com/tas50)) <!-- 15.0.59 -->
+- Add nillability to attribute deep merging [#7892](https://github.com/chef/chef/pull/7892) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.58 -->
+- Make sure we define windows_task resource on *nix systems [#7903](https://github.com/chef/chef/pull/7903) ([tas50](https://github.com/tas50)) <!-- 15.0.56 -->
+- windows_ad_join: Switch to UPN format usernames for use with AD cmdlets [#7895](https://github.com/chef/chef/pull/7895) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.55 -->
+- Fix the knife integration spec timeouts [#7896](https://github.com/chef/chef/pull/7896) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.54 -->
+- fix whitespace in node attributes [ci skip] [#7890](https://github.com/chef/chef/pull/7890) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.53 -->
+- add tests for yum version with package_source bug [#7886](https://github.com/chef/chef/pull/7886) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.52 -->
+- Remove Chef provisioning lazy loading [#7866](https://github.com/chef/chef/pull/7866) ([tas50](https://github.com/tas50)) <!-- 15.0.51 -->
+- Update more descriptions and tweak default handling in chef-resource-inspector [#7884](https://github.com/chef/chef/pull/7884) ([tas50](https://github.com/tas50)) <!-- 15.0.50 -->
+- Allow passing multiple ports in windows_firewall [#7879](https://github.com/chef/chef/pull/7879) ([tas50](https://github.com/tas50)) <!-- 15.0.49 -->
+- Add additional descriptions to resource and update others [#7881](https://github.com/chef/chef/pull/7881) ([tas50](https://github.com/tas50)) <!-- 15.0.48 -->
+- resource inspector: don&#39;t convert nil to &quot;nil&quot; in default values [#7880](https://github.com/chef/chef/pull/7880) ([tas50](https://github.com/tas50)) <!-- 15.0.47 -->
+- Defer running initramfs_command until end of run [#7871](https://github.com/chef/chef/pull/7871) ([tomdoherty](https://github.com/tomdoherty)) <!-- 15.0.45 -->
+- Fully remove knife cookbook create command [#7852](https://github.com/chef/chef/pull/7852) ([tas50](https://github.com/tas50)) <!-- 15.0.42 -->
+- Add more validation_messages to properties [#7867](https://github.com/chef/chef/pull/7867) ([tas50](https://github.com/tas50)) <!-- 15.0.41 -->
+- Make knife command banners consistent [#7869](https://github.com/chef/chef/pull/7869) ([tas50](https://github.com/tas50)) <!-- 15.0.40 -->
+- Add windows_firewall_rule [#7842](https://github.com/chef/chef/pull/7842) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.39 -->
+- Improve resource descriptions for resource documentation automation [#7808](https://github.com/chef/chef/pull/7808) ([tas50](https://github.com/tas50)) <!-- 15.0.38 -->
+- Remove the remaining OSC 11 knife user commands [#7868](https://github.com/chef/chef/pull/7868) ([tas50](https://github.com/tas50)) <!-- 15.0.37 -->
+- Remove knife user support for open source Chef Server &lt; 12 [#7841](https://github.com/chef/chef/pull/7841) ([tas50](https://github.com/tas50)) <!-- 15.0.36 -->
+- Add additional github issue templates [#7859](https://github.com/chef/chef/pull/7859) ([tas50](https://github.com/tas50)) <!-- 15.0.35 -->
+- Chef 15 node attribute array fixes [#7840](https://github.com/chef/chef/pull/7840) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.34 -->
+- Remove the check for nil code property in the script provider [#7855](https://github.com/chef/chef/pull/7855) ([tas50](https://github.com/tas50)) <!-- 15.0.33 -->
+- powershell_package doc update [#7857](https://github.com/chef/chef/pull/7857) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.32 -->
+- Set http_disable_auth_on_redirect to true [#7856](https://github.com/chef/chef/pull/7856) ([tas50](https://github.com/tas50)) <!-- 15.0.31 -->
+- Bump inspec-core to 3.0.25 [#7853](https://github.com/chef/chef/pull/7853) ([chef-ci](https://github.com/chef-ci)) <!-- 15.0.30 -->
+- Remove knife cookbook test feature [#7323](https://github.com/chef/chef/pull/7323) ([tas50](https://github.com/tas50)) <!-- 15.0.29 -->
+- Added property `description` on windows_task resource [#7777](https://github.com/chef/chef/pull/7777) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.28 -->
+- Remove the deprecated ohai_name property from the ohai resource [#7787](https://github.com/chef/chef/pull/7787) ([tas50](https://github.com/tas50)) <!-- 15.0.27 -->
+- Remove deprecated knife status --hide-healthy flag [#7791](https://github.com/chef/chef/pull/7791) ([tas50](https://github.com/tas50)) <!-- 15.0.26 -->
+- Update win32-taskscheduler to 2.0.1 [#7843](https://github.com/chef/chef/pull/7843) ([tas50](https://github.com/tas50)) <!-- 15.0.24 -->
+- Handle `interactive_enabled` property in windows_task resource [#7814](https://github.com/chef/chef/pull/7814) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.23 -->
+- Fix chef-apply crash for reboot [#7720](https://github.com/chef/chef/pull/7720) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.22 -->
+- Remove preview resource from windows_certificate &amp; windows_share [#7818](https://github.com/chef/chef/pull/7818) ([tas50](https://github.com/tas50)) <!-- 15.0.21 -->
+- Bump win32-certstore to 0.1.11 [#7823](https://github.com/chef/chef/pull/7823) ([tas50](https://github.com/tas50)) <!-- 15.0.20 -->
+- More cookbook loader cleanup and documentation [#7820](https://github.com/chef/chef/pull/7820) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.19 -->
+- Fix testing / installing on SLES 15 [#7819](https://github.com/chef/chef/pull/7819) ([tas50](https://github.com/tas50)) <!-- 15.0.18 -->
+- Update win32-certstore to include a license [#7822](https://github.com/chef/chef/pull/7822) ([tas50](https://github.com/tas50)) <!-- 15.0.17 -->
+- Add windows_certificate and windows_share resources [#7731](https://github.com/chef/chef/pull/7731) ([tas50](https://github.com/tas50)) <!-- 15.0.16 -->
+- Remove unused route resource properties [#7240](https://github.com/chef/chef/pull/7240) ([tas50](https://github.com/tas50)) <!-- 15.0.15 -->
+- Fix inspector to properly handle defaults that are symbols [#7813](https://github.com/chef/chef/pull/7813) ([tas50](https://github.com/tas50)) <!-- 15.0.14 -->
+- Refactor Cookbook loader logic now that we don&#39;t support merging [#7794](https://github.com/chef/chef/pull/7794) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.13 -->
+- Remove deprecated support for FreeBSD pkg provider [#7789](https://github.com/chef/chef/pull/7789) ([tas50](https://github.com/tas50)) <!-- 15.0.12 -->
+- Multiple fixes to dmg_package [#7802](https://github.com/chef/chef/pull/7802) ([tas50](https://github.com/tas50)) <!-- 15.0.11 -->
+- Allow passing array to supports in mount again [#7803](https://github.com/chef/chef/pull/7803) ([tas50](https://github.com/tas50)) <!-- 15.0.10 -->
+- Require mixin::shellout where we use it [#7798](https://github.com/chef/chef/pull/7798) ([tas50](https://github.com/tas50)) <!-- 15.0.9 -->
 - add GEMFILE_MOD to pin ohai to github master [#7796](https://github.com/chef/chef/pull/7796) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.8 -->
 - shell_out auto-timeout still needs to be restricted to only providers [#7793](https://github.com/chef/chef/pull/7793) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.7 -->
 - Remove cookbook merging/shadowing from the cookbooker loader [#7792](https://github.com/chef/chef/pull/7792) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.6 -->

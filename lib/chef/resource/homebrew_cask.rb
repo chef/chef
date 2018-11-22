@@ -32,8 +32,9 @@ class Chef
       include Chef::Mixin::HomebrewUser
 
       property :cask_name, String,
-               description: "The name of the Homebrew cask, if it differs from the resource block name.",
+               description: "An optional property to set the cask name if it differs from the resource block's name.",
                regex: %r{^[\w/-]+$},
+               validation_message: "The provided Homebrew cask name is not valid. Cask names can contain alphanumeric characters, _, -, or / only!",
                name_property: true
 
       property :options, String,
@@ -47,7 +48,7 @@ class Chef
                description: "The path to the homebrew binary.",
                default: "/usr/local/bin/brew"
 
-      property :owner, String,
+      property :owner, [String, Integer],
                description: "The owner of the Homebrew installation.",
                default: lazy { find_homebrew_username }
 

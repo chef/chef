@@ -42,7 +42,7 @@ class Chef
                default: false
 
       property :driver_name, String,
-               description: "Exact name of printer driver. Note that the printer driver must already be installed on the node.",
+               description: "The exact name of printer driver installed on the system.",
                required: true
 
       property :location, String,
@@ -61,7 +61,7 @@ class Chef
                regex: Resolv::IPv4::Regex
 
       property :exists, [TrueClass, FalseClass],
-               desired_state: true
+               skip_docs: true
 
       PRINTERS_REG_KEY = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\\'.freeze unless defined?(PRINTERS_REG_KEY)
 

@@ -103,6 +103,10 @@ class Chef
     #     be run in the context of the instance (and able to access other
     #     properties) and cached. If not, the value will be frozen with Object#freeze
     #     to prevent users from modifying it in an instance.
+    #   @option options [String] :default_description The description of the default value
+    #     used in docs. Particularly useful when a default is computed or lazily eval'd.
+    #   @option options [Boolean] :skip_docs This property should not be included in any
+    #     documentation output
     #   @option options [Proc] :coerce A proc which will be called to
     #     transform the user input to canonical form. The value is passed in,
     #     and the transformed value returned as output. Lazy values will *not*
@@ -230,6 +234,15 @@ class Chef
     end
 
     #
+    # A desciption of the default value of this property.
+    #
+    # @return [String]
+    #
+    def default_description
+      options[:default_description]
+    end
+
+    #
     # Whether this is part of the resource's natural identity or not.
     #
     # @return [Boolean]
@@ -278,6 +291,17 @@ class Chef
     end
 
     #
+    # Whether this property should be skipped for documentation purposes.
+    #
+    # Defaults to false.
+    #
+    # @return [Boolean]
+    #
+    def skip_docs?
+      options.fetch(:skip_docs, false)
+    end
+
+    #
     # Whether this property is sensitive or not.
     #
     # Defaults to false.
@@ -295,7 +319,7 @@ class Chef
     #
     def validation_options
       @validation_options ||= options.reject do |k, v|
-        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable, :sensitive, :description, :introduced, :deprecated].include?(k)
+        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable, :sensitive, :description, :introduced, :deprecated, :default_description, :skip_docs].include?(k)
       end
     end
 

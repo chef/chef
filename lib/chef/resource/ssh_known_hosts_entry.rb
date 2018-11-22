@@ -50,11 +50,11 @@ class Chef
                description: "The file mode for the ssh_known_hosts file.",
                default: "0644"
 
-      property :owner, String,
+      property :owner, [String, Integer],
                description: "The file owner for the ssh_known_hosts file.",
                default: "root"
 
-      property :group, String,
+      property :group, [String, Integer],
                description: "The file group for the ssh_known_hosts file.",
                default: lazy { node["root_group"] }
 

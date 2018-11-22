@@ -96,7 +96,7 @@ class Chef
 
             name = av.name # resolve the name via the available/candidate version
 
-            iv = python_helper.package_query(:whatinstalled, name)
+            iv = python_helper.package_query(:whatinstalled, av.name_with_arch)
 
             method = "install"
 

@@ -173,7 +173,7 @@ class Chef
       end
 
       def policyfile_set_in_config?
-        config[:use_policyfile] || config[:policy_name] || config[:policy_group]
+        config[:policy_name] || config[:policy_group]
       end
 
       def policyfile_compat_mode_config?

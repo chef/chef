@@ -1,0 +1,12 @@
+#!/bin/sh
+# WARNING: REQUIRES /bin/sh
+#
+# - must run on /bin/sh on solaris 9
+# - must run on /bin/sh on AIX 6.x
+# - if you think you are a bash wizard, you probably do not understand
+#   this programming language.  do not touch.
+# - if you are under 40, get peer review from your elders.
+
+INSTALLER_DIR=/opt/chef-fips
+echo "removing $INSTALLER_DIR..."
+rm -rf $INSTALLER_DIR

@@ -59,7 +59,6 @@ describe Chef::CookbookLoader do
       ]
     end
     it "should not support multiple merged cookbooks in the cookbook path" do
-      start_merged_cookbooks = cookbook_loader.merged_cookbooks
       expect { cookbook_loader.load_cookbooks }.to raise_error(Chef::Exceptions::CookbookMergingError)
     end
   end
@@ -197,7 +196,9 @@ describe Chef::CookbookLoader do
     end
 
     it "should not load the cookbook again when accessed" do
-      expect(cookbook_loader).not_to receive("load_cookbook")
+      cookbook_loader.send(:cookbook_version_loaders).each do |cbv_loader|
+        expect(cbv_loader).not_to receive(:load)
+      end
       cookbook_loader["openldap"]
     end
 

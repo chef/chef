@@ -27,123 +27,118 @@ class Chef
       introduced "14.0"
 
       property :app, String,
-               description: "The name of the application used by default for the /Volumes directory and the .app directory copied to /Applications.",
+               description: "The name of the application as it appears in the /Volumes directory, if it differs from the resource block's name.",
                name_property: true
 
       property :source, String,
-               description: "The remote URL for the dmg to download if specified."
+               description: "The remote URL that is used to download the .dmg file, if specified."
 
       property :file, String,
-               description: "The local dmg full file path."
+               description: "The full path to the .dmg file on the local system."
 
-      property :owner, String,
-               description: "The owner that should own the package installation."
+      property :owner, [String, Integer],
+               description: "The user that should own the package installation."
 
       property :destination, String,
                description: "The directory to copy the .app into.",
                default: "/Applications"
 
       property :checksum, String,
-               description: "The sha256 checksum of the dmg to download"
+               description: "The sha256 checksum of the .dmg file to download."
 
       property :volumes_dir, String,
-               description: "The Directory under /Volumes where the dmg is mounted as not all dmgs are mounted into a /Volumes location matching the name of the dmg."
+               description: "The directory under /Volumes where the dmg is mounted, if it differs from the name of the .dmg file.",
+               default: lazy { |r| r.app }, default_description: "The value passed for the application name."
 
       property :dmg_name, String,
-               description: "The name of the dmg if it is not the same as app, or if the name has spaces."
+               description: "The name of the .dmg file if it differs from that of the app, or if the name has spaces.",
+               desired_state: false,
+               default: lazy { |r| r.app }, default_description: "The value passed for the application name."
 
       property :type, String,
                description: "The type of package.",
                equal_to: %w{app pkg mpkg},
-               default: "app"
-
-      property :installed, [TrueClass, FalseClass],
-               default: false, desired_state: false
+               default: "app", desired_state: false
 
       property :package_id, String,
-               description: "The package id registered with pkgutil when a pkg or mpkg is installed"
+               description: "The package ID that is registered with pkgutil when a pkg or mpkg is installed."
 
       property :dmg_passphrase, String,
-               description: "Specify a passphrase to use to unencrypt the dmg while mounting."
+               description: "Specify a passphrase to be used to decrypt the .dmg file during the mount process.",
+               desired_state: false
 
       property :accept_eula, [TrueClass, FalseClass],
                description: "Specify whether to accept the EULA. Certain dmgs require acceptance of EULA before mounting.",
-               default: false
+               default: false, desired_state: false
 
-      property :headers, [Hash, nil],
+      property :headers, Hash,
                description: "Allows custom HTTP headers (like cookies) to be set on the remote_file resource.",
-               default: nil
+               desired_state: false
 
       property :allow_untrusted, [TrueClass, FalseClass],
                description: "Allow installation of packages that do not have trusted certificates.",
-               default: false
+               default: false, desired_state: false
 
       load_current_value do |new_resource|
         if ::File.directory?("#{new_resource.destination}/#{new_resource.app}.app")
-          Chef::Log.info "Already installed; to upgrade, remove \"#{new_resource.destination}/#{new_resource.app}.app\""
-          installed true
-        elsif shell_out("pkgutil --pkgs='#{new_resource.package_id}'").exitstatus == 0
-          Chef::Log.info "Already installed; to upgrade, try \"sudo pkgutil --forget '#{new_resource.package_id}'\""
-          installed true
+          Chef::Log.info "#{new_resource.app} is already installed. To upgrade, remove \"#{new_resource.destination}/#{new_resource.app}.app\""
+        elsif shell_out("pkgutil --pkg-info '#{new_resource.package_id}'").exitstatus == 0
+          Chef::Log.info "#{new_resource.app} is already installed. To upgrade, try \"sudo pkgutil --forget '#{new_resource.package_id}'\""
         else
-          installed false
+          current_value_does_not_exist! # allows us to check for current_resource.nil? below
         end
       end
 
       action :install do
         description "Installs the application."
 
-        unless current_resource.installed
-
-          volumes_dir = new_resource.volumes_dir ? new_resource.volumes_dir : new_resource.app
-          dmg_name = new_resource.dmg_name ? new_resource.dmg_name : new_resource.app
-
+        if current_resource.nil?
           if new_resource.source
-            declare_resource(:remote_file, "#{dmg_file} - #{new_resource.name}") do
-              path dmg_file
+            remote_file dmg_file do
               source new_resource.source
               headers new_resource.headers if new_resource.headers
               checksum new_resource.checksum if new_resource.checksum
             end
           end
 
-          passphrase_cmd = new_resource.dmg_passphrase ? "-passphrase #{new_resource.dmg_passphrase}" : ""
           ruby_block "attach #{dmg_file}" do
             block do
-              cmd = shell_out("hdiutil imageinfo #{passphrase_cmd} '#{dmg_file}' | grep -q 'Software License Agreement: true'")
-              software_license_agreement = cmd.exitstatus == 0
-              raise "Requires EULA Acceptance; add 'accept_eula true' to package resource" if software_license_agreement && !new_resource.accept_eula
-              accept_eula_cmd = new_resource.accept_eula ? "echo Y | PAGER=true" : ""
-              shell_out!("#{accept_eula_cmd} hdiutil attach #{passphrase_cmd} '#{dmg_file}' -mountpoint '/Volumes/#{volumes_dir}' -quiet")
+              raise "This DMG package requires EULA acceptance. Add 'accept_eula true' to dmg_package resource to accept the EULA during installation." if software_license_agreement? && !new_resource.accept_eula
+
+              attach_cmd = new_resource.accept_eula ? "yes | " : ""
+              attach_cmd << "/usr/bin/hdiutil attach #{passphrase_cmd} '#{dmg_file}' -nobrowse -mountpoint '/Volumes/#{new_resource.volumes_dir}'"
+
+              shell_out!(attach_cmd, env: { "PAGER" => "true" })
             end
-            not_if "hdiutil info #{passphrase_cmd} | grep -q 'image-path.*#{dmg_file}'"
+            not_if { dmg_attached? }
           end
 
           case new_resource.type
           when "app"
-            declare_resource(:execute, "rsync --force --recursive --links --perms --executability --owner --group --times '/Volumes/#{volumes_dir}/#{new_resource.app}.app' '#{new_resource.destination}'") do
+            execute "rsync --force --recursive --links --perms --executability --owner --group --times '/Volumes/#{new_resource.volumes_dir}/#{new_resource.app}.app' '#{new_resource.destination}'" do
               user new_resource.owner if new_resource.owner
             end
 
-            declare_resource(:file, "#{new_resource.destination}/#{new_resource.app}.app/Contents/MacOS/#{new_resource.app}") do
-              mode "755"
+            file "#{new_resource.destination}/#{new_resource.app}.app/Contents/MacOS/#{new_resource.app}" do
+              mode "0755"
               ignore_failure true
             end
           when "mpkg", "pkg"
-            install_cmd = "installation_file=$(ls '/Volumes/#{volumes_dir}' | grep '.#{new_resource.type}$') && sudo installer -pkg \"/Volumes/#{volumes_dir}/$installation_file\" -target /"
+            install_cmd = "installation_file=$(ls '/Volumes/#{new_resource.volumes_dir}' | grep '.#{new_resource.type}$') && sudo installer -pkg \"/Volumes/#{new_resource.volumes_dir}/$installation_file\" -target /"
             install_cmd += " -allowUntrusted" if new_resource.allow_untrusted
 
-            declare_resource(:execute, install_cmd) do
+            execute install_cmd do
               # Prevent cfprefsd from holding up hdiutil detach for certain disk images
               environment("__CFPREFERENCES_AVOID_DAEMON" => "1")
             end
           end
 
-          declare_resource(:execute, "hdiutil detach '/Volumes/#{volumes_dir}' || hdiutil detach '/Volumes/#{volumes_dir}' -force")
+          execute "/usr/bin/hdiutil detach '/Volumes/#{new_resource.volumes_dir}' || /usr/bin/hdiutil detach '/Volumes/#{new_resource.volumes_dir}' -force"
         end
       end
 
       action_class do
+        # @return [String] the path to the dmg file
         def dmg_file
           @dmg_file ||= begin
             if new_resource.file.nil?
@@ -152,6 +147,23 @@ class Chef
               new_resource.file
             end
           end
+        end
+
+        # @return [String] the hdiutil flag for handling DMGs with a password
+        def passphrase_cmd
+          @passphrase_cmd ||= new_resource.dmg_passphrase ? "-passphrase #{new_resource.dmg_passphrase}" : ""
+        end
+
+        # @return [Boolean] does the DMG require a software license agreement
+        def software_license_agreement?
+          # example hdiutil imageinfo output: http://rubular.com/r/0xvOaA6d8B
+          /Software License Agreement: true/.match?(shell_out!("/usr/bin/hdiutil imageinfo #{passphrase_cmd} '#{dmg_file}'").stdout)
+        end
+
+        # @return [Boolean] is the dmg file currently attached?
+        def dmg_attached?
+          # example hdiutil imageinfo output: http://rubular.com/r/CDcqenkixg
+          /image-path.*#{dmg_file}/.match?(shell_out!("/usr/bin/hdiutil info #{passphrase_cmd}").stdout)
         end
       end
     end

@@ -97,7 +97,7 @@ class Chef
             end
           when "windows"
             unless current_windows_tz.casecmp?(new_resource.timezone)
-              converge_by("set timezone to \"#{new_resource.timezone}\"") do
+              converge_by("setting timezone to \"#{new_resource.timezone}\"") do
                 shell_out!("tzutil /s \"#{new_resource.timezone}\"")
               end
             end
@@ -106,7 +106,7 @@ class Chef
       end
 
       action_class do
-        # detect the current TZ on darwin hosts & windows hosts
+        # detect the current TZ on darwin hosts
         #
         # @since 14.7
         # @return [String] TZ database value
@@ -118,13 +118,15 @@ class Chef
             /Time Zone: (.*)/.match(tz_shellout.stdout)[1]
           end
         end
+
+        # detect the current timezone on windows hosts
+        #
+        # @since 14.7
+        # @return [String] timezone id
         def current_windows_tz
-          tz_shellout = shell_out!("tzutil /g")
-          if /is not recognized as an internal/.match?(tz_shellout.stderr)
-            raise "The timezone resource requires tzutil to run on windows hosts!"
-          else
-            tz_shellout.stdout.strip
-          end
+          tz_shellout = shell_out("tzutil /g")
+          raise "There was an error running the tzutil command" if tz_shellout.exitstatus == 1
+          tz_shellout.stdout.strip
         end
       end
     end

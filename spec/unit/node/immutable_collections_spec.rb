@@ -209,7 +209,6 @@ describe Chef::Node::ImmutableArray do
     :merge!,
     :pop,
     :push,
-    :update,
     :reject!,
     :reverse!,
     :replace,

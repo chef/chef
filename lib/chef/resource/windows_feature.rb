@@ -24,35 +24,31 @@ class Chef
       resource_name :windows_feature
       provides(:windows_feature) { true }
 
-      description "Use the windows_feature resource to add, remove or delete Windows features and roles. This resource calls"\
-                  " the 'windows_feature_dism' or 'windows_feature_powershell' resources depending on the specified installation"\
-                  " method and defaults to dism, which is available on both Workstation and Server editions of Windows."
+      description "Use the windows_feature resource to add, remove or entirely delete Windows features and roles. This resource calls the 'windows_feature_dism' or 'windows_feature_powershell' resources depending on the specified installation method and defaults to dism, which is available on both Workstation and Server editions of Windows."
       introduced "14.0"
 
       property :feature_name, [Array, String],
-               description: "The name of the feature/role(s) to install. The same feature may have different"\
-                            " names depending on the underlying resource being used (ie DHCPServer vs DHCP;"\
-                            " DNS-Server-Full-Role vs DNS).",
+               description: "The name of the feature(s) or role(s) to install, if it differs from the resource block's name. The same feature may have different names depending on the underlying installation method being used (ie DHCPServer vs DHCP; DNS-Server-Full-Role vs DNS).",
                name_property: true
 
       property :source, String,
-               description: "Use a local repository for the feature install."
+               description: "Specify a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
                description: "Install all sub features.",
                default: false
 
       property :management_tools, [TrueClass, FalseClass],
-               description: "Install all applicable management tools of the roles, role services, or features (PowerShell only).",
+               description: "Install all applicable management tools for the roles, role services, or features (PowerShell-only).",
                default: false
 
       property :install_method, Symbol,
-               description: "If DISM or PowerShell should be used for the installation. Note feature names differ"\
-                            " between the two installation methods.",
-               equal_to: [:windows_feature_dism, :windows_feature_powershell, :windows_feature_servermanagercmd]
+               description: "The underlying installation method to use for feature installation. Specify ':windows_feature_dism' for DISM or ':windows_feature_powershell' for PowerShell.",
+               equal_to: [:windows_feature_dism, :windows_feature_powershell, :windows_feature_servermanagercmd],
+               default: :windows_feature_dism
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for feature install.",
+               description: "Specifies a timeout (in seconds) for the feature installation.",
                default: 600
 
       action :install do
@@ -77,16 +73,15 @@ class Chef
         # call the appropriate windows_feature resource based on the specified subresource
         # @return [void]
         def run_default_subresource(desired_action)
-          raise "Support for Windows feature installation via servermanagercmd.exe has been removed as this support is no longer needed in Windows 2008 R2 and above. You will need to update your cookbook to install either via dism or powershell (preferred)." if new_resource.install_method == :windows_feature_servermanagercmd
+          raise "Support for Windows feature installation via servermanagercmd.exe has been removed as this support is no longer needed in Windows 2008 R2 and above. You will need to update your recipe to install either via dism or powershell (preferred)." if new_resource.install_method == :windows_feature_servermanagercmd
 
-          subresource = new_resource.install_method || :windows_feature_dism
-          declare_resource(subresource, new_resource.name) do
+          declare_resource(new_resource.install_method, new_resource.name) do
             action desired_action
             feature_name new_resource.feature_name
             source new_resource.source if new_resource.source
             all new_resource.all
             timeout new_resource.timeout
-            management_tools new_resource.management_tools if subresource == :windows_feature_powershell
+            management_tools new_resource.management_tools if new_resource.install_method == :windows_feature_powershell
           end
         end
       end

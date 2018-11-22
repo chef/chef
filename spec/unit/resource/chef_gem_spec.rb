@@ -73,10 +73,7 @@ describe Chef::Resource::ChefGem, "gem_binary" do
       Chef::Recipe.new("hjk", "test", run_context)
     end
 
-    let(:chef_gem_compile_time) { nil }
-
     let(:resource) do
-      Chef::Config[:chef_gem_compile_time] = chef_gem_compile_time
       Chef::Resource::ChefGem.new("foo", run_context)
     end
 

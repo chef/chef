@@ -158,9 +158,9 @@ class Chef
       end
 
       def generate_config
-        conf = {}
         case node[:platform_family]
         when "rhel", "amazon", "fedora"
+          conf = {}
           # walk the collection
           run_context.resource_collection.each do |resource|
             next unless resource.is_a? Chef::Resource::Route

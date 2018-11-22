@@ -31,12 +31,12 @@ class Chef
       introduced "14.0"
 
       property :path, String,
-               description: "The path to write the file to it's different than the resource name.",
+               description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
                name_property: true
 
       property :key_length, Integer,
                equal_to: [1024, 2048, 4096, 8192],
-               validation_message: "key_length (bits) must be 1024, 2048, 4096, or 8192.",
+               validation_message: "key_length (bits) must be 1024, 2048, 4096, or 8192!",
                description: "The desired bit length of the generated key.",
                default: 2048
 
@@ -49,10 +49,10 @@ class Chef
                description: "The designed cipher to use when generating your key. Run `openssl list-cipher-algorithms` to see available options.",
                default: "des3"
 
-      property :owner, String,
+      property :owner, [String, Integer],
                description: "The owner applied to all files created by the resource."
 
-      property :group, String,
+      property :group, [String, Integer],
                description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],

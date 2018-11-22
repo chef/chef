@@ -69,7 +69,8 @@ class Chef
 
       property :allow_downgrade, [ true, false ],
                description: "Downgrade a package to satisfy requested version requirements.",
-               default: false
+               default: true,
+               desired_state: false
 
       property :yum_binary, String
     end

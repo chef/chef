@@ -36,49 +36,62 @@ describe Chef::Resource::RemoteDirectory do
     expect { resource.action :delete }.not_to raise_error
   end
 
-  it "accepts a string for the remote directory source" do
+  it "accepts a String for the cookbook property" do
+    resource.cookbook "foo"
+    expect(resource.cookbook).to eql("foo")
+  end
+
+  it "accepts a String for the source property" do
     resource.source "foo"
     expect(resource.source).to eql("foo")
   end
 
-  it "has the basename of the remote directory resource as the default source" do
+  it "uses the basename of the pat property as the default value of the source property" do
     resource.path "/foo/bar"
     expect(resource.source).to eql("bar")
   end
 
-  it "accepts a number for the remote files backup" do
+  it "files_backup property defaults to 5" do
+    expect(resource.files_backup).to eql(5)
+  end
+
+  it "accepts an Integer for the files_backup property" do
     resource.files_backup 1
     expect(resource.files_backup).to eql(1)
   end
 
-  it "accepts false for the remote files backup" do
+  it "accepts false for the files_backup property" do
     resource.files_backup false
     expect(resource.files_backup).to eql(false)
   end
 
-  it "accepts 3 or 4 digits for the files_mode" do
+  it "accepts 3 or 4 digits for the files_mode property" do
     resource.files_mode 100
     expect(resource.files_mode).to eql(100)
     resource.files_mode 1000
     expect(resource.files_mode).to eql(1000)
   end
 
-  it "accepts a string or number for the files group" do
+  it "accepts a String or number for the files_group property" do
     resource.files_group "heart"
     expect(resource.files_group).to eql("heart")
     resource.files_group 1000
     expect(resource.files_group).to eql(1000)
   end
 
-  it "accepts a string or number for the files owner" do
+  it "accepts a String or number for the files_owner property" do
     resource.files_owner "heart"
     expect(resource.files_owner).to eql("heart")
     resource.files_owner 1000
     expect(resource.files_owner).to eql(1000)
   end
 
-  it "overwrites by default" do
+  it "overwrite property has the default value of true" do
     expect(resource.overwrite).to be true
+  end
+
+  it "recursive property has the default value of true" do
+    expect(resource.recursive).to be true
   end
 
   describe "when it has cookbook, files owner, files mode, and source" do
@@ -98,7 +111,7 @@ describe Chef::Resource::RemoteDirectory do
       expect(state[:files_mode]).to eq("0664")
     end
 
-    it "returns the path  as its identity" do
+    it "returns the path as its identity" do
       expect(resource.identity).to eq("/var/path/")
     end
   end

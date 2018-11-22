@@ -18,8 +18,6 @@
 
 require "chef/knife"
 
-# NOTE: only knife user command that is backwards compatible with OSC 11,
-# so no deprecation warnings are necessary.
 class Chef
   class Knife
     class UserList < Knife

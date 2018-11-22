@@ -36,39 +36,51 @@ class Chef
                name_property: true
 
       property :user, String,
-               description: "The local administrator user to use to change the workgroup."
+               description: "The local administrator user to use to change the workgroup. Required if using the password property.",
+               desired_state: false
 
       property :password, String,
-               description: "The password for the local administrator user."
+               description: "The password for the local administrator user. Required if using the user property.",
+               desired_state: false
 
       property :reboot, Symbol,
-               equal_to: [:immediate, :delayed, :never, :request_reboot, :reboot_now],
+               equal_to: [:never, :request_reboot, :reboot_now],
                validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the Chef run completes), and :never (Don't reboot)",
                description: "Controls the system reboot behavior post workgroup joining. Reboot immediately, after the Chef run completes, or never. Note that a reboot is necessary for changes to take effect.",
-               default: :immediate
+               coerce: proc { |x| clarify_reboot(x) },
+               default: :immediate, desired_state: false
+
+      # This resource historically took `:immediate` and `:delayed` as arguments to the reboot property but then
+      # tried to shove that straight to the `reboot` resource which objected strenuously. We need to convert these
+      # legacy actions into actual reboot actions
+      #
+      # @return [Symbol] chef reboot resource action
+      def clarify_reboot(reboot_action)
+        case reboot_action
+        when :immediate
+          :reboot_now
+        when :delayed
+          :request_reboot
+        else
+          reboot_action
+        end
+      end
 
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
-               default: true
+               default: true, desired_state: false
 
       action :join do
         description "Update the workgroup."
 
         unless workgroup_member?
-          cmd = ""
-          cmd << "$pswd = ConvertTo-SecureString \'#{new_resource.password}\' -AsPlainText -Force;" if new_resource.password
-          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.user}\",$pswd);" if new_resource.password
-          cmd << "Add-Computer -WorkgroupName #{new_resource.workgroup_name}"
-          cmd << " -Credential $credential" if new_resource.password
-          cmd << " -Force"
-
           converge_by("join workstation workgroup #{new_resource.workgroup_name}") do
-            ps_run = powershell_out(cmd)
+            ps_run = powershell_out(join_command)
             raise "Failed to join the workgroup #{new_resource.workgroup_name}: #{ps_run.stderr}}" if ps_run.error?
 
             unless new_resource.reboot == :never
               reboot "Reboot to join workgroup #{new_resource.workgroup_name}" do
-                action clarify_reboot(new_resource.reboot)
+                action new_resource.reboot
                 reason "Reboot to join workgroup #{new_resource.workgroup_name}"
               end
             end
@@ -77,19 +89,18 @@ class Chef
       end
 
       action_class do
-        # This resource historically took `:immediate` and `:delayed` as arguments to the reboot property but then
-        # tried to shove that straight to the `reboot` resource which objected strenuously
-        def clarify_reboot(reboot_action)
-          case reboot_action
-          when :immediate
-            :reboot_now
-          when :delayed
-            :request_reboot
-          else
-            reboot_action
-          end
+        # return [String] the appropriate PS command to joint the workgroup
+        def join_command
+          cmd = ""
+          cmd << "$pswd = ConvertTo-SecureString \'#{new_resource.password}\' -AsPlainText -Force;" if new_resource.password
+          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.user}\",$pswd);" if new_resource.password
+          cmd << "Add-Computer -WorkgroupName #{new_resource.workgroup_name}"
+          cmd << " -Credential $credential" if new_resource.password
+          cmd << " -Force"
+          cmd
         end
 
+        # @return [Boolean] is the node a member of the workgroup specified in the resource
         def workgroup_member?
           node_workgroup = powershell_out!("(Get-WmiObject -Class Win32_ComputerSystem).Workgroup")
           raise "Failed to determine if system already a member of workgroup #{new_resource.workgroup_name}" if node_workgroup.error?

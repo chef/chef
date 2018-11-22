@@ -27,16 +27,16 @@ class Chef
       introduced "14.0"
 
       property :hostname, String,
-               description: "Used to specify the hostname if it is different than the resource's name.",
+               description: "An optional property to set the hostname if it differs from the resource block's name.",
                name_property: true
 
       property :compile_time, [ TrueClass, FalseClass ],
                description: "Determines whether or not the resource shoul be run at compile time.",
-               default: true
+               default: true, desired_state: false
 
       property :ipaddress, String,
                description: "The IP address to use when configuring the hosts file.",
-               default: lazy { node["ipaddress"] }
+               default: lazy { node["ipaddress"] }, default_description: "The node's IP address as determined by Ohai."
 
       property :aliases, [ Array, nil ],
                description: "An array of hostname aliases to use when configuring the hosts file.",

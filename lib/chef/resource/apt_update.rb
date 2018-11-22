@@ -29,6 +29,7 @@ class Chef
 
       # allow bare apt_update with no name
       property :name, String, default: ""
+
       property :frequency, Integer,
                 description: "Determines how frequently (in seconds) APT repository updates are made. Use this property when the :periodic action is specified.",
                 default: 86_400
