@@ -24,6 +24,8 @@ class Chef
   class Provider
     class Package
       class Homebrew < Chef::Provider::Package
+        allow_nils
+        use_multipackage_api
 
         provides :package, os: "darwin", override: true
         provides :homebrew_package
@@ -31,22 +33,29 @@ class Chef
         include Chef::Mixin::HomebrewUser
 
         def load_current_resource
-          self.current_resource = Chef::Resource::HomebrewPackage.new(new_resource.name)
+          @current_resource = Chef::Resource::HomebrewPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
-          current_resource.version(current_installed_version)
+          current_resource.version(get_current_versions)
           logger.trace("#{new_resource} current version is #{current_resource.version}") if current_resource.version
-
-          @candidate_version = candidate_version
-
-          logger.trace("#{new_resource} candidate version is #{@candidate_version}") if @candidate_version
 
           current_resource
         end
 
-        def install_package(name, version)
-          unless current_resource.version == version
-            brew("install", options, name)
+        def candidate_version
+          package_name_array.map do |package_name|
+            available_version(package_name)
           end
+        end
+
+        def get_current_versions
+          package_name_array.map do |package_name|
+            installed_version(package_name)
+          end
+        end
+
+        def install_package(names, versions)
+          packages = names.select { |x| x unless x.nil? }
+          brew("install", options, packages)
         end
 
         def upgrade_package(name, version)
@@ -59,17 +68,15 @@ class Chef
           end
         end
 
-        def remove_package(name, version)
-          if current_resource.version
-            brew("uninstall", options, name)
-          end
+        def remove_package(names, versions)
+          packages = names.select { |x| x unless x.nil? }
+          brew("uninstall", options, packages)
         end
 
         # Homebrew doesn't really have a notion of purging, do a "force remove"
-        def purge_package(name, version)
-          if current_resource.version
-            brew("uninstall", "--force", options, name)
-          end
+        def purge_package(names, versions)
+          packages = names.select { |x| x unless x.nil? }
+          brew("uninstall", "--force", options, packages)
         end
 
         def brew(*args)
@@ -83,9 +90,15 @@ class Chef
         # information, but that is not any more robust than using the
         # command-line interface that returns the same thing.
         #
-        # https://github.com/Homebrew/homebrew/wiki/Querying-Brew
+        # https://docs.brew.sh/Querying-Brew
+        #
+        # @returns [Hash] a hash of package information where the key is the package name
         def brew_info
-          @brew_info ||= Chef::JSONCompat.from_json(brew("info", "--json=v1", new_resource.package_name)).first
+          @brew_info ||= begin
+            command_array = ["info", "--json=v1"].concat new_resource.package_name
+            # convert the array of hashes into a hash where the key is the package name
+            Hash[Chef::JSONCompat.from_json(brew(command_array)).collect { |pkg| [pkg["name"], pkg] }]
+          end
         end
 
         # Some packages (formula) are "keg only" and aren't linked,
@@ -94,15 +107,18 @@ class Chef
         # "current" (as in latest). Otherwise, we will use the version
         # that brew thinks is linked as the current version.
         #
-        def current_installed_version
-          if brew_info["keg_only"]
-            if brew_info["installed"].empty?
+        # @param [String] package name
+        #
+        # @returns [String] package version
+        def installed_version(i)
+          if brew_info[i]["keg_only"]
+            if brew_info[i]["installed"].empty?
               nil
             else
-              brew_info["installed"].last["version"]
+              brew_info[i]["installed"].last["version"]
             end
           else
-            brew_info["linked_keg"]
+            brew_info[i]["linked_keg"]
           end
         end
 
@@ -115,8 +131,12 @@ class Chef
         # forward project.
         #
         # https://github.com/Homebrew/homebrew/wiki/Acceptable-Formulae#stable-versions
-        def candidate_version
-          brew_info["versions"]["stable"]
+        #
+        # @param [String] package name
+        #
+        # @returns [String] package version
+        def available_version(i)
+          brew_info[i]["versions"]["stable"]
         end
 
         private
