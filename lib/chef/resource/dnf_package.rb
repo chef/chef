@@ -67,13 +67,6 @@ class Chef
                            { after: true, before: false }
                          end
                        }
-
-      def allow_downgrade(arg = nil)
-        if !arg.nil?
-          Chef.deprecated(:dnf_package_allow_downgrade, "the allow_downgrade property on the dnf_package provider is not used, DNF supports downgrades by default.")
-        end
-        false
-      end
     end
   end
 end
