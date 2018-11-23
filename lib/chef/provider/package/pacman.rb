@@ -27,29 +27,12 @@ class Chef
         provides :package, platform: "arch"
         provides :pacman_package
 
+        use_multipackage_api
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
-
-          logger.trace("#{new_resource} checking pacman for #{new_resource.package_name}")
-          status = shell_out("pacman", "-Qi", new_resource.package_name)
-          status.stdout.each_line do |line|
-            case line
-            when /^Version(\s?)*: (.+)$/
-              logger.trace("#{new_resource} current version is #{$2}")
-              current_resource.version($2)
-            end
-          end
-
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
-          end
-
-          current_resource
-        end
-
-        def candidate_version
-          return @candidate_version if @candidate_version
+          current_resource.version = []
 
           repos = %w{extra core community}
 
@@ -58,31 +41,37 @@ class Chef
             repos = pacman.scan(/\[(.+)\]/).flatten
           end
 
-          package_repos = repos.map { |r| Regexp.escape(r) }.join("|")
-
+          repos = repos.map { |r| Regexp.escape(r) }.join("|")
           status = shell_out("pacman", "-Sl")
-          status.stdout.each_line do |line|
-            case line
-            when /^(#{package_repos}) #{Regexp.escape(new_resource.package_name)} (.+)$/
-              # $2 contains a string like "4.4.0-1" or "3.10-4 [installed]"
-              # simply split by space and use first token
-              @candidate_version = $2.split(" ").first
-            end
-          end
 
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
           end
 
-          unless @candidate_version
-            raise Chef::Exceptions::Package, "pacman does not have a version of package #{new_resource.package_name}"
+          pkg_db_data = status.stdout
+          @candidate_version = []
+          package_name_array.each do |pkg|
+            pkg_data = pkg_db_data.match(/(#{repos}) #{pkg} (?<candidate>.*?-[0-9]+)(?<installed> \[.*?( (?<current>.*?-[0-9]+))?\])?\n/m)
+            unless pkg_data
+              raise Chef::Exceptions::Package, "pacman does not have a version of package #{pkg}"
+            end
+            @candidate_version << pkg_data[:candidate]
+            if pkg_data[:installed]
+              current_resource.version << (pkg_data[:current] || pkg_data[:candidate])
+            else
+              current_resource.version << nil
+            end
           end
 
+          current_resource
+        end
+
+        def candidate_version
           @candidate_version
         end
 
         def install_package(name, version)
-          shell_out!( "pacman", "--sync", "--noconfirm", "--noprogressbar", options, name)
+          shell_out!("pacman", "--sync", "--noconfirm", "--noprogressbar", options, *name)
         end
 
         def upgrade_package(name, version)
@@ -90,7 +79,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          shell_out!( "pacman", "--remove", "--noconfirm", "--noprogressbar", options, name )
+          shell_out!("pacman", "--remove", "--noconfirm", "--noprogressbar", options, *name)
         end
 
         def purge_package(name, version)
