@@ -8,15 +8,15 @@ Chef 15 release notes will be added here as development progresses.
 
 ### Chef packages now remove /opt/chef before installation
 
-The intent of this change is that on upgrading packages the /opt/chef directory is removed of any stray `chef_gem` installed gem versions and other
+The intent of this change is that on upgrading packages the /opt/chef directory is removed of any `chef_gem` installed gem versions and other
 modifications to /opt/chef that might be preserved and cause issues on upgrades.  Due to technical details with rpm script execution order
 the way this was implemented was that a pre-installation script wipes /opt/chef before every install (done consistently this way on
 every package manager).
 
-This will not affect any user who is properly managing customizations to /opt/chef via chef recipes itself since they will be installed by
+Users who are properly managing customizations to /opt/chef through Chef recipes won't be affected, because their customizations will still be installed by
 the new chef-client package.
 
-The package installation emits a message that /opt/chef is being removed to inform the user that this action is taking place.
+You'll see a warning that the /opt/chef directory will be removed during the package installation process.
 
 ### Package provider allow_downgrade is now true by default
 
