@@ -1,6 +1,6 @@
 #--
 # Author:: Lamont Granquist <lamont@chef.io>
-# Copyright:: Copyright 2010-2017, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,8 @@
 class Chef
   module Mixin
     module Which
+      require "chef/chef_class"
+
       def which(*cmds, extra_path: nil, &block)
         where(*cmds, extra_path: extra_path, &block).first || false
       end
