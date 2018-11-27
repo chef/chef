@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.89 -->
-## [v15.0.89](https://github.com/chef/chef/tree/v15.0.89) (2018-11-27)
+<!-- latest_release 15.0.90 -->
+## [v15.0.90](https://github.com/chef/chef/tree/v15.0.90) (2018-11-27)
 
 #### Merged Pull Requests
-- Added windows support for the timezone resource [#7806](https://github.com/chef/chef/pull/7806) ([username-is-already-taken2](https://github.com/username-is-already-taken2))
+- gem_package provider supports --no-document and rubygems 3.x [#7986](https://github.com/chef/chef/pull/7986) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- gem_package provider supports --no-document and rubygems 3.x [#7986](https://github.com/chef/chef/pull/7986) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.90 -->
 - Added windows support for the timezone resource [#7806](https://github.com/chef/chef/pull/7806) ([username-is-already-taken2](https://github.com/username-is-already-taken2)) <!-- 15.0.89 -->
 - cab_package: Chef should fail when specified package is not applicable to the image [#7951](https://github.com/chef/chef/pull/7951) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.88 -->
 - Support apt-get --allow-downgrades [#7963](https://github.com/chef/chef/pull/7963) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.87 -->
