@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: a946ff969ae335b163a1766901ccd960ad6dc4eb
+  revision: 2cde15d109a992903ef5d2d63837d579e59ae233
   branch: master
   specs:
-    ohai (15.0.7)
+    ohai (15.0.10)
       chef-config (>= 12.8, < 16)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -27,10 +27,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (15.0.87)
+    chef (15.0.88)
       addressable
       bundler (>= 1.10)
-      chef-config (= 15.0.87)
+      chef-config (= 15.0.88)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -57,10 +57,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (15.0.87-universal-mingw32)
+    chef (15.0.88-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 15.0.87)
+      chef-config (= 15.0.88)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -104,7 +104,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (15.0.87)
+    chef-config (15.0.88)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
