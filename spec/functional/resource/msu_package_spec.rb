@@ -76,6 +76,20 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
     end
   end
 
+  context "when an msu package is not applicable to the image." do
+    def package_name
+      "Package_for_KB4019990"
+    end
+
+    def package_source
+      "http://download.windowsupdate.com/c/msdownload/update/software/updt/2017/05/windows8-rt-kb4019990-x64_a77f4e3e1f2d47205824763e7121bb11979c2716.msu"
+    end
+
+    it "raises error while installing" do
+      expect { subject.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /The specified package is not applicable to this image./)
+    end
+  end
+
   def remove_package
     pkg_to_remove = Chef::Resource::MsuPackage.new(package_name, run_context)
     pkg_to_remove.source = package_source
