@@ -95,6 +95,12 @@ class Chef
                 shell_out!("sudo systemsetup -settimezone #{new_resource.timezone}")
               end
             end
+          when "windows"
+            unless current_windows_tz.casecmp?(new_resource.timezone)
+              converge_by("setting timezone to \"#{new_resource.timezone}\"") do
+                shell_out!("tzutil /s \"#{new_resource.timezone}\"")
+              end
+            end
           end
         end
       end
@@ -111,6 +117,16 @@ class Chef
           else
             /Time Zone: (.*)/.match(tz_shellout.stdout)[1]
           end
+        end
+
+        # detect the current timezone on windows hosts
+        #
+        # @since 14.7
+        # @return [String] timezone id
+        def current_windows_tz
+          tz_shellout = shell_out("tzutil /g")
+          raise "There was an error running the tzutil command" if tz_shellout.exitstatus == 1
+          tz_shellout.stdout.strip
         end
       end
     end
