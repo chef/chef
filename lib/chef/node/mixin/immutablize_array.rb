@@ -140,7 +140,7 @@ class Chef
           :delete_at,
           :delete_if,
           :fill,
-          :filter,
+          :filter!,
           :flatten!,
           :insert,
           :keep_if,
