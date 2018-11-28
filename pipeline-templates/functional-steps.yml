@@ -7,5 +7,5 @@ steps:
     export GEM_HOME=$HOME/.gem
     sudo env PATH=$PATH gem install bundler --no-ri --no-doc
     sudo env PATH=$PATH bundle install --retry=3 --jobs=4
-    sudo env PATH=$PATH bundle exec rake spec:unit
-  displayName: 'bundle exec rake spec:unit'
+    sudo env PATH=$PATH bundle exec rake spec:functional
+  displayName: 'bundle exec rake spec:functional'
