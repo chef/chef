@@ -5,6 +5,9 @@ jobs:
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
+  - task: UseRubyVersion@0
+    inputs:
+      versionSpec: '>= 2.5'
   - script: gem install chefstyle
     displayName: 'Install Chefstyle'
   - script: rake style
