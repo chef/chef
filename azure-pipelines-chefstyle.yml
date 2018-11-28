@@ -1,0 +1,14 @@
+jobs:
+- job: Chefstyle
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - task: UseRubyVersion@0
+    inputs:
+      versionSpec: '>= 2.5'
+  - script: |
+      gem install rspec --no-doc --no-ri
+      gem install chefstyle --no-doc --no-ri
+    displayName: 'Install Chefstyle'
+  - script: chefstyle --fail-fast
+    displayName: 'Execute Chefstyle'
