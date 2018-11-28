@@ -15,11 +15,11 @@ jobs:
   - script: chefstyle --fail-fast
     displayName: 'Execute Chefstyle'
 
-# - job: Linux
-#   pool:
-#     vmImage: 'Ubuntu 16.04'
-#   steps:
-#   - template: pipeline-templates/unit-steps.yml
+- job: Linux
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - template: pipeline-templates/unit-steps.yml
 
 # - job: macOS
 #   pool:
