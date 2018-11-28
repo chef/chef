@@ -1,5 +1,71 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# UNRELEASED
+
+## Updated Resources
+
+### apt_package
+
+The apt_package resource now supports using the `allow_downgrade` property to enable downgrading of packages on a node in order to meet a specified version. Thank you [@whiteley](https://github.com/whiteley) for requesting this enhancement.
+
+### apt_repository
+
+An issue was resolved in the apt_repository resource that caused the resource to fail when importing GPG keys on newer Debian releases. Thank you [@EugenMayer](https://github.com/EugenMayer) for this fix.
+
+### gem_package
+
+gem_package now supports installing gems into Ruby 2.6 or later installations.
+
+### windows_ad_join
+
+windows_ad_join now uses the UPN format for usernames, which prevents some failures to authenticate to the domain.
+
+### windows_certificate
+
+An issue was resolved in the :acl_add action of the windows_certificate resource, which caused the resource to fail. Thank you [@shoekstra](htts://github.com/shoekstra) for reporting this issue.
+
+### windows_feature
+
+The windows_feature resource now allows for the installation of DISM features that have been fully removed from a system. Thank you [@zanecodes](https://github.com/zanecodes) for requesting this enhancement.
+
+### windows_share
+
+Multiple issues were resolved in windows_share, which caused the resource to either fail or update the share state on every Chef Client run. Thank you [@chadmccune](https://github.com/chadmccune) for reporting several of these issues and [@derekgroh](https://github.com/derekgroh) for one of the fixes.
+
+### windows_task
+
+A regression was resolved that prevented ChefSpec from testing the windows_task resource in Chef Client 14.7. Thank you [@jjustice6](https://github.com/jjustice6) for reporting this issue.
+
+## Ohai 14.8
+
+### openSUSE 15
+
+Ohai now properly detects the openSUSE 15.X platform.
+
+### Hyper-V Hypervisor Detection
+
+Detection of Linux guests running on Hyper-V has been improved. In addition, Linux guests on Hyper-V hypervisors will also now detect their hypervisor's hostname.
+
+Example `node['virtualization']` data:
+```json
+{
+  "systems": {
+    "hyperv": "guest"
+  },
+  "system": "hyperv",
+  "role": "guest",
+  "hypervisor_host": "hyper_v.example.com"
+}
+```
+
+## Security Updates
+
+### OpenSSL
+
+OpenSSL has been updated to 1.0.2q in order to resolve:
+- Microarchitecture timing vulnerability in ECC scalar multiplication ([CVE-2018-5407](https://nvd.nist.gov/vuln/detail/CVE-2018-5407))
+- Timing vulnerability in DSA signature generation ([CVE-2018-0734](https://nvd.nist.gov/vuln/detail/CVE-2018-0734))
+
 # Chef Client Release Notes 14.7:
 
 ## New Resources
