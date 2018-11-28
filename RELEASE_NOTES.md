@@ -44,7 +44,7 @@ Ohai now properly detects the openSUSE 15.X platform.
 
 ### Hyper-V Hypervisor Detection
 
-Detection of Linux guests running on Hyper-V has been improved. In addition Linux guests on Hyper-V hypervisors will also now detect their hypervisor's hostname.
+Detection of Linux guests running on Hyper-V has been improved. In addition, Linux guests on Hyper-V hypervisors will also now detect their hypervisor's hostname.
 
 Example `node['virtualization']` data:
 ```json
