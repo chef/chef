@@ -10,6 +10,7 @@ jobs:
       versionSpec: '>= 2.5'
   - script: |
       gem install bundler --no-doc --no-ri
+      gem install rspec --no-doc --no-ri
       gem install chefstyle --no-doc --no-ri
     displayName: 'Install Chefstyle'
   - script: rake style
