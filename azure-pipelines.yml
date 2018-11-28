@@ -1,5 +1,4 @@
 # azure pipelines jobs
-
 jobs:
 - job: Chefstyle
   pool:
@@ -13,8 +12,8 @@ jobs:
       gem install rspec --no-doc --no-ri
       gem install chefstyle --no-doc --no-ri
     displayName: 'Install Chefstyle'
-  - script: rake style
-    displayName: 'rake style'
+  - script: chefstyle --fail-fast
+    displayName: 'Execute Chefstyle'
 
 - job: Linux
   pool:
