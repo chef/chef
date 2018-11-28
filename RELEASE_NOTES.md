@@ -10,7 +10,7 @@ The apt_package resource now supports using the `allow_downgrade` property to en
 
 ### apt_repository
 
-An issue was resolve in the apt_repository resource that caused the resource to fail when importing GPG keys on newer Debian releases. Thank you [@EugenMayer](https://github.com/EugenMayer) for this fix.
+An issue was resolved in the apt_repository resource that caused the resource to fail when importing GPG keys on newer Debian releases. Thank you [@EugenMayer](https://github.com/EugenMayer) for this fix.
 
 ### gem_package
 
