@@ -5,11 +5,10 @@ steps:
     addToPath: true
 - script: |
     export GEM_HOME=$HOME/.gem
-    sudo gem install bundler --no-ri --no-doc
-    sudo bundle install --retry=3 --jobs=4
+    sudo /opt/hostedtoolcache/Ruby/2.5.1/x64/bin/gem install bundler --no-ri --no-doc
+    sudo /opt/hostedtoolcache/Ruby/2.5.1/x64/bin/bundle install --retry=3 --jobs=4
   displayName: 'bundle install'
-
 - script: |
     export GEM_HOME=$HOME/.gem
-    sudo bundle exec rake spec:unit
+    sudo /opt/hostedtoolcache/Ruby/2.5.1/x64/bin/bundle exec rake spec:unit
   displayName: 'bundle exec rake'
