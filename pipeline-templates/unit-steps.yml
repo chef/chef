@@ -5,10 +5,7 @@ steps:
     addToPath: true
 - script: |
     export GEM_HOME=$HOME/.gem
-    sudo -E $(which gem) install bundler --no-ri --no-doc
-    sudo -E $(which bundle) install --retry=3 --jobs=4
-  displayName: 'bundle install'
-- script: |
-    export GEM_HOME=$HOME/.gem
-    sudo -E $(which bundle) exec rake spec:unit
+    gem install bundler --no-ri --no-doc
+    bundle install --retry=3 --jobs=4
+    sudo -E bundle exec rake spec:unit
   displayName: 'bundle exec rake'
