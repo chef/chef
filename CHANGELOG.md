@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.92 -->
-## [v15.0.92](https://github.com/chef/chef/tree/v15.0.92) (2018-11-28)
+<!-- latest_release 15.0.93 -->
+## [v15.0.93](https://github.com/chef/chef/tree/v15.0.93) (2018-11-28)
 
 #### Merged Pull Requests
-- Make sure which mixin requires chef_class [#7989](https://github.com/chef/chef/pull/7989) ([tas50](https://github.com/tas50))
+- better kithen ohai pinning [#7998](https://github.com/chef/chef/pull/7998) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- better kithen ohai pinning [#7998](https://github.com/chef/chef/pull/7998) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.93 -->
 - Make sure which mixin requires chef_class [#7989](https://github.com/chef/chef/pull/7989) ([tas50](https://github.com/tas50)) <!-- 15.0.92 -->
 - pull the ohai version from the bundle not from master [#7987](https://github.com/chef/chef/pull/7987) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.91 -->
 - gem_package provider supports --no-document and rubygems 3.x [#7986](https://github.com/chef/chef/pull/7986) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.90 -->
