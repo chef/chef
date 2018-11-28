@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.8.6 -->
-## [v14.8.6](https://github.com/chef/chef/tree/v14.8.6) (2018-11-28)
+<!-- latest_release 14.8.7 -->
+## [v14.8.7](https://github.com/chef/chef/tree/v14.8.7) (2018-11-28)
 
 #### Merged Pull Requests
-- windows_share: Avoid ConvertTo-Json errors on Windows 2012r2 with powershell 4 [#7991](https://github.com/chef/chef/pull/7991) ([tas50](https://github.com/tas50))
+- apt_package: Support downgrades for apt packages [#7993](https://github.com/chef/chef/pull/7993) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- apt_package: Support downgrades for apt packages [#7993](https://github.com/chef/chef/pull/7993) ([tas50](https://github.com/tas50)) <!-- 14.8.7 -->
 - windows_share: Avoid ConvertTo-Json errors on Windows 2012r2 with powershell 4 [#7991](https://github.com/chef/chef/pull/7991) ([tas50](https://github.com/tas50)) <!-- 14.8.6 -->
 - gem_package: support the --no-document flag needed for Ruby 2.6 / rubygems 3 [#7994](https://github.com/chef/chef/pull/7994) ([tas50](https://github.com/tas50)) <!-- 14.8.5 -->
 - cab_package: Fail if the cab does not apply to the current windows image [#7992](https://github.com/chef/chef/pull/7992) ([tas50](https://github.com/tas50)) <!-- 14.8.4 -->
