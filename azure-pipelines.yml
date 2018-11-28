@@ -1,6 +1,15 @@
 # azure pipelines jobs
 
 jobs:
+- job: Chefstyle
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - script: gem install chefstyle
+    displayName: 'Install Chefstyle'
+  - script: rake style
+    displayName: 'rake style'
+
 - job: Linux
   pool:
     vmImage: 'Ubuntu 16.04'
