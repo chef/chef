@@ -5,7 +5,7 @@ steps:
     addToPath: true
 - script: |
     export GEM_HOME=$HOME/.gem
-    gem install bundler --no-ri --no-doc
-    bundle install --retry=3 --jobs=4
-    sudo -E bundle exec rake spec:unit
+    sudo env PATH=$PATH -E gem install bundler --no-ri --no-doc
+    sudo env PATH=$PATH -E bundle install --retry=3 --jobs=4
+    sudo env PATH=$PATH -E bundle exec rake spec:unit
   displayName: 'bundle exec rake'
