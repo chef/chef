@@ -113,11 +113,11 @@ The new behavior uses a Mash so that the attributes will work as expected.
 
 ### Ohai's system_profile plugin for macOS removed
 
-The system_profile plugin no longer ships in Ohai. This plugin did not correctly return data on modern Mac systems. Additionally the same data is provided by the hardware plugin, which has a format that is simpler to consume. Removing this plugin speeds up Ohai (and Chef) by ~3 seconds and greatly reduces the size of the node object on the Chef server.
+We removed the system_profile plugin because it incorrectly returned data on modern Mac systems. If you relied on this plugin you'll want to update recipes to use `node['hardware']` instead, which correctly returns the same data, but in a more easily consumed format. Removing this plugin speeds up Ohai (and Chef) by ~3 seconds and dramatically reduces the size of the node object on the Chef server.
 
 ### Ohai's Ohai::Util::Win32::GroupHelper class has been removed
 
-The Ohai::Util::Win32::GroupHelper helper class has been removed from Ohai. This class was only meant to be used internally within several Windows plugins, but it was never marked private in the codebase. If any Ohai plugins rely on this helper class, you will need to update your plugins for Ohai 15.
+We removed the Ohai::Util::Win32::GroupHelper helper class from Ohai. This class was intended for use internally in several Windows plugins, but it was never marked private in the codebase. If any of your Ohai plugins rely on this helper class, you will need to update your plugins for Ohai 15.
 
 # Chef Client Release Notes 14.7:
 
