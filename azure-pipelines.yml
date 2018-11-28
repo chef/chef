@@ -8,7 +8,9 @@ jobs:
   - task: UseRubyVersion@0
     inputs:
       versionSpec: '>= 2.5'
-  - script: gem install chefstyle
+  - script: |
+      gem install bundler --no-doc --no-ri
+      gem install chefstyle --no-doc --no-ri
     displayName: 'Install Chefstyle'
   - script: rake style
     displayName: 'rake style'
