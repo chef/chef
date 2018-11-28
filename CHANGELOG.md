@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.8.3 -->
-## [v14.8.3](https://github.com/chef/chef/tree/v14.8.3) (2018-11-22)
+<!-- latest_release 14.8.4 -->
+## [v14.8.4](https://github.com/chef/chef/tree/v14.8.4) (2018-11-28)
 
 #### Merged Pull Requests
-- Update to openssl 1.0.2q [#7976](https://github.com/chef/chef/pull/7976) ([tas50](https://github.com/tas50))
+- cab_package: Fail if the cab does not apply to the current windows image [#7992](https://github.com/chef/chef/pull/7992) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- cab_package: Fail if the cab does not apply to the current windows image [#7992](https://github.com/chef/chef/pull/7992) ([tas50](https://github.com/tas50)) <!-- 14.8.4 -->
 - Update to openssl 1.0.2q [#7976](https://github.com/chef/chef/pull/7976) ([tas50](https://github.com/tas50)) <!-- 14.8.3 -->
 - Chef 14: removed features are also available for installation in windows_feature_dism [#7970](https://github.com/chef/chef/pull/7970) ([tas50](https://github.com/tas50)) <!-- 14.8.2 -->
 - Chef 14: windows_share: Fix idempotency by removing the &quot;everyone&quot; access [#7973](https://github.com/chef/chef/pull/7973) ([tas50](https://github.com/tas50)) <!-- 14.8.1 -->
