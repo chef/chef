@@ -1,4 +1,5 @@
 # azure pipelines jobs
+name: Chefstyle
 jobs:
 - job: Chefstyle
   pool:
@@ -8,27 +9,26 @@ jobs:
     inputs:
       versionSpec: '>= 2.5'
   - script: |
-      gem install bundler --no-doc --no-ri
       gem install rspec --no-doc --no-ri
       gem install chefstyle --no-doc --no-ri
     displayName: 'Install Chefstyle'
   - script: chefstyle --fail-fast
     displayName: 'Execute Chefstyle'
 
-- job: Linux
-  pool:
-    vmImage: 'Ubuntu 16.04'
-  steps:
-  - template: pipeline-templates/unit-steps.yml
+# - job: Linux
+#   pool:
+#     vmImage: 'Ubuntu 16.04'
+#   steps:
+#   - template: pipeline-templates/unit-steps.yml
 
-- job: macOS
-  pool:
-    vmImage: 'macOS-10.13'
-  steps:
-  - template: pipeline-templates/unit-steps.yml
+# - job: macOS
+#   pool:
+#     vmImage: 'macOS-10.13'
+#   steps:
+#   - template: pipeline-templates/unit-steps.yml
 
-- job: WindowsServer
-  pool:
-    vmImage: 'vs2017-win2016'
-  steps:
-  - template: pipeline-templates/unit-steps-windows.yml
+# - job: WindowsServer
+#   pool:
+#     vmImage: 'vs2017-win2016'
+#   steps:
+#   - template: pipeline-templates/unit-steps-windows.yml
