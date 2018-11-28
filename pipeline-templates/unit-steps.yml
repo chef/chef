@@ -2,10 +2,10 @@ steps:
 - task: UseRubyVersion@0
   inputs:
     versionSpec: '>= 2.5'
-
+    addToPath: true
 - script: |
-    sudo gem install bundler --no-ri --no-doc
-    sudo bundle install --retry=3 --jobs=4
+    gem install bundler --no-ri --no-doc
+    bundle install --retry=3 --jobs=4
   displayName: 'bundle install'
 
 - script: sudo bundle exec rake spec:unit
