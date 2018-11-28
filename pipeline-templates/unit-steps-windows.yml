@@ -8,5 +8,5 @@ steps:
     bundle install --retry=3 --jobs=4
   displayName: 'bundle install'
 
-- script: sudo bundle exec rake spec:unit
+- script: bundle exec rake spec:unit
   displayName: 'bundle exec rake'
