@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, 2010-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2016, 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,42 +49,44 @@ class Chef
 
           DEFAULT_UNINSTALLER_OPTS = { ignore: true, executables: true }.freeze
 
-          ##
           # The paths where rubygems should search for installed gems.
           # Implemented by subclasses.
           def gem_paths
             raise NotImplementedError
           end
 
-          ##
           # A rubygems source index containing the list of gemspecs for all
           # available gems in the gem installation.
           # Implemented by subclasses
-          # === Returns
-          # Gem::SourceIndex
+          #
+          # @return [Gem::SourceIndex]
+          #
           def gem_source_index
             raise NotImplementedError
           end
 
-          ##
           # A rubygems specification object containing the list of gemspecs for all
           # available gems in the gem installation.
           # Implemented by subclasses
           # For rubygems >= 1.8.0
-          # === Returns
-          # Gem::Specification
+          #
+          # @return [Gem::Specification]
+          #
           def gem_specification
             raise NotImplementedError
           end
 
-          ##
+          def rubygems_version
+            raise NotImplementedError
+          end
+
           # Lists the installed versions of +gem_name+, constrained by the
           # version spec in +gem_dep+
-          # === Arguments
-          # Gem::Dependency   +gem_dep+ is a Gem::Dependency object, its version
-          #                   specification constrains which gems are returned.
-          # === Returns
-          # [Gem::Specification]  an array of Gem::Specification objects
+          #
+          # @param gem_dep [Gem::Dependency] the version specification that constrains
+          #   which gems are used.
+          # @return [Array<Gem::Specification>]  an array of Gem::Specification objects
+          #
           def installed_versions(gem_dep)
             rubygems_version = Gem::Version.new(Gem::VERSION)
             if rubygems_version >= Gem::Version.new("2.7")
@@ -266,6 +268,10 @@ class Chef
             Gem::Specification
           end
 
+          def rubygems_version
+            Gem::VERSION
+          end
+
           def candidate_version_from_remote(gem_dependency, *sources)
             with_gem_sources(*sources) do
               find_newest_remote_version(gem_dependency, *sources)
@@ -291,6 +297,10 @@ class Chef
 
           def initialize(gem_binary_location)
             @gem_binary_location = gem_binary_location
+          end
+
+          def rubygems_version
+            @rubygems_version ||= shell_out!("#{@gem_binary_location} --version").stdout.chomp
           end
 
           def gem_paths
@@ -547,9 +557,9 @@ class Chef
           end
           src_str = src.empty? ? "" : " #{src.join(" ")}"
           if !version.nil? && !version.empty?
-            shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src_str}#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} install #{name} -q #{rdoc_string} -v \"#{version}\"#{src_str}#{opts}", env: nil)
           else
-            shell_out!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src_str}#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} install \"#{name}\" -q #{rdoc_string} #{src_str}#{opts}", env: nil)
           end
         end
 
@@ -584,6 +594,18 @@ class Chef
         end
 
         private
+
+        def rdoc_string
+          if needs_nodocument?
+            "--no-document"
+          else
+            "--no-rdoc --no-ri"
+          end
+        end
+
+        def needs_nodocument?
+          Gem::Requirement.new(">= 3.0.0.beta1").satisfied_by?(Gem::Version.new(gem_env.rubygems_version))
+        end
 
         def opts
           expand_options(new_resource.options)
