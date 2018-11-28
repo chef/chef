@@ -1,20 +1,20 @@
-# Ruby
-# Package your Ruby project.
-# Add steps that install rails, analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/ruby
+# azure pipelines jobs
 
-pool:
-  vmImage: 'Ubuntu 16.04'
+jobs:
+- job: Linux
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - template: pipeline-templates/unit-steps.yml
 
-steps:
-- task: UseRubyVersion@0
-  inputs:
-    versionSpec: '>= 2.5'
+- job: macOS
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - template: pipeline-templates/unit-steps.yml
 
-- script: |
-    gem install bundler
-    bundle install --retry=3 --jobs=4
-  displayName: 'bundle install'
-
-- script: bundle exec rake
-  displayName: 'bundle exec rake'
+- job: WindowsServer
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - template: pipeline-templates/unit-steps.yml
