@@ -4,9 +4,12 @@ steps:
     versionSpec: '>= 2.5'
     addToPath: true
 - script: |
-    gem install bundler --no-ri --no-doc
-    bundle install --retry=3 --jobs=4
+    export GEM_HOME=$HOME/.gem
+    sudo gem install bundler --no-ri --no-doc
+    sudo bundle install --retry=3 --jobs=4
   displayName: 'bundle install'
 
-- script: sudo bundle exec rake spec:unit
+- script: |
+    export GEM_HOME=$HOME/.gem
+    sudo bundle exec rake spec:unit
   displayName: 'bundle exec rake'
