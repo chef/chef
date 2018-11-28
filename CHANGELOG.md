@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.8.4 -->
-## [v14.8.4](https://github.com/chef/chef/tree/v14.8.4) (2018-11-28)
+<!-- latest_release 14.8.5 -->
+## [v14.8.5](https://github.com/chef/chef/tree/v14.8.5) (2018-11-28)
 
 #### Merged Pull Requests
-- cab_package: Fail if the cab does not apply to the current windows image [#7992](https://github.com/chef/chef/pull/7992) ([tas50](https://github.com/tas50))
+- gem_package: support the --no-document flag needed for Ruby 2.6 / rubygems 3 [#7994](https://github.com/chef/chef/pull/7994) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- gem_package: support the --no-document flag needed for Ruby 2.6 / rubygems 3 [#7994](https://github.com/chef/chef/pull/7994) ([tas50](https://github.com/tas50)) <!-- 14.8.5 -->
 - cab_package: Fail if the cab does not apply to the current windows image [#7992](https://github.com/chef/chef/pull/7992) ([tas50](https://github.com/tas50)) <!-- 14.8.4 -->
 - Update to openssl 1.0.2q [#7976](https://github.com/chef/chef/pull/7976) ([tas50](https://github.com/tas50)) <!-- 14.8.3 -->
 - Chef 14: removed features are also available for installation in windows_feature_dism [#7970](https://github.com/chef/chef/pull/7970) ([tas50](https://github.com/tas50)) <!-- 14.8.2 -->
