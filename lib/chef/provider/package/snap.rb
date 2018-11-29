@@ -245,8 +245,6 @@ class Chef
             SNAP_OPTION
           end
 
-          pp snap_options
-
           multipart_form_data = <<~SNAP_S
             Host:
             Content-Type: multipart/form-data; boundary=#{snap_name}
