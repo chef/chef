@@ -22,7 +22,6 @@ class Chef
   class Resource
     class SnapPackage < Chef::Resource::Package
       resource_name :snap_package
-      provides :package, platform_family: "debian"
 
       description "Use the snap_package resource to manage snap packages on Debian and Ubuntu platforms."
 
