@@ -26,10 +26,9 @@ class Chef
   class Provider
     class Package
       class Snap < Chef::Provider::Package
-        extend Chef::Mixin::ShellOut
-
         allow_nils
         use_multipackage_api
+        use_package_name_for_source
 
         provides :snap_package
 
@@ -127,8 +126,8 @@ class Chef
         # ToDo: Would prefer to use net/http over socket
         def call_snap_api(method, uri, post_data = nil?)
           request = "#{method} #{uri} HTTP/1.0\r\n" +
-              "Accept: application/json\r\n" +
-              "Content-Type: application/json\r\n"
+            "Accept: application/json\r\n" +
+            "Content-Type: application/json\r\n"
           if method == "POST"
             request.concat("Content-Length: #{post_data.bytesize}\r\n\r\n#{post_data}")
           end
@@ -161,7 +160,7 @@ class Chef
         def wait_for_completion(id)
           n = 0
           waiting = true
-          while waiting do
+          while waiting
             result = get_change_id(id)
             puts "STATUS: #{result["result"]["status"]}"
             case result["result"]["status"]
@@ -189,7 +188,7 @@ class Chef
         def get_snap_version_from_source(path)
           body = {
               "context-id" => "get_snap_version_from_source_#{path}",
-              "args" => ["info", path,]
+              "args" => ["info", path,],
           }.to_json
 
           # json = call_snap_api('POST', '/v2/snapctl', body)
@@ -240,29 +239,29 @@ class Chef
           snap_options = []
           options.each do |k, v|
             snap_option = <<~SNAP_OPTION
-  Content-Disposition: form-data; name="#{k}"
+                Content-Disposition: form-data; name="#{k}"
 
-#{v}
---#{snap_name}
+              #{v}
+              --#{snap_name}
             SNAP_OPTION
             snap_options.push(snap_option)
           end
 
           multipart_form_data = <<~SNAP_S
-  Host:
-Content-Type: multipart/form-data; boundary=#{snap_name}
-Content-Length: #{content_length}
+              Host:
+            Content-Type: multipart/form-data; boundary=#{snap_name}
+            Content-Length: #{content_length}
 
---#{snap_name}
-Content-Disposition: form-data; name="action"
+            --#{snap_name}
+            Content-Disposition: form-data; name="action"
 
-#{action}
---#{snap_name}
-#{snap_options.join("\n")}
-Content-Disposition: form-data; name="snap"; filename="#{path}"
+            #{action}
+            --#{snap_name}
+            #{snap_options.join("\n")}
+            Content-Disposition: form-data; name="snap"; filename="#{path}"
 
-<#{content_length} bytes of snap file data>
---#{snap_name}
+            <#{content_length} bytes of snap file data>
+            --#{snap_name}
           SNAP_S
           multipart_form_data
         end
