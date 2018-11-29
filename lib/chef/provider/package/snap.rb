@@ -236,19 +236,19 @@ class Chef
         #   @param path [String] Path to the package on disk
         #   @param content_length [Integer] byte size of the snap file
         def generate_multipart_form_data(snap_name, action, options, path, content_length)
-          snap_options = []
-          options.each do |k, v|
-            snap_option = <<~SNAP_OPTION
-                Content-Disposition: form-data; name="#{k}"
+          snap_options = options.map do |k, v|
+            <<~SNAP_OPTION
+              Content-Disposition: form-data; name="#{k}"
 
               #{v}
               --#{snap_name}
             SNAP_OPTION
-            snap_options.push(snap_option)
           end
 
+          pp snap_options
+
           multipart_form_data = <<~SNAP_S
-              Host:
+            Host:
             Content-Type: multipart/form-data; boundary=#{snap_name}
             Content-Length: #{content_length}
 
@@ -257,7 +257,7 @@ class Chef
 
             #{action}
             --#{snap_name}
-            #{snap_options.join("\n")}
+            #{snap_options.join("\n").chomp}
             Content-Disposition: form-data; name="snap"; filename="#{path}"
 
             <#{content_length} bytes of snap file data>

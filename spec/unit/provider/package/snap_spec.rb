@@ -1,5 +1,5 @@
 # Author:: S.Cavallo (smcavallo@hotmail.com)
-# Copyright 2014-2018, Chef Software, Inc. <legal@chef.io>
+# Copyright 2014-2018, Chef Software Inc. <legal@chef.io>
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -177,7 +177,7 @@ describe Chef::Provider::Package::Snap do
   describe "when calling async operations" do
 
     it "should should throw if the async response is an error" do
-      expect { provider.send(:get_id_from_async_response, result_fail) }.to raise_error
+      expect { provider.send(:get_id_from_async_response, result_fail) }.to raise_error(RuntimeError)
     end
 
     it "should get the id from an async response" do
