@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.94 -->
-## [v15.0.94](https://github.com/chef/chef/tree/v15.0.94) (2018-11-29)
+<!-- latest_release 15.0.95 -->
+## [v15.0.95](https://github.com/chef/chef/tree/v15.0.95) (2018-11-30)
 
 #### Merged Pull Requests
-- Initial suppport for snap packages [#7999](https://github.com/chef/chef/pull/7999) ([lamont-granquist](https://github.com/lamont-granquist))
+- package resource: Add RHEL 8 support to DNF package installer [#8003](https://github.com/chef/chef/pull/8003) ([pixdrift](https://github.com/pixdrift))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- package resource: Add RHEL 8 support to DNF package installer [#8003](https://github.com/chef/chef/pull/8003) ([pixdrift](https://github.com/pixdrift)) <!-- 15.0.95 -->
 - Initial suppport for snap packages [#7999](https://github.com/chef/chef/pull/7999) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.94 -->
 - better kithen ohai pinning [#7998](https://github.com/chef/chef/pull/7998) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.93 -->
 - Make sure which mixin requires chef_class [#7989](https://github.com/chef/chef/pull/7989) ([tas50](https://github.com/tas50)) <!-- 15.0.92 -->
