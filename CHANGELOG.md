@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.8.8 -->
-## [v14.8.8](https://github.com/chef/chef/tree/v14.8.8) (2018-11-28)
+<!-- latest_release 14.8.9 -->
+## [v14.8.9](https://github.com/chef/chef/tree/v14.8.9) (2018-11-30)
 
 #### Merged Pull Requests
-- Make sure which mixin requires chef_class [#7995](https://github.com/chef/chef/pull/7995) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 3.0.61 [#8002](https://github.com/chef/chef/pull/8002) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- Bump inspec-core to 3.0.61 [#8002](https://github.com/chef/chef/pull/8002) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.9 -->
 - Make sure which mixin requires chef_class [#7995](https://github.com/chef/chef/pull/7995) ([tas50](https://github.com/tas50)) <!-- 14.8.8 -->
 - apt_package: Support downgrades for apt packages [#7993](https://github.com/chef/chef/pull/7993) ([tas50](https://github.com/tas50)) <!-- 14.8.7 -->
 - windows_share: Avoid ConvertTo-Json errors on Windows 2012r2 with powershell 4 [#7991](https://github.com/chef/chef/pull/7991) ([tas50](https://github.com/tas50)) <!-- 14.8.6 -->
