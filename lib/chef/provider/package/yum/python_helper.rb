@@ -40,7 +40,7 @@ class Chef
           YUM_HELPER = ::File.expand_path(::File.join(::File.dirname(__FILE__), "yum_helper.py")).freeze
 
           def yum_command
-            @yum_command ||= which("python", "python2", "python2.7") do |f|
+            @yum_command ||= which("platform-python", "python", "python2", "python2.7", extra_path: "/usr/libexec") do |f|
               shell_out("#{f} -c 'import yum'").exitstatus == 0
             end + " #{YUM_HELPER}"
           end
