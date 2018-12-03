@@ -249,7 +249,7 @@ class Chef
                 when ".cer"
                   powershell_out("openssl x509 -text -inform DER -in #{source} -outform PEM").stdout
                 when ".pfx"
-                  powershell_out("openssl pkcs12 -in #{source} -nodes -passin pass:#{new_resource.pfx_password}").stdout
+                  powershell_out("openssl pkcs12 -in #{source} -nodes -passin pass:'#{new_resource.pfx_password}'").stdout
                 when ".p7b"
                   powershell_out("openssl pkcs7 -print_certs -in #{source} -outform PEM").stdout
                 end
