@@ -28,6 +28,7 @@ class Chef
         provides :pacman_package
 
         use_multipackage_api
+        allow_nils
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(new_resource.name)
