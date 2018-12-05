@@ -25,7 +25,7 @@ class Chef
       preview_resource true
       resource_name :timezone
 
-      description "Use the timezone resource to change the system timezone on Linux and macOS hosts. Timezones are specified in tz database format, with a complete list of available TZ values here https://en.wikipedia.org/wiki/List_of_tz_database_time_zones."
+      description "Use the timezone resource to change the system timezone on Windows, Linux, and macOS hosts. Timezones are specified in tz database format, with a complete list of available TZ values for Linux and macOS here: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones and for Windows here: https://ss64.com/nt/timezones.html."
       introduced "14.6"
 
       property :timezone, String,
