@@ -23,3 +23,8 @@ override "util-macros", version: "1.19.0"
 override "xproto", version: "7.0.28"
 override "zlib", version: "1.2.11"
 override "openssl", version: "1.0.2q"
+
+# this pins the ohai omnibus definition ohai version to the same version that's
+# in the gemfile.lock, which is what the chef defition will end up using. If we
+# don't pin in this file we get master, which isn't the released version (usually)
+override "ohai", version: ::File.readlines("Gemfile.lock", File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; $1
