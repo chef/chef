@@ -38,13 +38,11 @@ A regression was resolved that prevented ChefSpec from testing the windows_task 
 
 ## Ohai 14.8
 
-### openSUSE 15
+### Improved Virtualization Detection
 
-Ohai now properly detects the openSUSE 15.X platform.
+#### Hyper-V Hypervisor Detection
 
-### Hyper-V Hypervisor Detection
-
-Detection of Linux guests running on Hyper-V has been improved. In addition, Linux guests on Hyper-V hypervisors will also now detect their hypervisor's hostname.
+Detection of Linux guests running on Hyper-V has been improved. In addition, Linux guests on Hyper-V hypervisors will also now detect their hypervisor's hostname. Thank you [@safematix](https://github.com/safematix) for contributing this enhancement.
 
 Example `node['virtualization']` data:
 ```json
@@ -57,6 +55,24 @@ Example `node['virtualization']` data:
   "hypervisor_host": "hyper_v.example.com"
 }
 ```
+
+#### LXC / LXD Detection
+
+On Linux systems running lxc or lxd containers, the lxc/lxd virtualization system will now properly populate the `node['virtualization']['systems']` attribute.
+
+
+#### BSD Hypervisor Detection
+
+BSD-based systems can now detect guests running on KVM and Amazon's hypervisor without the need for the dmidecode package.
+
+### New Platform Support
+
+- Ohai now properly detects the openSUSE 15.X platform. Thank you [@megamorf](https://github.com/megamorf) for reporting this issue.
+- Suse Linux Enterprise Desktop now identified as platform_family 'suse'
+- XCP-NG is now identified as platform 'xcp' and platform_family 'rhel'. Thank you [@heyjodom](http://github.com/heyjodom) for submitting this enhancement.
+- Mangeia Linux is now identified as platform 'mangeia' and platform_family 'mandriva'
+- Antergos Linux now identified as platform_family 'arch'
+- Manjaro Linux now identified as platform_family 'arch'
 
 ## Security Updates
 
