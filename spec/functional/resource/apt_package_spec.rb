@@ -103,7 +103,7 @@ describe Chef::Resource::AptPackage, metadata do
       # Disable mixlib-shellout live streams
       Chef::Log.level = :warn
       start_apt_server
-      enable_testing_apt_source
+      enable_testing_apt_source rescue nil # important: ignore errors so the before all does not get re-run on failures
     end
 
     after(:all) do
