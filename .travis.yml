@@ -277,13 +277,31 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test end-to-end-opensuse-leap
+      - bundle exec kitchen test end-to-end-opensuse-leap-42
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
      - OPENSUSELEAP=42
      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-opensuse-leap-15
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+     - OPENSUSELEAP=15
+     - KITCHEN_YAML=kitchen.yml
+  - rvm: 2.5.5
+    sudo: required
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - rvm @global do gem uninstall bundler -a -x || true
@@ -331,7 +349,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test rspec-opensuse-leap
+      - bundle exec kitchen test rspec-opensuse-leap-42
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
