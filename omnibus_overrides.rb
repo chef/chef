@@ -24,7 +24,10 @@ override "xproto", version: "7.0.28"
 override "zlib", version: "1.2.11"
 override "openssl", version: "1.0.2q"
 
-# this pins the ohai omnibus definition ohai version to the same version that's
-# in the gemfile.lock, which is what the chef defition will end up using. If we
-# don't pin in this file we get master, which isn't the released version (usually)
-override "ohai", version: ::File.readlines("Gemfile.lock", File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; $1
+# we build both a chef and ohai omnibus-software defintion which create the
+# chef-client and ohai binstubs. Out of the box the ohai definition uses whatever
+# is in master, which won't match what's in the Gemfile.lock and used by the chef
+# definition. This pin will ensure that ohai and chef-client commands use the
+# same (released) version of ohai.
+gemfile_lock = File.join(File.expand_path(File.dirname(__FILE__)), "Gemfile.lock")
+override "ohai", version: "#{::File.readlines(gemfile_lock).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1}" # rubocop: disable Layout/SpaceInsideStringInterpolation
