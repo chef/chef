@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.98 -->
-## [v15.0.98](https://github.com/chef/chef/tree/v15.0.98) (2018-12-05)
+<!-- latest_release 15.0.99 -->
+## [v15.0.99](https://github.com/chef/chef/tree/v15.0.99) (2018-12-05)
 
 #### Merged Pull Requests
-- Fix locking ohai to to the value in the Gemfile.lock [#8014](https://github.com/chef/chef/pull/8014) ([tas50](https://github.com/tas50))
+- Update InSpec to 3.0.61 and Ohai to 15.0.20 [#8010](https://github.com/chef/chef/pull/8010) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update InSpec to 3.0.61 and Ohai to 15.0.20 [#8010](https://github.com/chef/chef/pull/8010) ([tas50](https://github.com/tas50)) <!-- 15.0.99 -->
 - Fix locking ohai to to the value in the Gemfile.lock [#8014](https://github.com/chef/chef/pull/8014) ([tas50](https://github.com/tas50)) <!-- 15.0.98 -->
 - Pin the ohai definition to use the ohai version from Gemfile.lock [#8012](https://github.com/chef/chef/pull/8012) ([tas50](https://github.com/tas50)) <!-- 15.0.97 -->
 - RHEL8 yum_package fix. [#8005](https://github.com/chef/chef/pull/8005) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.96 -->
