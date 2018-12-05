@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.96 -->
-## [v15.0.96](https://github.com/chef/chef/tree/v15.0.96) (2018-11-30)
+<!-- latest_release 15.0.97 -->
+## [v15.0.97](https://github.com/chef/chef/tree/v15.0.97) (2018-12-05)
 
 #### Merged Pull Requests
-- RHEL8 yum_package fix. [#8005](https://github.com/chef/chef/pull/8005) ([lamont-granquist](https://github.com/lamont-granquist))
+- Pin the ohai definition to use the ohai version from Gemfile.lock [#8012](https://github.com/chef/chef/pull/8012) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Pin the ohai definition to use the ohai version from Gemfile.lock [#8012](https://github.com/chef/chef/pull/8012) ([tas50](https://github.com/tas50)) <!-- 15.0.97 -->
 - RHEL8 yum_package fix. [#8005](https://github.com/chef/chef/pull/8005) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.96 -->
 - package resource: Add RHEL 8 support to DNF package installer [#8003](https://github.com/chef/chef/pull/8003) ([pixdrift](https://github.com/pixdrift)) <!-- 15.0.95 -->
 - Initial suppport for snap packages [#7999](https://github.com/chef/chef/pull/7999) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.94 -->
