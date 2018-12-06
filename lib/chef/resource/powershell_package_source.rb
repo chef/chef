@@ -162,9 +162,6 @@ class Chef
                 @{n='provider_name';e={$_.ProviderName}}, @{n='trusted';e={$_.IsTrusted}} | ConvertTo-Json
             }
         }
-        else {
-            "" | Select source_name, url, provider_name, trusted | ConvertTo-Json
-        }
       EOH
     end
   end
