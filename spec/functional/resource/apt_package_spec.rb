@@ -93,7 +93,9 @@ metadata = { unix_only: true,
 }
 
 class INeedSomeGlobalState
-  attr_accessor :alreadyfailed
+  class << self
+    attr_accessor :alreadyfailed
+  end
 end
 
 describe Chef::Resource::AptPackage, metadata do
