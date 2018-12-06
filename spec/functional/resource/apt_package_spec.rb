@@ -118,6 +118,7 @@ describe Chef::Resource::AptPackage, metadata do
         # swallow the errors the second time (which unfortunately creates cascading errors which
         # have nothing to do with the problem), but the first time we throw the exception so
         # that debugging can hopefully proceeed.
+        pp INeedSomeGlobalState.alreadyfailed
         if !INeedSomeGlobalState.alreadyfailed
           INeedSomeGlobalState.alreadyfailed = true
           raise
