@@ -54,7 +54,7 @@ class Chef
                description: "The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'."
 
       load_current_value do
-        cmd = load_resource_state_script(name)
+        cmd = load_resource_state_script(source_name)
         repo = powershell_out!(cmd)
         if repo.stdout.empty?
           current_value_does_not_exist!
