@@ -21,6 +21,10 @@ require "spec_helper"
 require "webrick"
 
 module AptServer
+  class << self
+    attr_accessor :alreadyfailed
+  end
+
   def enable_testing_apt_source
     File.open("/etc/apt/sources.list.d/chef-integration-test.list", "w+") do |f|
       f.puts "deb [trusted=yes] http://localhost:9000/ sid main"
@@ -63,6 +67,9 @@ module AptServer
   end
 
   def start_apt_server
+    if self.class.alreadyfailed
+      raise "aborting the rest of the apt-package func tests due to failure in the before block"
+    end
     @apt_server_thread = Thread.new do
       run_apt_server
     end
@@ -73,6 +80,17 @@ module AptServer
         @apt_server_thread.join
         raise "apt server failed to start"
       end
+    end
+  rescue Mixlib::ShellOut::ShellCommandFailed
+    # if the apt-get update fails, then this before will run on every example until
+    # it succeeds (turning it into before(:each)).  we have been seeing rate liming problems
+    # which this behavior only makes worse.  so we only want to fail the first time, and
+    # swallow the errors the second time (which unfortunately creates cascading errors which
+    # have nothing to do with the problem), but the first time we throw the exception so
+    # that debugging can hopefully proceeed.
+    if !self.class.alreadyfailed
+      self.class.alreadyfailed = true
+      raise
     end
   end
 
@@ -92,12 +110,6 @@ metadata = { unix_only: true,
              arch: "x86_64" # test packages are 64bit
 }
 
-class INeedSomeGlobalState
-  class << self
-    attr_accessor :alreadyfailed
-  end
-end
-
 describe Chef::Resource::AptPackage, metadata do
   include Chef::Mixin::ShellOut
 
@@ -106,27 +118,11 @@ describe Chef::Resource::AptPackage, metadata do
     include AptServer
 
     before(:all) do
-      if INeedSomeGlobalState.alreadyfailed
-        raise "aborting the rest of the apt-package func tests due to failure in the before block"
-      end
 
       # Disable mixlib-shellout live streams
       Chef::Log.level = :warn
       start_apt_server
-      begin
-        enable_testing_apt_source
-      rescue
-        # if the apt-get update fails, then this before will run on every example until
-        # it succeeds (turning it into before(:each)).  we have been seeing rate liming problems
-        # which this behavior only makes worse.  so we only want to fail the first time, and
-        # swallow the errors the second time (which unfortunately creates cascading errors which
-        # have nothing to do with the problem), but the first time we throw the exception so
-        # that debugging can hopefully proceeed.
-        if !INeedSomeGlobalState.alreadyfailed
-          INeedSomeGlobalState.alreadyfailed = true
-          raise
-        end
-      end
+      enable_testing_apt_source
     end
 
     after(:all) do
