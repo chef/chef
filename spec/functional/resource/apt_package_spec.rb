@@ -51,6 +51,7 @@ module AptServer
     # swallow the errors the second time (which unfortunately creates cascading errors which
     # have nothing to do with the problem), but the first time we throw the exception so
     # that debugging can hopefully proceeed.
+    pp AptServer.alreadyfailed?
     if !AptServer.alreadyfailed?
       AptServer.alreadyfailed = true
       raise
