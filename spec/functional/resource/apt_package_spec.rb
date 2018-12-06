@@ -22,7 +22,13 @@ require "webrick"
 
 module AptServer
   class << self
-    attr_accessor :alreadyfailed
+    def alreadyfailed=(val)
+      @@alreadyfailed = val
+    end
+
+    def alreadyfailed?
+      !@@alreadyfailed
+    end
   end
 
   def enable_testing_apt_source
@@ -67,7 +73,7 @@ module AptServer
   end
 
   def start_apt_server
-    if AptServer.alreadyfailed
+    if AptServer.alreadyfailed?
       raise "aborting the rest of the apt-package func tests due to failure in the before block"
     end
     @apt_server_thread = Thread.new do
@@ -88,7 +94,7 @@ module AptServer
     # swallow the errors the second time (which unfortunately creates cascading errors which
     # have nothing to do with the problem), but the first time we throw the exception so
     # that debugging can hopefully proceeed.
-    if !AptServer.alreadyfailed
+    if !AptServer.alreadyfailed?
       AptServer.alreadyfailed = true
       raise
     end
