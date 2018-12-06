@@ -73,4 +73,11 @@ describe Chef::Resource::WindowsCertificate do
     resource.pfx_password "foo"
     expect(resource.sensitive).to be_truthy
   end
+
+  it "doesn't raise error if pfx_password contains special characters" do
+    resource.pfx_password "chef$123"
+    resource.source "C:\\certs\\test-cert.pfx"
+    resource.store_name "MY"
+    expect { resource.action :create }.not_to raise_error
+  end
 end
