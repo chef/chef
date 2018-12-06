@@ -22,6 +22,8 @@ require "webrick"
 
 module AptServer
   class << self
+    @@alreadyfailed = false
+
     def alreadyfailed=(val)
       @@alreadyfailed = val
     end
