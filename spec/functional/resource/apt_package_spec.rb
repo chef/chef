@@ -63,6 +63,10 @@ module AptServer
   end
 
   def start_apt_server
+    if tcp_test_port("localhost", 9000)
+      raise "who the hell has our apt server port 9000?"
+    end
+
     @apt_server_thread = Thread.new do
       run_apt_server
     end
