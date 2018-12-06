@@ -143,14 +143,13 @@ RSpec.configure do |config|
   config.filter_run_excluding skip_travis: true if ENV["TRAVIS"]
 
   config.filter_run_excluding windows_only: true unless windows?
-  config.filter_run_excluding not_supported_on_mac_osx: true if mac_osx?
-  config.filter_run_excluding mac_osx_only: true if !mac_osx?
+  config.filter_run_excluding not_supported_on_macos: true if mac_osx?
+  config.filter_run_excluding macos_only: true if !mac_osx?
   config.filter_run_excluding not_supported_on_aix: true if aix?
   config.filter_run_excluding not_supported_on_solaris: true if solaris?
   config.filter_run_excluding not_supported_on_gce: true if gce?
   config.filter_run_excluding not_supported_on_nano: true if windows_nano_server?
   config.filter_run_excluding win2012r2_only: true unless windows_2012r2?
-  config.filter_run_excluding windows_2008r2_or_later: true unless windows_2008r2_or_later?
   config.filter_run_excluding windows64_only: true unless windows64?
   config.filter_run_excluding windows32_only: true unless windows32?
   config.filter_run_excluding windows_nano_only: true unless windows_nano_server?
@@ -186,7 +185,6 @@ RSpec.configure do |config|
   config.filter_run_excluding not_wpar: true unless wpar?
   config.filter_run_excluding not_supported_under_fips: true if fips?
   config.filter_run_excluding rhel: true unless rhel?
-  config.filter_run_excluding rhel5: true unless rhel5?
   config.filter_run_excluding rhel6: true unless rhel6?
   config.filter_run_excluding rhel7: true unless rhel7?
   config.filter_run_excluding intel_64bit: true unless intel_64bit?

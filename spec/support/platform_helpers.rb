@@ -51,15 +51,6 @@ def windows_domain_joined?
   computer_system["partofdomain"]
 end
 
-def windows_2008r2_or_later?
-  return false unless windows?
-  return false unless host_version
-  components = host_version.split(".").map do |component|
-    component.to_i
-  end
-  components.length >= 2 && components[0] >= 6 && components[1] >= 1
-end
-
 def windows_2012r2?
   return false unless windows?
   (host_version && host_version.start_with?("6.3"))
@@ -165,10 +156,6 @@ end
 
 def rhel?
   !!(ohai[:platform_family] == "rhel")
-end
-
-def rhel5?
-  rhel? && !!(ohai[:platform_version].to_i == 5)
 end
 
 def rhel6?
