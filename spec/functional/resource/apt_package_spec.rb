@@ -67,7 +67,7 @@ module AptServer
   end
 
   def start_apt_server
-    if self.class.alreadyfailed
+    if AptServer.alreadyfailed
       raise "aborting the rest of the apt-package func tests due to failure in the before block"
     end
     @apt_server_thread = Thread.new do
@@ -88,8 +88,8 @@ module AptServer
     # swallow the errors the second time (which unfortunately creates cascading errors which
     # have nothing to do with the problem), but the first time we throw the exception so
     # that debugging can hopefully proceeed.
-    if !self.class.alreadyfailed
-      self.class.alreadyfailed = true
+    if !AptServer.alreadyfailed
+      AptServer.alreadyfailed = true
       raise
     end
   end
