@@ -148,6 +148,9 @@ class Chef
 
     def load_resource_state_script(name)
       <<-EOH
+        $PSDefaultParameterValues = @{
+          "*:WarningAction" = SilentlyContinue
+        }
         if(Get-PackageSource -Name '#{name}' -ErrorAction SilentlyContinue) {
             if ((Get-PackageSource -Name '#{name}').ProviderName -eq 'PowerShellGet') {
                 (Get-PSRepository -Name '#{name}') | Select @{n='source_name';e={$_.Name}}, @{n='url';e={$_.SourceLocation}},
