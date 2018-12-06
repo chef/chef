@@ -56,8 +56,12 @@ class Chef
       load_current_value do
         cmd = load_resource_state_script(name)
         repo = powershell_out!(cmd)
-        status = Chef::JSONCompat.from_json(repo.stdout)
-        url status["url"].nil? ? "not_set" : status["url"]
+        if repo.stdout.empty?
+          current_value_does_not_exist!
+        else
+          status = Chef::JSONCompat.from_json(repo.stdout)
+        end
+        url status["url"]
         trusted status["trusted"]
         provider_name status["provider_name"]
         publish_location status["publish_location"]
