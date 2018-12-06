@@ -106,6 +106,10 @@ describe Chef::Resource::AptPackage, metadata do
     include AptServer
 
     before(:all) do
+      if INeedSomeGlobalState.alreadyfailed
+        raise "aborting the rest of the apt-package func tests due to failure in the before block"
+      end
+
       # Disable mixlib-shellout live streams
       Chef::Log.level = :warn
       start_apt_server
@@ -118,7 +122,6 @@ describe Chef::Resource::AptPackage, metadata do
         # swallow the errors the second time (which unfortunately creates cascading errors which
         # have nothing to do with the problem), but the first time we throw the exception so
         # that debugging can hopefully proceeed.
-        pp INeedSomeGlobalState.alreadyfailed
         if !INeedSomeGlobalState.alreadyfailed
           INeedSomeGlobalState.alreadyfailed = true
           raise
