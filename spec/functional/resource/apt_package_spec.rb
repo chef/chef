@@ -29,7 +29,7 @@ module AptServer
     end
 
     def alreadyfailed?
-      !@@alreadyfailed
+      !!@@alreadyfailed
     end
   end
 
