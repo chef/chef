@@ -89,7 +89,7 @@ module AptServer
         raise "apt server failed to start"
       end
     end
-  rescue Mixlib::ShellOut::ShellCommandFailed
+  rescue
     # if the apt-get update fails, then this before will run on every example until
     # it succeeds (turning it into before(:each)).  we have been seeing rate liming problems
     # which this behavior only makes worse.  so we only want to fail the first time, and
