@@ -44,7 +44,7 @@ module AptServer
     shell_out!("apt-get update " +
                '-o Dir::Etc::sourcelist="sources.list.d/chef-integration-test.list" ' +
                '-o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"')
-  rescue
+  rescue Mixlib::ShellOut::ShellCommandFailed
     # if the apt-get update fails, then this before will run on every example until
     # it succeeds (turning it into before(:each)).  we have been seeing rate liming problems
     # which this behavior only makes worse.  so we only want to fail the first time, and
