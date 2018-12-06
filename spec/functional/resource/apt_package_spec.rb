@@ -34,6 +34,9 @@ module AptServer
   end
 
   def enable_testing_apt_source
+    if AptServer.alreadyfailed?
+      raise "aborting the rest of the apt-package func tests due to failure in the before block"
+    end
     File.open("/etc/apt/sources.list.d/chef-integration-test.list", "w+") do |f|
       f.puts "deb [trusted=yes] http://localhost:9000/ sid main"
     end
@@ -41,6 +44,17 @@ module AptServer
     shell_out!("apt-get update " +
                '-o Dir::Etc::sourcelist="sources.list.d/chef-integration-test.list" ' +
                '-o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"')
+  rescue
+    # if the apt-get update fails, then this before will run on every example until
+    # it succeeds (turning it into before(:each)).  we have been seeing rate liming problems
+    # which this behavior only makes worse.  so we only want to fail the first time, and
+    # swallow the errors the second time (which unfortunately creates cascading errors which
+    # have nothing to do with the problem), but the first time we throw the exception so
+    # that debugging can hopefully proceeed.
+    if !AptServer.alreadyfailed?
+      AptServer.alreadyfailed = true
+      raise
+    end
   end
 
   def disable_testing_apt_source
@@ -75,9 +89,6 @@ module AptServer
   end
 
   def start_apt_server
-    if AptServer.alreadyfailed?
-      raise "aborting the rest of the apt-package func tests due to failure in the before block"
-    end
     @apt_server_thread = Thread.new do
       run_apt_server
     end
@@ -88,17 +99,6 @@ module AptServer
         @apt_server_thread.join
         raise "apt server failed to start"
       end
-    end
-  rescue
-    # if the apt-get update fails, then this before will run on every example until
-    # it succeeds (turning it into before(:each)).  we have been seeing rate liming problems
-    # which this behavior only makes worse.  so we only want to fail the first time, and
-    # swallow the errors the second time (which unfortunately creates cascading errors which
-    # have nothing to do with the problem), but the first time we throw the exception so
-    # that debugging can hopefully proceeed.
-    if !AptServer.alreadyfailed?
-      AptServer.alreadyfailed = true
-      raise
     end
   end
 
