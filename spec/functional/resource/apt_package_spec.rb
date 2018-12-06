@@ -92,6 +92,10 @@ metadata = { unix_only: true,
              arch: "x86_64" # test packages are 64bit
 }
 
+class INeedSomeGlobalState
+  attr_accessor :alreadyfailed
+end
+
 describe Chef::Resource::AptPackage, metadata do
   include Chef::Mixin::ShellOut
 
@@ -103,7 +107,21 @@ describe Chef::Resource::AptPackage, metadata do
       # Disable mixlib-shellout live streams
       Chef::Log.level = :warn
       start_apt_server
-      enable_testing_apt_source rescue nil # important: ignore errors so the before all does not get re-run on failures
+      begin
+        enable_testing_apt_source
+      rescue
+        # if the apt-get update fails, then this before will run on every example until
+        # it succeeds (turning it into before(:each)).  we have been seeing rate liming problems
+        # which this behavior only makes worse.  so we only want to fail the first time, and
+        # swallow the errors the second time (which unfortunately creates cascading errors which
+        # have nothing to do with the problem), but the first time we throw the exception so
+        # that debugging can hopefully proceeed.
+        if INeedSomeGlobalState.alreadyfailed
+          raise
+        else
+          INeedSomeGlobalState.alreadyfailed = true
+        end
+      end
     end
 
     after(:all) do
