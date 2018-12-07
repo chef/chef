@@ -116,7 +116,7 @@ class Chef
 
       action_class do
         def package_source_exists?
-          cmd = powershell_out!("(Get-PackageSource -Name '#{new_resource.source_name}').Name")
+          cmd = powershell_out!("(Get-PackageSource -Name '#{new_resource.source_name}' -WarningAction SilentlyContinue).Name")
           cmd.stdout.downcase.strip == new_resource.source_name.downcase
         end
 
