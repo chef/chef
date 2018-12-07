@@ -455,7 +455,7 @@ class Chef
       case e
       when SystemExit
         raise # make sure exit passes through.
-      when Net::HTTPServerException, Net::HTTPFatalError
+      when Net::HTTPClientException, Net::HTTPFatalError
         humanize_http_exception(e)
       when OpenSSL::SSL::SSLError
         ui.error "Could not establish a secure connection to the server."

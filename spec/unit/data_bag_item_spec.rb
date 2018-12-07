@@ -298,7 +298,7 @@ describe Chef::DataBagItem do
 
     it "should create if the item is not found" do
       exception = double("404 error", code: "404")
-      expect(server).to receive(:put).and_raise(Net::HTTPServerException.new("foo", exception))
+      expect(server).to receive(:put).and_raise(Net::HTTPClientException.new("foo", exception))
       expect(server).to receive(:post).with("data/books", data_bag_item)
       data_bag_item.save
     end

@@ -61,7 +61,7 @@ describe Chef::ApiClient::Registration do
   end
 
   let(:response_409) { Net::HTTPConflict.new("1.1", "409", "Conflict") }
-  let(:exception_409) { Net::HTTPServerException.new("409 conflict", response_409) }
+  let(:exception_409) { Net::HTTPClientException.new("409 conflict", response_409) }
 
   let(:generated_private_key_pem) { IO.read(File.expand_path("ssl/private_key.pem", CHEF_SPEC_DATA)) }
   let(:generated_private_key) { OpenSSL::PKey::RSA.new(generated_private_key_pem) }

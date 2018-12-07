@@ -79,7 +79,7 @@ class Chef
 
                 get_data = begin
                   rest.get(policy_path)
-                rescue Net::HTTPServerException => e
+                rescue Net::HTTPClientException => e
                   raise "Could not find policy '#{policy_name}'' with revision '#{policy_data["revision_id"]}'' on the server"
                 end
 
@@ -113,7 +113,7 @@ class Chef
 
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e, "Timeout creating '#{name}': #{e}")
-            rescue Net::HTTPServerException => e
+            rescue Net::HTTPClientException => e
               # 404 = NotFoundError
               if e.response.code == "404"
                 raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)

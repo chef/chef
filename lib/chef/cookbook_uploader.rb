@@ -84,7 +84,7 @@ class Chef
       retries = 0
       begin
         rest.put(sandbox_url, { is_completed: true })
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         if e.message =~ /^400/ && (retries += 1) <= 5
           sleep 2
           retry
@@ -101,7 +101,7 @@ class Chef
         save_url = opts[:force] ? manifest.force_save_url : manifest.save_url
         begin
           rest.put(save_url, manifest)
-        rescue Net::HTTPServerException => e
+        rescue Net::HTTPClientException => e
           case e.response.code
           when "409"
             raise Chef::Exceptions::CookbookFrozen, "Version #{cb.version} of cookbook #{cb.name} is frozen. Use --force to override."
@@ -128,7 +128,7 @@ class Chef
         begin
           rest.put(url, file_contents, headers)
           checksums_to_upload.delete(checksum)
-        rescue Net::HTTPServerException, Net::HTTPFatalError, Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError => e
+        rescue Net::HTTPClientException, Net::HTTPFatalError, Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError => e
           error_message = "Failed to upload #{file} (#{checksum}) to #{url} : #{e.message}"
           error_message << "\n#{e.response.body}" if e.respond_to?(:response)
           Chef::Knife.ui.error(error_message)

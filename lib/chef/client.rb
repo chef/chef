@@ -552,7 +552,7 @@ class Chef
       recipe = Chef::Recipe.new(nil, nil, run_context)
       recipe.from_file(required_recipe_file)
       run_context
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       case e.response
       when Net::HTTPNotFound
         logger.trace("Required Recipe not configured on the server, skipping it")

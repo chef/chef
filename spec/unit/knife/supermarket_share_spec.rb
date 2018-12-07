@@ -85,7 +85,7 @@ describe Chef::Knife::SupermarketShare do
 
     it "should use a default category when given only 1 argument and cannot determine category" do
       @knife.name_args = ["cookbook_name"]
-      expect(@noauth_rest).to receive(:get).with("https://supermarket.chef.io/api/v1/cookbooks/cookbook_name") { raise Net::HTTPServerException.new("404 Not Found", OpenStruct.new(code: "404")) }
+      expect(@noauth_rest).to receive(:get).with("https://supermarket.chef.io/api/v1/cookbooks/cookbook_name") { raise Net::HTTPClientException.new("404 Not Found", OpenStruct.new(code: "404")) }
       expect(@knife).to receive(:do_upload)
       expect { @knife.run }.to_not raise_error
     end

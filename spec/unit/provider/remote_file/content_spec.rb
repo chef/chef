@@ -161,7 +161,7 @@ describe Chef::Provider::RemoteFile::Content do
 
     # https://github.com/chef/chef/pull/1358#issuecomment-40853299
     def create_exception(exception_class)
-      if [ Net::HTTPServerException, Net::HTTPFatalError ].include? exception_class
+      if [ Net::HTTPClientException, Net::HTTPFatalError ].include? exception_class
         exception_class.new("message", { "something" => 1 })
       else
         exception_class.new
@@ -177,7 +177,7 @@ describe Chef::Provider::RemoteFile::Content do
       Errno::ENOENT,
       Errno::EACCES,
       Timeout::Error,
-      Net::HTTPServerException,
+      Net::HTTPClientException,
       Net::HTTPFatalError,
       Net::FTPError,
       Errno::ETIMEDOUT,

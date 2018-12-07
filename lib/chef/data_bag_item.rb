@@ -168,7 +168,7 @@ class Chef
         else
           r.put("data/#{data_bag}/#{item_id}", self)
         end
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         raise e unless e.response.code == "404"
         r.post("data/#{data_bag}", self)
       end

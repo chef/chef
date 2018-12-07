@@ -491,7 +491,7 @@ class Chef
       chef_server_rest.get("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map do |cb|
         cb["version"]
       end
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       if e.to_s =~ /^404/
         Chef::Log.error("Cannot find a cookbook named #{cookbook_name}")
         nil

@@ -152,7 +152,7 @@ class Chef
       response.error! unless success_response?(response)
       return_value
 
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
       if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
@@ -190,7 +190,7 @@ class Chef
         response.error!
       end
       tempfile
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
       if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
@@ -245,7 +245,7 @@ class Chef
         end
       end
       tempfile
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
       if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0

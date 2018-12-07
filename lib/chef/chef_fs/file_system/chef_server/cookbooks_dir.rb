@@ -60,7 +60,7 @@ class Chef
             upload_cookbook(other, options)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "Timeout writing: #{e}")
-          rescue Net::HTTPServerException => e
+          rescue Net::HTTPClientException => e
             case e.response.code
             when "409"
               raise Chef::ChefFS::FileSystem::CookbookFrozenError.new(:write, self, e, "Cookbook #{other.name} is frozen")

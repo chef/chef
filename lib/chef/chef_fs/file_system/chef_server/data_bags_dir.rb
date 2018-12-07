@@ -33,7 +33,7 @@ class Chef
             @children ||= root.get_json(api_path).keys.sort.map { |entry| make_child_entry(entry, true) }
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout getting children: #{e}")
-          rescue Net::HTTPServerException => e
+          rescue Net::HTTPClientException => e
             if e.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
@@ -50,7 +50,7 @@ class Chef
               rest.post(api_path, { "name" => name })
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e, "Timeout creating child '#{name}': #{e}")
-            rescue Net::HTTPServerException => e
+            rescue Net::HTTPClientException => e
               if e.response.code == "409"
                 raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self, e, "Cannot create #{name} under #{path}: already exists")
               else

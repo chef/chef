@@ -41,7 +41,7 @@ class Chef
 
               Your chef_server_url may be misconfigured, or the network could be down.
 E
-          when Net::HTTPServerException, Net::HTTPFatalError
+          when Net::HTTPClientException, Net::HTTPFatalError
             humanize_http_exception(error_description)
           when Chef::Exceptions::MissingRole
             describe_missing_role(error_description)

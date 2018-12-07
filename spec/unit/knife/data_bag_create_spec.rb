@@ -63,7 +63,7 @@ describe Chef::Knife::DataBagCreate do
       exception = double("404 error", code: "404")
       allow(rest).to receive(:get)
         .with("data/#{bag_name}")
-        .and_raise(Net::HTTPServerException.new("404", exception))
+        .and_raise(Net::HTTPClientException.new("404", exception))
     end
 
     it "tries to create a data bag with an invalid name when given one argument" do
@@ -86,7 +86,7 @@ describe Chef::Knife::DataBagCreate do
         %w{node role client environment}.each do |name|
           allow(rest).to receive(:get)
             .with("data/sudoing_#{name}_admins")
-            .and_raise(Net::HTTPServerException.new("404", exception))
+            .and_raise(Net::HTTPClientException.new("404", exception))
         end
       end
 

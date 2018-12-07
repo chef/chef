@@ -93,7 +93,7 @@ class Chef
 
       def create_or_update
         create
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         # If create fails because the client exists, attempt to update. This
         # requires admin privileges.
         raise unless e.response.code == "409"

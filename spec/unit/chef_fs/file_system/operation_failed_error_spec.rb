@@ -29,7 +29,7 @@ describe Chef::ChefFS::FileSystem::OperationFailedError do
         response_body = '{"error":["Invalid key test in request body"]}'
         allow(@response).to receive(:code).and_return("400")
         allow(@response).to receive(:body).and_return(response_body)
-        exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
+        exception = Net::HTTPClientException.new("(exception) unauthorized", @response)
         expect do
           raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, exception), error_message
         end.to raise_error(Chef::ChefFS::FileSystem::OperationFailedError, "#{error_message} cause: #{response_body}")
