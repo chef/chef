@@ -34,6 +34,7 @@ class Chef
           :at,
           :bsearch,
           :bsearch_index,
+          :chain,
           :chunk,
           :chunk_while,
           :collect,
