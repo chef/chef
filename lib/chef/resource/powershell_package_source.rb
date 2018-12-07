@@ -149,7 +149,7 @@ class Chef
     def load_resource_state_script(name)
       <<-EOH
         $PSDefaultParameterValues = @{
-          "*:WarningAction" = SilentlyContinue
+          "*:WarningAction" = "SilentlyContinue"
         }
         if(Get-PackageSource -Name '#{name}' -ErrorAction SilentlyContinue) {
             if ((Get-PackageSource -Name '#{name}').ProviderName -eq 'PowerShellGet') {
