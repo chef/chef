@@ -54,10 +54,14 @@ class Chef
                description: "The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'."
 
       load_current_value do
-        cmd = load_resource_state_script(name)
+        cmd = load_resource_state_script(source_name)
         repo = powershell_out!(cmd)
-        status = Chef::JSONCompat.from_json(repo.stdout)
-        url status["url"].nil? ? "not_set" : status["url"]
+        if repo.stdout.empty?
+          current_value_does_not_exist!
+        else
+          status = Chef::JSONCompat.from_json(repo.stdout)
+        end
+        url status["url"]
         trusted status["trusted"]
         provider_name status["provider_name"]
         publish_location status["publish_location"]
@@ -112,7 +116,7 @@ class Chef
 
       action_class do
         def package_source_exists?
-          cmd = powershell_out!("(Get-PackageSource -Name '#{new_resource.source_name}').Name")
+          cmd = powershell_out!("(Get-PackageSource -Name '#{new_resource.source_name}' -WarningAction SilentlyContinue).Name")
           cmd.stdout.downcase.strip == new_resource.source_name.downcase
         end
 
@@ -144,6 +148,9 @@ class Chef
 
     def load_resource_state_script(name)
       <<-EOH
+        $PSDefaultParameterValues = @{
+          "*:WarningAction" = "SilentlyContinue"
+        }
         if(Get-PackageSource -Name '#{name}' -ErrorAction SilentlyContinue) {
             if ((Get-PackageSource -Name '#{name}').ProviderName -eq 'PowerShellGet') {
                 (Get-PSRepository -Name '#{name}') | Select @{n='source_name';e={$_.Name}}, @{n='url';e={$_.SourceLocation}},
@@ -154,9 +161,6 @@ class Chef
                 (Get-PackageSource -Name '#{name}') | Select @{n='source_name';e={$_.Name}}, @{n='url';e={$_.Location}},
                 @{n='provider_name';e={$_.ProviderName}}, @{n='trusted';e={$_.IsTrusted}} | ConvertTo-Json
             }
-        }
-        else {
-            "" | Select source_name, url, provider_name, trusted | ConvertTo-Json
         }
       EOH
     end
