@@ -33,7 +33,7 @@ describe "knife environment create", :workstation do
     it "refuses to add an existing environment" do
       pending "Knife environment create must not blindly overwrite an existing environment"
       knife("environment create bah").should_succeed out
-      expect { knife("environment create bah") }.to raise_error(Net::HTTPServerException)
+      expect { knife("environment create bah") }.to raise_error(Net::HTTPClientException)
     end
 
   end

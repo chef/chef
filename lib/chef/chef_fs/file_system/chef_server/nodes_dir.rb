@@ -33,7 +33,7 @@ class Chef
             end
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout retrieving children: #{e}")
-          rescue Net::HTTPServerException => e
+          rescue Net::HTTPClientException => e
             if $!.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             else

@@ -43,7 +43,7 @@ describe "knife client key create", :workstation do
 
     it "refuses to add an already existing key" do
       knife("client key create -k new bah")
-      expect { knife("client key create -k new bah") }.to raise_error(Net::HTTPServerException)
+      expect { knife("client key create -k new bah") }.to raise_error(Net::HTTPClientException)
     end
 
     it "saves the private key to a file" do

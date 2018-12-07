@@ -205,7 +205,7 @@ class Chef
 
       def assert_environment_valid!
         environment
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         if e.response.code.to_s == "404"
           ui.error "The environment #{config[:environment]} does not exist on the server, aborting."
           Log.debug(e)

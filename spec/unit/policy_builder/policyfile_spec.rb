@@ -218,7 +218,7 @@ describe Chef::PolicyBuilder::Policyfile do
       end
 
       context "when the deployment group cannot be loaded" do
-        let(:error404) { Net::HTTPServerException.new("404 message", :body) }
+        let(:error404) { Net::HTTPClientException.new("404 message", :body) }
 
         before do
           expect(api_service).to receive(:get)
@@ -738,7 +738,7 @@ describe Chef::PolicyBuilder::Policyfile do
         shared_examples "fetching cookbooks when they don't exist" do
           context "and a cookbook is missing" do
 
-            let(:error404) { Net::HTTPServerException.new("404 message", :body) }
+            let(:error404) { Net::HTTPClientException.new("404 message", :body) }
 
             before do
               policy_builder.finish_load_node(node)

@@ -424,7 +424,7 @@ describe Chef::Knife do
       response = Net::HTTPUnauthorized.new("1.1", "401", "Unauthorized")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u no syncronize your clock?"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("401 Unauthorized", response))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("401 Unauthorized", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(/ERROR: Failed to authenticate to/)
       expect(stderr.string).to match(/Response:  y u no syncronize your clock\?/)
@@ -434,7 +434,7 @@ describe Chef::Knife do
       response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u no administrator"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("403 Forbidden", response))
       allow(knife).to receive(:username).and_return("sadpanda")
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action})
@@ -454,7 +454,7 @@ describe Chef::Knife do
         response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
         response.instance_variable_set(:@read, true)
         allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u no administrator"))
-        allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
+        allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("403 Forbidden", response))
         allow(knife).to receive(:username).and_return("sadpanda")
         knife.run_with_pretty_exceptions
         expect(stderr.string).to match(%r{ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action})
@@ -467,7 +467,7 @@ describe Chef::Knife do
       response = Net::HTTPBadRequest.new("1.1", "400", "Bad Request")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u search wrong"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("400 Bad Request", response))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("400 Bad Request", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: The data in your request was invalid})
       expect(stderr.string).to match(%r{Response: y u search wrong})
@@ -477,7 +477,7 @@ describe Chef::Knife do
       response = Net::HTTPNotFound.new("1.1", "404", "Not Found")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "nothing to see here"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("404 Not Found", response))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("404 Not Found", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: The object you are looking for could not be found})
       expect(stderr.string).to match(%r{Response: nothing to see here})
@@ -491,7 +491,7 @@ describe Chef::Knife do
       response["x-ops-server-api-version"] = Chef::JSONCompat.to_json(min_version: "0", max_version: "1", request_version: "10000000")
 
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "sad trombone"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("406 Not Acceptable", response))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("406 Not Acceptable", response))
 
       knife.run_with_pretty_exceptions
       expect(stderr.string).to include("The request that Knife sent was using API version 10000000")
@@ -533,7 +533,7 @@ describe Chef::Knife do
       response = Net::HTTPPaymentRequired.new("1.1", "402", "Payment Required")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "nobugfixtillyoubuy"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("402 Payment Required", response))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("402 Payment Required", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: Payment Required})
       expect(stderr.string).to match(%r{Response: nobugfixtillyoubuy})

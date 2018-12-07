@@ -44,7 +44,7 @@ EOM
     it "refuses to add an existing client" do
       pending "Knife client create must not blindly overwrite an existing client"
       knife("client create -k bah").should_succeed stderr: out
-      expect { knife("client create -k bah") }.to raise_error(Net::HTTPServerException)
+      expect { knife("client create -k bah") }.to raise_error(Net::HTTPClientException)
     end
 
     it "saves the private key to a file" do

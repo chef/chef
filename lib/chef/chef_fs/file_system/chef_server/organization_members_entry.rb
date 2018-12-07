@@ -45,7 +45,7 @@ class Chef
             (desired_members - members).each do |member|
               begin
                 rest.post(api_path, "username" => member)
-              rescue Net::HTTPServerException => e
+              rescue Net::HTTPClientException => e
                 if %w{404 405}.include?(e.response.code)
                   raise "Chef server at #{api_path} does not allow you to directly add members.  Please either upgrade your Chef server or move the users you want into invitations.json instead of members.json."
                 else

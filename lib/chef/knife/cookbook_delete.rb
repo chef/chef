@@ -88,7 +88,7 @@ class Chef
         @available_versions ||= rest.get("cookbooks/#{@cookbook_name}").map do |name, url_and_version|
           url_and_version["versions"].map { |url_by_version| url_by_version["version"] }
         end.flatten
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         if e.to_s =~ /^404/
           ui.error("Cannot find a cookbook named #{@cookbook_name} to delete.")
           nil

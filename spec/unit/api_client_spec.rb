@@ -280,13 +280,13 @@ describe Chef::ApiClient do
     context "and the client does not exist on the server" do
       before do
         @a_404_response = Net::HTTPNotFound.new("404 not found and such", nil, nil)
-        @a_404_exception = Net::HTTPServerException.new("404 not found exception", @a_404_response)
+        @a_404_exception = Net::HTTPClientException.new("404 not found exception", @a_404_response)
 
         expect(@http_client).to receive(:get).with("clients/lost-my-key").and_raise(@a_404_exception)
       end
 
       it "raises a 404 error" do
-        expect { Chef::ApiClient.reregister("lost-my-key") }.to raise_error(Net::HTTPServerException)
+        expect { Chef::ApiClient.reregister("lost-my-key") }.to raise_error(Net::HTTPClientException)
       end
     end
 

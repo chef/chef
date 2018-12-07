@@ -89,7 +89,7 @@ describe Chef::DataBag do
 
     it "should silently proceed when the data bag already exists" do
       exception = double("409 error", code: "409")
-      expect(@rest).to receive(:post).and_raise(Net::HTTPServerException.new("foo", exception))
+      expect(@rest).to receive(:post).and_raise(Net::HTTPClientException.new("foo", exception))
       @data_bag.save
     end
 

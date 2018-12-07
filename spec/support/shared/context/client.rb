@@ -142,7 +142,7 @@ shared_context "a client run" do
 
   def stub_for_required_recipe
     response = Net::HTTPNotFound.new("1.1", "404", "Not Found")
-    exception = Net::HTTPServerException.new('404 "Not Found"', response)
+    exception = Net::HTTPClientException.new('404 "Not Found"', response)
     expect(http_node_load).to receive(:get).with("required_recipe").and_raise(exception)
   end
 

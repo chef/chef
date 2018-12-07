@@ -46,7 +46,7 @@ class Chef
             (desired_invites - invites).each do |invite|
               begin
                 rest.post(api_path, { "user" => invite })
-              rescue Net::HTTPServerException => e
+              rescue Net::HTTPClientException => e
                 if e.response.code == "409"
                   Chef::Log.warn("Could not invite #{invite} to organization #{org}: #{api_error_text(e.response)}")
                 else

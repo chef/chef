@@ -224,7 +224,7 @@ class Chef
     def save
       begin
         chef_server_rest.put("roles/#{@name}", self)
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         raise e unless e.response.code == "404"
         chef_server_rest.post("roles", self)
       end

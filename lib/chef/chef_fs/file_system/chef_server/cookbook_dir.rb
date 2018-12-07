@@ -108,7 +108,7 @@ class Chef
                 rest.delete(api_path)
               rescue Timeout::Error => e
                 raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
-              rescue Net::HTTPServerException
+              rescue Net::HTTPClientException
                 if $!.response.code == "404"
                   raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
                 else
@@ -182,7 +182,7 @@ class Chef
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
 
-            rescue Net::HTTPServerException => e
+            rescue Net::HTTPClientException => e
               if e.response.code == "404"
                 @could_not_get_chef_object = e
                 raise Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)

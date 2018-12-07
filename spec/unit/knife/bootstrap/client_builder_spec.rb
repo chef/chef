@@ -42,7 +42,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
 
   context "#sanity_check!" do
     let(:response_404) { OpenStruct.new(code: "404") }
-    let(:exception_404) { Net::HTTPServerException.new("404 not found", response_404) }
+    let(:exception_404) { Net::HTTPClientException.new("404 not found", response_404) }
 
     context "in cases where the prompting fails" do
       before do

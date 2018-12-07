@@ -186,7 +186,7 @@ class Chef
     # Save this client via the REST API, returns a hash including the private key
     def save
       http_api.put("clients/#{name}", { name: name, admin: admin, validator: validator })
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       # If that fails, go ahead and try and update it
       if e.response.code == "404"
         http_api.post("clients", { name: name, admin: admin, validator: validator })
