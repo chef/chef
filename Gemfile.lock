@@ -35,6 +35,7 @@ PATH
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
       ffi (~> 1.9, >= 1.9.25)
+      ffi-libarchive
       ffi-yajl (~> 2.2)
       highline (~> 1.6, >= 1.6.9)
       iniparse (~> 1.4)
@@ -59,6 +60,7 @@ PATH
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
       ffi (~> 1.9, >= 1.9.25)
+      ffi-libarchive
       ffi-yajl (~> 2.2)
       highline (~> 1.6, >= 1.6.9)
       iniparse (~> 1.4)
@@ -136,6 +138,8 @@ GEM
     ffi (1.10.0)
     ffi (1.10.0-x64-mingw32)
     ffi (1.10.0-x86-mingw32)
+    ffi-libarchive (0.4.6)
+      ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
       ffi
     ffi-yajl (2.3.1)
