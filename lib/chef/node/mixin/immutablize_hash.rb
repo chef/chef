@@ -30,6 +30,7 @@ class Chef
           :all?,
           :any?,
           :assoc,
+          :chain,
           :chunk,
           :chunk_while,
           :collect,
