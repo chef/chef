@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.101 -->
-## [v15.0.101](https://github.com/chef/chef/tree/v15.0.101) (2018-12-06)
+<!-- latest_release 15.0.102 -->
+## [v15.0.102](https://github.com/chef/chef/tree/v15.0.102) (2018-12-07)
 
 #### Merged Pull Requests
-- Require Ruby 2.5 or later [#8023](https://github.com/chef/chef/pull/8023) ([tas50](https://github.com/tas50))
+- Bugfixes to powershell_package_source [#8025](https://github.com/chef/chef/pull/8025) ([Happycoil](https://github.com/Happycoil))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Bugfixes to powershell_package_source [#8025](https://github.com/chef/chef/pull/8025) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.102 -->
 - Require Ruby 2.5 or later [#8023](https://github.com/chef/chef/pull/8023) ([tas50](https://github.com/tas50)) <!-- 15.0.101 -->
 - timezone: updated description to include windows [#8018](https://github.com/chef/chef/pull/8018) ([Stromweld](https://github.com/Stromweld)) <!-- 15.0.100 -->
 - Update InSpec to 3.0.61 and Ohai to 15.0.20 [#8010](https://github.com/chef/chef/pull/8010) ([tas50](https://github.com/tas50)) <!-- 15.0.99 -->
