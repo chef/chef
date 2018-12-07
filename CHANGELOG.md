@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.8.12 -->
-## [v14.8.12](https://github.com/chef/chef/tree/v14.8.12) (2018-12-05)
+<!-- latest_release 14.8.13 -->
+## [v14.8.13](https://github.com/chef/chef/tree/v14.8.13) (2018-12-07)
 
 #### Merged Pull Requests
-- Make sure the ohai CLI uses the same version of ohai as chef-client [#8020](https://github.com/chef/chef/pull/8020) ([tas50](https://github.com/tas50))
+- Bump mixlib-shellout to 2.4.2 and inspec to 3.0.64 [#8027](https://github.com/chef/chef/pull/8027) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.7.17 -->
 ### Changes since 14.7.17 release
 
 #### Merged Pull Requests
+- Bump mixlib-shellout to 2.4.2 and inspec to 3.0.64 [#8027](https://github.com/chef/chef/pull/8027) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.13 -->
 - Make sure the ohai CLI uses the same version of ohai as chef-client [#8020](https://github.com/chef/chef/pull/8020) ([tas50](https://github.com/tas50)) <!-- 14.8.12 -->
 - Bump ohai to 14.8.10 for improved virtualization and platform detection [#8019](https://github.com/chef/chef/pull/8019) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.11 -->
 - dnf_package: Add RHEL 8 support [#8006](https://github.com/chef/chef/pull/8006) ([tas50](https://github.com/tas50)) <!-- 14.8.10 -->
