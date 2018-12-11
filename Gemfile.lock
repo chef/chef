@@ -27,10 +27,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (15.0.102)
+    chef (15.0.103)
       addressable
       bundler (>= 1.10)
-      chef-config (= 15.0.102)
+      chef-config (= 15.0.103)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -57,10 +57,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (15.0.102-universal-mingw32)
+    chef (15.0.103-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 15.0.102)
+      chef-config (= 15.0.103)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -104,7 +104,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (15.0.102)
+    chef-config (15.0.103)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -298,7 +298,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
     slop (3.6.0)
-    specinfra (2.76.3)
+    specinfra (2.76.5)
       net-scp
       net-ssh (>= 2.7)
       net-telnet (= 0.1.1)
@@ -356,7 +356,7 @@ GEM
       structured_warnings
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    wmi-lite (1.0.0)
+    wmi-lite (1.0.1)
     yard (0.9.16)
 
 PLATFORMS
