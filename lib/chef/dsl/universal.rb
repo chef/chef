@@ -47,6 +47,13 @@ class Chef
       include Chef::Mixin::PowershellExec
       include Chef::Mixin::PowershellOut
       include Chef::Mixin::ShellOut
+
+      def tagged?(*tags)
+        tags.each do |tag|
+          return false unless run_context.node.tags.include?(tag)
+        end
+        true
+      end
     end
   end
 end
