@@ -44,25 +44,25 @@ class Chef
 
       def self.method_name_from_marketing_name(marketing_name)
         "#{marketing_name.gsub(/\s/, '_').tr('.', '_').downcase}?"
-        # "#{marketing_name.gsub(/\s/, '_').gsub(//, '_').downcase}?"
       end
 
       private_class_method :method_name_from_marketing_name
 
       WIN_VERSIONS = {
-        "Windows 10" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
-        "Windows Server 2016" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
-        "Windows 8.1" => { major: 6, minor: 3, callable: lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
-        "Windows Server 2012 R2" => { major: 6, minor: 3, callable: lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
-        "Windows 8" => { major: 6, minor: 2, callable: lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
-        "Windows Server 2012" => { major: 6, minor: 2, callable: lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
-        "Windows 7" => { major: 6, minor: 1, callable: lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
-        "Windows Server 2008 R2" => { major: 6, minor: 1, callable: lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
-        "Windows Server 2008" => { major: 6, minor: 0, callable: lambda { |product_type, suite_mask| product_type != VER_NT_WORKSTATION } },
-        "Windows Vista" => { major: 6, minor: 0, callable: lambda { |product_type, suite_mask| product_type == VER_NT_WORKSTATION } },
-        "Windows Server 2003 R2" => { major: 5, minor: 2, callable: lambda { |product_type, suite_mask| get_system_metrics(SM_SERVERR2) != 0 } },
-        "Windows Home Server" => { major: 5, minor: 2, callable: lambda { |product_type, suite_mask| (suite_mask & VER_SUITE_WH_SERVER) == VER_SUITE_WH_SERVER } },
-        "Windows Server 2003" => { major: 5, minor: 2, callable: lambda { |product_type, suite_mask| get_system_metrics(SM_SERVERR2) == 0 } },
+        "Windows Server 2019" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION && build_number >= 17763 } },
+        "Windows 10" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type == VER_NT_WORKSTATION } },
+        "Windows Server 2016" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION && build_number <= 14393 } },
+        "Windows 8.1" => { major: 6, minor: 3, callable: lambda { |product_type, suite_mask, build_number| product_type == VER_NT_WORKSTATION } },
+        "Windows Server 2012 R2" => { major: 6, minor: 3, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION } },
+        "Windows 8" => { major: 6, minor: 2, callable: lambda { |product_type, suite_mask, build_number| product_type == VER_NT_WORKSTATION } },
+        "Windows Server 2012" => { major: 6, minor: 2, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION } },
+        "Windows 7" => { major: 6, minor: 1, callable: lambda { |product_type, suite_mask, build_number| product_type == VER_NT_WORKSTATION } },
+        "Windows Server 2008 R2" => { major: 6, minor: 1, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION } },
+        "Windows Server 2008" => { major: 6, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION } },
+        "Windows Vista" => { major: 6, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type == VER_NT_WORKSTATION } },
+        "Windows Server 2003 R2" => { major: 5, minor: 2, callable: lambda { |product_type, suite_mask, build_number| get_system_metrics(SM_SERVERR2) != 0 } },
+        "Windows Home Server" => { major: 5, minor: 2, callable: lambda { |product_type, suite_mask, build_number| (suite_mask & VER_SUITE_WH_SERVER) == VER_SUITE_WH_SERVER } },
+        "Windows Server 2003" => { major: 5, minor: 2, callable: lambda { |product_type, suite_mask, build_number| get_system_metrics(SM_SERVERR2) == 0 } },
         "Windows XP" => { major: 5, minor: 1 },
         "Windows 2000" => { major: 5, minor: 0 },
       }.freeze
@@ -88,7 +88,7 @@ class Chef
         define_method(method_name) do
           (@major_version == v[:major]) &&
             (@minor_version == v[:minor]) &&
-            (v[:callable] ? v[:callable].call(@product_type, @suite_mask) : true)
+            (v[:callable] ? v[:callable].call(@product_type, @suite_mask, @build_number) : true)
         end
         marketing_names << [k, method_name]
       end
