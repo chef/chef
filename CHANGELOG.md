@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.103 -->
-## [v15.0.103](https://github.com/chef/chef/tree/v15.0.103) (2018-12-11)
+<!-- latest_release 15.0.104 -->
+## [v15.0.104](https://github.com/chef/chef/tree/v15.0.104) (2018-12-11)
 
 #### Merged Pull Requests
-- Allow the use of tagged?(tags) method in both only_if and not_if blocks [#7977](https://github.com/chef/chef/pull/7977) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Chef 15: Windows Server 2019 version detection [#8031](https://github.com/chef/chef/pull/8031) ([stuartpreston](https://github.com/stuartpreston))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Chef 15: Windows Server 2019 version detection [#8031](https://github.com/chef/chef/pull/8031) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.104 -->
 - Allow the use of tagged?(tags) method in both only_if and not_if blocks [#7977](https://github.com/chef/chef/pull/7977) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.103 -->
 - Bugfixes to powershell_package_source [#8025](https://github.com/chef/chef/pull/8025) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.102 -->
 - Require Ruby 2.5 or later [#8023](https://github.com/chef/chef/pull/8023) ([tas50](https://github.com/tas50)) <!-- 15.0.101 -->
