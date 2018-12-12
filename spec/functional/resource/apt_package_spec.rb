@@ -23,7 +23,7 @@ require "webrick"
 module AptServer
   def enable_testing_apt_source
     File.open("/etc/apt/sources.list.d/chef-integration-test.list", "w+") do |f|
-      f.puts "deb [trusted=yes] http://localhost:9000/ sid main"
+      f.puts "deb [trusted=yes] http://localhost:9876/ sid main"
     end
     # Magic to update apt cache for only our repo
     shell_out!("apt-get update " +
@@ -50,7 +50,7 @@ module AptServer
 
   def apt_server
     @apt_server ||= WEBrick::HTTPServer.new(
-      Port: 9000,
+      Port: 9876,
       DocumentRoot: apt_data_dir + "/var/www/apt",
       # Make WEBrick quiet, comment out for debug.
       Logger: Logger.new(StringIO.new),
@@ -66,7 +66,7 @@ module AptServer
     @apt_server_thread = Thread.new do
       run_apt_server
     end
-    until tcp_test_port("localhost", 9000)
+    until tcp_test_port("localhost", 9876)
       if @apt_server_thread.alive?
         sleep 1
       else
