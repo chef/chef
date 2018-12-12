@@ -51,6 +51,10 @@ class Chef
       property :non_unique, [ TrueClass, FalseClass ], default: false,
                description: "Allow gid duplication. May only be used with the Groupadd provider."
 
+      property :comment, String,
+               introduced: "14.9",
+               description: "Specifies a comment to associate with the local group."
+
       alias_method :users, :members
     end
   end

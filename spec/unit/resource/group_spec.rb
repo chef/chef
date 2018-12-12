@@ -49,6 +49,10 @@ describe Chef::Resource::Group, "initialize" do
     expect(resource.members).to eql([])
   end
 
+  it "defaults comment to be nil" do
+    expect(resource.comment).to eql(nil)
+  end
+
   it "aliases users to members, also an empty array" do
     expect(resource.users).to eql([])
   end
@@ -144,5 +148,18 @@ describe Chef::Resource::Group, "append" do
     it "returns the group name as its identity" do
       expect(resource.identity).to eq("pokemon")
     end
+  end
+end
+
+describe Chef::Resource::Group, "comment" do
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
+
+  it "allows an string" do
+    resource.comment "this is a group comment"
+    expect(resource.comment).to eql("this is a group comment")
+  end
+
+  it "does not allow a hash" do
+    expect { resource.send(:comment, { some_other_user: "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 end
