@@ -45,7 +45,7 @@ matrix:
     rvm: 2.5.3
     sudo: true
     # the travis apt proxy screws with our functional testing something fierce
-    script: rm -f /etc/apt/apt.conf.d/99-travis-apt-proxy; sudo -E $(which bundle) exec rake spec:functional;
+    script: sudo rm -f /etc/apt/apt.conf.d/99-travis-apt-proxy; sudo -E $(which bundle) exec rake spec:functional;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
       UNIT_SPECS_25: 1
