@@ -1,6 +1,6 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
-# UNRELEASED
+# Chef Client Release Notes 14.8:
 
 ## Updated Resources
 
@@ -11,6 +11,10 @@ The apt_package resource now supports using the `allow_downgrade` property to en
 ### apt_repository
 
 An issue was resolved in the apt_repository resource that caused the resource to fail when importing GPG keys on newer Debian releases. Thank you [@EugenMayer](https://github.com/EugenMayer) for this fix.
+
+### dnf_package / yum_package
+
+Initial support has been added for Red Hat Enterprise Linux 8. Thank you [@pixdrift](https://github.com/pixdrift) for this fix.
 
 ### gem_package
 
@@ -60,7 +64,6 @@ Example `node['virtualization']` data:
 
 On Linux systems running lxc or lxd containers, the lxc/lxd virtualization system will now properly populate the `node['virtualization']['systems']` attribute.
 
-
 #### BSD Hypervisor Detection
 
 BSD-based systems can now detect guests running on KVM and Amazon's hypervisor without the need for the dmidecode package.
@@ -68,7 +71,7 @@ BSD-based systems can now detect guests running on KVM and Amazon's hypervisor w
 ### New Platform Support
 
 - Ohai now properly detects the openSUSE 15.X platform. Thank you [@megamorf](https://github.com/megamorf) for reporting this issue.
-- Suse Linux Enterprise Desktop now identified as platform_family 'suse'
+- SUSE Linux Enterprise Desktop now identified as platform_family 'suse'
 - XCP-NG is now identified as platform 'xcp' and platform_family 'rhel'. Thank you [@heyjodom](http://github.com/heyjodom) for submitting this enhancement.
 - Mangeia Linux is now identified as platform 'mangeia' and platform_family 'mandriva'
 - Antergos Linux now identified as platform_family 'arch'
