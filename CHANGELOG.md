@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.105 -->
-## [v15.0.105](https://github.com/chef/chef/tree/v15.0.105) (2018-12-13)
+<!-- latest_release 15.0.106 -->
+## [v15.0.106](https://github.com/chef/chef/tree/v15.0.106) (2018-12-13)
 
 #### Merged Pull Requests
-- Remove travis apt proxy before running functional tests [#8040](https://github.com/chef/chef/pull/8040) ([lamont-granquist](https://github.com/lamont-granquist))
+- minimal_ohai: Add init_package plugin as a required plugin [#7980](https://github.com/chef/chef/pull/7980) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- minimal_ohai: Add init_package plugin as a required plugin [#7980](https://github.com/chef/chef/pull/7980) ([tas50](https://github.com/tas50)) <!-- 15.0.106 -->
 - Remove travis apt proxy before running functional tests [#8040](https://github.com/chef/chef/pull/8040) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.105 -->
 - Chef 15: Windows Server 2019 version detection [#8031](https://github.com/chef/chef/pull/8031) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.104 -->
 - Allow the use of tagged?(tags) method in both only_if and not_if blocks [#7977](https://github.com/chef/chef/pull/7977) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.103 -->
