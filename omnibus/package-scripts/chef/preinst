@@ -9,4 +9,9 @@
 
 INSTALLER_DIR=/opt/chef
 echo "removing $INSTALLER_DIR..."
-rm -rf $INSTALLER_DIR
+
+# we have to move the dir before trying to wipe it and then ignore errors since
+# files may still be in use.
+tmp_dir="/opt/.chef.$$"
+mv $INSTALLER_DIR $tmp_dir
+rm -rf $tmp_dir || true
