@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.104 -->
-## [v15.0.104](https://github.com/chef/chef/tree/v15.0.104) (2018-12-11)
+<!-- latest_release 15.0.105 -->
+## [v15.0.105](https://github.com/chef/chef/tree/v15.0.105) (2018-12-13)
 
 #### Merged Pull Requests
-- Chef 15: Windows Server 2019 version detection [#8031](https://github.com/chef/chef/pull/8031) ([stuartpreston](https://github.com/stuartpreston))
+- Remove travis apt proxy before running functional tests [#8040](https://github.com/chef/chef/pull/8040) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Remove travis apt proxy before running functional tests [#8040](https://github.com/chef/chef/pull/8040) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.105 -->
 - Chef 15: Windows Server 2019 version detection [#8031](https://github.com/chef/chef/pull/8031) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.104 -->
 - Allow the use of tagged?(tags) method in both only_if and not_if blocks [#7977](https://github.com/chef/chef/pull/7977) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.103 -->
 - Bugfixes to powershell_package_source [#8025](https://github.com/chef/chef/pull/8025) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.102 -->
