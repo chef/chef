@@ -205,13 +205,13 @@ describe Chef::Resource::PowershellPackageSource do
 
   describe "#package_source_exists?" do
     it "returns true if it exists" do
-      allow(provider).to receive(:powershell_out!).with("(Get-PackageSource -Name 'MyGallery').Name").and_return(double("powershell_out!", stdout: "MyGallery\r\n"))
+      allow(provider).to receive(:powershell_out!).with("(Get-PackageSource -Name 'MyGallery' -WarningAction SilentlyContinue).Name").and_return(double("powershell_out!", stdout: "MyGallery\r\n"))
       resource.source_name("MyGallery")
       expect(provider.package_source_exists?).to eql(true)
     end
 
     it "returns false if it doesn't exist" do
-      allow(provider).to receive(:powershell_out!).with("(Get-PackageSource -Name 'MyGallery').Name").and_return(double("powershell_out!", stdout: ""))
+      allow(provider).to receive(:powershell_out!).with("(Get-PackageSource -Name 'MyGallery' -WarningAction SilentlyContinue).Name").and_return(double("powershell_out!", stdout: ""))
       resource.source_name("MyGallery")
       expect(provider.package_source_exists?).to eql(false)
     end
