@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.107 -->
-## [v15.0.107](https://github.com/chef/chef/tree/v15.0.107) (2018-12-14)
+<!-- latest_release 15.0.108 -->
+## [v15.0.108](https://github.com/chef/chef/tree/v15.0.108) (2018-12-14)
 
 #### Merged Pull Requests
-- fix EBUSY errors in preinst script [#8046](https://github.com/chef/chef/pull/8046) ([lamont-granquist](https://github.com/lamont-granquist))
+- Added property `comment` on Windows group. [#8038](https://github.com/chef/chef/pull/8038) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Added property `comment` on Windows group. [#8038](https://github.com/chef/chef/pull/8038) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.108 -->
 - fix EBUSY errors in preinst script [#8046](https://github.com/chef/chef/pull/8046) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.107 -->
 - minimal_ohai: Add init_package plugin as a required plugin [#7980](https://github.com/chef/chef/pull/7980) ([tas50](https://github.com/tas50)) <!-- 15.0.106 -->
 - Remove travis apt proxy before running functional tests [#8040](https://github.com/chef/chef/pull/8040) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.105 -->
