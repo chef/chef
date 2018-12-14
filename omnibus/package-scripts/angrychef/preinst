@@ -9,4 +9,13 @@
 
 INSTALLER_DIR=/opt/angrychef
 echo "removing $INSTALLER_DIR..."
-rm -rf $INSTALLER_DIR
+
+# have to do this dance of moving /opt/chef to a tmp dir since files may be in use
+tmp_dir="/opt/.chef.$$"
+# if we can't create the tmp_dir then fail hard to prevent any possible security hole
+(umask 077 && mkdir $tmp_dir) || exit 1
+# now we can clean up the tmp_dir we created safely
+mv $INSTALLER_DIR $tmp_dir
+# ignore errors which must be EBUSY issues, this may crate some litter, which may
+# be unavoidable
+rm -rf $tmp_dir || true
