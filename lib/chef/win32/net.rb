@@ -180,6 +180,21 @@ class Chef
         end
       end
 
+      def self.net_local_group_set_info(server_name, group_name, comment)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+        comment = wstring(comment)
+
+        buf = LOCALGROUP_INFO_1.new
+        buf[:lgrpi1_name] = FFI::MemoryPointer.from_string(group_name)
+        buf[:lgrpi1_comment] = FFI::MemoryPointer.from_string(comment)
+
+        rc = NetLocalGroupSetInfo(server_name, group_name, 1, buf, nil)
+        if rc != NERR_Success
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
+        end
+      end
+
       def self.net_user_del(server_name, user_name)
         server_name = wstring(server_name)
         user_name = wstring(user_name)
