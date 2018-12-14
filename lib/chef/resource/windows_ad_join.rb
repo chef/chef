@@ -75,7 +75,7 @@ class Chef
             ps_run = powershell_out(cmd)
             if ps_run.error?
               if sensitive?
-                raise "Failed to join the domain #{new_resource.domain_name}: *sensitive output suppressed*"
+                raise "Failed to join the domain #{new_resource.domain_name}: *suppressed sensitive resource output*"
               else
                 raise "Failed to join the domain #{new_resource.domain_name}: #{ps_run.stderr}"
               end
