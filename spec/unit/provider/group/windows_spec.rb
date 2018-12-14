@@ -49,6 +49,7 @@ describe Chef::Provider::Group::Windows do
   describe "manage_group" do
     before do
       @new_resource.members([ "us" ])
+      @new_resource.comment = "this is group comment"
       @current_resource = Chef::Resource::Group.new("staff")
       @current_resource.members %w{all your base}
       @new_resource.excluded_members %w{all}
@@ -57,6 +58,7 @@ describe Chef::Provider::Group::Windows do
       allow(@net_group).to receive(:local_add_members)
       allow(@net_group).to receive(:local_set_members)
       allow(@provider).to receive(:lookup_account_name)
+      allow(@net_group).to receive(:local_group_set_info)
       allow(@provider).to receive(:validate_member!).and_return(true)
       @provider.current_resource = @current_resource
     end
@@ -70,6 +72,19 @@ describe Chef::Provider::Group::Windows do
     it "should call @net_group.local_add_members" do
       @new_resource.append(true)
       expect(@net_group).to receive(:local_add_members).with(@new_resource.members)
+      @provider.manage_group
+    end
+
+    it "when comment is present, should call @net_group.local_group_set_info" do
+      @new_resource.append(true)
+      expect(@net_group).to receive(:local_group_set_info).with(@new_resource.comment)
+      @provider.manage_group
+    end
+
+    it "when comment is not present, should not call @net_group.local_group_set_info" do
+      @new_resource.comment = nil
+      @new_resource.append(true)
+      expect(@net_group).not_to receive(:local_group_set_info).with(@new_resource.comment)
       @provider.manage_group
     end
 
