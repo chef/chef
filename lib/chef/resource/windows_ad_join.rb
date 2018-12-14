@@ -73,7 +73,13 @@ class Chef
 
           converge_by("join Active Directory domain #{new_resource.domain_name}") do
             ps_run = powershell_out(cmd)
-            raise "Failed to join the domain #{new_resource.domain_name}: #{ps_run.stderr}}" if ps_run.error?
+            if ps_run.error?
+              if sensitive?
+                raise "Failed to join the domain #{new_resource.domain_name}: *sensitive output suppressed*"
+              else
+                raise "Failed to join the domain #{new_resource.domain_name}: #{ps_run.stderr}"
+              end
+            end
 
             unless new_resource.reboot == :never
               reboot "Reboot to join domain #{new_resource.domain_name}" do
@@ -103,6 +109,10 @@ class Chef
           else
             reboot_action
           end
+        end
+
+        def sensitive?
+          !!new_resource.sensitive
         end
       end
     end
