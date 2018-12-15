@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.8.17 -->
-## [v14.8.17](https://github.com/chef/chef/tree/v14.8.17) (2018-12-14)
+<!-- latest_release 14.8.18 -->
+## [v14.8.18](https://github.com/chef/chef/tree/v14.8.18) (2018-12-15)
 
 #### Merged Pull Requests
-- Backport: Bugfixes to powershell_package_source [#8050](https://github.com/chef/chef/pull/8050) ([stuartpreston](https://github.com/stuartpreston))
+- Backport: Allow setting the comment on a Windows group [#8052](https://github.com/chef/chef/pull/8052) ([stuartpreston](https://github.com/stuartpreston))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.8.12 -->
 ### Changes since 14.8.12 release
 
 #### Merged Pull Requests
+- Backport: Allow setting the comment on a Windows group [#8052](https://github.com/chef/chef/pull/8052) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.18 -->
 - Backport: Bugfixes to powershell_package_source [#8050](https://github.com/chef/chef/pull/8050) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.17 -->
 - Bump mixlib-archive to 0.4.19 and mixlib-shellout to 2.4.4 [#8037](https://github.com/chef/chef/pull/8037) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.16 -->
 - Bump mixlib-shellout to 2.4.2 and inspec to 3.0.64 [#8027](https://github.com/chef/chef/pull/8027) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.13 -->
