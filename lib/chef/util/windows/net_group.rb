@@ -58,6 +58,12 @@ class Chef::Util::Windows::NetGroup
     raise ArgumentError, e
   end
 
+  def local_group_set_info(comment)
+    Chef::ReservedNames::Win32::NetUser.net_local_group_set_info(nil, groupname, comment)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
+  end
+
   def local_delete_members(members)
     Chef::ReservedNames::Win32::NetUser.net_local_group_del_members(nil, groupname, members)
   rescue Chef::Exceptions::Win32APIError => e

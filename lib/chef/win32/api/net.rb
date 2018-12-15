@@ -144,6 +144,11 @@ class Chef
           layout :lgrpi0_name, :LPWSTR
         end
 
+        class LOCALGROUP_INFO_1 < FFI::Struct
+          layout :lgrpi1_name, :LPWSTR,
+                 :lgrpi1_comment, :LPWSTR
+        end
+
         class USE_INFO_2 < FFI::Struct
           include StructHelpers
 
@@ -166,6 +171,17 @@ class Chef
         # );
         safe_attach_function :NetLocalGroupAdd, [
           :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD
+        ], :DWORD
+
+        # NET_API_STATUS NetLocalGroupSetInfo(
+        #   _In_ LPCWSTR servername,
+        #   _In_ LPCWSTR groupname,
+        #   _In_ DWORD   level,
+        #   _In_ LPBYTE  buf,
+        #   _Out_ LPDWORD parm_err
+        # );
+        safe_attach_function :NetLocalGroupSetInfo, [
+          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD
         ], :DWORD
 
         # NET_API_STATUS NetLocalGroupDel(

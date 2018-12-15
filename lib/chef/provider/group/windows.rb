@@ -77,6 +77,7 @@ class Chef
           else
             @net_group.local_set_members(new_resource.members)
           end
+          @net_group.local_group_set_info(new_resource.comment) if new_resource.comment
         end
 
         def has_current_group_member?(member)
