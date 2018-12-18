@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.8.19 -->
-## [v14.8.19](https://github.com/chef/chef/tree/v14.8.19) (2018-12-18)
+<!-- latest_release 14.8.20 -->
+## [v14.8.20](https://github.com/chef/chef/tree/v14.8.20) (2018-12-18)
 
 #### Merged Pull Requests
-- Backport: windows_ad_join: suppress sensitive stderr [#8061](https://github.com/chef/chef/pull/8061) ([stuartpreston](https://github.com/stuartpreston))
+- Bump inspec-core to 3.1.3 [#8048](https://github.com/chef/chef/pull/8048) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.8.12 -->
 ### Changes since 14.8.12 release
 
 #### Merged Pull Requests
+- Bump inspec-core to 3.1.3 [#8048](https://github.com/chef/chef/pull/8048) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.20 -->
 - Backport: windows_ad_join: suppress sensitive stderr [#8061](https://github.com/chef/chef/pull/8061) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.19 -->
 - Backport: Allow setting the comment on a Windows group [#8052](https://github.com/chef/chef/pull/8052) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.18 -->
 - Backport: Bugfixes to powershell_package_source [#8050](https://github.com/chef/chef/pull/8050) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.17 -->
