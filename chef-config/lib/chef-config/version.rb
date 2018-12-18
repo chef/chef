@@ -21,7 +21,7 @@
 
 module ChefConfig
   CHEFCONFIG_ROOT = File.expand_path("../..", __FILE__)
-  VERSION = "15.0.111".freeze
+  VERSION = "15.0.112".freeze
 end
 
 #
