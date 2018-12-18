@@ -181,7 +181,7 @@ GEM
     kitchen-vagrant (1.3.6)
       test-kitchen (~> 1.4)
     libyajl2 (1.2.0)
-    license_scout (1.0.19)
+    license_scout (1.0.20)
       ffi-yajl (~> 2.2)
       mixlib-shellout (~> 2.2)
       toml-rb (~> 1.0)
