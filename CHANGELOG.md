@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.109 -->
-## [v15.0.109](https://github.com/chef/chef/tree/v15.0.109) (2018-12-14)
+<!-- latest_release 15.0.110 -->
+## [v15.0.110](https://github.com/chef/chef/tree/v15.0.110) (2018-12-18)
 
 #### Merged Pull Requests
-- windows_ad_join: suppress sensitive stderr [#8054](https://github.com/chef/chef/pull/8054) ([Happycoil](https://github.com/Happycoil))
+- Adding VC Redistributable files required for powershell_exec on Windows [#8059](https://github.com/chef/chef/pull/8059) ([stuartpreston](https://github.com/stuartpreston))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Adding VC Redistributable files required for powershell_exec on Windows [#8059](https://github.com/chef/chef/pull/8059) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.110 -->
 - windows_ad_join: suppress sensitive stderr [#8054](https://github.com/chef/chef/pull/8054) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.109 -->
 - Added property `comment` on Windows group. [#8038](https://github.com/chef/chef/pull/8038) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.108 -->
 - fix EBUSY errors in preinst script [#8046](https://github.com/chef/chef/pull/8046) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.107 -->
