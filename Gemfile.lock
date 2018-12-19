@@ -316,7 +316,7 @@ GEM
     thor (0.20.3)
     timers (4.2.0)
     tomlrb (1.2.7)
-    train-core (1.5.11)
+    train-core (1.6.3)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
     travis (1.8.9)
