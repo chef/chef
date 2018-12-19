@@ -60,6 +60,24 @@ describe "chef-client" do
       shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
     end
 
+    it "should complete successfully with no other environment variables", skip: (Chef::Platform.windows?) do
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        # One environment variable we DO need to prevent hanging
+        ENV["CHEF_LICENSE"] = "accept-no-persist"
+      EOM
+
+      begin
+        result = shell_out("env -i #{critical_env_vars} #{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+        result.error!
+      rescue
+        Chef::Log.info "Bare invocation will have the following load-path."
+        Chef::Log.info shell_out!("env -i #{critical_env_vars} ruby -e 'puts $:'").stdout
+        raise
+      end
+    end
+
     it "should complete successfully with --no-listen" do
       file "config/client.rb", <<~EOM
         local_mode true

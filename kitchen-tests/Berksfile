@@ -2,3 +2,4 @@ source "https://supermarket.chef.io"
 
 cookbook "end_to_end", path: "cookbooks/end_to_end"
 cookbook "rspec", path: "cookbooks/rspec"
+cookbook "chef-client", git: "https://github.com/tyler-ball/chef-client.git", branch: "chef_license_accept"

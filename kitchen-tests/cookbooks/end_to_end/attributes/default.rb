@@ -62,6 +62,8 @@ default["chef_client"]["splay"] = 1800
 # only log what we change
 default["chef_client"]["config"]["verbose_logging"] = false
 
+default["chef_client"]["chef_license"] = "accept-no-persist"
+
 #
 # resolver cookbook overrides
 #

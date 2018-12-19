@@ -7,4 +7,4 @@ gem "berkshelf", git: "https://github.com/berkshelf/berkshelf.git", branch: "mas
 gem "kitchen-dokken", "~> 2.0"
 gem "kitchen-inspec", git: "https://github.com/chef/kitchen-inspec.git", branch: "master"
 gem "inspec", git: "https://github.com/inspec/inspec.git", branch: "master" # this goes away when we ship inspec 4
-gem "test-kitchen", git: "https://github.com/test-kitchen/test-kitchen.git", branch: "master"
+gem "test-kitchen", git: "https://github.com/test-kitchen/test-kitchen.git", branch: "chef_license_accept"

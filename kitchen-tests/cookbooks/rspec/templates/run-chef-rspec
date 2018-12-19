@@ -8,4 +8,5 @@ export PATH=/opt/chef/embedded/bin:$PATH
 cd /opt/chef/embedded/apps/chef
 
 /opt/chef/embedded/bin/bundle install
+export CHEF_LICENSE=accept-no-persist
 /opt/chef/embedded/bin/bundle exec /opt/chef/embedded/bin/rspec --format progress

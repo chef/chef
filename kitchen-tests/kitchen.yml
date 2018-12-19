@@ -12,6 +12,7 @@ provisioner:
   name: dokken
   client_rb:
     diff_disabled: true
+  chef_license: "accept-no-persist"
 
 lifecycle:
   pre_converge:
