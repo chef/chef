@@ -122,6 +122,62 @@
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.8.12](https://github.com/chef/chef/tree/v14.8.12) (2018-12-13)
+
+#### Merged Pull Requests
+- Chef 14 Backport: fix the knife integration spec timeouts [#7899](https://github.com/chef/chef/pull/7899) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef 14 Backport: windows_ad_join: Switch to UPN format usernames for use with AD cmdlets [#7906](https://github.com/chef/chef/pull/7906) ([stuartpreston](https://github.com/stuartpreston))
+- Chef 14 Backport: Make sure we define windows_task resource on *nix systems [#7907](https://github.com/chef/chef/pull/7907) ([stuartpreston](https://github.com/stuartpreston))
+- Update inspec and ca-certs to the latest [#7898](https://github.com/chef/chef/pull/7898) ([tas50](https://github.com/tas50))
+- Backport: windows_feature: Move provider logic into the default of the install_method property [#7920](https://github.com/chef/chef/pull/7920) ([tas50](https://github.com/tas50))
+- Bump InSpec to 3.0.46 [#7931](https://github.com/chef/chef/pull/7931) ([tas50](https://github.com/tas50))
+- Replace usage of win_friendly_path helper in windows_certificate [#7932](https://github.com/chef/chef/pull/7932) ([tas50](https://github.com/tas50))
+- Update cheffish to 14.0.4 [#7937](https://github.com/chef/chef/pull/7937) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 3.0.52 [#7945](https://github.com/chef/chef/pull/7945) ([chef-ci](https://github.com/chef-ci))
+- Chef 14: Replace several uses of attribute with property in resources [#7967](https://github.com/chef/chef/pull/7967) ([tas50](https://github.com/tas50))
+- Chef 14: windows_certificate: Add testing of the defaults and allowed properties [#7968](https://github.com/chef/chef/pull/7968) ([tas50](https://github.com/tas50))
+- Chef 14: Improve resource descriptions [#7969](https://github.com/chef/chef/pull/7969) ([tas50](https://github.com/tas50))
+- Chef 14: windows_workgroup: Coerce the provided reboot property and add more t ests [#7972](https://github.com/chef/chef/pull/7972) ([tas50](https://github.com/tas50))
+- Chef 14: windows_share: Properly split the users to be revoked using quotes [#7974](https://github.com/chef/chef/pull/7974) ([tas50](https://github.com/tas50))
+- Chef 14: apt_repository: prevent gpg key import on newer Debian releases [#7971](https://github.com/chef/chef/pull/7971) ([tas50](https://github.com/tas50))
+- Chef 14: windows_share: Fix idempotency by removing the &quot;everyone&quot; access [#7973](https://github.com/chef/chef/pull/7973) ([tas50](https://github.com/tas50))
+- Chef 14: removed features are also available for installation in windows_feature_dism [#7970](https://github.com/chef/chef/pull/7970) ([tas50](https://github.com/tas50))
+- Update to openssl 1.0.2q [#7976](https://github.com/chef/chef/pull/7976) ([tas50](https://github.com/tas50))
+- cab_package: Fail if the cab does not apply to the current windows image [#7992](https://github.com/chef/chef/pull/7992) ([tas50](https://github.com/tas50))
+- gem_package: support the --no-document flag needed for Ruby 2.6 / rubygems 3 [#7994](https://github.com/chef/chef/pull/7994) ([tas50](https://github.com/tas50))
+- windows_share: Avoid ConvertTo-Json errors on Windows 2012r2 with powershell 4 [#7991](https://github.com/chef/chef/pull/7991) ([tas50](https://github.com/tas50))
+- apt_package: Support downgrades for apt packages [#7993](https://github.com/chef/chef/pull/7993) ([tas50](https://github.com/tas50))
+- Make sure which mixin requires chef_class [#7995](https://github.com/chef/chef/pull/7995) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 3.0.61 [#8002](https://github.com/chef/chef/pull/8002) ([chef-ci](https://github.com/chef-ci))
+- dnf_package: Add RHEL 8 support [#8006](https://github.com/chef/chef/pull/8006) ([tas50](https://github.com/tas50))
+- Bump ohai to 14.8.10 for improved virtualization and platform detection [#8019](https://github.com/chef/chef/pull/8019) ([chef-ci](https://github.com/chef-ci))
+- Make sure the ohai CLI uses the same version of ohai as chef-client [#8020](https://github.com/chef/chef/pull/8020) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
+## [v14.7.17](https://github.com/chef/chef/tree/v14.7.17) (2018-11-08)
+
+#### Merged Pull Requests
+- Allow passing array to supports in mount resource again [#7809](https://github.com/chef/chef/pull/7809) ([tas50](https://github.com/tas50))
+- Automated resource documentation improvements [#7811](https://github.com/chef/chef/pull/7811) ([tas50](https://github.com/tas50))
+- Backport: Add macOS support to the timezone resource [#7830](https://github.com/chef/chef/pull/7830) ([tas50](https://github.com/tas50))
+- Backport: Fix inspector to properly handle defaults that are symbols [#7826](https://github.com/chef/chef/pull/7826) ([tas50](https://github.com/tas50))
+- Backport: Fix SLES 15 upgrades removing the symlinks [#7827](https://github.com/chef/chef/pull/7827) ([tas50](https://github.com/tas50))
+- Backport: Add windows_share and windows_certificate resources [#7833](https://github.com/chef/chef/pull/7833) ([tas50](https://github.com/tas50))
+- Backport: Handle `interactive_enabled` property in windows_task resource [#7832](https://github.com/chef/chef/pull/7832) ([tas50](https://github.com/tas50))
+- Backport: Multiple fixes to dmg_package including functional EULA acceptance [#7831](https://github.com/chef/chef/pull/7831) ([tas50](https://github.com/tas50))
+- Backport: Fix chef-apply crash for reboot [#7828](https://github.com/chef/chef/pull/7828) ([tas50](https://github.com/tas50))
+- Update win32-taskscheduler to 2.0.1 [#7844](https://github.com/chef/chef/pull/7844) ([tas50](https://github.com/tas50))
+- Backport: Added `description` property on windows_task resource [#7848](https://github.com/chef/chef/pull/7848) ([btm](https://github.com/btm))
+- Backport: Add default_descriptions to properties [#7873](https://github.com/chef/chef/pull/7873) ([tas50](https://github.com/tas50))
+- Backport: Make knife command banners consistent [#7874](https://github.com/chef/chef/pull/7874) ([tas50](https://github.com/tas50))
+- Add more validation_messages to properties [#7875](https://github.com/chef/chef/pull/7875) ([tas50](https://github.com/tas50))
+- Backport: Add windows_firewall_rule resource [#7876](https://github.com/chef/chef/pull/7876) ([tas50](https://github.com/tas50))
+- Backport: Resource property description updates [#7887](https://github.com/chef/chef/pull/7887) ([tas50](https://github.com/tas50))
+- Backport: Allow multiple local and remote ports in the windows_firewall_rule resource [#7888](https://github.com/chef/chef/pull/7888) ([tas50](https://github.com/tas50))
+- Backport: Defer running initramfs_command until end of run [#7889](https://github.com/chef/chef/pull/7889) ([tas50](https://github.com/tas50))
+- fix whitespace in node attributes [ci skip] [#7891](https://github.com/chef/chef/pull/7891) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v14.6.47](https://github.com/chef/chef/tree/v14.6.47) (2018-10-26)
 
 #### Merged Pull Requests
@@ -173,7 +229,6 @@
 - Add some retry/delay in HTTP functional tests [#7780](https://github.com/chef/chef/pull/7780) ([schisamo](https://github.com/schisamo))
 - Pin rake to 12.3.0 to prevent installing 2 copies in our install [#7779](https://github.com/chef/chef/pull/7779) ([tas50](https://github.com/tas50))
 - Fix locale on RHEL 6 / Amazon Linux [#7782](https://github.com/chef/chef/pull/7782) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.5.33](https://github.com/chef/chef/tree/v14.5.33) (2018-09-25)
 
