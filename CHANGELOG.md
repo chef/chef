@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.112 -->
-## [v15.0.112](https://github.com/chef/chef/tree/v15.0.112) (2018-12-18)
+<!-- latest_release 15.0.113 -->
+## [v15.0.113](https://github.com/chef/chef/tree/v15.0.113) (2018-12-19)
 
 #### Merged Pull Requests
-- Update inspec to 3.1 and bump all the mixlibs [#8062](https://github.com/chef/chef/pull/8062) ([tas50](https://github.com/tas50))
+- Bump license_scout to 1.0.20 for licensing tests [#8065](https://github.com/chef/chef/pull/8065) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Bump license_scout to 1.0.20 for licensing tests [#8065](https://github.com/chef/chef/pull/8065) ([tas50](https://github.com/tas50)) <!-- 15.0.113 -->
 - Update inspec to 3.1 and bump all the mixlibs [#8062](https://github.com/chef/chef/pull/8062) ([tas50](https://github.com/tas50)) <!-- 15.0.112 -->
 - windows_certificate: Fix invalid byte sequence errors with pfx certicates [#8008](https://github.com/chef/chef/pull/8008) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.111 -->
 - Adding VC Redistributable files required for powershell_exec on Windows [#8059](https://github.com/chef/chef/pull/8059) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.110 -->
