@@ -72,6 +72,7 @@ describe Chef::Application do
       describe "run" do
         before do
           allow(@app).to receive(:setup_application).and_return(true)
+          allow(@app).to receive(:check_license_acceptance)
           allow(@app).to receive(:run_application).and_return(true)
           allow(@app).to receive(:configure_chef).and_return(true)
           allow(@app).to receive(:configure_logging).and_return(true)
@@ -84,6 +85,11 @@ describe Chef::Application do
 
         it "should setup the application before running it" do
           expect(@app).to receive(:setup_application).and_return(true)
+          @app.run
+        end
+
+        it "should check the license acceptance" do
+          expect(@app).to receive(:check_license_acceptance)
           @app.run
         end
 

@@ -66,6 +66,8 @@ describe "chef-client" do
       file "config/client.rb", <<~EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
+        # One environment variable we DO need to prevent hanging
+        ENV["CHEF_LICENSE"] = "accept-no-persist"
       EOM
 
       begin
