@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.8.23 -->
-## [v14.8.23](https://github.com/chef/chef/tree/v14.8.23) (2018-12-19)
+<!-- latest_release 14.8.24 -->
+## [v14.8.24](https://github.com/chef/chef/tree/v14.8.24) (2018-12-20)
 
 #### Merged Pull Requests
-- Bump train-core to 1.6.3 [#8067](https://github.com/chef/chef/pull/8067) ([chef-ci](https://github.com/chef-ci))
+- windows_certificate: Fix failures in delete action fails if certificate doesn&#39;t exist [#8073](https://github.com/chef/chef/pull/8073) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.8.12 -->
 ### Changes since 14.8.12 release
 
 #### Merged Pull Requests
+- windows_certificate: Fix failures in delete action fails if certificate doesn&#39;t exist [#8073](https://github.com/chef/chef/pull/8073) ([tas50](https://github.com/tas50)) <!-- 14.8.24 -->
 - Bump train-core to 1.6.3 [#8067](https://github.com/chef/chef/pull/8067) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.23 -->
 - Bump license_scout to 1.0.20 for licensing tests [#8064](https://github.com/chef/chef/pull/8064) ([tas50](https://github.com/tas50)) <!-- 14.8.22 -->
 - Backport: Adding VC Redistributable files required for powershell_exec on Windows [#8060](https://github.com/chef/chef/pull/8060) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.21 -->
