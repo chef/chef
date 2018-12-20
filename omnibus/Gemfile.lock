@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: f54ca7cd82d0e49ac62f8380d9c56d05048db9fd
+  revision: 72dd1e333c638af8089c2d5904172640181bd29c
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
     aws-eventstream (1.0.1)
-    aws-partitions (1.125.0)
+    aws-partitions (1.126.0)
     aws-sdk-core (3.44.1)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
@@ -343,7 +343,7 @@ GEM
       structured_warnings
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    winrm (2.3.0)
+    winrm (2.3.1)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
@@ -352,10 +352,10 @@ GEM
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
       rubyntlm (~> 0.6.0, >= 0.6.1)
-    winrm-elevated (1.1.0)
+    winrm-elevated (1.1.1)
       winrm (~> 2.0)
       winrm-fs (~> 1.0)
-    winrm-fs (1.3.1)
+    winrm-fs (1.3.2)
       erubis (~> 2.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 1.1)
