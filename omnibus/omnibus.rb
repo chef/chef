@@ -29,11 +29,14 @@
 env_omnibus_windows_arch = (ENV["OMNIBUS_WINDOWS_ARCH"] || "").downcase
 env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_arch)
 
-windows_arch   env_omnibus_windows_arch
+windows_arch env_omnibus_windows_arch
 
 # Disable git caching
+# caching is currently disabled as it causes issues when we're running
+# builds of different product versions on the same host. When forked to prep
+# for the next major release this has caused problems. To enable again:
 # ------------------------------
-# use_git_caching false
+use_git_caching false
 
 # Enable S3 asset caching
 # ------------------------------
