@@ -59,7 +59,6 @@ class Chef
 
       action :create do
         description "Creates or updates a certificate."
-
         add_cert(OpenSSL::X509::Certificate.new(raw_source))
       end
 
@@ -91,8 +90,12 @@ class Chef
 
       action :delete do
         description "Deletes a certificate."
-
-        delete_cert
+        cert_obj = fetch_cert
+        if cert_obj
+          converge_by("Deleting certificate #{new_resource.source} from Store #{new_resource.store_name}") do
+            delete_cert
+          end
+        end
       end
 
       action :fetch do
