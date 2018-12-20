@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.114 -->
-## [v15.0.114](https://github.com/chef/chef/tree/v15.0.114) (2018-12-19)
+<!-- latest_release 15.0.115 -->
+## [v15.0.115](https://github.com/chef/chef/tree/v15.0.115) (2018-12-20)
 
 #### Merged Pull Requests
-- windows_certificate: Fix failures in delete action fails if certificate doesn&#39;t exist [#8000](https://github.com/chef/chef/pull/8000) ([Vasu1105](https://github.com/Vasu1105))
+- Disable s3 omnibus cache [#8068](https://github.com/chef/chef/pull/8068) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Disable s3 omnibus cache [#8068](https://github.com/chef/chef/pull/8068) ([tas50](https://github.com/tas50)) <!-- 15.0.115 -->
 - windows_certificate: Fix failures in delete action fails if certificate doesn&#39;t exist [#8000](https://github.com/chef/chef/pull/8000) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.114 -->
 - Bump license_scout to 1.0.20 for licensing tests [#8065](https://github.com/chef/chef/pull/8065) ([tas50](https://github.com/tas50)) <!-- 15.0.113 -->
 - Update inspec to 3.1 and bump all the mixlibs [#8062](https://github.com/chef/chef/pull/8062) ([tas50](https://github.com/tas50)) <!-- 15.0.112 -->
