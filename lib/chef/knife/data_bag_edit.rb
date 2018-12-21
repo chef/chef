@@ -43,7 +43,7 @@ class Chef
             exit(1)
           end
         else
-          return item, false
+          return item.raw_data, false
         end
       end
 
