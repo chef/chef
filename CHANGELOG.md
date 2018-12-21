@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.9.2 -->
-## [v14.9.2](https://github.com/chef/chef/tree/v14.9.2) (2018-12-20)
+<!-- latest_release 14.9.3 -->
+## [v14.9.3](https://github.com/chef/chef/tree/v14.9.3) (2018-12-21)
 
 #### Merged Pull Requests
-- Disable s3 omnibus cache [#8069](https://github.com/chef/chef/pull/8069) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 3.2.6 [#8075](https://github.com/chef/chef/pull/8075) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.8.12 -->
 ### Changes since 14.8.12 release
 
 #### Merged Pull Requests
+- Bump inspec-core to 3.2.6 [#8075](https://github.com/chef/chef/pull/8075) ([chef-ci](https://github.com/chef-ci)) <!-- 14.9.3 -->
 - Disable s3 omnibus cache [#8069](https://github.com/chef/chef/pull/8069) ([tas50](https://github.com/tas50)) <!-- 14.9.2 -->
 - chef 14: minimal_ohai: Add init_package plugin as a required plugin [#8072](https://github.com/chef/chef/pull/8072) ([tas50](https://github.com/tas50)) <!-- 14.9.1 -->
 - chef 14: windows_certificate: Fix invalid byte sequence errors with pfx certicates [#8071](https://github.com/chef/chef/pull/8071) ([tas50](https://github.com/tas50)) <!-- 14.9.0 -->
