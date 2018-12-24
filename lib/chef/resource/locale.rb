@@ -36,13 +36,21 @@ class Chef
       action :update do
         description "Update the system's locale."
 
-        if node["init_package"] == "systemd"
-          # on systemd settings LC_ALL is (correctly) reserved only for testing and cannot be set globally
-          execute "localectl set-locale LANG=#{new_resource.lang}" do
+        if node["init_package"] == "systemd" || ::File.exist?("/usr/sbin/update-locale")
+          execute "Generate locales" do
+            command "locale-gen #{new_resource.lang}"
             # RHEL uses /etc/locale.conf
-            not_if { up_to_date?("/etc/locale.conf", new_resource.lang) } if ::File.exist?("/etc/locale.conf")
+            not_if { up_to_date?("/etc/locale.conf", new_resource.lang, new_resource.lc_all) } if ::File.exist?("/etc/locale.conf")
             # Ubuntu 16.04 still uses /etc/default/locale
-            not_if { up_to_date?("/etc/default/locale", new_resource.lang) } if ::File.exist?("/etc/default/locale")
+            not_if { up_to_date?("/etc/default/locale", new_resource.lang, new_resource.lc_all) } if ::File.exist?("/etc/default/locale")
+          end
+
+          execute "Update locale" do
+            command "update-locale LANG=#{new_resource.lang} LC_ALL=#{new_resource.lc_all}"
+            # RHEL uses /etc/locale.conf
+            not_if { up_to_date?("/etc/locale.conf", new_resource.lang, new_resource.lc_all) } if ::File.exist?("/etc/locale.conf")
+            # Ubuntu 16.04 still uses /etc/default/locale
+            not_if { up_to_date?("/etc/default/locale", new_resource.lang, new_resource.lc_all) } if ::File.exist?("/etc/default/locale")
           end
         elsif ::File.exist?("/etc/sysconfig/i18n")
           locale_file_path = "/etc/sysconfig/i18n"
@@ -63,16 +71,6 @@ class Chef
           execute "reload root's lang profile script" do
             command "source /etc/sysconfig/i18n; source /etc/profile.d/lang.sh"
             not_if { updated }
-          end
-        elsif ::File.exist?("/usr/sbin/update-locale")
-          execute "Generate locales" do
-            command "locale-gen"
-            not_if { up_to_date?("/etc/default/locale", new_resource.lang, new_resource.lc_all) }
-          end
-
-          execute "Update locale" do
-            command "update-locale LANG=#{new_resource.lang} LC_ALL=#{new_resource.lc_all}"
-            not_if { up_to_date?("/etc/default/locale", new_resource.lang, new_resource.lc_all) }
           end
         else
           raise "#{node["platform"]} platform not supported by the chef locale resource."
