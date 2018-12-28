@@ -55,8 +55,6 @@ class Chef
           rescue Mixlib::ShellOut::ShellCommandFailed => e
             raise Chef::Exceptions::RebootFailed.new(e.message)
           end
-
-          raise Chef::Exceptions::Reboot.new(msg)
         end
 
         # this is a wrapper function so Chef::Client only needs a single line of code.
