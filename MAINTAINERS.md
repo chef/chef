@@ -196,12 +196,11 @@ To mention the team, use @chef/client-freebsd
 
 ### Lieutenant
 
-* [Aaron Kalin](https://github.com/martinisoft)
+* [Amy Aronsohn](https://github.com/OnlyHaveCans)
 
 ### Maintainers
 
 * [Cory Stephenson](https://github.com/Aevin1387)
-* [David Aronsohn](https://github.com/OnlyHaveCans)
 
 ## OpenBSD
 
