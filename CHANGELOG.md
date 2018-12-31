@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.117 -->
-## [v15.0.117](https://github.com/chef/chef/tree/v15.0.117) (2018-12-31)
+<!-- latest_release 15.0.118 -->
+## [v15.0.118](https://github.com/chef/chef/tree/v15.0.118) (2018-12-31)
 
 #### Merged Pull Requests
-- Bump inspec-core to 3.2.6 [#8076](https://github.com/chef/chef/pull/8076) ([tas50](https://github.com/tas50))
+- Bump multiple deps to the latest [#8085](https://github.com/chef/chef/pull/8085) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Bump multiple deps to the latest [#8085](https://github.com/chef/chef/pull/8085) ([tas50](https://github.com/tas50)) <!-- 15.0.118 -->
 - Bump inspec-core to 3.2.6 [#8076](https://github.com/chef/chef/pull/8076) ([tas50](https://github.com/tas50)) <!-- 15.0.117 -->
 - Update train-core to 1.6.3 for smaller size and new winrm options [#8074](https://github.com/chef/chef/pull/8074) ([tas50](https://github.com/tas50)) <!-- 15.0.116 -->
 - Disable s3 omnibus cache [#8068](https://github.com/chef/chef/pull/8068) ([tas50](https://github.com/tas50)) <!-- 15.0.115 -->
