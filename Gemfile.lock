@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: b19b6bc41a9251cbd1a4c03ccc45e39cc5fcb769
+  revision: 5190569ae0901e1139f296a92cb448a60d98da56
   branch: master
   specs:
-    chefstyle (0.11.0)
+    chefstyle (0.11.1)
       rubocop (= 0.55.0)
 
 GIT
@@ -163,7 +163,7 @@ GEM
       multi_json (~> 1.0)
       net-http-persistent (~> 2.9)
       net-http-pipeline
-    hashdiff (0.3.7)
+    hashdiff (0.3.8)
     hashie (3.6.0)
     highline (1.7.10)
     htmlentities (4.3.4)
@@ -336,7 +336,7 @@ GEM
       typhoeus (~> 0.6, >= 0.6.8)
     tty-color (0.4.3)
     tty-cursor (0.6.0)
-    tty-prompt (0.18.0)
+    tty-prompt (0.18.1)
       necromancer (~> 0.4.0)
       pastel (~> 0.7.0)
       timers (~> 4.0)
@@ -355,10 +355,10 @@ GEM
       tty-screen (~> 0.6.4)
     typhoeus (0.8.0)
       ethon (>= 0.8.0)
-    unicode-display_width (1.4.0)
+    unicode-display_width (1.4.1)
     unicode_utils (1.4.0)
     uuidtools (2.1.5)
-    webmock (3.4.2)
+    webmock (3.5.1)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
