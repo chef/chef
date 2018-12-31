@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 72dd1e333c638af8089c2d5904172640181bd29c
+  revision: 262af48ad7442b5a2edd44ba05106bc024819168
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
     aws-eventstream (1.0.1)
-    aws-partitions (1.126.0)
+    aws-partitions (1.127.0)
     aws-sdk-core (3.44.1)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
@@ -142,7 +142,7 @@ GEM
       mixlib-config (>= 2.2.12, < 3.0)
       mixlib-shellout (~> 2.0)
       tomlrb (~> 1.2)
-    chef-sugar (4.2.1)
+    chef-sugar (5.0.0)
     chef-zero (14.0.11)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
@@ -244,7 +244,7 @@ GEM
       multipart-post (~> 2.0.0)
       progressbar
       zhexdump (>= 0.0.2)
-    plist (3.4.0)
+    plist (3.5.0)
     progressbar (1.10.0)
     proxifier (1.0.3)
     pry (0.12.2)
@@ -294,7 +294,7 @@ GEM
     solve (4.0.2)
       molinillo (~> 0.6)
       semverse (>= 1.1, < 4.0)
-    specinfra (2.76.5)
+    specinfra (2.76.6)
       net-scp
       net-ssh (>= 2.7)
       net-telnet (= 0.1.1)
@@ -302,7 +302,7 @@ GEM
     structured_warnings (0.3.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    test-kitchen (1.23.5)
+    test-kitchen (1.24.0)
       mixlib-install (~> 3.6)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
@@ -315,7 +315,7 @@ GEM
     thor (0.20.3)
     toml-rb (1.1.2)
       citrus (~> 3.0, > 3.0)
-    tomlrb (1.2.7)
+    tomlrb (1.2.8)
     uuidtools (2.1.5)
     win32-api (1.5.3-universal-mingw32)
     win32-certstore (0.1.11)
