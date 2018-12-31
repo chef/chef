@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.116 -->
-## [v15.0.116](https://github.com/chef/chef/tree/v15.0.116) (2018-12-20)
+<!-- latest_release 15.0.117 -->
+## [v15.0.117](https://github.com/chef/chef/tree/v15.0.117) (2018-12-31)
 
 #### Merged Pull Requests
-- Update train-core to 1.6.3 for smaller size and new winrm options [#8074](https://github.com/chef/chef/pull/8074) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 3.2.6 [#8076](https://github.com/chef/chef/pull/8076) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Bump inspec-core to 3.2.6 [#8076](https://github.com/chef/chef/pull/8076) ([tas50](https://github.com/tas50)) <!-- 15.0.117 -->
 - Update train-core to 1.6.3 for smaller size and new winrm options [#8074](https://github.com/chef/chef/pull/8074) ([tas50](https://github.com/tas50)) <!-- 15.0.116 -->
 - Disable s3 omnibus cache [#8068](https://github.com/chef/chef/pull/8068) ([tas50](https://github.com/tas50)) <!-- 15.0.115 -->
 - windows_certificate: Fix failures in delete action fails if certificate doesn&#39;t exist [#8000](https://github.com/chef/chef/pull/8000) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.114 -->
