@@ -234,7 +234,7 @@ EOS
           package_name_array.each do |pkg|
             available_versions =
               begin
-                cmd = [ "list -r #{pkg}" ]
+                cmd = [ "list -r -a -e #{pkg}" ]
                 cmd.push( "-source #{new_resource.source}" ) if new_resource.source
                 raw = parse_list_output(*cmd)
                 raw.keys.each_with_object({}) do |name, available|
