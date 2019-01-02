@@ -673,6 +673,71 @@
 - Don&#39;t fail on every hostname with windows [#7107](https://github.com/chef/chef/pull/7107) ([tas50](https://github.com/tas50))
 - [windows_printer_port] fix typo + add action descriptions [#7093](https://github.com/chef/chef/pull/7093) ([brewn](https://github.com/brewn))
 
+## [v13.12.3](https://github.com/chef/chef/tree/v13.12.3) (2018-11-01)
+
+#### Merged Pull Requests
+- Backport omnibus cleanup + MSI speedup logic from Chef 14 [#7739](https://github.com/chef/chef/pull/7739) ([tas50](https://github.com/tas50))
+- Bump dependencies / slim the package size [#7805](https://github.com/chef/chef/pull/7805) ([tas50](https://github.com/tas50))
+- Pin rake to 12.0 to prevent shipping 2 copies [#7812](https://github.com/chef/chef/pull/7812) ([tas50](https://github.com/tas50))
+- Update Ohai to 13.12.4 [#7817](https://github.com/chef/chef/pull/7817) ([tas50](https://github.com/tas50))
+- Backport:  Throw better error on invalid resources actions [#7836](https://github.com/chef/chef/pull/7836) ([tas50](https://github.com/tas50))
+
+## [v13.11.3](https://github.com/chef/chef/tree/v13.11.3) (2018-09-26)
+
+#### Merged Pull Requests
+- Update to openssl 1.0.2p [#7547](https://github.com/chef/chef/pull/7547) ([tas50](https://github.com/tas50))
+- Use the existing helper method for package resource classes that don&#39;t support allow_downgrade [#7548](https://github.com/chef/chef/pull/7548) ([tas50](https://github.com/tas50))
+- windows_service: Remove potentially sensitive info from the log [#7688](https://github.com/chef/chef/pull/7688) ([tas50](https://github.com/tas50))
+- Improve the error message when knife bootstrap windows isn&#39;t installed  [#7686](https://github.com/chef/chef/pull/7686) ([tas50](https://github.com/tas50))
+- Fix remote_directory does not obey removal of file specificity [#7687](https://github.com/chef/chef/pull/7687) ([tas50](https://github.com/tas50))
+- windows_package: Avoid exposing sensitive data during package install failures if sensitive property set [#7684](https://github.com/chef/chef/pull/7684) ([tas50](https://github.com/tas50))
+- osx_profile: Use the full path to /usr/bin/profiles [#7683](https://github.com/chef/chef/pull/7683) ([tas50](https://github.com/tas50))
+
+## [v13.10.4](https://github.com/chef/chef/tree/v13.10.4) (2018-08-08)
+
+#### Merged Pull Requests
+- Check local file exists before installing a windows package [#7341](https://github.com/chef/chef/pull/7341) ([josh-barker](https://github.com/josh-barker))
+- Backport for 13: scrub tempfile names [#7526](https://github.com/chef/chef/pull/7526) ([tyler-ball](https://github.com/tyler-ball))
+- Pin to rspec to &lt; 3.8 [#7528](https://github.com/chef/chef/pull/7528) ([cheeseplus](https://github.com/cheeseplus))
+- [SHACK-290] Unpacking tarball paths suffer from URI error [#7522](https://github.com/chef/chef/pull/7522) ([tyler-ball](https://github.com/tyler-ball))
+
+## [v13.10.0](https://github.com/chef/chef/tree/v13.10.0) (2018-07-11)
+
+#### Merged Pull Requests
+- Trying to use --recipe-url on Windows with local file fails [#7426](https://github.com/chef/chef/pull/7426) ([tyler-ball](https://github.com/tyler-ball))
+- Pull in latest win32-service gem [#7432](https://github.com/chef/chef/pull/7432) ([tas50](https://github.com/tas50))
+- Bump Ohai to 13.10.0 [#7438](https://github.com/chef/chef/pull/7438) ([tas50](https://github.com/tas50))
+- Backport duplicate logger fix [#7447](https://github.com/chef/chef/pull/7447) ([btm](https://github.com/btm))
+- Bump to 13.10 and add release notes [#7454](https://github.com/chef/chef/pull/7454) ([tas50](https://github.com/tas50))
+
+## [v13.9.4](https://github.com/chef/chef/tree/v13.9.4) (2018-06-07)
+
+#### Merged Pull Requests
+- Update nokogiri, ruby, and openssl for CVEs [#7232](https://github.com/chef/chef/pull/7232) ([tas50](https://github.com/tas50))
+- Backport Ubuntu 18.04 fixes [#7280](https://github.com/chef/chef/pull/7280) ([thommay](https://github.com/thommay))
+- Chef-13: Bump ffi to 1.9.25 along with the rest of things [#7337](https://github.com/chef/chef/pull/7337) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v13.9.1](https://github.com/chef/chef/tree/v13.9.1) (2018-05-08)
+
+#### Merged Pull Requests
+- Backport RFC-101/RFC-104 resource enhancements [#6964](https://github.com/chef/chef/pull/6964) ([thommay](https://github.com/thommay))
+- Pass pointer to LsaFreeMemory, not FFI::MemoryPointer [#6991](https://github.com/chef/chef/pull/6991) ([btm](https://github.com/btm))
+- Backport mount provider fixes to 13 [#7007](https://github.com/chef/chef/pull/7007) ([thommay](https://github.com/thommay))
+- [chef-13] support nils because of course [#7017](https://github.com/chef/chef/pull/7017) ([thommay](https://github.com/thommay))
+- Empty commit to trigger a release build [#7040](https://github.com/chef/chef/pull/7040) ([btm](https://github.com/btm))
+- partially revert 61e3d4bb: do not use properties for mount [#7031](https://github.com/chef/chef/pull/7031) ([thommay](https://github.com/thommay))
+- Bump dependencies to bring in Ohai 13.9 [#7135](https://github.com/chef/chef/pull/7135) ([tas50](https://github.com/tas50))
+- Windows MSI: files are now re-unzipped during repair mode (Backport to Chef 13) [#7112](https://github.com/chef/chef/pull/7112) ([stuartpreston](https://github.com/stuartpreston))
+- Don&#39;t always request lazy files [#7216](https://github.com/chef/chef/pull/7216) ([thommay](https://github.com/thommay))
+- 13.9 Release notes [#7218](https://github.com/chef/chef/pull/7218) ([thommay](https://github.com/thommay))
+- RFC-102: Deprecation warning in resources [#7219](https://github.com/chef/chef/pull/7219) ([thommay](https://github.com/thommay))
+
+## [v13.8.5](https://github.com/chef/chef/tree/v13.8.5) (2018-03-07)
+
+#### Merged Pull Requests
+- [knife] Don&#39;t crash when a deprecated cookbook has no replacement (#6853) [#6936](https://github.com/chef/chef/pull/6936) ([tas50](https://github.com/tas50))
+- lock ffi at 1.9.21 [#6960](https://github.com/chef/chef/pull/6960) ([thommay](https://github.com/thommay))
+
 ## [v13.8.3](https://github.com/chef/chef/tree/v13.8.3) (2018-03-05)
 
 #### Merged Pull Requests
