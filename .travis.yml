@@ -358,6 +358,24 @@ matrix:
     env:
      - RSPEC_OPENSUSELEAP=42
      - KITCHEN_YAML=kitchen.travis.yml
+  allow_failures:
+    - rvm: 2.5.3
+      services: docker
+      sudo: required
+      gemfile: kitchen-tests/Gemfile
+      before_install:
+        - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+        - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+      before_script:
+        - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+        - cd kitchen-tests
+      script:
+        - bundle exec kitchen test rspec-opensuse-leap
+      after_failure:
+        - cat .kitchen/logs/kitchen.log
+      env:
+       - RSPEC_OPENSUSELEAP=42
+       - KITCHEN_YAML=kitchen.travis.yml
 
 notifications:
   on_change: true
