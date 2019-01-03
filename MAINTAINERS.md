@@ -49,23 +49,6 @@ To mention the team, use @chef/client-core
 * [Tyler Ball](https://github.com/tyler-ball)
 * [Josh Hudson](https://github.com/itmustbejj)
 
-## Chef Provisioning
-
-Chef Provisioning and Drivers.  Supported Drivers are listed in the [README](https://github.com/chef/chef-provisioning/blob/master/README.md#chef-provisioning).
-
-To mention the team, use @chef/provisioning
-
-### Lieutenant
-
-* [Tyler Ball](https://github.com/tyler-ball)
-
-### Maintainers
-
-* [John Keiser](https://github.com/jkeiser)
-* [JJ Asghar](https://github.com/jjasghar)
-* [Stuart Preston](https://github.com/stuartpreston)
-* [Harley Alaniz](https://github.com/thehar)
-
 ## Platform Specific Components
 
 The specific components of Chef related to a given platform - including (but not limited to) resources, providers, and the core DSL.
@@ -135,9 +118,9 @@ To mention the team, use @chef/client-aix
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 
-## Mac OS X
+## macOS
 
-To mention the team, use @chef/client-os-x
+To mention the team, use @chef/client-macos
 
 ### Lieutenant
 
@@ -170,21 +153,13 @@ To mention the team, use @chef/client-fedora
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 
-## openSUSE
+## openSUSE and SUSE Linux Enterprise Server
 
-To mention the team, use @chef/client-opensuse
+To mention the team, use @chef/client-suse
 
 ### Lieutenant
 
 * [Tim Smith](https://github.com/tas50)
-
-### Maintainers
-
-* [Lamont Granquist](https://github.com/lamont-granquist)
-
-## SUSE Enterprise Linux Server
-
-To mention the team, use @chef/client-suse
 
 ### Maintainers
 
@@ -198,39 +173,3 @@ To mention the team, use @chef/client-freebsd
 
 * [Amy Aronsohn](https://github.com/OnlyHaveCans)
 
-### Maintainers
-
-* [Cory Stephenson](https://github.com/Aevin1387)
-
-## OpenBSD
-
-To mention the team, use @chef/client-openbsd
-
-### Lieutenant
-
-* [Joe Miller](https://github.com/joemiller)
-
-## Gentoo
-
-To mention the team, use @chef/client-gentoo
-
-### Maintainers
-
-* [Lamont Granquist](https://github.com/lamont-granquist)
-
-## OmniOS
-
-To mention the team, use @chef/client-omnios
-
-### Maintainers
-
-* [Thom May](https://github.com/thommay)
-
-## ArchLinux
-
-To mention the team, use @chef/client-archlinux
-
-### Maintainers
-
-* [Lamont Granquist](https://github.com/lamont-granquist)
-* [Ryan Cragun](https://github.com/ryancragun)

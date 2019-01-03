@@ -56,23 +56,6 @@ Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, ch
         "itmustbejj"
       ]
 
-    [Org.Components.Provisioning]
-      title = "Chef Provisioning"
-      team = "provisioning"
-      text = """
-Chef Provisioning and Drivers.  Supported Drivers are listed in the [README](https://github.com/chef/chef-provisioning/blob/master/README.md#chef-provisioning).
-"""
-
-      lieutenant = "tyler-ball"
-
-      maintainers = [
-        "jkeiser",
-        "jjasghar",
-        "stuartpreston",
-        "thehar",
-        "jjlimepoint"
-      ]
-
     [Org.Components.Subsystems]
       title = "Platform Specific Components"
       text = """
@@ -133,9 +116,9 @@ The specific components of Chef related to a given platform - including (but not
 
         lieutenant = "lamont-granquist"
 
-      [Org.Components.Subsystems."Mac OS X"]
-        title = "Mac OS X"
-        team = "client-os-x"
+      [Org.Components.Subsystems."macOS"]
+        title = "macOS"
+        team = "client-macos"
 
         lieutenant = "jtimberman"
 
@@ -164,19 +147,11 @@ The specific components of Chef related to a given platform - including (but not
           "lamont-granquist"
         ]
 
-      [Org.Components.Subsystems.openSUSE]
-        title = "openSUSE"
-        team = "client-opensuse"
+      [Org.Components.Subsystems.SUSE]
+        title = "openSUSE and SUSE Linux Enterprise Server"
+        team = "client-suse"
 
         lieutenant = "tas50"
-
-        maintainers = [
-          "lamont-granquist"
-        ]
-
-      [Org.Components.Subsystems."SUSE Enterprise Linux"]
-        title = "SUSE Enterprise Linux Server"
-        team = "client-suse"
 
         maintainers = [
           "lamont-granquist"
@@ -186,43 +161,7 @@ The specific components of Chef related to a given platform - including (but not
         title = "FreeBSD"
         team = "client-freebsd"
 
-        lieutenant = "martinisoft"
-
-        maintainers = [
-          "Aevin1387",
-          "OnlyHaveCans"
-        ]
-
-      [Org.Components.Subsystems.OpenBSD]
-        title = "OpenBSD"
-        team = "client-openbsd"
-
-        lieutenant = "joemiller"
-
-    [Org.Components.Subsystems.Gentoo]
-        title = "Gentoo"
-        team = "client-gentoo"
-
-        maintainers = [
-          "lamont-granquist"
-        ]
-
-    [Org.Components.Subsystems.OmniOS]
-        title = "OmniOS"
-        team = "client-omnios"
-
-        maintainers = [
-          "thommay"
-        ]
-
-    [Org.Components.Subsystems.ArchLinux]
-        title = "ArchLinux"
-        team = "client-archlinux"
-
-        maintainers = [
-          "lamont-granquist",
-          "ryancragun"
-        ]
+        lieutenant = "OnlyHaveCans"
 
 [people]
   [people.adamhjk]
@@ -273,10 +212,6 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Lamont Granquist"
     GitHub = "lamont-granquist"
 
-  [people.martinisoft]
-    Name = "Aaron Kalin"
-    GitHub = "martinisoft"
-
   [people.ranjib]
     Name = "Ranjib Dey"
     GitHub = "ranjib"
@@ -290,7 +225,7 @@ The specific components of Chef related to a given platform - including (but not
     GitHub = "stevendanna"
 
   [people.OnlyHaveCans]
-    Name = "David Aronsohn"
+    Name = "Amy Aronsohn"
     GitHub = "OnlyHaveCans"
     IRC = "tBunnyMan"
     Twitter = "OnlyHaveCans"
@@ -309,17 +244,9 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Kartik Cating-Subramanian"
     GitHub = "ksubrama"
 
-  [people.joemiller]
-    Name = "Joe Miller"
-    GitHub = "joemiller"
-
   [people.coderanger]
     Name = "Noah Kantrowitz"
     GitHub = "coderanger"
-
-  [people.ryancragun]
-    Name = "Ryan Cragun"
-    GitHub = "ryancragun"
 
   [people.chefsalim]
     Name = "Salim Alam"
