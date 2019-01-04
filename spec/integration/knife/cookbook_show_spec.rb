@@ -138,11 +138,11 @@ EOM
     end
 
     it "knife cookbook show with a non-existent version displays an error" do
-      expect { knife("cookbook show x 1.0.1") }.to raise_error(Net::HTTPServerException)
+      expect { knife("cookbook show x 1.0.1") }.to raise_error(Net::HTTPClientException)
     end
 
     it "knife cookbook show with a non-existent cookbook displays an error" do
-      expect { knife("cookbook show y") }.to raise_error(Net::HTTPServerException)
+      expect { knife("cookbook show y") }.to raise_error(Net::HTTPClientException)
     end
   end
 end

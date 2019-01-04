@@ -40,7 +40,7 @@ class Chef
 
         def add_explanation(error_description)
           case exception
-          when Net::HTTPServerException, Net::HTTPFatalError
+          when Net::HTTPClientException, Net::HTTPFatalError
             humanize_http_exception(error_description)
           when Chef::Exceptions::PrivateKeyMissing
             error_description.section("Private Key Not Found:", <<~E)

@@ -57,15 +57,15 @@ describe Chef::Knife::SupermarketUnshare do
 
     it "should log an error and exit when forbidden" do
       exception = double('403 "Forbidden"', code: "403")
-      allow(@rest).to receive(:delete).and_raise(Net::HTTPServerException.new('403 "Forbidden"', exception))
+      allow(@rest).to receive(:delete).and_raise(Net::HTTPClientException.new('403 "Forbidden"', exception))
       expect(@knife.ui).to receive(:error)
       expect { @knife.run }.to raise_error(SystemExit)
     end
 
     it "should re-raise any non-forbidden errors on delete" do
       exception = double('500 "Application Error"', code: "500")
-      allow(@rest).to receive(:delete).and_raise(Net::HTTPServerException.new('500 "Application Error"', exception))
-      expect { @knife.run }.to raise_error(Net::HTTPServerException)
+      allow(@rest).to receive(:delete).and_raise(Net::HTTPClientException.new('500 "Application Error"', exception))
+      expect { @knife.run }.to raise_error(Net::HTTPClientException)
     end
 
     it "should log a success message" do

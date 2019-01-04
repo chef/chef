@@ -39,7 +39,7 @@ describe "knife node create", :workstation do
     it "refuses to add an existing node" do
       pending "Knife node create must not blindly overwrite an existing node"
       knife("node create bah").should_succeed out
-      expect { knife("node create bah") }.to raise_error(Net::HTTPServerException)
+      expect { knife("node create bah") }.to raise_error(Net::HTTPClientException)
     end
 
   end

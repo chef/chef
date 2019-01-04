@@ -49,7 +49,7 @@ describe "knife data bag create", :workstation do
 
     it "fails to add an existing item" do
       knife("data bag create foo bar").should_succeed stdout: out, stderr: err
-      expect { knife("data bag create foo bar") }.to raise_error(Net::HTTPServerException)
+      expect { knife("data bag create foo bar") }.to raise_error(Net::HTTPClientException)
     end
   end
 end

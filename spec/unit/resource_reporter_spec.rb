@@ -494,7 +494,7 @@ describe Chef::ResourceReporter do
         @node = Chef::Node.new
         @node.name("spitfire")
         @exception = ArgumentError.new
-        allow(@exception).to receive(:inspect).and_return("Net::HTTPServerException")
+        allow(@exception).to receive(:inspect).and_return("Net::HTTPClientException")
         allow(@exception).to receive(:message).and_return("Object not found")
         allow(@exception).to receive(:backtrace).and_return(@backtrace)
         @resource_reporter.run_list_expand_failed(@node, @exception)
@@ -505,7 +505,7 @@ describe Chef::ResourceReporter do
       it "includes the exception type in the event data" do
         expect(@report).to have_key("data")
         expect(@report["data"]["exception"]).to have_key("class")
-        expect(@report["data"]["exception"]["class"]).to eq("Net::HTTPServerException")
+        expect(@report["data"]["exception"]["class"]).to eq("Net::HTTPClientException")
       end
 
       it "includes the exception message in the event data" do
@@ -615,7 +615,7 @@ describe Chef::ResourceReporter do
       before do
         # 404 getting the run_id
         @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
-        @error = Net::HTTPServerException.new("404 message", @response)
+        @error = Net::HTTPClientException.new("404 message", @response)
         expect(@rest_client).to receive(:post)
           .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id,
                                                  start_time: @start_time.to_s },
@@ -645,7 +645,7 @@ describe Chef::ResourceReporter do
       before do
         # 500 getting the run_id
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
-        @error = Net::HTTPServerException.new("500 message", @response)
+        @error = Net::HTTPClientException.new("500 message", @response)
         expect(@rest_client).to receive(:post)
           .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
                { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
@@ -675,7 +675,7 @@ describe Chef::ResourceReporter do
         Chef::Config[:enable_reporting_url_fatals] = true
         # 500 getting the run_id
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
-        @error = Net::HTTPServerException.new("500 message", @response)
+        @error = Net::HTTPClientException.new("500 message", @response)
         expect(@rest_client).to receive(:post)
           .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
                { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
@@ -690,7 +690,7 @@ describe Chef::ResourceReporter do
         expect(Chef::Log).to receive(:error).with(/500/)
         expect do
           @resource_reporter.run_started(@run_status)
-        end.to raise_error(Net::HTTPServerException)
+        end.to raise_error(Net::HTTPClientException)
       end
     end
 
@@ -746,7 +746,7 @@ describe Chef::ResourceReporter do
 
       it "should log 4xx errors" do
         response = Net::HTTPClientError.new("forbidden", "403", "Forbidden")
-        error = Net::HTTPServerException.new("403 message", response)
+        error = Net::HTTPClientException.new("403 message", response)
         allow(@rest_client).to receive(:raw_request).and_raise(error)
         expect(Chef::Log).to receive(:error).with(/403/)
 

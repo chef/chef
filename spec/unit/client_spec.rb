@@ -441,7 +441,7 @@ EOM
 
     context "when required_recipe returns 404" do
       let(:http_response) { Net::HTTPNotFound.new("1.1", "404", "Not Found") }
-      let(:http_exception) { Net::HTTPServerException.new('404 "Not Found"', http_response) }
+      let(:http_exception) { Net::HTTPClientException.new('404 "Not Found"', http_response) }
 
       before(:each) do
         expect(rest).to receive(:get).with("required_recipe").and_raise(http_exception)

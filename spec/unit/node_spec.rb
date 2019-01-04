@@ -53,7 +53,7 @@ describe Chef::Node do
   describe "when the node does not exist on the server" do
     before do
       response = OpenStruct.new(code: "404")
-      exception = Net::HTTPServerException.new("404 not found", response)
+      exception = Net::HTTPClientException.new("404 not found", response)
       allow(Chef::Node).to receive(:load).and_raise(exception)
       node.name("created-node")
     end
@@ -1447,7 +1447,7 @@ describe Chef::Node do
         node.name("monkey")
         allow(node).to receive(:data_for_save).and_return({})
         exception = double("404 error", code: "404")
-        expect(@rest).to receive(:put).and_raise(Net::HTTPServerException.new("foo", exception))
+        expect(@rest).to receive(:put).and_raise(Net::HTTPClientException.new("foo", exception))
         expect(@rest).to receive(:post).with("nodes", {})
         node.save
       end

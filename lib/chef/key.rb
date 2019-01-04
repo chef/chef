@@ -187,7 +187,7 @@ class Chef
 
     def save
       create
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       if e.response.code == "409"
         update
       else

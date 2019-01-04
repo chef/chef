@@ -153,7 +153,7 @@ class Chef
         else
           create
         end
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         raise e unless e.response.code == "409"
       end
       self

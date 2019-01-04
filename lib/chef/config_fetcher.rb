@@ -39,7 +39,7 @@ class Chef
 
     def fetch_remote_config
       http.get("")
-    rescue SocketError, SystemCallError, Net::HTTPServerException => error
+    rescue SocketError, SystemCallError, Net::HTTPClientException => error
       Chef::Application.fatal!("Cannot fetch config '#{config_location}': '#{error.class}: #{error.message}")
     end
 

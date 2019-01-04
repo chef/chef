@@ -139,15 +139,15 @@ describe Chef::Knife::CookbookDelete do
     end
 
     it "should raise if an error other than HTTP 404 is returned" do
-      exception = Net::HTTPServerException.new("500 Internal Server Error", "500")
+      exception = Net::HTTPClientException.new("500 Internal Server Error", "500")
       expect(@rest_mock).to receive(:get).and_raise(exception)
-      expect { @knife.available_versions }.to raise_error Net::HTTPServerException
+      expect { @knife.available_versions }.to raise_error Net::HTTPClientException
     end
 
     describe "if the cookbook can't be found" do
       before(:each) do
         expect(@rest_mock).to receive(:get)
-          .and_raise(Net::HTTPServerException.new("404 Not Found", "404"))
+          .and_raise(Net::HTTPClientException.new("404 Not Found", "404"))
       end
 
       it "should print an error" do

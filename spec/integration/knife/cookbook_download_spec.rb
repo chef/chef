@@ -49,7 +49,7 @@ EOM
     end
 
     it "knife cookbook download with an unknown version raises an error" do
-      expect { knife("cookbook download -d #{tmpdir} x 1.0.0") }.to raise_error(Net::HTTPServerException)
+      expect { knife("cookbook download -d #{tmpdir} x 1.0.0") }.to raise_error(Net::HTTPClientException)
     end
   end
 

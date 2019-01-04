@@ -164,7 +164,7 @@ class Chef
           new_user["public_key"] = new_user["chef_key"]["public_key"]
           new_user.delete("chef_key")
         end
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         # rescue API V0 if 406 and the server supports V0
         supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
         raise e unless supported_versions && supported_versions.include?(0)
@@ -200,7 +200,7 @@ class Chef
         payload[:private_key] = new_key if new_key
 
         updated_user = chef_root_rest_v1.put("users/#{username}", payload)
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         if e.response.code == "400"
           # if a 400 is returned but the error message matches the error related to private / public key fields, try V0
           # else, raise the 400
@@ -220,7 +220,7 @@ class Chef
 
     def save(new_key = false)
       create
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       if e.response.code == "409"
         update(new_key)
       else
@@ -235,7 +235,7 @@ class Chef
         reregistered_self = chef_root_rest_v0.put("users/#{username}", payload)
         private_key(reregistered_self["private_key"])
       # only V0 supported for reregister
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         # if there was a 406 related to versioning, give error explaining that
         # only API version 0 is supported for reregister command
         if e.response.code == "406" && e.response["x-ops-server-api-version"]

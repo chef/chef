@@ -56,7 +56,7 @@ class Chef
               rest.delete(api_path)
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
-            rescue Net::HTTPServerException => e
+            rescue Net::HTTPClientException => e
               if e.response.code == "404"
                 raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
               else
