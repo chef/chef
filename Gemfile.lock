@@ -364,7 +364,7 @@ GEM
       hashdiff
     websocket (1.2.8)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.1.11)
+    win32-certstore (0.2.1)
       ffi
       mixlib-shellout
     win32-dir (0.5.1)
@@ -384,7 +384,7 @@ GEM
     win32-service (1.0.1)
       ffi
       ffi-win32-extensions
-    win32-taskscheduler (2.0.1)
+    win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
     windows-api (0.4.4)
