@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.119 -->
-## [v15.0.119](https://github.com/chef/chef/tree/v15.0.119) (2019-01-03)
+<!-- latest_release 15.0.120 -->
+## [v15.0.120](https://github.com/chef/chef/tree/v15.0.120) (2019-01-04)
 
 #### Merged Pull Requests
-- Update rubygems to 2.7.7 and bundler to 1.17.3 [#8091](https://github.com/chef/chef/pull/8091) ([tas50](https://github.com/tas50))
+- Support Ruby 2.6 and add Ruby 2.6 testing [#7922](https://github.com/chef/chef/pull/7922) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Support Ruby 2.6 and add Ruby 2.6 testing [#7922](https://github.com/chef/chef/pull/7922) ([tas50](https://github.com/tas50)) <!-- 15.0.120 -->
 - Update rubygems to 2.7.7 and bundler to 1.17.3 [#8091](https://github.com/chef/chef/pull/8091) ([tas50](https://github.com/tas50)) <!-- 15.0.119 -->
 - Bump multiple deps to the latest [#8085](https://github.com/chef/chef/pull/8085) ([tas50](https://github.com/tas50)) <!-- 15.0.118 -->
 - Bump inspec-core to 3.2.6 [#8076](https://github.com/chef/chef/pull/8076) ([tas50](https://github.com/tas50)) <!-- 15.0.117 -->
