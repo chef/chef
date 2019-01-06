@@ -607,9 +607,6 @@ class Chef
       filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version ohai_time os os_version init_package} : nil
       ohai.all_plugins(filter)
       events.ohai_completed(node)
-    rescue Ohai::Exceptions::CriticalPluginFailure => e
-      logger.error("Critical Ohai plugins failed: #{e.message}")
-      exit(false)
     end
 
     #

@@ -51,7 +51,7 @@ describe Chef::Client do
         class CriticalPluginFailure < Error; end
       end
       expect(ohai_system).to receive(:all_plugins) { raise Ohai::Exceptions::CriticalPluginFailure }
-      expect { client.run_ohai }.to raise_error(SystemExit)
+      expect { client.run_ohai }.to raise_error(Ohai::Exceptions::CriticalPluginFailure)
     end
   end
 
