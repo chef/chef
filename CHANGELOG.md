@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 13.12.4 -->
+## [v13.12.4](https://github.com/chef/chef/tree/v13.12.4) (2019-01-06)
+
+#### Merged Pull Requests
+- Update openssl to 1.0.2q and bring in latest omnibus-software [#8088](https://github.com/chef/chef/pull/8088) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=13.12.3 -->
+### Changes since 13.12.3 release
+
+#### Merged Pull Requests
+- Update openssl to 1.0.2q and bring in latest omnibus-software [#8088](https://github.com/chef/chef/pull/8088) ([tas50](https://github.com/tas50)) <!-- 13.12.4 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->

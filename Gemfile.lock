@@ -1,10 +1,10 @@
 PATH
   remote: .
   specs:
-    chef (13.12.3)
+    chef (13.12.4)
       addressable
       bundler (>= 1.10)
-      chef-config (= 13.12.3)
+      chef-config (= 13.12.4)
       chef-zero (~> 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -31,10 +31,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (13.12.3-universal-mingw32)
+    chef (13.12.4-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 13.12.3)
+      chef-config (= 13.12.4)
       chef-zero (~> 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -76,7 +76,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (13.12.3)
+    chef-config (13.12.4)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -86,8 +86,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.5.2)
-      public_suffix (>= 2.0.2, < 4.0)
+    addressable (2.4.0)
     appbundler (0.11.6)
       mixlib-cli (~> 1.4)
       mixlib-shellout (~> 2.0)
@@ -244,7 +243,6 @@ GEM
     pry-stack_explorer (0.4.9.3)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (3.0.3)
     pusher-client (0.6.2)
       json
       websocket (~> 1.0)
