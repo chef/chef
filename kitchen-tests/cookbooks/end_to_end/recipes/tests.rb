@@ -27,3 +27,8 @@ node["network"]["interfaces"].each do |interface_data|
     ignore_failure true
   end
 end
+
+locale "set locale" do
+  lang "en_US.utf8"
+  lc_all "en_US.utf8"
+end
