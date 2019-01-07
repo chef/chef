@@ -145,7 +145,7 @@ class Chef
               task.working_directory = new_resource.cwd if new_resource.cwd
               task.configure_settings(config_settings)
               task.configure_principals(principal_settings)
-              task.set_account_information(new_resource.user, new_resource.password)
+              task.set_account_information(new_resource.user, new_resource.password, new_resource.interactive_enabled)
               task.creator = new_resource.user
               task.description = new_resource.description unless new_resource.description.nil?
               task.activate(new_resource.task_name)
@@ -246,7 +246,7 @@ class Chef
 
         def update_task(task)
           converge_by("#{new_resource} task updated") do
-            task.set_account_information(new_resource.user, new_resource.password)
+            task.set_account_information(new_resource.user, new_resource.password, new_resource.interactive_enabled)
             task.application_name = new_resource.command if new_resource.command
             task.parameters = new_resource.command_arguments if new_resource.command_arguments
             task.working_directory = new_resource.cwd if new_resource.cwd
