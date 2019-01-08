@@ -564,18 +564,49 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
     end
 
     describe "running as a different account" do
+
+      let(:user_info) do
+        double("Struct::ServiceConfigInfo",
+        service_type: "own process",
+        start_type: "auto start",
+        error_control: "normal",
+        binary_path_name: chef_service_binary_path_name,
+        load_order_group: "",
+        tag_id: 0,
+        dependencies: ["Winmgmt"],
+        service_start_name: "wallace",
+        display_name: "Chef Client Service"
+        )
+      end
+
+      let(:localsystem_info) do
+        double("Struct::ServiceConfigInfo",
+        service_type: "own process",
+        start_type: "auto start",
+        error_control: "normal",
+        binary_path_name: chef_service_binary_path_name,
+        load_order_group: "",
+        tag_id: 0,
+        dependencies: ["Winmgmt"],
+        service_start_name: "LocalSystem",
+        display_name: "Chef Client Service"
+        )
+      end
+
       before do
         new_resource.run_as_user(".\\wallace")
         new_resource.run_as_password("Wensleydale")
       end
 
       it "calls #grant_service_logon if the :run_as_user and :run_as_password properties are present" do
+        allow(Win32::Service).to receive(:config_info).with(new_resource.service_name).and_return(user_info)
         expect(Win32::Service).to receive(:start)
         expect(provider).to receive(:grant_service_logon).and_return(true)
         provider.start_service
       end
 
       it "does not grant user SeServiceLogonRight if it already has it" do
+        allow(Win32::Service).to receive(:config_info).with(new_resource.service_name).and_return(user_info)
         expect(Win32::Service).to receive(:start)
         expect(Chef::ReservedNames::Win32::Security).to receive(:get_account_right).with("wallace").and_return([service_right])
         expect(Chef::ReservedNames::Win32::Security).not_to receive(:add_account_right).with("wallace", service_right)
@@ -583,7 +614,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       end
 
       it "skips the rights check for LocalSystem" do
-        new_resource.run_as_user("LocalSystem")
+        allow(Win32::Service).to receive(:config_info).with(new_resource.service_name).and_return(localsystem_info)
         expect(Win32::Service).to receive(:start)
         expect(Chef::ReservedNames::Win32::Security).not_to receive(:get_account_right)
         expect(Chef::ReservedNames::Win32::Security).not_to receive(:add_account_right)

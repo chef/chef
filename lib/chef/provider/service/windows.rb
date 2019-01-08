@@ -84,9 +84,10 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   def start_service
     if Win32::Service.exists?(@new_resource.service_name)
       # reconfiguration is idempotent, so just do it.
+      config_info = Win32::Service.config_info(@new_resource.service_name)
       new_config = {
         service_name: @new_resource.service_name,
-        service_start_name: @new_resource.run_as_user,
+        service_start_name: config_info.service_start_name,
         password: @new_resource.run_as_password,
       }.reject { |k, v| v.nil? || v.length == 0 }
 
