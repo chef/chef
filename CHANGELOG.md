@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.121 -->
-## [v15.0.121](https://github.com/chef/chef/tree/v15.0.121) (2019-01-07)
+<!-- latest_release 15.0.122 -->
+## [v15.0.122](https://github.com/chef/chef/tree/v15.0.122) (2019-01-10)
 
 #### Merged Pull Requests
-- windows_task resource: Allow non-system users without password [#7918](https://github.com/chef/chef/pull/7918) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Don&#39;t system exit on ohai CriticalPluginFailure [#8098](https://github.com/chef/chef/pull/8098) ([joshuamiller01](https://github.com/joshuamiller01))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Don&#39;t system exit on ohai CriticalPluginFailure [#8098](https://github.com/chef/chef/pull/8098) ([joshuamiller01](https://github.com/joshuamiller01)) <!-- 15.0.122 -->
 - windows_task resource: Allow non-system users without password [#7918](https://github.com/chef/chef/pull/7918) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.121 -->
 - Support Ruby 2.6 and add Ruby 2.6 testing [#7922](https://github.com/chef/chef/pull/7922) ([tas50](https://github.com/tas50)) <!-- 15.0.120 -->
 - Update rubygems to 2.7.7 and bundler to 1.17.3 [#8091](https://github.com/chef/chef/pull/8091) ([tas50](https://github.com/tas50)) <!-- 15.0.119 -->
