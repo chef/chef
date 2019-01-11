@@ -206,7 +206,7 @@ class Chef
           mode "0644"
           sensitive new_resource.sensitive
           action :create
-          verify "gpg %{path}"
+          verify "gpg --homedir /tmp/ %{path}"
         end
 
         declare_resource(:execute, "apt-key add #{cached_keyfile}") do
