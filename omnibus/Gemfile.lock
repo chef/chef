@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 5ac799cdcc5a7865b452daa96f92812144dccb3d
+  revision: 1cfcf1714d605bfaaa37bd647495002aa788675e
   branch: master
   specs:
-    omnibus (6.0.10)
+    omnibus (6.0.11)
       aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 262af48ad7442b5a2edd44ba05106bc024819168
+  revision: f876bb6a1d60e0b9e2b52a4ce16318d05327bdfd
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -382,4 +382,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.17.2
+   2.0.1
