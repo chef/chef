@@ -1,6 +1,6 @@
 #
 # Author:: Dreamcat4 (<dreamcat4@gmail.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,6 @@ describe Chef::Provider::User::Dscl do
   end
   let(:node) do
     node = Chef::Node.new
-    allow(node).to receive(:[]).with(:platform_version).and_return(mac_version)
     allow(node).to receive(:[]).with(:platform).and_return("mac_os_x")
     node
   end
@@ -51,10 +50,6 @@ describe Chef::Provider::User::Dscl do
 
   let(:provider) do
     Chef::Provider::User::Dscl.new(new_resource, run_context)
-  end
-
-  let(:mac_version) do
-    "10.9.1"
   end
 
   let(:password) { nil }
@@ -325,69 +320,29 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       end
     end
 
-    describe "when on Mac 10.6" do
-      let(:mac_version) do
-        "10.6.5"
-      end
+    describe "when password is SALTED-SHA512" do
+      let(:password) { salted_sha512_password }
 
       it "should raise an error" do
         expect { run_requirements }.to raise_error(Chef::Exceptions::User)
       end
     end
 
-    describe "when on Mac 10.7" do
-      let(:mac_version) do
-        "10.7.5"
-      end
+    describe "when password is SALTED-SHA512-PBKDF2" do
+      let(:password) { salted_sha512_pbkdf2_password }
 
-      describe "when password is SALTED-SHA512" do
-        let(:password) { salted_sha512_password }
-
-        it "should not raise an error" do
-          expect { run_requirements }.not_to raise_error
-        end
-      end
-
-      describe "when password is SALTED-SHA512-PBKDF2" do
-        let(:password) { salted_sha512_pbkdf2_password }
-
+      describe "when salt and iteration is not set" do
         it "should raise an error" do
           expect { run_requirements }.to raise_error(Chef::Exceptions::User)
         end
       end
-    end
 
-    [ "10.9", "10.10"].each do |version|
-      describe "when on Mac #{version}" do
-        let(:mac_version) do
-          "#{version}.2"
-        end
+      describe "when salt and iteration is set" do
+        let(:salt) { salted_sha512_pbkdf2_salt }
+        let(:iterations) { salted_sha512_pbkdf2_iterations }
 
-        describe "when password is SALTED-SHA512" do
-          let(:password) { salted_sha512_password }
-
-          it "should raise an error" do
-            expect { run_requirements }.to raise_error(Chef::Exceptions::User)
-          end
-        end
-
-        describe "when password is SALTED-SHA512-PBKDF2" do
-          let(:password) { salted_sha512_pbkdf2_password }
-
-          describe "when salt and iteration is not set" do
-            it "should raise an error" do
-              expect { run_requirements }.to raise_error(Chef::Exceptions::User)
-            end
-          end
-
-          describe "when salt and iteration is set" do
-            let(:salt) { salted_sha512_pbkdf2_salt }
-            let(:iterations) { salted_sha512_pbkdf2_iterations }
-
-            it "should not raise an error" do
-              expect { run_requirements }.not_to raise_error
-            end
-          end
+        it "should not raise an error" do
+          expect { run_requirements }.not_to raise_error
         end
       end
     end
@@ -431,211 +386,76 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     describe "when user is there" do
       let(:password) { "something" } # Load password during load_current_resource
 
-      describe "on 10.7" do
-        let(:mac_version) do
-          "10.7.5"
-        end
+      let(:user_plist_file) { "10.9" }
 
-        let(:user_plist_file) { "10.7" }
+      it "collects the user data correctly" do
+        provider.load_current_resource
+        expect(provider.current_resource.comment).to eq("vagrant")
+        expect(provider.current_resource.uid).to eq("501")
+        expect(provider.current_resource.gid).to eq("80")
+        expect(provider.current_resource.home).to eq("/Users/vagrant")
+        expect(provider.current_resource.shell).to eq("/bin/bash")
+        expect(provider.current_resource.password).to eq(vagrant_sha_512_pbkdf2)
+        expect(provider.current_resource.salt).to eq(vagrant_sha_512_pbkdf2_salt)
+        expect(provider.current_resource.iterations).to eq(vagrant_sha_512_pbkdf2_iterations)
+      end
 
-        it "collects the user data correctly" do
+      describe "when a plain password is set that is same" do
+        let(:password) { "vagrant" }
+
+        it "diverged_password? should report false" do
           provider.load_current_resource
-          expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("501")
-          expect(provider.current_resource.gid).to eq("80")
-          expect(provider.current_resource.home).to eq("/Users/vagrant")
-          expect(provider.current_resource.shell).to eq("/bin/bash")
-          expect(provider.current_resource.password).to eq(vagrant_sha_512)
-        end
-
-        describe "when a plain password is set that is same" do
-          let(:password) { "vagrant" }
-
-          it "diverged_password? should report false" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_falsey
-          end
-        end
-
-        describe "when a plain password is set that is different" do
-          let(:password) { "not_vagrant" }
-
-          it "diverged_password? should report true" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_truthy
-          end
-        end
-
-        describe "when iterations change" do
-          let(:password) { vagrant_sha_512 }
-          let(:iterations) { 12345 }
-
-          it "diverged_password? should report false" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_falsey
-          end
-        end
-
-        describe "when shadow hash changes" do
-          let(:password) { salted_sha512_password }
-
-          it "diverged_password? should report true" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_truthy
-          end
-        end
-
-        describe "when salt change" do
-          let(:password) { vagrant_sha_512 }
-          let(:salt) { "SOMETHINGRANDOM" }
-
-          it "diverged_password? should report false" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_falsey
-          end
+          expect(provider.diverged_password?).to be_falsey
         end
       end
 
-      describe "on 10.8" do
-        let(:mac_version) do
-          "10.8.3"
-        end
+      describe "when a plain password is set that is different" do
+        let(:password) { "not_vagrant" }
 
-        let(:user_plist_file) { "10.8" }
-
-        it "collects the user data correctly" do
+        it "diverged_password? should report true" do
           provider.load_current_resource
-          expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("501")
-          expect(provider.current_resource.gid).to eq("80")
-          expect(provider.current_resource.home).to eq("/Users/vagrant")
-          expect(provider.current_resource.shell).to eq("/bin/bash")
-          expect(provider.current_resource.password).to eq("ea4c2d265d801ba0ec0dfccd\
-253dfc1de91cbe0806b4acc1ed7fe22aebcf6beb5344d0f442e590\
-ffa04d679075da3afb119e41b72b5eaf08ee4aa54693722646d5\
-19ee04843deb8a3e977428d33f625e83887913e5c13b70035961\
-5e00ad7bc3e7a0c98afc3e19d1360272454f8d33a9214d2fbe8b\
-e68d1f9821b26689312366")
-          expect(provider.current_resource.salt).to eq("f994ef2f73b7c5594ebd1553300976b20733ce0e24d659783d87f3d81cbbb6a9")
-          expect(provider.current_resource.iterations).to eq(39840)
+          expect(provider.diverged_password?).to be_truthy
         end
       end
 
-      describe "on 10.7 upgraded to 10.8" do
-        # In this scenario user password is still in 10.7 format
-        let(:mac_version) do
-          "10.8.3"
-        end
+      describe "when iterations change" do
+        let(:password) { vagrant_sha_512_pbkdf2 }
+        let(:salt) { vagrant_sha_512_pbkdf2_salt }
+        let(:iterations) { 12345 }
 
-        let(:user_plist_file) { "10.7-8" }
-
-        it "collects the user data correctly" do
+        it "diverged_password? should report true" do
           provider.load_current_resource
-          expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("501")
-          expect(provider.current_resource.gid).to eq("80")
-          expect(provider.current_resource.home).to eq("/Users/vagrant")
-          expect(provider.current_resource.shell).to eq("/bin/bash")
-          expect(provider.current_resource.password).to eq("6f75d7190441facc34291ebbea1fc756b242d4f\
-e9bcff141bccb84f1979e27e539539aa31f9f7dcc92c0cea959\
-ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
-        end
-
-        describe "when a plain text password is set" do
-          it "reports password needs to be updated" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_truthy
-          end
-        end
-
-        describe "when a salted-sha512-pbkdf2 shadow is set" do
-          let(:password) { salted_sha512_pbkdf2_password }
-          let(:salt) { salted_sha512_pbkdf2_salt }
-          let(:iterations) { salted_sha512_pbkdf2_iterations }
-
-          it "reports password needs to be updated" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_truthy
-          end
+          expect(provider.diverged_password?).to be_truthy
         end
       end
 
-      describe "on 10.9" do
-        let(:mac_version) do
-          "10.9.1"
-        end
+      describe "when shadow hash changes" do
+        let(:password) { salted_sha512_pbkdf2_password }
+        let(:salt) { vagrant_sha_512_pbkdf2_salt }
+        let(:iterations) { vagrant_sha_512_pbkdf2_iterations }
 
-        let(:user_plist_file) { "10.9" }
-
-        it "collects the user data correctly" do
+        it "diverged_password? should report true" do
           provider.load_current_resource
-          expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("501")
-          expect(provider.current_resource.gid).to eq("80")
-          expect(provider.current_resource.home).to eq("/Users/vagrant")
-          expect(provider.current_resource.shell).to eq("/bin/bash")
-          expect(provider.current_resource.password).to eq(vagrant_sha_512_pbkdf2)
-          expect(provider.current_resource.salt).to eq(vagrant_sha_512_pbkdf2_salt)
-          expect(provider.current_resource.iterations).to eq(vagrant_sha_512_pbkdf2_iterations)
+          expect(provider.diverged_password?).to be_truthy
         end
+      end
 
-        describe "when a plain password is set that is same" do
-          let(:password) { "vagrant" }
+      describe "when salt change" do
+        let(:password) { vagrant_sha_512_pbkdf2 }
+        let(:salt) { salted_sha512_pbkdf2_salt }
+        let(:iterations) { vagrant_sha_512_pbkdf2_iterations }
 
-          it "diverged_password? should report false" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_falsey
-          end
+        it "diverged_password? should report true" do
+          provider.load_current_resource
+          expect(provider.diverged_password?).to be_truthy
         end
+      end
 
-        describe "when a plain password is set that is different" do
-          let(:password) { "not_vagrant" }
-
-          it "diverged_password? should report true" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_truthy
-          end
-        end
-
-        describe "when iterations change" do
-          let(:password) { vagrant_sha_512_pbkdf2 }
-          let(:salt) { vagrant_sha_512_pbkdf2_salt }
-          let(:iterations) { 12345 }
-
-          it "diverged_password? should report true" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_truthy
-          end
-        end
-
-        describe "when shadow hash changes" do
-          let(:password) { salted_sha512_pbkdf2_password }
-          let(:salt) { vagrant_sha_512_pbkdf2_salt }
-          let(:iterations) { vagrant_sha_512_pbkdf2_iterations }
-
-          it "diverged_password? should report true" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_truthy
-          end
-        end
-
-        describe "when salt change" do
-          let(:password) { vagrant_sha_512_pbkdf2 }
-          let(:salt) { salted_sha512_pbkdf2_salt }
-          let(:iterations) { vagrant_sha_512_pbkdf2_iterations }
-
-          it "diverged_password? should report true" do
-            provider.load_current_resource
-            expect(provider.diverged_password?).to be_truthy
-          end
-        end
-
-        describe "when salt isn't found" do
-          it "diverged_password? should report true" do
-            provider.load_current_resource
-            provider.current_resource.salt(nil)
-            expect(provider.diverged_password?).to be_truthy
-          end
+      describe "when salt isn't found" do
+        it "diverged_password? should report true" do
+          provider.load_current_resource
+          provider.current_resource.salt(nil)
+          expect(provider.diverged_password?).to be_truthy
         end
       end
     end
@@ -664,71 +484,34 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
   end
 
   describe "prepare_password_shadow_info" do
-    describe "when on Mac 10.7" do
-      let(:mac_version) do
-        "10.7.1"
-      end
+    describe "when the password is plain text" do
+      let(:password) { "vagrant" }
 
-      describe "when the password is plain text" do
-        let(:password) { "vagrant" }
-
-        it "password_shadow_info should have salted-sha-512 format" do
-          shadow_info = provider.prepare_password_shadow_info
-          expect(shadow_info).to have_key("SALTED-SHA512")
-          info = shadow_info["SALTED-SHA512"].string.unpack("H*").first
-          expect(provider.salted_sha512?(info)).to be_truthy
-        end
-      end
-
-      describe "when the password is salted-sha-512" do
-        let(:password) { vagrant_sha_512 }
-
-        it "password_shadow_info should have salted-sha-512 format" do
-          shadow_info = provider.prepare_password_shadow_info
-          expect(shadow_info).to have_key("SALTED-SHA512")
-          info = shadow_info["SALTED-SHA512"].string.unpack("H*").first
-          expect(provider.salted_sha512?(info)).to be_truthy
-          expect(info).to eq(vagrant_sha_512)
-        end
+      it "password_shadow_info should have salted-sha-512 format" do
+        shadow_info = provider.prepare_password_shadow_info
+        expect(shadow_info).to have_key("SALTED-SHA512-PBKDF2")
+        expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("entropy")
+        expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("salt")
+        expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("iterations")
+        info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*").first
+        expect(provider.salted_sha512_pbkdf2?(info)).to be_truthy
       end
     end
 
-    ["10.8", "10.9", "10.10"].each do |version|
-      describe "when on Mac #{version}" do
-        let(:mac_version) do
-          "#{version}.1"
-        end
+    describe "when the password is salted-sha-512" do
+      let(:password) { vagrant_sha_512_pbkdf2 }
+      let(:iterations) { vagrant_sha_512_pbkdf2_iterations }
+      let(:salt) { vagrant_sha_512_pbkdf2_salt }
 
-        describe "when the password is plain text" do
-          let(:password) { "vagrant" }
-
-          it "password_shadow_info should have salted-sha-512 format" do
-            shadow_info = provider.prepare_password_shadow_info
-            expect(shadow_info).to have_key("SALTED-SHA512-PBKDF2")
-            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("entropy")
-            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("salt")
-            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("iterations")
-            info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*").first
-            expect(provider.salted_sha512_pbkdf2?(info)).to be_truthy
-          end
-        end
-
-        describe "when the password is salted-sha-512" do
-          let(:password) { vagrant_sha_512_pbkdf2 }
-          let(:iterations) { vagrant_sha_512_pbkdf2_iterations }
-          let(:salt) { vagrant_sha_512_pbkdf2_salt }
-
-          it "password_shadow_info should have salted-sha-512 format" do
-            shadow_info = provider.prepare_password_shadow_info
-            expect(shadow_info).to have_key("SALTED-SHA512-PBKDF2")
-            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("entropy")
-            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("salt")
-            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("iterations")
-            info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*").first
-            expect(provider.salted_sha512_pbkdf2?(info)).to be_truthy
-            expect(info).to eq(vagrant_sha_512_pbkdf2)
-          end
-        end
+      it "password_shadow_info should have salted-sha-512 format" do
+        shadow_info = provider.prepare_password_shadow_info
+        expect(shadow_info).to have_key("SALTED-SHA512-PBKDF2")
+        expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("entropy")
+        expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("salt")
+        expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("iterations")
+        info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*").first
+        expect(provider.salted_sha512_pbkdf2?(info)).to be_truthy
+        expect(info).to eq(vagrant_sha_512_pbkdf2)
       end
     end
   end

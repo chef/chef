@@ -1,6 +1,6 @@
 #
 # Author:: Dreamcat4 (<dreamcat4@gmail.com>)
-# Copyright:: Copyright 2009-2018, Chef Software Inc.
+# Copyright:: Copyright 2009-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,11 +60,6 @@ class Chef
           super
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { mac_osx_version_less_than_10_7? == false }
-            a.failure_message(Chef::Exceptions::User, "Chef::Provider::User::Dscl only supports Mac OS X versions 10.7 and above.")
-          end
-
-          requirements.assert(:all_actions) do |a|
             a.assertion { ::File.exist?("/usr/bin/dscl") }
             a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/dscl' on the system for #{new_resource}!")
           end
@@ -76,7 +71,7 @@ class Chef
 
           requirements.assert(:create, :modify, :manage) do |a|
             a.assertion do
-              if new_resource.password && mac_osx_version_greater_than_10_7?
+              if new_resource.password
                 # SALTED-SHA512 password shadow hashes are not supported on 10.8 and above.
                 !salted_sha512?(new_resource.password)
               else
@@ -90,7 +85,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
 
           requirements.assert(:create, :modify, :manage) do |a|
             a.assertion do
-              if new_resource.password && mac_osx_version_greater_than_10_7? && salted_sha512_pbkdf2?(new_resource.password)
+              if new_resource.password && salted_sha512_pbkdf2?(new_resource.password)
                 # salt and iterations should be specified when
                 # SALTED-SHA512-PBKDF2 password shadow hash is given
                 !new_resource.salt.nil? && !new_resource.iterations.nil?
@@ -100,20 +95,6 @@ in 'password', with the associated 'salt' and 'iterations'.")
             end
             a.failure_message(Chef::Exceptions::User, "SALTED-SHA512-PBKDF2 shadow hash is given without associated \
 'salt' and 'iterations'. Please specify 'salt' and 'iterations' in order to set the user password using shadow hash.")
-          end
-
-          requirements.assert(:create, :modify, :manage) do |a|
-            a.assertion do
-              if new_resource.password && !mac_osx_version_greater_than_10_7?
-                # On 10.7 SALTED-SHA512-PBKDF2 is not supported
-                !salted_sha512_pbkdf2?(new_resource.password)
-              else
-                true
-              end
-            end
-            a.failure_message(Chef::Exceptions::User, "SALTED-SHA512-PBKDF2 shadow hashes are not supported on \
-Mac OS X version 10.7. Please specify a SALTED-SHA512 shadow hash in 'password' attribute to set the \
-user password using shadow hash.")
           end
         end
 
@@ -138,11 +119,7 @@ user password using shadow hash.")
               shadow_hash_xml = convert_binary_plist_to_xml(shadow_hash_binary.string)
               shadow_hash = Plist.parse_xml(shadow_hash_xml)
 
-              if shadow_hash["SALTED-SHA512"]
-                # Convert the shadow value from Base64 encoding to hex before consuming them
-                @password_shadow_conversion_algorithm = "SALTED-SHA512"
-                current_resource.password(shadow_hash["SALTED-SHA512"].string.unpack("H*").first)
-              elsif shadow_hash["SALTED-SHA512-PBKDF2"]
+              if shadow_hash["SALTED-SHA512-PBKDF2"] # 10.7+ contains this, but we retain the check in case it goes away in the future
                 @password_shadow_conversion_algorithm = "SALTED-SHA512-PBKDF2"
                 # Convert the entropy from Base64 encoding to hex before consuming them
                 current_resource.password(shadow_hash["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*").first)
@@ -390,47 +367,31 @@ user password using shadow hash.")
           salt = nil
           iterations = nil
 
-          if mac_osx_version_10_7?
-            hash_value = if salted_sha512?(new_resource.password)
-                           new_resource.password
-                         else
-                           # Create a random 4 byte salt
-                           salt = OpenSSL::Random.random_bytes(4)
-                           encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + new_resource.password)
-                           salt.unpack("H*").first + encoded_password
-                         end
-
-            shadow_info["SALTED-SHA512"] = StringIO.new
-            shadow_info["SALTED-SHA512"].string = convert_to_binary(hash_value)
-            shadow_info
+          if salted_sha512_pbkdf2?(new_resource.password)
+            entropy = convert_to_binary(new_resource.password)
+            salt = convert_to_binary(new_resource.salt)
+            iterations = new_resource.iterations
           else
-            if salted_sha512_pbkdf2?(new_resource.password)
-              entropy = convert_to_binary(new_resource.password)
-              salt = convert_to_binary(new_resource.salt)
-              iterations = new_resource.iterations
-            else
-              salt = OpenSSL::Random.random_bytes(32)
-              iterations = new_resource.iterations # Use the default if not specified by the user
+            salt = OpenSSL::Random.random_bytes(32)
+            iterations = new_resource.iterations # Use the default if not specified by the user
 
-              entropy = OpenSSL::PKCS5.pbkdf2_hmac(
-                new_resource.password,
-                salt,
-                iterations,
-                128,
-                OpenSSL::Digest::SHA512.new
-              )
-            end
-
-            pbkdf_info = {}
-            pbkdf_info["entropy"] = StringIO.new
-            pbkdf_info["entropy"].string = entropy
-            pbkdf_info["salt"] = StringIO.new
-            pbkdf_info["salt"].string = salt
-            pbkdf_info["iterations"] = iterations
-
-            shadow_info["SALTED-SHA512-PBKDF2"] = pbkdf_info
+            entropy = OpenSSL::PKCS5.pbkdf2_hmac(
+              new_resource.password,
+              salt,
+              iterations,
+              128,
+              OpenSSL::Digest::SHA512.new
+            )
           end
 
+          pbkdf_info = {}
+          pbkdf_info["entropy"] = StringIO.new
+          pbkdf_info["entropy"].string = entropy
+          pbkdf_info["salt"] = StringIO.new
+          pbkdf_info["salt"].string = salt
+          pbkdf_info["iterations"] = iterations
+
+          shadow_info["SALTED-SHA512-PBKDF2"] = pbkdf_info
           shadow_info
         end
 
@@ -515,29 +476,16 @@ user password using shadow hash.")
           return false if new_resource.password.nil?
 
           # Dscl provider supports both plain text passwords and shadow hashes.
-          if mac_osx_version_10_7?
-            if salted_sha512?(new_resource.password)
-              diverged?(:password)
-            else
-              !salted_sha512_password_match?
-            end
+          #
+          # Some system users don't have salts; this can happen if the system is
+          # upgraded and the user hasn't logged in yet. In this case, we will force
+          # the password to be updated.
+          return true if current_resource.salt.nil?
+
+          if salted_sha512_pbkdf2?(new_resource.password)
+            diverged?(:password) || diverged?(:salt) || diverged?(:iterations)
           else
-            # When a system is upgraded to a version 10.7+ shadow hashes of the users
-            # will be updated when the user logs in. So it's possible that we will have
-            # SALTED-SHA512 password in the current_resource. In that case we will force
-            # password to be updated.
-            return true if salted_sha512?(current_resource.password)
-
-            # Some system users don't have salts; this can happen if the system is
-            # upgraded and the user hasn't logged in yet. In this case, we will force
-            # the password to be updated.
-            return true if current_resource.salt.nil?
-
-            if salted_sha512_pbkdf2?(new_resource.password)
-              diverged?(:password) || diverged?(:salt) || diverged?(:iterations)
-            else
-              !salted_sha512_pbkdf2_password_match?
-            end
+            !salted_sha512_pbkdf2_password_match?
           end
         end
 
@@ -628,30 +576,8 @@ user password using shadow hash.")
         end
 
         #
-        # System Helpets
+        # System Helpers
         #
-
-        def mac_osx_version
-          # This provider will only be invoked on node[:platform] == "mac_os_x"
-          # We do not check or assert that here.
-          node[:platform_version]
-        end
-
-        def mac_osx_version_10_7?
-          mac_osx_version.start_with?("10.7.")
-        end
-
-        def mac_osx_version_less_than_10_7?
-          versions = mac_osx_version.split(".")
-          # Make integer comparison in order not to report 10.10 less than 10.7
-          (versions[0].to_i <= 10 && versions[1].to_i < 7)
-        end
-
-        def mac_osx_version_greater_than_10_7?
-          versions = mac_osx_version.split(".")
-          # Make integer comparison in order not to report 10.10 less than 10.7
-          (versions[0].to_i >= 10 && versions[1].to_i > 7)
-        end
 
         def run_dscl(*args)
           result = shell_out("dscl", ".", "-#{args[0]}", args[1..-1])
@@ -681,13 +607,6 @@ user password using shadow hash.")
 
         def salted_sha512?(string)
           !!(string =~ /^[[:xdigit:]]{136}$/)
-        end
-
-        def salted_sha512_password_match?
-          # Salt is included in the first 4 bytes of shadow data
-          salt = current_resource.password.slice(0, 8)
-          shadow = OpenSSL::Digest::SHA512.hexdigest(convert_to_binary(salt) + new_resource.password)
-          current_resource.password == salt + shadow
         end
 
         def salted_sha512_pbkdf2?(string)
