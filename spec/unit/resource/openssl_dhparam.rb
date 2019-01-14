@@ -53,4 +53,9 @@ describe Chef::Resource::OpensslDhparam do
     expect { resource.key_length 1234 }.to raise_error(ArgumentError)
   end
 
+  it "sets the mode which user provides for existing file" do
+    resource.mode '0600'
+    expect(resource.mode).to eql("0600")
+  end
+
 end
