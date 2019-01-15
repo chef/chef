@@ -32,8 +32,8 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
-    VALID_NAME = /^[\.\-[:alnum:]_]+$/
-    RESERVED_NAMES = /^(node|role|environment|client)$/
+    VALID_NAME = /^[\.\-[:alnum:]_]+$/.freeze
+    RESERVED_NAMES = /^(node|role|environment|client)$/.freeze
 
     def self.validate_name!(name)
       unless name =~ VALID_NAME
@@ -60,9 +60,9 @@ class Chef
 
     def to_h
       result = {
-        "name"       => @name,
+        "name" => @name,
         "json_class" => self.class.name,
-        "chef_type"  => "data_bag",
+        "chef_type" => "data_bag",
       }
       result
     end

@@ -49,7 +49,7 @@ describe "knife environment compare", :workstation do
         blah  = 1.0.0 
         krad  >= 1.0.0
         
-EOM
+      EOM
     end
 
     it "compares the cookbooks for two environments" do
@@ -58,7 +58,7 @@ EOM
         blah  = 1.0.0   = 1.1.0 
         krad  >= 1.0.0  >= 1.0.0
         
-EOM
+      EOM
     end
 
     it "compares the cookbooks for all environments" do
@@ -67,7 +67,7 @@ EOM
         blah  = 1.0.0   = 1.1.0 
         krad  >= 1.0.0  >= 1.0.0
         
-EOM
+      EOM
     end
     # rubocop:enable Layout/TrailingWhitespace
   end

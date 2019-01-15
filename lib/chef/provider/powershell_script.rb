@@ -89,7 +89,7 @@ class Chef
             {
               #{new_resource.code}
             }
-EOH
+          EOH
           user_script_file.puts user_code_wrapped_in_powershell_script_block
 
           # A .close or explicit .flush required to ensure the file is
@@ -215,7 +215,7 @@ EOH
           # launched with -Command, it will be 0 if $exitstatus was 0,
           # 1 (i.e. failed) otherwise.
           exit $exitstatus
-EOH
+        EOH
       end
 
     end

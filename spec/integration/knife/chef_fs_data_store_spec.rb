@@ -107,7 +107,7 @@ describe "ChefFSDataStore tests", :workstation do
             /policy_groups/x.json
             /roles/
             /roles/x.json
-EOM
+          EOM
         end
       end
 
@@ -193,7 +193,7 @@ EOM
           knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} x").should_succeed stderr: <<~EOM
             Uploading x              [1.0.0]
             Uploaded 1 cookbook.
-EOM
+          EOM
           knife("list --local -Rfp /cookbooks").should_succeed "/cookbooks/x/\n/cookbooks/x/metadata.rb\n"
         end
 
@@ -225,7 +225,7 @@ EOM
               "name": "x",
               "description": "hi there"
             }
-EOM
+          EOM
         end
       end
     end
@@ -250,7 +250,7 @@ EOM
           knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} z").should_succeed stderr: <<~EOM
             Uploading z            [1.0.0]
             Uploaded 1 cookbook.
-EOM
+          EOM
           knife("list --local -Rfp /cookbooks").should_succeed "/cookbooks/z/\n/cookbooks/z/metadata.rb\n"
         end
 
@@ -288,7 +288,7 @@ EOM
               "name": "x",
               "description": "hi there"
             }
-EOM
+          EOM
         end
       end
 
@@ -321,7 +321,7 @@ EOM
           /policies/
           /policy_groups/
           /roles/
-EOM
+        EOM
       end
 
       context "DELETE /TYPE/NAME" do
@@ -459,7 +459,7 @@ EOM
             /roles/x.json
             /users/
             /users/x.json
-EOM
+          EOM
         end
       end
 
@@ -496,7 +496,7 @@ EOM
               "name": "x",
               "description": "hi there"
             }
-EOM
+          EOM
         end
       end
     end
@@ -527,7 +527,7 @@ EOM
           /nodes/
           /roles/
           /users/
-EOM
+        EOM
       end
 
       context "DELETE /TYPE/NAME" do

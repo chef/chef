@@ -44,7 +44,7 @@ describe Chef::Provider::Package::Solaris do
         PSTAMP:  sfw10-patch20070430084444
         INSTDATE:  Nov 04 2009 01:02
         HOTLINE:  Please contact your local service provider
-PKGINFO
+      PKGINFO
 
       @status = double("Status", stdout: "", exitstatus: 0)
     end

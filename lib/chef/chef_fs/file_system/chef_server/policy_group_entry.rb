@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,11 +77,12 @@ class Chef
               object["policies"].each do |policy_name, policy_data|
                 policy_path = "/policies/#{policy_name}/revisions/#{policy_data["revision_id"]}"
 
-                get_data = begin
-                  rest.get(policy_path)
-                rescue Net::HTTPClientException => e
-                  raise "Could not find policy '#{policy_name}'' with revision '#{policy_data["revision_id"]}'' on the server"
-                end
+                get_data =
+                  begin
+                    rest.get(policy_path)
+                  rescue Net::HTTPClientException => e
+                    raise "Could not find policy '#{policy_name}'' with revision '#{policy_data["revision_id"]}'' on the server"
+                  end
 
                 # GET policy data
                 server_policy_data = Chef::JSONCompat.parse(get_data)

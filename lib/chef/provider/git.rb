@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -234,13 +234,14 @@ class Chef
       end
 
       def target_revision
-        @target_revision ||= begin
-          if sha_hash?(new_resource.revision)
-            @target_revision = new_resource.revision
-          else
-            @target_revision = remote_resolve_reference
+        @target_revision ||=
+          begin
+            if sha_hash?(new_resource.revision)
+              @target_revision = new_resource.revision
+            else
+              @target_revision = remote_resolve_reference
+            end
           end
-        end
       end
 
       alias :revision_slug :target_revision
@@ -311,17 +312,18 @@ class Chef
           # Certain versions of `git` misbehave if git configuration is
           # inaccessible in $HOME. We need to ensure $HOME matches the
           # user who is executing `git` not the user running Chef.
-          env["HOME"] = begin
-            require "etc"
-            case new_resource.user
-            when Integer
-              Etc.getpwuid(new_resource.user).dir
-            else
-              Etc.getpwnam(new_resource.user.to_s).dir
+          env["HOME"] =
+            begin
+              require "etc"
+              case new_resource.user
+              when Integer
+                Etc.getpwuid(new_resource.user).dir
+              else
+                Etc.getpwnam(new_resource.user.to_s).dir
+              end
+            rescue ArgumentError # user not found
+              raise Chef::Exceptions::User, "Could not determine HOME for specified user '#{new_resource.user}' for resource '#{new_resource.name}'"
             end
-          rescue ArgumentError # user not found
-            raise Chef::Exceptions::User, "Could not determine HOME for specified user '#{new_resource.user}' for resource '#{new_resource.name}'"
-          end
         end
         run_opts[:group] = new_resource.group if new_resource.group
         env["GIT_SSH"] = new_resource.ssh_wrapper if new_resource.ssh_wrapper

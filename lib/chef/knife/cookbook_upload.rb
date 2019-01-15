@@ -26,7 +26,7 @@ class Chef
     class CookbookUpload < Knife
 
       CHECKSUM = "checksum".freeze
-      MATCH_CHECKSUM = /[0-9a-f]{32,}/
+      MATCH_CHECKSUM = /[0-9a-f]{32,}/.freeze
 
       deps do
         require "chef/exceptions"

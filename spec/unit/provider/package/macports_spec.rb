@@ -73,7 +73,7 @@ describe Chef::Provider::Package::Macports do
       stdout = <<~EOF
         The following ports are currently installed:
           openssl @0.9.8k_0 (active)
-EOF
+      EOF
 
       status = double(stdout: stdout, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).and_return(status)

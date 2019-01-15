@@ -104,8 +104,8 @@ describe Chef::Environment do
   describe "cookbook_versions" do
     before(:each) do
       @cookbook_versions = {
-        "apt"     => "= 1.0.0",
-        "god"     => "= 2.0.0",
+        "apt" => "= 1.0.0",
+        "god" => "= 2.0.0",
         "apache2" => "= 4.2.0",
       }
     end
@@ -243,8 +243,8 @@ describe Chef::Environment do
   describe "self.validate_cookbook_versions" do
     before(:each) do
       @cookbook_versions = {
-        "apt"     => "= 1.0.0",
-        "god"     => "= 2.0.0",
+        "apt" => "= 1.0.0",
+        "god" => "= 2.0.0",
         "apache2" => "= 4.2.0",
       }
     end

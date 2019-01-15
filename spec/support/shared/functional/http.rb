@@ -92,8 +92,8 @@ module ChefHTTPShared
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_content_length_compressed.png", 200, nil,
       {
-        "Content-Length"   => nyan_compressed_size.to_s,
-        "Content-Type"     => "application/gzip",
+        "Content-Length" => nyan_compressed_size.to_s,
+        "Content-Type" => "application/gzip",
         "Content-Encoding" => "gzip",
       }
     ) do
@@ -120,8 +120,8 @@ module ChefHTTPShared
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_truncated_compressed.png", 200, nil,
       {
-        "Content-Length"   => (nyan_compressed_size + 1).to_s,
-        "Content-Type"     => "application/gzip",
+        "Content-Length" => (nyan_compressed_size + 1).to_s,
+        "Content-Type" => "application/gzip",
         "Content-Encoding" => "gzip",
       }
     ) do
@@ -137,7 +137,7 @@ module ChefHTTPShared
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_transfer_encoding.png", 200, nil,
       {
-        "Content-Length"    => (nyan_uncompressed_size + 1).to_s,
+        "Content-Length" => (nyan_uncompressed_size + 1).to_s,
         "Transfer-Encoding" => "anything",
       }
     ) do

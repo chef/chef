@@ -40,7 +40,7 @@ describe Chef::Provider::Package::Ips do
       installed on the system.  Try specifying -r to query remotely:
 
          crypto/gnupg
-PKG_STATUS
+    PKG_STATUS
     OpenStruct.new(stdout: stdout, stdin: stdin, stderr: stderr, status: @status, exitstatus: 1)
   end
 
@@ -56,7 +56,7 @@ PKG_STATUS
       Packaging Date: April  1, 2012 05:55:52 PM
                 Size: 2.57 MB
                 FMRI: pkg://omnios/security/sudo@1.8.4.1,5.11-0.151002:20120401T175552Z
-PKG_STATUS
+    PKG_STATUS
     stdin = StringIO.new
     stderr = ""
     OpenStruct.new(stdout: stdout, stdin: stdin, stderr: stderr, status: @status, exitstatus: 0)
@@ -106,7 +106,7 @@ PKG_STATUS
         Packaging Date: October 19, 2011 09:14:50 AM
                   Size: 8.07 MB
                   FMRI: pkg://solaris/crypto/gnupg@2.0.17,5.11-0.175.0.0.0.2.537:20111019T091450Z
-INSTALLED
+      INSTALLED
       expect(@provider).to receive(:shell_out_compacted).with("pkg", "info", @new_resource.package_name, timeout: 900).and_return(local)
       expect(@provider).to receive(:shell_out_compacted!).with("pkg", "info", "-r", @new_resource.package_name, timeout: 900).and_return(remote_output)
       @provider.load_current_resource
@@ -151,7 +151,7 @@ INSTALLED
         Packaging Date: April  1, 2012 05:55:52 PM
                   Size: 2.57 MB
                   FMRI: pkg://omnios/security/sudo@1.8.4.1,5.11-0.151002:20120401T175552Z
-PKG_STATUS
+      PKG_STATUS
       expect(@provider).to receive(:shell_out_compacted).with("pkg", "info", @new_resource.package_name, timeout: 900).and_return(local_output)
       expect(@provider).to receive(:shell_out_compacted!).with("pkg", "info", "-r", @new_resource.package_name, timeout: 900).and_return(remote)
       @provider.load_current_resource
@@ -175,7 +175,7 @@ PKG_STATUS
         Packaging Date: October 19, 2011 09:14:50 AM
                   Size: 8.07 MB
                   FMRI: pkg://solaris/crypto/gnupg@2.0.17,5.11-0.175.0.0.0.2.537:20111019T091450Z
-INSTALLED
+      INSTALLED
       remote = remote_output
       remote.stdout = <<~REMOTE
                   Name: crypto/gnupg
@@ -191,7 +191,7 @@ INSTALLED
         Packaging Date: October 19, 2011 09:14:50 AM
                   Size: 8.07 MB
                   FMRI: pkg://solaris/crypto/gnupg@2.0.18,5.11-0.175.0.0.0.2.537:20111019T091450Z
-REMOTE
+      REMOTE
 
       expect(@provider).to receive(:shell_out_compacted).with("pkg", "info", @new_resource.package_name, timeout: 900).and_return(local)
       expect(@provider).to receive(:shell_out_compacted!).with("pkg", "info", "-r", @new_resource.package_name, timeout: 900).and_return(remote)

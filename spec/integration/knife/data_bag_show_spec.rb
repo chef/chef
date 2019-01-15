@@ -40,14 +40,14 @@ describe "knife data bag show", :workstation do
         ariane
         atlas
         falcon9
-EOM
+      EOM
     end
 
     it "with a single item" do
       knife("data bag show rocket falcon9").should_succeed <<~EOM
         heavy: true
         id:    falcon9
-EOM
+      EOM
     end
   end
 end

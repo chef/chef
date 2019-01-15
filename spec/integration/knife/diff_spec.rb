@@ -58,7 +58,7 @@ describe "knife diff", :workstation do
             D\t/roles/x.json
             D\t/users/admin.json
             D\t/users/x.json
-EOM
+          EOM
         end
       end
 
@@ -96,13 +96,13 @@ EOM
               {
                 "foo": "bar"
               }
-EOM
+            EOM
           end
 
           it "knife diff reports the role as different" do
             knife("diff --name-status /").should_succeed <<~EOM
               M\t/roles/x.json
-EOM
+            EOM
           end
         end
 
@@ -130,7 +130,7 @@ EOM
               A\t/nodes/y.json
               A\t/roles/y.json
               A\t/users/y.json
-EOM
+            EOM
           end
 
           context "when cwd is the data_bags directory" do
@@ -139,13 +139,13 @@ EOM
               knife("diff --name-status").should_succeed <<~EOM
                 A\tx/z.json
                 A\ty
-EOM
+              EOM
             end
             it "knife diff * reports different data bags" do
               knife("diff --name-status *").should_succeed <<~EOM
                 A\tx/z.json
                 A\ty
-EOM
+              EOM
             end
           end
         end
@@ -161,7 +161,7 @@ EOM
             D\t/nodes
             D\t/roles
             D\t/users
-EOM
+          EOM
         end
       end
     end
@@ -183,14 +183,14 @@ EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
             A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          EOM
         end
 
         it "knife diff --diff-filter=MAT does not show deleted files" do
           knife("diff --diff-filter=MAT --name-status /cookbooks/x").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          EOM
         end
       end
 
@@ -214,7 +214,7 @@ EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
             A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          EOM
         end
       end
 
@@ -228,7 +228,7 @@ EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin0.9.9.rb
             A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          EOM
         end
       end
     end
@@ -353,7 +353,7 @@ EOM
             D\t/roles/x.json
             D\t/users/admin.json
             D\t/users/x.json
-EOM
+          EOM
         end
       end
 
@@ -390,13 +390,13 @@ EOM
               {
                 "foo": "bar"
               }
-EOM
+            EOM
           end
 
           it "knife diff reports the role as different" do
             knife("diff --name-status /").should_succeed <<~EOM
               M\t/roles/x.json
-EOM
+            EOM
           end
         end
 
@@ -426,7 +426,7 @@ EOM
               A\t/nodes/y.json
               A\t/roles/y.json
               A\t/users/y.json
-EOM
+            EOM
           end
 
           context "when cwd is the data_bags directory" do
@@ -435,13 +435,13 @@ EOM
               knife("diff --name-status").should_succeed <<~EOM
                 A\tx/z.json
                 A\ty
-EOM
+              EOM
             end
             it "knife diff * reports different data bags" do
               knife("diff --name-status *").should_succeed <<~EOM
                 A\tx/z.json
                 A\ty
-EOM
+              EOM
             end
           end
         end
@@ -457,7 +457,7 @@ EOM
             D\t/nodes
             D\t/roles
             D\t/users
-EOM
+          EOM
         end
       end
     end
@@ -477,7 +477,7 @@ EOM
         it "knife diff /cookbooks shows differences" do
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             D\t/cookbooks/x-1.0.1
-EOM
+          EOM
         end
 
         it "knife diff --diff-filter=MAT does not show deleted files" do
@@ -504,7 +504,7 @@ EOM
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             D\t/cookbooks/x-1.0.1
             A\t/cookbooks/x-1.0.0
-EOM
+          EOM
         end
       end
 
@@ -517,7 +517,7 @@ EOM
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             D\t/cookbooks/x-0.9.9
             A\t/cookbooks/x-1.0.0
-EOM
+          EOM
         end
       end
     end

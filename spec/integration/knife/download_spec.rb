@@ -62,7 +62,7 @@ describe "knife download", :workstation do
             Created /roles/x.json
             Created /users/admin.json
             Created /users/x.json
-EOM
+          EOM
           knife("diff --name-status /").should_succeed ""
         end
       end
@@ -110,7 +110,7 @@ EOM
 
                 ]
               }
-EOM
+            EOM
           end
 
           it "knife download changes the role" do
@@ -142,7 +142,7 @@ EOM
 
                 ]
               }
-EOM
+            EOM
           end
 
           it "knife download / does not change anything" do
@@ -176,7 +176,7 @@ EOM
               A\t/nodes/y.json
               A\t/roles/y.json
               A\t/users/y.json
-EOM
+            EOM
           end
 
           it "knife download --purge deletes the extra files" do
@@ -190,7 +190,7 @@ EOM
               Deleted extra entry /nodes/y.json (purge is on)
               Deleted extra entry /roles/y.json (purge is on)
               Deleted extra entry /users/y.json (purge is on)
-EOM
+            EOM
             knife("diff --name-status /").should_succeed ""
           end
         end
@@ -219,7 +219,7 @@ EOM
             Created /users
             Created /users/admin.json
             Created /users/x.json
-EOM
+          EOM
           knife("diff --name-status /").should_succeed ""
         end
 
@@ -245,7 +245,7 @@ EOM
             Created /users
             Created /users/admin.json
             Created /users/x.json
-EOM
+          EOM
           knife("diff --name-status /").should_succeed ""
         end
 
@@ -273,10 +273,10 @@ EOM
             Created /data_bags
             Created /data_bags/x
             Created /data_bags/x/y.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/z.json
-EOM
+          EOM
         end
 
         it "knife download /data_bags/x /data_bags/x/y.json downloads x once" do
@@ -285,7 +285,7 @@ EOM
             Created /data_bags/x
             Created /data_bags/x/y.json
             Created /data_bags/x/z.json
-EOM
+          EOM
         end
       end
     end
@@ -296,17 +296,17 @@ EOM
           {
             "id": "deleted"
           }
-EOM
+        EOM
         file "data_bags/x/modified.json", <<~EOM
           {
             "id": "modified"
           }
-EOM
+        EOM
         file "data_bags/x/unmodified.json", <<~EOM
           {
             "id": "unmodified"
           }
-EOM
+        EOM
       end
 
       when_the_chef_server "has a modified, unmodified, added and deleted data bag item" do
@@ -321,11 +321,11 @@ EOM
         it "knife download of the modified file succeeds" do
           knife("download /data_bags/x/modified.json").should_succeed <<~EOM
             Updated /data_bags/x/modified.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/added.json
             A\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife download of the unmodified file does nothing" do
           knife("download /data_bags/x/unmodified.json").should_succeed ""
@@ -333,16 +333,16 @@ EOM
             D\t/data_bags/x/added.json
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife download of the added file succeeds" do
           knife("download /data_bags/x/added.json").should_succeed <<~EOM
             Created /data_bags/x/added.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife download of the deleted file does nothing" do
           knife("download /data_bags/x/deleted.json").should_succeed ""
@@ -350,32 +350,32 @@ EOM
             D\t/data_bags/x/added.json
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife download --purge of the deleted file deletes it" do
           knife("download --purge /data_bags/x/deleted.json").should_succeed <<~EOM
             Deleted extra entry /data_bags/x/deleted.json (purge is on)
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/added.json
             M\t/data_bags/x/modified.json
-EOM
+          EOM
         end
         it "knife download of the entire data bag downloads everything" do
           knife("download /data_bags/x").should_succeed <<~EOM
             Created /data_bags/x/added.json
             Updated /data_bags/x/modified.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             A\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife download --purge of the entire data bag downloads everything" do
           knife("download --purge /data_bags/x").should_succeed <<~EOM
             Created /data_bags/x/added.json
             Updated /data_bags/x/modified.json
             Deleted extra entry /data_bags/x/deleted.json (purge is on)
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed ""
         end
         context "when cwd is the /data_bags directory" do
@@ -390,7 +390,7 @@ EOM
               Created x/added.json
               Updated x/modified.json
               Deleted extra entry x/deleted.json (purge is on)
-EOM
+            EOM
             knife("diff --name-status /data_bags").should_succeed ""
           end
           it "knife download --purge * downloads everything" do
@@ -398,7 +398,7 @@ EOM
               Created x/added.json
               Updated x/modified.json
               Deleted extra entry x/deleted.json (purge is on)
-EOM
+            EOM
             knife("diff --name-status /data_bags").should_succeed ""
           end
         end
@@ -421,7 +421,7 @@ EOM
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             D\t/cookbooks/x/y.rb
             A\t/cookbooks/x/z.rb
-EOM
+          EOM
         end
         it "knife download of a deleted file does nothing" do
           knife("download /cookbooks/x/z.rb").should_succeed ""
@@ -429,37 +429,37 @@ EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/y.rb
             A\t/cookbooks/x/z.rb
-EOM
+          EOM
         end
         it "knife download --purge of a deleted file succeeds" do
           knife("download --purge /cookbooks/x/z.rb").should_succeed "Deleted extra entry /cookbooks/x/z.rb (purge is on)\n"
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/y.rb
-EOM
+          EOM
         end
         it "knife download of an added file succeeds" do
           knife("download /cookbooks/x/y.rb").should_succeed "Created /cookbooks/x/y.rb\n"
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             A\t/cookbooks/x/z.rb
-EOM
+          EOM
         end
         it "knife download of the cookbook itself succeeds" do
           knife("download /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x/metadata.rb
             Created /cookbooks/x/y.rb
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             A\t/cookbooks/x/z.rb
-EOM
+          EOM
         end
         it "knife download --purge of the cookbook itself succeeds" do
           knife("download --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x/metadata.rb
             Created /cookbooks/x/y.rb
             Deleted extra entry /cookbooks/x/z.rb (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -482,7 +482,7 @@ EOM
             Updated /cookbooks/x/metadata.rb
             Created /cookbooks/x/onlyin1.0.1.rb
             Deleted extra entry /cookbooks/x/onlyin1.0.0.rb (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -496,7 +496,7 @@ EOM
         it "knife download /cookbooks/x downloads the updated file" do
           knife("download --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x/onlyin1.0.0.rb
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -511,7 +511,7 @@ EOM
             Updated /cookbooks/x/metadata.rb
             Created /cookbooks/x/onlyin1.0.1.rb
             Deleted extra entry /cookbooks/x/onlyin1.0.0.rb (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -526,7 +526,7 @@ EOM
             Updated /cookbooks/x/metadata.rb
             Created /cookbooks/x/onlyin0.9.9.rb
             Deleted extra entry /cookbooks/x/onlyin1.0.0.rb (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -541,7 +541,7 @@ EOM
           file "roles/x.rb", <<~EOM
             name "x"
             description "x"
-EOM
+          EOM
         end
 
         it "knife download refuses to change the role" do
@@ -565,7 +565,7 @@ EOM
                                                    {
                                  (right here) ------^
 
-EOH
+          EOH
           knife("download /environments/x.json").should_succeed "Updated /environments/x.json\n", stderr: warning
           knife("diff --name-status /environments/x.json").should_succeed ""
         end
@@ -631,7 +631,7 @@ EOH
             Created /roles/x.json
             Created /users/admin.json
             Created /users/x.json
-EOM
+          EOM
           knife("diff --name-status /").should_succeed ""
         end
       end
@@ -690,7 +690,7 @@ EOM
 
                 ]
               }
-EOM
+            EOM
           end
 
           it "knife download / does not change anything" do
@@ -726,7 +726,7 @@ EOM
               A\t/nodes/y.json
               A\t/roles/y.json
               A\t/users/y.json
-EOM
+            EOM
           end
 
           it "knife download --purge deletes the extra files" do
@@ -741,7 +741,7 @@ EOM
               Deleted extra entry /nodes/y.json (purge is on)
               Deleted extra entry /roles/y.json (purge is on)
               Deleted extra entry /users/y.json (purge is on)
-EOM
+            EOM
             knife("diff --name-status /").should_succeed ""
           end
         end
@@ -770,7 +770,7 @@ EOM
             Created /users
             Created /users/admin.json
             Created /users/x.json
-EOM
+          EOM
           knife("diff --name-status /").should_succeed ""
         end
 
@@ -797,10 +797,10 @@ EOM
             Created /data_bags
             Created /data_bags/x
             Created /data_bags/x/y.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/z.json
-EOM
+          EOM
         end
       end
     end
@@ -811,17 +811,17 @@ EOM
           {
             "id": "deleted"
           }
-EOM
+        EOM
         file "data_bags/x/modified.json", <<~EOM
           {
             "id": "modified"
           }
-EOM
+        EOM
         file "data_bags/x/unmodified.json", <<~EOM
           {
             "id": "unmodified"
           }
-EOM
+        EOM
       end
 
       when_the_chef_server "has a modified, unmodified, added and deleted data bag item" do
@@ -836,11 +836,11 @@ EOM
         it "knife download of the modified file succeeds" do
           knife("download /data_bags/x/modified.json").should_succeed <<~EOM
             Updated /data_bags/x/modified.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/added.json
             A\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife download of the unmodified file does nothing" do
           knife("download /data_bags/x/unmodified.json").should_succeed ""
@@ -848,16 +848,16 @@ EOM
             D\t/data_bags/x/added.json
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife download of the added file succeeds" do
           knife("download /data_bags/x/added.json").should_succeed <<~EOM
             Created /data_bags/x/added.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife download of the deleted file does nothing" do
           knife("download /data_bags/x/deleted.json").should_succeed ""
@@ -865,32 +865,32 @@ EOM
             D\t/data_bags/x/added.json
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife download --purge of the deleted file deletes it" do
           knife("download --purge /data_bags/x/deleted.json").should_succeed <<~EOM
             Deleted extra entry /data_bags/x/deleted.json (purge is on)
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/added.json
             M\t/data_bags/x/modified.json
-EOM
+          EOM
         end
         it "knife download of the entire data bag downloads everything" do
           knife("download /data_bags/x").should_succeed <<~EOM
             Created /data_bags/x/added.json
             Updated /data_bags/x/modified.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             A\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife download --purge of the entire data bag downloads everything" do
           knife("download --purge /data_bags/x").should_succeed <<~EOM
             Created /data_bags/x/added.json
             Updated /data_bags/x/modified.json
             Deleted extra entry /data_bags/x/deleted.json (purge is on)
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed ""
         end
         context "when cwd is the /data_bags directory" do
@@ -905,7 +905,7 @@ EOM
               Created x/added.json
               Updated x/modified.json
               Deleted extra entry x/deleted.json (purge is on)
-EOM
+            EOM
             knife("diff --name-status /data_bags").should_succeed ""
           end
           it "knife download --purge * downloads everything" do
@@ -913,7 +913,7 @@ EOM
               Created x/added.json
               Updated x/modified.json
               Deleted extra entry x/deleted.json (purge is on)
-EOM
+            EOM
             knife("diff --name-status /data_bags").should_succeed ""
           end
         end
@@ -936,7 +936,7 @@ EOM
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             D\t/cookbooks/x-1.0.0/y.rb
             A\t/cookbooks/x-1.0.0/z.rb
-EOM
+          EOM
         end
         it "knife download of a deleted file does nothing" do
           knife("download /cookbooks/x-1.0.0/z.rb").should_succeed ""
@@ -944,37 +944,37 @@ EOM
             M\t/cookbooks/x-1.0.0/metadata.rb
             D\t/cookbooks/x-1.0.0/y.rb
             A\t/cookbooks/x-1.0.0/z.rb
-EOM
+          EOM
         end
         it "knife download --purge of a deleted file succeeds" do
           knife("download --purge /cookbooks/x-1.0.0/z.rb").should_succeed "Deleted extra entry /cookbooks/x-1.0.0/z.rb (purge is on)\n"
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x-1.0.0/metadata.rb
             D\t/cookbooks/x-1.0.0/y.rb
-EOM
+          EOM
         end
         it "knife download of an added file succeeds" do
           knife("download /cookbooks/x-1.0.0/y.rb").should_succeed "Created /cookbooks/x-1.0.0/y.rb\n"
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x-1.0.0/metadata.rb
             A\t/cookbooks/x-1.0.0/z.rb
-EOM
+          EOM
         end
         it "knife download of the cookbook itself succeeds" do
           knife("download /cookbooks/x-1.0.0").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0/metadata.rb
             Created /cookbooks/x-1.0.0/y.rb
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             A\t/cookbooks/x-1.0.0/z.rb
-EOM
+          EOM
         end
         it "knife download --purge of the cookbook itself succeeds" do
           knife("download --purge /cookbooks/x-1.0.0").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0/metadata.rb
             Created /cookbooks/x-1.0.0/y.rb
             Deleted extra entry /cookbooks/x-1.0.0/z.rb (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -998,7 +998,7 @@ EOM
             Created /cookbooks/x-1.0.1
             Created /cookbooks/x-1.0.1/metadata.rb
             Created /cookbooks/x-1.0.1/onlyin1.0.1.rb
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1015,7 +1015,7 @@ EOM
             Created /cookbooks/x-0.9.9/metadata.rb
             Created /cookbooks/x-0.9.9/onlyin0.9.9.rb
             Updated /cookbooks/x-1.0.0/onlyin1.0.0.rb
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1031,7 +1031,7 @@ EOM
             Created /cookbooks/x-1.0.1/metadata.rb
             Created /cookbooks/x-1.0.1/onlyin1.0.1.rb
             Deleted extra entry /cookbooks/x-1.0.0 (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1047,7 +1047,7 @@ EOM
             Created /cookbooks/x-0.9.9/metadata.rb
             Created /cookbooks/x-0.9.9/onlyin0.9.9.rb
             Deleted extra entry /cookbooks/x-1.0.0 (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1106,7 +1106,7 @@ EOM
           Created /cookbooks
           Created /cookbooks/x
           Created /cookbooks/x/metadata.rb
-EOM
+        EOM
       end
     end
   end
@@ -1189,7 +1189,7 @@ EOM
           Created /policies
           Created /policy_groups
           Created /roles
-EOM
+        EOM
       end
 
       context "and the server has one of each thing" do
@@ -1232,7 +1232,7 @@ EOM
             Created /acls/roles/x.json
             Updated /groups/clients.json
             Updated /groups/users.json
-EOM
+          EOM
         end
 
         it "knife download / downloads everything" do
@@ -1254,7 +1254,7 @@ EOM
             Created /policies/x-1.0.0.json
             Created /policy_groups/x.json
             Created /roles/x.json
-EOM
+          EOM
           knife("diff --name-status /").should_succeed ""
         end
 
@@ -1323,7 +1323,7 @@ EOM
               Updated /policies/x-1.0.0.json
               Updated /policy_groups/x.json
               Updated /roles/x.json
-EOM
+            EOM
             knife("diff --name-status /").should_succeed ""
           end
         end

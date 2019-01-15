@@ -67,16 +67,16 @@ class Chef
 
       def to_h
         hash = {
-          "type"           => new_resource.resource_name.to_sym,
-          "name"           => new_resource.name.to_s,
-          "id"             => resource_identity,
-          "after"          => new_resource_state_reporter,
-          "before"         => current_resource_state_reporter,
-          "duration"       => elapsed_time_in_milliseconds.to_s,
-          "delta"          => new_resource.respond_to?(:diff) && potentially_changed? ? new_resource.diff : "",
+          "type" => new_resource.resource_name.to_sym,
+          "name" => new_resource.name.to_s,
+          "id" => resource_identity,
+          "after" => new_resource_state_reporter,
+          "before" => current_resource_state_reporter,
+          "duration" => elapsed_time_in_milliseconds.to_s,
+          "delta" => new_resource.respond_to?(:diff) && potentially_changed? ? new_resource.diff : "",
           "ignore_failure" => new_resource.ignore_failure,
-          "result"         => action.to_s,
-          "status"         => status,
+          "result" => action.to_s,
+          "status" => status,
         }
 
         if new_resource.cookbook_name

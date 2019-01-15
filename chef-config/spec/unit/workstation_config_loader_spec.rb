@@ -459,7 +459,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
             client_key = "barney_rubble.pem"
             chef_server_url = "https://api.chef.io/organizations/bedrock"
             invalid_config_option1234 = "foobar"
-EOH
+          EOH
           content
         end
 
@@ -484,7 +484,7 @@ EOH
             }
             [default.knife]
             ssh_user = "knife_ssh_user"
-EOH
+          EOH
           content
         end
 
@@ -506,7 +506,7 @@ EOH
             -----BEGIN RSA PRIVATE KEY-----
             foo
             """
-EOH
+          EOH
           content
         end
 
@@ -515,7 +515,7 @@ EOH
           expect(ChefConfig::Config.client_key_contents).to eq(<<~EOH
             -----BEGIN RSA PRIVATE KEY-----
             foo
-EOH
+          EOH
 )
         end
       end
@@ -531,7 +531,7 @@ EOH
             client_name = "explicit"
             [context]
             client_name = "context"
-EOH
+          EOH
           content
         end
 
@@ -573,7 +573,7 @@ EOH
             [default]
             node_name = 'barney'
             client_name = 'barney'
-EOH
+          EOH
           content
         end
 

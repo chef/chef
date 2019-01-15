@@ -215,7 +215,7 @@ module Shell
             /etc/chef/client.rb if -z option is given.
             /etc/chef/solo.rb   if --solo-legacy-mode option is given.
             .chef/knife.rb      if -s option is given.
-FOOTER
+    FOOTER
 
     option :config_file,
       short: "-c CONFIG",

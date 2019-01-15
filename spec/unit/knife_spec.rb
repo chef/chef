@@ -576,7 +576,7 @@ describe Chef::Knife do
         Use `knife ssl check` to troubleshoot your SSL configuration.
         If your Chef Server uses a self-signed certificate, you can use
         `knife ssl fetch` to make knife trust the server's certificates.
-MSG
+      MSG
       expect(stderr.string).to include(expected_message)
     end
 

@@ -46,7 +46,7 @@ class Chef
           Do not pass either if you do not want to change the public_key field of your key.
           Pass --public-key if you want to update the public_key field of your key from a specific public key.
           Pass --create-key if you want the server to generate a new key and use that to update the public_key field of your key.
-EOS
+        EOS
       end
 
       def edit_data(key)

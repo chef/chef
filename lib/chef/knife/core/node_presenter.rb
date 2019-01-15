@@ -100,38 +100,38 @@ class Chef
 
             summarized = <<~SUMMARY
               #{ui.color('Node Name:', :bold)}   #{ui.color(node.name, :bold)}
-SUMMARY
+            SUMMARY
             show_policy = !(node.policy_name.nil? && node.policy_group.nil?)
             if show_policy
               summarized << <<~POLICY
                 #{key('Policy Name:')}  #{node.policy_name}
                 #{key('Policy Group:')} #{node.policy_group}
-POLICY
+              POLICY
             else
               summarized << <<~ENV
                 #{key('Environment:')} #{node.chef_environment}
-ENV
+              ENV
             end
             summarized << <<~SUMMARY
               #{key('FQDN:')}        #{node[:fqdn]}
               #{key('IP:')}          #{ip}
               #{key('Run List:')}    #{node.run_list}
-SUMMARY
+            SUMMARY
             unless show_policy
               summarized << <<~ROLES
                 #{key('Roles:')}       #{Array(node[:roles]).join(', ')}
-ROLES
+              ROLES
             end
             summarized << <<~SUMMARY
               #{key('Recipes:')}     #{Array(node[:recipes]).join(', ')}
               #{key('Platform:')}    #{node[:platform]} #{node[:platform_version]}
               #{key('Tags:')}        #{node.tags.join(', ')}
-SUMMARY
+            SUMMARY
             if config[:medium_output] || config[:long_output]
               summarized += <<~MORE
                 #{key('Attributes:')}
                 #{text_format(node.normal_attrs)}
-MORE
+              MORE
             end
             if config[:long_output]
               summarized += <<~MOST
@@ -141,7 +141,7 @@ MORE
                 #{text_format(node.override_attrs)}
                 #{key('Automatic Attributes (Ohai Data):')}
                 #{text_format(node.automatic_attrs)}
-MOST
+              MOST
             end
             summarized
           else

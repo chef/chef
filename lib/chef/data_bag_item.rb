@@ -36,7 +36,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
-    VALID_ID = /^[\.\-[:alnum:]_]+$/
+    VALID_ID = /^[\.\-[:alnum:]_]+$/.freeze
 
     def self.validate_id!(id_str)
       if id_str.nil? || ( id_str !~ VALID_ID )
@@ -113,11 +113,11 @@ class Chef
     # Serialize this object as a hash
     def to_json(*a)
       result = {
-        "name"       => object_name,
+        "name" => object_name,
         "json_class" => self.class.name,
-        "chef_type"  => "data_bag_item",
-        "data_bag"   => data_bag,
-        "raw_data"   => raw_data,
+        "chef_type" => "data_bag_item",
+        "data_bag" => data_bag,
+        "raw_data" => raw_data,
       }
       Chef::JSONCompat.to_json(result, *a)
     end

@@ -38,7 +38,7 @@ describe "knife client create", :workstation do
         chef_type: client
         name:      bah
         validator: true
-EOM
+      EOM
     end
 
     it "refuses to add an existing client" do

@@ -137,7 +137,7 @@ class Chef
           Knife has no means to verify these are the correct certificates. You should
           verify the authenticity of these certificates after downloading.
 
-TRUST_TRUST
+        TRUST_TRUST
         remote_cert_chain.each do |cert|
           write_cert(cert)
         end

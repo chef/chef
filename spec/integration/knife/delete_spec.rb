@@ -43,7 +43,7 @@ describe "knife delete", :workstation do
       /roles/x.json
       /users
       /users/x.json
-EOM
+    EOM
   end
 
   let :server_everything do
@@ -68,7 +68,7 @@ EOM
       /users
       /users/admin.json
       /users/x.json
-EOM
+    EOM
   end
   let :server_nothing do
     <<~EOM
@@ -83,7 +83,7 @@ EOM
       /roles
       /users
       /users/admin.json
-EOM
+    EOM
   end
 
   let :nothing do
@@ -95,7 +95,7 @@ EOM
       /nodes
       /roles
       /users
-EOM
+    EOM
   end
 
   when_the_chef_server "has one of each thing" do
@@ -125,7 +125,7 @@ EOM
         knife("delete --both /cookbooks/x").should_fail <<~EOM
           ERROR: /cookbooks/x (remote) must be deleted recursively!  Pass -r to knife delete.
           ERROR: /cookbooks/x (local) must be deleted recursively!  Pass -r to knife delete.
-EOM
+        EOM
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed everything
       end
@@ -151,7 +151,7 @@ EOM
           /users
           /users/admin.json
           /users/x.json
-EOM
+        EOM
         knife("list -Rf --local /").should_succeed <<~EOM
           /clients
           /clients/x.json
@@ -168,7 +168,7 @@ EOM
           /roles/x.json
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete -r --local /cookbooks/x deletes x locally but not remotely" do
@@ -190,7 +190,7 @@ EOM
           /roles/x.json
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete -r /cookbooks/x deletes x remotely but not locally" do
@@ -214,7 +214,7 @@ EOM
           /users
           /users/admin.json
           /users/x.json
-EOM
+        EOM
         knife("list -Rf --local /").should_succeed everything
       end
 
@@ -229,7 +229,7 @@ EOM
           knife("delete --both /data_bags/empty").should_fail <<~EOM
             ERROR: /data_bags/empty (remote) must be deleted recursively!  Pass -r to knife delete.
             ERROR: /data_bags/empty (local) must be deleted recursively!  Pass -r to knife delete.
-EOM
+          EOM
           knife("list -Rf /").should_succeed <<~EOM
             /clients
             /clients/chef-validator.json
@@ -252,7 +252,7 @@ EOM
             /users
             /users/admin.json
             /users/x.json
-EOM
+          EOM
           knife("list -Rf --local /").should_succeed <<~EOM
             /clients
             /clients/x.json
@@ -272,7 +272,7 @@ EOM
             /roles/x.json
             /users
             /users/x.json
-EOM
+          EOM
         end
       end
 
@@ -280,7 +280,7 @@ EOM
         knife("delete --both /data_bags/x").should_fail <<~EOM
           ERROR: /data_bags/x (remote) must be deleted recursively!  Pass -r to knife delete.
           ERROR: /data_bags/x (local) must be deleted recursively!  Pass -r to knife delete.
-EOM
+        EOM
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed everything
       end
@@ -306,7 +306,7 @@ EOM
           /users
           /users/admin.json
           /users/x.json
-EOM
+        EOM
         knife("list -Rf --local /").should_succeed <<~EOM
           /clients
           /clients/x.json
@@ -323,7 +323,7 @@ EOM
           /roles/x.json
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete --both /environments/x.json deletes x" do
@@ -348,7 +348,7 @@ EOM
           /users
           /users/admin.json
           /users/x.json
-EOM
+        EOM
         knife("list -Rf --local /").should_succeed <<~EOM
           /clients
           /clients/x.json
@@ -366,7 +366,7 @@ EOM
           /roles/x.json
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete --both /roles/x.json deletes x" do
@@ -391,7 +391,7 @@ EOM
           /users
           /users/admin.json
           /users/x.json
-EOM
+        EOM
         knife("list -Rf --local /").should_succeed <<~EOM
           /clients
           /clients/x.json
@@ -409,7 +409,7 @@ EOM
           /roles
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete --both /environments/_default.json fails but still deletes the local copy" do
@@ -432,7 +432,7 @@ EOM
           /roles/x.json
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete --both /environments/nonexistent.json fails" do
@@ -445,7 +445,7 @@ EOM
         knife("delete --both /").should_fail <<~EOM
           ERROR: / (remote) cannot be deleted.
           ERROR: / (local) cannot be deleted.
-EOM
+        EOM
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed everything
       end
@@ -468,7 +468,7 @@ EOM
           ERROR: /roles (local) cannot be deleted.
           ERROR: /users (remote) cannot be deleted.
           ERROR: /users (local) cannot be deleted.
-EOM
+        EOM
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed everything
       end
@@ -512,7 +512,7 @@ EOM
           /users
           /users/admin.json
           /users/x.json
-EOM
+        EOM
         knife("list -Rf --local /").should_succeed nothing
       end
 
@@ -543,7 +543,7 @@ EOM
           /users
           /users/admin.json
           /users/x.json
-EOM
+        EOM
         knife("list -Rf --local /").should_succeed nothing
       end
 
@@ -569,7 +569,7 @@ EOM
           /users
           /users/admin.json
           /users/x.json
-EOM
+        EOM
         knife("list -Rf --local /").should_succeed nothing
       end
 
@@ -595,7 +595,7 @@ EOM
           /users
           /users/admin.json
           /users/x.json
-EOM
+        EOM
         knife("list -Rf --local /").should_succeed nothing
       end
 
@@ -629,7 +629,7 @@ EOM
           ERROR: /roles (local) cannot be deleted.
           ERROR: /users (remote) cannot be deleted.
           ERROR: /users (local) cannot be deleted.
-EOM
+        EOM
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed nothing
       end
@@ -665,7 +665,7 @@ EOM
             users
             users/admin.json
             users/x.json
-EOM
+          EOM
           knife("list -Rf --local /").should_succeed <<~EOM
             clients
             cookbooks
@@ -674,7 +674,7 @@ EOM
             nodes
             roles
             users
-EOM
+          EOM
         end
       end
     end
@@ -718,7 +718,7 @@ EOM
           /roles/x.json
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete --both /data_bags/x fails" do
@@ -746,7 +746,7 @@ EOM
           /roles/x.json
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete --both /environments/x.json deletes x" do
@@ -769,7 +769,7 @@ EOM
           /roles/x.json
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete --both /roles/x.json deletes x" do
@@ -792,7 +792,7 @@ EOM
           /roles
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete --both /environments/_default.json fails but still deletes the local copy" do
@@ -815,7 +815,7 @@ EOM
           /roles/x.json
           /users
           /users/x.json
-EOM
+        EOM
       end
 
       it "knife delete --both / fails" do
@@ -842,7 +842,7 @@ EOM
           ERROR: /roles (local) cannot be deleted.
           ERROR: /users (remote) cannot be deleted.
           ERROR: /users (local) cannot be deleted.
-EOM
+        EOM
         knife("list -Rf /").should_succeed server_nothing
         knife("list -Rf --local /").should_succeed everything
       end
@@ -869,7 +869,7 @@ EOM
             roles
             users
             users/admin.json
-EOM
+          EOM
           knife("list -Rf --local /").should_succeed <<~EOM
             clients
             clients/x.json
@@ -888,7 +888,7 @@ EOM
             roles/x.json
             users
             users/x.json
-EOM
+          EOM
         end
       end
     end

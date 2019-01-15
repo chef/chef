@@ -53,7 +53,7 @@ describe "chef-client" do
       syHLXYFNy0OxMtH/bBAXBGNHd9gf5uOnqh0pYcbe/uRAxumC7Rl0cL509eURiA2T
       +vFmf54y9YdnLXaqv+FhJT6B6V7WX7IpU9BMqJY1cJYXHuHG2KA=
       -----END RSA PRIVATE KEY-----
-END_VALIDATION_PEM
+    END_VALIDATION_PEM
   end
 
   let(:cache_path) do
@@ -66,7 +66,7 @@ END_VALIDATION_PEM
       validation_key '#{path_to('config/validator.pem')}'
       cache_path '#{cache_path}'
       client_key '#{cache_path}/client.pem'
-END_CLIENT_RB
+    END_CLIENT_RB
   end
 
   let(:client_rb_content) do

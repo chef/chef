@@ -30,10 +30,10 @@ class Chef
           #{exception.message}
 
           Your chef_server_url may be misconfigured, or the network could be down.
-E
+        E
         error_description.section("Relevant Config Settings:", <<~E)
           chef_server_url  "#{server_url}"
-E
+        E
       end
 
       def describe_eof_error(error_description)
@@ -78,11 +78,11 @@ E
             Failed to authenticate to the chef server (http 401).
             The request failed because your clock has drifted by more than 15 minutes.
             Syncing your clock to an NTP Time source should resolve the issue.
-E
+          E
         else
           error_description.section("Authentication Error:", <<~E)
             Failed to authenticate to the chef server (http 401).
-E
+          E
 
           error_description.section("Server Response:", format_rest_error)
           error_description.section("Relevant Config Settings:", <<~E)
@@ -92,14 +92,14 @@ E
 
             If these settings are correct, your client_key may be invalid, or
             you may have a chef user with the same client name as this node.
-E
+          E
         end
       end
 
       def describe_400_error(error_description)
         error_description.section("Invalid Request Data:", <<~E)
           The data in your request was invalid (HTTP 400).
-E
+        E
         error_description.section("Server Response:", format_rest_error)
       end
 
@@ -115,7 +115,7 @@ E
             The server supports a min API version of #{min_server_version} and a max API version of #{max_server_version}.
             Chef just made a request with an API version of #{client_api_version}.
             Please either update your Chef client or server to be a compatible set.
-E
+          E
         else
           describe_http_error(error_description)
         end
@@ -124,7 +124,7 @@ E
       def describe_500_error(error_description)
         error_description.section("Unknown Server Error:", <<~E)
           The server had a fatal error attempting to load the node data.
-E
+        E
         error_description.section("Server Response:", format_rest_error)
       end
 

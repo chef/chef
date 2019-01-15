@@ -64,7 +64,7 @@ describe "knife upload", :workstation do
             D\t/roles/x.json
             D\t/users/admin.json
             D\t/users/x.json
-EOM
+          EOM
         end
 
         it "knife upload --purge deletes everything" do
@@ -79,10 +79,10 @@ EOM
             Deleted extra entry /roles/x.json (purge is on)
             Deleted extra entry /users/admin.json (purge is on)
             Deleted extra entry /users/x.json (purge is on)
-EOM
+          EOM
           knife("diff --name-status /").should_succeed <<~EOM
             D\t/environments/_default.json
-EOM
+          EOM
         end
       end
 
@@ -145,7 +145,7 @@ EOM
 
                 ]
               }
-EOM
+            EOM
           end
 
           it "knife upload / does not change anything" do
@@ -159,7 +159,7 @@ EOM
             file "roles/x.rb", <<~EOM
               name "x"
               description "blargle"
-EOM
+            EOM
           end
 
           it "knife upload changes the role" do
@@ -208,7 +208,7 @@ EOM
               Created /nodes/y.json
               Created /roles/y.json
               Created /users/y.json
-EOM
+            EOM
             knife("diff /").should_succeed ""
           end
 
@@ -224,7 +224,7 @@ EOM
               Created /nodes/y.json
               Created /roles/y.json
               Created /users/y.json
-EOM
+            EOM
             knife("diff --name-status /").should_succeed ""
           end
         end
@@ -241,7 +241,7 @@ EOM
             D\t/nodes
             D\t/roles
             D\t/users
-EOM
+          EOM
         end
 
         it "knife upload --purge deletes nothing" do
@@ -253,7 +253,7 @@ EOM
             ERROR: /nodes cannot be deleted.
             ERROR: /roles cannot be deleted.
             ERROR: /users cannot be deleted.
-EOM
+          EOM
           knife("diff --name-status /").should_succeed <<~EOM
             D\t/clients
             D\t/cookbooks
@@ -262,7 +262,7 @@ EOM
             D\t/nodes
             D\t/roles
             D\t/users
-EOM
+          EOM
         end
 
         context "when current directory is top level" do
@@ -288,7 +288,7 @@ EOM
           knife("upload /data_bags/x/y.json").should_succeed <<~EOM
             Created /data_bags/x
             Created /data_bags/x/y.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<EOM
 EOM
           expect(Chef::JSONCompat.parse(knife("raw /data/x/y").stdout, create_additions: false).keys.sort).to eq(%w{foo id})
@@ -298,7 +298,7 @@ EOM
           knife("upload /data_bags/x /data_bags/x/y.json").should_succeed <<~EOM
             Created /data_bags/x
             Created /data_bags/x/y.json
-EOM
+          EOM
         end
       end
 
@@ -312,7 +312,7 @@ EOM
           knife("upload /data_bags/x/y.json").should_succeed <<~EOM
             Created /data_bags/x
             Created /data_bags/x/y.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed ""
           result = Chef::JSONCompat.parse(knife("raw /data/x/y").stdout, create_additions: false)
           expect(result.keys.sort).to eq(%w{chef_type data_bag id})
@@ -331,10 +331,10 @@ EOM
           knife("upload /data_bags/x/y.json").should_succeed <<~EOM
             Created /data_bags/x
             Created /data_bags/x/y.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             A\t/data_bags/x/z.json
-EOM
+          EOM
         end
       end
     end
@@ -355,11 +355,11 @@ EOM
         it "knife upload of the modified file succeeds" do
           knife("upload /data_bags/x/modified.json").should_succeed <<~EOM
             Updated /data_bags/x/modified.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/deleted.json
             A\t/data_bags/x/added.json
-EOM
+          EOM
         end
         it "knife upload of the unmodified file does nothing" do
           knife("upload /data_bags/x/unmodified.json").should_succeed ""
@@ -367,16 +367,16 @@ EOM
             D\t/data_bags/x/deleted.json
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/added.json
-EOM
+          EOM
         end
         it "knife upload of the added file succeeds" do
           knife("upload /data_bags/x/added.json").should_succeed <<~EOM
             Created /data_bags/x/added.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/deleted.json
             M\t/data_bags/x/modified.json
-EOM
+          EOM
         end
         it "knife upload of the deleted file does nothing" do
           knife("upload /data_bags/x/deleted.json").should_succeed ""
@@ -384,32 +384,32 @@ EOM
             D\t/data_bags/x/deleted.json
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/added.json
-EOM
+          EOM
         end
         it "knife upload --purge of the deleted file deletes it" do
           knife("upload --purge /data_bags/x/deleted.json").should_succeed <<~EOM
             Deleted extra entry /data_bags/x/deleted.json (purge is on)
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/added.json
-EOM
+          EOM
         end
         it "knife upload of the entire data bag uploads everything" do
           knife("upload /data_bags/x").should_succeed <<~EOM
             Created /data_bags/x/added.json
             Updated /data_bags/x/modified.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife upload --purge of the entire data bag uploads everything" do
           knife("upload --purge /data_bags/x").should_succeed <<~EOM
             Created /data_bags/x/added.json
             Updated /data_bags/x/modified.json
             Deleted extra entry /data_bags/x/deleted.json (purge is on)
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed ""
         end
         context "when cwd is the /data_bags directory" do
@@ -427,7 +427,7 @@ EOM
               Created x/added.json
               Updated x/modified.json
               Deleted extra entry x/deleted.json (purge is on)
-EOM
+            EOM
             knife("diff --name-status /data_bags").should_succeed ""
           end
           it "knife upload --purge * uploads everything" do
@@ -435,7 +435,7 @@ EOM
               Created x/added.json
               Updated x/modified.json
               Deleted extra entry x/deleted.json (purge is on)
-EOM
+            EOM
             knife("diff --name-status /data_bags").should_succeed ""
           end
         end
@@ -468,13 +468,13 @@ EOM
         it "knife upload of the cookbook itself succeeds" do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
         it "knife upload --purge of the cookbook itself succeeds" do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -487,7 +487,7 @@ EOM
         it "knife upload of the cookbook succeeds" do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -502,7 +502,7 @@ EOM
         it "knife upload of the cookbook succeeds" do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -515,7 +515,7 @@ EOM
         it "knife upload --freeze freezes the cookbook" do
           knife("upload --freeze /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
-EOM
+          EOM
           # Modify a file and attempt to upload
           file "cookbooks/x/metadata.rb", 'name "x"; version "1.0.0"#different'
           knife("upload /cookbooks/x").should_fail "ERROR: /cookbooks failed to write: Cookbook x is frozen\n"
@@ -540,7 +540,7 @@ EOM
         it "knife upload --force uploads the frozen cookbook" do
           knife("upload --force /cookbooks/frozencook").should_succeed <<~EOM
             Updated /cookbooks/frozencook
-EOM
+          EOM
         end
       end
     end
@@ -562,15 +562,15 @@ EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
             A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          EOM
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
             A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          EOM
         end
       end
 
@@ -583,7 +583,7 @@ EOM
         it "knife upload /cookbooks/x uploads the local version" do
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -598,27 +598,27 @@ EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
             A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          EOM
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
             A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          EOM
         end
       end
 
       when_the_chef_server "has an earlier version for the cookbook, and no current version" do
         before do
-          cookbook "x", "0.9.9", {  "onlyin0.9.9.rb" => "hi" }
+          cookbook "x", "0.9.9", { "onlyin0.9.9.rb" => "hi" }
         end
 
         it "knife upload /cookbooks/x uploads the new version" do
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -718,7 +718,7 @@ EOM
         it "knife upload succeeds" do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Created /cookbooks/x
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -763,7 +763,7 @@ EOM
             D\t/roles/x.json
             D\t/users/admin.json
             D\t/users/x.json
-EOM
+          EOM
         end
 
         it "knife upload --purge deletes everything" do
@@ -778,10 +778,10 @@ EOM
             Deleted extra entry /roles/x.json (purge is on)
             Deleted extra entry /users/admin.json (purge is on)
             Deleted extra entry /users/x.json (purge is on)
-EOM
+          EOM
           knife("diff --name-status /").should_succeed <<~EOM
             D\t/environments/_default.json
-EOM
+          EOM
         end
       end
 
@@ -840,7 +840,7 @@ EOM
 
                 ]
               }
-EOM
+            EOM
           end
 
           it "knife upload / does not change anything" do
@@ -876,7 +876,7 @@ EOM
               Created /nodes/y.json
               Created /roles/y.json
               Created /users/y.json
-EOM
+            EOM
             knife("diff --name-status /").should_succeed ""
           end
         end
@@ -893,7 +893,7 @@ EOM
             D\t/nodes
             D\t/roles
             D\t/users
-EOM
+          EOM
         end
 
         it "knife upload --purge deletes nothing" do
@@ -905,7 +905,7 @@ EOM
             ERROR: /nodes cannot be deleted.
             ERROR: /roles cannot be deleted.
             ERROR: /users cannot be deleted.
-EOM
+          EOM
           knife("diff --name-status /").should_succeed <<~EOM
             D\t/clients
             D\t/cookbooks
@@ -914,7 +914,7 @@ EOM
             D\t/nodes
             D\t/roles
             D\t/users
-EOM
+          EOM
         end
 
         context "when current directory is top level" do
@@ -940,10 +940,10 @@ EOM
           knife("upload /data_bags/x/y.json").should_succeed <<~EOM
             Created /data_bags/x
             Created /data_bags/x/y.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             A\t/data_bags/x/z.json
-EOM
+          EOM
         end
       end
     end
@@ -962,11 +962,11 @@ EOM
         it "knife upload of the modified file succeeds" do
           knife("upload /data_bags/x/modified.json").should_succeed <<~EOM
             Updated /data_bags/x/modified.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/deleted.json
             A\t/data_bags/x/added.json
-EOM
+          EOM
         end
         it "knife upload of the unmodified file does nothing" do
           knife("upload /data_bags/x/unmodified.json").should_succeed ""
@@ -974,16 +974,16 @@ EOM
             D\t/data_bags/x/deleted.json
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/added.json
-EOM
+          EOM
         end
         it "knife upload of the added file succeeds" do
           knife("upload /data_bags/x/added.json").should_succeed <<~EOM
             Created /data_bags/x/added.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/deleted.json
             M\t/data_bags/x/modified.json
-EOM
+          EOM
         end
         it "knife upload of the deleted file does nothing" do
           knife("upload /data_bags/x/deleted.json").should_succeed ""
@@ -991,32 +991,32 @@ EOM
             D\t/data_bags/x/deleted.json
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/added.json
-EOM
+          EOM
         end
         it "knife upload --purge of the deleted file deletes it" do
           knife("upload --purge /data_bags/x/deleted.json").should_succeed <<~EOM
             Deleted extra entry /data_bags/x/deleted.json (purge is on)
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             M\t/data_bags/x/modified.json
             A\t/data_bags/x/added.json
-EOM
+          EOM
         end
         it "knife upload of the entire data bag uploads everything" do
           knife("upload /data_bags/x").should_succeed <<~EOM
             Created /data_bags/x/added.json
             Updated /data_bags/x/modified.json
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed <<~EOM
             D\t/data_bags/x/deleted.json
-EOM
+          EOM
         end
         it "knife upload --purge of the entire data bag uploads everything" do
           knife("upload --purge /data_bags/x").should_succeed <<~EOM
             Created /data_bags/x/added.json
             Updated /data_bags/x/modified.json
             Deleted extra entry /data_bags/x/deleted.json (purge is on)
-EOM
+          EOM
           knife("diff --name-status /data_bags").should_succeed ""
         end
         context "when cwd is the /data_bags directory" do
@@ -1031,7 +1031,7 @@ EOM
               Created x/added.json
               Updated x/modified.json
               Deleted extra entry x/deleted.json (purge is on)
-EOM
+            EOM
             knife("diff --name-status /data_bags").should_succeed ""
           end
           it "knife upload --purge * uploads everything" do
@@ -1039,7 +1039,7 @@ EOM
               Created x/added.json
               Updated x/modified.json
               Deleted extra entry x/deleted.json (purge is on)
-EOM
+            EOM
             knife("diff --name-status /data_bags").should_succeed ""
           end
         end
@@ -1072,14 +1072,14 @@ EOM
         it "knife upload of the cookbook itself succeeds" do
           knife("upload /cookbooks/x-1.0.0").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
 
         it "knife upload --purge of the cookbook itself succeeds" do
           knife("upload /cookbooks/x-1.0.0").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1092,7 +1092,7 @@ EOM
         it "knife upload of the cookbook succeeds" do
           knife("upload /cookbooks/x-1.0.0").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1107,7 +1107,7 @@ EOM
         it "knife upload of the cookbook succeeds" do
           knife("upload /cookbooks/x-1.0.0").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1129,11 +1129,11 @@ EOM
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x-1.0.0/onlyin1.0.0.rb
             D\t/cookbooks/x-1.0.1
-EOM
+          EOM
           knife("upload --purge /cookbooks").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
             Deleted extra entry /cookbooks/x-1.0.1 (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1147,7 +1147,7 @@ EOM
           knife("upload --purge /cookbooks").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
             Deleted extra entry /cookbooks/x-0.9.9 (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1161,11 +1161,11 @@ EOM
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             D\t/cookbooks/x-1.0.1
             A\t/cookbooks/x-1.0.0
-EOM
+          EOM
           knife("upload --purge /cookbooks").should_succeed <<~EOM
             Created /cookbooks/x-1.0.0
             Deleted extra entry /cookbooks/x-1.0.1 (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1179,7 +1179,7 @@ EOM
           knife("upload --purge /cookbooks").should_succeed <<~EOM
             Created /cookbooks/x-1.0.0
             Deleted extra entry /cookbooks/x-0.9.9 (purge is on)
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1252,7 +1252,7 @@ EOM
         it "knife upload succeeds" do
           knife("upload /cookbooks/x-1.0.0").should_succeed <<~EOM
             Created /cookbooks/x-1.0.0
-EOM
+          EOM
           knife("diff --name-status /cookbooks").should_succeed ""
         end
       end
@@ -1331,7 +1331,7 @@ EOM
             Created /policies/x-1.0.0.json
             Created /policy_groups/x.json
             Created /roles/x.json
-EOM
+          EOM
           expect(api.get("association_requests").map { |a| a["username"] }).to eq([ "foo" ])
           expect(api.get("users").map { |a| a["user"]["username"] }).to eq([ "bar" ])
           knife("diff --name-status --diff-filter=AMT /").should_succeed ""
@@ -1368,7 +1368,7 @@ EOM
           it "knife upload makes no changes" do
             knife("upload /").should_succeed <<~EOM
               Updated /acls/groups/blah.json
-EOM
+            EOM
           end
         end
 
@@ -1380,7 +1380,7 @@ EOM
           it "should fail because policies are not updateable" do
             knife("upload /policies/x-1.0.0.json").should_fail <<~EOM
               ERROR: /policies/x-1.0.0.json cannot be updated: policy revisions are immutable once uploaded. If you want to change the policy, create a new revision with your changes.
-EOM
+            EOM
           end
         end
 
@@ -1392,7 +1392,7 @@ EOM
           it "should fail because cookbook_artifacts cannot be updated" do
             knife("upload /cookbook_artifacts/x-1x1").should_fail <<~EOM
               ERROR: /cookbook_artifacts/x-1x1 cannot be updated: cookbook artifacts are immutable once uploaded.
-EOM
+            EOM
           end
         end
 
@@ -1434,7 +1434,7 @@ EOM
               Created /policies/blah-1.0.0.json
               Updated /policy_groups/x.json
               Updated /roles/x.json
-EOM
+            EOM
             knife("diff --name-status --diff-filter=AMT /").should_succeed ""
           end
         end

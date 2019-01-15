@@ -103,7 +103,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
      ValueData = '#{test_registry_data}'
      Ensure = 'Present'
   }
-EOH
+    EOH
   end
 
   let(:dsc_code) { dsc_reg_code }
@@ -111,7 +111,7 @@ EOH
     <<-EOH
   param($testregkeyname, $testregvaluename)
   #{dsc_reg_code}
-EOH
+    EOH
   end
 
   let(:dsc_user_prefix) { "dsc" }
@@ -138,7 +138,7 @@ EOH
     $#{dsc_user_prefix_param_name},
     $#{dsc_user_suffix_param_name}
     )
-EOH
+    EOH
   end
 
   let(:config_param_section) { "" }
@@ -166,7 +166,7 @@ EOH
           PasswordChangeRequired = $false
       }
       }
-EOH
+    EOH
   end
 
   let(:dsc_user_config_data) do
@@ -180,7 +180,7 @@ EOH
           )
       }
 
-EOH
+    EOH
   end
 
   let(:dsc_environment_env_var_name) { "dsc_test_cwd" }
@@ -199,7 +199,7 @@ EOH
           Value = $pwd.path
           Ensure = 'Present'
       }
-EOH
+    EOH
   end
 
   let(:dsc_config_name) do
@@ -249,7 +249,7 @@ EOH
            Name = '#{dsc_environment_env_var_name}'
            Ensure = 'Absent'
         }
-EOH
+      EOH
       removal_resource.run_action(:run)
     end
 
@@ -448,7 +448,7 @@ EOH
         }
         "@
         $ConfigurationData | out-file '#{configuration_data_path}' -force
-  MYCODE
+      MYCODE
     end
 
     let(:powershell_script_resource) do
@@ -467,7 +467,7 @@ EOH
               Password = #{r.ps_credential('jf9a8m49jrajf4#')}
               Ensure = "Present"
           }
-EOF
+        EOF
         r.configuration_data_script(configuration_data_path)
       end
     end

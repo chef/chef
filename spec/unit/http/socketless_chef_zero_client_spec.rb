@@ -38,13 +38,13 @@ describe Chef::HTTP::SocketlessChefZeroClient do
 
     let(:expected_rack_req) do
       {
-        "SCRIPT_NAME"     => "",
-        "SERVER_NAME"     => "localhost",
-        "REQUEST_METHOD"  => method.to_s.upcase,
-        "PATH_INFO"       => uri.path,
-        "QUERY_STRING"    => uri.query,
-        "SERVER_PORT"     => uri.port,
-        "HTTP_HOST"       => "localhost:#{uri.port}",
+        "SCRIPT_NAME" => "",
+        "SERVER_NAME" => "localhost",
+        "REQUEST_METHOD" => method.to_s.upcase,
+        "PATH_INFO" => uri.path,
+        "QUERY_STRING" => uri.query,
+        "SERVER_PORT" => uri.port,
+        "HTTP_HOST" => "localhost:#{uri.port}",
         "rack.url_scheme" => "chefzero",
       }
     end
@@ -137,16 +137,16 @@ describe Chef::HTTP::SocketlessChefZeroClient do
 
     let(:expected_rack_req) do
       {
-        "SCRIPT_NAME"     => "",
-        "SERVER_NAME"     => "localhost",
-        "REQUEST_METHOD"  => method.to_s.upcase,
-        "PATH_INFO"       => uri.path,
-        "QUERY_STRING"    => uri.query,
-        "SERVER_PORT"     => uri.port,
-        "HTTP_HOST"       => "localhost:#{uri.port}",
+        "SCRIPT_NAME" => "",
+        "SERVER_NAME" => "localhost",
+        "REQUEST_METHOD" => method.to_s.upcase,
+        "PATH_INFO" => uri.path,
+        "QUERY_STRING" => uri.query,
+        "SERVER_PORT" => uri.port,
+        "HTTP_HOST" => "localhost:#{uri.port}",
         "HTTP_X_OPS_SERVER_API_VERSION" => "2",
         "rack.url_scheme" => "chefzero",
-        "rack.input"      => an_instance_of(StringIO),
+        "rack.input" => an_instance_of(StringIO),
       }
     end
 

@@ -63,7 +63,7 @@ describe "knife raw", :workstation do
 
           ]
         }
-EOM
+      EOM
     end
 
     it "knife raw /blarghle returns 404" do
@@ -90,7 +90,7 @@ EOM
 
           }
         }
-EOM
+      EOM
       knife("show /roles/x.json").should_fail "ERROR: /roles/x.json: No such file or directory\n"
     end
 
@@ -115,7 +115,7 @@ EOM
 
             }
           }
-EOM
+        EOM
         file.close
 
         knife("raw -m PUT -i #{file.path} /roles/x").should_succeed <<~EOM
@@ -137,14 +137,14 @@ EOM
 
             }
           }
-EOM
+        EOM
         knife("show /roles/x.json").should_succeed <<~EOM
           /roles/x.json:
           {
             "name": "x",
             "description": "eek"
           }
-EOM
+        EOM
       end
     end
 
@@ -166,21 +166,21 @@ EOM
             "env_run_lists": {
             }
           }
-EOM
+        EOM
         file.close
 
         knife("raw -m POST -i #{file.path} /roles").should_succeed <<~EOM
           {
             "uri": "#{Chef::Config.chef_server_url}/roles/y"
           }
-EOM
+        EOM
         knife("show /roles/y.json").should_succeed <<~EOM
           /roles/y.json:
           {
             "name": "y",
             "description": "eek"
           }
-EOM
+        EOM
       end
     end
 
@@ -206,13 +206,13 @@ EOM
             "x": "y",
             "a": "b"
           }
-EOM
+        EOM
       end
 
       it "knife raw --no-pretty /blah returns the raw json" do
         knife("raw --no-pretty /blah").should_succeed <<~EOM
           { "x": "y", "a": "b" }
-EOM
+        EOM
       end
     end
 
@@ -235,13 +235,13 @@ EOM
       it "knife raw /blah returns the raw text" do
         knife("raw /blah").should_succeed(<<~EOM)
           { "x": "y", "a": "b" }
-EOM
+        EOM
       end
 
       it "knife raw --no-pretty /blah returns the raw text" do
         knife("raw --no-pretty /blah").should_succeed(<<~EOM)
           { "x": "y", "a": "b" }
-EOM
+        EOM
       end
     end
   end

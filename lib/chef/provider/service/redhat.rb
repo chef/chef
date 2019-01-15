@@ -32,8 +32,8 @@ class Chef
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
         end
 
-        CHKCONFIG_ON = /\d:on/
-        CHKCONFIG_MISSING = /No such/
+        CHKCONFIG_ON = /\d:on/.freeze
+        CHKCONFIG_MISSING = /No such/.freeze
 
         def self.supports?(resource, action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)

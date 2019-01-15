@@ -87,7 +87,7 @@ describe "Resource::ActionClass#converge_if_changed" do
               * #{resource_name}[blah] action create
                 - update default_identity1
                 -   set state1 to "new_state1" (was "current_state1")
-              EOM
+            EOM
           end
         end
 
@@ -109,7 +109,7 @@ describe "Resource::ActionClass#converge_if_changed" do
                 - update default_identity1
                 -   set state1 to "new_state1" (was "current_state1")
                 -   set state2 to "new_state2" (was "current_state2")
-EOM
+            EOM
           end
         end
 
@@ -132,7 +132,7 @@ EOM
                 - update default_identity1
                 -   set state1 to (suppressed sensitive property)
                 -   set state2 to (suppressed sensitive property)
-EOM
+            EOM
           end
         end
 
@@ -152,7 +152,7 @@ EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
                 -   set sensitive1 to (suppressed sensitive property)
-EOM
+            EOM
           end
         end
 
@@ -173,7 +173,7 @@ EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
                 -   set state2 to "new_state2" (was "current_state2")
-EOM
+            EOM
           end
         end
 
@@ -192,7 +192,7 @@ EOM
             expect(resource.updated?).to  be_falsey
             expect(converged_recipe.stdout).to eq <<~EOM
               * #{resource_name}[blah] action create (up to date)
-EOM
+            EOM
           end
         end
 
@@ -213,7 +213,7 @@ EOM
             expect(resource.updated?).to  be_falsey
             expect(converged_recipe.stdout).to eq <<~EOM
               * #{resource_name}[blah] action create (up to date)
-EOM
+            EOM
           end
         end
       end
@@ -270,7 +270,7 @@ EOM
                 -   set state1     to "default_state1" (default value)
                 -   set state2     to "default_state2" (default value)
                 -   set sensitive1 to (suppressed sensitive property) (default value)
-EOM
+            EOM
           end
         end
 
@@ -295,7 +295,7 @@ EOM
                 -   set state1     to "new_state1"
                 -   set state2     to "new_state2"
                 -   set sensitive1 to (suppressed sensitive property)
-EOM
+            EOM
           end
         end
 
@@ -320,7 +320,7 @@ EOM
                 -   set state1     to (suppressed sensitive property)
                 -   set state2     to (suppressed sensitive property)
                 -   set sensitive1 to (suppressed sensitive property) (default value)
-EOM
+            EOM
           end
         end
       end
@@ -357,7 +357,7 @@ EOM
             expect(resource.updated?).to  be_falsey
             expect(converged_recipe.stdout).to eq <<~EOM
               * #{resource_name}[blah] action create (up to date)
-EOM
+            EOM
           end
         end
 
@@ -378,7 +378,7 @@ EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
                 -   set state1 to "new_state1" (was "current_state1")
-EOM
+            EOM
           end
         end
 
@@ -401,7 +401,7 @@ EOM
                 -   set state1 to "new_state1" (was "current_state1")
                 - update default_identity1
                 -   set state2 to "new_state2" (was "current_state2")
-EOM
+            EOM
           end
         end
 
@@ -422,7 +422,7 @@ EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
                 -   set state2 to "new_state2" (was "current_state2")
-EOM
+            EOM
           end
         end
 
@@ -441,7 +441,7 @@ EOM
             expect(resource.updated?).to  be_falsey
             expect(converged_recipe.stdout).to eq <<~EOM
               * #{resource_name}[blah] action create (up to date)
-EOM
+            EOM
           end
         end
 
@@ -461,7 +461,7 @@ EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
                 -   set sensitive1 to (suppressed sensitive property)
-EOM
+            EOM
           end
         end
       end
@@ -489,7 +489,7 @@ EOM
                 -   set state2 to "default_state2" (default value)
                 - create default_identity1
                 -   set sensitive1 to (suppressed sensitive property) (default value)
-EOM
+            EOM
           end
         end
 
@@ -515,7 +515,7 @@ EOM
                 -   set state2 to "new_state2"
                 - create default_identity1
                 -   set sensitive1 to (suppressed sensitive property)
-EOM
+            EOM
           end
         end
 
@@ -541,7 +541,7 @@ EOM
                 -   set state2 to (suppressed sensitive property)
                 - create default_identity1
                 -   set sensitive1 to (suppressed sensitive property) (default value)
-EOM
+            EOM
           end
         end
 

@@ -259,7 +259,7 @@ describe Chef::Provider::Git do
         d7b9957f67236fa54e660cc3ab45ffecd6e0ba38\trefs/tags/0.7.8
         b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}
         ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package
-SHAS
+      SHAS
       @resource.revision ""
       expect(@provider).to receive(:shell_out!).with(@git_ls_remote + "\"HEAD\"", { log_tag: "git[web2.0 app]" }).and_return(double("ShellOut result", stdout: @stdout))
       expect(@provider.target_revision).to eql("28af684d8460ba4793eda3e7ac238c864a5d029a")

@@ -40,7 +40,7 @@ class Chef
               #{exception.message}
 
               Your chef_server_url may be misconfigured, or the network could be down.
-E
+            E
           when Net::HTTPClientException, Net::HTTPFatalError
             humanize_http_exception(error_description)
           when Chef::Exceptions::MissingRole
@@ -78,7 +78,7 @@ E
           when Net::HTTPUnauthorized
             error_description.section("Authentication Error:", <<~E)
               Failed to authenticate to the chef server (http 401).
-E
+            E
 
             error_description.section("Server Response:", format_rest_error)
             error_description.section("Relevant Config Settings:", <<~E)
@@ -87,25 +87,25 @@ E
               client_key        "#{api_key}"
 
               If these settings are correct, your client_key may be invalid.
-E
+            E
           when Net::HTTPForbidden
             # TODO: we're rescuing errors from Node.find_or_create
             # * could be no write on nodes container
             # * could be no read on the node
             error_description.section("Authorization Error", <<~E)
               Your client is not authorized to load one or more of your roles (HTTP 403).
-E
+            E
             error_description.section("Server Response:", format_rest_error)
 
             error_description.section("Possible Causes:", <<~E)
               * Your client (#{username}) may have misconfigured authorization permissions.
-E
+            E
           when Net::HTTPNotAcceptable
             describe_406_error(error_description, response)
           when Net::HTTPInternalServerError
             error_description.section("Unknown Server Error:", <<~E)
               The server had a fatal error attempting to load a role.
-E
+            E
             error_description.section("Server Response:", format_rest_error)
           when Net::HTTPBadGateway, Net::HTTPServiceUnavailable
             error_description.section("Server Unavailable", "The Chef Server is temporarily unavailable")

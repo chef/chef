@@ -25,7 +25,7 @@ describe "chef-solo" do
     before do
       file "config/solo.rb", <<~EOM
         chef_repo_path "#{@repository_dir}"
-EOM
+      EOM
       result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -l debug", cwd: chef_dir)
       result.error!
     end
@@ -77,7 +77,7 @@ EOM
       file "config/solo.rb", <<~EOM
         cookbook_path "#{path_to('cookbooks')}"
         file_cache_path "#{path_to('config/cache')}"
-EOM
+      EOM
       result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
       result.error!
       expect(result.stdout).to include("ITWORKS")
@@ -87,11 +87,11 @@ EOM
       file "config/solo.rb", <<~EOM
         cookbook_path "#{path_to('cookbooks')}"
         file_cache_path "#{path_to('config/cache')}"
-EOM
+      EOM
 
       file "config/node.json", <<~E
         {"run_list":["x::default"]}
-E
+      E
 
       result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -j '#{path_to('config/node.json')}' -l debug", cwd: chef_dir)
       result.error!
@@ -113,7 +113,7 @@ E
       file "config/solo.rb", <<~EOM
         cookbook_path "#{path_to('cookbooks')}"
         file_cache_path "#{path_to('config/cache')}"
-EOM
+      EOM
       result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
       expect(result.exitstatus).to eq(0) # For CHEF-5120 this becomes 1
       expect(result.stdout).to include("WARN: MissingCookbookDependency")
@@ -127,7 +127,7 @@ EOM
       file "config/solo.rb", <<~EOM
         cookbook_path "#{path_to('cookbooks')}"
         file_cache_path "#{path_to('config/cache')}"
-EOM
+      EOM
     end
 
     it "should exit with an error" do
@@ -144,7 +144,7 @@ EOM
       file "config/solo.rb", <<~EOM
         cookbook_path "#{path_to('cookbooks')}"
         file_cache_path "#{path_to('config/cache')}"
-EOM
+      EOM
     end
 
     it "should exit with an error" do
@@ -169,14 +169,14 @@ EOM
             end
           end
         end
-EOM
+      EOM
     end
 
     it "while running solo concurrently" do
       file "config/solo.rb", <<~EOM
         cookbook_path "#{path_to('cookbooks')}"
         file_cache_path "#{path_to('config/cache')}"
-EOM
+      EOM
       # We have a timeout protection here so that if due to some bug
       # run_lock gets stuck we can discover it.
       expect do

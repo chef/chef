@@ -51,7 +51,7 @@ describe Chef::Provider::Cron do
           2 * 1 * * /bin/false
 
           # Another comment
-CRONTAB
+        CRONTAB
       end
 
       it "should set cron_exists" do
@@ -80,7 +80,7 @@ CRONTAB
           2 * 1 * * /bin/false
 
           # Another comment
-CRONTAB
+        CRONTAB
         cron = @provider.load_current_resource
         expect(cron.mailto).to eq("foo@example.com")
         expect(cron.shell).to eq("/bin/foosh")
@@ -97,7 +97,7 @@ CRONTAB
           TEST=lol
           FLAG=1
           @reboot /bin/true
-CRONTAB
+        CRONTAB
         cron = @provider.load_current_resource
 
         expect(cron.mailto).to eq("warn@example.com")
@@ -112,7 +112,7 @@ CRONTAB
           TEST=lol
           ENVIRONMENT=production
           @reboot /bin/true
-CRONTAB
+        CRONTAB
         cron = @provider.load_current_resource
 
         expect(cron.time).to eq(:reboot)
@@ -175,7 +175,7 @@ CRONTAB
           * 5 * * * /bin/true
 
           # Another comment
-CRONTAB
+        CRONTAB
       end
 
       it "should not set cron_exists or cron_empty" do
@@ -193,7 +193,7 @@ CRONTAB
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           # Chef Name: foo[bar] (baz)
           21 */4 * * * some_prog 1234567
-CRONTAB
+        CRONTAB
         expect do
           @provider.load_current_resource
         end.not_to raise_error
@@ -211,7 +211,7 @@ CRONTAB
           2 * 1 * * /bin/false
 
           # Another comment
-CRONTAB
+        CRONTAB
       end
 
       it "should set cron_exists" do
@@ -245,7 +245,7 @@ CRONTAB
           2 * 1 * * /bin/false
 
           # Another comment
-CRONTAB
+        CRONTAB
         cron = @provider.load_current_resource
         expect(cron.mailto).to eq("foo@example.com")
         expect(cron.shell).to eq("/bin/foosh")
@@ -267,7 +267,7 @@ CRONTAB
           TEST=lol
           FLAG=1
           * 5 * * * /bin/true
-CRONTAB
+        CRONTAB
         cron = @provider.load_current_resource
 
         expect(cron.mailto).to eq("warn@example.com")
@@ -282,7 +282,7 @@ CRONTAB
           TEST=lol
           ENVIRONMENT=production
           * 5 * * * /bin/true
-CRONTAB
+        CRONTAB
         cron = @provider.load_current_resource
 
         expect(cron.minute).to eq("*")
@@ -307,7 +307,7 @@ CRONTAB
           2 * 1 * * /bin/false
 
           # Another comment
-CRONTAB
+        CRONTAB
       end
 
       it "should set cron_exists" do
@@ -338,7 +338,7 @@ CRONTAB
           0 2 * * * /some/other/command
 
           # Chef Name: cronhole some stuff
-CRONTAB
+        CRONTAB
         cron = @provider.load_current_resource
         expect(@provider.cron_exists).to eq(true)
         expect(cron.minute).to eq("*")
@@ -356,7 +356,7 @@ CRONTAB
 
           # Chef Name: cronhole some stuff
           #* 5 * 1 * /bin/true param1 param2
-CRONTAB
+        CRONTAB
         cron = @provider.load_current_resource
         expect(@provider.cron_exists).to eq(true)
         expect(cron.minute).to eq("*")
@@ -378,7 +378,7 @@ CRONTAB
           2 * 1 * * /bin/false
 
           # Another comment
-CRONTAB
+        CRONTAB
         cron = @provider.load_current_resource
         expect(@provider.cron_exists).to eq(true)
         expect(cron.minute).to eq("*")
@@ -700,7 +700,7 @@ CRONTAB
           * 5 * * * /bin/true
 
           # Another comment
-CRONTAB
+        CRONTAB
       end
 
       it "should not update the crontab" do

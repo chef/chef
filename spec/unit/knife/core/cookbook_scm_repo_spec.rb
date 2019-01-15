@@ -35,7 +35,7 @@ describe Chef::Knife::CookbookSCMRepo do
   chef-vendor-graphite
   chef-vendor-python
   chef-vendor-absent-new
-BRANCHES
+    BRANCHES
   end
 
   it "has a path to the cookbook repo" do
@@ -84,7 +84,7 @@ BRANCHES
             @dirty_status = Mixlib::ShellOut.new
             @dirty_status.stdout.replace(<<-DIRTY)
  M chef/lib/chef/knife/cookbook_site_install.rb
-DIRTY
+            DIRTY
             expect(@cookbook_repo).to receive(:shell_out!).with("git status --porcelain", cwd: @repo_path).and_return(@dirty_status)
             expect { @cookbook_repo.sanity_check }.to raise_error(SystemExit)
           end

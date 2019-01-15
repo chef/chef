@@ -35,7 +35,7 @@ describe Chef::Resource::ChocolateySource do
     </features>
     <apiKeys />
   </chocolatey>
-CONFIG
+    CONFIG
   end
 
   # we save off the ENV and set ALLUSERSPROFILE so these specs will work on *nix and non-C drive Windows installs

@@ -29,7 +29,7 @@ describe Chef::Util::DSC::LocalConfigurationManager do
       logtype: [machinename]: LCM:  [ Start  Resource ] [name]
       logtype: [machinename]: LCM:  [ End    Resource ] [name]
       logtype: [machinename]: LCM:  [ End    Set      ]
-EOH
+    EOH
   end
 
   let(:no_whatif_lcm_output) do
@@ -40,13 +40,13 @@ EOH
       +                        ~~~~~~~~
           + CategoryInfo          : InvalidArgument: (:) [Start-DscConfiguration], ParameterBindingException
           + FullyQualifiedErrorId : NamedParameterNotFound,SomeCompany.SomeAssembly.Commands.RunSomeCommand
-EOH
+    EOH
   end
 
   let(:dsc_resource_import_failure_output) do
     <<~EOH
       PowerShell provider MSFT_xWebsite failed to execute Test-TargetResource functionality with error message: Please ensure that WebAdministration module is installed. + CategoryInfo : InvalidOperation: (:) [], CimException + FullyQualifiedErrorId : ProviderOperationExecutionFailure + PSComputerName : . PowerShell provider MSFT_xWebsite failed to execute Test-TargetResource functionality with error message: Please ensure that WebAdministration module is installed. + CategoryInfo : InvalidOperation: (:) [], CimException + FullyQualifiedErrorId : ProviderOperationExecutionFailure + PSComputerName : . The SendConfigurationApply function did not succeed. + CategoryInfo : NotSpecified: (root/Microsoft/...gurationManager:String) [], CimException + FullyQualifiedErrorId : MI RESULT 1 + PSComputerName : .
-EOH
+    EOH
   end
 
   let(:lcm_status) do

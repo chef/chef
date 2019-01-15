@@ -24,15 +24,15 @@ describe "LWRPs" do
 
         file "resources/foo.rb", <<~EOM
           default_action :create
-EOM
+        EOM
         file "providers/foo.rb", <<~EOM
           action :create do
           end
-EOM
+        EOM
 
         file "recipes/default.rb", <<~EOM
           l_w_r_p_foo "me"
-EOM
+        EOM
 
       end # directory 'cookbooks/x'
     end
@@ -42,7 +42,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'l-w-r-p::default'", cwd: chef_dir)
       expect(result.stdout).to match(/\* l_w_r_p_foo\[me\] action create \(up to date\)/)

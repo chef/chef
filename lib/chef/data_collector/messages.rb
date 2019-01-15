@@ -36,16 +36,16 @@ class Chef
       #
       def self.run_start_message(run_status)
         {
-          "chef_server_fqdn"  => chef_server_fqdn,
-          "entity_uuid"       => node_uuid,
-          "id"                => run_status.run_id,
-          "message_version"   => "1.0.0",
-          "message_type"      => "run_start",
-          "node_name"         => run_status.node.name,
+          "chef_server_fqdn" => chef_server_fqdn,
+          "entity_uuid" => node_uuid,
+          "id" => run_status.run_id,
+          "message_version" => "1.0.0",
+          "message_type" => "run_start",
+          "node_name" => run_status.node.name,
           "organization_name" => organization,
-          "run_id"            => run_status.run_id,
-          "source"            => collector_source,
-          "start_time"        => run_status.start_time.utc.iso8601,
+          "run_id" => run_status.run_id,
+          "source" => collector_source,
+          "start_time" => run_status.start_time.utc.iso8601,
         }
       end
 
@@ -61,34 +61,34 @@ class Chef
         run_status = reporter_data[:run_status]
 
         message = {
-          "chef_server_fqdn"       => chef_server_fqdn,
-          "entity_uuid"            => node_uuid,
-          "expanded_run_list"      => reporter_data[:expanded_run_list],
-          "id"                     => run_status.run_id,
-          "message_version"        => "1.1.0",
-          "message_type"           => "run_converge",
-          "node"                   => run_status.node,
-          "node_name"              => run_status.node.name,
-          "organization_name"      => organization,
-          "resources"              => reporter_data[:resources].map(&:report_data),
-          "run_id"                 => run_status.run_id,
-          "run_list"               => run_status.node.run_list.for_json,
-          "policy_name"            => run_status.node.policy_name,
-          "policy_group"           => run_status.node.policy_group,
-          "start_time"             => run_status.start_time.utc.iso8601,
-          "end_time"               => run_status.end_time.utc.iso8601,
-          "source"                 => collector_source,
-          "status"                 => reporter_data[:status],
-          "total_resource_count"   => reporter_data[:resources].count,
+          "chef_server_fqdn" => chef_server_fqdn,
+          "entity_uuid" => node_uuid,
+          "expanded_run_list" => reporter_data[:expanded_run_list],
+          "id" => run_status.run_id,
+          "message_version" => "1.1.0",
+          "message_type" => "run_converge",
+          "node" => run_status.node,
+          "node_name" => run_status.node.name,
+          "organization_name" => organization,
+          "resources" => reporter_data[:resources].map(&:report_data),
+          "run_id" => run_status.run_id,
+          "run_list" => run_status.node.run_list.for_json,
+          "policy_name" => run_status.node.policy_name,
+          "policy_group" => run_status.node.policy_group,
+          "start_time" => run_status.start_time.utc.iso8601,
+          "end_time" => run_status.end_time.utc.iso8601,
+          "source" => collector_source,
+          "status" => reporter_data[:status],
+          "total_resource_count" => reporter_data[:resources].count,
           "updated_resource_count" => reporter_data[:resources].select { |r| r.report_data["status"] == "updated" }.count,
-          "deprecations"           => reporter_data[:deprecations],
+          "deprecations" => reporter_data[:deprecations],
         }
 
         if run_status.exception
           message["error"] = {
-            "class"       => run_status.exception.class,
-            "message"     => run_status.exception.message,
-            "backtrace"   => run_status.exception.backtrace,
+            "class" => run_status.exception.class,
+            "message" => run_status.exception.message,
+            "backtrace" => run_status.exception.backtrace,
             "description" => reporter_data[:error_descriptions],
           }
         end

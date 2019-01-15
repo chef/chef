@@ -237,9 +237,9 @@ class Chef
           end
 
           {
-            current_version:    current_version,
-            candidate_version:  candidate_version,
-            virtual:            virtual,
+            current_version: current_version,
+            candidate_version: candidate_version,
+            virtual: virtual,
           }
         end
 

@@ -132,9 +132,7 @@ class Chef
 
           def drain_stderr
             output = ""
-            until IO.select([stderr], nil, nil, 0).nil?
-              output += stderr.sysread(4096).chomp
-            end
+            output += stderr.sysread(4096).chomp until IO.select([stderr], nil, nil, 0).nil?
             output
           rescue
             # we must rescue EOFError, and we don't much care about errors on stderr anyway

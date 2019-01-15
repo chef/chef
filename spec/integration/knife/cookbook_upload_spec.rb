@@ -36,14 +36,14 @@ describe "knife cookbook upload", :workstation do
         knife("cookbook upload x -o #{cb_dir}").should_succeed stderr: <<~EOM
           Uploading x            [1.0.0]
           Uploaded 1 cookbook.
-EOM
+        EOM
       end
 
       it "knife cookbook upload --freeze uploads and freezes the cookbook" do
         knife("cookbook upload x -o #{cb_dir} --freeze").should_succeed stderr: <<~EOM
           Uploading x            [1.0.0]
           Uploaded 1 cookbook.
-EOM
+        EOM
         # Modify the file, attempt to reupload
         file "cookbooks/x/metadata.rb", 'name "x"; version "1.0.0"#different'
         knife("cookbook upload x -o #{cb_dir} --freeze").should_fail stderr: <<~EOM
@@ -51,7 +51,7 @@ EOM
           ERROR: Version 1.0.0 of cookbook x is frozen. Use --force to override.
           WARNING: Not updating version constraints for x in the environment as the cookbook is frozen.
           ERROR: Failed to upload 1 cookbook.
-EOM
+        EOM
       end
     end
 
@@ -66,7 +66,7 @@ EOM
           Uploading x            [1.0.0]
           Uploading y            [1.0.0]
           Uploaded 2 cookbooks.
-EOM
+        EOM
       end
 
       it "knife cookbook upload fails due to missing dependencies" do
@@ -75,7 +75,7 @@ EOM
           ERROR: Cookbook x depends on cookbooks which are not currently
           ERROR: being uploaded and cannot be found on the server.
           ERROR: The missing cookbook(s) are: 'y' version '>= 0.0.0'
-EOM
+        EOM
       end
 
       it "knife cookbook upload -a uploads both cookbooks" do
@@ -83,7 +83,7 @@ EOM
           Uploading x            [1.0.0]
           Uploading y            [1.0.0]
           Uploaded all cookbooks.
-EOM
+        EOM
       end
     end
   end

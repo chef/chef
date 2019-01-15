@@ -37,7 +37,7 @@ describe "knife cookbook download", :workstation do
         Downloading x cookbook version 1.0.1
         Downloading root_files
         Cookbook downloaded to #{tmpdir}/x-1.0.1
-EOM
+      EOM
     end
 
     it "knife cookbook download with a version downloads the specified version" do
@@ -45,7 +45,7 @@ EOM
         Downloading x cookbook version 1.0.1
         Downloading root_files
         Cookbook downloaded to #{tmpdir}/x-1.0.1
-EOM
+      EOM
     end
 
     it "knife cookbook download with an unknown version raises an error" do
@@ -64,7 +64,7 @@ EOM
         Downloading x cookbook version 1.0.1
         Downloading root_files
         Cookbook downloaded to #{tmpdir}/x-1.0.1
-EOM
+      EOM
 )
     end
   end

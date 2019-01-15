@@ -80,7 +80,7 @@ class Chef
             client_name     = '#{new_client_name}'
             client_key      = '#{new_client_key}'
             chef_server_url = '#{chef_server}'
-EOH
+          EOH
         end
 
         if config[:initial]

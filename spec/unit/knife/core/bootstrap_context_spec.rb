@@ -75,7 +75,7 @@ describe Chef::Knife::Core::BootstrapContext do
       log_level   :info
       log_location   "/tmp/log"
       # Using default node name (fqdn)
-EXPECTED
+    EXPECTED
     expect(bootstrap_context.config_content).to eq expected
   end
 

@@ -63,16 +63,16 @@ describe Chef::Node::Attribute do
                                                      "mtu" => "1280",
                                                      "type" => "gif",
                                                      "encapsulation" => "IPIP" },
-                                         "vmnet8" =>         { "flags" => %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
-                                                               "number" => "8",
-                                                               "addresses" => { "192.168.4.1" => { "broadcast" => "192.168.4.255",
-                                                                                                   "netmask" => "255.255.255.0",
-                                                                                                   "family" => "inet" },
-                                                                                "00:50:56:c0:00:08" => { "family" => "lladdr" } },
-                                                               "mtu" => "1500",
-                                                               "type" => "vmnet",
-                                                               "arp" => { "192.168.4.255" => "ff:ff:ff:ff:ff:ff" },
-                                                               "encapsulation" => "Ethernet" },
+                                         "vmnet8" => { "flags" => %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
+                                                       "number" => "8",
+                                                       "addresses" => { "192.168.4.1" => { "broadcast" => "192.168.4.255",
+                                                                                           "netmask" => "255.255.255.0",
+                                                                                           "family" => "inet" },
+                                                                        "00:50:56:c0:00:08" => { "family" => "lladdr" } },
+                                                       "mtu" => "1500",
+                                                       "type" => "vmnet",
+                                                       "arp" => { "192.168.4.255" => "ff:ff:ff:ff:ff:ff" },
+                                                       "encapsulation" => "Ethernet" },
                                          "en0" => { "status" => "inactive",
                                                     "flags" => %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
                                                     "number" => "0",
@@ -81,8 +81,8 @@ describe Chef::Node::Attribute do
                                                     "media" => { "supported" => { "autoselect" => { "options" => [] },
                                                                                   "none" => { "options" => [] },
                                                                                   "1000baseT" => { "options" => ["full-duplex", "flow-control", "hw-loopback"] },
-                                                                                  "10baseT/UTP" =>               { "options" => ["half-duplex", "full-duplex", "flow-control", "hw-loopback"] },
-                                                                                  "100baseTX" =>                 { "options" => ["half-duplex", "full-duplex", "flow-control", "hw-loopback"] } },
+                                                                                  "10baseT/UTP" => { "options" => ["half-duplex", "full-duplex", "flow-control", "hw-loopback"] },
+                                                                                  "100baseTX" => { "options" => ["half-duplex", "full-duplex", "flow-control", "hw-loopback"] } },
                                                                  "selected" => { "autoselect" => { "options" => [] } } },
                                                     "type" => "en",
                                                     "encapsulation" => "Ethernet" },
@@ -118,28 +118,28 @@ describe Chef::Node::Attribute do
                                                                  "selected" => { "autoselect" => { "options" => [] } } },
                                                     "type" => "en",
                                                     "encapsulation" => "Ethernet" },
-                                         "fw0" =>                       { "status" => "inactive",
-                                                                          "flags" => %w{BROADCAST SIMPLEX MULTICAST},
-                                                                          "number" => "0",
-                                                                          "addresses" => { "00:23:32:ff:fe:b0:32:f2" => { "family" => "lladdr" } },
-                                                                          "mtu" => "4078",
-                                                                          "media" => { "supported" => { "autoselect" => { "options" => ["full-duplex"] } },
-                                                                                       "selected" => { "autoselect" => { "options" => ["full-duplex"] } } },
-                                                                          "type" => "fw",
-                                                                          "encapsulation" => "1394" },
-                                         "en3" =>                       { "status" => "active",
-                                                                          "flags" => %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
-                                                                          "number" => "3",
-                                                                          "addresses" => { "169.254.206.152" => { "broadcast" => "169.254.255.255",
-                                                                                                                  "netmask" => "255.255.0.0",
-                                                                                                                  "family" => "inet" },
-                                                                                           "00:1c:42:00:00:00" => { "family" => "lladdr" },
-                                                                                           "fe80::21c:42ff:fe00:0" => { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" } },
-                                                                          "mtu" => "1500",
-                                                                          "media" => { "supported" => { "autoselect" => { "options" => [] } },
-                                                                                       "selected" => { "autoselect" => { "options" => [] } } },
-                                                                          "type" => "en",
-                                                                          "encapsulation" => "Ethernet" } } },
+                                         "fw0" => { "status" => "inactive",
+                                                    "flags" => %w{BROADCAST SIMPLEX MULTICAST},
+                                                    "number" => "0",
+                                                    "addresses" => { "00:23:32:ff:fe:b0:32:f2" => { "family" => "lladdr" } },
+                                                    "mtu" => "4078",
+                                                    "media" => { "supported" => { "autoselect" => { "options" => ["full-duplex"] } },
+                                                                 "selected" => { "autoselect" => { "options" => ["full-duplex"] } } },
+                                                    "type" => "fw",
+                                                    "encapsulation" => "1394" },
+                                         "en3" => { "status" => "active",
+                                                    "flags" => %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
+                                                    "number" => "3",
+                                                    "addresses" => { "169.254.206.152" => { "broadcast" => "169.254.255.255",
+                                                                                            "netmask" => "255.255.0.0",
+                                                                                            "family" => "inet" },
+                                                                     "00:1c:42:00:00:00" => { "family" => "lladdr" },
+                                                                     "fe80::21c:42ff:fe00:0" => { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" } },
+                                                    "mtu" => "1500",
+                                                    "media" => { "supported" => { "autoselect" => { "options" => [] } },
+                                                                 "selected" => { "autoselect" => { "options" => [] } } },
+                                                    "type" => "en",
+                                                    "encapsulation" => "Ethernet" } } },
         "fqdn" => "latte.local",
         "ohai_time" => 1249065590.90391,
         "domain" => "local",
@@ -572,8 +572,8 @@ describe Chef::Node::Attribute do
     before(:each) do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  { "two" => "three" },
-          "hut" =>  { "two" => "three" },
+          "one" => { "two" => "three" },
+          "hut" => { "two" => "three" },
           "place" => {},
         },
         {
@@ -621,11 +621,11 @@ describe Chef::Node::Attribute do
     before(:each) do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {
@@ -659,11 +659,11 @@ describe Chef::Node::Attribute do
     before do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {
@@ -695,11 +695,11 @@ describe Chef::Node::Attribute do
     before do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {
@@ -731,11 +731,11 @@ describe Chef::Node::Attribute do
     before do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {
@@ -775,11 +775,11 @@ describe Chef::Node::Attribute do
     before do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {
@@ -809,11 +809,11 @@ describe Chef::Node::Attribute do
     before do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {
@@ -866,11 +866,11 @@ describe Chef::Node::Attribute do
     before do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {
@@ -911,11 +911,11 @@ describe Chef::Node::Attribute do
     before do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {
@@ -952,11 +952,11 @@ describe Chef::Node::Attribute do
     before do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {
@@ -988,11 +988,11 @@ describe Chef::Node::Attribute do
     before do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {
@@ -1038,11 +1038,11 @@ describe Chef::Node::Attribute do
     before do
       @attributes = Chef::Node::Attribute.new(
         {
-          "one" =>  "two",
-          "hut" =>  "three",
+          "one" => "two",
+          "hut" => "three",
         },
         {
-          "one" =>  "four",
+          "one" => "four",
           "snakes" => "on a plane",
         },
         {

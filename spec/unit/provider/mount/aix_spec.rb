@@ -26,29 +26,29 @@ describe Chef::Provider::Mount::Aix do
         node       mounted        mounted over    vfs       date        options
       -------- ---------------  ---------------  ------ ------------ ---------------
                /dev/sdz1         /tmp/foo         jfs2   Jul 17 13:22 rw,log=/dev/hd8
-MOUNT
+    MOUNT
 
     @unmounted_output = <<~UNMOUNTED
         node       mounted        mounted over    vfs       date        options
       -------- ---------------  ---------------  ------ ------------ ---------------
                /dev/sdz2         /                jfs2   Jul 17 13:22 rw,log=/dev/hd8
-UNMOUNTED
+    UNMOUNTED
 
     @conflict_mounted_output = <<~MOUNT
         node       mounted        mounted over    vfs       date        options
       -------- ---------------  ---------------  ------ ------------ ---------------
                /dev/sdz3         /tmp/foo         jfs2   Jul 17 13:22 rw,log=/dev/hd8
-MOUNT
+    MOUNT
 
     @enabled_output = <<~ENABLED
       #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
       /tmp/foo:/dev/sdz1:jfs2::bootfs:10485760:rw:yes:no
-ENABLED
+    ENABLED
 
     @test_wrong_output = <<~WRONG
       #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
       /tmp/foo::/dev/sdz1:jfs2:bootfs:10485760:rw:yes:no
-WRONG
+    WRONG
   end
 
   before(:each) do
@@ -248,7 +248,7 @@ WRONG
           vfs   = jfs2
           mount   = true
           options   = rw
-ETCFILESYSTEMS
+      ETCFILESYSTEMS
 
       filesystems = StringIO.new
       allow(::File).to receive(:open).with("/etc/filesystems", "w").and_yield(filesystems)
