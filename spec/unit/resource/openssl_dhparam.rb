@@ -54,7 +54,7 @@ describe Chef::Resource::OpensslDhparam do
   end
 
   it "sets the mode which user provides for existing file" do
-    resource.mode '0600'
+    resource.mode "0600"
     expect(resource.mode).to eql("0600")
   end
 
