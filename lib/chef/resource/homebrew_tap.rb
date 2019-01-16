@@ -55,9 +55,9 @@ class Chef
       action :tap do
         description "Add a Homebrew tap."
 
-        unless tapped?(new_resource.name)
-          converge_by("tap #{new_resource.name}") do
-            shell_out!("#{new_resource.homebrew_path} tap #{new_resource.full ? '--full' : ''} #{new_resource.name} #{new_resource.url || ''}",
+        unless tapped?(new_resource.tap_name)
+          converge_by("tap #{new_resource.tap_name}") do
+            shell_out!("#{new_resource.homebrew_path} tap #{new_resource.full ? '--full' : ''} #{new_resource.tap_name} #{new_resource.url || ''}",
                 user: new_resource.owner,
                 env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
                 cwd: ::Dir.home(new_resource.owner))
@@ -68,9 +68,9 @@ class Chef
       action :untap do
         description "Remove a Homebrew tap."
 
-        if tapped?(new_resource.name)
-          converge_by("untap #{new_resource.name}") do
-            shell_out!("#{new_resource.homebrew_path} untap #{new_resource.name}",
+        if tapped?(new_resource.tap_name)
+          converge_by("untap #{new_resource.tap_name}") do
+            shell_out!("#{new_resource.homebrew_path} untap #{new_resource.tap_name}",
                 user: new_resource.owner,
                 env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
                 cwd: ::Dir.home(new_resource.owner))
