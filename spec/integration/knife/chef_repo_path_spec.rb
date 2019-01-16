@@ -76,7 +76,7 @@ describe "chef_repo_path tests", :workstation do
           /roles/role3.json
           /users/
           /users/user3.json
-EOM
+        EOM
       end
 
       it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only do
@@ -98,7 +98,7 @@ EOM
           /roles/role3.json
           /users/
           /users/user3.json
-EOM
+        EOM
       end
 
       it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only do
@@ -145,7 +145,7 @@ EOM
           /policy_groups/
           /roles/
           /roles/role3.json
-EOM
+        EOM
       end
 
       context "when all _paths are set to alternates" do
@@ -174,7 +174,7 @@ EOM
             /roles/role3.json
             /users/
             /users/user3.json
-EOM
+          EOM
         end
 
         context "when cwd is at the top level" do
@@ -211,7 +211,7 @@ EOM
               roles/role2.json
               users/
               users/user2.json
-EOM
+            EOM
           end
         end
 
@@ -221,7 +221,7 @@ EOM
             knife("list --local -Rfp").should_succeed <<~EOM
               bag2/
               bag2/item2.json
-EOM
+            EOM
           end
           it "knife list --local -Rfp ../roles lists roles" do
             knife("list --local -Rfp ../roles").should_succeed "/roles/role2.json\n"
@@ -256,7 +256,7 @@ EOM
               roles/role2.json
               users/
               users/user2.json
-EOM
+            EOM
           end
         end
 
@@ -280,7 +280,7 @@ EOM
             knife("list --local -Rfp").should_succeed <<~EOM
               bag2/
               bag2/item2.json
-EOM
+            EOM
           end
         end
       end
@@ -327,7 +327,7 @@ EOM
               roles/role3.json
               users/
               users/user3.json
-EOM
+            EOM
           end
         end
 
@@ -337,7 +337,7 @@ EOM
             knife("list --local -Rfp").should_succeed <<~EOM
               bag3/
               bag3/item3.json
-EOM
+            EOM
           end
         end
       end
@@ -364,7 +364,7 @@ EOM
               {
 
               }
-EOM
+            EOM
           end
         end
 
@@ -381,7 +381,7 @@ EOM
               /cookbooks/cookbook1/metadata.rb
               /cookbooks/cookbook2/
               /cookbooks/cookbook2/metadata.rb
-EOM
+            EOM
           end
         end
 
@@ -398,7 +398,7 @@ EOM
               /cookbooks/cookbook1/metadata.rb
               /cookbooks/cookbook2/
               /cookbooks/cookbook2/metadata.rb
-EOM
+            EOM
           end
         end
 
@@ -415,7 +415,7 @@ EOM
               /cookbooks/cookbook1/metadata.rb
               /cookbooks/cookbook2/
               /cookbooks/cookbook2/metadata.rb
-EOM
+            EOM
           end
         end
 
@@ -432,7 +432,7 @@ EOM
               /data_bags/bag2/item2.json
               /data_bags/blah/
               /data_bags/blah/item.json
-EOM
+            EOM
           end
         end
 
@@ -449,7 +449,7 @@ EOM
               /data_bags/bag2/item2.json
               /data_bags/blah/
               /data_bags/blah/item1.json
-EOM
+            EOM
           end
         end
 
@@ -464,7 +464,7 @@ EOM
               {
 
               }
-EOM
+            EOM
           end
         end
 
@@ -479,7 +479,7 @@ EOM
               {
 
               }
-EOM
+            EOM
           end
         end
 
@@ -494,7 +494,7 @@ EOM
               {
 
               }
-EOM
+            EOM
           end
         end
 
@@ -509,7 +509,7 @@ EOM
               {
 
               }
-EOM
+            EOM
           end
         end
 
@@ -528,7 +528,7 @@ EOM
               bag/item.json
               bag2/
               bag2/item2.json
-EOM
+            EOM
           end
         end
 
@@ -561,7 +561,7 @@ EOM
               users/
               users/user1.json
               users/user2.json
-EOM
+            EOM
           end
         end
 
@@ -573,7 +573,7 @@ EOM
               bag/item.json
               bag2/
               bag2/item2.json
-EOM
+            EOM
           end
         end
       end
@@ -618,7 +618,7 @@ EOM
               users/
               users/user1.json
               users/user3.json
-EOM
+            EOM
           end
         end
 
@@ -630,7 +630,7 @@ EOM
               bag/item.json
               bag3/
               bag3/item3.json
-EOM
+            EOM
           end
         end
 
@@ -663,7 +663,7 @@ EOM
               users/
               users/user1.json
               users/user3.json
-EOM
+            EOM
           end
         end
 
@@ -675,7 +675,7 @@ EOM
               bag/item.json
               bag3/
               bag3/item3.json
-EOM
+            EOM
           end
         end
       end
@@ -723,7 +723,7 @@ EOM
               roles/role3.json
               users/
               users/user3.json
-EOM
+            EOM
           end
         end
 
@@ -733,7 +733,7 @@ EOM
             knife("list --local -Rfp").should_succeed <<~EOM
               bag3/
               bag3/item3.json
-EOM
+            EOM
           end
         end
       end
@@ -779,7 +779,7 @@ EOM
               users/
               users/user1.json
               users/user3.json
-EOM
+            EOM
           end
         end
 
@@ -791,7 +791,7 @@ EOM
               bag/item.json
               bag3/
               bag3/item3.json
-EOM
+            EOM
           end
         end
 
@@ -824,7 +824,7 @@ EOM
               users/
               users/user1.json
               users/user3.json
-EOM
+            EOM
           end
         end
 
@@ -836,7 +836,7 @@ EOM
               bag/item.json
               bag3/
               bag3/item3.json
-EOM
+            EOM
           end
         end
       end
@@ -863,7 +863,7 @@ EOM
             knife("list --local -Rfp").should_succeed <<~EOM
               bag/
               bag/item.json
-EOM
+            EOM
           end
         end
 
@@ -887,7 +887,7 @@ EOM
               roles/role3.json
               users/
               users/user3.json
-EOM
+            EOM
           end
         end
 
@@ -915,14 +915,14 @@ EOM
             /data_bags/
             /data_bags/bag/
             /data_bags/bag/item.json
-EOM
+          EOM
         end
 
         it "knife list --local -Rfp /data_bags lists data bags" do
           knife("list --local -Rfp /data_bags").should_succeed <<~EOM
             /data_bags/bag/
             /data_bags/bag/item.json
-EOM
+          EOM
         end
 
         context "when cwd is inside the data_bags directory" do
@@ -931,7 +931,7 @@ EOM
             knife("list --local -Rfp").should_succeed <<~EOM
               bag/
               bag/item.json
-EOM
+            EOM
           end
         end
       end

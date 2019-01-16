@@ -321,7 +321,7 @@ class Chef::Application::Solo < Chef::Application
         Early contributor to Chef
         Kind hearted open source advocate
         Rest in peace, Ezra.
-EOH
+    EOH
   end
 
   def interval_run_chef_client

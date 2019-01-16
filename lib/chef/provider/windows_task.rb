@@ -347,21 +347,21 @@ class Chef
               flag = true
             else
               flag = true if start_day_updated?(current_task_trigger, new_task_trigger) == true ||
-                  start_time_updated?(current_task_trigger, new_task_trigger) == true ||
-                  current_task_trigger[:trigger_type] != new_task_trigger[:trigger_type] ||
-                  current_task_trigger[:type] != new_task_trigger[:type] ||
-                  current_task_trigger[:random_minutes_interval].to_i != new_task_trigger[:random_minutes_interval].to_i ||
-                  current_task_trigger[:minutes_interval].to_i != new_task_trigger[:minutes_interval].to_i ||
-                  task.account_information.to_s.casecmp(new_resource.user.to_s) != 0 ||
-                  task.application_name != new_resource.command ||
-                  description_needs_update?(task) ||
-                  task.parameters != new_resource.command_arguments.to_s ||
-                  task.working_directory != new_resource.cwd.to_s ||
-                  task.principals[:logon_type] != logon_type ||
-                  task.principals[:run_level] != run_level ||
-                  PRIORITY[task.priority] != new_resource.priority ||
-                  task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_if_on_batteries ||
-                  task.settings[:stop_if_going_on_batteries] != new_resource.stop_if_going_on_batteries
+                start_time_updated?(current_task_trigger, new_task_trigger) == true ||
+                current_task_trigger[:trigger_type] != new_task_trigger[:trigger_type] ||
+                current_task_trigger[:type] != new_task_trigger[:type] ||
+                current_task_trigger[:random_minutes_interval].to_i != new_task_trigger[:random_minutes_interval].to_i ||
+                current_task_trigger[:minutes_interval].to_i != new_task_trigger[:minutes_interval].to_i ||
+                task.account_information.to_s.casecmp(new_resource.user.to_s) != 0 ||
+                task.application_name != new_resource.command ||
+                description_needs_update?(task) ||
+                task.parameters != new_resource.command_arguments.to_s ||
+                task.working_directory != new_resource.cwd.to_s ||
+                task.principals[:logon_type] != logon_type ||
+                task.principals[:run_level] != run_level ||
+                PRIORITY[task.priority] != new_resource.priority ||
+                task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_if_on_batteries ||
+                task.settings[:stop_if_going_on_batteries] != new_resource.stop_if_going_on_batteries
               if trigger_type == TaskScheduler::MONTHLYDATE
                 flag = true if current_task_trigger[:run_on_last_day_of_month] != new_task_trigger[:run_on_last_day_of_month]
               end

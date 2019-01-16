@@ -36,7 +36,7 @@ describe "knife data bag list", :workstation do
         canteloupe
         rocket
         x
-EOM
+      EOM
     end
 
   end

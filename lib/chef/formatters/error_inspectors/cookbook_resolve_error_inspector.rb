@@ -62,7 +62,7 @@ class Chef
 
               To access its cookbooks, a client needs to be able to read its environment and
               all of the cookbooks in its expanded run list.
-E
+            E
             error_description.section("Expanded Run List:", expanded_run_list_ul)
             error_description.section("Server Response:", format_rest_error)
           when Net::HTTPPreconditionFailed
@@ -120,7 +120,7 @@ E
                 1-) Removing cookbook versions that depend on deleted cookbooks.
                 2-) Removing unused cookbook versions.
                 3-) Pinning exact cookbook versions using environments.
-EOM
+            EOM
             error_description.section("Cookbook dependency resolution error:", explanation)
           end
 

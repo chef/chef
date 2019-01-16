@@ -36,7 +36,7 @@ describe Chef::Provider::Service::Invokercd, "load_current_resource" do
       aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
       aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
       aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
-PS
+    PS
     @status = double("Status", exitstatus: 0, stdout: @stdout)
     allow(@provider).to receive(:shell_out!).and_return(@status)
   end
@@ -121,7 +121,7 @@ PS
       @stdout = StringIO.new(<<~RUNNING_PS)
         aj        7842  5057  0 21:26 pts/2    00:00:06 chef
         aj        7842  5057  0 21:26 pts/2    00:00:06 poos
-RUNNING_PS
+      RUNNING_PS
       @status = double("Status", exitstatus: 0, stdout: @stdout)
       expect(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource

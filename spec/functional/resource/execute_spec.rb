@@ -87,8 +87,8 @@ describe Chef::Resource::Execute do
   describe "when parent resource sets :environment" do
     before do
       resource.environment({
-        "SAWS_SECRET"  => "supersecret",
-        "SAWS_KEY"     => "qwerty",
+        "SAWS_SECRET" => "supersecret",
+        "SAWS_KEY" => "qwerty",
       })
     end
 

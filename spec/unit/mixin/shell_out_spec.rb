@@ -72,11 +72,11 @@ describe Chef::Mixin::ShellOut do
               options = { environment: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
                 environment: {
-                  "HOME"     => "/Users/morty",
-                  "LC_ALL"   => Chef::Config[:internal_locale],
-                  "LANG"     => Chef::Config[:internal_locale],
+                  "HOME" => "/Users/morty",
+                  "LC_ALL" => Chef::Config[:internal_locale],
+                  "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path   => sanitized_path,
+                  env_path => sanitized_path,
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
@@ -86,11 +86,11 @@ describe Chef::Mixin::ShellOut do
               options = { environment: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
                 environment: {
-                  "HOME"     => "/Users/morty",
-                  "LC_ALL"   => Chef::Config[:internal_locale],
-                  "LANG"     => Chef::Config[:internal_locale],
+                  "HOME" => "/Users/morty",
+                  "LC_ALL" => Chef::Config[:internal_locale],
+                  "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path   => sanitized_path,
+                  env_path => sanitized_path,
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
@@ -115,11 +115,11 @@ describe Chef::Mixin::ShellOut do
               options = { env: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
                 env: {
-                  "HOME"     => "/Users/morty",
-                  "LC_ALL"   => Chef::Config[:internal_locale],
-                  "LANG"     => Chef::Config[:internal_locale],
+                  "HOME" => "/Users/morty",
+                  "LC_ALL" => Chef::Config[:internal_locale],
+                  "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path   => sanitized_path,
+                  env_path => sanitized_path,
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
@@ -129,11 +129,11 @@ describe Chef::Mixin::ShellOut do
               options = { env: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
                 env: {
-                  "HOME"     => "/Users/morty",
-                  "LC_ALL"   => Chef::Config[:internal_locale],
-                  "LANG"     => Chef::Config[:internal_locale],
+                  "HOME" => "/Users/morty",
+                  "LC_ALL" => Chef::Config[:internal_locale],
+                  "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path   => sanitized_path,
+                  env_path => sanitized_path,
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
@@ -147,10 +147,10 @@ describe Chef::Mixin::ShellOut do
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
                 user: "morty",
                 environment: {
-                  "LC_ALL"   => Chef::Config[:internal_locale],
-                  "LANG"     => Chef::Config[:internal_locale],
+                  "LC_ALL" => Chef::Config[:internal_locale],
+                  "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path   => sanitized_path,
+                  env_path => sanitized_path,
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
@@ -162,10 +162,10 @@ describe Chef::Mixin::ShellOut do
           it "should set environment language settings to the configured internal locale" do
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
               environment: {
-                "LC_ALL"   => Chef::Config[:internal_locale],
-                "LANG"     => Chef::Config[:internal_locale],
+                "LC_ALL" => Chef::Config[:internal_locale],
+                "LANG" => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-                env_path   => sanitized_path,
+                env_path => sanitized_path,
               },
             }).and_return(retobj)
             shell_out_obj.send(method, cmd)

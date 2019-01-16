@@ -133,9 +133,7 @@ class Chef
                 while (x_pos <= x_pos_max) && (isalnum(x[x_pos]) == false)
                   x_pos += 1 # +1 over pos_max if end of string
                 end
-                while (y_pos <= y_pos_max) && (isalnum(y[y_pos]) == false)
-                  y_pos += 1
-                end
+                y_pos += 1 while (y_pos <= y_pos_max) && (isalnum(y[y_pos]) == false)
 
                 # if we hit the end of either we are done matching segments
                 if (x_pos == x_pos_max + 1) || (y_pos == y_pos_max + 1)
@@ -154,29 +152,21 @@ class Chef
                   x_seg_pos += 1
 
                   # gather up our digits
-                  while (x_seg_pos <= x_pos_max) && isdigit(x[x_seg_pos])
-                    x_seg_pos += 1
-                  end
+                  x_seg_pos += 1 while (x_seg_pos <= x_pos_max) && isdigit(x[x_seg_pos])
                   # copy the segment but not the unmatched character that x_seg_pos will
                   # refer to
                   x_comp = x[x_pos, x_seg_pos - x_pos]
 
-                  while (y_seg_pos <= y_pos_max) && isdigit(y[y_seg_pos])
-                    y_seg_pos += 1
-                  end
+                  y_seg_pos += 1 while (y_seg_pos <= y_pos_max) && isdigit(y[y_seg_pos])
                   y_comp = y[y_pos, y_seg_pos - y_pos]
                 else
                   # we are comparing strings
                   x_seg_is_num = false
 
-                  while (x_seg_pos <= x_pos_max) && isalpha(x[x_seg_pos])
-                    x_seg_pos += 1
-                  end
+                  x_seg_pos += 1 while (x_seg_pos <= x_pos_max) && isalpha(x[x_seg_pos])
                   x_comp = x[x_pos, x_seg_pos - x_pos]
 
-                  while (y_seg_pos <= y_pos_max) && isalpha(y[y_seg_pos])
-                    y_seg_pos += 1
-                  end
+                  y_seg_pos += 1 while (y_seg_pos <= y_pos_max) && isalpha(y[y_seg_pos])
                   y_comp = y[y_pos, y_seg_pos - y_pos]
                 end
 

@@ -1477,7 +1477,7 @@ describe Chef::Node do
           data = {
             "automatic" => {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
               "network" => {
@@ -1550,7 +1550,7 @@ describe Chef::Node do
           data = {
             "automatic" => {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
             },
@@ -1578,7 +1578,7 @@ describe Chef::Node do
           data = {
             "automatic" => {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
               "network" => {
@@ -1616,7 +1616,7 @@ describe Chef::Node do
           data = {
             "automatic" => {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
             },
@@ -1626,7 +1626,7 @@ describe Chef::Node do
           selected_data = {
             "automatic" => {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
             },

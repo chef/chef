@@ -207,7 +207,7 @@ class Chef
         Chef::Log.error(<<-EOF)
             Your chef-client run timed out. You can increase the time chef-client is given
             to complete by configuring windows_service.watchdog_timeout in your client.rb.
-          EOF
+        EOF
       rescue Mixlib::ShellOut::ShellCommandFailed => e
         Chef::Log.warn "Not able to start chef-client in new process (#{e})"
       rescue => e

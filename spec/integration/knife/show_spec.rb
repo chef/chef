@@ -52,13 +52,13 @@ describe "knife show", :workstation do
         knife("show /cookbooks/x/metadata.rb").should_succeed <<~EOM
           /cookbooks/x/metadata.rb:
           name "x"; version "1.0.0"
-EOM
+        EOM
       end
       it "knife show --local /cookbooks/x/metadata.rb shows the local version" do
         knife("show --local /cookbooks/x/metadata.rb").should_succeed <<~EOM
           /cookbooks/x/metadata.rb:
           name "x"; version "1.0.0"
-EOM
+        EOM
       end
       it "knife show /data_bags/x/y.json shows the remote version" do
         knife("show /data_bags/x/y.json").should_succeed <<~EOM
@@ -66,7 +66,7 @@ EOM
           {
             "id": "y"
           }
-EOM
+        EOM
       end
       it "knife show --local /data_bags/x/y.json shows the local version" do
         knife("show --local /data_bags/x/y.json").should_succeed <<~EOM
@@ -74,7 +74,7 @@ EOM
           {
             "foo": "bar"
           }
-EOM
+        EOM
       end
       it "knife show /environments/x.json shows the remote version", skip: (RUBY_VERSION < "1.9") do
         knife("show /environments/x.json").should_succeed <<~EOM
@@ -82,7 +82,7 @@ EOM
           {
             "name": "x"
           }
-EOM
+        EOM
       end
       it "knife show --local /environments/x.json shows the local version" do
         knife("show --local /environments/x.json").should_succeed <<~EOM
@@ -90,7 +90,7 @@ EOM
           {
             "foo": "bar"
           }
-EOM
+        EOM
       end
       it "knife show /roles/x.json shows the remote version", skip: (RUBY_VERSION < "1.9") do
         knife("show /roles/x.json").should_succeed <<~EOM
@@ -98,7 +98,7 @@ EOM
           {
             "name": "x"
           }
-EOM
+        EOM
       end
       it "knife show --local /roles/x.json shows the local version" do
         knife("show --local /roles/x.json").should_succeed <<~EOM
@@ -106,7 +106,7 @@ EOM
           {
             "foo": "bar"
           }
-EOM
+        EOM
       end
       # show directory
       it "knife show /data_bags/x fails" do
@@ -151,7 +151,7 @@ EOM
             "x": "y"
           }
         }
-EOM
+      EOM
     end
   end
 
@@ -161,7 +161,7 @@ EOM
       knife("show --local /environments/x.json").should_succeed <<~EOM
         /environments/x.json:
         {
-EOM
+      EOM
     end
   end
 end

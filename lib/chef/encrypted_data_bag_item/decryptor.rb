@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -88,13 +88,14 @@ class Chef::EncryptedDataBagItem
       end
 
       def decrypted_data
-        @decrypted_data ||= begin
-          plaintext = openssl_decryptor.update(encrypted_bytes)
-          plaintext << openssl_decryptor.final
-        rescue OpenSSL::Cipher::CipherError => e
-          # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
-          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{(@key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : ''}"
-        end
+        @decrypted_data ||=
+          begin
+            plaintext = openssl_decryptor.update(encrypted_bytes)
+            plaintext << openssl_decryptor.final
+          rescue OpenSSL::Cipher::CipherError => e
+            # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
+            raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{(@key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : ''}"
+          end
       end
 
       def encrypted_bytes
@@ -102,12 +103,13 @@ class Chef::EncryptedDataBagItem
       end
 
       def openssl_decryptor
-        @openssl_decryptor ||= begin
-          d = OpenSSL::Cipher.new(algorithm)
-          d.decrypt
-          d.pkcs5_keyivgen(key)
-          d
-        end
+        @openssl_decryptor ||=
+          begin
+            d = OpenSSL::Cipher.new(algorithm)
+            d.decrypt
+            d.pkcs5_keyivgen(key)
+            d
+          end
       end
     end
 
@@ -139,25 +141,27 @@ class Chef::EncryptedDataBagItem
       end
 
       def decrypted_data
-        @decrypted_data ||= begin
-          plaintext = openssl_decryptor.update(encrypted_bytes)
-          plaintext << openssl_decryptor.final
-        rescue OpenSSL::Cipher::CipherError => e
-          # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
-          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{( @key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : ''}"
-        end
+        @decrypted_data ||=
+          begin
+            plaintext = openssl_decryptor.update(encrypted_bytes)
+            plaintext << openssl_decryptor.final
+          rescue OpenSSL::Cipher::CipherError => e
+            # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
+            raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{( @key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : ''}"
+          end
       end
 
       def openssl_decryptor
-        @openssl_decryptor ||= begin
-          assert_valid_cipher!(@encrypted_data["cipher"], algorithm)
-          d = OpenSSL::Cipher.new(algorithm)
-          d.decrypt
-          # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
-          d.key = OpenSSL::Digest::SHA256.digest(key)
-          d.iv = iv
-          d
-        end
+        @openssl_decryptor ||=
+          begin
+            assert_valid_cipher!(@encrypted_data["cipher"], algorithm)
+            d = OpenSSL::Cipher.new(algorithm)
+            d.decrypt
+            # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
+            d.key = OpenSSL::Digest::SHA256.digest(key)
+            d.iv = iv
+            d
+          end
       end
 
     end
@@ -213,12 +217,13 @@ class Chef::EncryptedDataBagItem
       end
 
       def openssl_decryptor
-        @openssl_decryptor ||= begin
-          d = super
-          d.auth_tag = auth_tag
-          d.auth_data = ""
-          d
-        end
+        @openssl_decryptor ||=
+          begin
+            d = super
+            d.auth_tag = auth_tag
+            d.auth_data = ""
+            d
+          end
       end
 
     end

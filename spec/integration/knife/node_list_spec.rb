@@ -37,7 +37,7 @@ describe "knife node list", :workstation do
         cat
         cdr
         cons
-EOM
+      EOM
     end
 
   end

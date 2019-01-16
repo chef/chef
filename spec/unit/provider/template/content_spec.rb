@@ -162,7 +162,7 @@ describe Chef::Provider::Template::Content do
         2
         helpers.erb
         #{CHEF_SPEC_DATA}/cookbooks/openldap/templates/default/helpers.erb
-EOF
+      EOF
     end
 
   end

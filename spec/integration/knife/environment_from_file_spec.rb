@@ -45,7 +45,7 @@ describe "knife environment from file", :workstation do
 
             }
           }
-EOM
+        EOM
 
         file "environments/car.json", <<~EOM
           {
@@ -63,7 +63,7 @@ EOM
 
             }
           }
-EOM
+        EOM
 
         file "environments/cdr.json", <<~EOM
           {
@@ -81,14 +81,14 @@ EOM
 
             }
           }
-EOM
+        EOM
 
       end
 
       it "uploads a single file" do
         knife("environment from file #{env_dir}/cons.json").should_succeed stderr: <<~EOM
           Updated Environment cons
-EOM
+        EOM
       end
 
       it "uploads many files" do
@@ -96,7 +96,7 @@ EOM
           Updated Environment cons
           Updated Environment car
           Updated Environment cdr
-EOM
+        EOM
       end
 
       it "uploads all environments in the repository" do
@@ -107,7 +107,7 @@ EOM
           car
           cdr
           cons
-EOM
+        EOM
       end
 
     end

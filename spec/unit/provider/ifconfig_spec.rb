@@ -44,7 +44,7 @@ describe Chef::Provider::Ifconfig do
     let(:net_tools_version) { StringIO.new <<~EOS }
       net-tools 1.60
       ifconfig 1.42 (2001-04-13)
-EOS
+    EOS
 
     before do
       ifconfig = double(stdout: "", exitstatus: 1)

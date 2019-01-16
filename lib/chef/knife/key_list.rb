@@ -43,7 +43,7 @@ class Chef
         <<~EOS
           You cannot pass both --only-expired and --only-non-expired.
           Please pass one or none.
-EOS
+        EOS
       end
 
       def display_info(string)

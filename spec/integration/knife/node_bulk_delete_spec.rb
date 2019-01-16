@@ -39,12 +39,12 @@ describe "knife node bulk delete", :workstation do
 
         Are you sure you want to delete these nodes? (Y/N) Deleted node car
         Deleted node cat
-EOM
+      EOM
 
       knife("node list").should_succeed <<~EOM
         cdr
         cons
-EOM
+      EOM
     end
   end
 

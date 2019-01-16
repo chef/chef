@@ -46,10 +46,10 @@ class Chef
             error_description.section("Private Key Not Found:", <<~E)
               Your private key could not be loaded. If the key file exists, ensure that it is
               readable by chef-client.
-E
+            E
             error_description.section("Relevant Config Settings:", <<~E)
               client_key        "#{api_key}"
-E
+            E
           when EOFError
             describe_eof_error(error_description)
           when *NETWORK_ERROR_CLASSES
@@ -71,12 +71,12 @@ E
             # * could be no read on the node
             error_description.section("Authorization Error", <<~E)
               Your client is not authorized to load the node data (HTTP 403).
-E
+            E
             error_description.section("Server Response:", format_rest_error)
 
             error_description.section("Possible Causes:", <<~E)
               * Your client (#{username}) may have misconfigured authorization permissions.
-E
+            E
           when Net::HTTPBadRequest
             describe_400_error(error_description)
           when Net::HTTPNotFound
@@ -99,10 +99,10 @@ E
         def describe_404_error(error_description)
           error_description.section("Resource Not Found:", <<~E)
             The server returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
-E
+          E
           error_description.section("Relevant Config Settings:", <<~E)
             chef_server_url "#{server_url}"
-E
+          E
         end
 
         def username

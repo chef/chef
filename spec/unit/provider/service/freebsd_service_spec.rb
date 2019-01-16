@@ -142,7 +142,7 @@ describe Chef::Provider::Service::Freebsd do
           413  ??  Ss     0:02.51 /usr/sbin/syslogd -s
           539  ??  Is     0:00.14 /usr/sbin/sshd
           545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
-PS_SAMPLE
+        PS_SAMPLE
       end
       let(:status) { double(stdout: stdout, exitstatus: 0) }
 
@@ -344,7 +344,7 @@ PS_SAMPLE
         StringIO.new(<<~EOF)
           name="#{new_resource.service_name}"
           rcvar=`set_rcvar`
-EOF
+        EOF
       end
 
       it "should not raise an exception if the rcscript have a name variable" do
@@ -365,7 +365,7 @@ EOF
       let(:rcscript) do
         StringIO.new <<~EOF
           rcvar=`set_rcvar`
-EOF
+        EOF
       end
 
       before do
@@ -380,7 +380,7 @@ EOF
             #
             # #{new_resource.service_name}_enable="YES"
             #   (default: "")
-EOF
+          EOF
         end
 
         it "should get the service name from rcvar if the rcscript does not have a name variable" do
@@ -397,7 +397,7 @@ EOF
           rcvar_stdout = <<~EOF
             # service_with_noname
             #
-EOF
+          EOF
         end
 
         it "should return nil" do

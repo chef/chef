@@ -32,7 +32,7 @@ describe Chef::Provider::Ifconfig::Aix do
       lo0: flags=e08084b,c0<UP,BROADCAST,LOOPBACK,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,LARGESEND,CHAIN>
               inet 127.0.0.1 netmask 0xff000000 broadcast 127.255.255.255
               inet6 ::1%1/0
-IFCONFIG
+    IFCONFIG
   end
 
   before(:each) do

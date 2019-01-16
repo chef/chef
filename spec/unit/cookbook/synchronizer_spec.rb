@@ -63,7 +63,7 @@ describe Chef::CookbookSynchronizer do
     {
       "path" => "recipes/default.rb",
       "name" => "recipes/default.rb",
-      "url"  => "http://chef.example.com/abc123",
+      "url" => "http://chef.example.com/abc123",
       "checksum" => "abc123",
     }
   end
@@ -72,7 +72,7 @@ describe Chef::CookbookSynchronizer do
     {
       "path" => "attributes/default.rb",
       "name" => "attributes/default.rb",
-      "url"  => "http://chef.example.com/abc456",
+      "url" => "http://chef.example.com/abc456",
       "checksum" => "abc456",
     }
   end

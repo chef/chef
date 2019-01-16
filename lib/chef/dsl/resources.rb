@@ -35,7 +35,7 @@ class Chef
             def #{dsl_name}(args = nil, &block)
               declare_resource(#{dsl_name.inspect}, args, created_at: caller[0], &block)
             end
-          EOM
+        EOM
       end
 
       def self.remove_resource_dsl(dsl_name)

@@ -41,7 +41,7 @@ describe "knife client list", :workstation do
         chef-validator
         chef-webui
         cons
-EOM
+      EOM
     end
 
   end

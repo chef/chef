@@ -43,14 +43,14 @@ describe "knife node from file", :workstation do
               ]
             }
           }
-EOM
+        EOM
 
       end
 
       it "uploads a single file" do
         knife("node from file #{node_dir}/cons.json").should_succeed stderr: <<~EOM
           Updated Node cons
-EOM
+        EOM
       end
 
     end

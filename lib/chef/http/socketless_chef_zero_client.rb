@@ -163,16 +163,16 @@ class Chef
       def req_to_rack(method, url, body, headers)
         body_str = body || ""
         {
-          "SCRIPT_NAME"     => "",
-          "SERVER_NAME"     => "localhost",
-          "REQUEST_METHOD"  => method.to_s.upcase,
-          "PATH_INFO"       => url.path,
-          "QUERY_STRING"    => url.query,
-          "SERVER_PORT"     => url.port,
-          "HTTP_HOST"       => "localhost:#{url.port}",
+          "SCRIPT_NAME" => "",
+          "SERVER_NAME" => "localhost",
+          "REQUEST_METHOD" => method.to_s.upcase,
+          "PATH_INFO" => url.path,
+          "QUERY_STRING" => url.query,
+          "SERVER_PORT" => url.port,
+          "HTTP_HOST" => "localhost:#{url.port}",
           "HTTP_X_OPS_SERVER_API_VERSION" => headers["X-Ops-Server-API-Version"],
           "rack.url_scheme" => "chefzero",
-          "rack.input"      => StringIO.new(body_str),
+          "rack.input" => StringIO.new(body_str),
         }
       end
 

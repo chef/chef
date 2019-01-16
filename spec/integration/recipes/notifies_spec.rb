@@ -30,7 +30,7 @@ describe "notifications" do
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # our delayed notification should run at the end of the parent run_context after the baz resource
@@ -53,7 +53,7 @@ EOM
               notifies :write, 'log[foo]', :delayed
             end
           end
-EOM
+        EOM
 
         file "recipes/default.rb", <<~EOM
           log "foo" do
@@ -61,7 +61,7 @@ EOM
           end
           notifying_test "whatever"
           log "baz"
-EOM
+        EOM
 
       end
     end
@@ -71,7 +71,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # our delayed notification should run at the end of the parent run_context after the baz resource
@@ -94,7 +94,7 @@ EOM
               notifies :write, 'log[foo]', :delayed
             end
           end
-EOM
+        EOM
 
         file "recipes/default.rb", <<~EOM
           log "foo" do
@@ -104,7 +104,7 @@ EOM
           log "baz" do
             notifies :write, 'log[foo]', :delayed
           end
-EOM
+        EOM
 
       end
     end
@@ -114,7 +114,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # our delayed notification should run at the end of the parent run_context after the baz resource
@@ -139,7 +139,7 @@ EOM
               notifies :write, 'log[foo]', :delayed
             end
           end
-EOM
+        EOM
 
         file "recipes/default.rb", <<~EOM
           log "foo" do
@@ -151,7 +151,7 @@ EOM
           end
           notifying_test "whatever"
           log "baz"
-EOM
+        EOM
 
       end
     end
@@ -161,7 +161,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # the delayed notification from the sub-resource is de-duplicated by the notification already in the parent run_context
@@ -185,7 +185,7 @@ EOM
           log "baz" do
             notifies :write, 'log[foo]', :delayed
           end
-EOM
+        EOM
 
       end
     end
@@ -195,7 +195,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # the delayed notification from the sub-resource is de-duplicated by the notification already in the parent run_context
@@ -220,7 +220,7 @@ EOM
               notifies :write, 'log[foo]', :immediately
             end
           end
-EOM
+        EOM
 
         file "recipes/default.rb", <<~EOM
           log "foo" do
@@ -228,7 +228,7 @@ EOM
           end
           notifying_test "whatever"
           log "baz"
-EOM
+        EOM
 
       end
     end
@@ -238,7 +238,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
@@ -260,7 +260,7 @@ EOM
               notifies :write, resources(log: "foo"), :immediately
             end
           end
-EOM
+        EOM
 
         file "recipes/default.rb", <<~EOM
           log "foo" do
@@ -268,7 +268,7 @@ EOM
           end
           notifying_test "whatever"
           log "baz"
-EOM
+        EOM
 
       end
     end
@@ -278,7 +278,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
@@ -300,12 +300,12 @@ EOM
               notifies :write, "log[foo]"
             end
           end
-EOM
+        EOM
 
         file "recipes/default.rb", <<~EOM
           notifying_test "whatever"
           log "baz"
-EOM
+        EOM
 
       end
     end
@@ -315,7 +315,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match(/Chef::Exceptions::ResourceNotFound/)
@@ -337,7 +337,7 @@ EOM
               level :info
             end
           end
-EOM
+        EOM
 
         file "recipes/default.rb", <<~EOM
           log "bar" do
@@ -345,7 +345,7 @@ EOM
           end
 
           cloning_test "whatever"
-EOM
+        EOM
 
       end
     end
@@ -355,7 +355,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).not_to match(/CHEF-3694/)
@@ -383,7 +383,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         log_level :warn
-EOM
+      EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match /\* log\[a, b\] action write/

@@ -45,7 +45,7 @@ describe "knife client key list", :workstation do
         expired:    http://127.0.0.1:8900/clients/cons/keys/expired (expired)
         new:        http://127.0.0.1:8900/clients/cons/keys/new
         next_month: http://127.0.0.1:8900/clients/cons/keys/next_month
-EOM
+      EOM
     end
 
     it "lists the expired keys for a client" do

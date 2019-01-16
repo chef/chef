@@ -120,7 +120,7 @@ describe Chef::Provider::Group::Dscl do
         someprogram		somethingElse:gid = (
             500
         )
-        EOS
+      EOS
       )
     end
 
@@ -322,7 +322,7 @@ describe "Test DSCL loading" do
       RecordName: com.apple.aj
       RecordType: dsRecTypeStandard:Groups
       GroupMembership: waka bar
-EOF
+    EOF
     allow(@provider).to receive(:safe_dscl).with(*"read /Groups/aj".split(" ")).and_return(@output)
     @current_resource = @provider.load_current_resource
 

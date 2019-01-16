@@ -390,7 +390,7 @@ describe Chef::Recipe do
   zen_master "gnome" do
     peace = true
   end
-  CODE
+      CODE
       expect { recipe.instance_eval(code) }.not_to raise_error
       expect(recipe.resources(zen_master: "gnome").name).to eql("gnome")
     end

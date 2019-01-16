@@ -89,10 +89,10 @@ describe Chef::CookbookManifest do
       {
         "chef_type" => "cookbook_version",
 
-        "name"          => "tatft-1.2.3",
-        "version"       => "1.2.3",
+        "name" => "tatft-1.2.3",
+        "version" => "1.2.3",
         "cookbook_name" => "tatft",
-        "metadata"      => metadata,
+        "metadata" => metadata,
 
         "frozen?" => false,
 
@@ -129,9 +129,9 @@ describe Chef::CookbookManifest do
                end
 
         {
-          "name"        => name,
-          "path"        => relative_path,
-          "checksum"    => Chef::Digester.generate_md5_checksum_for_file(path),
+          "name" => name,
+          "path" => relative_path,
+          "checksum" => Chef::Digester.generate_md5_checksum_for_file(path),
           "specificity" => "default",
         }.tap do |fp|
           if full
@@ -145,10 +145,10 @@ describe Chef::CookbookManifest do
       {
         "chef_type" => "cookbook_version",
 
-        "name"          => "tatft-1.2.3",
-        "version"       => "1.2.3",
+        "name" => "tatft-1.2.3",
+        "version" => "1.2.3",
         "cookbook_name" => "tatft",
-        "metadata"      => metadata,
+        "metadata" => metadata,
 
         "frozen?" => false,
 

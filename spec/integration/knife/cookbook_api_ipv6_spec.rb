@@ -54,7 +54,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
         syHLXYFNy0OxMtH/bBAXBGNHd9gf5uOnqh0pYcbe/uRAxumC7Rl0cL509eURiA2T
         +vFmf54y9YdnLXaqv+FhJT6B6V7WX7IpU9BMqJY1cJYXHuHG2KA=
         -----END RSA PRIVATE KEY-----
-END_VALIDATION_PEM
+      END_VALIDATION_PEM
     end
 
     let(:cache_path) do
@@ -80,7 +80,7 @@ END_VALIDATION_PEM
             client_key '#{path_to('config/knifeuser.pem')}'
             node_name 'whoisthisis'
             cookbook_path '#{CHEF_SPEC_DATA}/cookbooks'
-END_CLIENT_RB
+          END_CLIENT_RB
         end
 
         before do

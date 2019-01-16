@@ -171,7 +171,7 @@ class Chef
           using SSH/SCP or some other secure method, then re-run this command to confirm
           that the server's certificate is now trusted.
 
-BAD_CERTS
+        BAD_CERTS
         # @TODO: ^ needs URL once documentation is posted.
       end
 
@@ -200,7 +200,7 @@ BAD_CERTS
           using SSH/SCP or some other secure method, then re-run this command to confirm
           that the server's certificate is now trusted.
 
-ADVICE
+        ADVICE
       end
 
       def debug_invalid_host
@@ -222,7 +222,7 @@ ADVICE
 
           If you are not able to connect to the server using the hostname #{cn}
           you will have to update the certificate on the server to use the correct hostname.
-ADVICE
+        ADVICE
       end
 
       def debug_ssl_settings

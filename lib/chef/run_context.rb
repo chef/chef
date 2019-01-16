@@ -337,7 +337,7 @@ class Chef
           is not a dependency of any cookbook in the run_list.  To load this recipe,
           first add a dependency on cookbook '#{cookbook_name}' in the cookbook you're
           including it from in that cookbook's metadata.
-ERROR_MESSAGE
+        ERROR_MESSAGE
       end
 
       if loaded_fully_qualified_recipe?(cookbook_name, recipe_short_name)

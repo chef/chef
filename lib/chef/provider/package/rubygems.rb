@@ -281,7 +281,7 @@ class Chef
         end
 
         class AlternateGemEnvironment < GemEnvironment
-          JRUBY_PLATFORM = /(:?universal|x86_64|x86)\-java\-[0-9\.]+/
+          JRUBY_PLATFORM = /(:?universal|x86_64|x86)\-java\-[0-9\.]+/.freeze
 
           def self.gempath_cache
             @gempath_cache ||= {}

@@ -214,7 +214,7 @@ describe Chef::Knife::UI do
       expect(@out.string).to eq <<~EOM
         hi: a
         lo: b
-EOM
+      EOM
     end
 
     it "formats empty hashes appropriately" do
@@ -227,7 +227,7 @@ EOM
       expect(@out.string).to eq <<~EOM
         a
         b
-EOM
+      EOM
     end
 
     it "formats empty arrays appropriately" do
@@ -253,7 +253,7 @@ EOM
 
         c
         d
-EOM
+      EOM
     end
 
     it "formats nested arrays with single- and empty subarrays appropriately" do
@@ -267,7 +267,7 @@ EOM
 
         d
         e
-EOM
+      EOM
     end
 
     it "formats arrays of hashes with extra lines in between for readability" do
@@ -280,7 +280,7 @@ EOM
 
         m: n
         o: p
-EOM
+      EOM
     end
 
     it "formats hashes with empty array members appropriately" do
@@ -288,7 +288,7 @@ EOM
       expect(@out.string).to eq <<~EOM
         a:
         b: c
-EOM
+      EOM
     end
 
     it "formats hashes with single-member array values appropriately" do
@@ -296,7 +296,7 @@ EOM
       expect(@out.string).to eq <<~EOM
         a: foo
         b: c
-EOM
+      EOM
     end
 
     it "formats hashes with array members appropriately" do
@@ -306,7 +306,7 @@ EOM
           foo
           bar
         b: c
-EOM
+      EOM
     end
 
     it "formats hashes with single-member nested array values appropriately" do
@@ -315,7 +315,7 @@ EOM
         a:
           foo
         b: c
-EOM
+      EOM
     end
 
     it "formats hashes with nested array values appropriately" do
@@ -332,7 +332,7 @@ EOM
           aa: bb
           cc: dd
         b: c
-EOM
+      EOM
     end
 
     it "formats hashes with empty hash values appropriately" do
@@ -340,7 +340,7 @@ EOM
       expect(@out.string).to eq <<~EOM
         a:
         b: c
-EOM
+      EOM
     end
   end
 

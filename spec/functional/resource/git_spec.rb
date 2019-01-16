@@ -69,7 +69,7 @@ describe Chef::Resource::Git, requires_git: true do
       [user]
         name = frodoTbaggins
         email = frodo@shire.org
-E
+    E
   end
 
   before(:each) do

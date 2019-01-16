@@ -172,7 +172,7 @@ describe Chef::Knife::CookbookUpload do
       before(:each) do
         cookbook.metadata.depends("dependency")
         allow(cookbook_loader).to receive(:[]) do |ckbk|
-          { "test_cookbook" =>  cookbook,
+          { "test_cookbook" => cookbook,
             "dependency" => cookbook_dependency }[ckbk]
         end
         allow(knife).to receive(:cookbook_names).and_return(%w{cookbook_dependency test_cookbook})
@@ -198,7 +198,7 @@ describe Chef::Knife::CookbookUpload do
         cookbook_dependency2 = Chef::CookbookVersion.new("dependency2")
         cookbook.metadata.depends("dependency2")
         allow(cookbook_loader).to receive(:[]) do |ckbk|
-          { "test_cookbook" =>  cookbook,
+          { "test_cookbook" => cookbook,
             "dependency" => cookbook_dependency,
             "dependency2" => cookbook_dependency2 }[ckbk]
         end

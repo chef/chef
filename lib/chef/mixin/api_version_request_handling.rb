@@ -56,7 +56,7 @@ class Chef
           User keys are now managed via the key rotation commmands.
           Please refer to the documentation on how to manage your keys via the key rotation commands:
           https://docs.chef.io/server_security.html#key-rotation
-EOH
+        EOH
       end
 
     end

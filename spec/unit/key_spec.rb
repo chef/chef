@@ -34,7 +34,7 @@ describe Chef::Key do
       Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       0wIDAQAB
       -----END PUBLIC KEY-----
-EOS
+    EOS
   end
 
   shared_examples_for "fields with username type validation" do

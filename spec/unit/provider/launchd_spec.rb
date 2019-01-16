@@ -49,7 +49,7 @@ describe Chef::Provider::Launchd do
       \t<integer>300</integer>
       </dict>
       </plist>
-XML
+    XML
     let(:test_plist_multiple_intervals) { String.new <<~XML }
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -78,7 +78,7 @@ XML
       \t<integer>300</integer>
       </dict>
       </plist>
-XML
+    XML
 
     let(:test_hash) do
       {
@@ -139,7 +139,7 @@ XML
         it "should allow array of Hashes" do
           allowed = (1..2).collect do |num|
             {
-              "Hour"    => 10 + num,
+              "Hour" => 10 + num,
               "Weekday" => num,
             }
           end
@@ -152,11 +152,11 @@ XML
 
         it "should allow all StartCalendarInterval keys" do
           allowed = {
-            "Minute"  => 1,
-            "Hour"    => 1,
-            "Day"     => 1,
+            "Minute" => 1,
+            "Hour" => 1,
+            "Day" => 1,
             "Weekday" => 1,
-            "Month"   => 1,
+            "Month" => 1,
           }
           new_resource.program "/Library/scripts/call_mom.sh"
           new_resource.time_out 300

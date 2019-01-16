@@ -23,9 +23,9 @@ class Chef
   class Provider
     class Package
       class Dpkg < Chef::Provider::Package
-        DPKG_REMOVED   = /^Status: deinstall ok config-files/
-        DPKG_INSTALLED = /^Status: install ok installed/
-        DPKG_VERSION   = /^Version: (.+)$/
+        DPKG_REMOVED   = /^Status: deinstall ok config-files/.freeze
+        DPKG_INSTALLED = /^Status: install ok installed/.freeze
+        DPKG_VERSION   = /^Version: (.+)$/.freeze
 
         provides :dpkg_package
 

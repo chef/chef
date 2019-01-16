@@ -40,12 +40,12 @@ class Chef
     COLLISION_WARNING_14 = <<~EOH.gsub(/\s+/, " ").strip
       %{type_caps} %{key} from a cookbook is overriding the %{type} from the client.  Please upgrade your cookbook
         or remove the cookbook from your run_list before the next major release of Chef.
-EOH
+    EOH
 
     COLLISION_WARNING_15 = <<~EOH.gsub(/\s+/, " ").strip
       %{type_caps} %{key} from the client is overriding the %{type} from a cookbook.  Please upgrade your cookbook
         or remove the cookbook from your run_list.
-EOH
+    EOH
 
     #
     # Set a key/value pair on the map with a filter.  The filter must be true

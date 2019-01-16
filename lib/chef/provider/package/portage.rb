@@ -28,7 +28,7 @@ class Chef
         provides :package, platform: "gentoo"
         provides :portage_package
 
-        PACKAGE_NAME_PATTERN = %r{(?:([^/]+)/)?([^/]+)}
+        PACKAGE_NAME_PATTERN = %r{(?:([^/]+)/)?([^/]+)}.freeze
 
         def load_current_resource
           @current_resource = Chef::Resource::PortagePackage.new(new_resource.name)

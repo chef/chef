@@ -26,8 +26,8 @@ class Chef
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:debian)
         end
 
-        UPDATE_RC_D_ENABLED_MATCHES = /\/rc[\dS].d\/S|not installed/i
-        UPDATE_RC_D_PRIORITIES = /\/rc([\dS]).d\/([SK])(\d\d)/i
+        UPDATE_RC_D_ENABLED_MATCHES = /\/rc[\dS].d\/S|not installed/i.freeze
+        UPDATE_RC_D_PRIORITIES = /\/rc([\dS]).d\/([SK])(\d\d)/i.freeze
 
         def self.supports?(resource, action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)

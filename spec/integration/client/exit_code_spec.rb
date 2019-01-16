@@ -31,7 +31,7 @@ describe "chef-client" do
       file "config/client.rb", <<~EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
-EOM
+      EOM
     end
 
     def setup_client_rb_with_audit_mode
@@ -39,7 +39,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         audit_mode :audit_only
-EOM
+      EOM
     end
 
     def run_chef_client_and_expect_exit_code(exit_code)
@@ -72,7 +72,7 @@ EOM
                   expect(4 - 4).to eq(1)
                 end
               end
-RECIPE
+            RECIPE
           end
 
           it "exits with AUDIT_MODE_FAILURE, 42" do
@@ -114,7 +114,7 @@ RECIPE
           before do
             file "cookbooks/x/recipes/default.rb", <<~EOM
               raise Chef::Exceptions::Reboot.new
-EOM
+            EOM
           end
 
           it "exits with REBOOT_SCHEDULED, 35" do
@@ -127,7 +127,7 @@ EOM
           before do
             file "cookbooks/x/recipes/default.rb", <<~EOM
               raise Chef::Exceptions::RebootFailed.new
-EOM
+            EOM
           end
 
           it "exits with REBOOT_FAILED, 41" do

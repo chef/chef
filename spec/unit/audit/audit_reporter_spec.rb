@@ -103,7 +103,7 @@ describe Chef::Audit::AuditReporter do
             Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
             /path/recipe.rb:57
             /path/library.rb:106
-EOM
+          EOM
         end
 
       end
@@ -273,7 +273,7 @@ EOM
           Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
           /path/recipe.rb:57
           /path/library.rb:106
-EOM
+        EOM
       end
     end
   end

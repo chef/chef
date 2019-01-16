@@ -37,7 +37,7 @@ class Chef
           If Chocolatey is installed, ensure that the 'ChocolateyInstall' environment
           variable is correctly set. You can verify this with the PowerShell command
           '#{PATHFINDING_POWERSHELL_COMMAND}'.
-EOS
+        EOS
 
         # Responsible for building the current_resource.
         #

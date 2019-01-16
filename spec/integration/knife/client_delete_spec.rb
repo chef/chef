@@ -35,7 +35,7 @@ describe "knife client delete", :workstation do
     it "deletes a client" do
       knife("client delete car", input: "Y").should_succeed <<~EOM
         Do you really want to delete car? (Y/N) Deleted client[car]
-EOM
+      EOM
 
       knife("client list").should_succeed <<~EOM
         car-validator
@@ -44,19 +44,19 @@ EOM
         chef-validator
         chef-webui
         cons
-EOM
+      EOM
     end
 
     it "refuses to delete a validator normally" do
       knife("client delete car-validator", input: "Y").should_fail exit_code: 2, stdout: "Do you really want to delete car-validator? (Y/N) ", stderr: <<~EOM
         FATAL: You must specify --delete-validators to delete the validator client car-validator
-EOM
+      EOM
     end
 
     it "deletes a validator correctly" do
       knife("client delete car-validator -D", input: "Y").should_succeed <<~EOM
         Do you really want to delete car-validator? (Y/N) Deleted client[car-validator]
-EOM
+      EOM
     end
 
   end

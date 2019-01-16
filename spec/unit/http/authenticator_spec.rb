@@ -108,7 +108,7 @@ describe Chef::HTTP::Authenticator do
         wxpGV4dGtdcahwXNE4601aXPra+xPcRd2puCNoEDBzgVuTSsLYeKBDMSfs173W1Q
         YwIDAQAB
         -----END PUBLIC KEY-----
-EOH
+      EOH
 
       let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: "test", raw_key: public_key, ssh_agent_signing: true) }
 

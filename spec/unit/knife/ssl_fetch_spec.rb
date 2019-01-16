@@ -70,10 +70,10 @@ describe Chef::Knife::SslFetch do
       expect { ssl_fetch.run }.to raise_error(SystemExit)
       expected_stdout = <<~E
         USAGE: knife ssl fetch [URL] (options)
-E
+      E
       expected_stderr = <<~E
         ERROR: Given URI: `foo.test' is invalid
-E
+      E
       expect(stdout_io.string).to eq(expected_stdout)
       expect(stderr_io.string).to eq(expected_stderr)
     end
@@ -86,10 +86,10 @@ E
         expect { ssl_fetch.run }.to raise_error(SystemExit)
         expected_stdout = <<~E
           USAGE: knife ssl fetch [URL] (options)
-E
+        E
         expected_stderr = <<~E
           ERROR: Given URI: `#{name_args[0]}' is invalid
-E
+        E
         expect(stdout_io.string).to eq(expected_stdout)
         expect(stderr_io.string).to eq(expected_stderr)
       end
@@ -190,7 +190,7 @@ E
         expected_error_text = <<~ERROR_TEXT
           ERROR: The service at the given URI (http://foo.example.com) does not accept SSL connections
           ERROR: Perhaps you meant to connect to 'https://foo.example.com'?
-ERROR_TEXT
+        ERROR_TEXT
 
         run
         expect(stderr).to include(expected_error_text)

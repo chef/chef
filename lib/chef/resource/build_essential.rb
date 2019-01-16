@@ -112,7 +112,7 @@ class Chef
           Chef::Log.warn <<-EOH
         The build_essential resource does not currently support the '#{node['platform_family']}'
         platform family. Skipping...
-        EOH
+          EOH
         end
       end
 

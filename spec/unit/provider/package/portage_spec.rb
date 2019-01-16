@@ -138,7 +138,7 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
           * dev-python/sphinx
 
           Please use a more specific atom.
-EOF
+        EOF
         status = double(stdout: "", stderr: stderr_output, exitstatus: 1)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
         expect(@provider).to receive(:shell_out_compacted).and_return(status)

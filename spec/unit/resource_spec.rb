@@ -410,7 +410,7 @@ describe Chef::Resource do
         resource "foo" do
           foo foo
         end
-        EOH
+      EOH
     end
   end
 

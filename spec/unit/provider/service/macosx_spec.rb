@@ -57,7 +57,7 @@ describe Chef::Provider::Service::Macosx do
         <string>io.redis.redis-server</string>
       </dict>
       </plist>
-XML
+    XML
 
     %w{Daemon Agent}.each do |service_type|
       ["redis-server", "io.redis.redis-server"].each do |service_name|
@@ -150,7 +150,7 @@ XML
                       "-f";
                     );
                   };
-SVC_LIST
+                SVC_LIST
 
                 before do
                   provider.load_current_resource
@@ -188,7 +188,7 @@ SVC_LIST
                       "-f";
                     );
                   };
-SVC_LIST
+                SVC_LIST
 
                 before do
                   provider.load_current_resource
@@ -206,7 +206,7 @@ SVC_LIST
               context "when launchctl doesn't return service entry at all" do
                 let(:launchctl_stdout) { StringIO.new <<~SVC_LIST }
                   Could not find service "io.redis.redis-server" in domain for system
-SVC_LIST
+                SVC_LIST
 
                 it "sets service running state to false" do
                   provider.load_current_resource

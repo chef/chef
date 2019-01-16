@@ -248,7 +248,7 @@ describe Chef::Role do
   ROLE_DSL = <<~EOR.freeze
     name "ceiling_cat"
     description "like Aliens, but furry"
-EOR
+  EOR
 
   describe "when loading from disk" do
     before do

@@ -467,24 +467,24 @@ class Chef
 
       def to_h
         {
-          NAME                   => name,
-          DESCRIPTION            => description,
-          LONG_DESCRIPTION       => long_description,
-          MAINTAINER             => maintainer,
-          MAINTAINER_EMAIL       => maintainer_email,
-          LICENSE                => license,
-          PLATFORMS              => platforms,
-          DEPENDENCIES           => dependencies,
-          PROVIDING              => providing,
-          ATTRIBUTES             => attributes,
-          RECIPES                => recipes,
-          VERSION                => version,
-          SOURCE_URL             => source_url,
-          ISSUES_URL             => issues_url,
-          PRIVACY                => privacy,
-          CHEF_VERSIONS          => gem_requirements_to_array(*chef_versions),
-          OHAI_VERSIONS          => gem_requirements_to_array(*ohai_versions),
-          GEMS                   => gems,
+          NAME => name,
+          DESCRIPTION => description,
+          LONG_DESCRIPTION => long_description,
+          MAINTAINER => maintainer,
+          MAINTAINER_EMAIL => maintainer_email,
+          LICENSE => license,
+          PLATFORMS => platforms,
+          DEPENDENCIES => dependencies,
+          PROVIDING => providing,
+          ATTRIBUTES => attributes,
+          RECIPES => recipes,
+          VERSION => version,
+          SOURCE_URL => source_url,
+          ISSUES_URL => issues_url,
+          PRIVACY => privacy,
+          CHEF_VERSIONS => gem_requirements_to_array(*chef_versions),
+          OHAI_VERSIONS => gem_requirements_to_array(*ohai_versions),
+          GEMS => gems,
         }
       end
 
@@ -659,7 +659,7 @@ class Chef
             Called by: #{caller_name} '#{dep_name}', #{version_constraints.map { |vc| vc.inspect }.join(", ")}
             Called from:
             #{caller[0...5].map { |line| "  " + line }.join("\n")}
-OBSOLETED
+          OBSOLETED
           raise Exceptions::ObsoleteDependencySyntax, msg
         end
       end
@@ -678,7 +678,7 @@ OBSOLETED
           Called by: #{caller_name} '#{dep_name}', '#{constraint_str}'
           Called from:
           #{caller[0...5].map { |line| "  " + line }.join("\n")}
-INVALID
+        INVALID
         raise Exceptions::InvalidVersionConstraint, msg
       end
 
