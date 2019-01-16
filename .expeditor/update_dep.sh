@@ -11,6 +11,10 @@
 
 set -evx
 
+function new_gem_included() {
+  git diff | grep -E '^\+' | grep "${GEM_NAME} (${VERSION})"
+}
+
 release_branch="chef-14"
 new_branch="expeditor/${GEM_NAME}_${VERSION}"
 git checkout "$release_branch"
@@ -18,12 +22,17 @@ git checkout -b "$new_branch"
 
 bundle install
 
-# it appears that the gem that triggers this script fires off this script before
-# the gem is actually available via bundler on rubygems.org.
-sleep 240
-
-gem install rake
-rake dependencies:update_gemfile_lock
+tries=12
+for (( i=1; i<=$tries; i+=1 )); do
+  bundle exec rake dependencies:update_gemfile_lock
+  new_gem_included && break || sleep 20
+  if [ $i -eq $tries ]; then
+    echo "Searching for '${GEM_NAME} (${VERSION})' ${i} times and did not find it"
+    exit 1
+  else
+    echo "Searched ${i} times for '${GEM_NAME} (${VERSION})'"
+  fi
+done
 
 git add .
 
