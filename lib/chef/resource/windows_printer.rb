@@ -114,7 +114,7 @@ class Chef
 
           port_name = "IP_#{new_resource.ipv4_address}"
 
-          declare_resource(:powershell_script, "Creating printer: #{new_resource.name}") do
+          declare_resource(:powershell_script, "Creating printer: #{new_resource.device_id}") do
             code <<-EOH
 
               Set-WmiInstance -class Win32_Printer `
@@ -133,9 +133,9 @@ class Chef
         end
 
         def delete_printer
-          declare_resource(:powershell_script, "Deleting printer: #{new_resource.name}") do
+          declare_resource(:powershell_script, "Deleting printer: #{new_resource.device_id}") do
             code <<-EOH
-              $printer = Get-WMIObject -class Win32_Printer -EnableAllPrivileges -Filter "name = '#{new_resource.name}'"
+              $printer = Get-WMIObject -class Win32_Printer -EnableAllPrivileges -Filter "name = '#{new_resource.device_id}'"
               $printer.Delete()
             EOH
           end
