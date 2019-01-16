@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.123 -->
-## [v15.0.123](https://github.com/chef/chef/tree/v15.0.123) (2019-01-14)
+<!-- latest_release 15.0.124 -->
+## [v15.0.124](https://github.com/chef/chef/tree/v15.0.124) (2019-01-16)
 
 #### Merged Pull Requests
-- user resource: Remove support for macOS 10.7 and 10.7 upgraded to 10.8+ [#8110](https://github.com/chef/chef/pull/8110) ([tas50](https://github.com/tas50))
+- Add a bit more yard to chef-config/config [#8119](https://github.com/chef/chef/pull/8119) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add a bit more yard to chef-config/config [#8119](https://github.com/chef/chef/pull/8119) ([tas50](https://github.com/tas50)) <!-- 15.0.124 -->
 - user resource: Remove support for macOS 10.7 and 10.7 upgraded to 10.8+ [#8110](https://github.com/chef/chef/pull/8110) ([tas50](https://github.com/tas50)) <!-- 15.0.123 -->
 - Don&#39;t system exit on ohai CriticalPluginFailure [#8098](https://github.com/chef/chef/pull/8098) ([joshuamiller01](https://github.com/joshuamiller01)) <!-- 15.0.122 -->
 - windows_task resource: Allow non-system users without password [#7918](https://github.com/chef/chef/pull/7918) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.121 -->
