@@ -59,7 +59,21 @@ class Chef
 
       action :create do
         description "Creates or updates a certificate."
-        add_cert(OpenSSL::X509::Certificate.new(raw_source))
+
+        cert_obj = OpenSSL::X509::Certificate.new(raw_source) # A certificate object in memory
+        thumbprint = OpenSSL::Digest::SHA1.new(cert_obj.to_der).to_s # Fetch its thumbprint
+
+        # Check whether a certificate with this thumbprint
+        # is already present in certificate store
+        exists = verify_cert(thumbprint)
+
+        if (!!exists == exists) && exists
+          Chef::Log.info("Certificate is already present")
+        else
+          converge_by("Adding certificate #{new_resource.source} into Store #{new_resource.store_name}") do
+            add_cert(cert_obj)
+          end
+        end
       end
 
       # acl_add is a modify-if-exists operation : not idempotent
@@ -95,6 +109,8 @@ class Chef
           converge_by("Deleting certificate #{new_resource.source} from Store #{new_resource.store_name}") do
             delete_cert
           end
+        else
+          Chef::Log.info("Certificate not found")
         end
       end
 
@@ -135,9 +151,9 @@ class Chef
           store.get(new_resource.source)
         end
 
-        def verify_cert
+        def verify_cert(thumbprint = new_resource.source)
           store = ::Win32::Certstore.open(new_resource.store_name)
-          store.valid?(new_resource.source)
+          store.valid?(thumbprint)
         end
 
         def show_or_store_cert(cert_obj)
