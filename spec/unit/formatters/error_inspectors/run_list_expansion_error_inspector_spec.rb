@@ -55,7 +55,7 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
       @response_body = "forbidden"
       @response = Net::HTTPForbidden.new("1.1", "403", "(response) forbidden")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
+      @exception = Net::HTTPClientException.new("(exception) forbidden", @response)
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
       allow(@inspector).to receive(:config).and_return(node_name: "unit-test.example.com")
 
@@ -73,7 +73,7 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
       @response_body = "check your key and node name"
       @response = Net::HTTPUnauthorized.new("1.1", "401", "(response) unauthorized")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
+      @exception = Net::HTTPClientException.new("(exception) unauthorized", @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
       allow(@inspector).to receive(:config).and_return(node_name: "unit-test.example.com",

@@ -51,7 +51,7 @@ class Chef
                 rest.put("#{api_path}/#{permission}", { permission => acls[permission] })
               rescue Timeout::Error => e
                 raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "Timeout writing: #{e}")
-              rescue Net::HTTPServerException => e
+              rescue Net::HTTPClientException => e
                 if e.response.code == "404"
                   raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
                 else

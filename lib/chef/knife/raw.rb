@@ -112,7 +112,7 @@ class Chef
         rescue Timeout::Error => e
           ui.error "Server timeout"
           exit 1
-        rescue Net::HTTPServerException => e
+        rescue Net::HTTPClientException => e
           ui.error "Server responded with error #{e.response.code} \"#{e.response.message}\""
           ui.error "Error Body: #{e.response.body}" if e.response.body && e.response.body != ""
           exit 1

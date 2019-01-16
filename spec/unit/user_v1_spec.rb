@@ -312,7 +312,7 @@ describe Chef::UserV1 do
 
   describe "Versioned API Interactions" do
     let(:response_406) { OpenStruct.new(code: "406") }
-    let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
+    let(:exception_406) { Net::HTTPClientException.new("406 Not Acceptable", response_406) }
 
     before (:each) do
       @user = Chef::UserV1.new
@@ -374,7 +374,7 @@ describe Chef::UserV1 do
 
         context "when the server returns a 400" do
           let(:response_400) { OpenStruct.new(code: "400") }
-          let(:exception_400) { Net::HTTPServerException.new("400 Bad Request", response_400) }
+          let(:exception_400) { Net::HTTPClientException.new("400 Bad Request", response_400) }
 
           context "when the 400 was due to public / private key fields no longer being supported" do
             let(:response_body_400) { '{"error":["Since Server API v1, all keys must be updated via the keys endpoint. "]}' }

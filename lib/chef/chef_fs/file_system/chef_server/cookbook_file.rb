@@ -41,7 +41,7 @@ class Chef
             File.open(tmpfile, "rb") { |f| f.read }
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading #{file[:url]}: #{e}")
-          rescue Net::HTTPServerException => e
+          rescue Net::HTTPClientException => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "#{e.message} retrieving #{file[:url]}")
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)

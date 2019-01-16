@@ -216,7 +216,7 @@ class Chef
     # Save this client via the REST API, returns a hash including the private key
     def save
       update
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       # If that fails, go ahead and try and update it
       if e.response.code == "404"
         create
@@ -235,7 +235,7 @@ class Chef
         private_key(reregistered_self.private_key)
       end
       self
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       # if there was a 406 related to versioning, give error explaining that
       # only API version 0 is supported for reregister command
       if e.response.code == "406" && e.response["x-ops-server-api-version"]
@@ -266,7 +266,7 @@ class Chef
 
       begin
         new_client = chef_rest_v1.put("clients/#{name}", payload)
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         # rescue API V0 if 406 and the server supports V0
         supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
         raise e unless supported_versions && supported_versions.include?(0)
@@ -303,7 +303,7 @@ class Chef
           new_client.delete("chef_key")
         end
 
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         # rescue API V0 if 406 and the server supports V0
         supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
         raise e unless supported_versions && supported_versions.include?(0)

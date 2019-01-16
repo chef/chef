@@ -311,7 +311,7 @@ class Chef
       # @api private
       def policy
         @policy ||= api_service.get(policyfile_location)
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         raise ConfigurationError, "Error loading policyfile from `#{policyfile_location}': #{e.class} - #{e.message}"
       end
 

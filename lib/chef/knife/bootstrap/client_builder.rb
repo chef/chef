@@ -187,7 +187,7 @@ class Chef
         def resource_exists?(relative_path)
           rest.get(relative_path)
           true
-        rescue Net::HTTPServerException => e
+        rescue Net::HTTPClientException => e
           raise unless e.response.code == "404"
           false
         end

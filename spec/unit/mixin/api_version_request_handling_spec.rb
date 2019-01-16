@@ -27,7 +27,7 @@ describe Chef::Mixin::ApiVersionRequestHandling do
 
     context "when the response code is not 406" do
       let(:response) { OpenStruct.new(code: "405") }
-      let(:exception) { Net::HTTPServerException.new("405 Something Else", response) }
+      let(:exception) { Net::HTTPClientException.new("405 Something Else", response) }
 
       it "returns nil" do
         expect(object.server_client_api_version_intersection(exception, default_supported_client_versions))
@@ -38,7 +38,7 @@ describe Chef::Mixin::ApiVersionRequestHandling do
 
     context "when the response code is 406" do
       let(:response) { OpenStruct.new(code: "406") }
-      let(:exception) { Net::HTTPServerException.new("406 Not Acceptable", response) }
+      let(:exception) { Net::HTTPClientException.new("406 Not Acceptable", response) }
 
       context "when x-ops-server-api-version header does not exist" do
         it "returns nil" do

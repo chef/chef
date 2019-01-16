@@ -77,7 +77,7 @@ class Chef
             end
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout retrieving children: #{e}")
-          rescue Net::HTTPServerException => e
+          rescue Net::HTTPClientException => e
             # 404 = NotFoundError
             if $!.response.code == "404"
 
@@ -90,7 +90,7 @@ class Chef
                   root.get_json(parent.api_path)
                   # Return empty list if the organization exists but /policies didn't work
                   []
-                rescue Net::HTTPServerException => e
+                rescue Net::HTTPClientException => e
                   if e.response.code == "404"
                     raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
                   end
@@ -133,7 +133,7 @@ class Chef
               rest.post(api_path, object)
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e, "Timeout creating '#{name}': #{e}")
-            rescue Net::HTTPServerException => e
+            rescue Net::HTTPClientException => e
               # 404 = NotFoundError
               if e.response.code == "404"
                 raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)

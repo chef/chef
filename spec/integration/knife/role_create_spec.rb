@@ -33,7 +33,7 @@ describe "knife role create", :workstation do
     it "refuses to add an existing role" do
       pending "Knife role create must not blindly overwrite an existing role"
       knife("role create bah").should_succeed out
-      expect { knife("role create bah") }.to raise_error(Net::HTTPServerException)
+      expect { knife("role create bah") }.to raise_error(Net::HTTPClientException)
     end
 
   end

@@ -5,6 +5,10 @@ module ChefNetHTTPExceptionExtensions
   attr_accessor :chef_rest_request
 end
 
+unless defined?(Net::HTTPClientException)
+  Net::HTTPClientException = Net::HTTPServerException
+end
+
 require "net/http"
 module Net
   class HTTPError
@@ -13,7 +17,7 @@ module Net
   class HTTPRetriableError
     include ChefNetHTTPExceptionExtensions
   end
-  class HTTPServerException
+  class HTTPClientException
     include ChefNetHTTPExceptionExtensions
   end
   class HTTPFatalError

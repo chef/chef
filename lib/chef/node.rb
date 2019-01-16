@@ -575,7 +575,7 @@ class Chef
 
     def self.find_or_create(node_name)
       load(node_name)
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       raise unless e.response.code == "404"
       node = build(node_name)
       node.create
@@ -608,7 +608,7 @@ class Chef
         else
           chef_server_rest.put("nodes/#{name}", data_for_save)
         end
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         if e.response.code == "404"
           chef_server_rest.post("nodes", data_for_save)
         else
@@ -622,7 +622,7 @@ class Chef
     def create
       chef_server_rest.post("nodes", data_for_save)
       self
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       # Chef Server before 12.3 rejects node JSON with 'policy_name' or
       # 'policy_group' keys, but 'policy_name' will be detected first.
       # Backcompat can be removed in 13.0
@@ -655,7 +655,7 @@ class Chef
       trimmed_data = data_for_save_without_policyfile_attrs
 
       chef_server_rest.put("nodes/#{name}", trimmed_data)
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       raise e unless e.response.code == "404"
       chef_server_rest.post("nodes", trimmed_data)
     end
