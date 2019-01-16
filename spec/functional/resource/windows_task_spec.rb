@@ -1599,26 +1599,70 @@ describe Chef::Resource::WindowsTask, :windows_only do
     end
 
     context "when start_day is passed with frequency :onstart" do
-      it "not raises error" do
+      it "does not raises error" do
         subject.frequency :onstart
         subject.start_day "09/20/2017"
         expect { subject.after_created }.not_to raise_error
       end
     end
 
-    context "when a non-system user is passed without password" do
+    context "when a non system user is passed without password" do
       it "raises error" do
-        subject.user "Administrator"
+        subject.user "USER"
         subject.frequency :onstart
-        expect { subject.after_created }.to raise_error(%q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'SYSTEM', 'NT AUTHORITY\SYSTEM', 'LOCAL SERVICE', 'NT AUTHORITY\LOCAL SERVICE', 'NETWORK SERVICE', 'NT AUTHORITY\NETWORK SERVICE', 'ADMINISTRATORS', 'BUILTIN\ADMINISTRATORS', 'USERS', 'BUILTIN\USERS', 'GUESTS', 'BUILTIN\GUESTS'})
+        expect { subject.after_created }.to raise_error(%q{Please provide a password or check if this task needs to be interactive! Valid passwordless users are: 'SYSTEM', 'NT AUTHORITY\SYSTEM', 'LOCAL SERVICE', 'NT AUTHORITY\LOCAL SERVICE', 'NETWORK SERVICE', 'NT AUTHORITY\NETWORK SERVICE', 'ADMINISTRATORS', 'BUILTIN\ADMINISTRATORS', 'USERS', 'BUILTIN\USERS', 'GUESTS', 'BUILTIN\GUESTS'})
+      end
+      it "does not raises error when task is interactive" do
+        subject.user "USER"
+        subject.frequency :onstart
+        subject.interactive_enabled true
+        expect { subject.after_created }.not_to raise_error
       end
     end
 
-    context "when interactive_enabled is passed for a System user without password" do
-      it "raises error" do
-        subject.interactive_enabled true
+    context "when a system user is passed without password" do
+      it "does not raises error" do
+        subject.user "ADMINISTRATORS"
         subject.frequency :onstart
-        expect { subject.after_created }.to raise_error("Please provide the password when attempting to set interactive/non-interactive.")
+        expect { subject.after_created }.not_to raise_error
+      end
+      it "does not raises error when task is interactive" do
+        subject.user "ADMINISTRATORS"
+        subject.frequency :onstart
+        subject.interactive_enabled true
+        expect { subject.after_created }.not_to raise_error
+      end
+    end
+
+    context "when a non system user is passed with password" do
+      it "does not raises error" do
+        subject.user "USER"
+        subject.password "XXXX"
+        subject.frequency :onstart
+        expect { subject.after_created }.not_to raise_error
+      end
+      it "does not raises error when task is interactive" do
+        subject.user "USER"
+        subject.password "XXXX"
+        subject.frequency :onstart
+        subject.interactive_enabled true
+        expect { subject.after_created }.not_to raise_error
+      end
+    end
+
+    context "when a system user is passed with password" do
+      it "raises error" do
+        subject.user "ADMINISTRATORS"
+        subject.password "XXXX"
+        subject.frequency :onstart
+        expect { subject.after_created }.to raise_error("Password is not required for system users.")
+      end
+      it "raises error when task is interactive" do
+        subject.user "ADMINISTRATORS"
+        subject.password "XXXX"
+        subject.frequency :onstart
+        subject.interactive_enabled true
+        expect { subject.after_created }.to raise_error("Password is not required for system users.")
       end
     end
 
