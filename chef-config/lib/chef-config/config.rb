@@ -4,7 +4,7 @@
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (<mmzyk@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,10 +85,13 @@ module ChefConfig
       end
     end
 
+    # @param name [String]
+    # @param file_path [String]
     def self.add_formatter(name, file_path = nil)
       formatters << [name, file_path]
     end
 
+    # @param logger [String]
     def self.add_event_logger(logger)
       event_handlers << logger
     end
@@ -125,18 +128,21 @@ module ChefConfig
 
     default :formatters, []
 
+    # @param uri [String] the URI to validate
+    #
+    # @return [Boolean] is the URL valid
     def self.is_valid_url?(uri)
       url = uri.to_s.strip
       /^http:\/\// =~ url || /^https:\/\// =~ url || /^chefzero:/ =~ url
     end
+
     # Override the config dispatch to set the value of multiple server options simultaneously
     #
-    # === Parameters
-    # url<String>:: String to be set for all of the chef-server-api URL's
+    # @param [String] url String to be set for all of the chef-server-api URL's
     #
     configurable(:chef_server_url).writes_value do |uri|
       unless is_valid_url? uri
-        raise ConfigurationError, "#{uri} is an invalid chef_server_url."
+        raise ConfigurationError, "#{uri} is an invalid chef_server_url. The URL must start with http://, https://, or chefzero://."
       end
       uri.to_s.strip
     end
@@ -184,6 +190,7 @@ module ChefConfig
       path
     end
 
+    # @param child_path [String]
     def self.derive_path_from_chef_repo_path(child_path)
       if chef_repo_path.kind_of?(String)
         PathHelper.join(chef_repo_path, child_path)
@@ -295,6 +302,8 @@ module ChefConfig
     end
 
     # Returns true only if the path exists and is readable and writeable for the user.
+    #
+    # @param path [String]
     def self.path_accessible?(path)
       File.exists?(path) && File.readable?(path) && File.writable?(path)
     end
