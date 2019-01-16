@@ -67,7 +67,7 @@ class Chef
         unless new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
           converge_by("Create an EC private key #{new_resource.path}") do
             log "Generating an #{new_resource.key_curve} "\
-                "EC key file at #{new_resource.name}, this may take some time"
+                "EC key file at #{new_resource.path}, this may take some time"
 
             if new_resource.key_pass
               unencrypted_ec_key = gen_ec_priv_key(new_resource.key_curve)
