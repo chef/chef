@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.9.4 -->
-## [v14.9.4](https://github.com/chef/chef/tree/v14.9.4) (2019-01-04)
+<!-- latest_release 14.9.5 -->
+## [v14.9.5](https://github.com/chef/chef/tree/v14.9.5) (2019-01-16)
 
 #### Merged Pull Requests
-- Bump mixlib-cli to 2.0.0 and win32-certstore to 0.2.1 [#8092](https://github.com/chef/chef/pull/8092) ([chef-ci](https://github.com/chef-ci))
+- Support and test on Ruby 2.6 [#8121](https://github.com/chef/chef/pull/8121) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.8.12 -->
 ### Changes since 14.8.12 release
 
 #### Merged Pull Requests
+- Support and test on Ruby 2.6 [#8121](https://github.com/chef/chef/pull/8121) ([tas50](https://github.com/tas50)) <!-- 14.9.5 -->
 - Bump mixlib-cli to 2.0.0 and win32-certstore to 0.2.1 [#8092](https://github.com/chef/chef/pull/8092) ([chef-ci](https://github.com/chef-ci)) <!-- 14.9.4 -->
 - Bump inspec-core to 3.2.6 [#8075](https://github.com/chef/chef/pull/8075) ([chef-ci](https://github.com/chef-ci)) <!-- 14.9.3 -->
 - Disable s3 omnibus cache [#8069](https://github.com/chef/chef/pull/8069) ([tas50](https://github.com/tas50)) <!-- 14.9.2 -->
