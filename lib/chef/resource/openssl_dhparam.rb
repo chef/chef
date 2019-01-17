@@ -57,17 +57,27 @@ class Chef
 
       action :create do
         description "Create the dhparam file."
+        unless dhparam_pem_valid?(new_resource.path)
+          converge_by("Create a dhparam file #{new_resource.path}") do
+            dhparam_content = gen_dhparam(new_resource.key_length, new_resource.generator).to_pem
 
-        converge_by("Create a dhparam file #{new_resource.path}") do
-          dhparam_content = gen_dhparam(new_resource.key_length, new_resource.generator).to_pem if !::File.exist?(new_resource.path)
-
+            file new_resource.path do
+              action :create
+              owner new_resource.owner unless new_resource.owner.nil?
+              group new_resource.group unless new_resource.group.nil?
+              mode new_resource.mode
+              sensitive true
+              content dhparam_content
+            end
+          end
+        end
+        if ::File.exist?(new_resource.path)
           file new_resource.path do
             action :create
             owner new_resource.owner unless new_resource.owner.nil?
             group new_resource.group unless new_resource.group.nil?
             mode new_resource.mode
             sensitive true
-            content dhparam_content
           end
         end
       end
