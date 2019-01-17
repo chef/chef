@@ -285,6 +285,10 @@ class Chef
       def inspect
         "#{message}\n#{location}"
       end
+
+      def target
+        "property.html"
+      end
     end
 
     class Generic < Base
