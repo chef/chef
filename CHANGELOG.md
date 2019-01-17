@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.127 -->
-## [v15.0.127](https://github.com/chef/chef/tree/v15.0.127) (2019-01-17)
+<!-- latest_release 15.0.128 -->
+## [v15.0.128](https://github.com/chef/chef/tree/v15.0.128) (2019-01-17)
 
 #### Merged Pull Requests
-- ssh_known_host_entry: Use the host name_property in debug logging [#8124](https://github.com/chef/chef/pull/8124) ([tas50](https://github.com/tas50))
+- openssl_ec_private_key / openssl_x509_request.rb: properly use the path properties when specified [#8122](https://github.com/chef/chef/pull/8122) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- openssl_ec_private_key / openssl_x509_request.rb: properly use the path properties when specified [#8122](https://github.com/chef/chef/pull/8122) ([tas50](https://github.com/tas50)) <!-- 15.0.128 -->
 - ssh_known_host_entry: Use the host name_property in debug logging [#8124](https://github.com/chef/chef/pull/8124) ([tas50](https://github.com/tas50)) <!-- 15.0.127 -->
 - Update license_scout to 1.0.22 [#8133](https://github.com/chef/chef/pull/8133) ([tas50](https://github.com/tas50)) <!-- 15.0.126 -->
 - Update license scout 1.0.21 [#8130](https://github.com/chef/chef/pull/8130) ([tas50](https://github.com/tas50)) <!-- 15.0.125 -->
