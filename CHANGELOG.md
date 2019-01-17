@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.125 -->
-## [v15.0.125](https://github.com/chef/chef/tree/v15.0.125) (2019-01-17)
+<!-- latest_release 15.0.126 -->
+## [v15.0.126](https://github.com/chef/chef/tree/v15.0.126) (2019-01-17)
 
 #### Merged Pull Requests
-- Update license scout 1.0.21 [#8130](https://github.com/chef/chef/pull/8130) ([tas50](https://github.com/tas50))
+- Update license_scout to 1.0.22 [#8133](https://github.com/chef/chef/pull/8133) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update license_scout to 1.0.22 [#8133](https://github.com/chef/chef/pull/8133) ([tas50](https://github.com/tas50)) <!-- 15.0.126 -->
 - Update license scout 1.0.21 [#8130](https://github.com/chef/chef/pull/8130) ([tas50](https://github.com/tas50)) <!-- 15.0.125 -->
 - Add a bit more yard to chef-config/config [#8119](https://github.com/chef/chef/pull/8119) ([tas50](https://github.com/tas50)) <!-- 15.0.124 -->
 - user resource: Remove support for macOS 10.7 and 10.7 upgraded to 10.8+ [#8110](https://github.com/chef/chef/pull/8110) ([tas50](https://github.com/tas50)) <!-- 15.0.123 -->
