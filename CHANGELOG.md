@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.128 -->
-## [v15.0.128](https://github.com/chef/chef/tree/v15.0.128) (2019-01-17)
+<!-- latest_release 15.0.129 -->
+## [v15.0.129](https://github.com/chef/chef/tree/v15.0.129) (2019-01-17)
 
 #### Merged Pull Requests
-- openssl_ec_private_key / openssl_x509_request.rb: properly use the path properties when specified [#8122](https://github.com/chef/chef/pull/8122) ([tas50](https://github.com/tas50))
+- homebrew_cask / homebrew_tap:  Properly use the cask_name and tap_name properties [#8123](https://github.com/chef/chef/pull/8123) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- homebrew_cask / homebrew_tap:  Properly use the cask_name and tap_name properties [#8123](https://github.com/chef/chef/pull/8123) ([tas50](https://github.com/tas50)) <!-- 15.0.129 -->
 - openssl_ec_private_key / openssl_x509_request.rb: properly use the path properties when specified [#8122](https://github.com/chef/chef/pull/8122) ([tas50](https://github.com/tas50)) <!-- 15.0.128 -->
 - ssh_known_host_entry: Use the host name_property in debug logging [#8124](https://github.com/chef/chef/pull/8124) ([tas50](https://github.com/tas50)) <!-- 15.0.127 -->
 - Update license_scout to 1.0.22 [#8133](https://github.com/chef/chef/pull/8133) ([tas50](https://github.com/tas50)) <!-- 15.0.126 -->
