@@ -63,12 +63,10 @@ class Chef
         cert_obj = OpenSSL::X509::Certificate.new(raw_source) # A certificate object in memory
         thumbprint = OpenSSL::Digest::SHA1.new(cert_obj.to_der).to_s # Fetch its thumbprint
 
-        # Check whether a certificate with this thumbprint
-        # is already present in certificate store
-        exists = verify_cert(thumbprint)
-
-        if (!!exists == exists) && exists
-          Chef::Log.info("Certificate is already present")
+        # Need to check if return value is Boolean:true
+        # If not then the given certificate should be added in certstore
+        if verify_cert(thumbprint) == true
+          Chef::Log.debug("Certificate is already present")
         else
           converge_by("Adding certificate #{new_resource.source} into Store #{new_resource.store_name}") do
             add_cert(cert_obj)
@@ -110,7 +108,7 @@ class Chef
             delete_cert
           end
         else
-          Chef::Log.info("Certificate not found")
+          Chef::Log.debug("Certificate not found")
         end
       end
 
@@ -121,7 +119,7 @@ class Chef
         if cert_obj
           show_or_store_cert(cert_obj)
         else
-          Chef::Log.info("Certificate not found")
+          Chef::Log.debug("Certificate not found")
         end
       end
 
@@ -151,6 +149,11 @@ class Chef
           store.get(new_resource.source)
         end
 
+        # Checks whether a certificate with the given thumbprint
+        # is already present and valid in certificate store
+        # If the certificate is not present, verify_cert returns a String: "Certificate not found"
+        # But if it is present but expired, it returns a Boolean: false
+        # Otherwise, it returns a Boolean: true
         def verify_cert(thumbprint = new_resource.source)
           store = ::Win32::Certstore.open(new_resource.store_name)
           store.valid?(thumbprint)
@@ -257,11 +260,15 @@ class Chef
           set_acl_script
         end
 
+        # Returns the certificate string of the given
+        # input certificate in PEM format
         def raw_source
           ext = ::File.extname(new_resource.source)
           convert_pem(ext, new_resource.source)
         end
 
+        # Uses powershell command to convert crt/der/cer/pfx & p7b certificates
+        # In PEM format and returns its certificate content
         def convert_pem(ext, source)
           out = case ext
                 when ".crt", ".der"
@@ -277,6 +284,7 @@ class Chef
           format_raw_out(out)
         end
 
+        # Returns the certificate content
         def format_raw_out(out)
           begin_cert = "-----BEGIN CERTIFICATE-----"
           end_cert = "-----END CERTIFICATE-----"
