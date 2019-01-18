@@ -37,3 +37,4 @@ suites:
   - name: end-to-end
     run_list:
       - recipe[end_to_end::default]
+      - recipe[end_to_end::tests]
