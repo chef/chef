@@ -89,7 +89,7 @@ class Chef
 
         unless ::File.exist? new_resource.path
           converge_by("Create CSR #{@new_resource}") do
-            file new_resource.name do
+            file new_resource.path do
               owner new_resource.owner unless new_resource.owner.nil?
               group new_resource.group unless new_resource.group.nil?
               mode new_resource.mode unless new_resource.mode.nil?

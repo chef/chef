@@ -104,7 +104,7 @@ class Chef
         keys = r.variables[:entries].reject(&:empty?)
 
         if key_exists?(keys, key, comment)
-          Chef::Log.debug "Known hosts key for #{new_resource.name} already exists - skipping"
+          Chef::Log.debug "Known hosts key for #{new_resource.host} already exists - skipping"
         else
           r.variables[:entries].push(key)
         end
