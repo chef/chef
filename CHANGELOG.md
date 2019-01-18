@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.9.8 -->
-## [v14.9.8](https://github.com/chef/chef/tree/v14.9.8) (2019-01-17)
+<!-- latest_release 14.9.9 -->
+## [v14.9.9](https://github.com/chef/chef/tree/v14.9.9) (2019-01-18)
 
 #### Merged Pull Requests
-- Update license scout to 1.0.22 [#8131](https://github.com/chef/chef/pull/8131) ([tas50](https://github.com/tas50))
+- Backport various name_property fixes in resources from Chef 15 [#8134](https://github.com/chef/chef/pull/8134) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.8.12 -->
 ### Changes since 14.8.12 release
 
 #### Merged Pull Requests
+- Backport various name_property fixes in resources from Chef 15 [#8134](https://github.com/chef/chef/pull/8134) ([tas50](https://github.com/tas50)) <!-- 14.9.9 -->
 - Update license scout to 1.0.22 [#8131](https://github.com/chef/chef/pull/8131) ([tas50](https://github.com/tas50)) <!-- 14.9.8 -->
 - Chef 14: A windows support to the timezone resource [#8129](https://github.com/chef/chef/pull/8129) ([tas50](https://github.com/tas50)) <!-- 14.9.7 -->
 - windows_task resource: allow non-system users without password for interactive tasks [#8120](https://github.com/chef/chef/pull/8120) ([tas50](https://github.com/tas50)) <!-- 14.9.6 -->
