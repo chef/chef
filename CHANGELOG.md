@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.133 -->
-## [v15.0.133](https://github.com/chef/chef/tree/v15.0.133) (2019-01-21)
+<!-- latest_release 15.0.134 -->
+## [v15.0.134](https://github.com/chef/chef/tree/v15.0.134) (2019-01-21)
 
 #### Merged Pull Requests
-- Allow for mixlib-archive 1.x [#8137](https://github.com/chef/chef/pull/8137) ([tas50](https://github.com/tas50))
+- Sysctl: Allow slashes in key or block name [#8136](https://github.com/chef/chef/pull/8136) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Sysctl: Allow slashes in key or block name [#8136](https://github.com/chef/chef/pull/8136) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.134 -->
 - Allow for mixlib-archive 1.x [#8137](https://github.com/chef/chef/pull/8137) ([tas50](https://github.com/tas50)) <!-- 15.0.133 -->
 - Fix cask resource running each chef-client run [#8140](https://github.com/chef/chef/pull/8140) ([jeroenj](https://github.com/jeroenj)) <!-- 15.0.132 -->
 - Updates homebrew_cask tap name [#8139](https://github.com/chef/chef/pull/8139) ([jeroenj](https://github.com/jeroenj)) <!-- 15.0.131 -->
