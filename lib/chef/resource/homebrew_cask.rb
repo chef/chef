@@ -55,7 +55,7 @@ class Chef
       action :install do
         description "Install an application packaged as a Homebrew cask."
 
-        homebrew_tap "caskroom/cask" if new_resource.install_cask
+        homebrew_tap "homebrew/cask" if new_resource.install_cask
 
         unless casked?
           converge_by("install cask #{new_resource.cask_name} #{new_resource.options}") do
@@ -70,7 +70,7 @@ class Chef
       action :remove do
         description "Remove an application packaged as a Homebrew cask."
 
-        homebrew_tap "caskroom/cask" if new_resource.install_cask
+        homebrew_tap "homebrew/cask" if new_resource.install_cask
 
         if casked?
           converge_by("uninstall cask #{new_resource.cask_name}") do
