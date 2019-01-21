@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.130 -->
-## [v15.0.130](https://github.com/chef/chef/tree/v15.0.130) (2019-01-17)
+<!-- latest_release 15.0.131 -->
+## [v15.0.131](https://github.com/chef/chef/tree/v15.0.131) (2019-01-21)
 
 #### Merged Pull Requests
-- windows_printer: prevent failures when deleting printers and using device_id property [#8125](https://github.com/chef/chef/pull/8125) ([tas50](https://github.com/tas50))
+- Updates homebrew_cask tap name [#8139](https://github.com/chef/chef/pull/8139) ([jeroenj](https://github.com/jeroenj))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Updates homebrew_cask tap name [#8139](https://github.com/chef/chef/pull/8139) ([jeroenj](https://github.com/jeroenj)) <!-- 15.0.131 -->
 - windows_printer: prevent failures when deleting printers and using device_id property [#8125](https://github.com/chef/chef/pull/8125) ([tas50](https://github.com/tas50)) <!-- 15.0.130 -->
 - homebrew_cask / homebrew_tap:  Properly use the cask_name and tap_name properties [#8123](https://github.com/chef/chef/pull/8123) ([tas50](https://github.com/tas50)) <!-- 15.0.129 -->
 - openssl_ec_private_key / openssl_x509_request.rb: properly use the path properties when specified [#8122](https://github.com/chef/chef/pull/8122) ([tas50](https://github.com/tas50)) <!-- 15.0.128 -->
