@@ -80,7 +80,7 @@ class Chef
 
           directory new_resource.conf_dir
 
-          file "#{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf" do
+          file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr('/', '.')}.conf" do
             content "#{new_resource.key} = #{new_resource.value}"
           end
 
@@ -96,9 +96,9 @@ class Chef
         description "Remove a sysctl value."
 
         # only converge the resource if the file actually exists to delete
-        if ::File.exist?("#{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf")
-          converge_by "removing sysctl config at #{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf" do
-            file "#{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf" do
+        if ::File.exist?("#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr('/', '.')}.conf")
+          converge_by "removing sysctl config at #{new_resource.conf_dir}/99-chef-#{new_resource.key.tr('/', '.')}.conf" do
+            file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr('/', '.')}.conf" do
               action :delete
             end
 
@@ -140,8 +140,8 @@ class Chef
       # return the value. Raise in case this conf file needs to be created
       # or updated
       def get_sysctld_value(key)
-        raise unless ::File.exist?("/etc/sysctl.d/99-chef-#{key}.conf")
-        k, v = ::File.read("/etc/sysctl.d/99-chef-#{key}.conf").match(/(.*) = (.*)/).captures
+        raise unless ::File.exist?("/etc/sysctl.d/99-chef-#{key.tr('/', '.')}.conf")
+        k, v = ::File.read("/etc/sysctl.d/99-chef-#{key.tr('/', '.')}.conf").match(/(.*) = (.*)/).captures
         raise "Unknown sysctl key!" if k.nil?
         raise "Unknown sysctl value!" if v.nil?
         v
