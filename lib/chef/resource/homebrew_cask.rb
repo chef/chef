@@ -89,7 +89,7 @@ class Chef
 
         def casked?
           unscoped_name = new_resource.cask_name.split("/").last
-          shell_out!('#{new_resource.homebrew_path} cask list 2>/dev/null',
+          shell_out!("#{new_resource.homebrew_path} cask list 2>/dev/null",
             user: new_resource.owner,
             env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
             cwd: ::Dir.home(new_resource.owner)).stdout.split.include?(unscoped_name)
