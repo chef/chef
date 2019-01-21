@@ -55,7 +55,7 @@ class Chef
       action :install do
         description "Install an application packaged as a Homebrew cask."
 
-        homebrew_tap "caskroom/cask" if new_resource.install_cask
+        homebrew_tap "homebrew/cask" if new_resource.install_cask
 
         unless casked?
           converge_by("install cask #{new_resource.cask_name} #{new_resource.options}") do
@@ -70,7 +70,7 @@ class Chef
       action :remove do
         description "Remove an application packaged as a Homebrew cask."
 
-        homebrew_tap "caskroom/cask" if new_resource.install_cask
+        homebrew_tap "homebrew/cask" if new_resource.install_cask
 
         if casked?
           converge_by("uninstall cask #{new_resource.cask_name}") do
@@ -89,7 +89,7 @@ class Chef
 
         def casked?
           unscoped_name = new_resource.cask_name.split("/").last
-          shell_out!('#{new_resource.homebrew_path} cask list 2>/dev/null',
+          shell_out!("#{new_resource.homebrew_path} cask list 2>/dev/null",
             user: new_resource.owner,
             env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
             cwd: ::Dir.home(new_resource.owner)).stdout.split.include?(unscoped_name)
