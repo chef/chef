@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.132 -->
-## [v15.0.132](https://github.com/chef/chef/tree/v15.0.132) (2019-01-21)
+<!-- latest_release 15.0.133 -->
+## [v15.0.133](https://github.com/chef/chef/tree/v15.0.133) (2019-01-21)
 
 #### Merged Pull Requests
-- Fix cask resource running each chef-client run [#8140](https://github.com/chef/chef/pull/8140) ([jeroenj](https://github.com/jeroenj))
+- Allow for mixlib-archive 1.x [#8137](https://github.com/chef/chef/pull/8137) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Allow for mixlib-archive 1.x [#8137](https://github.com/chef/chef/pull/8137) ([tas50](https://github.com/tas50)) <!-- 15.0.133 -->
 - Fix cask resource running each chef-client run [#8140](https://github.com/chef/chef/pull/8140) ([jeroenj](https://github.com/jeroenj)) <!-- 15.0.132 -->
 - Updates homebrew_cask tap name [#8139](https://github.com/chef/chef/pull/8139) ([jeroenj](https://github.com/jeroenj)) <!-- 15.0.131 -->
 - windows_printer: prevent failures when deleting printers and using device_id property [#8125](https://github.com/chef/chef/pull/8125) ([tas50](https://github.com/tas50)) <!-- 15.0.130 -->
