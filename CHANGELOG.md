@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.9.9 -->
-## [v14.9.9](https://github.com/chef/chef/tree/v14.9.9) (2019-01-18)
+<!-- latest_release 14.9.10 -->
+## [v14.9.10](https://github.com/chef/chef/tree/v14.9.10) (2019-01-21)
 
 #### Merged Pull Requests
-- Backport various name_property fixes in resources from Chef 15 [#8134](https://github.com/chef/chef/pull/8134) ([tas50](https://github.com/tas50))
+- Allow for mixlib-archive 1.x [#8141](https://github.com/chef/chef/pull/8141) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.8.12 -->
 ### Changes since 14.8.12 release
 
 #### Merged Pull Requests
+- Allow for mixlib-archive 1.x [#8141](https://github.com/chef/chef/pull/8141) ([tas50](https://github.com/tas50)) <!-- 14.9.10 -->
 - Backport various name_property fixes in resources from Chef 15 [#8134](https://github.com/chef/chef/pull/8134) ([tas50](https://github.com/tas50)) <!-- 14.9.9 -->
 - Update license scout to 1.0.22 [#8131](https://github.com/chef/chef/pull/8131) ([tas50](https://github.com/tas50)) <!-- 14.9.8 -->
 - Chef 14: A windows support to the timezone resource [#8129](https://github.com/chef/chef/pull/8129) ([tas50](https://github.com/tas50)) <!-- 14.9.7 -->
