@@ -1,7 +1,7 @@
 #
 # Author:: Nuo Yan (<nuo@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,11 @@ class Chef
 
       banner "knife cookbook site share COOKBOOK [CATEGORY] (options)"
       category "deprecated"
+
+      def run
+        Chef::Log.warn("knife cookbook site share has been deprecated in favor of knife supermarket share. In Chef 16 (April 2020) this will result in an error!")
+        super
+      end
 
     end
   end
