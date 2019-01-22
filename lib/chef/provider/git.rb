@@ -30,7 +30,7 @@ class Chef
 
       GIT_VERSION_PATTERN = Regexp.compile('git version (\d+\.\d+.\d+)')
 
-      def_delegator :new_resource, :destination, :cwd
+      def_delegator :new_resource, :path, :cwd
 
       def load_current_resource
         @resolved_reference = nil
@@ -80,7 +80,7 @@ class Chef
           enable_submodules
           add_remotes
         else
-          logger.trace "#{new_resource} checkout destination #{cwd} already exists or is a non-empty directory"
+          logger.trace "#{new_resource} checkout path #{cwd} already exists or is a non-empty directory"
         end
       end
 

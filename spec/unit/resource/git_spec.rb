@@ -43,8 +43,8 @@ describe Chef::Resource::Git do
     expect(resource.revision).to eql("v1.0 tag")
   end
 
-  it "the destination property is the name_property" do
-    expect(resource.destination).to eql("fakey_fakerton")
+  it "the path property is the name_property" do
+    expect(resource.path).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :sync" do

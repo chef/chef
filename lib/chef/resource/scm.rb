@@ -24,8 +24,8 @@ class Chef
       default_action :sync
       allowed_actions :checkout, :export, :sync, :diff, :log
 
-      property :destination, String,
-               description: "The location path to which the source is to be cloned, checked out, or exported. Default value: the name of the resource block.",
+      property :path, String,
+               description: "The location path to which the source is to be cloned, checked out, or exported. Default value: the name of the resource block. This may also be specified by the legacy 'destination' property.",
                name_property: true, identity: true
 
       property :repository, String
@@ -69,6 +69,7 @@ class Chef
                description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}).",
                default: nil
 
+      alias :destination :path
       alias :env :environment
     end
   end

@@ -23,7 +23,7 @@ describe Chef::Provider::Subversion do
   before do
     @resource = Chef::Resource::Subversion.new("my app")
     @resource.repository "http://svn.example.org/trunk/"
-    @resource.destination "/my/deploy/dir"
+    @resource.path "/my/deploy/dir"
     @resource.revision "12345"
     @resource.svn_arguments(false)
     @resource.svn_info_args(false)
@@ -206,7 +206,7 @@ describe Chef::Provider::Subversion do
     expect { @provider.run_action(:sync) }.to raise_error(Chef::Exceptions::MissingParentDirectory)
   end
 
-  it "should not checkout if the destination exists or is a non empty directory" do
+  it "should not checkout if the path exists or is a non empty directory" do
     allow(::File).to receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
     allow(::File).to receive(:exist?).with("/my/deploy/dir").and_return(true)
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)

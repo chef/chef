@@ -29,7 +29,7 @@ describe Chef::Provider::Git do
 
     @resource = Chef::Resource::Git.new("web2.0 app")
     @resource.repository "git://github.com/opscode/chef.git"
-    @resource.destination "/my/deploy/dir"
+    @resource.path "/my/deploy/dir"
     @resource.revision "d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -71,7 +71,7 @@ describe Chef::Provider::Git do
     end
   end
 
-  it "creates a current_resource with the currently deployed revision when a clone exists in the destination dir" do
+  it "creates a current_resource with the currently deployed revision when a clone exists in the path" do
     allow(@provider).to receive(:find_current_revision).and_return("681c9802d1c62a45b490786c18f0b8216b309440")
     @provider.load_current_resource
     expect(@provider.current_resource.name).to eql(@resource.name)
@@ -358,10 +358,10 @@ describe Chef::Provider::Git do
     end
   end
 
-  it "runs a clone command with escaped destination" do
+  it "runs a clone command with escaped path" do
     @resource.user "deployNinja"
     allow(Etc).to receive(:getpwnam).and_return(double("Struct::Passwd", name: @resource.user, dir: "/home/deployNinja"))
-    @resource.destination "/Application Support/with/space"
+    @resource.path "/Application Support/with/space"
     @resource.ssh_wrapper "do_it_this_way.sh"
     expected_cmd = "git clone \"git://github.com/opscode/chef.git\" \"/Application Support/with/space\""
     expect(@provider).to receive(:shell_out!).with(expected_cmd, user: "deployNinja",
@@ -641,7 +641,7 @@ describe Chef::Provider::Git do
    # @resource.should be_updated
   end
 
-  it "should not checkout if the destination exists or is a non empty directory" do
+  it "should not checkout if the path exists or is a non empty directory" do
     # will be invoked in load_current_resource
     allow(::File).to receive(:exist?).with("/my/deploy/dir/.git").and_return(false)
 
@@ -712,7 +712,7 @@ describe Chef::Provider::Git do
 
   it "does an export by cloning the repo then removing the .git directory" do
     expect(@provider).to receive(:action_checkout)
-    expect(FileUtils).to receive(:rm_rf).with(@resource.destination + "/.git")
+    expect(FileUtils).to receive(:rm_rf).with(@resource.path + "/.git")
     @provider.run_action(:export)
     expect(@resource).to be_updated
   end

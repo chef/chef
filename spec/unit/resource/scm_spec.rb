@@ -22,8 +22,8 @@ require "spec_helper"
 describe Chef::Resource::Scm do
   let(:resource) { Chef::Resource::Scm.new("fakey_fakerton") }
 
-  it "the destination property is the name_property" do
-    expect(resource.destination).to eql("fakey_fakerton")
+  it "the path property is the name_property" do
+    expect(resource.path).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :sync" do
@@ -38,9 +38,9 @@ describe Chef::Resource::Scm do
     expect { resource.action :sync }.not_to raise_error
   end
 
-  it "takes the destination path as a string" do
-    resource.destination "/path/to/deploy/dir"
-    expect(resource.destination).to eql("/path/to/deploy/dir")
+  it "takes the path as a string" do
+    resource.path "/path/to/deploy/dir"
+    expect(resource.path).to eql("/path/to/deploy/dir")
   end
 
   it "takes a string for the repository URL" do
@@ -146,7 +146,7 @@ describe Chef::Resource::Scm do
 
   describe "when it has repository, revision, user, and group" do
     before do
-      resource.destination("hell")
+      resource.path("hell")
       resource.repository("apt")
       resource.revision("1.2.3")
       resource.user("root")
@@ -158,7 +158,7 @@ describe Chef::Resource::Scm do
       expect(state[:revision]).to eq("1.2.3")
     end
 
-    it "returns the destination as its identity" do
+    it "returns the path as its identity" do
       expect(resource.identity).to eq("hell")
     end
   end

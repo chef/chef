@@ -151,6 +151,10 @@ Initial support has been added for Red Hat Enterprise Linux 8. Thank you [@pixdr
 
 gem_package now supports installing gems into Ruby 2.6 or later installations.
 
+### scm / git / subversion
+
+scm now supports the path property in favour of destination. However destination will continue to work at this time.
+
 ### windows_ad_join
 
 windows_ad_join now uses the UPN format for usernames, which prevents some failures to authenticate to the domain.
