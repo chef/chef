@@ -6,38 +6,41 @@
 - homebrew_cask: Ensure the resource is fully idempotent [#8143](https://github.com/chef/chef/pull/8143) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup since=14.8.12 -->
-### Changes since 14.8.12 release
-
-#### Merged Pull Requests
-- homebrew_cask: Ensure the resource is fully idempotent [#8143](https://github.com/chef/chef/pull/8143) ([tas50](https://github.com/tas50)) <!-- 14.9.12 -->
-- systctl: Allow slashes in key or block name [#8142](https://github.com/chef/chef/pull/8142) ([tas50](https://github.com/tas50)) <!-- 14.9.11 -->
-- Allow for mixlib-archive 1.x [#8141](https://github.com/chef/chef/pull/8141) ([tas50](https://github.com/tas50)) <!-- 14.9.10 -->
-- Backport various name_property fixes in resources from Chef 15 [#8134](https://github.com/chef/chef/pull/8134) ([tas50](https://github.com/tas50)) <!-- 14.9.9 -->
-- Update license scout to 1.0.22 [#8131](https://github.com/chef/chef/pull/8131) ([tas50](https://github.com/tas50)) <!-- 14.9.8 -->
-- Chef 14: A windows support to the timezone resource [#8129](https://github.com/chef/chef/pull/8129) ([tas50](https://github.com/tas50)) <!-- 14.9.7 -->
-- windows_task resource: allow non-system users without password for interactive tasks [#8120](https://github.com/chef/chef/pull/8120) ([tas50](https://github.com/tas50)) <!-- 14.9.6 -->
-- Support and test on Ruby 2.6 [#8121](https://github.com/chef/chef/pull/8121) ([tas50](https://github.com/tas50)) <!-- 14.9.5 -->
-- Bump mixlib-cli to 2.0.0 and win32-certstore to 0.2.1 [#8092](https://github.com/chef/chef/pull/8092) ([chef-ci](https://github.com/chef-ci)) <!-- 14.9.4 -->
-- Bump inspec-core to 3.2.6 [#8075](https://github.com/chef/chef/pull/8075) ([chef-ci](https://github.com/chef-ci)) <!-- 14.9.3 -->
-- Disable s3 omnibus cache [#8069](https://github.com/chef/chef/pull/8069) ([tas50](https://github.com/tas50)) <!-- 14.9.2 -->
-- chef 14: minimal_ohai: Add init_package plugin as a required plugin [#8072](https://github.com/chef/chef/pull/8072) ([tas50](https://github.com/tas50)) <!-- 14.9.1 -->
-- chef 14: windows_certificate: Fix invalid byte sequence errors with pfx certicates [#8071](https://github.com/chef/chef/pull/8071) ([tas50](https://github.com/tas50)) <!-- 14.9.0 -->
-- windows_certificate: Fix failures in delete action fails if certificate doesn&#39;t exist [#8073](https://github.com/chef/chef/pull/8073) ([tas50](https://github.com/tas50)) <!-- 14.8.24 -->
-- Bump train-core to 1.6.3 [#8067](https://github.com/chef/chef/pull/8067) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.23 -->
-- Bump license_scout to 1.0.20 for licensing tests [#8064](https://github.com/chef/chef/pull/8064) ([tas50](https://github.com/tas50)) <!-- 14.8.22 -->
-- Backport: Adding VC Redistributable files required for powershell_exec on Windows [#8060](https://github.com/chef/chef/pull/8060) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.21 -->
-- Bump inspec-core to 3.1.3 [#8048](https://github.com/chef/chef/pull/8048) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.20 -->
-- Backport: windows_ad_join: suppress sensitive stderr [#8061](https://github.com/chef/chef/pull/8061) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.19 -->
-- Backport: Allow setting the comment on a Windows group [#8052](https://github.com/chef/chef/pull/8052) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.18 -->
-- Backport: Bugfixes to powershell_package_source [#8050](https://github.com/chef/chef/pull/8050) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.17 -->
-- Bump mixlib-archive to 0.4.19 and mixlib-shellout to 2.4.4 [#8037](https://github.com/chef/chef/pull/8037) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.16 -->
-- Bump mixlib-shellout to 2.4.2 and inspec to 3.0.64 [#8027](https://github.com/chef/chef/pull/8027) ([chef-ci](https://github.com/chef-ci)) <!-- 14.8.13 -->
-- Chef 14: Windows Server 2019 version detection [#8033](https://github.com/chef/chef/pull/8033) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.8.14 -->
--  Bump mixlib-archive, mixlib-shellout, semverse, and train-core to the latest [#8041](https://github.com/chef/chef/pull/8041) ([tas50](https://github.com/tas50)) <!-- 14.8.15 -->
+<!-- release_rollup since=14.9.13 -->
+### Changes since 14.9.13 release
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.9.13](https://github.com/chef/chef/tree/v14.9.13) (2019-01-22)
+
+#### Merged Pull Requests
+-  Bump mixlib-archive, mixlib-shellout, semverse, and train-core to the latest [#8041](https://github.com/chef/chef/pull/8041) ([tas50](https://github.com/tas50))
+- Chef 14: Windows Server 2019 version detection [#8033](https://github.com/chef/chef/pull/8033) ([stuartpreston](https://github.com/stuartpreston))
+- Bump mixlib-shellout to 2.4.2 and inspec to 3.0.64 [#8027](https://github.com/chef/chef/pull/8027) ([chef-ci](https://github.com/chef-ci))
+- Bump mixlib-archive to 0.4.19 and mixlib-shellout to 2.4.4 [#8037](https://github.com/chef/chef/pull/8037) ([chef-ci](https://github.com/chef-ci))
+- Backport: Bugfixes to powershell_package_source [#8050](https://github.com/chef/chef/pull/8050) ([stuartpreston](https://github.com/stuartpreston))
+- Backport: Allow setting the comment on a Windows group [#8052](https://github.com/chef/chef/pull/8052) ([stuartpreston](https://github.com/stuartpreston))
+- Backport: windows_ad_join: suppress sensitive stderr [#8061](https://github.com/chef/chef/pull/8061) ([stuartpreston](https://github.com/stuartpreston))
+- Bump inspec-core to 3.1.3 [#8048](https://github.com/chef/chef/pull/8048) ([chef-ci](https://github.com/chef-ci))
+- Backport: Adding VC Redistributable files required for powershell_exec on Windows [#8060](https://github.com/chef/chef/pull/8060) ([stuartpreston](https://github.com/stuartpreston))
+- Bump license_scout to 1.0.20 for licensing tests [#8064](https://github.com/chef/chef/pull/8064) ([tas50](https://github.com/tas50))
+- Bump train-core to 1.6.3 [#8067](https://github.com/chef/chef/pull/8067) ([chef-ci](https://github.com/chef-ci))
+- windows_certificate: Fix failures in delete action fails if certificate doesn&#39;t exist [#8073](https://github.com/chef/chef/pull/8073) ([tas50](https://github.com/tas50))
+- chef 14: windows_certificate: Fix invalid byte sequence errors with pfx certicates [#8071](https://github.com/chef/chef/pull/8071) ([tas50](https://github.com/tas50))
+- chef 14: minimal_ohai: Add init_package plugin as a required plugin [#8072](https://github.com/chef/chef/pull/8072) ([tas50](https://github.com/tas50))
+- Disable s3 omnibus cache [#8069](https://github.com/chef/chef/pull/8069) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 3.2.6 [#8075](https://github.com/chef/chef/pull/8075) ([chef-ci](https://github.com/chef-ci))
+- Bump mixlib-cli to 2.0.0 and win32-certstore to 0.2.1 [#8092](https://github.com/chef/chef/pull/8092) ([chef-ci](https://github.com/chef-ci))
+- Support and test on Ruby 2.6 [#8121](https://github.com/chef/chef/pull/8121) ([tas50](https://github.com/tas50))
+- windows_task resource: allow non-system users without password for interactive tasks [#8120](https://github.com/chef/chef/pull/8120) ([tas50](https://github.com/tas50))
+- Chef 14: A windows support to the timezone resource [#8129](https://github.com/chef/chef/pull/8129) ([tas50](https://github.com/tas50))
+- Update license scout to 1.0.22 [#8131](https://github.com/chef/chef/pull/8131) ([tas50](https://github.com/tas50))
+- Backport various name_property fixes in resources from Chef 15 [#8134](https://github.com/chef/chef/pull/8134) ([tas50](https://github.com/tas50))
+- Allow for mixlib-archive 1.x [#8141](https://github.com/chef/chef/pull/8141) ([tas50](https://github.com/tas50))
+- systctl: Allow slashes in key or block name [#8142](https://github.com/chef/chef/pull/8142) ([tas50](https://github.com/tas50))
+- homebrew_cask: Ensure the resource is fully idempotent [#8143](https://github.com/chef/chef/pull/8143) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v14.8.12](https://github.com/chef/chef/tree/v14.8.12) (2018-12-13)
 
 #### Merged Pull Requests
@@ -68,7 +71,6 @@
 - dnf_package: Add RHEL 8 support [#8006](https://github.com/chef/chef/pull/8006) ([tas50](https://github.com/tas50))
 - Bump ohai to 14.8.10 for improved virtualization and platform detection [#8019](https://github.com/chef/chef/pull/8019) ([chef-ci](https://github.com/chef-ci))
 - Make sure the ohai CLI uses the same version of ohai as chef-client [#8020](https://github.com/chef/chef/pull/8020) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.7.17](https://github.com/chef/chef/tree/v14.7.17) (2018-11-08)
 
