@@ -1,5 +1,65 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.9:
+
+## Updated Resources
+
+### group
+
+On Windows hosts the group resource now supports setting the comment field via a new `comment` property.
+
+### homebrew_cask
+
+Two issues that caused homebrew_cask to converge on each Chef run have been resolved. Thanks [@jeroenj](https://github.com/jeroenj) for this fix. Additionally the resource will no longer fail if the `cask_name` property is specified.
+
+### homebrew_tap
+
+The homebrew_tap resource no longer fails if the `tap_name` property is specified.
+
+### openssl_x509_request
+
+The openssl_x509_request resource now property writes out the CSR file if the `path` property is specified. Thank you [@cpjones](https://github.com/cpjones) for reporting this issue.
+
+### powershell_package_source
+
+powershell_package_source now suppresses warnings which prevented properly loading the resource state, and resolves idempotency issues when both the `name` and `source_name` properties were specified. Thanks [@Happycoil](https://github.com/Happycoil) for this fix.
+
+### sysctl
+
+The sysctl resource now allows slashes in the key or block name. This allows keys such as `net/ipv4/conf/ens256.401/rp_filter` to be used with this resource.
+
+### windows_ad_join
+
+Errors joining the domain are now properly suppressed from the console and logs if the `sensitive` property is set to true. Thanks [@Happycoil](https://github.com/Happycoil) for this improvement.
+
+### windows_certificate
+
+The delete action now longer fails if a certificate does not exist on the system. Additionally certificates with special characters in their passwords will no longer fail. Thank you for reporting this [@chadmccune](https://github.com/chadmccune)
+
+### windows_printer
+
+The windows_printer resource no longer fails when creating or deleting a printer if the `device_id` property is specified.
+
+### windows_task
+
+Non-system users can now run tasks without a password being specified.
+
+## Minimal Ohai Improvements
+
+The ohai `init_package` plugin is now included as part of the `minimal_ohai` plugins set, which allows resources such as timezone to continue to function if Chef is running with the minimal number of ohai plugins.
+
+## Ruby 2.6 Support
+
+Chef 14.9 now supports Ruby 2.6.
+
+## InSpec 3.2.6
+
+InSpec has been updated from 3.0.64 to 3.2.6 with improved resources for auditing. See the [InSpec changelog](https://github.com/inspec/inspec/blob/master/CHANGELOG.md#v326-2018-12-20) for additional details on this new version.
+
+## powershell_exec Runtimes Bundled
+
+The necessary VC++ runtimes for the powershell_exec helper are now bundled with Chef to prevent failures on hosts that lacked the runtimes.
+
 # Chef Client Release Notes 14.8:
 
 ## Updated Resources
