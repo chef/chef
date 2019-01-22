@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.135 -->
-## [v15.0.135](https://github.com/chef/chef/tree/v15.0.135) (2019-01-22)
+<!-- latest_release 15.0.136 -->
+## [v15.0.136](https://github.com/chef/chef/tree/v15.0.136) (2019-01-22)
 
 #### Merged Pull Requests
-- Hide knife cookbook site &amp; null by setting them to deprecated category [#8148](https://github.com/chef/chef/pull/8148) ([tas50](https://github.com/tas50))
+- Add a deprecation warning to knife cookbook site [#8149](https://github.com/chef/chef/pull/8149) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add a deprecation warning to knife cookbook site [#8149](https://github.com/chef/chef/pull/8149) ([tas50](https://github.com/tas50)) <!-- 15.0.136 -->
 - Hide knife cookbook site &amp; null by setting them to deprecated category [#8148](https://github.com/chef/chef/pull/8148) ([tas50](https://github.com/tas50)) <!-- 15.0.135 -->
 - Sysctl: Allow slashes in key or block name [#8136](https://github.com/chef/chef/pull/8136) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.134 -->
 - Allow for mixlib-archive 1.x [#8137](https://github.com/chef/chef/pull/8137) ([tas50](https://github.com/tas50)) <!-- 15.0.133 -->
