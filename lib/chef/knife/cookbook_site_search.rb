@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,11 @@ class Chef
 
       banner "knife cookbook site search QUERY (options)"
       category "cookbook site"
+
+      def run
+        Chef::Log.warn("knife cookbook site search has been deprecated in favor of knife supermarket search. In Chef 16 (April 2020) this will result in an error!")
+        super
+      end
 
     end
   end
