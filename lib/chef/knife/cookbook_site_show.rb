@@ -28,7 +28,7 @@ class Chef
       options.merge!(superclass.options)
 
       banner "knife cookbook site show COOKBOOK [VERSION] (options)"
-      category "cookbook site"
+      category "deprecated"
 
     end
   end
