@@ -1,4 +1,3 @@
-#
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)

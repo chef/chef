@@ -1,4 +1,3 @@
-#--
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Copyright:: Copyright 2010-2018, Chef Software Inc.
