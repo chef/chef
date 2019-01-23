@@ -40,7 +40,6 @@ describe "knife cookbook show", :workstation do
         cookbook_name: x
         frozen?:       false
         metadata:
-          attributes:
           chef_versions:
           dependencies:
           description:      
@@ -87,7 +86,6 @@ describe "knife cookbook show", :workstation do
 
     it "knife cookbook show x 1.0.0 metadata shows the metadata" do
       knife("cookbook show x 1.0.0 metadata").should_succeed <<~EOM
-        attributes:
         chef_versions:
         dependencies:
         description:      

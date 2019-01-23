@@ -116,7 +116,6 @@ describe Chef::Knife::CookbookShow do
             "platforms" => {},
             "dependencies" => {},
             "providing" => {},
-            "attributes" => {},
             "recipes" => {},
             "version" => "0.0.0",
             "source_url" => "",
