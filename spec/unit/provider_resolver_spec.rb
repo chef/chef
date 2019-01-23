@@ -670,7 +670,7 @@ describe Chef::ProviderResolver do
                 group: [ Chef::Resource::Group, Chef::Provider::Group::Suse ],
               },
             },
-            "opensuse" => {
+            "opensuseleap" => {
     #          service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
               package: [ Chef::Resource::ZypperPackage, Chef::Provider::Package::Zypper ],
               group: [ Chef::Resource::Group, Chef::Provider::Group::Usermod ],
