@@ -790,16 +790,6 @@ describe Chef::ProviderResolver do
           },
         },
 
-        "hpux" => {
-          "hpux" => {
-            "hpux" => {
-              "3.1.4" => {
-                group: [ Chef::Resource::Group, Chef::Provider::Group::Usermod ],
-              },
-            },
-          },
-        },
-
         "netbsd" => {
           "netbsd" => {
             "netbsd" => {

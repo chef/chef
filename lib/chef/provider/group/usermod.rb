@@ -23,7 +23,7 @@ class Chef
     class Group
       class Usermod < Chef::Provider::Group::Groupadd
 
-        provides :group, os: %w{openbsd solaris2 hpux}
+        provides :group, os: %w{openbsd solaris2}
         provides :group, platform: "opensuse"
 
         def load_current_resource
