@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.136 -->
-## [v15.0.136](https://github.com/chef/chef/tree/v15.0.136) (2019-01-22)
+<!-- latest_release 15.0.137 -->
+## [v15.0.137](https://github.com/chef/chef/tree/v15.0.137) (2019-01-23)
 
 #### Merged Pull Requests
-- Add a deprecation warning to knife cookbook site [#8149](https://github.com/chef/chef/pull/8149) ([tas50](https://github.com/tas50))
+- Remove &#39;attributes&#39;  attribute from cookbook metadata [#8151](https://github.com/chef/chef/pull/8151) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Remove &#39;attributes&#39;  attribute from cookbook metadata [#8151](https://github.com/chef/chef/pull/8151) ([tas50](https://github.com/tas50)) <!-- 15.0.137 -->
 - Add a deprecation warning to knife cookbook site [#8149](https://github.com/chef/chef/pull/8149) ([tas50](https://github.com/tas50)) <!-- 15.0.136 -->
 - Hide knife cookbook site &amp; null by setting them to deprecated category [#8148](https://github.com/chef/chef/pull/8148) ([tas50](https://github.com/tas50)) <!-- 15.0.135 -->
 - Sysctl: Allow slashes in key or block name [#8136](https://github.com/chef/chef/pull/8136) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.134 -->
