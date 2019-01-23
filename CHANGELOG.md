@@ -1,13 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.9.12 -->
-## [v14.9.12](https://github.com/chef/chef/tree/v14.9.12) (2019-01-21)
+<!-- latest_release 14.9.14 -->
+## [v14.9.14](https://github.com/chef/chef/tree/v14.9.14) (2019-01-23)
 
 #### Merged Pull Requests
-- homebrew_cask: Ensure the resource is fully idempotent [#8143](https://github.com/chef/chef/pull/8143) ([tas50](https://github.com/tas50))
+- Bump all deps to the latest versions [#8154](https://github.com/chef/chef/pull/8154) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.9.13 -->
 ### Changes since 14.9.13 release
+
+#### Merged Pull Requests
+- Bump all deps to the latest versions [#8154](https://github.com/chef/chef/pull/8154) ([tas50](https://github.com/tas50)) <!-- 14.9.14 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
