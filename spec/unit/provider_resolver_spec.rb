@@ -869,15 +869,6 @@ describe Chef::ProviderResolver do
 
         },
 
-        "solaris" => {
-          "solaris" => {
-            "solaris" => {
-              "3.1.4" => {
-              },
-            },
-          },
-        },
-
         "exherbo" => {
           "exherbo" => {
             "exherbo" => {
