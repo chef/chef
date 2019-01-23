@@ -77,7 +77,7 @@ The ``knife status --hide-healthy`` flag has been removed. Users should run ``kn
 
 Previously if a user provided multiple cookbook path's to Chef Solo that contained cookbooks with the same name, Chef would combine these into a single cookbook. This merging of two cookbooks often caused unexpected outcomes and has been removed.
 
-### Removal of unused Route properties
+### Removal of unused route resource properties
 
 The route resource contained multiple unused properties that have been removed. If you previously set ``networking``, ``networking_ipv6``, ``hostname``, ``domainname``, or ``domain`` they would be ignored. In Chef 15 setting these properties will throw an error.
 
@@ -100,6 +100,14 @@ The ``knife bootstrap --identity_file`` flag has been removed. This flag was dep
 ### knife user support for Chef Server < 12 removed
 
 The `knife user` command no longer supports open source Chef Server version prior to 12.
+
+### knife cookbook site deprecated in favor of knife supermarket
+
+The knife cookbook site command has been deprecated in favor of the knife supermarket command. Under the hood they are both actually the same codebase, but running knife cookbook site will now product a warning message. In Chef 16 we will remove the knife cookbook site command entirely.
+
+### attributes in metadata.rb
+
+Chef no longer processes attributes in the metadata.rb file. Attributes could be defined in the metadata.rb file as a form of documentation, which would be shown when running `knife cookbook show COOKBOOK_NAME`, but these attributes often became out of sync with attributes in the actual attributes files. Chef 15 will no longer show these attributes when running `knife cookbook show COOKBOOK_NAME` and will instead throw a warning message upon upload. Foodcritic has warned against the use of attributes in the metadata.rb file since April 2017.
 
 ### Node attributes array bugfix
 
