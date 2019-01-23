@@ -674,11 +674,6 @@ describe Chef::ProviderResolver do
     #          service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
               package: [ Chef::Resource::ZypperPackage, Chef::Provider::Package::Zypper ],
               group: [ Chef::Resource::Group, Chef::Provider::Group::Usermod ],
-              "12.3" => {
-              },
-              "12.2" => {
-                group: [ Chef::Resource::Group, Chef::Provider::Group::Suse ],
-              },
             },
           },
 

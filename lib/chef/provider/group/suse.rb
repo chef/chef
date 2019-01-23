@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ class Chef
   class Provider
     class Group
       class Suse < Chef::Provider::Group::Groupadd
-        provides :group, platform: "opensuse", platform_version: "< 12.3"
         provides :group, platform: "suse", platform_version: "< 12.0"
 
         def load_current_resource
