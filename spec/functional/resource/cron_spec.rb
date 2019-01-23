@@ -28,7 +28,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   # Platform specific validation routines.
   def cron_should_exists(cron_name, command)
     case ohai[:platform]
-    when "aix", "solaris", "opensolaris", "solaris2", "omnios"
+    when "aix", "opensolaris", "solaris2", "omnios"
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(0)
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").stdout.lines.to_a.size).to eq(1)
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{command}\"").exitstatus).to eq(0)
@@ -43,7 +43,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
 
   def cron_should_not_exists(cron_name)
     case ohai[:platform]
-    when "aix", "solaris", "opensolaris", "solaris2", "omnios"
+    when "aix", "opensolaris", "solaris2", "omnios"
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(1)
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{new_resource.command}\"").stdout.lines.to_a.size).to eq(0)
     else
@@ -57,7 +57,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
     new_resource.user  "root"
     # @hourly is not supported on solaris, aix
-    if ohai[:platform] == "solaris" || ohai[:platform] == "solaris2" || ohai[:platform] == "aix"
+    if ohai[:platform] == "solaris2" || ohai[:platform] == "aix"
       new_resource.minute "0 * * * *"
     else
       new_resource.minute "@hourly"
