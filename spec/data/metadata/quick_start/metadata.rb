@@ -12,8 +12,3 @@ version           "0.7"
 }.each do |os|
   supports os
 end
-
-attribute "quick_start/deep_thought",
-  :display_name => "Quick Start Deep Thought",
-  :description => "A deep thought",
-  :default => "If a tree falls in the forest..."
