@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.137 -->
-## [v15.0.137](https://github.com/chef/chef/tree/v15.0.137) (2019-01-23)
+<!-- latest_release 15.0.138 -->
+## [v15.0.138](https://github.com/chef/chef/tree/v15.0.138) (2019-01-23)
 
 #### Merged Pull Requests
-- Remove &#39;attributes&#39;  attribute from cookbook metadata [#8151](https://github.com/chef/chef/pull/8151) ([tas50](https://github.com/tas50))
+- Bump misc deps the latest [#8153](https://github.com/chef/chef/pull/8153) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Bump misc deps the latest [#8153](https://github.com/chef/chef/pull/8153) ([tas50](https://github.com/tas50)) <!-- 15.0.138 -->
 - Remove &#39;attributes&#39;  attribute from cookbook metadata [#8151](https://github.com/chef/chef/pull/8151) ([tas50](https://github.com/tas50)) <!-- 15.0.137 -->
 - Add a deprecation warning to knife cookbook site [#8149](https://github.com/chef/chef/pull/8149) ([tas50](https://github.com/tas50)) <!-- 15.0.136 -->
 - Hide knife cookbook site &amp; null by setting them to deprecated category [#8148](https://github.com/chef/chef/pull/8148) ([tas50](https://github.com/tas50)) <!-- 15.0.135 -->
