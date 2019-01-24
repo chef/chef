@@ -47,7 +47,7 @@ module WindowsCertificateHelper
   end
 end
 
-describe Chef::Resource::WindowsCertificate, :windows_only do
+describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
   include WindowsCertificateHelper
 
   let(:stdout) { StringIO.new }
