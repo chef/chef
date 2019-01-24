@@ -10,7 +10,7 @@ On Windows hosts, the group resource now supports setting the comment field via 
 
 ### homebrew_cask
 
-Two issues that caused homebrew_cask to converge on each Chef run have been resolved. Thanks [@jeroenj](https://github.com/jeroenj) for this fix. Additionally the resource will no longer fail if the `cask_name` property is specified.
+Two issues, which caused homebrew_cask to converge on each Chef run, have been resolved. Thanks [@jeroenj](https://github.com/jeroenj) for this fix. Additionally, the resource will no longer fail if the `cask_name` property is specified.
 
 ### homebrew_tap
 
