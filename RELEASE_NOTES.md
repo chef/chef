@@ -18,7 +18,7 @@ The homebrew_tap resource no longer fails if the `tap_name` property is specifie
 
 ### openssl_x509_request
 
-The openssl_x509_request resource now property writes out the CSR file if the `path` property is specified. Thank you [@cpjones](https://github.com/cpjones) for reporting this issue.
+The openssl_x509_request resource now properly writes out the CSR file if the `path` property is specified. Thank you [@cpjones](https://github.com/cpjones) for reporting this issue.
 
 ### powershell_package_source
 
