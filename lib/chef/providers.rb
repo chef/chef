@@ -84,6 +84,7 @@ require "chef/provider/package/bff"
 require "chef/provider/package/cab"
 require "chef/provider/package/powershell"
 require "chef/provider/package/msu"
+require "chef/provider/package/snap"
 
 require "chef/provider/service/arch"
 require "chef/provider/service/freebsd"
