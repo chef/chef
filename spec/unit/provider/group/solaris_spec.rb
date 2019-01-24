@@ -1,5 +1,5 @@
 #
-# Author:: AJ Christensen (<aj@chef.io>)
+# Author:: Joshua Justice (<jjustice6@bloomberg.net>)
 # Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
