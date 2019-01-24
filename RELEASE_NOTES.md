@@ -22,7 +22,7 @@ The openssl_x509_request resource now properly writes out the CSR file if the `p
 
 ### powershell_package_source
 
-powershell_package_source now suppresses warnings which prevented properly loading the resource state, and resolves idempotency issues when both the `name` and `source_name` properties were specified. Thanks [@Happycoil](https://github.com/Happycoil) for this fix.
+powershell_package_source now suppresses warnings, which prevented properly loading the resource state, and resolves idempotency issues when both the `name` and `source_name` properties were specified. Thanks [@Happycoil](https://github.com/Happycoil) for this fix.
 
 ### sysctl
 
