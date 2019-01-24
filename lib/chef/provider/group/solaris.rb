@@ -23,7 +23,7 @@ class Chef
     class Group
       class Solaris < Chef::Provider::Group::Groupadd
 
-        provides :group, os: "solaris2"
+        provides :group, platform: "solaris2"
 
         def load_current_resource
           super
