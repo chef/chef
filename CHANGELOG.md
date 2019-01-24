@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.140 -->
-## [v15.0.140](https://github.com/chef/chef/tree/v15.0.140) (2019-01-23)
+<!-- latest_release 15.0.141 -->
+## [v15.0.141](https://github.com/chef/chef/tree/v15.0.141) (2019-01-24)
 
 #### Merged Pull Requests
-- Remove hpux support from group&#39;s usermod provider [#8160](https://github.com/chef/chef/pull/8160) ([tas50](https://github.com/tas50))
+- Use the latest omnibus-software and nokogiri [#8162](https://github.com/chef/chef/pull/8162) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Use the latest omnibus-software and nokogiri [#8162](https://github.com/chef/chef/pull/8162) ([tas50](https://github.com/tas50)) <!-- 15.0.141 -->
 - Remove hpux support from group&#39;s usermod provider [#8160](https://github.com/chef/chef/pull/8160) ([tas50](https://github.com/tas50)) <!-- 15.0.140 -->
 - Remove bogus &quot;solaris&quot; platform from specs [#8159](https://github.com/chef/chef/pull/8159) ([tas50](https://github.com/tas50)) <!-- 15.0.139 -->
 - Bump misc deps the latest [#8153](https://github.com/chef/chef/pull/8153) ([tas50](https://github.com/tas50)) <!-- 15.0.138 -->
