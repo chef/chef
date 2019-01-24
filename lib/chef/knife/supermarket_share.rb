@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Webber (<cwebber@chef.io>)
-# Copyright:: Copyright (c) 2014-2018 Chef Software, Inc.
+# Copyright:: Copyright (c) 2014-2019 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 #
 
 require "chef/knife"
-require "chef/mixin/shell_out"
 
 class Chef
   class Knife
@@ -29,10 +28,8 @@ class Chef
         require "chef/cookbook_loader"
         require "chef/cookbook_uploader"
         require "chef/cookbook_site_streaming_uploader"
-        require "mixlib/shellout"
+        require "chef/mixin/shell_out"
       end
-
-      include Chef::Mixin::ShellOut
 
       banner "knife supermarket share COOKBOOK [CATEGORY] (options)"
       category "supermarket"
