@@ -34,7 +34,7 @@ Errors joining the domain are now properly suppressed from the console and logs 
 
 ### windows_certificate
 
-The delete action now longer fails if a certificate does not exist on the system. Additionally certificates with special characters in their passwords will no longer fail. Thank you for reporting this [@chadmccune](https://github.com/chadmccune)
+The delete action now longer fails if a certificate does not exist on the system. Additionally, certificates with special characters in their passwords will no longer fail. Thank you for reporting this [@chadmccune](https://github.com/chadmccune).
 
 ### windows_printer
 
