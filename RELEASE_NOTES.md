@@ -6,7 +6,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ### group
 
-On Windows hosts the group resource now supports setting the comment field via a new `comment` property.
+On Windows hosts, the group resource now supports setting the comment field via a new `comment` property.
 
 ### homebrew_cask
 
