@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::Group::Usermod do
+describe Chef::Provider::Group::Solaris do
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -26,7 +26,7 @@ describe Chef::Provider::Group::Usermod do
     @new_resource = Chef::Resource::Group.new("wheel")
     @new_resource.members %w{all your base}
     @new_resource.excluded_members [ ]
-    @provider = Chef::Provider::Group::Usermod.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Group::Solaris.new(@new_resource, @run_context)
     allow(@provider).to receive(:run_command)
   end
 
@@ -46,13 +46,7 @@ describe Chef::Provider::Group::Usermod do
 
     describe "with supplied members" do
       platforms = {
-        "openbsd" => [ "-G" ],
-        "netbsd" => [ "-G" ],
-        "solaris" => [ "-a", "-G" ],
-        "suse" => [ "-a", "-G" ],
-        "opensuse" => [ "-a", "-G" ],
-        "smartos" => [ "-G" ],
-        "omnios" => [ "-G" ],
+        "solaris2" => [ "-G" ]
       }
 
       before do
@@ -68,28 +62,24 @@ describe Chef::Provider::Group::Usermod do
         expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider}, must set append true in group")
       end
 
-      it "should raise an error when excluded_members are set" do
-        @provider.define_resource_requirements
-        @provider.load_current_resource
-        @provider.instance_variable_set("@group_exists", true)
-        @provider.action = :modify
-        @new_resource.append(true)
-        @new_resource.excluded_members(["someone"])
-        expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "excluded_members is not supported by #{@provider}")
-      end
-
       platforms.each do |platform, flags|
-        it "should usermod each user when the append option is set on #{platform}" do
+        it "should usermod +/- each user when the append option is set on #{platform}" do
           current_resource = @new_resource.dup
-          current_resource.members([ ])
+          current_resource.members(%w(are belong to us))
+          @new_resource.excluded_members(%w(are belong to us))
           @provider.current_resource = current_resource
           @node.automatic_attrs[:platform] = platform
           @new_resource.append(true)
-          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "wheel", "all")
-          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "wheel", "your")
-          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "wheel", "base")
+          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "+wheel", "all")
+          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "+wheel", "your")
+          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "+wheel", "base")
+          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "-wheel", "are")
+          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "-wheel", "belong")
+          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "-wheel", "to")
+          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "-wheel", "us")
           @provider.modify_group_members
         end
+
       end
     end
   end
