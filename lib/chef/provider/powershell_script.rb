@@ -60,8 +60,8 @@ class Chef
       def flags
         interpreter_flags = [*default_interpreter_flags].join(" ")
 
-        if ! (new_resource.flags.nil?)
-          interpreter_flags = [new_resource.flags, interpreter_flags].join(" ")
+        unless new_resource.flags.nil?
+          interpreter_flags = [interpreter_flags, new_resource.flags].join(" ")
         end
 
         interpreter_flags
