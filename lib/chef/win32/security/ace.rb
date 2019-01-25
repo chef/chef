@@ -113,7 +113,11 @@ class Chef
           struct[:AceType] = type
           struct[:AceFlags] = flags
           struct[:AceSize] = size_needed
-          struct[:Mask] = mask
+          if mask == Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE || mask == Chef::ReservedNames::Win32::API::Security::WRITE_CONTROL
+            struct[:Mask] = Chef::ReservedNames::Win32::API::Security::WRITE_CONTROL
+          else
+            struct[:Mask] = mask
+          end
           Chef::ReservedNames::Win32::Memory.memcpy(struct.pointer + struct.offset_of(:SidStart), sid.pointer, sid.size)
           ACE.new(struct.pointer)
         end
