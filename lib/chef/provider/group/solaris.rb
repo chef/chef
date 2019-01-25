@@ -23,6 +23,8 @@ class Chef
     class Group
       class Solaris < Chef::Provider::Group::Groupadd
 
+        # this provides line is setup to only catch the solaris2 platform, but
+        # NOT other platforms in the Solaris platform_family. (See usermod provider.)
         provides :group, platform: "solaris2"
 
         def load_current_resource
