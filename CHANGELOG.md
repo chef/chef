@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.10.2 -->
-## [v14.10.2](https://github.com/chef/chef/tree/v14.10.2) (2019-01-25)
+<!-- latest_release 14.10.3 -->
+## [v14.10.3](https://github.com/chef/chef/tree/v14.10.3) (2019-01-25)
 
 #### Merged Pull Requests
-- Update nokogiri to 1.10.1 [#8172](https://github.com/chef/chef/pull/8172) ([tas50](https://github.com/tas50))
+- Bump all deps to current [#8173](https://github.com/chef/chef/pull/8173) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.9.13 -->
 ### Changes since 14.9.13 release
 
 #### Merged Pull Requests
+- Bump all deps to current [#8173](https://github.com/chef/chef/pull/8173) ([tas50](https://github.com/tas50)) <!-- 14.10.3 -->
 - Update nokogiri to 1.10.1 [#8172](https://github.com/chef/chef/pull/8172) ([tas50](https://github.com/tas50)) <!-- 14.10.2 -->
 - Add a deprecation warning to knife cookbook site [#8164](https://github.com/chef/chef/pull/8164) ([tas50](https://github.com/tas50)) <!-- 14.10.1 -->
 - windows_certificate: Ensure all actions are fully idempotent [#8163](https://github.com/chef/chef/pull/8163) ([tas50](https://github.com/tas50)) <!-- 14.10.0 -->
