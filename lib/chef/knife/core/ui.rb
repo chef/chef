@@ -26,7 +26,6 @@ require "tempfile"
 class Chef
   class Knife
 
-    #==Chef::Knife::UI
     # The User Interaction class used by knife.
     class UI
 
@@ -64,6 +63,8 @@ class Chef
 
       # Prints a message to stdout. Aliased as +info+ for compatibility with
       # the logger API.
+      #
+      # @param message [String] the text string
       def msg(message)
         stdout.puts message
       rescue Errno::EPIPE => e
@@ -72,6 +73,8 @@ class Chef
       end
 
       # Prints a msg to stderr. Used for info, warn, error, and fatal.
+      #
+      # @param message [String] the text string
       def log(message)
         stderr.puts message
       rescue Errno::EPIPE => e
@@ -83,16 +86,22 @@ class Chef
       alias :err :log
 
       # Print a warning message
+      #
+      # @param message [String] the text string
       def warn(message)
         log("#{color('WARNING:', :yellow, :bold)} #{message}")
       end
 
       # Print an error message
+      #
+      # @param message [String] the text string
       def error(message)
         log("#{color('ERROR:', :red, :bold)} #{message}")
       end
 
       # Print a message describing a fatal error.
+      #
+      # @param message [String] the text string
       def fatal(message)
         log("#{color('FATAL:', :red, :bold)} #{message}")
       end

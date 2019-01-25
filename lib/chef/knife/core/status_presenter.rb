@@ -26,7 +26,7 @@ class Chef
       # This module may be included into a knife subcommand class to automatically
       # add configuration options used by the StatusPresenter
       module StatusFormattingOptions
-        # :nodoc:
+        # @private
         # Would prefer to do this in a rational way, but can't be done b/c of
         # Mixlib::CLI's design :(
         def self.included(includer)
@@ -48,7 +48,6 @@ class Chef
         end
       end
 
-      #==Chef::Knife::Core::StatusPresenter
       # A customized presenter for Chef::Node objects. Supports variable-length
       # output formats for displaying node data
       class StatusPresenter < GenericPresenter
@@ -148,8 +147,8 @@ class Chef
           ui.color(key_text, :cyan)
         end
 
-        # :nodoc:
-        # TODO: this is duplicated from StatusHelper in the Webui. dedup.
+        # @private
+        # @todo this is duplicated from StatusHelper in the Webui. dedup.
         def time_difference_in_hms(unix_time)
           now = Time.now.to_i
           difference = now - unix_time.to_i
