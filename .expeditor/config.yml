@@ -1,5 +1,9 @@
 # Documentation available at https://expeditor.chef.io/docs/getting-started/
 
+# the name we use for this project when interacting with expeditor chatbot
+project:
+  alias: chef-15
+
 # The name of the product keys for this product (from mixlib-install)
 product_key:
   - chef
