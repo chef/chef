@@ -809,7 +809,7 @@ describe Chef::ProviderResolver do
         },
 
         "solaris2" => {
-          group: [ Chef::Resource::Group, Chef::Provider::Group::Solaris ],
+          group: [ Chef::Resource::Group, Chef::Provider::Group::Usermod ],
           ips_package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
           package: [ Chef::Resource::SolarisPackage, Chef::Provider::Package::Solaris ],
           mount: [ Chef::Resource::Mount, Chef::Provider::Mount::Solaris ],
@@ -847,6 +847,7 @@ describe Chef::ProviderResolver do
               user: [ Chef::Resource::User::SolarisUser, Chef::Provider::User::Solaris ],
               "5.11" => {
                 package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
+                group: [ Chef::Resource::Group, Chef::Provider::Group::Solaris ],
               },
               "5.9" => {
               },
