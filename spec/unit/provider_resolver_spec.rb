@@ -849,8 +849,6 @@ describe Chef::ProviderResolver do
                 package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
                 group: [ Chef::Resource::Group, Chef::Provider::Group::Solaris ],
               },
-              "5.9" => {
-              },
             },
           },
 
