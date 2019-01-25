@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.143 -->
-## [v15.0.143](https://github.com/chef/chef/tree/v15.0.143) (2019-01-24)
+<!-- latest_release 15.0.144 -->
+## [v15.0.144](https://github.com/chef/chef/tree/v15.0.144) (2019-01-25)
 
 #### Merged Pull Requests
-- apt_repository: Don&#39;t create gpg temporary files owned by root in the running user&#39;s home directory [#8104](https://github.com/chef/chef/pull/8104) ([vijaymmali1990](https://github.com/vijaymmali1990))
+- Remove support for unsupported opensuse &lt; 42 from group provider [#8158](https://github.com/chef/chef/pull/8158) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Remove support for unsupported opensuse &lt; 42 from group provider [#8158](https://github.com/chef/chef/pull/8158) ([tas50](https://github.com/tas50)) <!-- 15.0.144 -->
 - apt_repository: Don&#39;t create gpg temporary files owned by root in the running user&#39;s home directory [#8104](https://github.com/chef/chef/pull/8104) ([vijaymmali1990](https://github.com/vijaymmali1990)) <!-- 15.0.143 -->
 - windows_certificate: Ensure all actions are fully idempotent [#8118](https://github.com/chef/chef/pull/8118) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.142 -->
 - Use the latest omnibus-software and nokogiri [#8162](https://github.com/chef/chef/pull/8162) ([tas50](https://github.com/tas50)) <!-- 15.0.141 -->
