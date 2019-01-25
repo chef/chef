@@ -78,8 +78,6 @@ class Chef
           case node[:platform]
           when "openbsd", "netbsd", "aix", "smartos", "omnios"
             "-G"
-          when "solaris"
-            [ "-a", "-G" ]
           end
         end
 
