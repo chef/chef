@@ -115,6 +115,7 @@ class Chef
         STANDARD_RIGHTS_EXECUTE           = READ_CONTROL
         STANDARD_RIGHTS_ALL               = 0x001F0000
         SPECIFIC_RIGHTS_ALL               = 0x0000FFFF
+
         # Access System Security Right
         ACCESS_SYSTEM_SECURITY            = 0x01000000
         # File/Directory Specific Rights
@@ -138,8 +139,14 @@ class Chef
         FILE_GENERIC_READ          = STANDARD_RIGHTS_READ |
           FILE_READ_DATA | FILE_READ_ATTRIBUTES |
           FILE_READ_EA | SYNCHRONIZE
-        FILE_GENERIC_WRITE         = STANDARD_RIGHTS_WRITE | FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA | FILE_APPEND_DATA | SYNCHRONIZE
-        FILE_GENERIC_EXECUTE       = STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES | FILE_EXECUTE | SYNCHRONIZE
+        FILE_GENERIC_WRITE         = STANDARD_RIGHTS_WRITE |
+          FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES |
+          FILE_WRITE_EA | FILE_APPEND_DATA |
+          SYNCHRONIZE
+        WRITE_CONTROL              = FILE_WRITE_DATA | FILE_APPEND_DATA |
+          FILE_WRITE_EA | FILE_WRITE_ATTRIBUTES
+        FILE_GENERIC_EXECUTE       = STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES |
+          FILE_EXECUTE | SYNCHRONIZE
         # Access Token Rights (for OpenProcessToken)
         # Access Rights for Access-Token Objects (used in OpenProcessToken)
         TOKEN_ASSIGN_PRIMARY = 0x0001
