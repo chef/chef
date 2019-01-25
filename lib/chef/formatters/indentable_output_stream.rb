@@ -24,9 +24,12 @@ class Chef
         end
       end
 
-      # Print text.  This will start a new line and indent if necessary
+      # Print text. This will start a new line and indent if necessary
       # but will not terminate the line (future print and puts statements
       # will start off where this print left off).
+      #
+      # @param string [String]
+      # @param args [Array<Hash,Symbol>]
       def color(string, *args)
         print(string, from_args(args))
       end
@@ -34,18 +37,27 @@ class Chef
       # Print the start of a new line.  This will terminate any existing lines and
       # cause indentation but will not move to the next line yet (future 'print'
       # and 'puts' statements will stay on this line).
+      #
+      # @param string [String]
+      # @param args [Array<Hash,Symbol>]
       def start_line(string, *args)
         print(string, from_args(args, start_line: true))
       end
 
       # Print a line.  This will continue from the last start_line or print,
       # or start a new line and indent if necessary.
+      #
+      # @param string [String]
+      # @param args [Array<Hash,Symbol>]
       def puts(string, *args)
         print(string, from_args(args, end_line: true))
       end
 
       # Print an entire line from start to end.  This will terminate any existing
       # lines and cause indentation.
+      #
+      # @param string [String]
+      # @param args [Array<Hash,Symbol>]
       def puts_line(string, *args)
         print(string, from_args(args, start_line: true, end_line: true))
       end
