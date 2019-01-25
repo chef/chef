@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,6 @@ class Chef
       class Usermod < Chef::Provider::Group::Groupadd
 
         provides :group, os: %w{openbsd solaris2}
-        provides :group, platform: "opensuse"
 
         def load_current_resource
           super
@@ -79,7 +78,7 @@ class Chef
           case node[:platform]
           when "openbsd", "netbsd", "aix", "solaris2", "smartos", "omnios"
             "-G"
-          when "solaris", "suse", "opensuse"
+          when "solaris"
             [ "-a", "-G" ]
           end
         end
