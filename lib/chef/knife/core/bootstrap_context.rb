@@ -62,7 +62,7 @@ class Chef
         end
 
         # Contains commands and content, see trusted_certs_content
-        # TODO: Rename to trusted_certs_script
+        # @todo Rename to trusted_certs_script
         def trusted_certs
           @trusted_certs ||= trusted_certs_content
         end
