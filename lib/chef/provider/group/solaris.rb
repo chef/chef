@@ -39,11 +39,10 @@ class Chef
           end
 
           requirements.assert(:modify, :manage) do |a|
-            a.assertion { (new_resource.members.empty?  && new_resource.excluded_members.empty?) || new_resource.append }
+            a.assertion { (new_resource.members.empty? && new_resource.excluded_members.empty?) || new_resource.append }
             a.failure_message Chef::Exceptions::Group, "setting group members directly is not supported by #{self}, must set append true in group"
             # No whyrun alternative - this action is simply not supported.
           end
-
         end
 
         def set_members(members)

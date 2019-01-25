@@ -46,7 +46,7 @@ describe Chef::Provider::Group::Solaris do
 
     describe "with supplied members" do
       platforms = {
-        "solaris2" => [ "-G" ]
+        "solaris2" => [ "-G" ],
       }
 
       before do
@@ -65,8 +65,8 @@ describe Chef::Provider::Group::Solaris do
       platforms.each do |platform, flags|
         it "should usermod +/- each user when the append option is set on #{platform}" do
           current_resource = @new_resource.dup
-          current_resource.members(%w(are belong to us))
-          @new_resource.excluded_members(%w(are belong to us))
+          current_resource.members(%w{are belong to us})
+          @new_resource.excluded_members(%w{are belong to us})
           @provider.current_resource = current_resource
           @node.automatic_attrs[:platform] = platform
           @new_resource.append(true)
