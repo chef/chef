@@ -46,7 +46,7 @@ class Chef
 
       property :command, [ String, Array ],
                name_property: true, identity: true,
-               description: "An optional proeprty to set the command to be executed if it differs from the resource block's name."
+               description: "An optional property to set the command to be executed if it differs from the resource block's name."
 
       property :umask, [ String, Integer ],
                description: "The file mode creation mask, or umask."
