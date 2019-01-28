@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.146 -->
-## [v15.0.146](https://github.com/chef/chef/tree/v15.0.146) (2019-01-28)
+<!-- latest_release 15.0.147 -->
+## [v15.0.147](https://github.com/chef/chef/tree/v15.0.147) (2019-01-28)
 
 #### Merged Pull Requests
-- Cleanup requires / includes in knife supermarket [#8166](https://github.com/chef/chef/pull/8166) ([tas50](https://github.com/tas50))
+- [knife] Remove duplicate code blocks in the knife cookbook upload command [#8135](https://github.com/chef/chef/pull/8135) ([f9n](https://github.com/f9n))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- [knife] Remove duplicate code blocks in the knife cookbook upload command [#8135](https://github.com/chef/chef/pull/8135) ([f9n](https://github.com/f9n)) <!-- 15.0.147 -->
 - Cleanup requires / includes in knife supermarket [#8166](https://github.com/chef/chef/pull/8166) ([tas50](https://github.com/tas50)) <!-- 15.0.146 -->
 - Misc YARD updates for knife [#8169](https://github.com/chef/chef/pull/8169) ([tas50](https://github.com/tas50)) <!-- 15.0.145 -->
 - Remove support for unsupported opensuse &lt; 42 from group provider [#8158](https://github.com/chef/chef/pull/8158) ([tas50](https://github.com/tas50)) <!-- 15.0.144 -->
