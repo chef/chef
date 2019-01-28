@@ -118,7 +118,7 @@ shared_context "use Windows permissions", :windows_only do
   let(:expected_write_perms) do
     {
       generic: Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE,
-      specific: Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE,
+      specific: Chef::ReservedNames::Win32::API::Security::WRITE,
     }
   end
 

@@ -90,13 +90,11 @@ class Chef
         target_acl.each do |target_ace|
           if target_ace.flags & INHERIT_ONLY_ACE == 0
             self_ace = target_ace.dup
-            if target_ace.mask != Chef::ReservedNames::Win32::API::Security::WRITE_CONTROL
-              self_ace.flags = 0
-            end
+            self_ace.flags = 0 unless target_ace.mask == Chef::ReservedNames::Win32::API::Security::WRITE
             self_ace.mask = securable_object.predict_rights_mask(target_ace.mask)
             new_target_acl << self_ace
           end
-          if target_ace.mask != Chef::ReservedNames::Win32::API::Security::WRITE_CONTROL && target_ace.flags & (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) != 0
+          if target_ace.mask != Chef::ReservedNames::Win32::API::Security::WRITE && target_ace.flags & (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) != 0
             children_ace = target_ace.dup
             children_ace.flags |= INHERIT_ONLY_ACE
             new_target_acl << children_ace
