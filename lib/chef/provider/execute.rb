@@ -18,22 +18,24 @@
 
 require "chef/log"
 require "chef/provider"
+require "forwardable"
 
 class Chef
   class Provider
     class Execute < Chef::Provider
+      extend Forwardable
+
       provides :execute
 
-      def initialize(new_resource, run_context)
-        super
-      end
+      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
+        current_resource
       end
 
       def define_resource_requirements
-        if new_resource.creates && creates_relative? && !new_resource.cwd
+        if creates && creates_relative? && !cwd
           # FIXME? move this onto the resource?
           raise Chef::Exceptions::Execute, "Please either specify a full path for the creates property, or specify a cwd property to the #{new_resource} resource"
         end
@@ -46,14 +48,14 @@ class Chef
       end
 
       def action_run
-        if new_resource.creates && sentinel_file.exist?
+        if creates && sentinel_file.exist?
           logger.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false
         end
 
         converge_by("execute #{description}") do
           begin
-            shell_out!(new_resource.command, opts)
+            shell_out!(command, opts)
           rescue Mixlib::ShellOut::ShellCommandFailed
             if sensitive?
               ex = Mixlib::ShellOut::ShellCommandFailed.new("Command execution failed. STDOUT/STDERR suppressed for sensitive resource")
@@ -87,15 +89,15 @@ class Chef
       def opts
         opts = {}
         opts[:timeout]     = timeout
-        opts[:returns]     = new_resource.returns if new_resource.returns
-        opts[:environment] = new_resource.environment if new_resource.environment
-        opts[:user]        = new_resource.user if new_resource.user
-        opts[:domain]      = new_resource.domain if new_resource.domain
-        opts[:password]    = new_resource.password if new_resource.password
-        opts[:group]       = new_resource.group if new_resource.group
-        opts[:cwd]         = new_resource.cwd if new_resource.cwd
-        opts[:umask]       = new_resource.umask if new_resource.umask
-        opts[:default_env] = new_resource.default_env
+        opts[:returns]     = returns if returns
+        opts[:environment] = environment if environment
+        opts[:user]        = user if user
+        opts[:domain]      = domain if domain
+        opts[:password]    = password if password
+        opts[:group]       = group if group
+        opts[:cwd]         = cwd if cwd
+        opts[:umask]       = umask if umask
+        opts[:default_env] = default_env
         opts[:log_level]   = :info
         opts[:log_tag]     = new_resource.to_s
         if (logger.info? || live_stream?) && !sensitive?
@@ -105,21 +107,21 @@ class Chef
             opts[:live_stream] = STDOUT
           end
         end
-        opts[:elevated] = new_resource.elevated if new_resource.elevated
+        opts[:elevated] = elevated if elevated
         opts
       end
 
       def description
-        sensitive? ? "sensitive resource" : new_resource.command
+        sensitive? ? "sensitive resource" : command
       end
 
       def creates_relative?
-        Pathname(new_resource.creates).relative?
+        Pathname(creates).relative?
       end
 
       def sentinel_file
         Pathname.new(Chef::Util::PathHelper.cleanpath(
-           ( new_resource.cwd && creates_relative? ) ? ::File.join(new_resource.cwd, new_resource.creates) : new_resource.creates
+           ( cwd && creates_relative? ) ? ::File.join(cwd, creates) : creates
         ))
       end
 
