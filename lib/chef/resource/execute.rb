@@ -23,10 +23,6 @@ class Chef
   class Resource
     class Execute < Chef::Resource
       resource_name :execute
-      provides :execute
-
-      identity_attr :command
-
       description "Use the execute resource to execute a single command. Commands that"\
                   " are executed with this resource are (by their nature) not idempotent,"\
                   " as they are typically unique to the environment in which they are run."\
@@ -48,13 +44,10 @@ class Chef
         @is_guard_interpreter = false
       end
 
-      def command(arg = nil)
-        set_or_return(
-          :command,
-          arg,
-          kind_of: [ String, Array ]
-        )
-      end
+      property :command, [ String, Array ],
+               name_property: true, identity: true,
+               description: "An optional proeprty to set the command to be executed if it differs from the resource block's name."
+
       property :umask, [ String, Integer ],
                description: "The file mode creation mask, or umask."
 
@@ -66,8 +59,6 @@ class Chef
 
       property :environment, Hash,
                description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'})."
-
-      alias :env :environment
 
       property :group, [ String, Integer ],
                description: "The group name or group ID that must be changed before running a command."
@@ -105,6 +96,8 @@ class Chef
       property :elevated, [ TrueClass, FalseClass ], default: false,
                description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running Chef needs the “Replace a process level token” and “Adjust Memory Quotas for a process” permissions. The user that is running the command needs the “Log on as a batch job” permission.\nBecause this requires a login, the user and password properties are required.",
                introduced: "13.3"
+
+      alias :env :environment
 
       def self.set_guard_inherited_attributes(*inherited_attributes)
         @class_inherited_attributes = inherited_attributes
