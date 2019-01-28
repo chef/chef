@@ -76,21 +76,13 @@ class Chef
 
       def run
         # Sanity check before we load anything from the server
-        unless config[:all]
-          if @name_args.empty?
-            show_usage
-            ui.fatal("You must specify the --all flag or at least one cookbook name")
-            exit 1
-          end
-        end
-
-        config[:cookbook_path] ||= Chef::Config[:cookbook_path]
-
-        if @name_args.empty? && ! config[:all]
+        if ! config[:all] && @name_args.empty?
           show_usage
           ui.fatal("You must specify the --all flag or at least one cookbook name")
           exit 1
         end
+
+        config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
         assert_environment_valid!
         version_constraints_to_update = {}
@@ -121,12 +113,6 @@ class Chef
             ui.warn("Could not find any cookbooks in your cookbook path: #{cookbook_path}. Use --cookbook-path to specify the desired path.")
           end
         else
-          if @name_args.empty?
-            show_usage
-            ui.error("You must specify the --all flag or at least one cookbook name")
-            exit 1
-          end
-
           cookbooks_to_upload.each do |cookbook_name, cookbook|
             cookbook.freeze_version if config[:freeze]
             begin
