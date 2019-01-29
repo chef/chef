@@ -22,6 +22,21 @@ class Chef
     class PowershellScript < Chef::Resource::WindowsScript
       provides :powershell_script, os: "windows"
 
+      property :flags, String,
+        description: "A string that is passed to the Windows PowerShell command",
+        default: lazy { default_flags },
+        coerce: proc { |input|
+          if input == default_flags
+            # Means there was no input provided,
+            # and should use defaults in this case
+            input
+          else
+            # The last occurance of a flag would override its
+            # previous one at the time of command execution.
+            [default_flags, input].join(" ")
+          end
+        }
+
       description "Use the powershell_script resource to execute a script using the Windows PowerShell"\
                   " interpreter, much like how the script and script-based resources—bash, csh, perl, python,"\
                   " and ruby—are used. The powershell_script is specific to the Microsoft Windows platform"\
@@ -53,6 +68,27 @@ class Chef
       # same behavior.
       def self.get_default_attributes(opts)
         { convert_boolean_return: true }
+      end
+
+      # Options that will be passed to Windows PowerShell command
+      def default_flags
+        return "" if Chef::Platform.windows_nano_server?
+
+        # Execution policy 'Bypass' is preferable since it doesn't require
+        # user input confirmation for files such as PowerShell modules
+        # downloaded from the Internet. However, 'Bypass' is not supported
+        # prior to PowerShell 3.0, so the fallback is 'Unrestricted'
+        execution_policy = Chef::Platform.supports_powershell_execution_bypass?(run_context.node) ? "Bypass" : "Unrestricted"
+
+        [
+          "-NoLogo",
+          "-NonInteractive",
+          "-NoProfile",
+          "-ExecutionPolicy #{execution_policy}",
+          # PowerShell will hang if STDIN is redirected
+          # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
+          "-InputFormat None",
+        ].join(" ")
       end
     end
   end

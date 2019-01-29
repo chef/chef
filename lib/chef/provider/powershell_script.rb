@@ -48,23 +48,13 @@ class Chef
         # end of the script, it gets changed to '1'.
         #
         # Nano only supports -Command
-        cmd = "\"#{interpreter_path}\" #{flags}"
+        cmd = "\"#{interpreter_path}\" #{new_resource.flags}"
         if Chef::Platform.windows_nano_server?
           cmd << " -Command \". '#{script_file.path}'\""
         else
           cmd << " -File \"#{script_file.path}\""
         end
         cmd
-      end
-
-      def flags
-        interpreter_flags = [*default_interpreter_flags].join(" ")
-
-        unless new_resource.flags.nil?
-          interpreter_flags = [interpreter_flags, new_resource.flags].join(" ")
-        end
-
-        interpreter_flags
       end
 
       protected
@@ -78,7 +68,7 @@ class Chef
       end
 
       def validate_script_syntax!
-        interpreter_arguments = default_interpreter_flags.join(" ")
+        interpreter_arguments = new_resource.flags
         Tempfile.open(["chef_powershell_script-user-code", ".ps1"]) do |user_script_file|
           # Wrap the user's code in a PowerShell script block so that
           # it isn't executed. However, syntactically invalid script
@@ -113,26 +103,6 @@ class Chef
             shell_out!(validation_command, { returns: [0] })
           end
         end
-      end
-
-      def default_interpreter_flags
-        return [] if Chef::Platform.windows_nano_server?
-
-        # Execution policy 'Bypass' is preferable since it doesn't require
-        # user input confirmation for files such as PowerShell modules
-        # downloaded from the Internet. However, 'Bypass' is not supported
-        # prior to PowerShell 3.0, so the fallback is 'Unrestricted'
-        execution_policy = Chef::Platform.supports_powershell_execution_bypass?(run_context.node) ? "Bypass" : "Unrestricted"
-
-        [
-          "-NoLogo",
-          "-NonInteractive",
-          "-NoProfile",
-          "-ExecutionPolicy #{execution_policy}",
-          # PowerShell will hang if STDIN is redirected
-          # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-          "-InputFormat None",
-        ]
       end
 
       # A wrapper script is used to launch user-supplied script while
