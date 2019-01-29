@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.149 -->
-## [v15.0.149](https://github.com/chef/chef/tree/v15.0.149) (2019-01-29)
+<!-- latest_release 15.0.150 -->
+## [v15.0.150](https://github.com/chef/chef/tree/v15.0.150) (2019-01-29)
 
 #### Merged Pull Requests
-- git: Don&#39;t display the repo URL when sensitive property is set [#8179](https://github.com/chef/chef/pull/8179) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Update knife bootstrap template to use up to date omnitruck URL [#8190](https://github.com/chef/chef/pull/8190) ([mivok](https://github.com/mivok))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update knife bootstrap template to use up to date omnitruck URL [#8190](https://github.com/chef/chef/pull/8190) ([mivok](https://github.com/mivok)) <!-- 15.0.150 -->
 - git: Don&#39;t display the repo URL when sensitive property is set [#8179](https://github.com/chef/chef/pull/8179) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.149 -->
 - Update Rubygems to 3.0.2 [#8174](https://github.com/chef/chef/pull/8174) ([tas50](https://github.com/tas50)) <!-- 15.0.148 -->
 - [knife] Remove duplicate code blocks in the knife cookbook upload command [#8135](https://github.com/chef/chef/pull/8135) ([f9n](https://github.com/f9n)) <!-- 15.0.147 -->
