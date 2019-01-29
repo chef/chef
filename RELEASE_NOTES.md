@@ -10,15 +10,15 @@ The windows_certificate resource is now fully idempotent and properly imports pr
 
 ### apt_repository
 
-The apt_repository resource no longer creates .gpg directory in the user's home directory owned by root when installing repository keys.
+The apt_repository resource no longer creates .gpg directory in the user's home directory owned by root when installing repository keys. Thanks [@omry](http://github.com/omry) for reporting this issue.
 
 ### git
 
 The git resource no longer displays the URL of the repository if the `sensitive` property is set.
 
-## InSpec 3.3.14
+## InSpec 3.4.1
 
-InSpec has been updated from 3.2.6 to 3.3.14. This new release adds `aws_billing_report` / `aws_billing_reports` resources and resolves multiple bugs.
+InSpec has been updated from 3.2.6 to 3.4.1. This new release adds new `aws_billing_report` / `aws_billing_reports` resources, resolves multiple bugs, and includes tons of under the hood improvements.
 
 ## New Deprecations
 
