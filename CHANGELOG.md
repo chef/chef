@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.148 -->
-## [v15.0.148](https://github.com/chef/chef/tree/v15.0.148) (2019-01-29)
+<!-- latest_release 15.0.149 -->
+## [v15.0.149](https://github.com/chef/chef/tree/v15.0.149) (2019-01-29)
 
 #### Merged Pull Requests
-- Update Rubygems to 3.0.2 [#8174](https://github.com/chef/chef/pull/8174) ([tas50](https://github.com/tas50))
+- git: Don&#39;t display the repo URL when sensitive property is set [#8179](https://github.com/chef/chef/pull/8179) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- git: Don&#39;t display the repo URL when sensitive property is set [#8179](https://github.com/chef/chef/pull/8179) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.149 -->
 - Update Rubygems to 3.0.2 [#8174](https://github.com/chef/chef/pull/8174) ([tas50](https://github.com/tas50)) <!-- 15.0.148 -->
 - [knife] Remove duplicate code blocks in the knife cookbook upload command [#8135](https://github.com/chef/chef/pull/8135) ([f9n](https://github.com/f9n)) <!-- 15.0.147 -->
 - Cleanup requires / includes in knife supermarket [#8166](https://github.com/chef/chef/pull/8166) ([tas50](https://github.com/tas50)) <!-- 15.0.146 -->
