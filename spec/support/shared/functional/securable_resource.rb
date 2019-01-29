@@ -117,7 +117,6 @@ shared_context "use Windows permissions", :windows_only do
 
   let(:expected_write_perms) do
     {
-      generic: Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE,
       specific: Chef::ReservedNames::Win32::API::Security::WRITE,
     }
   end
@@ -135,6 +134,8 @@ shared_context "use Windows permissions", :windows_only do
       specific: Chef::ReservedNames::Win32::API::Security::FILE_ALL_ACCESS,
     }
   end
+
+  let (:write_flag) { 3 }
 
   RSpec::Matchers.define :have_expected_properties do |mask, type, flags|
     match do |ace|
@@ -380,7 +381,7 @@ shared_examples_for "a securable resource without existing target" do
       it "correctly sets :write rights" do
         resource.rights(:write, "Guest")
         resource.run_action(:create)
-        expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_write_perms))
+        expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_write_perms, write_flag))
       end
 
       it "correctly sets :modify rights" do
@@ -393,6 +394,30 @@ shared_examples_for "a securable resource without existing target" do
         resource.rights(:full_control, "Guest")
         resource.run_action(:create)
         expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_full_control_perms))
+      end
+
+      it "correctly sets :read deny_rights" do
+        resource.deny_rights(:read, "Guest")
+        resource.run_action(:create)
+        expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_read_perms))
+      end
+
+      it "correctly sets :read_execute deny_rights" do
+        resource.deny_rights(:read_execute, "Guest")
+        resource.run_action(:create)
+        expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_read_execute_perms))
+      end
+
+      it "correctly sets :write deny_rights" do
+        resource.deny_rights(:write, "Guest")
+        resource.run_action(:create)
+        expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_write_perms, write_flag))
+      end
+
+      it "correctly sets :modify deny_rights" do
+        resource.deny_rights(:modify, "Guest")
+        resource.run_action(:create)
+        expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_modify_perms))
       end
 
       it "correctly sets deny_rights" do
