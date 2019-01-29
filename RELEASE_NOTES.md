@@ -24,7 +24,7 @@ InSpec has been updated from 3.2.6 to 3.3.14. This new release adds `aws_billing
 
 ### knife cookbook site
 
-Since Chef 13 `knife cookbook site` has actually called the `knife supermarket` command under the hood. In Chef 16 (April 2020) we will remove the `knife cookbook site` command in favor of `knife supermarket`.
+Since Chef 13, `knife cookbook site` has actually called the `knife supermarket` command under the hood. In Chef 16 (April 2020), we will remove the `knife cookbook site` command in favor of `knife supermarket`.
 
 ### Audit Mode
 
