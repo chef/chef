@@ -171,7 +171,7 @@ do_download() {
 <% if knife_config[:bootstrap_install_command] %>
   <%= knife_config[:bootstrap_install_command] %>
 <% else %>
-  install_sh="<%= knife_config[:bootstrap_url] ? knife_config[:bootstrap_url] : "https://omnitruck-direct.chef.io/chef/install.sh" %>"
+  install_sh="<%= knife_config[:bootstrap_url] ? knife_config[:bootstrap_url] : "https://omnitruck.chef.io/chef/install.sh" %>"
   if test -f /usr/bin/chef-client; then
     echo "-----> Existing Chef installation detected"
   else
