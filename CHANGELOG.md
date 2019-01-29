@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.10.5 -->
-## [v14.10.5](https://github.com/chef/chef/tree/v14.10.5) (2019-01-29)
+<!-- latest_release 14.10.6 -->
+## [v14.10.6](https://github.com/chef/chef/tree/v14.10.6) (2019-01-29)
 
 #### Merged Pull Requests
-- apt_repository: Don&#39;t create gpg temporary files owned by root in the running user&#39;s home directory [#8184](https://github.com/chef/chef/pull/8184) ([tas50](https://github.com/tas50))
+- Update inspec to 3.3.14 [#8185](https://github.com/chef/chef/pull/8185) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.9.13 -->
 ### Changes since 14.9.13 release
 
 #### Merged Pull Requests
+- Update inspec to 3.3.14 [#8185](https://github.com/chef/chef/pull/8185) ([tas50](https://github.com/tas50)) <!-- 14.10.6 -->
 - apt_repository: Don&#39;t create gpg temporary files owned by root in the running user&#39;s home directory [#8184](https://github.com/chef/chef/pull/8184) ([tas50](https://github.com/tas50)) <!-- 14.10.5 -->
 - Cleanup dependencies and comments in knife plugins [#8183](https://github.com/chef/chef/pull/8183) ([tas50](https://github.com/tas50)) <!-- 14.10.4 -->
 - Bump all deps to current [#8173](https://github.com/chef/chef/pull/8173) ([tas50](https://github.com/tas50)) <!-- 14.10.3 -->
