@@ -376,6 +376,10 @@ class Chef::Application::Client < Chef::Application
     end
 
     if mode = config[:audit_mode] || Chef::Config[:audit_mode]
+      if [:enabled, :audit_only].include?(mode)
+        Chef.deprecated(:audit_mode, "Chef's Audit mode has been deprecated and will be removed in Chef 15 (April 2019). Consider migrating to InSpec as a replacement for this functionality.")
+      end
+
       expected_modes = [:enabled, :disabled, :audit_only]
       unless expected_modes.include?(mode)
         Chef::Application.fatal!(unrecognized_audit_mode(mode))
