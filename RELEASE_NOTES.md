@@ -1,5 +1,39 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.10:
+
+## Updated Resources
+
+### windows_certificate
+
+The windows_certificate resource is now fully idempotent and properly imports private keys. Thanks [@Xorima](https://github.com/Xorima) for reporting these issues.
+
+### apt_repository
+
+The apt_repository resource no longer creates .gpg directory in the user's home directory owned by root when installing repository keys.
+
+### git
+
+The git resource no longer displays the URL of the repository if the `sensitive` property is set.
+
+## InSpec 3.3.14
+
+InSpec has been updated from 3.2.6 to 3.3.14. This new release adds `aws_billing_report` / `aws_billing_reports` resources and resolves multiple bugs.
+
+## New Deprecations
+
+### knife cookbook site
+
+Since Chef 13 `knife cookbook site` has actually called the `knife supermarket` command under the hood. In Chef 16 (April 2020) we will remove the `knife cookbook site` command in favor of `knife supermarket`.
+
+### Audit Mode
+
+Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. It's functionality has been superceded by InSpec and we will be removing this beta feature in Chef 15 (April 2019).
+
+### Cookbook Shadowing
+
+Cookbook shadowing allowed cookbooks to be combined in a mono-repo if the same named cookbook was present in both the cookbooks directory and the site-cookbooks directory. This feature was problematic and has been deprecated since Chef 0.10, and will be removed in Chef 15 (April 2019).
+
 # Chef Client Release Notes 14.9:
 
 ## Updated Resources
