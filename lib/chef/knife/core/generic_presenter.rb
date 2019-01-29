@@ -25,7 +25,7 @@ class Chef
       # Allows includer knife commands to  return multiple attributes
       # @brief knife node show NAME -a ATTR1 -a ATTR2
       module MultiAttributeReturnOption
-        # :nodoc:
+        # @private
         def self.included(includer)
           includer.class_eval do
             option :field_separator,
@@ -45,7 +45,6 @@ class Chef
         end
       end
 
-      #==Chef::Knife::Core::GenericPresenter
       # The base presenter class for displaying structured data in knife commands.
       # This is not an abstract base class, and it is suitable for displaying
       # most kinds of objects that knife needs to display.
