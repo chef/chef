@@ -341,10 +341,10 @@ class Chef
       def sha_hash?(string)
         string =~ /^[0-9a-f]{40}$/
       end
+
       # Returns a message for sensitive repository URL if sensitive is true otherwise
       # repository URL is returned
       # @return [String]
-
       def repo_url
         if new_resource.sensitive
           "**Suppressed Sensitive URL**"
