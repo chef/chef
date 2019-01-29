@@ -28,7 +28,7 @@ Since Chef 13 `knife cookbook site` has actually called the `knife supermarket` 
 
 ### Audit Mode
 
-Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. It's functionality has been superceded by InSpec and we will be removing this beta feature in Chef 15 (April 2019).
+Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superceded by InSpec and we will be removing this beta feature in Chef 15 (April 2019).
 
 ### Cookbook Shadowing
 
