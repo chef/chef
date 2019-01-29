@@ -32,7 +32,7 @@ Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via
 
 ### Cookbook Shadowing
 
-Cookbook shadowing allowed cookbooks to be combined in a mono-repo if the same named cookbook was present in both the cookbooks directory and the site-cookbooks directory. This feature was problematic and has been deprecated since Chef 0.10, and will be removed in Chef 15 (April 2019).
+Cookbook shadowing was deprecated in 0.10 and will be removed in Chef 15 (April 2019). Cookbook shadowing allowed combining cookbooks within a mono-repo, so long as the cookbooks in question had the same name and were present in both the cookbooks directory and the site-cookbooks directory.
 
 # Chef Client Release Notes 14.9:
 
