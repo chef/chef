@@ -434,6 +434,7 @@ EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
         audit_mode :enabled
+        silence_deprecation_warnings %w{chef-27}
 EOM
     end
 

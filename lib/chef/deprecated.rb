@@ -207,12 +207,6 @@ class Chef
       target 23
     end
 
-    class MapCollision < Base
-      target 25
-    end
-
-    # id 3694 was deleted
-
     # Returned when using the deprecated option on a property
     class Property < Base
       target 24
@@ -222,9 +216,23 @@ class Chef
       end
     end
 
+    class MapCollision < Base
+      target 25
+    end
+
     class ShellOut < Base
       target 26
     end
+
+    class AuditMode < Base
+      target 27
+    end
+
+    class CookbookShadowing < Base
+      target 28
+    end
+
+    # id 3694 was deleted and should not be reused
 
     class Generic < Base
       def url
