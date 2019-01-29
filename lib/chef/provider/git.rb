@@ -151,7 +151,7 @@ class Chef
       end
 
       def clone
-        converge_by("clone from #{new_resource.repository} into #{cwd}") do
+        converge_by("clone from #{repo_url} into #{cwd}") do
           remote = new_resource.remote
 
           clone_cmd = ["clone"]
@@ -161,7 +161,7 @@ class Chef
           clone_cmd << "\"#{new_resource.repository}\""
           clone_cmd << "\"#{cwd}\""
 
-          logger.info "#{new_resource} cloning repo #{new_resource.repository} to #{cwd}"
+          logger.info "#{new_resource} cloning repo #{repo_url} to #{cwd}"
           git clone_cmd
         end
       end
@@ -342,6 +342,16 @@ class Chef
         string =~ /^[0-9a-f]{40}$/
       end
 
+      # Returns a message for sensitive repository URL if sensitive is true otherwise
+      # repository URL is returned
+      # @return [String]
+      def repo_url
+        if new_resource.sensitive
+          "**Suppressed Sensitive URL**"
+        else
+          new_resource.repository
+        end
+      end
     end
   end
 end

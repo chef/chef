@@ -318,7 +318,7 @@ GEM
     tomlrb (1.2.8)
     uuidtools (2.1.5)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.2.2)
+    win32-certstore (0.2.3)
       ffi
       mixlib-shellout
     win32-dir (0.5.1)
