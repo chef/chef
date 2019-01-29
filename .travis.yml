@@ -376,6 +376,10 @@ matrix:
       env:
        - RSPEC_OPENSUSELEAP=42
        - KITCHEN_YAML=kitchen.travis.yml
+    - env:
+        TEST_GEM: poise/halite
+      script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
+      rvm: 2.5.3
 
 notifications:
   on_change: true
