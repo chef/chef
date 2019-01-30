@@ -61,6 +61,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
   let(:certificate_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "windows_certificates")) }
   let(:cer_path) { File.join(certificate_path, "test.cer") }
   let(:pem_path) { File.join(certificate_path, "test.pem") }
+  let(:pfx_path) { File.join(certificate_path, "test.pfx") }
   let(:out_path) { File.join(certificate_path, "testout.pem") }
   let(:tests_thumbprint) { "3180B3E3217862600BD7B2D28067B03D41576A4F" }
   let(:other_cer_path) { File.join(certificate_path, "othertest.cer") }
@@ -153,6 +154,66 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
       it "Converges while addition" do
         expect(no_of_certificates).to eq(2)
         expect(win_certificate).to be_updated_by_last_action
+      end
+    end
+  end
+
+  describe "Works for various formats" do
+    context "Adds CER" do
+      before do
+        win_certificate.source = cer_path
+        win_certificate.run_action(:create)
+      end
+      it "Imports certificate into store" do
+        expect(no_of_certificates).to eq(1)
+      end
+      it "Idempotent: Does not converge while adding again" do
+        win_certificate.run_action(:create)
+        expect(no_of_certificates).to eq(1)
+        expect(win_certificate).not_to be_updated_by_last_action
+      end
+    end
+
+    context "Adds PEM" do
+      before do
+        win_certificate.source = pem_path
+        win_certificate.run_action(:create)
+      end
+      it "Imports certificate into store" do
+        expect(no_of_certificates).to eq(1)
+      end
+      it "Idempotent: Does not converge while adding again" do
+        win_certificate.run_action(:create)
+        expect(no_of_certificates).to eq(1)
+        expect(win_certificate).not_to be_updated_by_last_action
+      end
+    end
+
+    context "Adds PFX" do
+      context "With valid password" do
+        before do
+          win_certificate.source = pfx_path
+          win_certificate.pfx_password = password
+          win_certificate.run_action(:create)
+        end
+        it "Imports certificate into store" do
+          expect(no_of_certificates).to eq(1)
+        end
+        it "Idempotent: Does not converge while adding again" do
+          win_certificate.run_action(:create)
+          expect(no_of_certificates).to eq(1)
+          expect(win_certificate).not_to be_updated_by_last_action
+        end
+      end
+
+      context "With Invalid password" do
+        before do
+          win_certificate.source = pfx_path
+          win_certificate.pfx_password = "Invalid password"
+        end
+        it "Raises an error" do
+          expect { win_certificate.run_action(:create) }.to raise_error(RuntimeError)
+        end
       end
     end
   end
