@@ -59,6 +59,10 @@ class Chef
       action :create do
         description "Creates or updates a certificate."
 
+        # Extension of the certificate
+        ext = ::File.extname(new_resource.source)
+        raw_source = convert_pem(ext)
+
         cert_obj = OpenSSL::X509::Certificate.new(raw_source) # A certificate object in memory
         thumbprint = OpenSSL::Digest::SHA1.new(cert_obj.to_der).to_s # Fetch its thumbprint
 
@@ -68,7 +72,11 @@ class Chef
           Chef::Log.debug("Certificate is already present")
         else
           converge_by("Adding certificate #{new_resource.source} into Store #{new_resource.store_name}") do
-            add_cert(cert_obj)
+            if ext == ".pfx"
+              add_pfx_cert
+            else
+              add_cert(cert_obj)
+            end
           end
         end
       end
@@ -136,6 +144,11 @@ class Chef
         def add_cert(cert_obj)
           store = ::Win32::Certstore.open(new_resource.store_name)
           store.add(cert_obj)
+        end
+
+        def add_pfx_cert
+          store = ::Win32::Certstore.open(new_resource.store_name)
+          store.add_pfx(new_resource.source, new_resource.pfx_password)
         end
 
         def delete_cert
@@ -259,28 +272,25 @@ class Chef
           set_acl_script
         end
 
-        # Returns the certificate string of the given
-        # input certificate in PEM format
-        def raw_source
-          ext = ::File.extname(new_resource.source)
-          convert_pem(ext, new_resource.source)
-        end
-
         # Uses powershell command to convert crt/der/cer/pfx & p7b certificates
         # In PEM format and returns its certificate content
-        def convert_pem(ext, source)
+        def convert_pem(ext)
           out = case ext
-                when ".crt", ".der"
-                  powershell_out("openssl x509 -text -inform DER -in #{source} -outform PEM").stdout
-                when ".cer"
-                  powershell_out("openssl x509 -text -inform DER -in #{source} -outform PEM").stdout
+                when ".crt", ".cer", ".der"
+                  powershell_out("openssl x509 -text -inform DER -in #{new_resource.source} -outform PEM")
                 when ".pfx"
-                  powershell_out("openssl pkcs12 -in #{source} -nodes -passin pass:'#{new_resource.pfx_password}'").stdout
+                  powershell_out("openssl pkcs12 -in #{new_resource.source} -nodes -passin pass:'#{new_resource.pfx_password}'")
                 when ".p7b"
-                  powershell_out("openssl pkcs7 -print_certs -in #{source} -outform PEM").stdout
+                  powershell_out("openssl pkcs7 -print_certs -in #{new_resource.source} -outform PEM")
+                else
+                  powershell_out("openssl x509 -text -inform #{ext.delete(".")} -in #{new_resource.source} -outform PEM")
                 end
-          out = ::File.read(source) if out.nil? || out.empty?
-          format_raw_out(out)
+
+          if out.exitstatus == 0
+            format_raw_out(out.stdout)
+          else
+            raise out.stderr
+          end
         end
 
         # Returns the certificate content
