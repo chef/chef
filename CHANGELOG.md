@@ -1,29 +1,27 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.10.9 -->
-## [v14.10.9](https://github.com/chef/chef/tree/v14.10.9) (2019-01-29)
-
-#### Merged Pull Requests
-- Bump InSpec to 3.4.1 [#8192](https://github.com/chef/chef/pull/8192) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.9.13 -->
-### Changes since 14.9.13 release
-
-#### Merged Pull Requests
-- Bump InSpec to 3.4.1 [#8192](https://github.com/chef/chef/pull/8192) ([tas50](https://github.com/tas50)) <!-- 14.10.9 -->
-- Backport git resource fix in #8179 and update win32-certstore [#8189](https://github.com/chef/chef/pull/8189) ([tas50](https://github.com/tas50)) <!-- 14.10.8 -->
-- Officially deprecate cookbook shadowing and audit mode [#8187](https://github.com/chef/chef/pull/8187) ([tas50](https://github.com/tas50)) <!-- 14.10.7 -->
-- Update inspec to 3.3.14 [#8185](https://github.com/chef/chef/pull/8185) ([tas50](https://github.com/tas50)) <!-- 14.10.6 -->
-- apt_repository: Don&#39;t create gpg temporary files owned by root in the running user&#39;s home directory [#8184](https://github.com/chef/chef/pull/8184) ([tas50](https://github.com/tas50)) <!-- 14.10.5 -->
-- Cleanup dependencies and comments in knife plugins [#8183](https://github.com/chef/chef/pull/8183) ([tas50](https://github.com/tas50)) <!-- 14.10.4 -->
-- Bump all deps to current [#8173](https://github.com/chef/chef/pull/8173) ([tas50](https://github.com/tas50)) <!-- 14.10.3 -->
-- Update nokogiri to 1.10.1 [#8172](https://github.com/chef/chef/pull/8172) ([tas50](https://github.com/tas50)) <!-- 14.10.2 -->
-- Add a deprecation warning to knife cookbook site [#8164](https://github.com/chef/chef/pull/8164) ([tas50](https://github.com/tas50)) <!-- 14.10.1 -->
-- windows_certificate: Ensure all actions are fully idempotent [#8163](https://github.com/chef/chef/pull/8163) ([tas50](https://github.com/tas50)) <!-- 14.10.0 -->
-- Bump all deps to the latest versions [#8154](https://github.com/chef/chef/pull/8154) ([tas50](https://github.com/tas50)) <!-- 14.9.14 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.10.9](https://github.com/chef/chef/tree/v14.10.9) (2019-01-30)
+
+#### Merged Pull Requests
+- Bump all deps to the latest versions [#8154](https://github.com/chef/chef/pull/8154) ([tas50](https://github.com/tas50))
+- windows_certificate: Ensure all actions are fully idempotent [#8163](https://github.com/chef/chef/pull/8163) ([tas50](https://github.com/tas50))
+- Add a deprecation warning to knife cookbook site [#8164](https://github.com/chef/chef/pull/8164) ([tas50](https://github.com/tas50))
+- Update nokogiri to 1.10.1 [#8172](https://github.com/chef/chef/pull/8172) ([tas50](https://github.com/tas50))
+- Bump all deps to current [#8173](https://github.com/chef/chef/pull/8173) ([tas50](https://github.com/tas50))
+- Cleanup dependencies and comments in knife plugins [#8183](https://github.com/chef/chef/pull/8183) ([tas50](https://github.com/tas50))
+- apt_repository: Don&#39;t create gpg temporary files owned by root in the running user&#39;s home directory [#8184](https://github.com/chef/chef/pull/8184) ([tas50](https://github.com/tas50))
+- Update inspec to 3.3.14 [#8185](https://github.com/chef/chef/pull/8185) ([tas50](https://github.com/tas50))
+- Officially deprecate cookbook shadowing and audit mode [#8187](https://github.com/chef/chef/pull/8187) ([tas50](https://github.com/tas50))
+- Backport git resource fix in #8179 and update win32-certstore [#8189](https://github.com/chef/chef/pull/8189) ([tas50](https://github.com/tas50))
+- Bump InSpec to 3.4.1 [#8192](https://github.com/chef/chef/pull/8192) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v14.9.13](https://github.com/chef/chef/tree/v14.9.13) (2019-01-22)
 
 #### Merged Pull Requests
@@ -52,7 +50,6 @@
 - Allow for mixlib-archive 1.x [#8141](https://github.com/chef/chef/pull/8141) ([tas50](https://github.com/tas50))
 - systctl: Allow slashes in key or block name [#8142](https://github.com/chef/chef/pull/8142) ([tas50](https://github.com/tas50))
 - homebrew_cask: Ensure the resource is fully idempotent [#8143](https://github.com/chef/chef/pull/8143) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.8.12](https://github.com/chef/chef/tree/v14.8.12) (2018-12-13)
 
