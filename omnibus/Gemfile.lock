@@ -63,10 +63,10 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
     byebug (10.0.2)
-    chef (14.9.13)
+    chef (14.10.9)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.9.13)
+      chef-config (= 14.10.9)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -93,10 +93,10 @@ GEM
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.9.13-universal-mingw32)
+    chef (14.10.9-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.9.13)
+      chef-config (= 14.10.9)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -136,7 +136,7 @@ GEM
       win32-taskscheduler (~> 2.0)
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
-    chef-config (14.9.13)
+    chef-config (14.10.9)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
