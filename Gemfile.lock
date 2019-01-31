@@ -310,7 +310,7 @@ GEM
     thor (0.20.3)
     timers (4.3.0)
     tomlrb (1.2.8)
-    train-core (1.7.1)
+    train-core (1.7.2)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
     travis (1.8.9)
@@ -411,4 +411,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.17.3
+   2.0.1
