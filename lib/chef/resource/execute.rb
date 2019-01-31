@@ -22,6 +22,7 @@ require "chef/resource"
 class Chef
   class Resource
     class Execute < Chef::Resource
+      resource_name :execute
       provides :execute
       description "Use the execute resource to execute a single command. Commands that"\
                   " are executed with this resource are (by their nature) not idempotent,"\
