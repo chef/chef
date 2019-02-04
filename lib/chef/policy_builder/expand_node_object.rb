@@ -103,7 +103,7 @@ class Chef
         run_context.load(@run_list_expansion)
         if specific_recipes
           specific_recipes.each do |recipe_file|
-            run_context.load_recipe_file(recipe_file)
+            run_context.load_recipe_file(recipe_file) if File.file?(recipe_file)
           end
         end
 
