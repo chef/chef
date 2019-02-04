@@ -43,92 +43,129 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource
       end
 
-      it "creates scheduled task and sets command arguments" do
-        subject.command "chef-client -W"
-        call_for_create_action
-        # loading current resource again to check new task is creted and it matches task parameters
-        current_resource = call_for_load_current_resource
-        expect(current_resource.exists).to eq(true)
-        expect(current_resource.task.application_name).to eq("chef-client")
-        expect(current_resource.task.parameters).to eq("-W")
+      context "With Arguments" do
+        it "creates scheduled task and sets command arguments" do
+          subject.command "chef-client -W"
+          call_for_create_action
+          # loading current resource again to check new task is creted and it matches task parameters
+          current_resource = call_for_load_current_resource
+          expect(current_resource.exists).to eq(true)
+          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.parameters).to eq("-W")
+        end
+
+        it "does not converge the resource if it is already converged" do
+          subject.command "chef-client -W"
+          subject.run_action(:create)
+          subject.command "chef-client -W"
+          subject.run_action(:create)
+          expect(subject).not_to be_updated_by_last_action
+        end
+
+        it "creates scheduled task and sets command arguments when arguments inclusive single quotes" do
+          subject.command "chef-client -W -L 'C:\\chef\\chef-ad-join.log'"
+          call_for_create_action
+          # loading current resource again to check new task is creted and it matches task parameters
+          current_resource = call_for_load_current_resource
+          expect(current_resource.exists).to eq(true)
+          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.parameters).to eq("-W -L 'C:\\chef\\chef-ad-join.log'")
+        end
+
+        it "does not converge the resource if it is already converged" do
+          subject.command "chef-client -W -L 'C:\\chef\\chef-ad-join.log'"
+          subject.run_action(:create)
+          subject.command "chef-client -W -L 'C:\\chef\\chef-ad-join.log'"
+          subject.run_action(:create)
+          expect(subject).not_to be_updated_by_last_action
+        end
+
+        it "creates scheduled task and sets command arguments with spaces in command" do
+          subject.command '"C:\\Program Files\\example\\program.exe" -arg1 --arg2'
+          call_for_create_action
+          current_resource = call_for_load_current_resource
+          expect(current_resource.exists).to eq(true)
+          expect(current_resource.task.application_name).to eq('"C:\\Program Files\\example\\program.exe"')
+          expect(current_resource.task.parameters).to eq("-arg1 --arg2")
+        end
+
+        it "does not converge the resource if it is already converged" do
+          subject.command '"C:\\Program Files\\example\\program.exe" -arg1 --arg2'
+          subject.run_action(:create)
+          subject.command '"C:\\Program Files\\example\\program.exe" -arg1 --arg2'
+          subject.run_action(:create)
+          expect(subject).not_to be_updated_by_last_action
+        end
+
+        it "creates scheduled task and sets command arguments with spaces in arguments" do
+          subject.command 'powershell.exe -file "C:\\Program Files\\app\\script.ps1"'
+          call_for_create_action
+          current_resource = call_for_load_current_resource
+          expect(current_resource.exists).to eq(true)
+          expect(current_resource.task.application_name).to eq("powershell.exe")
+          expect(current_resource.task.parameters).to eq('-file "C:\\Program Files\\app\\script.ps1"')
+        end
+
+        it "does not converge the resource if it is already converged" do
+          subject.command 'powershell.exe -file "C:\\Program Files\\app\\script.ps1"'
+          subject.run_action(:create)
+          subject.command 'powershell.exe -file "C:\\Program Files\\app\\script.ps1"'
+          subject.run_action(:create)
+          expect(subject).not_to be_updated_by_last_action
+        end
+
+        it "creates scheduled task and sets command arguments" do
+          subject.command "ping http://www.google.com"
+          call_for_create_action
+          # loading current resource again to check new task is creted and it matches task parameters
+          current_resource = call_for_load_current_resource
+          expect(current_resource.exists).to eq(true)
+          expect(current_resource.task.application_name).to eq("ping")
+          expect(current_resource.task.parameters).to eq("http://www.google.com")
+        end
+
+        it "does not converge the resource if it is already converged" do
+          subject.command "ping http://www.google.com"
+          subject.run_action(:create)
+          subject.command "ping http://www.google.com"
+          subject.run_action(:create)
+          expect(subject).not_to be_updated_by_last_action
+        end
       end
 
-      it "does not converge the resource if it is already converged" do
-        subject.command "chef-client -W"
-        subject.run_action(:create)
-        subject.command "chef-client -W"
-        subject.run_action(:create)
-        expect(subject).not_to be_updated_by_last_action
+      context "Without Arguments" do
+        it "creates scheduled task and sets command arguments" do
+          subject.command "chef-client"
+          call_for_create_action
+          # loading current resource again to check new task is creted and it matches task parameters
+          current_resource = call_for_load_current_resource
+          expect(current_resource.exists).to eq(true)
+          expect(current_resource.task.application_name).to eq("chef-client")
+          expect(current_resource.task.parameters).to be_empty
+        end
+
+        it "does not converge the resource if it is already converged" do
+          subject.command "chef-client"
+          subject.run_action(:create)
+          subject.command "chef-client"
+          subject.run_action(:create)
+          expect(subject).not_to be_updated_by_last_action
+        end
       end
 
-      it "creates scheduled task and sets command arguments when arguments inclusive single quotes" do
-        subject.command "chef-client -W -L 'C:\\chef\\chef-ad-join.log'"
-        call_for_create_action
-        # loading current resource again to check new task is creted and it matches task parameters
-        current_resource = call_for_load_current_resource
-        expect(current_resource.exists).to eq(true)
-        expect(current_resource.task.application_name).to eq("chef-client")
-        expect(current_resource.task.parameters).to eq("-W -L 'C:\\chef\\chef-ad-join.log'")
-      end
-
-      it "does not converge the resource if it is already converged" do
-        subject.command "chef-client -W -L 'C:\\chef\\chef-ad-join.log'"
-        subject.run_action(:create)
-        subject.command "chef-client -W -L 'C:\\chef\\chef-ad-join.log'"
-        subject.run_action(:create)
-        expect(subject).not_to be_updated_by_last_action
-      end
-
-      it "creates scheduled task and sets command arguments with spaces in command" do
-        subject.command '"C:\\Program Files\\example\\program.exe" -arg1 --arg2'
-        call_for_create_action
-        current_resource = call_for_load_current_resource
-        expect(current_resource.exists).to eq(true)
-        expect(current_resource.task.application_name).to eq('"C:\\Program Files\\example\\program.exe"')
-        expect(current_resource.task.parameters).to eq("-arg1 --arg2")
-      end
-
-      it "does not converge the resource if it is already converged" do
-        subject.command '"C:\\Program Files\\example\\program.exe" -arg1 --arg2'
-        subject.run_action(:create)
-        subject.command '"C:\\Program Files\\example\\program.exe" -arg1 --arg2'
-        subject.run_action(:create)
-        expect(subject).not_to be_updated_by_last_action
-      end
-
-      it "creates scheduled task and sets command arguments with spaces in arguments" do
+      it "creates scheduled task and Re-sets command arguments" do
         subject.command 'powershell.exe -file "C:\\Program Files\\app\\script.ps1"'
-        call_for_create_action
+        subject.run_action(:create)
         current_resource = call_for_load_current_resource
-        expect(current_resource.exists).to eq(true)
         expect(current_resource.task.application_name).to eq("powershell.exe")
         expect(current_resource.task.parameters).to eq('-file "C:\\Program Files\\app\\script.ps1"')
-      end
 
-      it "does not converge the resource if it is already converged" do
-        subject.command 'powershell.exe -file "C:\\Program Files\\app\\script.ps1"'
+        subject.command "powershell.exe"
         subject.run_action(:create)
-        subject.command 'powershell.exe -file "C:\\Program Files\\app\\script.ps1"'
-        subject.run_action(:create)
-        expect(subject).not_to be_updated_by_last_action
-      end
-
-      it "creates scheduled task and sets command arguments" do
-        subject.command "ping http://www.google.com"
-        call_for_create_action
-        # loading current resource again to check new task is creted and it matches task parameters
         current_resource = call_for_load_current_resource
-        expect(current_resource.exists).to eq(true)
-        expect(current_resource.task.application_name).to eq("ping")
-        expect(current_resource.task.parameters).to eq("http://www.google.com")
-      end
-
-      it "does not converge the resource if it is already converged" do
-        subject.command "ping http://www.google.com"
-        subject.run_action(:create)
-        subject.command "ping http://www.google.com"
-        subject.run_action(:create)
-        expect(subject).not_to be_updated_by_last_action
+        expect(current_resource.task.application_name).to eq("powershell.exe")
+        expect(current_resource.task.parameters).to be_empty
+        expect(subject).to be_updated_by_last_action
       end
     end
 
