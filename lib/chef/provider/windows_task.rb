@@ -116,9 +116,8 @@ class Chef
         end
 
         def action_create
-          if new_resource.command && new_resource.command.split.size > 1
-            set_command_and_arguments
-          end
+          set_command_and_arguments if new_resource.command
+
           if current_resource.exists
             logger.trace "#{new_resource} task exist."
             unless (task_needs_update?(current_resource.task)) || (new_resource.force)
