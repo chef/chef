@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.151 -->
-## [v15.0.151](https://github.com/chef/chef/tree/v15.0.151) (2019-01-31)
+<!-- latest_release 15.0.152 -->
+## [v15.0.152](https://github.com/chef/chef/tree/v15.0.152) (2019-02-04)
 
 #### Merged Pull Requests
-- Convert execute_resource remaining properties to use properties  [#8178](https://github.com/chef/chef/pull/8178) ([Vasu1105](https://github.com/Vasu1105))
+- windows_certificate: Import PFX certificates with their private keys [#8193](https://github.com/chef/chef/pull/8193) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- windows_certificate: Import PFX certificates with their private keys [#8193](https://github.com/chef/chef/pull/8193) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.152 -->
 - Convert execute_resource remaining properties to use properties  [#8178](https://github.com/chef/chef/pull/8178) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.151 -->
 - Update knife bootstrap template to use up to date omnitruck URL [#8190](https://github.com/chef/chef/pull/8190) ([mivok](https://github.com/mivok)) <!-- 15.0.150 -->
 - git: Don&#39;t display the repo URL when sensitive property is set [#8179](https://github.com/chef/chef/pull/8179) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.149 -->
