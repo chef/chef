@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.11.0 -->
+## [v14.11.0](https://github.com/chef/chef/tree/v14.11.0) (2019-02-05)
+
+#### Merged Pull Requests
+- Update rubygems to 2.7.8 and bundler to 1.17.3 [#8194](https://github.com/chef/chef/pull/8194) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.10.9 -->
+### Changes since 14.10.9 release
+
+#### Merged Pull Requests
+- Update rubygems to 2.7.8 and bundler to 1.17.3 [#8194](https://github.com/chef/chef/pull/8194) ([tas50](https://github.com/tas50)) <!-- 14.11.0 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
