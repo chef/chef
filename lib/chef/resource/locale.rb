@@ -36,56 +36,41 @@ class Chef
       action :update do
         description "Update the system's locale."
 
-        if ::File.exist?("/usr/sbin/update-locale")
-          execute "Generate locales" do
-            command "locale-gen #{new_resource.lang}"
-            not_if { up_to_date?("/etc/default/locale", new_resource.lang, new_resource.lc_all) }
-          end
-
-          execute "Update locale" do
-            command "update-locale LANG=#{new_resource.lang} LC_ALL=#{new_resource.lc_all}"
-            not_if { up_to_date?("/etc/default/locale", new_resource.lang, new_resource.lc_all) }
-          end
+        if ::File.exist?("/etc/default/locale")
+          locale_file = "/etc/default/locale"
         elsif ::File.exist?("/etc/sysconfig/i18n")
-          locale_file_path = "/etc/sysconfig/i18n"
-
-          updated = up_to_date?(locale_file_path, new_resource.lang, new_resource.lc_all)
-
-          file locale_file_path do
-            content lazy {
-              locale = IO.read(locale_file_path)
-              variables = Hash[locale.lines.map { |line| line.strip.split("=") }]
-              variables["LANG"] = new_resource.lang
-              variables["LC_ALL"] =
-                variables.map { |pairs| pairs.join("=") }.join("\n") + "\n"
-            }
-            not_if { updated }
-          end
-
-          execute "reload root's lang profile script" do
-            command "source /etc/sysconfig/i18n; source /etc/profile.d/lang.sh"
-            not_if { updated }
-          end
-        elsif node["init_package"] == "systemd"
-          # on systemd settings LC_ALL is (correctly) reserved only for testing and cannot be set globally
-          execute "localectl set-locale LANG=#{new_resource.lang}" do
-            # RHEL uses /etc/locale.conf
-            not_if { up_to_date?("/etc/locale.conf", new_resource.lang) } if ::File.exist?("/etc/locale.conf")
-            # Ubuntu 16.04 still uses /etc/default/locale
-            not_if { up_to_date?("/etc/default/locale", new_resource.lang) } if ::File.exist?("/etc/default/locale")
-          end
+          locale_file = "/etc/sysconfig/i18n"
+        elsif ::File.exist?("/etc/environment")
+          locale_file = "/etc/environment"
         else
           raise "#{node["platform"]} platform not supported by the chef locale resource."
+        end
+
+        contents = IO.readlines(locale_file)
+        env_val = contents.map { |t| t.split("=") if t.include?("=") }.compact.to_h
+
+        unless up_to_date?(env_val)
+          execute "Generate locales" do
+            command "locale-gen #{new_resource.lang}"
+            only_if { locale_file == "/etc/default/locale" }
+          end
+
+          file locale_file do
+            content replace(env_val)
+          end
         end
       end
 
       action_class do
-        def up_to_date?(file_path, lang, lc_all = nil)
-          locale = IO.read(file_path)
-          locale.include?("LANG=#{lang}") &&
-            (node["init_package"] == "systemd" || lc_all.nil? || locale.include?("LC_ALL=#{lc_all}"))
-        rescue
-          false
+        def up_to_date?(hash)
+          hash["LANG"] && new_resource.lang == hash["LANG"].gsub(/\n|"/, "") &&
+            hash["LC_ALL"] && new_resource.lc_all == hash["LC_ALL"].gsub(/\n|"/, "")
+        end
+
+        def replace(hash)
+          hash["LANG"] = "\"#{new_resource.lang}\""
+          hash["LC_ALL"] = "\"#{new_resource.lc_all}\""
+          hash.to_a.map { |t| t.join("=") }.join("\n")
         end
       end
     end

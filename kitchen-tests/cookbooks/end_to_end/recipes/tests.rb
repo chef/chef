@@ -20,15 +20,15 @@ file "/tmp/chef-test-\xFDmlaut" do
   content "testing illegal UTF-8 char in the filename"
 end
 
+locale "set locale" do
+  lang "en_GB.utf8"
+  lc_all "en_GB.utf8"
+end
+
 node["network"]["interfaces"].each do |interface_data|
   interface = interface_data[0]
   sysctl_param "net/ipv4/conf/#{interface}/rp_filter" do
     value 0
     ignore_failure true
   end
-end
-
-locale "set locale" do
-  lang "en_US.utf8"
-  lc_all "en_US.utf8"
 end
