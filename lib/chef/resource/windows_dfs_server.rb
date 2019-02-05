@@ -24,15 +24,32 @@ class Chef
       resource_name :windows_dfs_server
       provides :windows_dfs_server
 
-      # disable use of FQDN. https://docs.microsoft.com/en-us/powershell/module/dfsn/set-dfsnserverconfiguration?view=win10-ps
       property :use_fqdn, [TrueClass, FalseClass], default: false
+      property :ldap_timeout_secs, Integer, default: 30
+      property :prefer_login_dc, [TrueClass, FalseClass], default: false
+      property :enable_site_costed_referrals, [TrueClass, FalseClass], default: false
+      property :sync_interval_secs, Integer, default: 3600
+
+      load_current_value do
+        ps_results = powershell_out("Get-DfsnServerConfiguration -ComputerName '#{ENV['COMPUTERNAME']}' | Select LdapTimeoutSec, PreferLogonDC, EnableSiteCostedReferrals, SyncIntervalSec, UseFqdn | ConvertTo-Json")
+
+        if ps_results.error?
+          raise "The dfs_server resource failed to fetch the current state via the Get-DfsnServerConfiguration PowerShell cmlet. Is the DFS Windows feature installed?"
+        end
+
+        Chef::Log.debug("The Get-DfsnServerConfiguration results were #{ps_results.stdout}")
+        results = Chef::JSONCompat.from_json(ps_results.stdout)
+
+        use_fqdn results["UseFqdn"] || false
+        ldap_timeout_secs results["LdapTimeoutSec"]
+        prefer_login_dc results["PreferLogonDC"] || false
+        enable_site_costed_referrals results["EnableSiteCostedReferrals"] || false
+        sync_interval_secs results["SyncIntervalSec"]
+      end
 
       action :configure do
-        powershell_script "Configure DFS Server Settings" do
-          code <<-EOH
-		      Set-DfsnServerConfiguration -ComputerName "#{ENV['COMPUTERNAME']}" -UseFqdn $#{new_resource.use_fqdn}
-          EOH
-          not_if "(Get-DfsnServerConfiguration -ComputerName '#{ENV['COMPUTERNAME']}').UseFqdn -eq $#{new_resource.use_fqdn}"
+        converge_if_changed do
+          powershell_out("Set-DfsnServerConfiguration -ComputerName '#{ENV['COMPUTERNAME']}' EnableSiteCostedReferrals $#{new_resource.enable_site_costed_referrals} -UseFqdn $#{new_resource.use_fqdn} -LdapTimeoutSec #{new_resource.ldap_timeout_secs} -PreferLogonDC $#{new_resource.prefer_login_dc} -SyncIntervalSec #{new_resource.sync_interval_secs}")
         end
       end
     end
