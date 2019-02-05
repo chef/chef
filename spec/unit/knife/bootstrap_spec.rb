@@ -442,6 +442,7 @@ describe Chef::Knife::Bootstrap do
     end
 
     it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty" do
+      allow(Dir).to receive(:glob).and_call_original
       expect(Dir).to receive(:glob).with(File.join(trusted_certs_dir, "*.{crt,pem}")).and_return([])
       expect(rendered_template).not_to match(%r{mkdir -p /etc/chef/trusted_certs})
     end
