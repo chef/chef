@@ -110,7 +110,8 @@ class Chef
             else
               child_paths[name].each do |path|
                 begin
-                  Dir.mkdir(path, 0700)
+                  ::FileUtils.mkdir_p(path)
+                  ::FileUtils.chmod(0700, path)
                   if Chef::Platform.windows?
                     all_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_ALL
                     administrators = Chef::ReservedNames::Win32::Security::SID.Administrators
