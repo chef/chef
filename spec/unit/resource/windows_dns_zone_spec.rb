@@ -28,6 +28,18 @@ describe Chef::Resource::WindowsDnsZone do
     expect(resource.zone_name).to eql("fakey_fakerton")
   end
 
+  it "the server_type property accepts 'Standalone'" do
+    expect { resource.server_type "Standalone" }.not_to raise_error(ArgumentError)
+  end
+
+  it "the server_type property accepts 'Domain'" do
+    expect { resource.server_type "Domain" }.not_to raise_error(ArgumentError)
+  end
+
+  it "the resource raises an ArgumentError if invalid server_type is set" do
+    expect { resource.server_type "NOPE" }.to raise_error(ArgumentError)
+  end
+
   it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end

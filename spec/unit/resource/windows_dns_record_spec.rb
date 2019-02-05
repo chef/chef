@@ -28,6 +28,22 @@ describe Chef::Resource::WindowsDnsRecord do
     expect(resource.record_name).to eql("fakey_fakerton")
   end
 
+  it "the record_type property accepts 'CNAME'" do
+    expect { resource.record_type "CNAME" }.not_to raise_error(ArgumentError)
+  end
+
+  it "the record_type property accepts 'ARecord'" do
+    expect { resource.record_type "ARecord" }.not_to raise_error(ArgumentError)
+  end
+
+  it "the record_type property accepts 'PTR'" do
+    expect { resource.record_type "PTR" }.not_to raise_error(ArgumentError)
+  end
+
+  it "the resource raises an ArgumentError if invalid record_type is set" do
+    expect { resource.record_type "NOPE" }.to raise_error(ArgumentError)
+  end
+
   it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
   end
