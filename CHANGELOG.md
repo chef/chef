@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.153 -->
-## [v15.0.153](https://github.com/chef/chef/tree/v15.0.153) (2019-02-04)
+<!-- latest_release 15.0.154 -->
+## [v15.0.154](https://github.com/chef/chef/tree/v15.0.154) (2019-02-05)
 
 #### Merged Pull Requests
-- windows_task: Properly set command / argumentts so resource updates behave as expected [#8201](https://github.com/chef/chef/pull/8201) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8202](https://github.com/chef/chef/pull/8202) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8202](https://github.com/chef/chef/pull/8202) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.154 -->
 - windows_task: Properly set command / argumentts so resource updates behave as expected [#8201](https://github.com/chef/chef/pull/8201) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.153 -->
 - windows_certificate: Import PFX certificates with their private keys [#8193](https://github.com/chef/chef/pull/8193) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.152 -->
 - Convert execute_resource remaining properties to use properties  [#8178](https://github.com/chef/chef/pull/8178) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.151 -->
