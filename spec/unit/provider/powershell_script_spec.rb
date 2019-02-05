@@ -43,6 +43,11 @@ describe Chef::Provider::PowershellScript, "action_run" do
     new_resource
   end
 
+  def set_user_defined_flag
+    new_resource.flags "-ExecutionPolicy RemoteSigned"
+    provider
+  end
+
   let(:provider) do
     Chef::Provider::PowershellScript.new(new_resource, run_context)
   end
@@ -78,22 +83,21 @@ describe Chef::Provider::PowershellScript, "action_run" do
       end
 
       let(:execution_policy_flag) do
-        execution_policy_index = 0
         provider_flags = provider.flags.split(" ")
-        execution_policy_specified = false
+        # Last occurance of "executionpolicy"
+        execution_policy_index = provider_flags.map(&:downcase).rindex("-executionpolicy")
 
-        provider_flags.find do |value|
-          execution_policy_index += 1
-          execution_policy_specified = value.casecmp("-ExecutionPolicy".downcase) == 0
-        end
-
-        execution_policy = execution_policy_specified ? provider_flags[execution_policy_index] : nil
+        execution_policy_index ? provider_flags[execution_policy_index + 1] : nil
       end
 
       context "when running with an unspecified PowerShell version" do
         let(:powershell_version) { nil }
-        it "sets the -ExecutionPolicy flag to 'Unrestricted' by default" do
+        it "sets default -ExecutionPolicy flag to 'Unrestricted'" do
           expect(execution_policy_flag.downcase).to eq("unrestricted".downcase)
+        end
+        it "sets user defined -ExecutionPolicy flag to 'RemoteSigned'" do
+          set_user_defined_flag
+          expect(execution_policy_flag.downcase).to eq("RemoteSigned".downcase)
         end
       end
 
@@ -106,8 +110,13 @@ describe Chef::Provider::PowershellScript, "action_run" do
         let(:powershell_version) { version_policy[0].to_f }
         context "when running PowerShell version #{version_policy[0]}" do
           let(:powershell_version) { version_policy[0].to_f }
-          it "sets the -ExecutionPolicy flag to '#{version_policy[1]}'" do
+
+          it "sets default -ExecutionPolicy flag to '#{version_policy[1]}'" do
             expect(execution_policy_flag.downcase).to eq(version_policy[1].downcase)
+          end
+          it "sets user defined -ExecutionPolicy flag to 'RemoteSigned'" do
+            set_user_defined_flag
+            expect(execution_policy_flag.downcase).to eq("RemoteSigned".downcase)
           end
         end
       end

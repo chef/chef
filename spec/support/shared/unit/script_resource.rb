@@ -41,7 +41,7 @@ shared_examples_for "a script resource" do
 
   it "should accept a string for the flags" do
     script_resource.flags "-f"
-    expect(script_resource.flags).to eql("-f")
+    expect(script_resource.flags.strip).to eql("-f")
   end
 
   it "should raise an exception if users set command on the resource", chef: ">= 13" do

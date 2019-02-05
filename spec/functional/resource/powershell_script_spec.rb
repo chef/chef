@@ -231,20 +231,26 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       expect(is_64_bit).to eq(detected_64_bit)
     end
 
+    it "returns 0 if a valid flag is passed to the interpreter" do
+      resource.code(cmdlet_exit_code_success_content)
+      resource.flags(valid_powershell_interpreter_flag)
+      resource.returns(0)
+      resource.run_action(:run)
+    end
+
+    it "returns 0 if no flag is passed to the interpreter" do
+      resource.code(cmdlet_exit_code_success_content)
+      resource.returns(0)
+      resource.run_action(:run)
+    end
+
     it "returns 1 if an invalid flag is passed to the interpreter" do
       pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
 
       resource.code(cmdlet_exit_code_success_content)
       resource.flags(invalid_powershell_interpreter_flag)
       resource.returns(1)
-      resource.run_action(:run)
-    end
-
-    it "returns 0 if a valid flag is passed to the interpreter" do
-      resource.code(cmdlet_exit_code_success_content)
-      resource.flags(valid_powershell_interpreter_flag)
-      resource.returns(0)
-      resource.run_action(:run)
+      expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
 
     it "raises an error when given a block and a guard_interpreter" do
