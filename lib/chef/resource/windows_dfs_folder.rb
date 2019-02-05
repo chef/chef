@@ -24,12 +24,26 @@ class Chef
       resource_name :windows_dfs_folder
       provides :windows_dfs_folder
 
-      property :folder_path, String, name_property: true
-      property :namespace_name, String, required: true
-      property :target_path, String
-      property :description, String
+      description "The windows_dfs_folder resources creates a folder within dfs as many levels deep as required."
+      introduced "15.0"
+
+      property :folder_path, String,
+               description: "The path of the folder to create.",
+               name_property: true
+
+      property :namespace_name, String,
+               description: "The namespace this should be created within.",
+               required: true
+
+      property :target_path, String,
+               description: "The target that this path will connect you to."
+
+      property :description, String,
+               description: "Description for the share."
 
       action :install do
+        description "Creates the folder in dfs namespace."
+
         raise "target_path is required for install" unless property_is_set?(:target_path)
         raise "description is required for install" unless property_is_set?(:description)
         powershell_script "Create or Update DFS Folder" do
@@ -47,6 +61,8 @@ class Chef
       end
 
       action :delete do
+        description "Deletes the folder in the dfs namespace."
+
         powershell_script "Delete DFS Namespace" do
           code <<-EOH
             Remove-DfsnFolder -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -Force

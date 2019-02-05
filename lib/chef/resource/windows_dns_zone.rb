@@ -24,17 +24,32 @@ class Chef
       resource_name :windows_dns_zone
       provides :windows_dns_zone
 
-      property :zone_name,          String, name_property: true
-      property :replication_scope,  String, default: "Domain", required: false
-      property :server_type,        String, default: "Domain", regex: /^(?:Domain|Standalone)$/i
+      description "The windows_dns_zone resource creates an Active Directory Integrated DNS Zone on the local server."
+      introduced "15.0"
+
+      property :zone_name, String,
+               description: "The name of the zone to create.",
+               name_property: true
+
+      property :replication_scope, String,
+               description: "The replication scope for the zone, required if server_type set to 'Domain'",
+               default: "Domain"
+
+      property :server_type, String,
+               description: "The type of DNS server, Domain or Standalone.",
+               default: "Domain", equal_to: %w{Domain Standalone}
 
       action :create do
+        description "Creates and updates a DNS Zone."
+
         powershell_package "xDnsServer" do
         end
         do_it "Present"
       end
 
       action :delete do
+        description "Deletes a DNS Zone."
+
         powershell_package "xDnsServer" do
         end
         do_it "Absent"

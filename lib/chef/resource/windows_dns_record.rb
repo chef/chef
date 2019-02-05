@@ -24,18 +24,35 @@ class Chef
       resource_name :windows_dns_record
       provides :windows_dns_record
 
-      property :record_name,  String, name_property: true
-      property :zone,         String, required: true
-      property :target,       String, required: true
-      property :record_type,  String, default: "ARecord", regex: /^(?:ARecord|CNAME|Ptr)$/i
+      description "The windows_dns_record resource creates a DNS record for the given domain."
+      introduced "15.0"
+
+      property :record_name, String,
+               description: "The name of the record to create.",
+               name_property: true
+
+      property :zone, String,
+               description: "The zone to create the record in.",
+               required: true
+
+      property :target, String,
+               description: "The target for the record.",
+               required: true
+
+      property :record_type, String,
+               description: "The type of record to create, can be either ARecord, CNAME or PTR.",
+               default: "ARecord", equal_to: %w{ARecord CNAME PTR}
 
       action :create do
+        description "Creates and updates the DNS entry."
+
         powershell_package "xDnsServer" do
         end
         do_it "Present"
       end
 
       action :delete do
+        description "Deletes a DNS entry."
         powershell_package "xDnsServer" do
         end
         do_it "Absent"

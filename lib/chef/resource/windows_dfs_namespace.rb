@@ -24,14 +24,36 @@ class Chef
       resource_name :windows_dfs_namespace
       provides :windows_dfs_namespace
 
-      property :namespace_name, String, name_property: true
-      property :description,    String, required: true
-      property :full_users,     Array,  default: ['BUILTIN\\administrators']
-      property :change_users,   Array,  default: []
-      property :read_users,     Array,  default: []
-      property :root,           String, default: 'C:\\DFSRoots'
+      description "Creates a share and DFS namespace on the local server."
+      introduced "15.0"
+
+      property :namespace_name, String,
+               description: "The name of the namespace to create.",
+               name_property: true
+
+      property :description, String,
+               description: "Description of the share.",
+               required: true
+
+      property :full_users, Array,
+               description: "Which users should have full access to the share.",
+               default: ['BUILTIN\\administrators']
+
+      property :change_users, Array,
+               description: " Which users should have change access to the share.",
+               default: []
+
+      property :read_users, Array,
+               description: "Which users should have read access to the share.",
+               default: []
+
+      property :root, String,
+               description: "The root from which to create the DFS tree, defaults to C:\\DFSRoots.",
+               default: 'C:\\DFSRoots'
 
       action :install do
+        description "Creates the dfs namespace on the server."
+
         directory file_path do
           action :create
           recursive true
@@ -62,6 +84,8 @@ class Chef
       end
 
       action :delete do
+        description "Deletes a DFS Namespace including the directory on disk."
+
         powershell_script "Delete DFS Namespace" do
           code <<-EOH
             Remove-DfsnRoot -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}' -Force
