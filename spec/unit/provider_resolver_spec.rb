@@ -847,8 +847,7 @@ describe Chef::ProviderResolver do
               user: [ Chef::Resource::User::SolarisUser, Chef::Provider::User::Solaris ],
               "5.11" => {
                 package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
-              },
-              "5.9" => {
+                group: [ Chef::Resource::Group, Chef::Provider::Group::Solaris ],
               },
             },
           },
