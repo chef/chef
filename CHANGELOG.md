@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.11.2 -->
-## [v14.11.2](https://github.com/chef/chef/tree/v14.11.2) (2019-02-06)
+<!-- latest_release 14.11.3 -->
+## [v14.11.3](https://github.com/chef/chef/tree/v14.11.3) (2019-02-06)
 
 #### Merged Pull Requests
-- windows_task: Properly set command / arguments so resource updates behave as expected [#8205](https://github.com/chef/chef/pull/8205) ([tas50](https://github.com/tas50))
+- Update knife bootstrap template to use up to date omnitruck URL [#8207](https://github.com/chef/chef/pull/8207) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.10.9 -->
 ### Changes since 14.10.9 release
 
 #### Merged Pull Requests
+- Update knife bootstrap template to use up to date omnitruck URL [#8207](https://github.com/chef/chef/pull/8207) ([tas50](https://github.com/tas50)) <!-- 14.11.3 -->
 - windows_task: Properly set command / arguments so resource updates behave as expected [#8205](https://github.com/chef/chef/pull/8205) ([tas50](https://github.com/tas50)) <!-- 14.11.2 -->
 - windows_certificate: Import PFX certificates with their private keys [#8206](https://github.com/chef/chef/pull/8206) ([tas50](https://github.com/tas50)) <!-- 14.11.1 -->
 - Update rubygems to 2.7.8 and bundler to 1.17.3 [#8194](https://github.com/chef/chef/pull/8194) ([tas50](https://github.com/tas50)) <!-- 14.11.0 -->
