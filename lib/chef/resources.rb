@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2018, Chef Software, Inc.
+# Copyright:: Copyright 2010-2019, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -149,5 +149,6 @@ require "chef/resource/windows_printer_port"
 require "chef/resource/windows_share"
 require "chef/resource/windows_shortcut"
 require "chef/resource/windows_task"
+require "chef/resource/windows_uac"
 require "chef/resource/windows_workgroup"
 require "chef/resource/timezone"
