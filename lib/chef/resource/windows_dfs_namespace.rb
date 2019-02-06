@@ -28,7 +28,7 @@ class Chef
       introduced "15.0"
 
       property :namespace_name, String,
-               description: "The name of the namespace to create.",
+               description: "An optional property to set the dfs namespace if it differs from the resource block's name.",
                name_property: true
 
       property :description, String,

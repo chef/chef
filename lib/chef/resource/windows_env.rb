@@ -32,7 +32,7 @@ class Chef
       allowed_actions :create, :delete, :modify
 
       property :key_name, String,
-               description: "The name of the key that is to be created, deleted, or modified.",
+               description: "An optional property to set the name of the key that is to be created, deleted, or modified if it differs from the resource block's name.",
                identity: true, name_property: true
 
       property :value, String,
