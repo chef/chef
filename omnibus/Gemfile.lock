@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: c1f49993ce7daeac6fbb4352e8787468d81a1121
+  revision: bf006801aa98595383904ea65c098846d8c12ea4
   branch: master
   specs:
-    omnibus (6.0.12)
+    omnibus (6.0.18)
       aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 222f2955a04b6e57c841faf58d1879ab7280e734
+  revision: f341152c973e02da707a5a408cfb19cccaf54e45
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
     aws-eventstream (1.0.1)
-    aws-partitions (1.133.0)
+    aws-partitions (1.136.0)
     aws-sdk-core (3.46.0)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
@@ -63,10 +63,10 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
     byebug (10.0.2)
-    chef (14.8.12)
+    chef (14.10.9)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.8.12)
+      chef-config (= 14.10.9)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -74,7 +74,7 @@ GEM
       ffi-yajl (~> 2.2)
       highline (~> 1.6, >= 1.6.9)
       iniparse (~> 1.4)
-      mixlib-archive (~> 0.4)
+      mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (~> 2.1)
       mixlib-cli (~> 1.7)
       mixlib-log (~> 2.0, >= 2.0.3)
@@ -93,10 +93,10 @@ GEM
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.8.12-universal-mingw32)
+    chef (14.10.9-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.8.12)
+      chef-config (= 14.10.9)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -105,7 +105,7 @@ GEM
       highline (~> 1.6, >= 1.6.9)
       iniparse (~> 1.4)
       iso8601 (~> 0.12.1)
-      mixlib-archive (~> 0.4)
+      mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (~> 2.1)
       mixlib-cli (~> 1.7)
       mixlib-log (~> 2.0, >= 2.0.3)
@@ -136,7 +136,7 @@ GEM
       win32-taskscheduler (~> 2.0)
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
-    chef-config (14.8.12)
+    chef-config (14.10.9)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -199,7 +199,7 @@ GEM
     mixlib-cli (1.7.0)
     mixlib-config (2.2.18)
       tomlrb
-    mixlib-install (3.11.5)
+    mixlib-install (3.11.11)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -318,7 +318,7 @@ GEM
     tomlrb (1.2.8)
     uuidtools (2.1.5)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.2.2)
+    win32-certstore (0.2.4)
       ffi
       mixlib-shellout
     win32-dir (0.5.1)
@@ -338,7 +338,7 @@ GEM
     win32-service (1.0.1)
       ffi
       ffi-win32-extensions
-    win32-taskscheduler (2.0.0)
+    win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
     windows-api (0.4.4)
@@ -381,4 +381,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.17.1
+   1.17.3
