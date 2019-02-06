@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.158 -->
-## [v15.0.158](https://github.com/chef/chef/tree/v15.0.158) (2019-02-06)
+<!-- latest_release 15.0.159 -->
+## [v15.0.159](https://github.com/chef/chef/tree/v15.0.159) (2019-02-06)
 
 #### Merged Pull Requests
-- Add windows_uac resource [#8212](https://github.com/chef/chef/pull/8212) ([tas50](https://github.com/tas50))
+- More consist descriptions for resource name properties [#8216](https://github.com/chef/chef/pull/8216) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- More consist descriptions for resource name properties [#8216](https://github.com/chef/chef/pull/8216) ([tas50](https://github.com/tas50)) <!-- 15.0.159 -->
 - Add windows_uac resource [#8212](https://github.com/chef/chef/pull/8212) ([tas50](https://github.com/tas50)) <!-- 15.0.158 -->
 - Add windows_dfs and windows_dns resources [#8198](https://github.com/chef/chef/pull/8198) ([tas50](https://github.com/tas50)) <!-- 15.0.157 -->
 - Bump InSpec to 3.5.0 [#8211](https://github.com/chef/chef/pull/8211) ([tas50](https://github.com/tas50)) <!-- 15.0.156 -->
