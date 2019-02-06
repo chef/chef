@@ -28,7 +28,7 @@ class Chef
       introduced "14.0"
 
       property :feature_name, [Array, String],
-               description: "The name of the feature(s) or role(s) to install, if it differs from the resource block's name. The same feature may have different names depending on the underlying installation method being used (ie DHCPServer vs DHCP; DNS-Server-Full-Role vs DNS).",
+               description: "The name of the feature(s) or role(s) to install if they differ from the resource block's name. The same feature may have different names depending on the underlying installation method being used (ie DHCPServer vs DHCP; DNS-Server-Full-Role vs DNS).",
                name_property: true
 
       property :source, String,

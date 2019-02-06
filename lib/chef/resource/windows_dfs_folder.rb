@@ -28,7 +28,7 @@ class Chef
       introduced "15.0"
 
       property :folder_path, String,
-               description: "The path of the folder to create.",
+               description: "An optional property to set the path of the dfs folder if it differs from the resource block's name.",
                name_property: true
 
       property :namespace_name, String,

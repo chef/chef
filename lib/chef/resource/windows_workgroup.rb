@@ -30,7 +30,7 @@ class Chef
       introduced "14.5"
 
       property :workgroup_name, String,
-               description: "The name of the workgroup for the computer.",
+               description: "An optional property to set the workgroup name if it differs from the resource block's name.",
                validation_message: "The 'workgroup_name' property must not contain spaces.",
                regex: /^\S*$/, # no spaces
                name_property: true

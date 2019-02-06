@@ -32,7 +32,7 @@ class Chef
 
       # Specifies a name for the SMB share. The name may be composed of any valid file name characters, but must be less than 80 characters long. The names pipe and mailslot are reserved for use by the computer.
       property :share_name, String,
-               description: "The name to assign to the share.",
+               description: "An optional property to set the share name if it differs from the resource block's name.",
                name_property: true
 
       # Specifies the path of the location of the folder to share. The path must be fully qualified. Relative paths or paths that contain wildcard characters are not permitted.

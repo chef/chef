@@ -28,7 +28,7 @@ class Chef
 
       property :path, String,
                coerce: proc { |x| x.tr("/", '\\') },
-               description: "The path to the pagefile if different from the resource name.",
+               description: "An optional property to set the pagefile name if it differs from the resource block's name.",
                name_property: true
 
       property :system_managed, [TrueClass, FalseClass],

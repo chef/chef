@@ -37,7 +37,7 @@ class Chef
       # acording to the sudo man pages sudo will ignore files in an include dir that have a `.` or `~`
       # We convert either to `__`
       property :filename, String,
-               description: "The name of the sudoers.d file, if it differs from the name of the resource block",
+               description: "The name of the sudoers.d file if it differs from the name of the resource block",
                name_property: true,
                coerce: proc { |x| x.gsub(/[\.~]/, "__") }
 

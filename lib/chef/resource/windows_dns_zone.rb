@@ -28,7 +28,7 @@ class Chef
       introduced "15.0"
 
       property :zone_name, String,
-               description: "The name of the zone to create.",
+               description: "An optional property to set the dns zone name if it differs from the resource block's name.",
                name_property: true
 
       property :replication_scope, String,

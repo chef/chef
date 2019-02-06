@@ -27,7 +27,7 @@ class Chef
       introduced "14.0"
 
       property :app, String,
-               description: "The name of the application as it appears in the /Volumes directory, if it differs from the resource block's name.",
+               description: "The name of the application as it appears in the /Volumes directory if it differs from the resource block's name.",
                name_property: true
 
       property :source, String,
@@ -47,7 +47,7 @@ class Chef
                description: "The sha256 checksum of the .dmg file to download."
 
       property :volumes_dir, String,
-               description: "The directory under /Volumes where the dmg is mounted, if it differs from the name of the .dmg file.",
+               description: "The directory under /Volumes where the dmg is mounted if it differs from the name of the .dmg file.",
                default: lazy { |r| r.app }, default_description: "The value passed for the application name."
 
       property :dmg_name, String,
