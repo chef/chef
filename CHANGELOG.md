@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.157 -->
-## [v15.0.157](https://github.com/chef/chef/tree/v15.0.157) (2019-02-06)
+<!-- latest_release 15.0.158 -->
+## [v15.0.158](https://github.com/chef/chef/tree/v15.0.158) (2019-02-06)
 
 #### Merged Pull Requests
-- Add windows_dfs and windows_dns resources [#8198](https://github.com/chef/chef/pull/8198) ([tas50](https://github.com/tas50))
+- Add windows_uac resource [#8212](https://github.com/chef/chef/pull/8212) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add windows_uac resource [#8212](https://github.com/chef/chef/pull/8212) ([tas50](https://github.com/tas50)) <!-- 15.0.158 -->
 - Add windows_dfs and windows_dns resources [#8198](https://github.com/chef/chef/pull/8198) ([tas50](https://github.com/tas50)) <!-- 15.0.157 -->
 - Bump InSpec to 3.5.0 [#8211](https://github.com/chef/chef/pull/8211) ([tas50](https://github.com/tas50)) <!-- 15.0.156 -->
 - powershell_script: Prefer user provided flags over the defaults [#8167](https://github.com/chef/chef/pull/8167) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.155 -->
