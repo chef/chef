@@ -48,15 +48,9 @@ class Chef
         end
 
         def set_members(members)
+          # Set the group to have exactly the list of members passed to it.
           unless members.empty?
-            members.each do |member|
-              add_member(member)
-            end
-          end
-          unless excluded_members.empty?
-            excluded_members.each do |excluded_member|
-              remove_member(excluded_member)
-            end
+            shell_out!("groupmod", "-U", members.join(","), new_resource.group_name)
           end
         end
 
