@@ -297,7 +297,7 @@ Properties
 The <%= @name %> resource has the following properties:
 <% @properties.each do |p| %>
 ``<%= p['name'] %>``
-   **Ruby Type:** <%= friendly_types_list(p['is']) %><% unless pretty_default(p['default']).nil? %> | **Default Value:** ``<%= pretty_default(p['default']) %>``<% end %><% if p['required'] %> | ``REQUIRED``<% end %><% if p['deprecated'] %> | ``DEPRECATED``<% end %><% if p['name_property'] %> | **Default Value:** ``'name'``<% end %>
+   **Ruby Type:** <%= friendly_types_list(p['is']) %><% unless pretty_default(p['default']).nil? %> | **Default Value:** ``<%= pretty_default(p['default']) %>``<% end %><% if p['required'] %> | ``REQUIRED``<% end %><% if p['deprecated'] %> | ``DEPRECATED``<% end %><% if p['name_property'] %> | **Default Value:** ``The resource block's name``<% end %>
 
    <%= p['description'] %>
 <% unless p['introduced'].nil? %>\n   *New in Chef Client <%= p['introduced'] %>.*<% end %>
