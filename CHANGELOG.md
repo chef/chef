@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.11.4 -->
-## [v14.11.4](https://github.com/chef/chef/tree/v14.11.4) (2019-02-06)
+<!-- latest_release 14.11.5 -->
+## [v14.11.5](https://github.com/chef/chef/tree/v14.11.5) (2019-02-06)
 
 #### Merged Pull Requests
-- chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8209](https://github.com/chef/chef/pull/8209) ([tas50](https://github.com/tas50))
+- Update InSpec to 3.5.0 [#8214](https://github.com/chef/chef/pull/8214) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.10.9 -->
 ### Changes since 14.10.9 release
 
 #### Merged Pull Requests
+- Update InSpec to 3.5.0 [#8214](https://github.com/chef/chef/pull/8214) ([tas50](https://github.com/tas50)) <!-- 14.11.5 -->
 - chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8209](https://github.com/chef/chef/pull/8209) ([tas50](https://github.com/tas50)) <!-- 14.11.4 -->
 - Update knife bootstrap template to use up to date omnitruck URL [#8207](https://github.com/chef/chef/pull/8207) ([tas50](https://github.com/tas50)) <!-- 14.11.3 -->
 - windows_task: Properly set command / arguments so resource updates behave as expected [#8205](https://github.com/chef/chef/pull/8205) ([tas50](https://github.com/tas50)) <!-- 14.11.2 -->
