@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 0ee44af9fd6892d2ccf52aaa4b7dfda65730840d
+  revision: bf006801aa98595383904ea65c098846d8c12ea4
   branch: master
   specs:
-    omnibus (6.0.14)
+    omnibus (6.0.18)
       aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: e5c168f42dc18f585b3109245e1604649d0a366a
+  revision: f341152c973e02da707a5a408cfb19cccaf54e45
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -318,7 +318,7 @@ GEM
     tomlrb (1.2.8)
     uuidtools (2.1.5)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.2.3)
+    win32-certstore (0.2.4)
       ffi
       mixlib-shellout
     win32-dir (0.5.1)
