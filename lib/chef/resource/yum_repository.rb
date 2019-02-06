@@ -143,7 +143,7 @@ class Chef
                description: "Determines whether to report the instance ID when using Amazon Linux AMIs and repositories."
 
       property :repositoryid, String, regex: [/^[^\/]+$/],
-               description: "Specifies a unique name for each repository, one word. Defaults to name property.",
+               description: "An optional property to set the repository name if it differs from the resource block's name.",
                validation_message: "repositoryid property cannot contain a forward slash '/'",
                name_property: true
 

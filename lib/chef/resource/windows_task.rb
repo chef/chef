@@ -32,7 +32,7 @@ class Chef
       default_action :create
 
       property :task_name, String, regex: [/\A[^\/\:\*\?\<\>\|]+\z/],
-               description: "The task name, such as 'Task Name' or '/Task Name'",
+               description: "An optional property to set the task name if it differs from the resource block's name. Example: 'Task Name' or '/Task Name'",
                name_property: true
 
       property :command, String,

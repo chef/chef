@@ -31,7 +31,7 @@ class Chef
       introduced "14.0"
 
       property :device_id, String,
-               description: "Printer queue name, such as 'HP LJ 5200 in fifth floor copy room'.",
+               description: "An optional property to set the printer queue name if it differs from the resource block's name. Example: 'HP LJ 5200 in fifth floor copy room'.",
                name_property: true
 
       property :comment, String,
