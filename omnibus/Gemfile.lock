@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: f341152c973e02da707a5a408cfb19cccaf54e45
+  revision: ebe3e0ab360080534f954b8630970f641ed795e6
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -199,7 +199,7 @@ GEM
     mixlib-cli (1.7.0)
     mixlib-config (2.2.18)
       tomlrb
-    mixlib-install (3.11.5)
+    mixlib-install (3.11.11)
       mixlib-shellout
       mixlib-versioning
       thor

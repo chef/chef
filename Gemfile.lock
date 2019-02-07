@@ -120,6 +120,9 @@ GEM
       mixlib-shellout (~> 2.0)
     ast (2.4.0)
     backports (3.11.4)
+    bcrypt_pbkdf (1.0.0)
+    bcrypt_pbkdf (1.0.0-x64-mingw32)
+    bcrypt_pbkdf (1.0.0-x86-mingw32)
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
@@ -259,6 +262,10 @@ GEM
     rainbow (3.0.0)
     rake (12.3.0)
     rb-readline (0.5.5)
+    rbnacl (6.0.1)
+      ffi
+    rbnacl-libsodium (1.0.16)
+      rbnacl (>= 3.0.1)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
@@ -402,6 +409,7 @@ PLATFORMS
 
 DEPENDENCIES
   appbundler
+  bcrypt_pbkdf
   chef!
   chef-config!
   chef-vault
@@ -417,6 +425,8 @@ DEPENDENCIES
   pry-stack_explorer
   rake (<= 12.3.0)
   rb-readline
+  rbnacl
+  rbnacl-libsodium
   ruby-prof
   ruby-shadow
   simplecov
