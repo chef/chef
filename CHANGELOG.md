@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.12.8 -->
-## [v13.12.8](https://github.com/chef/chef/tree/v13.12.8) (2019-02-06)
+<!-- latest_release 13.12.9 -->
+## [v13.12.9](https://github.com/chef/chef/tree/v13.12.9) (2019-02-07)
 
 #### Merged Pull Requests
-- Update knife bootstrap template to use up to date omnitruck URL [#8208](https://github.com/chef/chef/pull/8208) ([tas50](https://github.com/tas50))
+- Update nokogiri to 1.10.1 [#8218](https://github.com/chef/chef/pull/8218) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.12.3 -->
 ### Changes since 13.12.3 release
 
 #### Merged Pull Requests
+- Update nokogiri to 1.10.1 [#8218](https://github.com/chef/chef/pull/8218) ([tas50](https://github.com/tas50)) <!-- 13.12.9 -->
 - Update knife bootstrap template to use up to date omnitruck URL [#8208](https://github.com/chef/chef/pull/8208) ([tas50](https://github.com/tas50)) <!-- 13.12.8 -->
 - Fix for Property deprecations are broken in Chef 13 [#8132](https://github.com/chef/chef/pull/8132) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 13.12.7 -->
 - Update omnibus Chef dep to 14.8 [#8146](https://github.com/chef/chef/pull/8146) ([tas50](https://github.com/tas50)) <!-- 13.12.6 -->
