@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.159 -->
-## [v15.0.159](https://github.com/chef/chef/tree/v15.0.159) (2019-02-06)
+<!-- latest_release 15.0.160 -->
+## [v15.0.160](https://github.com/chef/chef/tree/v15.0.160) (2019-02-07)
 
 #### Merged Pull Requests
-- More consist descriptions for resource name properties [#8216](https://github.com/chef/chef/pull/8216) ([tas50](https://github.com/tas50))
+- add ed25519 gemset and update omnibus-software [#8221](https://github.com/chef/chef/pull/8221) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- add ed25519 gemset and update omnibus-software [#8221](https://github.com/chef/chef/pull/8221) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.160 -->
 - More consist descriptions for resource name properties [#8216](https://github.com/chef/chef/pull/8216) ([tas50](https://github.com/tas50)) <!-- 15.0.159 -->
 - Add windows_uac resource [#8212](https://github.com/chef/chef/pull/8212) ([tas50](https://github.com/tas50)) <!-- 15.0.158 -->
 - Add windows_dfs and windows_dns resources [#8198](https://github.com/chef/chef/pull/8198) ([tas50](https://github.com/tas50)) <!-- 15.0.157 -->
