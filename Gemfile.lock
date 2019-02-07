@@ -212,12 +212,12 @@ GEM
     nori (2.6.0)
     octokit (4.13.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (13.12.4)
+    ohai (13.12.6)
       chef-config (>= 12.5.0.alpha.1, < 14)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
-      mixlib-cli
+      mixlib-cli (< 2.0)
       mixlib-config (~> 2.0)
       mixlib-log (>= 1.7.1, < 2.0)
       mixlib-shellout (~> 2.0)
