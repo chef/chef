@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.11.5 -->
-## [v14.11.5](https://github.com/chef/chef/tree/v14.11.5) (2019-02-06)
+<!-- latest_release 14.11.6 -->
+## [v14.11.6](https://github.com/chef/chef/tree/v14.11.6) (2019-02-07)
 
 #### Merged Pull Requests
-- Update InSpec to 3.5.0 [#8214](https://github.com/chef/chef/pull/8214) ([tas50](https://github.com/tas50))
+- Chef-14: add ed25519 gemset and update omnibus-software [#8222](https://github.com/chef/chef/pull/8222) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.10.9 -->
 ### Changes since 14.10.9 release
 
 #### Merged Pull Requests
+- Chef-14: add ed25519 gemset and update omnibus-software [#8222](https://github.com/chef/chef/pull/8222) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.11.6 -->
 - Update InSpec to 3.5.0 [#8214](https://github.com/chef/chef/pull/8214) ([tas50](https://github.com/tas50)) <!-- 14.11.5 -->
 - chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8209](https://github.com/chef/chef/pull/8209) ([tas50](https://github.com/tas50)) <!-- 14.11.4 -->
 - Update knife bootstrap template to use up to date omnitruck URL [#8207](https://github.com/chef/chef/pull/8207) ([tas50](https://github.com/tas50)) <!-- 14.11.3 -->
