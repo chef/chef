@@ -202,12 +202,20 @@ describe Chef::Provider::Mount::Aix do
     it "should enable mount if it is mounted and not enabled" do
       @new_resource.options("nodev,rw")
       stub_mounted_enabled(@provider, @mounted_output, "")
+      # Add existing mount to test enable action appends additional mount with seperating blank line
       filesystems = StringIO.new
+      filesystems.puts <<~ETCFILESYSTEMS
+        /tmp/abc:
+          dev   = /dev/sdz2
+          vfs   = jfs2
+          mount   = true
+          options   = rw
+      ETCFILESYSTEMS
       allow(::File).to receive(:open).with("/etc/filesystems", "a").and_yield(filesystems)
 
       @provider.run_action(:enable)
 
-      expect(filesystems.string).to match(%r{^/tmp/foo:\n\tdev\t\t= /dev/sdz1\n\tvfs\t\t= jfs2\n\tmount\t\t= false\n\toptions\t\t= nodev,rw\n$})
+      expect(filesystems.string).to match(%r{^\n\n/tmp/foo:\n\tdev\t\t= /dev/sdz1\n\tvfs\t\t= jfs2\n\tmount\t\t= false\n\toptions\t\t= nodev,rw\n$})
     end
 
     it "should not enable mount if it is mounted and already enabled and mount options are unchanged" do

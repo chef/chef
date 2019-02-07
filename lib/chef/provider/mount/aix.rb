@@ -164,7 +164,7 @@ class Chef
             disable_fs
           end
           ::File.open("/etc/filesystems", "a") do |fstab|
-            fstab.puts("\n#{@new_resource.mount_point}:")
+            fstab.puts("\n\n#{@new_resource.mount_point}:")
             if network_device?
               device_details = device_fstab.split(":")
               fstab.puts("\tdev\t\t= #{device_details[1]}")
