@@ -29,28 +29,29 @@ class Chef
       provides :libarchive_file # legacy cookbook name
 
       introduced "15.0"
+      description "Use the archive_file resource to extract archive files to disk. This resource uses the libarchive library to extract multiple archive formats including tar, gzip, bzip, and zip formats."
 
       property :path, String,
                name_property: true,
                coerce: proc { |f| ::File.expand_path(f) },
-               description: ""
+               description: "An optional property to set the file path to the archive to extract if it differs from the resource block's name."
 
       property :owner, String,
-               description: ""
+               description: "The owner of the extracted files"
 
       property :group, String,
-               description: ""
+               description: "The group of the extracted files"
 
       property :mode, [String, Integer],
-               description: "",
+               description: "The mode of the extracted files",
                default: "755"
 
       property :destination, String,
-               description: "",
+               description: "The file path to extract the archive file to.",
                required: true
 
       property :options, [Array, Symbol],
-               description: "",
+               description: "An array of symbols representing extraction flags. Example: :no_overwrite to prevent overwriting files on disk.",
                default: lazy { [] }
 
       # backwards compatibility for the legacy cookbook names
@@ -58,6 +59,8 @@ class Chef
       alias_method :extract_to, :destination
 
       action :extract do
+        description "Extract and archive file."
+
         require "fileutils"
 
         unless ::File.exist?(new_resource.path)
