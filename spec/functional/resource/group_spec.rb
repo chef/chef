@@ -292,7 +292,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
   end
 
-  # Groups below 1000 are reserved on a number of OSes, pick higher numbers
+  # Groups below 100 are reserved on a number of OSes, pick higher numbers
   let(:number) { SecureRandom.random_number(9899) + 100 }
   let(:group_name) { "grp#{number}" } # groupname 8 characters or less
   let(:included_members) { [] }
