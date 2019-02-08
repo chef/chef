@@ -292,9 +292,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
   end
 
-  # Groups below 100 are reserved on a number of OSes, pick higher numbers
-  let(:number) { SecureRandom.random_number(9899) + 100 }
-  let(:group_name) { "grp#{number}" } # groupname 8 characters or less for Solaris, and possibly others
+  let(:number) { rand(2000..9999) } # avoid low group numbers
+  let(:group_name) { "grp#{number}" } # group name should be 8 characters or less for Solaris, and possibly others
   # https://community.aegirproject.org/developing/architecture/unix-group-limitations/index.html#Group_name_length_limits
   let(:included_members) { [] }
   let(:excluded_members) { [] }
