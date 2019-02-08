@@ -147,7 +147,7 @@ GEM
     highline (1.7.10)
     htmlentities (4.3.4)
     iniparse (1.4.4)
-    inspec-core (3.5.0)
+    inspec-core (3.6.4)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
@@ -166,7 +166,7 @@ GEM
       sslshake (~> 1.2)
       thor (~> 0.20)
       tomlrb (~> 1.2)
-      train-core (~> 1.5, = 1.7.1)
+      train-core (~> 1.5, >= 1.7.2)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
     ipaddress (0.8.3)
@@ -317,7 +317,7 @@ GEM
     thor (0.20.3)
     timers (4.3.0)
     tomlrb (1.2.8)
-    train-core (1.7.1)
+    train-core (1.7.2)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
     travis (1.8.9)
@@ -421,4 +421,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.17.3
+   2.0.1
