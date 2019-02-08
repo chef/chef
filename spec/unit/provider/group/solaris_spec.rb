@@ -54,12 +54,13 @@ describe Chef::Provider::Group::Solaris do
         allow(File).to receive(:exist?).and_return(true)
       end
 
-      it "should raise an error when setting the entire group directly" do
-        @provider.define_resource_requirements
-        @provider.load_current_resource
-        @provider.instance_variable_set("@group_exists", true)
-        @provider.action = :modify
-        expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider}, must set append true in group")
+      it "should groupmod the whole batch when append is false" do
+        current_resource = @new_resource.dup
+        @provider.current_resource = current_resource
+        @node.automatic_attrs[:platform] = "solaris2"
+        @new_resource.append(false)
+        expect(@provider).to receive(:shell_out_compacted!).with("groupmod", "-U", "all,your,base", "wheel")
+        @provider.modify_group_members
       end
 
       platforms.each do |platform, flags|
