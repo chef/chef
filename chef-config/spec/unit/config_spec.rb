@@ -644,11 +644,11 @@ RSpec.describe ChefConfig::Config do
 
           context "when the user's home dir is /home/charlie/" do
             before do
-              ChefConfig::Config.user_home = to_platform("/home/charlie")
+              ChefConfig::Config.user_home = "/home/charlie/"
             end
 
             it "config_dir is /home/charlie/.chef/" do
-              expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.join(to_platform("/home/charlie/.chef"), ""))
+              expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.join(ChefConfig::PathHelper.cleanpath("/home/charlie/"), ".chef", ""))
             end
 
             context "and chef is running in local mode" do
@@ -657,9 +657,32 @@ RSpec.describe ChefConfig::Config do
               end
 
               it "config_dir is /home/charlie/.chef/" do
-                expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.join(to_platform("/home/charlie/.chef"), ""))
+                expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.join(ChefConfig::PathHelper.cleanpath("/home/charlie/"), ".chef", ""))
               end
             end
+          end
+
+          if is_windows
+            context "when the user's home dir is windows specific" do
+              before do
+                ChefConfig::Config.user_home = to_platform("/home/charlie/")
+              end
+
+              it "config_dir is with backslashes" do
+                expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.join(ChefConfig::PathHelper.cleanpath("/home/charlie/"), ".chef", ""))
+              end
+
+              context "and chef is running in local mode" do
+                before do
+                  ChefConfig::Config.local_mode = true
+                end
+
+                it "config_dir is with backslashes" do
+                  expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.join(ChefConfig::PathHelper.cleanpath("/home/charlie/"), ".chef", ""))
+                end
+              end
+            end
+
           end
 
         end
