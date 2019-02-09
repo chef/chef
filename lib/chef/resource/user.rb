@@ -49,10 +49,6 @@ class Chef
                 description: "The password shadow hash",
                 desired_state: false
 
-      property :iterations, Integer,
-                description: "macOS platform only. The number of iterations for a password with a SALTED-SHA512-PBKDF2 shadow hash.",
-                default: 27855, desired_state: false
-
       property :non_unique, [ TrueClass, FalseClass ],
                 description: "Create a duplicate (non-unique) user account.",
                 default: false, desired_state: false
