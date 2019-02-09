@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright 2010-2016, VMware, Inc.
+# Copyright:: Copyright 2010-2019, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,7 @@
 
 require "chef/provider/user"
 require "chef/exceptions"
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require "chef/util/windows/net_user"
-end
+require "chef/util/windows/net_user" if Chef::Platform.windows?
 
 class Chef
   class Provider
