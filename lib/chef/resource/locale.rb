@@ -26,52 +26,96 @@ class Chef
       introduced "14.5"
 
       property :lang, String,
-               default: "en_US.utf8",
                description: "Sets the default system language."
 
       property :lc_all, String,
-               default: "en_US.utf8",
                description: "Sets the fallback system language."
 
       action :update do
         description "Update the system's locale."
 
-        if ::File.exist?("/etc/default/locale")
-          locale_file = "/etc/default/locale"
-        elsif ::File.exist?("/etc/sysconfig/i18n")
-          locale_file = "/etc/sysconfig/i18n"
-        elsif ::File.exist?("/etc/environment")
-          locale_file = "/etc/environment"
-        else
-          raise "#{node["platform"]} platform not supported by the chef locale resource."
+        locale_file = nil
+
+        %w{ /etc/default/locale
+            /etc/sysconfig/i18n
+            /etc/environment }.each do |file|
+          if ::File.exist?(file)
+            locale_file = file
+            break
+          end
         end
 
-        contents = IO.readlines(locale_file)
-        env_val = contents.map { |t| t.split("=") if t.include?("=") }.compact.to_h
+        if locale_file.nil?
+          raise "#{node['platform']} platform not supported by the chef locale resource."
+        end
 
-        unless up_to_date?(env_val)
-          execute "Generate locales" do
-            command "locale-gen #{new_resource.lang}"
-            only_if { locale_file == "/etc/default/locale" }
-          end
+        contents = ::File.read(locale_file)
 
-          file locale_file do
-            content replace(env_val)
+        unless up_to_date?(contents, new_resource.lang, new_resource.lc_all)
+          converge_by("Applying locale settings") do
+            file locale_file do
+              content add_or_replace(contents, new_resource.lang, new_resource.lc_all)
+            end
           end
         end
       end
 
-      action_class do
-        def up_to_date?(hash)
-          hash["LANG"] && new_resource.lang == hash["LANG"].gsub(/\n|"/, "") &&
-            hash["LC_ALL"] && new_resource.lc_all == hash["LC_ALL"].gsub(/\n|"/, "")
-        end
+      def up_to_date?(contents, lang, lc_all)
+        h = parse_and_get_hash(contents)
+        h["LANG"] == lang && h["LC_ALL"] == lc_all
+      end
 
-        def replace(hash)
-          hash["LANG"] = "\"#{new_resource.lang}\""
-          hash["LC_ALL"] = "\"#{new_resource.lc_all}\""
-          hash.to_a.map { |t| t.join("=") }.join("\n")
+      def add_or_replace(contents, lang, lc_all)
+        lang_flag = true if lang
+        lc_all_flag = true if lc_all
+        new_contents = []
+        contents.each_line do |line|
+          new_contents <<  if PARSER.match? line
+                             kv = parse_and_get_hash(line)
+                             if kv["LANG"] && lang
+                               lang_flag = false
+                               if kv["LANG"] != lang
+                                 set("LANG", lang)
+                               else
+                                 line
+                               end
+                             elsif kv["LC_ALL"] && lc_all
+                               lc_all_flag = false
+                               if kv["LC_ALL"] != lc_all
+                                 set("LC_ALL", lc_all)
+                               else
+                                 line
+                               end
+                             else
+                               line
+                             end
+                           else
+                             line
+                           end
         end
+        new_contents << set("LANG", lang) if lang_flag
+        new_contents << set("LC_ALL", lc_all) if lc_all_flag
+        new_contents.join
+      end
+
+      private
+
+      # This will parse the string and capture the data where
+      # Valid "KEY = VAL" exists. Comments and whitespaces in a line are ignored
+      # Key can be any word character (letter, number, underscore)
+      # Separated by "="
+      # Value can also contain dots and quotations
+      PARSER = /^(\s*\w+\s*)=([ \t]*[\w+."']+)/i
+
+      def parse_and_get_hash(contents)
+        # For quick matching purpose, keys are converted in upper case
+        contents.scan(PARSER)
+                .map { |line| [line.first.strip.upcase, line.last.strip] }
+                .to_h
+      end
+
+      def set(key, val)
+        "\n#{key}=#{val}\n"
       end
     end
   end
