@@ -8,7 +8,7 @@ Chef 15 release notes will be added here as development progresses.
 
 ### powershell_script now allows overriding the default flags
 
-powershell_script uses a predefined set of flags that are used when executing the provided PowerShell script. Previously the defaults were appended to any user provided flags. This prevented the user provided flags from overriding the defaults. We now append the user flags to the defaults, which allows them to override default values. This is the correct behavior, but it may cause scripts to execute differently than they did in prevous Chef releases.
+We now append `powershell_script`  user flags to the default flags, rather than the other way around, making user flags override the defaults.  This is the correct behavior, but it may cause scripts to execute differently than in previous Chef releases.
 
 ### Chef packages now remove /opt/chef before installation
 
