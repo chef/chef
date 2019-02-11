@@ -6,6 +6,10 @@ Chef 15 release notes will be added here as development progresses.
 
 ## Breaking Changes
 
+### powershell_script now allows overriding the default flags
+
+We now append `powershell_script`  user flags to the default flags, rather than the other way around, making user flags override the defaults.  This is the correct behavior, but it may cause scripts to execute differently than in previous Chef releases.
+
 ### Chef packages now remove /opt/chef before installation
 
 The intent of this change is that on upgrading packages the /opt/chef directory is removed of any `chef_gem` installed gem versions and other
@@ -59,11 +63,11 @@ been "bar".
 
 ### http_disable_auth_on_redirect now enabled
 
-The Chef config ``http_disable_auth_on_redirect`` has been changed from `false` to `true`. In Chef 16 this config option will be removed alltogether and Chef will always disable auth on redirect.
+The Chef config ``http_disable_auth_on_redirect`` has been changed from `false` to `true`. In Chef 16 this config option will be removed altogether and Chef will always disable auth on redirect.
 
 ### knife cookbook test removal
 
-The ``knife cookbook test`` command has been removed. This command would often report non-functional cookbook as functional and has been superceded by functionality in other testing tools such as ``cookstyle``, ``foodcritic``, and ``chefspec``.
+The ``knife cookbook test`` command has been removed. This command would often report non-functional cookbook as functional and has been superseded by functionality in other testing tools such as ``cookstyle``, ``foodcritic``, and ``chefspec``.
 
 ### ohai resource's ohai_name property removal
 
@@ -139,6 +143,100 @@ We removed the system_profile plugin because it incorrectly returned data on mod
 
 We removed the Ohai::Util::Win32::GroupHelper helper class from Ohai. This class was intended for use internally in several Windows plugins, but it was never marked private in the codebase. If any of your Ohai plugins rely on this helper class, you will need to update your plugins for Ohai 15.
 
+# Chef Client Release Notes 14.10:
+
+## Updated Resources
+
+### windows_certificate
+
+The windows_certificate resource is now fully idempotent and properly imports private keys. Thanks [@Xorima](https://github.com/Xorima) for reporting these issues.
+
+### apt_repository
+
+The apt_repository resource no longer creates .gpg directory in the user's home directory owned by root when installing repository keys. Thanks [@omry](http://github.com/omry) for reporting this issue.
+
+### git
+
+The git resource no longer displays the URL of the repository if the `sensitive` property is set.
+
+## InSpec 3.4.1
+
+InSpec has been updated from 3.2.6 to 3.4.1. This new release adds new `aws_billing_report` / `aws_billing_reports` resources, resolves multiple bugs, and includes tons of under the hood improvements.
+
+## New Deprecations
+
+### knife cookbook site
+
+Since Chef 13, `knife cookbook site` has actually called the `knife supermarket` command under the hood. In Chef 16 (April 2020), we will remove the `knife cookbook site` command in favor of `knife supermarket`.
+
+### Audit Mode
+
+Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superceded by InSpec and we will be removing this beta feature in Chef 15 (April 2019).
+
+### Cookbook Shadowing
+
+Cookbook shadowing was deprecated in 0.10 and will be removed in Chef 15 (April 2019). Cookbook shadowing allowed combining cookbooks within a mono-repo, so long as the cookbooks in question had the same name and were present in both the cookbooks directory and the site-cookbooks directory.
+
+# Chef Client Release Notes 14.9:
+
+## Updated Resources
+
+### group
+
+On Windows hosts, the group resource now supports setting the comment field via a new `comment` property.
+
+### homebrew_cask
+
+Two issues, which caused homebrew_cask to converge on each Chef run, have been resolved. Thanks [@jeroenj](https://github.com/jeroenj) for this fix. Additionally, the resource will no longer fail if the `cask_name` property is specified.
+
+### homebrew_tap
+
+The homebrew_tap resource no longer fails if the `tap_name` property is specified.
+
+### openssl_x509_request
+
+The openssl_x509_request resource now properly writes out the CSR file if the `path` property is specified. Thank you [@cpjones](https://github.com/cpjones) for reporting this issue.
+
+### powershell_package_source
+
+powershell_package_source now suppresses warnings, which prevented properly loading the resource state, and resolves idempotency issues when both the `name` and `source_name` properties were specified. Thanks [@Happycoil](https://github.com/Happycoil) for this fix.
+
+### sysctl
+
+The sysctl resource now allows slashes in the key or block name. This allows keys such as `net/ipv4/conf/ens256.401/rp_filter` to be used with this resource.
+
+### windows_ad_join
+
+Errors joining the domain are now properly suppressed from the console and logs if the `sensitive` property is set to true. Thanks [@Happycoil](https://github.com/Happycoil) for this improvement.
+
+### windows_certificate
+
+The delete action now longer fails if a certificate does not exist on the system. Additionally, certificates with special characters in their passwords will no longer fail. Thank you for reporting this [@chadmccune](https://github.com/chadmccune).
+
+### windows_printer
+
+The windows_printer resource no longer fails when creating or deleting a printer if the `device_id` property is specified.
+
+### windows_task
+
+Non-system users can now run tasks without a password being specified.
+
+## Minimal Ohai Improvements
+
+The ohai `init_package` plugin is now included as part of the `minimal_ohai` plugins set, which allows resources such as timezone to continue to function if Chef is running with the minimal number of ohai plugins.
+
+## Ruby 2.6 Support
+
+Chef 14.9 now supports Ruby 2.6.
+
+## InSpec 3.2.6
+
+InSpec has been updated from 3.0.64 to 3.2.6 with improved resources for auditing. See the [InSpec changelog](https://github.com/inspec/inspec/blob/master/CHANGELOG.md#v326-2018-12-20) for additional details on this new version.
+
+## powershell_exec Runtimes Bundled
+
+The necessary VC++ runtimes for the powershell_exec helper are now bundled with Chef to prevent failures on hosts that lacked the runtimes.
+
 # Chef Client Release Notes 14.8:
 
 ## Updated Resources
@@ -161,7 +259,7 @@ gem_package now supports installing gems into Ruby 2.6 or later installations.
 
 ### windows_ad_join
 
-windows_ad_join now uses the UPN format for usernames, which prevents some failures to authenticate to the domain.
+windows_ad_join now uses the UPN format for usernames, which prevents some failures authenticating to the domain.
 
 ### windows_certificate
 
@@ -339,7 +437,7 @@ Chef is now tested against macOS Mojave, and packages are now available at downl
 
 ### Filesystem Plugin on AIX and Solaris
 
-AIX and Solaris now ship with a filesystem2 plugin that updates the filesystem data to match that of Linux, macOS, and BSD hosts. This new data structure makes accessing filesystem data in recipes easier and especially improves the layout and depth of data on ZFS filesystems. In Chef 15 (April 2019) we will begin wrting this same format of data to the existing `node['filesystem']` namespace. In Chef 16 (April 2020) we will remove the `node['filesystem2']` namespace, completing the transition to the new format. Thank you [@jaymzh](https://github.com/jaymzh) for continuing the updates to our filesystem plugins with this change.
+AIX and Solaris now ship with a filesystem2 plugin that updates the filesystem data to match that of Linux, macOS, and BSD hosts. This new data structure makes accessing filesystem data in recipes easier and especially improves the layout and depth of data on ZFS filesystems. In Chef 15 (April 2019) we will begin writing this same format of data to the existing `node['filesystem']` namespace. In Chef 16 (April 2020) we will remove the `node['filesystem2']` namespace, completing the transition to the new format. Thank you [@jaymzh](https://github.com/jaymzh) for continuing the updates to our filesystem plugins with this change.
 
 ### macOS Improvements
 
@@ -585,12 +683,12 @@ Use the chocolatey_source resource to add or remove Chocolatey sources.
 
 ### powershell_package_source
 
-Use the `powershell_package_source` resource to register a powershell package repository.
+Use the `powershell_package_source` resource to register a PowerShell package repository.
 
 ### Actions
 
-- `register` - Registers and updates the powershell package source.
-- `unregister` - Unregisters the powershell package source.
+- `register` - Registers and updates the PowerShell package source.
+- `unregister` - Unregisters the PowerShell package source.
 
 #### Properties
 
