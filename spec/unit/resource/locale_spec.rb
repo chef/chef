@@ -105,7 +105,7 @@ describe Chef::Resource::Locale do
             actual: "",
             up_to_date: false,
             expected: '
-LANG=X
+LANG=X #created by chef
 ',
           },
           {
@@ -124,7 +124,7 @@ LANG=X
             up_to_date: false,
             expected: should_not_change + '
 
-LANG=X
+LANG=X #created by chef
             ',
           },
           {
@@ -134,7 +134,7 @@ LANG=X
             up_to_date: false,
             expected: should_not_change + '
             LC_ALL=Y
-LANG=X
+LANG=X #created by chef
 ',
           },
           {
@@ -144,7 +144,7 @@ LANG=X
             up_to_date: false,
             expected: should_not_change + '
             LC_ALL=Z
-LANG=X
+LANG=X #created by chef
 ',
           },
           {
@@ -156,7 +156,7 @@ LANG=X
             up_to_date: false,
             expected: '
 
-LANG=X
+LANG=X #created by chef
             LC_ALL=foo
             ' + should_not_change,
           },
@@ -170,7 +170,7 @@ LANG=X
             expected: '
             LC_ALL = foo
 
-LANG=X
+LANG=X #created by chef
             ' + should_not_change,
           }
         ],
@@ -186,7 +186,7 @@ LANG=X
             actual: "",
             up_to_date: false,
             expected: '
-LC_ALL=Y
+LC_ALL=Y #created by chef
 ',
           },
           {
@@ -196,7 +196,7 @@ LC_ALL=Y
             up_to_date: false,
             expected: should_not_change + '
             LANG=X
-LC_ALL=Y
+LC_ALL=Y #created by chef
 ',
           },
           {
@@ -206,7 +206,7 @@ LC_ALL=Y
             up_to_date: false,
             expected: should_not_change + '
             LANG=Z
-LC_ALL=Y
+LC_ALL=Y #created by chef
 ',
           },
           {
@@ -227,7 +227,7 @@ LC_ALL=Y
             up_to_date: false,
             expected: should_not_change + '
 
-LC_ALL=Y
+LC_ALL=Y #created by chef
             ',
           },
           {
@@ -240,7 +240,7 @@ LC_ALL=Y
             expected: '
             LANG=bar
 
-LC_ALL=Y
+LC_ALL=Y #created by chef
             ' + should_not_change,
           },
           {
@@ -252,7 +252,7 @@ LC_ALL=Y
             up_to_date: false,
             expected: '
 
-LC_ALL=Y
+LC_ALL=Y #created by chef
             LANG = bar
             ' + should_not_change,
           }
@@ -269,9 +269,9 @@ LC_ALL=Y
             actual: "",
             up_to_date: false,
             expected: '
-LANG=X
+LANG=X #created by chef
 
-LC_ALL=Y
+LC_ALL=Y #created by chef
 ',
           },
             {
@@ -281,7 +281,7 @@ LC_ALL=Y
               up_to_date: false,
               expected: should_not_change + '
               LANG=X
-LC_ALL=Y
+LC_ALL=Y #created by chef
 ',
             },
           {
@@ -291,9 +291,9 @@ LC_ALL=Y
             up_to_date: false,
             expected: should_not_change + '
 
-LANG=X
+LANG=X #created by chef
 
-LC_ALL=Y
+LC_ALL=Y #created by chef
 ',
           },
           {
@@ -303,7 +303,7 @@ LC_ALL=Y
             up_to_date: false,
             expected: should_not_change + '
             LC_ALL=Y
-LANG=X
+LANG=X #created by chef
 ',
           },
           {
@@ -313,9 +313,9 @@ LANG=X
             up_to_date: false,
             expected: should_not_change + '
 
-LC_ALL=Y
+LC_ALL=Y #created by chef
 
-LANG=X
+LANG=X #created by chef
 ',
           },
           {
@@ -327,9 +327,9 @@ LANG=X
             up_to_date: false,
             expected: '
 
-LC_ALL=Y
+LC_ALL=Y #created by chef
 
-LANG=X
+LANG=X #created by chef
             ' + should_not_change,
           },
           {
@@ -341,9 +341,9 @@ LANG=X
             up_to_date: false,
             expected: '
 
-LC_ALL=Y
+LC_ALL=Y #created by chef
 
-LANG=X
+LANG=X #created by chef
             ' + should_not_change,
           },
           {
@@ -357,9 +357,9 @@ LANG=X
             expected: should_not_change + '
             # this is a comment
 
-LC_ALL=Y
+LC_ALL=Y #created by chef
 
-LANG=X
+LANG=X #created by chef
             ' + should_not_change,
           },
           {
@@ -373,9 +373,9 @@ LANG=X
             expected: should_not_change + '
             # this is a comment
 
-LC_ALL=Y
+LC_ALL=Y #created by chef
 
-LANG=X
+LANG=X #created by chef
             ' + should_not_change,
           }
         ],
