@@ -90,10 +90,12 @@ class Chef
         target_acl.each do |target_ace|
           if target_ace.flags & INHERIT_ONLY_ACE == 0
             self_ace = target_ace.dup
+            # We need flag value which is already being set in case of WRITE permissions as 3, so we will not be overwriting it with the hard coded value.
             self_ace.flags = 0 unless target_ace.mask == Chef::ReservedNames::Win32::API::Security::WRITE
             self_ace.mask = securable_object.predict_rights_mask(target_ace.mask)
             new_target_acl << self_ace
           end
+          # As there is no inheritence needed in case of WRITE permissions.
           if target_ace.mask != Chef::ReservedNames::Win32::API::Security::WRITE && target_ace.flags & (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) != 0
             children_ace = target_ace.dup
             children_ace.flags |= INHERIT_ONLY_ACE
@@ -220,7 +222,7 @@ class Chef
           when :read_execute
             mask |= GENERIC_READ | GENERIC_EXECUTE
           when :write
-            mask |= GENERIC_WRITE
+            mask |= WRITE
           else
             # Otherwise, assume it's an integer specifying the actual flags
             mask |= permission
