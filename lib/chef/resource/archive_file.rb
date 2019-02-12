@@ -37,13 +37,13 @@ class Chef
                description: "An optional property to set the file path to the archive to extract if it differs from the resource block's name."
 
       property :owner, String,
-               description: "The owner of the extracted files"
+               description: "The owner of the extracted files."
 
       property :group, String,
-               description: "The group of the extracted files"
+               description: "The group of the extracted files."
 
       property :mode, [String, Integer],
-               description: "The mode of the extracted files",
+               description: "The mode of the extracted files.",
                default: "755"
 
       property :destination, String,
@@ -51,31 +51,45 @@ class Chef
                required: true
 
       property :options, [Array, Symbol],
-               description: "An array of symbols representing extraction flags. Example: :no_overwrite to prevent overwriting files on disk.",
-               default: lazy { [] }
+               description: "An array of symbols representing extraction flags. Example: :no_overwrite to prevent overwriting files on disk. By default this properly sets :time which preserves the modification timestamps of files in the archive when writing them to disk.",
+               default: lazy { [:time] }
+
+      property :overwrite, [TrueClass, FalseClass, :auto],
+               description: "Should the resource overwrite the destination file contents if they already exist? If set to :auto the date stamp of files within the archive will be compared to those on disk and disk contents will be overwritten if they differ. This may cause unintented consequences if on disk date stamps are changed between runs, which will result in the files being overwritten during each client run. Make sure to properly test any change to this property.",
+               default: false
 
       # backwards compatibility for the legacy cookbook names
       alias_method :extract_options, :options
       alias_method :extract_to, :destination
 
+      require "fileutils"
+
       action :extract do
         description "Extract and archive file."
 
-        require "fileutils"
-
         unless ::File.exist?(new_resource.path)
-          raise Errno::ENOENT, "No archive found at #{new_resource.path}!"
+          raise Errno::ENOENT, "No archive found at #{new_resource.path}! Cannot continue."
         end
 
-        unless Dir.exist?(new_resource.destination)
+        if !::File.exist?(new_resource.destination)
+          Chef::Log.trace("File or directory does not exist at destination path: #{new_resource.destination}")
+
           converge_by("create directory #{new_resource.destination}") do
             FileUtils.mkdir_p(new_resource.destination, mode: new_resource.mode.to_i)
           end
-        end
 
-        converge_by("extract #{new_resource.path} to #{new_resource.destination}") do
-          extract(new_resource.path, new_resource.destination,
-            Array(new_resource.options))
+          extract(new_resource.path, new_resource.destination, Array(new_resource.options))
+        else
+          Chef::Log.trace("File or directory exists at destination path: #{new_resource.destination}.")
+
+          if new_resource.overwrite == true ||
+              (new_resource.overwrite == :auto && archive_differs_from_disk?(new_resource.path, new_resource.destination))
+            Chef::Log.debug("Overwriting existing content at #{new_resource.destination} due to resource's overwrite property settings.")
+
+            extract(new_resource.path, new_resource.destination, Array(new_resource.options))
+          else
+            Chef::Log.debug("Not extracting archive as #{new_resource.destination} exists and resource not set to overwrite.")
+          end
         end
 
         if new_resource.owner || new_resource.group
@@ -101,33 +115,56 @@ class Chef
           }
         end
 
+        # try to determine if the resource has updated or not by checking for files that are in the
+        # archive, but not on disk or files with a non-matching mtime
+        #
+        # @param [String] src
+        # @param [String] dest
+        #
+        # @return [Boolean]
+        def archive_differs_from_disk?(src, dest)
+          require "ffi-libarchive"
+
+          modified = false
+          Dir.chdir(dest) do
+            archive = Archive::Reader.open_filename(src)
+            Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
+            archive.each_entry do |e|
+              pathname = ::File.expand_path(e.pathname)
+              if ::File.exist?(pathname)
+                Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
+                modified = true unless ::File.mtime(pathname) == e.mtime
+              else
+                Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
+                modified = true
+              end
+            end
+          end
+          modified
+        end
+
+        # extract the archive
+        #
         # @param [String] src
         # @param [String] dest
         # @param [Array] options
         #
-        # @return [Boolean] was the file extraction performed or not
+        # @return [void]
         def extract(src, dest, options = [])
           require "ffi-libarchive"
 
-          flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
-          modified = false
+          converge_by("extract #{src} to #{dest}") do
+            flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
 
-          Dir.chdir(dest) do
-            archive = Archive::Reader.open_filename(src)
+            Dir.chdir(dest) do
+              archive = Archive::Reader.open_filename(src)
 
-            archive.each_entry do |e|
-              pathname = ::File.expand_path(e.pathname)
-              if ::File.exist?(pathname)
-                modified = true unless ::File.mtime(pathname) == e.mtime
-              else
-                modified = true
+              archive.each_entry do |e|
+                archive.extract(e, flags.to_i)
               end
-
-              archive.extract(e, flags.to_i)
+              archive.close
             end
-            archive.close
           end
-          modified
         end
       end
     end
