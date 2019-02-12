@@ -278,7 +278,9 @@ class Chef
         def convert_pem(ext)
           out = case ext
                 when ".crt", ".cer", ".der"
-                  powershell_out("openssl x509 -text -inform DER -in #{new_resource.source} -outform PEM")
+                  command = "openssl x509 -text -in #{new_resource.source} -outform PEM"
+                  command += " -inform DER" if binary_cert?
+                  powershell_out(command)
                 when ".pfx"
                   powershell_out("openssl pkcs12 -in #{new_resource.source} -nodes -passin pass:'#{new_resource.pfx_password}'")
                 when ".p7b"
@@ -299,6 +301,11 @@ class Chef
           begin_cert = "-----BEGIN CERTIFICATE-----"
           end_cert = "-----END CERTIFICATE-----"
           begin_cert + out[/#{begin_cert}(.*?)#{end_cert}/m, 1] + end_cert
+        end
+
+        # Checks if the certificate is binary encoded or not
+        def binary_cert?
+          powershell_out("file -b --mime-encoding #{new_resource.source}").stdout.strip == "binary"
         end
       end
 
