@@ -282,7 +282,7 @@ describe Chef::Provider::Package::Chocolatey do
     end
 
     it "should pass options into the install command" do
-      allow_remote_list(["git"])
+      allow_remote_list(["git"], " -force")
       new_resource.options("-force")
       provider.load_current_resource
       expect(provider).to receive(:shell_out_compacted!).with("#{choco_exe} install -y -force git", { returns: [0], timeout: timeout }).and_return(double)
