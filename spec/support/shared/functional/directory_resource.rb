@@ -68,7 +68,7 @@ shared_examples_for "a directory resource" do
     def allowed_acl(sid, expected_perms, flags = 0)
       acl = [ ACE.access_allowed(sid, expected_perms[:specific], flags) ]
       if expected_perms[:generic]
-        acl << ACE.access_allowed(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
+        acl << ACE.access_allowed(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::SUBFOLDERS_AND_FILES_ONLY))
       end
       acl
     end
@@ -76,7 +76,7 @@ shared_examples_for "a directory resource" do
     def denied_acl(sid, expected_perms, flags = 0)
       acl = [ ACE.access_denied(sid, expected_perms[:specific], flags) ]
       if expected_perms[:generic]
-        acl << ACE.access_denied(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
+        acl << ACE.access_denied(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::SUBFOLDERS_AND_FILES_ONLY))
       end
       acl
     end

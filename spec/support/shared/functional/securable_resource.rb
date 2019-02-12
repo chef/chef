@@ -364,102 +364,108 @@ shared_examples_for "a securable resource without existing target" do
       expect(descriptor.group).to eq(arbitrary_non_default_group)
     end
 
-    describe "with rights and deny_rights attributes" do
+    describe "#allowed_acl" do
+      context "correctly sets" do
 
-      it "correctly sets :read rights" do
-        resource.rights(:read, "Guest")
-        resource.run_action(:create)
-        expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_read_perms))
+        it ":read rights" do
+          resource.rights(:read, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_read_perms))
+        end
+
+        it ":read_execute rights" do
+          resource.rights(:read_execute, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_read_execute_perms))
+        end
+
+        it ":write rights" do
+          resource.rights(:write, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_write_perms, write_flag))
+        end
+
+        it ":modify rights" do
+          resource.rights(:modify, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_modify_perms))
+        end
+
+        it ":full_control rights" do
+          resource.rights(:full_control, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_full_control_perms))
+        end
+
+        it "multiple rights" do
+          resource.rights(:read, "Everyone")
+          resource.rights(:modify, "Guest")
+          resource.run_action(:create)
+
+          expect(explicit_aces).to eq(
+            allowed_acl(SID.Everyone, expected_read_perms) +
+            allowed_acl(SID.Guest, expected_modify_perms)
+          )
+        end
       end
+    end
 
-      it "correctly sets :read_execute rights" do
-        resource.rights(:read_execute, "Guest")
-        resource.run_action(:create)
-        expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_read_execute_perms))
+    describe "#denied_acl" do
+      context "correctly sets" do
+
+        it ":read rights" do
+          resource.deny_rights(:read, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_read_perms))
+        end
+
+        it ":read_execute rights" do
+          resource.deny_rights(:read_execute, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_read_execute_perms))
+        end
+
+        it ":write rights" do
+          resource.deny_rights(:write, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_write_perms, write_flag))
+        end
+
+        it ":modify rights" do
+          resource.deny_rights(:modify, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_modify_perms))
+        end
+
+        it ":full_control rights" do
+          # deny is an ACE with full rights, but is a deny type ace, not an allow type
+          resource.deny_rights(:full_control, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_full_control_perms))
+        end
+
+        it "deny_rights ahead of rights" do
+          resource.rights(:read, "Everyone")
+          resource.deny_rights(:modify, "Guest")
+          resource.run_action(:create)
+
+          expect(explicit_aces).to eq(
+            denied_acl(SID.Guest, expected_modify_perms) +
+            allowed_acl(SID.Everyone, expected_read_perms)
+          )
+        end
+
+        it "deny_rights ahead of rights when specified in reverse order" do
+          resource.deny_rights(:modify, "Guest")
+          resource.rights(:read, "Everyone")
+          resource.run_action(:create)
+
+          expect(explicit_aces).to eq(
+            denied_acl(SID.Guest, expected_modify_perms) +
+            allowed_acl(SID.Everyone, expected_read_perms)
+          )
+        end
       end
-
-      it "correctly sets :write rights" do
-        resource.rights(:write, "Guest")
-        resource.run_action(:create)
-        expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_write_perms, write_flag))
-      end
-
-      it "correctly sets :modify rights" do
-        resource.rights(:modify, "Guest")
-        resource.run_action(:create)
-        expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_modify_perms))
-      end
-
-      it "correctly sets :full_control rights" do
-        resource.rights(:full_control, "Guest")
-        resource.run_action(:create)
-        expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_full_control_perms))
-      end
-
-      it "correctly sets :read deny_rights" do
-        resource.deny_rights(:read, "Guest")
-        resource.run_action(:create)
-        expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_read_perms))
-      end
-
-      it "correctly sets :read_execute deny_rights" do
-        resource.deny_rights(:read_execute, "Guest")
-        resource.run_action(:create)
-        expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_read_execute_perms))
-      end
-
-      it "correctly sets :write deny_rights" do
-        resource.deny_rights(:write, "Guest")
-        resource.run_action(:create)
-        expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_write_perms, write_flag))
-      end
-
-      it "correctly sets :modify deny_rights" do
-        resource.deny_rights(:modify, "Guest")
-        resource.run_action(:create)
-        expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_modify_perms))
-      end
-
-      it "correctly sets deny_rights" do
-        # deny is an ACE with full rights, but is a deny type ace, not an allow type
-        resource.deny_rights(:full_control, "Guest")
-        resource.run_action(:create)
-        expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_full_control_perms))
-      end
-
-      it "Sets multiple rights" do
-        resource.rights(:read, "Everyone")
-        resource.rights(:modify, "Guest")
-        resource.run_action(:create)
-
-        expect(explicit_aces).to eq(
-          allowed_acl(SID.Everyone, expected_read_perms) +
-          allowed_acl(SID.Guest, expected_modify_perms)
-        )
-      end
-
-      it "Sets deny_rights ahead of rights" do
-        resource.rights(:read, "Everyone")
-        resource.deny_rights(:modify, "Guest")
-        resource.run_action(:create)
-
-        expect(explicit_aces).to eq(
-          denied_acl(SID.Guest, expected_modify_perms) +
-          allowed_acl(SID.Everyone, expected_read_perms)
-        )
-      end
-
-      it "Sets deny_rights ahead of rights when specified in reverse order" do
-        resource.deny_rights(:modify, "Guest")
-        resource.rights(:read, "Everyone")
-        resource.run_action(:create)
-
-        expect(explicit_aces).to eq(
-          denied_acl(SID.Guest, expected_modify_perms) +
-          allowed_acl(SID.Everyone, expected_read_perms)
-        )
-      end
-
     end
 
     context "with a mode attribute" do
