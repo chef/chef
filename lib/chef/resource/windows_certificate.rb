@@ -21,6 +21,7 @@ require "chef/util/path_helper"
 require "chef/resource"
 require "win32-certstore" if Chef::Platform.windows?
 require "openssl"
+require "open3"
 
 class Chef
   class Resource
@@ -275,19 +276,19 @@ class Chef
         # Uses powershell command to convert crt/der/cer/pfx & p7b certificates
         # In PEM format and returns its certificate content
         def convert_pem(ext)
-          out = case ext
-                when ".crt", ".cer", ".der"
-                  command = "openssl x509 -text -in #{new_resource.source} -outform PEM"
-                  command += " -inform DER" if binary_cert?
-                  powershell_out(command)
-                when ".pfx"
-                  powershell_out("openssl pkcs12 -in #{new_resource.source} -nodes -passin pass:'#{new_resource.pfx_password}'")
-                when ".p7b"
-                  powershell_out("openssl pkcs7 -print_certs -in #{new_resource.source} -outform PEM")
-                else
-                  powershell_out("openssl x509 -text -inform #{ext.delete(".")} -in #{new_resource.source} -outform PEM")
-                end
+          command = case ext
+                    when ".crt", ".cer", ".der"
+                      cmd = "openssl x509 -text -in #{new_resource.source} -outform PEM"
+                      pem_cert? ? cmd : cmd + " -inform DER"
+                    when ".pfx"
+                      "openssl pkcs12 -in #{new_resource.source} -nodes -passin pass:'#{new_resource.pfx_password}'"
+                    when ".p7b"
+                      "openssl pkcs7 -print_certs -in #{new_resource.source} -outform PEM"
+                    else
+                      "openssl x509 -text -inform #{ext.delete('.')} -in #{new_resource.source} -outform PEM"
+                    end
 
+          out = powershell_out(command)
           if out.exitstatus == 0
             format_raw_out(out.stdout)
           else
@@ -302,12 +303,14 @@ class Chef
           begin_cert + out[/#{begin_cert}(.*?)#{end_cert}/m, 1] + end_cert
         end
 
-        # Checks if the certificate is binary encoded or not
-        def binary_cert?
-          powershell_out("file -b --mime-encoding #{new_resource.source}").stdout.strip == "binary"
+        # Checks if the given certificate is a PEM certificate or not
+        def pem_cert?
+          details, status = Open3.capture2e("file", new_resource.source)
+          return false unless status.success?
+
+          details.rpartition(":").last.strip == "PEM certificate"
         end
       end
-
     end
   end
 end
