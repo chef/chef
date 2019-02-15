@@ -218,6 +218,10 @@ class Chef
             return 0
           end
 
+          # Till now we are getting v1 as an array. But we need only the latest version of the package in form of string.
+          # So we pass only the first element of the array.
+          # If we pass array in `Gem::Version.new(Array)` it will throw `Malformed version number string []` error.
+          v1 = v1.first if v1.is_a?(Array)
           gem_v1 = Gem::Version.new(v1)
           gem_v2 = Gem::Version.new(v2)
 
