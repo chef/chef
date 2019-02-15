@@ -228,7 +228,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
           win_certificate.pfx_password = "Invalid password"
         end
         it "Raises an error" do
-          expect { win_certificate.run_action(:create) }.to raise_error(RuntimeError)
+          expect { win_certificate.run_action(:create) }.to raise_error(OpenSSL::PKCS12::PKCS12Error)
         end
       end
     end
