@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.162 -->
-## [v15.0.162](https://github.com/chef/chef/tree/v15.0.162) (2019-02-08)
+<!-- latest_release 15.0.163 -->
+## [v15.0.163](https://github.com/chef/chef/tree/v15.0.163) (2019-02-16)
 
 #### Merged Pull Requests
-- Chef::Config: Uniform config dir path separator [#8219](https://github.com/chef/chef/pull/8219) ([vsingh-msys](https://github.com/vsingh-msys))
+- windows_certificate: Add support to import Base 64 encoded CER certificates [#8229](https://github.com/chef/chef/pull/8229) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- windows_certificate: Add support to import Base 64 encoded CER certificates [#8229](https://github.com/chef/chef/pull/8229) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.163 -->
 - Chef::Config: Uniform config dir path separator [#8219](https://github.com/chef/chef/pull/8219) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.162 -->
 - Alter how we set set group members in solaris / unify group testing [#8226](https://github.com/chef/chef/pull/8226) ([tas50](https://github.com/tas50)) <!-- 15.0.161 -->
 - add ed25519 gemset and update omnibus-software [#8221](https://github.com/chef/chef/pull/8221) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.160 -->
