@@ -52,7 +52,7 @@ class Chef
                description: ""
 
       # lazy used to set default value of sensitive to true if password is set
-      property :sensitive, [ TrueClass, FalseClass ],
+      property :sensitive, [TrueClass, FalseClass],
                description: "Ensure that sensitive resource data is not logged by the chef-client.",
                default: lazy { |r| r.pfx_password ? true : false }, skip_docs: true
 
@@ -61,9 +61,7 @@ class Chef
 
         # Extension of the certificate
         ext = ::File.extname(new_resource.source)
-        raw_source = convert_pem(ext)
-
-        cert_obj = OpenSSL::X509::Certificate.new(raw_source) # A certificate object in memory
+        cert_obj = fetch_cert_object(ext) # Fetch OpenSSL::X509::Certificate object
         thumbprint = OpenSSL::Digest::SHA1.new(cert_obj.to_der).to_s # Fetch its thumbprint
 
         # Need to check if return value is Boolean:true
@@ -247,6 +245,7 @@ class Chef
 
         def acl_script(hash)
           return "" if new_resource.private_key_acl.nil? || new_resource.private_key_acl.empty?
+
           # this PS came from http://blogs.technet.com/b/operationsguy/archive/2010/11/29/provide-access-to-private-keys-commandline-vs-powershell.aspx
           # and from https://msdn.microsoft.com/en-us/library/windows/desktop/bb204778(v=vs.85).aspx
           set_acl_script = <<-EOH
@@ -272,35 +271,43 @@ class Chef
           set_acl_script
         end
 
-        # Uses powershell command to convert crt/der/cer/pfx & p7b certificates
-        # In PEM format and returns its certificate content
-        def convert_pem(ext)
-          out = case ext
-                when ".crt", ".cer", ".der"
-                  powershell_out("openssl x509 -text -inform DER -in #{new_resource.source} -outform PEM")
-                when ".pfx"
-                  powershell_out("openssl pkcs12 -in #{new_resource.source} -nodes -passin pass:'#{new_resource.pfx_password}'")
-                when ".p7b"
-                  powershell_out("openssl pkcs7 -print_certs -in #{new_resource.source} -outform PEM")
-                else
-                  powershell_out("openssl x509 -text -inform #{ext.delete(".")} -in #{new_resource.source} -outform PEM")
-                end
+        # Method returns an OpenSSL::X509::Certificate object
+        #
+        # Based on its extension, the certificate contents are used to initialize
+        # PKCS12 (PFX), PKCS7 (P7B) objects which contains OpenSSL::X509::Certificate.
+        #
+        # @note Other then PEM, all the certificates are usually in binary format, and hence
+        #       their contents are loaded by using File.binread
+        #
+        # @param ext [String] Extension of the certificate
+        #
+        # @return [OpenSSL::X509::Certificate] Object containing certificate's attributes
+        #
+        # @raise [OpenSSL::PKCS12::PKCS12Error] When incorrect password is provided for PFX certificate
+        #
+        def fetch_cert_object(ext)
+          contents = if binary_cert?
+                       ::File.binread(new_resource.source)
+                     else
+                       ::File.read(new_resource.source)
+                     end
 
-          if out.exitstatus == 0
-            format_raw_out(out.stdout)
+          case ext
+          when ".pfx"
+            OpenSSL::PKCS12.new(contents, new_resource.pfx_password).certificate
+          when ".p7b"
+            OpenSSL::PKCS7.new(contents).certificates.first
           else
-            raise out.stderr
+            OpenSSL::X509::Certificate.new(contents)
           end
         end
 
-        # Returns the certificate content
-        def format_raw_out(out)
-          begin_cert = "-----BEGIN CERTIFICATE-----"
-          end_cert = "-----END CERTIFICATE-----"
-          begin_cert + out[/#{begin_cert}(.*?)#{end_cert}/m, 1] + end_cert
+        # @return [Boolean] Whether the certificate file is binary encoded or not
+        #
+        def binary_cert?
+          powershell_out!("file -b --mime-encoding #{new_resource.source}").stdout.strip == "binary"
         end
       end
-
     end
   end
 end
