@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.165 -->
-## [v15.0.165](https://github.com/chef/chef/tree/v15.0.165) (2019-02-19)
+<!-- latest_release 15.0.166 -->
+## [v15.0.166](https://github.com/chef/chef/tree/v15.0.166) (2019-02-19)
 
 #### Merged Pull Requests
-- chocolatey_package: use provided options when determing available options to allow using private sources [#8230](https://github.com/chef/chef/pull/8230) ([vsingh-msys](https://github.com/vsingh-msys))
+- Cleanup the user resource and convert it to the resource DSL + delete user_add provider [#8228](https://github.com/chef/chef/pull/8228) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Cleanup the user resource and convert it to the resource DSL + delete user_add provider [#8228](https://github.com/chef/chef/pull/8228) ([tas50](https://github.com/tas50)) <!-- 15.0.166 -->
 - chocolatey_package: use provided options when determing available options to allow using private sources [#8230](https://github.com/chef/chef/pull/8230) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.165 -->
 - Update scripts to use new EXPEDITOR_ environment variables [#8232](https://github.com/chef/chef/pull/8232) ([tduffield](https://github.com/tduffield)) <!-- 15.0.164 -->
 - windows_certificate: Add support to import Base 64 encoded CER certificates [#8229](https://github.com/chef/chef/pull/8229) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.163 -->
