@@ -282,7 +282,7 @@ describe Chef::Provider::Package::Chocolatey do
     end
 
     it "should pass options into the install command" do
-      allow_remote_list(["git"])
+      allow_remote_list(["git"], " -force")
       new_resource.options("-force")
       provider.load_current_resource
       expect(provider).to receive(:shell_out_compacted!).with("#{choco_exe} install -y -force git", { returns: [0], timeout: timeout }).and_return(double)
@@ -311,6 +311,35 @@ describe Chef::Provider::Package::Chocolatey do
         new_resource.source("alternate_source")
         provider.load_current_resource
         expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+      end
+    end
+
+    context "private source" do
+      it "installing a package without auth options throws an error" do
+        allow_remote_list(["package-without-auth"], " -source auth_source")
+        new_resource.package_name("package-without-auth")
+        new_resource.source("auth_source")
+        provider.load_current_resource
+        expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+      end
+
+      it "installing a package with invalid credentials throws an error" do
+        allow_remote_list(["package-invalid-auth"], " -source auth_source -u user -p password")
+        new_resource.package_name("package-invalid-auth")
+        new_resource.source("auth_source")
+        new_resource.options("-u user -p password")
+        provider.load_current_resource
+        expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+      end
+
+      it "installing a package with valid credentials" do
+        allow_remote_list(["git"], " -source auth_source -u user -p password")
+        new_resource.source("auth_source")
+        new_resource.options("-u user -p password")
+        provider.load_current_resource
+        expect(provider).to receive(:shell_out_compacted!).with("#{choco_exe} install -y -u user -p password -source auth_source git", { returns: [0], timeout: timeout }).and_return(double)
+        provider.run_action(:install)
+        expect(new_resource).to be_updated_by_last_action
       end
     end
   end

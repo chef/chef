@@ -236,6 +236,8 @@ class Chef
               begin
                 cmd = [ "list -r #{pkg}" ]
                 cmd.push( "-source #{new_resource.source}" ) if new_resource.source
+                cmd.push( new_resource.options ) if new_resource.options
+
                 raw = parse_list_output(*cmd)
                 raw.keys.each_with_object({}) do |name, available|
                   available[name] = desired_name_versions[name] || raw[name]
