@@ -191,7 +191,7 @@ describe Chef::Provider::User do
     let(:mapping) do
       {
         "username" => %w{notarealuser notarealuser},
-        "comment" => ["Nota Realuser", "Nota Realuser"],
+        "comment" => ["Nota Realuser", "Not a Realuser"],
         "uid" => [1000, 1001],
         "gid" => [1000, 1001],
         "home" => ["/home/notarealuser", "/Users/notarealuser"],
