@@ -1,5 +1,9 @@
 # Documentation available at https://expeditor.chef.io/docs/getting-started/
 
+# the name we use for this project when interacting with expeditor chatbot
+project:
+  alias: chef-13
+
 # The name of the product keys for this product (from mixlib-install)
 product_key:
   - chef
@@ -39,6 +43,8 @@ github:
   # for building.
   release_branch:
     - master:
+        version_constraint: 15*
+    - chef-14:
         version_constraint: 14*
     - chef-13:
         version_constraint: 13*
@@ -49,7 +55,7 @@ merge_actions:
       ignore_labels:
         - "Expeditor: Skip Version Bump"
         - "Expeditor: Skip All"
-  - bash:.expeditor/update_version.sh:
+  - bash:.expeditor/update_version.sh@chef/chef@master:
       only_if: built_in:bump_version
   - built_in:update_changelog:
       ignore_labels:
