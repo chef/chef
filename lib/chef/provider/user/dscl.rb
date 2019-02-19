@@ -18,6 +18,7 @@
 
 require "chef/mixin/shell_out"
 require "chef/provider/user"
+require "chef/resource/user/dscl_user"
 require "openssl"
 require "plist"
 require "chef/util/path_helper"
@@ -99,7 +100,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         end
 
         def load_current_resource
-          @current_resource = Chef::Resource::User.new(new_resource.username)
+          @current_resource = Chef::Resource::User::DsclUser.new(new_resource.username)
           current_resource.username(new_resource.username)
 
           @user_info = read_user_info
