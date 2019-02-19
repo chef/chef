@@ -11,4 +11,4 @@
 
 set -evx
 
-sed -i -r "s/^ARG VERSION=.+/ARG VERSION=${VERSION}/" Dockerfile
+sed -i -r "s/^ARG VERSION=.+/ARG VERSION=${EXPEDITOR_VERSION}/" Dockerfile
