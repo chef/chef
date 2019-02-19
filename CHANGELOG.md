@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.163 -->
-## [v15.0.163](https://github.com/chef/chef/tree/v15.0.163) (2019-02-16)
+<!-- latest_release 15.0.164 -->
+## [v15.0.164](https://github.com/chef/chef/tree/v15.0.164) (2019-02-19)
 
 #### Merged Pull Requests
-- windows_certificate: Add support to import Base 64 encoded CER certificates [#8229](https://github.com/chef/chef/pull/8229) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Update scripts to use new EXPEDITOR_ environment variables [#8232](https://github.com/chef/chef/pull/8232) ([tduffield](https://github.com/tduffield))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update scripts to use new EXPEDITOR_ environment variables [#8232](https://github.com/chef/chef/pull/8232) ([tduffield](https://github.com/tduffield)) <!-- 15.0.164 -->
 - windows_certificate: Add support to import Base 64 encoded CER certificates [#8229](https://github.com/chef/chef/pull/8229) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.163 -->
 - Chef::Config: Uniform config dir path separator [#8219](https://github.com/chef/chef/pull/8219) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.162 -->
 - Alter how we set set group members in solaris / unify group testing [#8226](https://github.com/chef/chef/pull/8226) ([tas50](https://github.com/tas50)) <!-- 15.0.161 -->
