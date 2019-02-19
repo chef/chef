@@ -38,7 +38,7 @@ git add .
 # DCO sign-off is needed for this sort of PR since it contains no intellectual property
 git commit --message "Bump $EXPEDITOR_GEM_NAME to $EXPEDITOR_VERSION" --message "This pull request was triggered automatically via Expeditor when $EXPEDITOR_GEM_NAME $EXPEDITOR_VERSION was promoted to Rubygems." --message "This change falls under the obvious fix policy so no Developer Certificate of Origin (DCO) sign-off is required."
 
-open_pull_request
+open_pull_request "$EXPEDITOR_BRANCH"
 
 # Get back to master and cleanup the leftovers - any changed files left over at the end of this script will get committed to master.
 git checkout -
