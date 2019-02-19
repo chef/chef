@@ -23,25 +23,25 @@ describe Chef::Provider::User::Dscl do
   before do
     allow(ChefConfig).to receive(:windows?) { false }
   end
-  let(:shellcmdresult) do
-    Struct.new(:stdout, :stderr, :exitstatus)
-  end
+
+  let(:shellcmdresult) { Struct.new(:stdout, :stderr, :exitstatus) }
+
+  let(:password) { nil }
+  let(:salt) { nil }
+  let(:iterations) { nil }
+
+  let (:events) { Chef::EventDispatch::Dispatcher.new }
+
   let(:node) do
-    node = Chef::Node.new
-    allow(node).to receive(:[]).with(:platform).and_return("mac_os_x")
-    node
+    Chef::Node.new.tap do |node|
+      node.automatic["os"] = "darwin"
+    end
   end
 
-  let(:events) do
-    Chef::EventDispatch::Dispatcher.new
-  end
-
-  let(:run_context) do
-    Chef::RunContext.new(node, {}, events)
-  end
+  let (:run_context) { Chef::RunContext.new(node, {}, events) }
 
   let(:new_resource) do
-    r = Chef::Resource::User::DsclUser.new("toor")
+    r = Chef::Resource::User::DsclUser.new("toor", run_context)
     r.password(password)
     r.salt(salt)
     r.iterations(iterations)
@@ -51,10 +51,6 @@ describe Chef::Provider::User::Dscl do
   let(:provider) do
     Chef::Provider::User::Dscl.new(new_resource, run_context)
   end
-
-  let(:password) { nil }
-  let(:salt) { nil }
-  let(:iterations) { nil }
 
   let(:salted_sha512_password) do
     "0f543f021c63255e64e121a3585601b8ecfedf6d2\
@@ -144,17 +140,17 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       expect(provider).to receive(:run_dscl).with("list", "/Users", "uid").and_return("\nwheel      200\nstaff      201\nbrahms      500\nchopin      501\n")
     end
 
-    describe "when resource is configured as system" do
+    describe "when the system property is set to true" do
       before do
         new_resource.system(true)
       end
 
-      it "should return the first unused uid number on or above 500" do
+      it "should return the first unused uid number on or above 200" do
         expect(provider.get_free_uid).to eq(202)
       end
     end
 
-    it "should return the first unused uid number on or above 200" do
+    it "should return the first unused uid number on or above 500" do
       expect(provider.get_free_uid).to eq(502)
     end
 
@@ -564,9 +560,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
       it "sets the comment field to username" do
         new_resource.comment nil
-        expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "RealName", "#mockssuck").and_return(true)
+        expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "RealName", "toor").and_return(true)
         provider.dscl_create_comment
-        expect(new_resource.comment).to eq("#mockssuck")
       end
 
       it "should run run_dscl with create /Users/user PrimaryGroupID to set the users primary group" do

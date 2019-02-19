@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,18 +27,18 @@ describe Chef::Provider::User do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::User.new("adam")
-    @new_resource.comment "Adam Jacob"
+    @new_resource = Chef::Resource::User.new("notarealuser")
+    @new_resource.comment "Nota Realuser"
     @new_resource.uid 1000
     @new_resource.gid 1000
-    @new_resource.home "/home/adam"
+    @new_resource.home "/home/notarealuser"
     @new_resource.shell "/usr/bin/zsh"
 
-    @current_resource = Chef::Resource::User.new("adam")
-    @current_resource.comment "Adam Jacob"
+    @current_resource = Chef::Resource::User.new("notarealuser")
+    @current_resource.comment "Nota Realuser"
     @current_resource.uid 1000
     @current_resource.gid 1000
-    @current_resource.home "/home/adam"
+    @current_resource.home "/home/notarealuser"
     @current_resource.shell "/usr/bin/zsh"
 
     @provider = Chef::Provider::User.new(@new_resource, @run_context)
@@ -60,22 +60,22 @@ describe Chef::Provider::User do
       @node = Chef::Node.new
       # @new_resource = double("Chef::Resource::User",
       #  :null_object => true,
-      #  :username => "adam",
-      #  :comment => "Adam Jacob",
+      #  :username => "notarealuser",
+      #  :comment => "Nota Realuser",
       #  :uid => 1000,
       #  :gid => 1000,
-      #  :home => "/home/adam",
+      #  :home => "/home/notarealuser",
       #  :shell => "/usr/bin/zsh",
       #  :password => nil,
       #  :updated => nil
       # )
       allow(Chef::Resource::User).to receive(:new).and_return(@current_resource)
       @pw_user = EtcPwnamIsh.new
-      @pw_user.name = "adam"
+      @pw_user.name = "notarealuser"
       @pw_user.gid = 1000
       @pw_user.uid = 1000
-      @pw_user.gecos = "Adam Jacob"
-      @pw_user.dir = "/home/adam"
+      @pw_user.gecos = "Nota Realuser"
+      @pw_user.dir = "/home/notarealuser"
       @pw_user.shell = "/usr/bin/zsh"
       @pw_user.passwd = "*"
       allow(Etc).to receive(:getpwnam).and_return(@pw_user)
@@ -83,7 +83,7 @@ describe Chef::Provider::User do
 
     it "should create a current resource with the same name as the new resource" do
       @provider.load_current_resource
-      expect(@provider.current_resource.name).to eq("adam")
+      expect(@provider.current_resource.name).to eq("notarealuser")
     end
 
     it "should set the username of the current resource to the username of the new resource" do
@@ -129,7 +129,7 @@ describe Chef::Provider::User do
     end
 
     it "shouldn't try and convert the group gid if none has been supplied" do
-      @new_resource.gid(false)
+      @new_resource.gid(nil)
       expect(@provider).not_to receive(:convert_group_name)
       @provider.load_current_resource
     end
@@ -168,7 +168,7 @@ describe Chef::Provider::User do
               expect(@provider).to receive(:require) { |*args| original_method.call(*args) }
               passwd_info = Struct::PasswdEntry.new(sp_namp: "adm ", sp_pwdp: "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", sp_lstchg: 14861, sp_min: 0, sp_max: 99999,
                                                     sp_warn: 7, sp_inact: -1, sp_expire: -1, sp_flag: -1)
-              expect(Shadow::Passwd).to receive(:getspnam).with("adam").and_return(passwd_info)
+              expect(Shadow::Passwd).to receive(:getspnam).with("notarealuser").and_return(passwd_info)
               @provider.load_current_resource
               @provider.define_resource_requirements
               @provider.process_resource_requirements
@@ -190,11 +190,11 @@ describe Chef::Provider::User do
   describe "compare_user" do
     let(:mapping) do
       {
-        "username" => %w{adam Adam},
-        "comment" => ["Adam Jacob", "adam jacob"],
+        "username" => %w{notarealuser notarealuser},
+        "comment" => ["Nota Realuser", "Not a Realuser"],
         "uid" => [1000, 1001],
         "gid" => [1000, 1001],
-        "home" => ["/home/adam", "/Users/adam"],
+        "home" => ["/home/notarealuser", "/Users/notarealuser"],
         "shell" => ["/usr/bin/zsh", "/bin/bash"],
         "password" => %w{abcd 12345},
       }
@@ -221,8 +221,8 @@ describe Chef::Provider::User do
     end
 
     it "should ignore differences in trailing slash in home paths" do
-      @new_resource.home "/home/adam"
-      @current_resource.home "/home/adam/"
+      @new_resource.home "/home/notarealuser"
+      @current_resource.home "/home/notarealuser/"
       expect(@provider.compare_user).to eql(false)
     end
   end
@@ -232,11 +232,11 @@ describe Chef::Provider::User do
       allow(@provider).to receive(:load_current_resource)
       # @current_resource = double("Chef::Resource::User",
       #   :null_object => true,
-      #   :username => "adam",
-      #   :comment => "Adam Jacob",
+      #   :username => "notarealuser",
+      #   :comment => "Nota Realuser",
       #   :uid => 1000,
       #   :gid => 1000,
-      #   :home => "/home/adam",
+      #   :home => "/home/notarealuser",
       #   :shell => "/usr/bin/zsh",
       #   :password => nil,
       #   :updated => nil
