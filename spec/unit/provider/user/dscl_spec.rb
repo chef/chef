@@ -149,12 +149,12 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
         new_resource.system(true)
       end
 
-      it "should return the first unused uid number on or above 500" do
+      it "should return the first unused uid number on or above 200" do
         expect(provider.get_free_uid).to eq(202)
       end
     end
 
-    it "should return the first unused uid number on or above 200" do
+    it "should return the first unused uid number on or above 500" do
       expect(provider.get_free_uid).to eq(502)
     end
 
