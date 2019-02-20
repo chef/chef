@@ -21,6 +21,7 @@ require "chef/dsl/platform_introspection"
 require "chef/mixin/powershell_exec"
 require "chef/mixin/powershell_out"
 require "chef/mixin/shell_out"
+require "chef/mixin/lazy_module_include"
 
 class Chef
   module DSL
