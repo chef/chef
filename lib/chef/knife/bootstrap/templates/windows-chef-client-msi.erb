@@ -1,0 +1,271 @@
+@rem
+@rem Author:: Seth Chisamore (<schisamo@chef.io>)
+@rem Copyright:: Copyright (c) 2011-2017 Chef Software, Inc.
+@rem License:: Apache License, Version 2.0
+@rem
+@rem Licensed under the Apache License, Version 2.0 (the "License");
+@rem you may not use this file except in compliance with the License.
+@rem You may obtain a copy of the License at
+@rem
+@rem     http://www.apache.org/licenses/LICENSE-2.0
+@rem
+@rem Unless required by applicable law or agreed to in writing, software
+@rem distributed under the License is distributed on an "AS IS" BASIS,
+@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@rem See the License for the specific language governing permissions and
+@rem limitations under the License.
+@rem
+
+@rem Use delayed environment expansion so that ERRORLEVEL can be evaluated with the
+@rem !ERRORLEVEL! syntax which evaluates at execution of the line of script, not when
+@rem the line is read. See help for the /E switch from cmd.exe /? .
+@setlocal ENABLEDELAYEDEXPANSION
+
+<%= "SETX HTTP_PROXY \"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] %>
+
+@set BOOTSTRAP_DIRECTORY=<%= bootstrap_directory %>
+@echo Checking for existing directory "%BOOTSTRAP_DIRECTORY%"...
+@if NOT EXIST %BOOTSTRAP_DIRECTORY% (
+    @echo Existing directory not found, creating.
+    @mkdir %BOOTSTRAP_DIRECTORY%
+) else (
+    @echo Existing directory found, skipping creation.
+)
+
+> <%= bootstrap_directory %>\wget.vbs (
+ <%= win_wget %>
+)
+
+> <%= bootstrap_directory %>\wget.ps1 (
+ <%= win_wget_ps %>
+)
+
+@rem Determine the version and the architecture
+
+@FOR /F "usebackq tokens=1-8 delims=.[] " %%A IN (`ver`) DO (
+@set WinMajor=%%D
+@set WinMinor=%%E
+@set WinBuild=%%F
+)
+
+@echo Detected Windows Version %WinMajor%.%WinMinor% Build %WinBuild%
+
+@set LATEST_OS_VERSION_MAJOR=10
+@set LATEST_OS_VERSION_MINOR=1
+
+@if /i %WinMajor% GTR %LATEST_OS_VERSION_MAJOR% goto VersionUnknown
+@if /i %WinMajor% EQU %LATEST_OS_VERSION_MAJOR%  (
+  @if /i %WinMinor% GTR %LATEST_OS_VERSION_MINOR% goto VersionUnknown
+)
+
+goto Version%WinMajor%.%WinMinor%
+
+:VersionUnknown
+@rem If this is an unknown version of windows set the default
+@set MACHINE_OS=2012r2
+@echo Warning: Unknown version of Windows, assuming default of Windows %MACHINE_OS%
+goto architecture_select
+
+:Version6.0
+@set MACHINE_OS=2008
+goto architecture_select
+
+:Version5.2
+@set MACHINE_OS=2003r2
+goto architecture_select
+
+:Version6.1
+@set MACHINE_OS=2008r2
+goto architecture_select
+
+:Version6.2
+@set MACHINE_OS=2012
+goto architecture_select
+
+@rem Currently Windows Server 2012 R2 is treated as equivalent to Windows Server 2012
+:Version6.3
+@set MACHINE_OS=2012r2
+goto architecture_select
+
+:Version10.0
+@set MACHINE_OS=2016
+goto architecture_select
+
+@rem Currently Windows Server 2016 R2 is treated as equivalent to Windows Server 2016
+:Version10.1
+goto Version10.0
+
+:architecture_select
+<% if knife_config[:architecture] %>
+  @set MACHINE_ARCH=<%= knife_config[:architecture] %>
+
+  <% if knife_config[:architecture] == "x86_64" %>
+      IF "%PROCESSOR_ARCHITECTURE%"=="x86" IF not defined PROCESSOR_ARCHITEW6432 (
+      echo You specified bootstrap_architecture as x86_64 but the target machine is i386. A 64 bit program cannot run on a 32 bit machine. > "&2"
+      echo Exiting without bootstrapping. > "&2"
+      exit /b 1
+    )
+  <% end %>
+<% else %>
+  @set MACHINE_ARCH=x86_64
+  IF "%PROCESSOR_ARCHITECTURE%"=="x86" IF not defined PROCESSOR_ARCHITEW6432 @set MACHINE_ARCH=i686
+<% end %>
+goto chef_installed
+
+:chef_installed
+@echo Checking for existing chef installation
+WHERE chef-client >nul 2>nul
+If !ERRORLEVEL!==0 (
+  @echo Existing Chef installation detected, skipping download
+  goto key_create
+) else (
+  @echo No existing installation of chef detected
+  goto install
+)
+
+:install
+@rem If user has provided the custom installation command for chef-client then execute it
+<% if @chef_config[:knife][:bootstrap_install_command] %>
+  <%= @chef_config[:knife][:bootstrap_install_command] %>
+<% else %>
+  @rem Install Chef using chef-client MSI installer
+
+  @set "LOCAL_DESTINATION_MSI_PATH=<%= local_download_path %>"
+  @set "CHEF_CLIENT_MSI_LOG_PATH=%TEMP%\chef-client-msi%RANDOM%.log"
+
+  @rem Clear any pre-existing downloads
+  @echo Checking for existing downloaded package at "%LOCAL_DESTINATION_MSI_PATH%"
+  @if EXIST "%LOCAL_DESTINATION_MSI_PATH%" (
+      @echo Found existing downloaded package, deleting.
+      @del /f /q "%LOCAL_DESTINATION_MSI_PATH%"
+      @if ERRORLEVEL 1 (
+          echo Warning: Failed to delete pre-existing package with status code !ERRORLEVEL! > "&2"
+      )
+  ) else (
+      echo No existing downloaded packages to delete.
+    )
+
+  @rem If there is somehow a name collision, remove pre-existing log
+  @if EXIST "%CHEF_CLIENT_MSI_LOG_PATH%" del /f /q "%CHEF_CLIENT_MSI_LOG_PATH%"
+
+  @echo Attempting to download client package using PowerShell if available...
+  @set "REMOTE_SOURCE_MSI_URL=<%= msi_url('%MACHINE_OS%', '%MACHINE_ARCH%', 'PowerShell') %>"
+  @set powershell_download=powershell.exe -ExecutionPolicy Unrestricted -InputFormat None -NoProfile -NonInteractive -File  <%= bootstrap_directory %>\wget.ps1 "%REMOTE_SOURCE_MSI_URL%" "%LOCAL_DESTINATION_MSI_PATH%"
+  @echo !powershell_download!
+  @call !powershell_download!
+
+  @set DOWNLOAD_ERROR_STATUS=!ERRORLEVEL!
+
+  @if ERRORLEVEL 1 (
+      @echo Failed PowerShell download with status code !DOWNLOAD_ERROR_STATUS! > "&2"
+      @if !DOWNLOAD_ERROR_STATUS!==0 set DOWNLOAD_ERROR_STATUS=2
+  ) else (
+      @rem Sometimes the error level is not set even when the download failed,
+      @rem so check for the file to be sure it is there -- if it is not, we will retry
+      @if NOT EXIST "%LOCAL_DESTINATION_MSI_PATH%" (
+          echo Failed download: download completed, but downloaded file not found > "&2"
+          set DOWNLOAD_ERROR_STATUS=2
+      ) else (
+          echo Download via PowerShell succeeded.
+        )
+    )
+
+  @if NOT %DOWNLOAD_ERROR_STATUS%==0 (
+      @echo Warning: Failed to download "%REMOTE_SOURCE_MSI_URL%" to "%LOCAL_DESTINATION_MSI_PATH%"
+      @echo Warning: Retrying download with cscript ...
+
+      @if EXIST "%LOCAL_DESTINATION_MSI_PATH%" del /f /q "%LOCAL_DESTINATION_MSI_PATH%"
+
+      @set "REMOTE_SOURCE_MSI_URL=<%= msi_url('%MACHINE_OS%', '%MACHINE_ARCH%') %>"
+      cscript /nologo <%= bootstrap_directory %>\wget.vbs /url:"%REMOTE_SOURCE_MSI_URL%" /path:"%LOCAL_DESTINATION_MSI_PATH%"
+
+      @if NOT ERRORLEVEL 1 (
+          @rem Sometimes the error level is not set even when the download failed,
+          @rem so check for the file to be sure it is there.
+          @if NOT EXIST "%LOCAL_DESTINATION_MSI_PATH%" (
+              echo Failed download: download completed, but downloaded file not found > "&2"
+              echo Exiting without bootstrapping due to download failure. > "&2"
+              exit /b 1
+          ) else (
+              echo Download via cscript succeeded.
+            )
+      ) else (
+          echo Failed to download "%REMOTE_SOURCE_MSI_URL%" with status code !ERRORLEVEL!. > "&2"
+          echo Exiting without bootstrapping due to download failure. > "&2"
+          exit /b 1
+        )
+  )
+
+  @echo Installing downloaded client package...
+
+  <%= install_chef %>
+
+  @if ERRORLEVEL 1 (
+      echo Chef-client package failed to install with status code !ERRORLEVEL!. > "&2"
+      echo See installation log for additional detail: %CHEF_CLIENT_MSI_LOG_PATH%. > "&2"
+  ) else (
+      @echo Installation completed successfully
+      del /f /q "%CHEF_CLIENT_MSI_LOG_PATH%"
+    )
+
+<% end %>
+
+:key_create
+@endlocal
+
+@echo off
+
+<% if client_pem -%>
+> <%= bootstrap_directory %>\client.pem (
+ <%= escape_and_echo(::File.read(::File.expand_path(client_pem))) %>
+)
+<% end -%>
+
+echo Writing validation key...
+
+<% if validation_key -%>
+> <%= bootstrap_directory %>\validation.pem (
+ <%= escape_and_echo(validation_key) %>
+)
+<% end -%>
+
+echo Validation key written.
+@echo on
+
+<% if @config[:secret] -%>
+> <%= bootstrap_directory %>\encrypted_data_bag_secret (
+ <%= secret %>
+)
+<% end -%>
+
+<% unless trusted_certs_script.empty? -%>
+mkdir <%= bootstrap_directory %>\trusted_certs
+<%= trusted_certs_script %>
+<% end -%>
+
+<%# Generate Ohai Hints -%>
+<% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
+mkdir <%= bootstrap_directory %>\ohai\hints
+
+<% @chef_config[:knife][:hints].each do |name, hash| -%>
+> <%= bootstrap_directory %>\ohai\hints\<%= name %>.json (
+  <%= escape_and_echo(hash.to_json) %>
+)
+<% end -%>
+<% end -%>
+
+> <%= bootstrap_directory %>\client.rb (
+ <%= config_content %>
+)
+
+> <%= bootstrap_directory %>\first-boot.json (
+ <%= first_boot %>
+)
+
+<% unless client_d.empty? -%>
+  mkdir <%= bootstrap_directory %>\client.d
+  <%= client_d %>
+<% end -%>
+
+@echo Starting chef to bootstrap the node...
+<%= start_chef %>

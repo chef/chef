@@ -85,6 +85,13 @@ class Chef
       alias :info :log
       alias :err :log
 
+      # Print a Debug
+      #
+      # @param message [String] the text string
+      def debug(message)
+        log("#{color('DEBUG:', :blue, :bold)} #{message}")
+      end
+
       # Print a warning message
       #
       # @param message [String] the text string

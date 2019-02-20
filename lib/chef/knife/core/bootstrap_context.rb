@@ -161,7 +161,7 @@ class Chef
           end
 
           if Chef::Config[:fips]
-            client_rb << <<-CONFIG.gsub(/^ {14}/, "")
+            client_rb << <<~CONFIG
               fips true
               require "chef/version"
               chef_version = ::Chef::VERSION.split(".")

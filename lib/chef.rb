@@ -16,7 +16,11 @@
 # limitations under the License.
 #
 
+
 require "chef/version"
+
+require "chef_core/text"
+
 require "chef/nil_argument"
 require "chef/mash"
 require "chef/exceptions"
