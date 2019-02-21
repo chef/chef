@@ -51,7 +51,7 @@ end
 
 group(:ed25519) do
   gem "rbnacl-libsodium"
-  gem "rbnacl"
+  gem "rbnacl", "~> 5.0" # pin to 5.x until we can replace rbnacl-libsodium
   gem "bcrypt_pbkdf"
 end
 
