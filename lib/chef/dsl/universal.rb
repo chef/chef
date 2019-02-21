@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016 Chef Software, Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@
 require "chef/dsl/platform_introspection"
 require "chef/mixin/powershell_out"
 require "chef/mixin/shell_out"
+require "chef/mixin/lazy_module_include"
 
 class Chef
   module DSL
@@ -45,6 +46,7 @@ class Chef
       include Chef::DSL::PlatformIntrospection
       include Chef::Mixin::PowershellOut
       include Chef::Mixin::ShellOut
+      extend Chef::Mixin::LazyModuleInclude
     end
   end
 end
