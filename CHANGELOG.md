@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.168 -->
-## [v15.0.168](https://github.com/chef/chef/tree/v15.0.168) (2019-02-20)
+<!-- latest_release 15.0.169 -->
+## [v15.0.169](https://github.com/chef/chef/tree/v15.0.169) (2019-02-21)
 
 #### Merged Pull Requests
-- add LazyModuleInclude to Universal DSL [#8243](https://github.com/chef/chef/pull/8243) ([lamont-granquist](https://github.com/lamont-granquist))
+- pin rbnacl to 5.x [#8244](https://github.com/chef/chef/pull/8244) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- pin rbnacl to 5.x [#8244](https://github.com/chef/chef/pull/8244) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.169 -->
 - add LazyModuleInclude to Universal DSL [#8243](https://github.com/chef/chef/pull/8243) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.168 -->
 - Update InSpec to 3.6.6 [#8235](https://github.com/chef/chef/pull/8235) ([tas50](https://github.com/tas50)) <!-- 15.0.167 -->
 - Cleanup the user resource and convert it to the resource DSL + delete user_add provider [#8228](https://github.com/chef/chef/pull/8228) ([tas50](https://github.com/tas50)) <!-- 15.0.166 -->
