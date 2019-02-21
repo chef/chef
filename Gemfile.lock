@@ -119,14 +119,14 @@ GEM
       mixlib-cli (~> 1.4)
       mixlib-shellout (~> 2.0)
     ast (2.4.0)
-    backports (3.11.4)
+    backports (3.12.0)
     bcrypt_pbkdf (1.0.0)
     bcrypt_pbkdf (1.0.0-x64-mingw32)
     bcrypt_pbkdf (1.0.0-x86-mingw32)
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
-    byebug (10.0.2)
+    byebug (11.0.0)
     chef-vault (3.4.3)
     chef-zero (14.0.11)
       ffi-yajl (~> 2.2)
@@ -246,8 +246,8 @@ GEM
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
-    pry-byebug (3.6.0)
-      byebug (~> 10.0)
+    pry-byebug (3.7.0)
+      byebug (~> 11.0)
       pry (~> 0.10)
     pry-remote (0.1.8)
       pry (~> 0.9)
@@ -262,7 +262,7 @@ GEM
     rainbow (3.0.0)
     rake (12.3.0)
     rb-readline (0.5.5)
-    rbnacl (6.0.1)
+    rbnacl (5.0.0)
       ffi
     rbnacl-libsodium (1.0.16)
       rbnacl (>= 3.0.1)
@@ -425,7 +425,7 @@ DEPENDENCIES
   pry-stack_explorer
   rake (<= 12.3.0)
   rb-readline
-  rbnacl
+  rbnacl (~> 5.0)
   rbnacl-libsodium
   ruby-prof
   ruby-shadow
