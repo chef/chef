@@ -185,7 +185,7 @@ class Chef
         converge_if_changed do
           # you can't actually change the path so you have to delete the old share first
           if different_path?
-            Chef::Log.debug('The path has changed so we will delete and recreate share')
+            Chef::Log.debug("The path has changed so we will delete and recreate share")
             delete_share
             create_share
           elsif current_resource.nil?
