@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.11.7 -->
-## [v14.11.7](https://github.com/chef/chef/tree/v14.11.7) (2019-02-19)
+<!-- latest_release 14.11.8 -->
+## [v14.11.8](https://github.com/chef/chef/tree/v14.11.8) (2019-02-22)
 
 #### Merged Pull Requests
-- Update InSpec to 3.6.6 [#8237](https://github.com/chef/chef/pull/8237) ([tas50](https://github.com/tas50))
+- Chef-14: add lazy module include to universal DSL [#8246](https://github.com/chef/chef/pull/8246) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.10.9 -->
 ### Changes since 14.10.9 release
 
 #### Merged Pull Requests
+- Chef-14: add lazy module include to universal DSL [#8246](https://github.com/chef/chef/pull/8246) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.11.8 -->
 - Update InSpec to 3.6.6 [#8237](https://github.com/chef/chef/pull/8237) ([tas50](https://github.com/tas50)) <!-- 14.11.7 -->
 - Chef-14: add ed25519 gemset and update omnibus-software [#8222](https://github.com/chef/chef/pull/8222) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.11.6 -->
 - Update InSpec to 3.5.0 [#8214](https://github.com/chef/chef/pull/8214) ([tas50](https://github.com/tas50)) <!-- 14.11.5 -->
