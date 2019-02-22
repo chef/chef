@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.169 -->
-## [v15.0.169](https://github.com/chef/chef/tree/v15.0.169) (2019-02-21)
+<!-- latest_release 15.0.170 -->
+## [v15.0.170](https://github.com/chef/chef/tree/v15.0.170) (2019-02-22)
 
 #### Merged Pull Requests
-- pin rbnacl to 5.x [#8244](https://github.com/chef/chef/pull/8244) ([lamont-granquist](https://github.com/lamont-granquist))
+- allow setting mode for openssl_dhparam after creation [#8245](https://github.com/chef/chef/pull/8245) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- allow setting mode for openssl_dhparam after creation [#8245](https://github.com/chef/chef/pull/8245) ([btm](https://github.com/btm)) <!-- 15.0.170 -->
 - pin rbnacl to 5.x [#8244](https://github.com/chef/chef/pull/8244) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.169 -->
 - add LazyModuleInclude to Universal DSL [#8243](https://github.com/chef/chef/pull/8243) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.168 -->
 - Update InSpec to 3.6.6 [#8235](https://github.com/chef/chef/pull/8235) ([tas50](https://github.com/tas50)) <!-- 15.0.167 -->
