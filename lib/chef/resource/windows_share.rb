@@ -184,10 +184,12 @@ class Chef
 
         converge_if_changed do
           # you can't actually change the path so you have to delete the old share first
-          delete_share if different_path?
-
-          # powershell cmdlet for create is different than updates
-          if current_resource.nil?
+          if different_path?
+            Chef::Log.debug('The path has changed so we will delete and recreate share')
+            delete_share
+            create_share
+          elsif current_resource.nil?
+            # powershell cmdlet for create is different than updates
             Chef::Log.debug("The current resource is nil so we will create a new share")
             create_share
           else
@@ -215,7 +217,7 @@ class Chef
       action_class do
         def different_path?
           return false if current_resource.nil? # going from nil to something isn't different for our concerns
-          return false if current_resource.path == new_resource.path
+          return false if current_resource.path == Chef::Util::PathHelper.cleanpath(new_resource.path)
           true
         end
 
@@ -236,7 +238,7 @@ class Chef
         def create_share
           raise "#{new_resource.path} is missing or not a directory. Shares cannot be created if the path doesn't first exist." unless ::File.directory? new_resource.path
 
-          share_cmd = "New-SmbShare -Name '#{new_resource.share_name}' -Path '#{new_resource.path}' -Description '#{new_resource.description}' -ConcurrentUserLimit #{new_resource.concurrent_user_limit} -CATimeout #{new_resource.ca_timeout} -EncryptData:#{bool_string(new_resource.encrypt_data)} -ContinuouslyAvailable:#{bool_string(new_resource.continuously_available)}"
+          share_cmd = "New-SmbShare -Name '#{new_resource.share_name}' -Path '#{Chef::Util::PathHelper.cleanpath(new_resource.path)}' -Description '#{new_resource.description}' -ConcurrentUserLimit #{new_resource.concurrent_user_limit} -CATimeout #{new_resource.ca_timeout} -EncryptData:#{bool_string(new_resource.encrypt_data)} -ContinuouslyAvailable:#{bool_string(new_resource.continuously_available)}"
           share_cmd << " -ScopeName #{new_resource.scope_name}" unless new_resource.scope_name == "*" # passing * causes the command to fail
           share_cmd << " -Temporary:#{bool_string(new_resource.temporary)}" if new_resource.temporary # only set true
 
