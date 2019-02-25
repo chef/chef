@@ -21,6 +21,7 @@
 
 require "chef/resource"
 require "chef/json_compat"
+require "chef/util/path_helper"
 
 class Chef
   class Resource
