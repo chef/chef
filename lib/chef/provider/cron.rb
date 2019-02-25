@@ -29,9 +29,9 @@ class Chef
       CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :time, :command, :mailto, :path, :shell, :home, :environment].freeze
       WEEKDAY_SYMBOLS = [:sunday, :monday, :tuesday, :wednesday, :thursday, :friday, :saturday].freeze
 
-      CRON_PATTERN = /\A([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+|[a-zA-Z]{3})\s([-0-9*,\/]+|[a-zA-Z]{3})\s(.*)/.freeze
-      SPECIAL_PATTERN = /\A(@(#{SPECIAL_TIME_VALUES.join('|')}))\s(.*)/.freeze
-      ENV_PATTERN = /\A(\S+)=(\S*)/.freeze
+      CRON_PATTERN = /\A([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+|[a-zA-Z]{3})\s([-0-9*,\/]+|[a-zA-Z]{3})\s(.*)/
+      SPECIAL_PATTERN = /\A(@(#{SPECIAL_TIME_VALUES.join('|')}))\s(.*)/
+      ENV_PATTERN = /\A(\S+)=(\S*)/
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
@@ -220,9 +220,14 @@ class Chef
         [ :mailto, :path, :shell, :home ].each do |v|
           newcron << "#{v.to_s.upcase}=\"#{new_resource.send(v)}\"\n" if new_resource.send(v)
         end
+        idempotency = true
         new_resource.environment.each do |name, value|
+          if %w{MAILTO PATH SHELL HOME}.include?(name)
+            idempotency = false
+          end
           newcron << "#{name}=#{value}\n"
         end
+        logger.warn("It will not be idempotent to use `environment` for an entry that can also be specified as a `property`") unless idempotency
         if new_resource.time
           newcron << "@#{new_resource.time} #{new_resource.command}\n"
         else
