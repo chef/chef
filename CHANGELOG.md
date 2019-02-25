@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.171 -->
-## [v15.0.171](https://github.com/chef/chef/tree/v15.0.171) (2019-02-22)
+<!-- latest_release 15.0.172 -->
+## [v15.0.172](https://github.com/chef/chef/tree/v15.0.172) (2019-02-25)
 
 #### Merged Pull Requests
-- Update libxml2 to 2.9.9 [#8240](https://github.com/chef/chef/pull/8240) ([tas50](https://github.com/tas50))
+- windows_share: Improve path comparison to prevent convering on each run [#8248](https://github.com/chef/chef/pull/8248) ([Xorima](https://github.com/Xorima))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- windows_share: Improve path comparison to prevent convering on each run [#8248](https://github.com/chef/chef/pull/8248) ([Xorima](https://github.com/Xorima)) <!-- 15.0.172 -->
 - Update libxml2 to 2.9.9 [#8240](https://github.com/chef/chef/pull/8240) ([tas50](https://github.com/tas50)) <!-- 15.0.171 -->
 - allow setting mode for openssl_dhparam after creation [#8245](https://github.com/chef/chef/pull/8245) ([btm](https://github.com/btm)) <!-- 15.0.170 -->
 - pin rbnacl to 5.x [#8244](https://github.com/chef/chef/pull/8244) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.169 -->
