@@ -449,44 +449,22 @@ describe Chef::Provider::Cron do
         @provider.run_action(:create)
       end
 
-      context "when environment variable is used" do
-        context "contains an entry that can also be specified as a `property`" do
-          before do
-            @new_resource.environment = { "SHELL" => "/bash" }
-          end
-          it "should raise a warning for idempotency" do
-            expect(logger).to receive(:warn).with("It will not be idempotent to use `environment` for an entry that can also be specified as a `property`")
-            @provider.run_action(:create)
-          end
-        end
-
-        context "contains an entry that cannot be specified as a `property`" do
-          before do
-            @new_resource.environment = { "ENV" => "environment" }
-          end
-          it "should not raise a warning for idempotency" do
-            expect(logger).not_to receive(:warn).with("It will not be idempotent to use `environment` for an entry that can also be specified as a `property`")
-            @provider.run_action(:create)
-          end
-        end
-
-        it "should include env variables that are set" do
-          @new_resource.mailto "foo@example.com"
-          @new_resource.path "/usr/bin:/my/custom/path"
-          @new_resource.shell "/bin/foosh"
-          @new_resource.home "/home/foo"
-          @new_resource.environment "TEST" => "LOL"
-          expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
-            # Chef Name: cronhole some stuff
-            MAILTO="foo@example.com"
-            PATH="/usr/bin:/my/custom/path"
-            SHELL="/bin/foosh"
-            HOME="/home/foo"
-            TEST=LOL
-            30 * * * * /bin/true
-          ENDCRON
-          @provider.run_action(:create)
-        end
+      it "should include env variables that are set" do
+        @new_resource.mailto "foo@example.com"
+        @new_resource.path "/usr/bin:/my/custom/path"
+        @new_resource.shell "/bin/foosh"
+        @new_resource.home "/home/foo"
+        @new_resource.environment "TEST" => "LOL"
+        expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
+          # Chef Name: cronhole some stuff
+          MAILTO="foo@example.com"
+          PATH="/usr/bin:/my/custom/path"
+          SHELL="/bin/foosh"
+          HOME="/home/foo"
+          TEST=LOL
+          30 * * * * /bin/true
+        ENDCRON
+        @provider.run_action(:create)
       end
 
       it "should mark the resource as updated" do
@@ -714,7 +692,6 @@ describe Chef::Provider::Cron do
     context "when there is a crontab with a matching and identical section" do
       before :each do
         @provider.cron_exists = true
-        allow(@provider).to receive(:cron_different?).and_return(false)
         allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
           0 2 * * * /some/other/command
 
@@ -725,20 +702,72 @@ describe Chef::Provider::Cron do
         CRONTAB
       end
 
-      it "should not update the crontab" do
-        expect(@provider).not_to receive(:write_crontab)
-        @provider.run_action(:create)
+      context "when environment variable is used" do
+        context "contains an entry that can also be specified as a `property`" do
+          before do
+            @new_resource.environment = { "SHELL" => "/bash" }
+          end
+
+          it "should raise a warning for idempotency" do
+            expect(logger).to receive(:warn).with("It is not idempotent to use `environment` for an entry that can be specified as a `property`")
+            @provider.run_action(:create)
+          end
+
+          it "should update the crontab" do
+            expect(@provider).to receive(:write_crontab)
+            @provider.run_action(:create)
+          end
+
+          it "should mark the resource as updated" do
+            @provider.run_action(:create)
+            expect(@new_resource).to be_updated_by_last_action
+          end
+        end
+
+        context "contains an entry that cannot be specified as a `property`" do
+          before do
+            @new_resource.environment = { "ENV" => "environment" }
+          end
+
+          it "should not raise a warning for idempotency" do
+            expect(logger).not_to receive(:warn).with("It is not idempotent to use `environment` for an entry that can be specified as a `property`")
+            @provider.run_action(:create)
+          end
+
+          it "should not update the crontab" do
+            allow(@provider).to receive(:cron_different?).and_return(false)
+            expect(@provider).not_to receive(:write_crontab)
+            @provider.run_action(:create)
+          end
+
+          it "should not mark the resource as updated" do
+            allow(@provider).to receive(:cron_different?).and_return(false)
+            @provider.run_action(:create)
+            expect(@new_resource).not_to be_updated_by_last_action
+          end
+        end
       end
 
-      it "should not mark the resource as updated" do
-        @provider.run_action(:create)
-        expect(@new_resource).not_to be_updated_by_last_action
-      end
+      context "when environment variable is not used" do
+        before do
+          allow(@provider).to receive(:cron_different?).and_return(false)
+        end
 
-      it "should log nothing changed" do
-        expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
-        expect(logger).to receive(:trace).with("Skipping existing cron entry '#{@new_resource.name}'")
-        @provider.run_action(:create)
+        it "should not update the crontab" do
+          expect(@provider).not_to receive(:write_crontab)
+          @provider.run_action(:create)
+        end
+
+        it "should not mark the resource as updated" do
+          @provider.run_action(:create)
+          expect(@new_resource).not_to be_updated_by_last_action
+        end
+
+        it "should log nothing changed" do
+          expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
+          expect(logger).to receive(:trace).with("Skipping existing cron entry '#{@new_resource.name}'")
+          @provider.run_action(:create)
+        end
       end
     end
   end

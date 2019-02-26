@@ -89,9 +89,16 @@ class Chef
       end
 
       def cron_different?
+        logger.warn("It is not idempotent to use `environment` for an entry that can be specified as a `property`") if property_with_environment?
         CRON_ATTRIBUTES.any? do |cron_var|
           new_resource.send(cron_var) != current_resource.send(cron_var)
         end
+      end
+
+      # Returns true if user is using a `environment` for an entry that can also be specified as a `property`
+      def property_with_environment?
+        common_attribute = %w{MAILTO PATH SHELL HOME} & new_resource.environment.keys
+        common_attribute.any?
       end
 
       def action_create
@@ -220,14 +227,9 @@ class Chef
         [ :mailto, :path, :shell, :home ].each do |v|
           newcron << "#{v.to_s.upcase}=\"#{new_resource.send(v)}\"\n" if new_resource.send(v)
         end
-        idempotency = true
         new_resource.environment.each do |name, value|
-          if %w{MAILTO PATH SHELL HOME}.include?(name)
-            idempotency = false
-          end
           newcron << "#{name}=#{value}\n"
         end
-        logger.warn("It will not be idempotent to use `environment` for an entry that can also be specified as a `property`") unless idempotency
         if new_resource.time
           newcron << "@#{new_resource.time} #{new_resource.command}\n"
         else
