@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.12.10 -->
-## [v13.12.10](https://github.com/chef/chef/tree/v13.12.10) (2019-02-07)
+<!-- latest_release 13.12.11 -->
+## [v13.12.11](https://github.com/chef/chef/tree/v13.12.11) (2019-02-26)
 
 #### Merged Pull Requests
-- Update Ohai to 13.12.6 [#8223](https://github.com/chef/chef/pull/8223) ([tas50](https://github.com/tas50))
+- Chef-13: add lazy module include to universal DSL [#8247](https://github.com/chef/chef/pull/8247) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.12.3 -->
 ### Changes since 13.12.3 release
 
 #### Merged Pull Requests
+- Chef-13: add lazy module include to universal DSL [#8247](https://github.com/chef/chef/pull/8247) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.12.11 -->
 - Update Ohai to 13.12.6 [#8223](https://github.com/chef/chef/pull/8223) ([tas50](https://github.com/tas50)) <!-- 13.12.10 -->
 - Update nokogiri to 1.10.1 [#8218](https://github.com/chef/chef/pull/8218) ([tas50](https://github.com/tas50)) <!-- 13.12.9 -->
 - Update knife bootstrap template to use up to date omnitruck URL [#8208](https://github.com/chef/chef/pull/8208) ([tas50](https://github.com/tas50)) <!-- 13.12.8 -->
