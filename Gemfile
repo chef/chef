@@ -49,12 +49,6 @@ group(:ruby_shadow) do
   gem "ruby-shadow", platforms: :ruby
 end
 
-group(:ed25519) do
-  gem "rbnacl-libsodium"
-  gem "rbnacl", "~> 5.0" # pin to 5.x until we can replace rbnacl-libsodium
-  gem "bcrypt_pbkdf"
-end
-
 group(:development, :test) do
   # we pin rake as a copy of rake is installed from the ruby source
   # if you bump the ruby version you should confirm we don't end up with

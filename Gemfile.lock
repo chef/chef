@@ -120,9 +120,6 @@ GEM
       mixlib-shellout (~> 2.0)
     ast (2.4.0)
     backports (3.12.0)
-    bcrypt_pbkdf (1.0.0)
-    bcrypt_pbkdf (1.0.0-x64-mingw32)
-    bcrypt_pbkdf (1.0.0-x86-mingw32)
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
@@ -196,7 +193,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.12.1)
     jaro_winkler (1.5.2)
-    json (2.1.0)
+    json (2.2.0)
     launchy (2.4.3)
       addressable (~> 2.3)
     libyajl2 (1.2.0)
@@ -233,7 +230,7 @@ GEM
     netrc (0.11.0)
     octokit (4.13.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    parallel (1.13.0)
+    parallel (1.14.0)
     parser (2.6.0.0)
       ast (~> 2.4.0)
     parslet (1.8.2)
@@ -262,10 +259,6 @@ GEM
     rainbow (3.0.0)
     rake (12.3.0)
     rb-readline (0.5.5)
-    rbnacl (5.0.0)
-      ffi
-    rbnacl-libsodium (1.0.16)
-      rbnacl (>= 3.0.1)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
@@ -297,7 +290,7 @@ GEM
     ruby-progressbar (1.10.0)
     ruby-shadow (2.5.0)
     rubyzip (1.2.2)
-    safe_yaml (1.0.4)
+    safe_yaml (1.0.5)
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
@@ -409,7 +402,6 @@ PLATFORMS
 
 DEPENDENCIES
   appbundler
-  bcrypt_pbkdf
   chef!
   chef-config!
   chef-vault
@@ -425,8 +417,6 @@ DEPENDENCIES
   pry-stack_explorer
   rake (<= 12.3.0)
   rb-readline
-  rbnacl (~> 5.0)
-  rbnacl-libsodium
   ruby-prof
   ruby-shadow
   simplecov
