@@ -282,7 +282,12 @@ class Chef
 
           case ext
           when ".pfx"
-            OpenSSL::PKCS12.new(contents, new_resource.pfx_password).certificate
+            pfx = OpenSSL::PKCS12.new(contents, new_resource.pfx_password)
+            if pfx.ca_certs.nil?
+              pfx.certificate
+            else
+              [pfx.certificate] + pfx.ca_certs
+            end
           when ".p7b"
             OpenSSL::PKCS7.new(contents).certificates
           else
