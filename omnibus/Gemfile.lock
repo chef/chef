@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: bf006801aa98595383904ea65c098846d8c12ea4
+  revision: 10151d127fef039839ce0e6072b68fe695b1d3c5
   branch: master
   specs:
-    omnibus (6.0.18)
+    omnibus (6.0.19)
       aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 3213f1d282f6b62dfa656353c6c8557fdca8378b
+  revision: 00c81e99278b7d715f39968e72eb96c3c948f015
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,8 +32,8 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
     aws-eventstream (1.0.1)
-    aws-partitions (1.139.0)
-    aws-sdk-core (3.46.1)
+    aws-partitions (1.141.0)
+    aws-sdk-core (3.46.2)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
@@ -59,10 +59,7 @@ GEM
       retryable (~> 2.0)
       solve (~> 4.0)
       thor (>= 0.20)
-    binding_of_caller (0.8.0)
-      debug_inspector (>= 0.0.1)
     builder (3.2.3)
-    byebug (10.0.2)
     chef (14.10.9)
       addressable
       bundler (>= 1.10)
@@ -151,9 +148,7 @@ GEM
       uuidtools (~> 2.1)
     citrus (3.0.2)
     cleanroom (1.0.0)
-    coderay (1.1.2)
     concurrent-ruby (1.1.4)
-    debug_inspector (0.0.3)
     diff-lcs (1.3)
     erubis (2.7.0)
     faraday (0.15.4)
@@ -178,7 +173,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.12.1)
     jmespath (1.4.0)
-    kitchen-vagrant (1.3.6)
+    kitchen-vagrant (1.4.0)
       test-kitchen (~> 1.4)
     libyajl2 (1.2.0)
     license_scout (1.0.22)
@@ -189,11 +184,10 @@ GEM
     logging (2.2.2)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
-    method_source (0.9.2)
     minitar (0.8)
-    mixlib-archive (0.4.19)
+    mixlib-archive (0.4.20)
       mixlib-log
-    mixlib-archive (0.4.19-universal-mingw32)
+    mixlib-archive (0.4.20-universal-mingw32)
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
@@ -247,15 +241,6 @@ GEM
     plist (3.5.0)
     progressbar (1.10.0)
     proxifier (1.0.3)
-    pry (0.12.2)
-      coderay (~> 1.1.0)
-      method_source (~> 0.9.0)
-    pry-byebug (3.6.0)
-      byebug (~> 10.0)
-      pry (~> 0.10)
-    pry-stack_explorer (0.4.9.3)
-      binding_of_caller (>= 0.7)
-      pry (>= 0.9.11)
     public_suffix (3.0.3)
     rack (2.0.6)
     retryable (2.0.4)
@@ -370,15 +355,12 @@ PLATFORMS
 
 DEPENDENCIES
   berkshelf (>= 7.0)
-  kitchen-vagrant (~> 1.3.1)
+  kitchen-vagrant (>= 1.3.1)
   ohai (~> 14.0)
   omnibus!
   omnibus-software!
   pedump
-  pry
-  pry-byebug
-  pry-stack_explorer
-  test-kitchen (~> 1.21)
+  test-kitchen (>= 1.23)
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
