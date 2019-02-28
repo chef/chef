@@ -1,3 +1,5 @@
+binstubs
+.bundle
 vendor/bundle
 pkg/*
 kitchen.local.yml
@@ -9,3 +11,4 @@ vendor/cookbooks
 build_timestamp
 ldd.out
 Berksfile.lock
+Gemfile.local
