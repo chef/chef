@@ -1,10 +1,10 @@
 PATH
   remote: .
   specs:
-    chef (13.12.11)
+    chef (13.12.12)
       addressable
       bundler (>= 1.10)
-      chef-config (= 13.12.11)
+      chef-config (= 13.12.12)
       chef-zero (~> 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -31,10 +31,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (13.12.11-universal-mingw32)
+    chef (13.12.12-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 13.12.11)
+      chef-config (= 13.12.12)
       chef-zero (~> 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -76,7 +76,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (13.12.11)
+    chef-config (13.12.12)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -180,9 +180,9 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     method_source (0.9.2)
-    mixlib-archive (0.4.19)
+    mixlib-archive (0.4.20)
       mixlib-log
-    mixlib-archive (0.4.19-universal-mingw32)
+    mixlib-archive (0.4.20-universal-mingw32)
       mixlib-log
     mixlib-authentication (1.4.2)
     mixlib-cli (1.7.0)
