@@ -33,13 +33,16 @@ github:
   # The file where our CHANGELOG is kept. This file is updated automatically with
   # details from the Pull Request via the `built_in:update_changelog` merge_action.
   changelog_file: "CHANGELOG.md"
-  # Delete the PR branch after successfully merged into release branch.
+  # This deletes the GitHub PR branch after successfully merged into the release branch
   delete_branch_on_merge: true
   # The tag format to use (e.g. v1.0.0)
   version_tag_format: "v{{version}}"
   # allow bumping the minor release via label
   minor_bump_labels:
     - "Expeditor: Bump Version Minor"
+  # allow bumping the major release via label
+  major_bump_labels:
+    - "Expeditor: Bump Version Major"
   # Which Github branches to build Omnibus releases from, and what versions
   # (as determined by the value in the VERSION file) those branches are responsible
   # for building.
@@ -65,7 +68,7 @@ merge_actions:
         - "Expeditor: Skip All"
   - built_in:trigger_habitat_package_build:
       ignore_labels:
-        - "Expeditor: Skip Build"
+        - "Expeditor: Skip Habitat"
         - "Expeditor: Skip All"
       only_if: built_in:bump_version
   - built_in:trigger_omnibus_release_build:
