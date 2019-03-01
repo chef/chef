@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,7 +76,7 @@ describe "knife show", :workstation do
           }
         EOM
       end
-      it "knife show /environments/x.json shows the remote version", skip: (RUBY_VERSION < "1.9") do
+      it "knife show /environments/x.json shows the remote version" do
         knife("show /environments/x.json").should_succeed <<~EOM
           /environments/x.json:
           {
@@ -92,7 +92,7 @@ describe "knife show", :workstation do
           }
         EOM
       end
-      it "knife show /roles/x.json shows the remote version", skip: (RUBY_VERSION < "1.9") do
+      it "knife show /roles/x.json shows the remote version" do
         knife("show /roles/x.json").should_succeed <<~EOM
           /roles/x.json:
           {
@@ -135,7 +135,7 @@ describe "knife show", :workstation do
         "name" => "x",
       }
     end
-    it "knife show shows the attributes in a predetermined order", skip: (RUBY_VERSION < "1.9") do
+    it "knife show shows the attributes in a predetermined order" do
       knife("show /environments/x.json").should_succeed <<~EOM
         /environments/x.json:
         {

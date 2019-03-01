@@ -215,9 +215,7 @@ describe Chef::ChefFS::Parallelizer do
       end
 
       after :each do
-        if RUBY_VERSION.to_f > 1.8
-          Thread.kill(@thread)
-        end
+        Thread.kill(@thread)
       end
 
       it "parallelize with :main_thread_processing = true does not block" do
