@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -1007,14 +1007,8 @@ describe Chef::Node::Attribute do
       expect(@attributes).to respond_to(:select)
     end
 
-    if RUBY_VERSION >= "1.8.7"
-      it "should not raise a LocalJumpError if no block is given" do
-        expect { @attributes.select }.not_to raise_error
-      end
-    else
-      it "should raise a LocalJumpError if no block is given" do
-        expect { @attributes.select }.to raise_error(LocalJumpError)
-      end
+    it "should not raise a LocalJumpError if no block is given" do
+      expect { @attributes.select }.not_to raise_error
     end
 
     it "should return an empty hash/array (ruby-version-dependent) for a block containing nil" do

@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -247,7 +247,7 @@ describe "knife diff", :workstation do
         end
         when_the_chef_server "has an environment with a different value" do
           before { environment "x", { "description" => "hi" } }
-          it "knife diff reports the difference", skip: (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
 -  "name": "x",
@@ -277,7 +277,7 @@ describe "knife diff", :workstation do
             environment "x", {}
           end
 
-          it "knife diff reports the difference", skip: (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
 -  "name": "x"
@@ -291,7 +291,7 @@ describe "knife diff", :workstation do
           before do
             environment "x", { "description" => "lo" }
           end
-          it "knife diff reports the difference", skip: (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
    "name": "x",
@@ -533,7 +533,7 @@ describe "knife diff", :workstation do
         end
         when_the_chef_server "has an environment with a different value" do
           before { environment "x", { "description" => "hi" } }
-          it "knife diff reports the difference", skip: (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
 -  "name": "x",
@@ -560,7 +560,7 @@ describe "knife diff", :workstation do
         end
         when_the_chef_server "has an environment with no value" do
           before { environment "x", {} }
-          it "knife diff reports the difference", skip: (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
 -  "name": "x"
@@ -574,7 +574,7 @@ describe "knife diff", :workstation do
           before do
             environment "x", { "description" => "lo" }
           end
-          it "knife diff reports the difference", skip: (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
    "name": "x",

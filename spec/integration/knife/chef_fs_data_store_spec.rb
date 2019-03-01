@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -218,7 +218,7 @@ describe "ChefFSDataStore tests", :workstation do
           knife("list --local /roles").should_succeed "/roles/x.json\n"
         end
 
-        it "After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty", skip: (RUBY_VERSION < "1.9") do
+        it "After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty" do
           knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed( /"x"/ )
           expect(IO.read(path_to("roles/x.json"))).to eq <<~EOM.strip
             {
@@ -281,7 +281,7 @@ describe "ChefFSDataStore tests", :workstation do
           knife("list --local /roles").should_succeed "/roles/z.json\n"
         end
 
-        it "After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty", skip: (RUBY_VERSION < "1.9") do
+        it "After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty" do
           knife("raw -z -i #{path_to('rolestuff.json')} -m POST /roles").should_succeed( /uri/ )
           expect(IO.read(path_to("roles/x.json"))).to eq <<~EOM.strip
             {
@@ -489,7 +489,7 @@ describe "ChefFSDataStore tests", :workstation do
           knife("list --local /users").should_succeed "/users/x.json\n"
         end
 
-        it "After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty", skip: (RUBY_VERSION < "1.9") do
+        it "After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty" do
           knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed( /"x"/ )
           expect(IO.read(path_to("roles/x.json"))).to eq <<~EOM.strip
             {

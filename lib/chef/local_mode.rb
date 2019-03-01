@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +14,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 require "chef/config"
-if Chef::Platform.windows?
-  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1")
-    require "chef/monkey_patches/webrick-utils"
-  end
-end
+require "chef/monkey_patches/webrick-utils" if Chef::Platform.windows?
 
 class Chef
   module LocalMode
