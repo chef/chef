@@ -24,7 +24,7 @@ plugins), `chef-apply`, `chef-solo`, `chef-client -z`, etc.
 <!--- Tell us which version of chef-client you are using (see below for Server+ChefDK bugs). -->
 
 ## Platform Version
-<!--- Tell us which Operating System distribution and version chef-client is running on. -->
+<!--- Tell us which operating system distribution and version chef-client is running on. -->
 
 ## Replication Case
 <!--- Tell us what steps to take to replicate your problem.  See [How to create a Minimal, Complete, and Verifiable example](https://stackoverflow.com/help/mcve)
