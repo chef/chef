@@ -60,6 +60,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
   let(:store) { "Chef-Functional-Test" }
   let(:certificate_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "windows_certificates")) }
   let(:cer_path) { File.join(certificate_path, "test.cer") }
+  let(:base64_path) { File.join(certificate_path, "base64_test.cer") }
   let(:pem_path) { File.join(certificate_path, "test.pem") }
   let(:pfx_path) { File.join(certificate_path, "test.pfx") }
   let(:out_path) { File.join(certificate_path, "testout.pem") }
@@ -174,6 +175,21 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
       end
     end
 
+    context "Adds Base64 Encoded CER" do
+      before do
+        win_certificate.source = base64_path
+        win_certificate.run_action(:create)
+      end
+      it "Imports certificate into store" do
+        expect(no_of_certificates).to eq(1)
+      end
+      it "Idempotent: Does not converge while adding again" do
+        win_certificate.run_action(:create)
+        expect(no_of_certificates).to eq(1)
+        expect(win_certificate).not_to be_updated_by_last_action
+      end
+    end
+
     context "Adds PEM" do
       before do
         win_certificate.source = pem_path
@@ -212,7 +228,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
           win_certificate.pfx_password = "Invalid password"
         end
         it "Raises an error" do
-          expect { win_certificate.run_action(:create) }.to raise_error(RuntimeError)
+          expect { win_certificate.run_action(:create) }.to raise_error(OpenSSL::PKCS12::PKCS12Error)
         end
       end
     end
