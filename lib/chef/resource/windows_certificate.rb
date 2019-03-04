@@ -32,7 +32,7 @@ class Chef
       introduced "14.7"
 
       property :source, String,
-               description: "The source file (for create and acl_add), thumbprint (for delete and acl_add) or subject (for delete).",
+               description: "The source file (for create and acl_add), thumbprint (for delete and acl_add) or subject (for delete) if it differs from the resource block's name.",
                name_property: true
 
       property :pfx_password, String,

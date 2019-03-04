@@ -31,7 +31,7 @@ class Chef
       default_action :add
 
       property :path, String,
-               description: "The name of the value to add to the system path",
+               description: "An optional property to set the path value if it differs from the resource block's name.",
                name_property: true
     end
   end

@@ -29,7 +29,7 @@ class Chef
       introduced "14.0"
 
       property :feature_name, [Array, String],
-               description: "The name of the feature(s) or role(s) to install, if it differs from the resource name.",
+               description: "The name of the feature(s) or role(s) to install if they differ from the resource name.",
                coerce: proc { |x| to_formatted_array(x) },
                name_property: true
 

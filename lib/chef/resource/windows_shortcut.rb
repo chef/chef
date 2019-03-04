@@ -28,7 +28,7 @@ class Chef
       introduced "14.0"
 
       property :shortcut_name, String,
-               description: "The name for the shortcut, if it differs from the resource name.",
+               description: "An optional property to set the shortcut name if it differs from the resource block's name.",
                name_property: true
 
       property :target, String,
