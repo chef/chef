@@ -61,22 +61,9 @@ class Chef
 
         # Extension of the certificate
         ext = ::File.extname(new_resource.source)
-        cert_obj = fetch_cert_object(ext) # Fetch OpenSSL::X509::Certificate object
-        thumbprint = OpenSSL::Digest::SHA1.new(cert_obj.to_der).to_s # Fetch its thumbprint
 
-        # Need to check if return value is Boolean:true
-        # If not then the given certificate should be added in certstore
-        if verify_cert(thumbprint) == true
-          Chef::Log.debug("Certificate is already present")
-        else
-          converge_by("Adding certificate #{new_resource.source} into Store #{new_resource.store_name}") do
-            if ext == ".pfx"
-              add_pfx_cert
-            else
-              add_cert(cert_obj)
-            end
-          end
-        end
+        # PFX certificates contains private keys and we import them with some other aproach
+        import_certificates(fetch_cert_object(ext), (ext == ".pfx"))
       end
 
       # acl_add is a modify-if-exists operation : not idempotent
@@ -271,7 +258,7 @@ class Chef
           set_acl_script
         end
 
-        # Method returns an OpenSSL::X509::Certificate object
+        # Method returns an OpenSSL::X509::Certificate object. Might also return multiple certificates if present in certificate path
         #
         # Based on its extension, the certificate contents are used to initialize
         # PKCS12 (PFX), PKCS7 (P7B) objects which contains OpenSSL::X509::Certificate.
@@ -294,9 +281,14 @@ class Chef
 
           case ext
           when ".pfx"
-            OpenSSL::PKCS12.new(contents, new_resource.pfx_password).certificate
+            pfx = OpenSSL::PKCS12.new(contents, new_resource.pfx_password)
+            if pfx.ca_certs.nil?
+              pfx.certificate
+            else
+              [pfx.certificate] + pfx.ca_certs
+            end
           when ".p7b"
-            OpenSSL::PKCS7.new(contents).certificates.first
+            OpenSSL::PKCS7.new(contents).certificates
           else
             OpenSSL::X509::Certificate.new(contents)
           end
@@ -306,6 +298,32 @@ class Chef
         #
         def binary_cert?
           powershell_out!("file -b --mime-encoding #{new_resource.source}").stdout.strip == "binary"
+        end
+
+        # Imports the certificate object into cert store
+        #
+        # @param cert_objs [OpenSSL::X509::Certificate] Object containing certificate's attributes
+        #
+        # @param is_pfx [Boolean] true if we want to import a PFX certificate
+        #
+        def import_certificates(cert_objs, is_pfx)
+          [cert_objs].flatten.each do |cert_obj|
+            thumbprint = OpenSSL::Digest::SHA1.new(cert_obj.to_der).to_s # Fetch its thumbprint
+
+            # Need to check if return value is Boolean:true
+            # If not then the given certificate should be added in certstore
+            if verify_cert(thumbprint) == true
+              Chef::Log.debug("Certificate is already present")
+            else
+              converge_by("Adding certificate #{new_resource.source} into Store #{new_resource.store_name}") do
+                if is_pfx
+                  add_pfx_cert
+                else
+                  add_cert(cert_obj)
+                end
+              end
+            end
+          end
         end
       end
     end

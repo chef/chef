@@ -62,11 +62,14 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
   let(:cer_path) { File.join(certificate_path, "test.cer") }
   let(:base64_path) { File.join(certificate_path, "base64_test.cer") }
   let(:pem_path) { File.join(certificate_path, "test.pem") }
+  let(:p7b_path) { File.join(certificate_path, "test.p7b") }
   let(:pfx_path) { File.join(certificate_path, "test.pfx") }
   let(:out_path) { File.join(certificate_path, "testout.pem") }
   let(:tests_thumbprint) { "3180B3E3217862600BD7B2D28067B03D41576A4F" }
   let(:other_cer_path) { File.join(certificate_path, "othertest.cer") }
   let(:others_thumbprint) { "AD393859B2D2D4161D224F16CBD3D16555753A20" }
+  let(:p7b_thumbprint) { "50954A52DDFA2043F36EA9026FDD95EC252048D0" }
+  let(:p7b_nested_thumbprint) { "4A3333FC4E1274995AF5A95810881C86F2DF7FBD" }
 
   before do
     opts = { store_name: store }
@@ -205,6 +208,23 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
       end
     end
 
+    context "Adds P7B" do
+      before do
+        win_certificate.source = p7b_path
+        win_certificate.run_action(:create)
+      end
+      it "Imports certificate into store" do
+        expect(no_of_certificates).not_to eq(0)
+      end
+      it "Idempotent: Does not converge while adding again" do
+        win_certificate.run_action(:create)
+        expect(win_certificate).not_to be_updated_by_last_action
+      end
+      it "Nested certificates are also imported" do
+        expect(no_of_certificates).to eq(2)
+      end
+    end
+
     context "Adds PFX" do
       context "With valid password" do
         before do
@@ -280,6 +300,61 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
         end
         it "Initial check if certificate is present" do
           expect(no_of_certificates).to eq(1)
+        end
+        it "Displays correct message" do
+          expect(stdout.string.strip).to eq("Certificate not found")
+        end
+        it "Does not converge while verifying" do
+          expect(win_certificate).not_to be_updated_by_last_action
+        end
+      end
+    end
+
+    context "When multiple certificates are present" do
+      before do
+        win_certificate.source = p7b_path
+        win_certificate.run_action(:create)
+      end
+
+      context "With main certificate's thumbprint" do
+        before do
+          win_certificate.source = p7b_thumbprint
+          win_certificate.run_action(:verify)
+        end
+        it "Initial check if certificate is present" do
+          expect(no_of_certificates).to eq(2)
+        end
+        it "Displays correct message" do
+          expect(stdout.string.strip).to eq("Certificate is valid")
+        end
+        it "Does not converge while verifying" do
+          expect(win_certificate).not_to be_updated_by_last_action
+        end
+      end
+
+      context "With nested certificate's thumbprint" do
+        before do
+          win_certificate.source = p7b_nested_thumbprint
+          win_certificate.run_action(:verify)
+        end
+        it "Initial check if certificate is present" do
+          expect(no_of_certificates).to eq(2)
+        end
+        it "Displays correct message" do
+          expect(stdout.string.strip).to eq("Certificate is valid")
+        end
+        it "Does not converge while verifying" do
+          expect(win_certificate).not_to be_updated_by_last_action
+        end
+      end
+
+      context "For an invalid thumbprint" do
+        before do
+          win_certificate.source = others_thumbprint
+          win_certificate.run_action(:verify)
+        end
+        it "Initial check if certificate is present" do
+          expect(no_of_certificates).to eq(2)
         end
         it "Displays correct message" do
           expect(stdout.string.strip).to eq("Certificate not found")
