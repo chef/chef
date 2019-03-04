@@ -119,7 +119,7 @@ module ChefConfig
       if config_file
         PathHelper.dirname(PathHelper.canonical_path(config_file, false))
       else
-        PathHelper.join(user_home, ".chef", "")
+        PathHelper.join(PathHelper.cleanpath(user_home), ".chef", "")
       end
     end
 
