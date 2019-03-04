@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.11.16 -->
-## [v14.11.16](https://github.com/chef/chef/tree/v14.11.16) (2019-03-04)
+<!-- latest_release 14.11.17 -->
+## [v14.11.17](https://github.com/chef/chef/tree/v14.11.17) (2019-03-04)
 
 #### Merged Pull Requests
-- Update openssl to 1.0.2r [#8266](https://github.com/chef/chef/pull/8266) ([tas50](https://github.com/tas50))
+- windows_certificate: Add support to import Base 64 encoded CER certificates [#8267](https://github.com/chef/chef/pull/8267) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.10.9 -->
 ### Changes since 14.10.9 release
 
 #### Merged Pull Requests
+- windows_certificate: Add support to import Base 64 encoded CER certificates [#8267](https://github.com/chef/chef/pull/8267) ([tas50](https://github.com/tas50)) <!-- 14.11.17 -->
 - Update openssl to 1.0.2r [#8266](https://github.com/chef/chef/pull/8266) ([tas50](https://github.com/tas50)) <!-- 14.11.16 -->
 - More consist descriptions for resource name properties [#8265](https://github.com/chef/chef/pull/8265) ([tas50](https://github.com/tas50)) <!-- 14.11.15 -->
 - openssl_dhparam: allow changing file mode on subsequent runs [#8264](https://github.com/chef/chef/pull/8264) ([tas50](https://github.com/tas50)) <!-- 14.11.14 -->
