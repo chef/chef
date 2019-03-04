@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.11.18 -->
-## [v14.11.18](https://github.com/chef/chef/tree/v14.11.18) (2019-03-04)
+<!-- latest_release 14.11.19 -->
+## [v14.11.19](https://github.com/chef/chef/tree/v14.11.19) (2019-03-04)
 
 #### Merged Pull Requests
-- Update InSpec to 3.7.1 [#8268](https://github.com/chef/chef/pull/8268) ([tas50](https://github.com/tas50))
+- Update cacerts to 2019-01-22 file [#8270](https://github.com/chef/chef/pull/8270) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.10.9 -->
 ### Changes since 14.10.9 release
 
 #### Merged Pull Requests
+- Update cacerts to 2019-01-22 file [#8270](https://github.com/chef/chef/pull/8270) ([tas50](https://github.com/tas50)) <!-- 14.11.19 -->
 - Update InSpec to 3.7.1 [#8268](https://github.com/chef/chef/pull/8268) ([tas50](https://github.com/tas50)) <!-- 14.11.18 -->
 - windows_certificate: Add support to import Base 64 encoded CER certificates [#8267](https://github.com/chef/chef/pull/8267) ([tas50](https://github.com/tas50)) <!-- 14.11.17 -->
 - Update openssl to 1.0.2r [#8266](https://github.com/chef/chef/pull/8266) ([tas50](https://github.com/tas50)) <!-- 14.11.16 -->
