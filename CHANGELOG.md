@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.175 -->
-## [v15.0.175](https://github.com/chef/chef/tree/v15.0.175) (2019-03-01)
+<!-- latest_release 15.0.176 -->
+## [v15.0.176](https://github.com/chef/chef/tree/v15.0.176) (2019-03-04)
 
 #### Merged Pull Requests
-- Remove checks / patches for old versions of Ruby [#8259](https://github.com/chef/chef/pull/8259) ([tas50](https://github.com/tas50))
+- Update openssl to 1.0.2r [#8258](https://github.com/chef/chef/pull/8258) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update openssl to 1.0.2r [#8258](https://github.com/chef/chef/pull/8258) ([tas50](https://github.com/tas50)) <!-- 15.0.176 -->
 - Remove checks / patches for old versions of Ruby [#8259](https://github.com/chef/chef/pull/8259) ([tas50](https://github.com/tas50)) <!-- 15.0.175 -->
 - Update omnibus gemfile deps to remove pry [#8257](https://github.com/chef/chef/pull/8257) ([tas50](https://github.com/tas50)) <!-- 15.0.174 -->
 - rollback rbnacl [#8255](https://github.com/chef/chef/pull/8255) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.173 -->
