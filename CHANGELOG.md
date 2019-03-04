@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.11.11 -->
-## [v14.11.11](https://github.com/chef/chef/tree/v14.11.11) (2019-03-04)
+<!-- latest_release 14.11.12 -->
+## [v14.11.12](https://github.com/chef/chef/tree/v14.11.12) (2019-03-04)
 
 #### Merged Pull Requests
-- Use proper paths on Windows in chef-config [#8261](https://github.com/chef/chef/pull/8261) ([tas50](https://github.com/tas50))
+- windows_share: Improve path comparison to prevent convering on each run [#8262](https://github.com/chef/chef/pull/8262) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.10.9 -->
 ### Changes since 14.10.9 release
 
 #### Merged Pull Requests
+- windows_share: Improve path comparison to prevent convering on each run [#8262](https://github.com/chef/chef/pull/8262) ([tas50](https://github.com/tas50)) <!-- 14.11.12 -->
 - Use proper paths on Windows in chef-config [#8261](https://github.com/chef/chef/pull/8261) ([tas50](https://github.com/tas50)) <!-- 14.11.11 -->
 - Update libxml2 to 2.9.9 [#8238](https://github.com/chef/chef/pull/8238) ([tas50](https://github.com/tas50)) <!-- 14.11.10 -->
 - Chef-14: rollback rbnacl [#8254](https://github.com/chef/chef/pull/8254) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.11.9 -->
