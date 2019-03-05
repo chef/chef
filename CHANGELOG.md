@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.177 -->
-## [v15.0.177](https://github.com/chef/chef/tree/v15.0.177) (2019-03-04)
+<!-- latest_release 15.0.178 -->
+## [v15.0.178](https://github.com/chef/chef/tree/v15.0.178) (2019-03-05)
 
 #### Merged Pull Requests
-- windows_certificate: Import nested certificates while importing P7B certs. [#8242](https://github.com/chef/chef/pull/8242) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- mount: Add proper new lines when on AIX to prevent failures [#8271](https://github.com/chef/chef/pull/8271) ([gsreynolds](https://github.com/gsreynolds))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- mount: Add proper new lines when on AIX to prevent failures [#8271](https://github.com/chef/chef/pull/8271) ([gsreynolds](https://github.com/gsreynolds)) <!-- 15.0.178 -->
 - windows_certificate: Import nested certificates while importing P7B certs. [#8242](https://github.com/chef/chef/pull/8242) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.177 -->
 - Update openssl to 1.0.2r [#8258](https://github.com/chef/chef/pull/8258) ([tas50](https://github.com/tas50)) <!-- 15.0.176 -->
 - Remove checks / patches for old versions of Ruby [#8259](https://github.com/chef/chef/pull/8259) ([tas50](https://github.com/tas50)) <!-- 15.0.175 -->
