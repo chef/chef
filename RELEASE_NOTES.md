@@ -1,5 +1,50 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.11:
+
+## Updated Resources
+
+### chocolatey_package
+
+The chocolatey_package resource now uses the provided options to fetch information on available packages, which allows installation packages from private sources. Thanks [@astoltz](https://github.com/astoltz) for reporting this issue.
+
+### openssl_dhparam
+
+The openssl_dhparam resource now supports updating the dhparam file's mode on subsequent chef-client runs. Thanks [@anewb](https://github.com/anewb) for the initial work on this fix.
+
+### mount
+
+The mount resource now properly adds a blank line between entries in fstab to prevent mount failures on AIX.
+
+### windows_certificate
+
+The windows_certificate resource now supports importing Base64 encoded CER certificates and nested P7B certificates. Additionally, private keys in PFX certificates are now imported along with the certificate.
+
+### windows_share
+
+The windows_share resource has improved logic to compare the desired share path vs. the current path, which prevents the resource from incorrectly converging during each Chef run. Thanks [@Xorima](https://github.com/xorima) for this fix.
+
+### windows_task
+
+The windows_task resource now properly clears out arguments that are no longer present when updating a task. Thanks [@nmcspadden](https://github.com/nmcspadden) for reporting this.
+
+## InSpec 3.7.1
+
+InSpec has been updated from 3.4.1 to 3.7.1. This new release contains improvements to the plugin system, a new config file system, and improvements to multiple resources. Additionally, profile attributes have also been renamed to inputs to prevent confusion with Chef attributes, which weren't actually related in any way.
+
+## Updated Components
+
+- bundler 1.16.1 -> 1.17.3
+- rubygems 2.7.6 -> 2.7.8
+- libxml2 2.9.7 -> 2.9.9
+- ca-certs updated to 2019-01-22 for new roots
+
+## Security Updates
+
+### OpenSSL
+
+OpenSSL has been updated to 1.0.2r in order to resolve ([CVE-2019-1559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559))
+
 # Chef Client Release Notes 14.10:
 
 ## Updated Resources
