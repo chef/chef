@@ -35,7 +35,6 @@ InSpec has been updated from 3.4.1 to 3.7.1. This new release contains improveme
 ## Updated Components
 
 - bundler 1.16.1 -> 1.17.3
-- rubygems 2.7.6 -> 2.7.8
 - libxml2 2.9.7 -> 2.9.9
 - ca-certs updated to 2019-01-22 for new roots
 
@@ -43,7 +42,17 @@ InSpec has been updated from 3.4.1 to 3.7.1. This new release contains improveme
 
 ### OpenSSL
 
-OpenSSL has been updated to 1.0.2r in order to resolve ([CVE-2019-1559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559))
+OpenSSL has been updated to 1.0.2r in order to resolve [CVE-2019-1559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559)
+
+### RubyGems
+
+RubyGems has been updated to 2.7.9 in order to resolve the following CVEs:
+  - [CVE-2019-8320](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8320): Delete directory using symlink when decompressing tar
+  - [CVE-2019-8321](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8321): Escape sequence injection vulnerability in verbose
+  - [CVE-2019-8322](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8322): Escape sequence injection vulnerability in gem owner
+  - [CVE-2019-8323](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8323): Escape sequence injection vulnerability in API response handling
+  - [CVE-2019-8324](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8324): Installing a malicious gem may lead to arbitrary code execution
+  - [CVE-2019-8325](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8325): Escape sequence injection vulnerability in errors
 
 # Chef Client Release Notes 14.10:
 
