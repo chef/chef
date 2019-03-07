@@ -1,40 +1,38 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.11.21 -->
-## [v14.11.21](https://github.com/chef/chef/tree/v14.11.21) (2019-03-06)
-
-#### Merged Pull Requests
-- Update Rubygems to 2.7.9 + Add release notes for Chef 14.11 [#8272](https://github.com/chef/chef/pull/8272) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.10.9 -->
-### Changes since 14.10.9 release
-
-#### Merged Pull Requests
-- Update Rubygems to 2.7.9 + Add release notes for Chef 14.11 [#8272](https://github.com/chef/chef/pull/8272) ([tas50](https://github.com/tas50)) <!-- 14.11.21 -->
-- mount: Add proper new lines when on AIX to prevent failures [#8273](https://github.com/chef/chef/pull/8273) ([tas50](https://github.com/tas50)) <!-- 14.11.20 -->
-- Update cacerts to 2019-01-22 file [#8270](https://github.com/chef/chef/pull/8270) ([tas50](https://github.com/tas50)) <!-- 14.11.19 -->
-- Update InSpec to 3.7.1 [#8268](https://github.com/chef/chef/pull/8268) ([tas50](https://github.com/tas50)) <!-- 14.11.18 -->
-- windows_certificate: Add support to import Base 64 encoded CER certificates [#8267](https://github.com/chef/chef/pull/8267) ([tas50](https://github.com/tas50)) <!-- 14.11.17 -->
-- Update openssl to 1.0.2r [#8266](https://github.com/chef/chef/pull/8266) ([tas50](https://github.com/tas50)) <!-- 14.11.16 -->
-- More consist descriptions for resource name properties [#8265](https://github.com/chef/chef/pull/8265) ([tas50](https://github.com/tas50)) <!-- 14.11.15 -->
-- openssl_dhparam: allow changing file mode on subsequent runs [#8264](https://github.com/chef/chef/pull/8264) ([tas50](https://github.com/tas50)) <!-- 14.11.14 -->
-- ﻿﻿chocolatey_package: use provided options when determing available options to allow using private sources [#8263](https://github.com/chef/chef/pull/8263) ([tas50](https://github.com/tas50)) <!-- 14.11.13 -->
-- windows_share: Improve path comparison to prevent convering on each run [#8262](https://github.com/chef/chef/pull/8262) ([tas50](https://github.com/tas50)) <!-- 14.11.12 -->
-- Use proper paths on Windows in chef-config [#8261](https://github.com/chef/chef/pull/8261) ([tas50](https://github.com/tas50)) <!-- 14.11.11 -->
-- Update libxml2 to 2.9.9 [#8238](https://github.com/chef/chef/pull/8238) ([tas50](https://github.com/tas50)) <!-- 14.11.10 -->
-- Chef-14: rollback rbnacl [#8254](https://github.com/chef/chef/pull/8254) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.11.9 -->
-- Chef-14: add lazy module include to universal DSL [#8246](https://github.com/chef/chef/pull/8246) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.11.8 -->
-- Update InSpec to 3.6.6 [#8237](https://github.com/chef/chef/pull/8237) ([tas50](https://github.com/tas50)) <!-- 14.11.7 -->
-- Chef-14: add ed25519 gemset and update omnibus-software [#8222](https://github.com/chef/chef/pull/8222) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.11.6 -->
-- Update InSpec to 3.5.0 [#8214](https://github.com/chef/chef/pull/8214) ([tas50](https://github.com/tas50)) <!-- 14.11.5 -->
-- chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8209](https://github.com/chef/chef/pull/8209) ([tas50](https://github.com/tas50)) <!-- 14.11.4 -->
-- Update knife bootstrap template to use up to date omnitruck URL [#8207](https://github.com/chef/chef/pull/8207) ([tas50](https://github.com/tas50)) <!-- 14.11.3 -->
-- windows_task: Properly set command / arguments so resource updates behave as expected [#8205](https://github.com/chef/chef/pull/8205) ([tas50](https://github.com/tas50)) <!-- 14.11.2 -->
-- windows_certificate: Import PFX certificates with their private keys [#8206](https://github.com/chef/chef/pull/8206) ([tas50](https://github.com/tas50)) <!-- 14.11.1 -->
-- Update rubygems to 2.7.8 and bundler to 1.17.3 [#8194](https://github.com/chef/chef/pull/8194) ([tas50](https://github.com/tas50)) <!-- 14.11.0 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.11.21](https://github.com/chef/chef/tree/v14.11.21) (2019-03-07)
+
+#### Merged Pull Requests
+- Update rubygems to 2.7.8 and bundler to 1.17.3 [#8194](https://github.com/chef/chef/pull/8194) ([tas50](https://github.com/tas50))
+- windows_certificate: Import PFX certificates with their private keys [#8206](https://github.com/chef/chef/pull/8206) ([tas50](https://github.com/tas50))
+- windows_task: Properly set command / arguments so resource updates behave as expected [#8205](https://github.com/chef/chef/pull/8205) ([tas50](https://github.com/tas50))
+- Update knife bootstrap template to use up to date omnitruck URL [#8207](https://github.com/chef/chef/pull/8207) ([tas50](https://github.com/tas50))
+- chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8209](https://github.com/chef/chef/pull/8209) ([tas50](https://github.com/tas50))
+- Update InSpec to 3.5.0 [#8214](https://github.com/chef/chef/pull/8214) ([tas50](https://github.com/tas50))
+- Chef-14: add ed25519 gemset and update omnibus-software [#8222](https://github.com/chef/chef/pull/8222) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update InSpec to 3.6.6 [#8237](https://github.com/chef/chef/pull/8237) ([tas50](https://github.com/tas50))
+- Chef-14: add lazy module include to universal DSL [#8246](https://github.com/chef/chef/pull/8246) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-14: rollback rbnacl [#8254](https://github.com/chef/chef/pull/8254) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update libxml2 to 2.9.9 [#8238](https://github.com/chef/chef/pull/8238) ([tas50](https://github.com/tas50))
+- Use proper paths on Windows in chef-config [#8261](https://github.com/chef/chef/pull/8261) ([tas50](https://github.com/tas50))
+- windows_share: Improve path comparison to prevent convering on each run [#8262](https://github.com/chef/chef/pull/8262) ([tas50](https://github.com/tas50))
+- ﻿﻿chocolatey_package: use provided options when determing available options to allow using private sources [#8263](https://github.com/chef/chef/pull/8263) ([tas50](https://github.com/tas50))
+- openssl_dhparam: allow changing file mode on subsequent runs [#8264](https://github.com/chef/chef/pull/8264) ([tas50](https://github.com/tas50))
+- More consist descriptions for resource name properties [#8265](https://github.com/chef/chef/pull/8265) ([tas50](https://github.com/tas50))
+- Update openssl to 1.0.2r [#8266](https://github.com/chef/chef/pull/8266) ([tas50](https://github.com/tas50))
+- windows_certificate: Add support to import Base 64 encoded CER certificates [#8267](https://github.com/chef/chef/pull/8267) ([tas50](https://github.com/tas50))
+- Update InSpec to 3.7.1 [#8268](https://github.com/chef/chef/pull/8268) ([tas50](https://github.com/tas50))
+- Update cacerts to 2019-01-22 file [#8270](https://github.com/chef/chef/pull/8270) ([tas50](https://github.com/tas50))
+- mount: Add proper new lines when on AIX to prevent failures [#8273](https://github.com/chef/chef/pull/8273) ([tas50](https://github.com/tas50))
+- Update Rubygems to 2.7.9 + Add release notes for Chef 14.11 [#8272](https://github.com/chef/chef/pull/8272) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v14.10.9](https://github.com/chef/chef/tree/v14.10.9) (2019-01-30)
 
 #### Merged Pull Requests
@@ -49,7 +47,6 @@
 - Officially deprecate cookbook shadowing and audit mode [#8187](https://github.com/chef/chef/pull/8187) ([tas50](https://github.com/tas50))
 - Backport git resource fix in #8179 and update win32-certstore [#8189](https://github.com/chef/chef/pull/8189) ([tas50](https://github.com/tas50))
 - Bump InSpec to 3.4.1 [#8192](https://github.com/chef/chef/pull/8192) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.9.13](https://github.com/chef/chef/tree/v14.9.13) (2019-01-22)
 
