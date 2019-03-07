@@ -1,29 +1,27 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.12.14 -->
-## [v13.12.14](https://github.com/chef/chef/tree/v13.12.14) (2019-03-07)
-
-#### Merged Pull Requests
-- mount: Add proper new lines when on AIX to prevent failures  [#8281](https://github.com/chef/chef/pull/8281) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=13.12.3 -->
-### Changes since 13.12.3 release
-
-#### Merged Pull Requests
-- mount: Add proper new lines when on AIX to prevent failures  [#8281](https://github.com/chef/chef/pull/8281) ([tas50](https://github.com/tas50)) <!-- 13.12.14 -->
--  Update openssl to 1.0.2r and rubygems to 2.7.9  [#8280](https://github.com/chef/chef/pull/8280) ([tas50](https://github.com/tas50)) <!-- 13.12.13 -->
-- Update libxml2 to 2.9.9 [#8239](https://github.com/chef/chef/pull/8239) ([tas50](https://github.com/tas50)) <!-- 13.12.12 -->
-- Chef-13: add lazy module include to universal DSL [#8247](https://github.com/chef/chef/pull/8247) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.12.11 -->
-- Update Ohai to 13.12.6 [#8223](https://github.com/chef/chef/pull/8223) ([tas50](https://github.com/tas50)) <!-- 13.12.10 -->
-- Update nokogiri to 1.10.1 [#8218](https://github.com/chef/chef/pull/8218) ([tas50](https://github.com/tas50)) <!-- 13.12.9 -->
-- Update knife bootstrap template to use up to date omnitruck URL [#8208](https://github.com/chef/chef/pull/8208) ([tas50](https://github.com/tas50)) <!-- 13.12.8 -->
-- Fix for Property deprecations are broken in Chef 13 [#8132](https://github.com/chef/chef/pull/8132) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 13.12.7 -->
-- Update omnibus Chef dep to 14.8 [#8146](https://github.com/chef/chef/pull/8146) ([tas50](https://github.com/tas50)) <!-- 13.12.6 -->
-- Update Chef 13 to the latest gem deps [#8145](https://github.com/chef/chef/pull/8145) ([tas50](https://github.com/tas50)) <!-- 13.12.5 -->
-- Update openssl to 1.0.2q and bring in latest omnibus-software [#8088](https://github.com/chef/chef/pull/8088) ([tas50](https://github.com/tas50)) <!-- 13.12.4 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.12.14](https://github.com/chef/chef/tree/v13.12.14) (2019-03-07)
+
+#### Merged Pull Requests
+- Update openssl to 1.0.2q and bring in latest omnibus-software [#8088](https://github.com/chef/chef/pull/8088) ([tas50](https://github.com/tas50))
+- Update Chef 13 to the latest gem deps [#8145](https://github.com/chef/chef/pull/8145) ([tas50](https://github.com/tas50))
+- Update omnibus Chef dep to 14.8 [#8146](https://github.com/chef/chef/pull/8146) ([tas50](https://github.com/tas50))
+- Fix for Property deprecations are broken in Chef 13 [#8132](https://github.com/chef/chef/pull/8132) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Update knife bootstrap template to use up to date omnitruck URL [#8208](https://github.com/chef/chef/pull/8208) ([tas50](https://github.com/tas50))
+- Update nokogiri to 1.10.1 [#8218](https://github.com/chef/chef/pull/8218) ([tas50](https://github.com/tas50))
+- Update Ohai to 13.12.6 [#8223](https://github.com/chef/chef/pull/8223) ([tas50](https://github.com/tas50))
+- Chef-13: add lazy module include to universal DSL [#8247](https://github.com/chef/chef/pull/8247) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update libxml2 to 2.9.9 [#8239](https://github.com/chef/chef/pull/8239) ([tas50](https://github.com/tas50))
+-  Update openssl to 1.0.2r and rubygems to 2.7.9  [#8280](https://github.com/chef/chef/pull/8280) ([tas50](https://github.com/tas50))
+- mount: Add proper new lines when on AIX to prevent failures  [#8281](https://github.com/chef/chef/pull/8281) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v13.12.3](https://github.com/chef/chef/tree/v13.12.3) (2018-11-01)
 
 #### Merged Pull Requests
@@ -32,7 +30,6 @@
 - Pin rake to 12.0 to prevent shipping 2 copies [#7812](https://github.com/chef/chef/pull/7812) ([tas50](https://github.com/tas50))
 - Update Ohai to 13.12.4 [#7817](https://github.com/chef/chef/pull/7817) ([tas50](https://github.com/tas50))
 - Backport:  Throw better error on invalid resources actions  [#7836](https://github.com/chef/chef/pull/7836) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v13.11.3](https://github.com/chef/chef/tree/v13.11.3) (2018-09-26)
 
