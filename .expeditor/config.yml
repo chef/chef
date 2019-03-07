@@ -77,7 +77,7 @@ subscriptions:
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
-      - bash:.expeditor/update_dockerfile.sh
+      - bash:.expeditor/update_dockerfile.sh@chef/chef@master
       - built_in:tag_docker_image
       - built_in:publish_rubygems
       - built_in:notify_chefio_slack_channels
