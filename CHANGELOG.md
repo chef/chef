@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.12.12 -->
-## [v13.12.12](https://github.com/chef/chef/tree/v13.12.12) (2019-02-28)
+<!-- latest_release 13.12.13 -->
+## [v13.12.13](https://github.com/chef/chef/tree/v13.12.13) (2019-03-07)
 
 #### Merged Pull Requests
-- Update libxml2 to 2.9.9 [#8239](https://github.com/chef/chef/pull/8239) ([tas50](https://github.com/tas50))
+-  Update openssl to 1.0.2r and rubygems to 2.7.9  [#8280](https://github.com/chef/chef/pull/8280) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.12.3 -->
 ### Changes since 13.12.3 release
 
 #### Merged Pull Requests
+-  Update openssl to 1.0.2r and rubygems to 2.7.9  [#8280](https://github.com/chef/chef/pull/8280) ([tas50](https://github.com/tas50)) <!-- 13.12.13 -->
 - Update libxml2 to 2.9.9 [#8239](https://github.com/chef/chef/pull/8239) ([tas50](https://github.com/tas50)) <!-- 13.12.12 -->
 - Chef-13: add lazy module include to universal DSL [#8247](https://github.com/chef/chef/pull/8247) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.12.11 -->
 - Update Ohai to 13.12.6 [#8223](https://github.com/chef/chef/pull/8223) ([tas50](https://github.com/tas50)) <!-- 13.12.10 -->
