@@ -143,6 +143,60 @@ We removed the system_profile plugin because it incorrectly returned data on mod
 
 We removed the Ohai::Util::Win32::GroupHelper helper class from Ohai. This class was intended for use internally in several Windows plugins, but it was never marked private in the codebase. If any of your Ohai plugins rely on this helper class, you will need to update your plugins for Ohai 15.
 
+# Chef Client Release Notes 14.11:
+
+## Updated Resources
+
+### chocolatey_package
+
+The chocolatey_package resource now uses the provided options to fetch information on available packages, which allows installation packages from private sources. Thanks [@astoltz](https://github.com/astoltz) for reporting this issue.
+
+### openssl_dhparam
+
+The openssl_dhparam resource now supports updating the dhparam file's mode on subsequent chef-client runs. Thanks [@anewb](https://github.com/anewb) for the initial work on this fix.
+
+### mount
+
+The mount resource now properly adds a blank line between entries in fstab to prevent mount failures on AIX.
+
+### windows_certificate
+
+The windows_certificate resource now supports importing Base64 encoded CER certificates and nested P7B certificates. Additionally, private keys in PFX certificates are now imported along with the certificate.
+
+### windows_share
+
+The windows_share resource has improved logic to compare the desired share path vs. the current path, which prevents the resource from incorrectly converging during each Chef run. Thanks [@Xorima](https://github.com/xorima) for this fix.
+
+### windows_task
+
+The windows_task resource now properly clears out arguments that are no longer present when updating a task. Thanks [@nmcspadden](https://github.com/nmcspadden) for reporting this.
+
+## InSpec 3.7.1
+
+InSpec has been updated from 3.4.1 to 3.7.1. This new release contains improvements to the plugin system, a new config file system, and improvements to multiple resources. Additionally, profile attributes have also been renamed to inputs to prevent confusion with Chef attributes, which weren't actually related in any way.
+
+## Updated Components
+
+- bundler 1.16.1 -> 1.17.3
+- libxml2 2.9.7 -> 2.9.9
+- ca-certs updated to 2019-01-22 for new roots
+
+## Security Updates
+
+### OpenSSL
+
+OpenSSL has been updated to 1.0.2r in order to resolve [CVE-2019-1559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559)
+
+### RubyGems
+
+RubyGems has been updated to 2.7.9 in order to resolve the following CVEs:
+  - [CVE-2019-8320](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8320): Delete directory using symlink when decompressing tar
+  - [CVE-2019-8321](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8321): Escape sequence injection vulnerability in verbose
+  - [CVE-2019-8322](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8322): Escape sequence injection vulnerability in gem owner
+  - [CVE-2019-8323](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8323): Escape sequence injection vulnerability in API response handling
+  - [CVE-2019-8324](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8324): Installing a malicious gem may lead to arbitrary code execution
+  - [CVE-2019-8325](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8325): Escape sequence injection vulnerability in errors
+
 # Chef Client Release Notes 14.10:
 
 ## Updated Resources
@@ -1360,7 +1414,38 @@ optional_plugins in the client.rb file:
 optional_plugins [ "lspci", "passwd" ]
 ```
 
-# Chef Client Release Notes 13.12
+# Chef Client Release Notes 13.12.14
+
+## Bugfixes
+
+- The mount provider now properly adds blank lines between fstab entries on AIX
+- Ohai now reports itself as Ohai well communicating with GCE metadata endpoints
+- Property deprecations in custom resources no longer result in an error. Thanks for reporting this [martinisoft](https://github.com/martinisoft)
+- mixlib-archive has been updated to prevent corruption of archives on Windows systems
+
+## Updated Components
+
+- libxml2 2.9.7 -> 2.9.9
+- ca-certs updated to 2019-01-22 for new roots
+- nokogiri 1.8.5 -> 1.10.1
+
+## Security Updates
+
+### OpenSSL
+
+OpenSSL has been updated to 1.0.2r in order to resolve [CVE-2019-1559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559) and [CVE-2018-5407](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5407)
+
+### RubyGems
+
+RubyGems has been updated to 2.7.9 in order to resolve the following CVEs:
+  - [CVE-2019-8320](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8320): Delete directory using symlink when decompressing tar
+  - [CVE-2019-8321](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8321): Escape sequence injection vulnerability in verbose
+  - [CVE-2019-8322](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8322): Escape sequence injection vulnerability in gem owner
+  - [CVE-2019-8323](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8323): Escape sequence injection vulnerability in API response handling
+  - [CVE-2019-8324](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8324): Installing a malicious gem may lead to arbitrary code execution
+  - [CVE-2019-8325](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8325): Escape sequence injection vulnerability in errors
+
+# Chef Client Release Notes 13.12.3
 
 ## Smaller Package and Install Size
 
