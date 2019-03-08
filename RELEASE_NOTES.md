@@ -1271,6 +1271,256 @@ optional_plugins in the client.rb file:
 optional_plugins [ "lspci", "passwd" ]
 ```
 
+# Chef Client Release Notes 13.12.14
+
+## Bugfixes
+
+- The mount provider now properly adds blank lines between fstab entries on AIX
+- Ohai now reports itself as Ohai well communicating with GCE metadata endpoints
+- Property deprecations in custom resources no longer result in an error. Thanks for reporting this [martinisoft](https://github.com/martinisoft)
+- mixlib-archive has been updated to prevent corruption of archives on Windows systems
+
+## Updated Components
+
+- libxml2 2.9.7 -> 2.9.9
+- ca-certs updated to 2019-01-22 for new roots
+- nokogiri 1.8.5 -> 1.10.1
+
+## Security Updates
+
+### OpenSSL
+
+OpenSSL has been updated to 1.0.2r in order to resolve [CVE-2019-1559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559) and [CVE-2018-5407](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5407)
+
+### RubyGems
+
+RubyGems has been updated to 2.7.9 in order to resolve the following CVEs:
+  - [CVE-2019-8320](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8320): Delete directory using symlink when decompressing tar
+  - [CVE-2019-8321](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8321): Escape sequence injection vulnerability in verbose
+  - [CVE-2019-8322](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8322): Escape sequence injection vulnerability in gem owner
+  - [CVE-2019-8323](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8323): Escape sequence injection vulnerability in API response handling
+  - [CVE-2019-8324](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8324): Installing a malicious gem may lead to arbitrary code execution
+  - [CVE-2019-8325](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8325): Escape sequence injection vulnerability in errors
+
+# Chef Client Release Notes 13.12.3
+
+## Smaller Package and Install Size
+
+We trimmed unnecessary installation files, greatly reducing the sizes of both Chef packages and on disk installations. MacOS/Linux/FreeBSD packages are ~50% smaller and Windows are ~12% smaller. Chef 13 is now smaller than a legacy Chef 10 package.
+
+## macOS Mojave (10.14)
+
+Chef is now tested against macOS Mojave and packages are now available at downloads.chef.io.
+
+## SUSE Linux Enterprise Server 15
+
+- Ohai now properly detects SLES 15
+- The Chef package will no longer remove symlinks to chef-client and ohai when upgrading on SLES 15
+
+## Updated Chef-Vault
+
+Updating chef-vault to 3.4.2 resolved multiple bugs.
+
+## Faster Windows Installations
+
+Improved Windows installation speed by skipping unnecessary steps when Windows Installer 5.0 or later is available.
+
+## Ohai Release Notes 13.12
+
+### macOS Improvements
+
+- sysctl commands have been modified to gather only the bare minimum required data, which prevents sysctl hanging in some scenarios
+- Extra data has been removed from the system_profile plugin, reducing the amount of data stored on the chef-server for each node
+
+## New Deprecations
+
+### system_profile Ohai plugin removal
+
+The system_profile plugin will be removed from Chef/Ohai 15 in April, 2019. This plugin incorrectly returns data on modern Mac systems. Further, the hardware plugin returns the same data in a more readily consumable format. Removing this plugin reduces the speed of the Ohai return by ~3 seconds and also greatly reduces the node object size on the Chef server
+
+### ohai_name property in ohai resource
+
+The ``ohai`` resource's unused ``ohai_name`` property has been deprecated. This will be removed in Chef 15.0.
+
+## Security Updates
+
+### Ruby 2.4.5
+
+Ruby has been updated to from 2.4.4 to 2.4.5 to resolve multiple CVEs as well as bugs:
+- [CVE-2018-16396](https://www.ruby-lang.org/en/news/2018/10/17/not-propagated-taint-flag-in-some-formats-of-pack-cve-2018-16396/)
+- [CVE-2018-16395](https://www.ruby-lang.org/en/news/2018/10/17/openssl-x509-name-equality-check-does-not-work-correctly-cve-2018-16395/)
+
+# Chef Client Release Notes 13.11
+
+### Sensitive Properties on Windows
+
+- `windows_service` no longer logs potentially sensitive information when a service is setup
+- `windows_package` now respects the `sensitive` property to avoid logging sensitive data in the event of a package installation failure
+
+### Other Fixes
+
+- `remote_directory` now properly loads files in the root of a cookbook's `files` directory
+- `osx_profile` now uses the full path the profiles CLI tool to avoid running other binaries of the same name in a users path
+- `package` resources that don't support the `allow_downgrade` property will no longer fail
+- `knife bootstrap windows` error messages have been improved
+
+## Security Updates
+
+### OpenSSL
+
+- OpenSSL has been updated to 1.0.2p to resolve [CVE-2018-0732](https://nvd.nist.gov/vuln/detail/CVE-2018-0732) and [CVE-2018-0737](https://nvd.nist.gov/vuln/detail/CVE-2018-0737)
+
+### Rubyzip
+
+- Updated Rubyzip to 1.2.2 to resolve [CVE-2018-1000544](https://nvd.nist.gov/vuln/detail/CVE-2018-1000544)
+
+# Chef Client Release Notes 13.10
+
+## Bugfixes
+
+- Resolves a duplicate logging getting created when redirecting stdout
+- Using --recipe-url with a local file on Windows no longer fails
+- Service resource no longer throws Ruby deprecation warnings on Windows
+
+## Ohai 13.10 Improvements
+
+- Correctly identify the platform_version on the final release of Amazon Linux 2.0
+- Detect nodes with the DMI data of "OpenStack Compute" as being OpenStack nodes
+
+## Security Updates
+
+### ffi Gem
+
+- CVE-2018-1000201: DLL loading issue which can be hijacked on Windows OS
+
+# Chef Client Release Notes 13.9.X:
+
+## Security Updates
+
+Ruby has been updated to 2.4.4
+
+- CVE-2017-17742: HTTP response splitting in WEBrick
+- CVE-2018-6914: Unintentional file and directory creation with directory traversal in tempfile and tmpdir
+- CVE-2018-8777: DoS by large request in WEBrick
+- CVE-2018-8778: Buffer under-read in String#unpack
+- CVE-2018-8779: Unintentional socket creation by poisoned NUL byte in UNIXServer and UNIXSocket
+- CVE-2018-8780: Unintentional directory traversal by poisoned NUL byte in Dir
+- Multiple vulnerabilities in RubyGems
+
+Nokogiri has been updated to 1.8.2
+
+- [MRI] Behavior in libxml2 has been reverted which caused CVE-2018-8048 (loofah gem), CVE-2018-3740 (sanitize gem), and CVE-2018-3741 (rails-html-sanitizer gem).
+
+OpenSSL has been updated to 1.0.2o
+
+- CVE-2018-0739: Constructed ASN.1 types with a recursive definition could exceed the stack.
+
+## Platform Updates
+
+As Debian 7 is now end of life we will no longer produce Debian 7 chef-client packages.
+
+## Ifconfig on Ubuntu 18.04
+
+Incompatibilities with Ubuntu 18.04 in the ifconfig resource have been resolved.
+
+## Ohai Updated to 13.9.2
+
+### Virtualization detection on AWS
+
+Ohai now detects the virtualization hypervisor `amazonec2` when running on Amazon's new C5/M5 instances.
+
+### Configurable DMI Whitelist
+
+The whitelist of DMI IDs is now user configurable using the `additional_dmi_ids` configuration setting, which takes an Array.
+
+### Filesystem2 on BSD
+
+The Filesystem2 functionality has been backported to BSD systems to provide a consistent filesystem format.
+
+# Chef Client Release Notes 13.9.1:
+
+## Platform Additions
+
+Enable Ubuntu-18.04 and Debian-9 tested chef-client packages.
+
+# Chef Client Release Notes 13.9:
+
+- On Windows, the installer now correctly re-extracts files during repair mode
+- The mount resource will now not create duplicate entries when the device type differs
+- Ensure we don't request every remote file when running with lazy loading enabled
+- Don't crash when getting the access rights for Windows system accounts
+
+## Custom Resource Improvements
+
+We've expanded the DSL for custom resources with new functionality to better document your resources and help users with errors and upgrades. Many resources in Chef itself are now using this new functionality, and you'll see more updated to take advantage of this it in the future.
+
+### Deprecations in Cookbook Resources
+
+Chef 13 provides new primitives that allow you to deprecate resources or properties with the same functionality used for deprecations in Chef Client resources. This allows you make breaking changes to enterprise or community cookbooks with friendly notifications to downstream cookbook consumers directly in the Chef run.
+
+Deprecate the foo_bar resource in a cookbook:
+
+```ruby
+deprecated "The foo_bar resource has been deprecated and will be removed in the next major release of this cookbook scheduled for 12/25/2018!"
+
+property :thing, String, name_property: true
+
+action :create do
+ # you'd probably have some actual chef code here
+end
+```
+
+Deprecate the thing2 property in a resource
+
+```ruby
+property :thing2, String, deprecated: 'The thing2 property has been deprecated and will be removed in the next major release of this cookbook scheduled for 12/25/2018!'
+```
+
+Rename a property with a deprecation warning for users of the old property name
+
+```ruby
+deprecated_property_alias 'thing2', 'the_second_thing', 'The thing2 property was renamed the_second_thing in the 2.0 release of this cookbook. Please update your cookbooks to use the new property name.'
+```
+
+### validation_message
+
+Validation messages allow you give the user a friendly error message when any validation on a property fails.
+
+Provide a friendly message when a regex fails:
+
+```ruby
+property :repo_name, String, regex: [/^[^\/]+$/], validation_message: "The repo_name property cannot contain a forward slash '/'",
+```
+
+### Resource Documentation
+
+You can now include documentation that describes how a resource is to be used. Expect this data to be consumed by Chef and other tooling in future releases.
+
+A resource which includes description and introduced values in the resource, actions, and properties:
+
+```ruby
+description 'The apparmor_policy resource is used to add or remove policy files from a cookbook file'
+introduced '14.1'
+
+property :source_cookbook, String,
+         description: 'The cookbook to source the policy file from'
+property :source_filename, String,
+         description: 'The name of the source file if it differs from the apparmor.d file being created'
+
+action :add do
+  description 'Adds an apparmor policy'
+
+  # you'd probably have some actual chef code here
+end
+```
+
+# Ohai Release Notes 13.9:
+
+- Fix uptime parsing on AIX
+- Fix Softlayer cloud detection
+- Use the current Azure metadata endpoint
+- Correctly detect macOS guests on VMware and VirtualBox
+
 # Chef Client Release Notes 13.8:
 
 ## Revert attributes changes from 13.7
@@ -1453,11 +1703,11 @@ It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and `SLAVE` p
 
 ### Properties
 
-- `ethtool_opts`<br>
+- `ethtool\_opts`<br>
   **Ruby types:** String<br>
   **Platforms:** Fedora, RHEL, Amazon Linux A string containing arguments to ethtool. The string will be wrapped in double quotes, so ensure that any needed quotes in the property are surrounded by single quotes
 
-- `bonding_opts`<br>
+- `bonding\_opts`<br>
   **Ruby types:** String<br>
   **Platforms:** Fedora, RHEL, Amazon Linux A string containing configuration parameters for the bonding device.
 
@@ -1898,7 +2148,7 @@ It is now possible to load Solaris services recursively, by ensuring the new `op
 
 This is the inverse of the pre-existing whitelisting functionality.
 
-## The guard interpreter for `powershell_script` is PowerShell, again
+## The guard interpreter for `powershell_script` is Powershell, again
 
 When writing `not_if` or `only_if` statements, by default we now run those statements using powershell, rather than forcing the user to set `guard_interpreter` each time.
 
