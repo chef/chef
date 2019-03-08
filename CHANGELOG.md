@@ -214,6 +214,32 @@
 - Update Rubygems to 2.7.9 + Add release notes for Chef 14.11 [#8272](https://github.com/chef/chef/pull/8272) ([tas50](https://github.com/tas50))
 <!-- latest_stable_release -->
 
+## [v14.11.21](https://github.com/chef/chef/tree/v14.11.21) (2019-03-07)
+
+#### Merged Pull Requests
+- Update rubygems to 2.7.8 and bundler to 1.17.3 [#8194](https://github.com/chef/chef/pull/8194) ([tas50](https://github.com/tas50))
+- windows_certificate: Import PFX certificates with their private keys [#8206](https://github.com/chef/chef/pull/8206) ([tas50](https://github.com/tas50))
+- windows_task: Properly set command / arguments so resource updates behave as expected [#8205](https://github.com/chef/chef/pull/8205) ([tas50](https://github.com/tas50))
+- Update knife bootstrap template to use up to date omnitruck URL [#8207](https://github.com/chef/chef/pull/8207) ([tas50](https://github.com/tas50))
+- chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8209](https://github.com/chef/chef/pull/8209) ([tas50](https://github.com/tas50))
+- Update InSpec to 3.5.0 [#8214](https://github.com/chef/chef/pull/8214) ([tas50](https://github.com/tas50))
+- Chef-14: add ed25519 gemset and update omnibus-software [#8222](https://github.com/chef/chef/pull/8222) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update InSpec to 3.6.6 [#8237](https://github.com/chef/chef/pull/8237) ([tas50](https://github.com/tas50))
+- Chef-14: add lazy module include to universal DSL [#8246](https://github.com/chef/chef/pull/8246) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-14: rollback rbnacl [#8254](https://github.com/chef/chef/pull/8254) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update libxml2 to 2.9.9 [#8238](https://github.com/chef/chef/pull/8238) ([tas50](https://github.com/tas50))
+- Use proper paths on Windows in chef-config [#8261](https://github.com/chef/chef/pull/8261) ([tas50](https://github.com/tas50))
+- windows_share: Improve path comparison to prevent convering on each run [#8262](https://github.com/chef/chef/pull/8262) ([tas50](https://github.com/tas50))
+- chocolatey_package: use provided options when determing available options to allow using private sources [#8263](https://github.com/chef/chef/pull/8263) ([tas50](https://github.com/tas50))
+- openssl_dhparam: allow changing file mode on subsequent runs [#8264](https://github.com/chef/chef/pull/8264) ([tas50](https://github.com/tas50))
+- More consist descriptions for resource name properties [#8265](https://github.com/chef/chef/pull/8265) ([tas50](https://github.com/tas50))
+- Update openssl to 1.0.2r [#8266](https://github.com/chef/chef/pull/8266) ([tas50](https://github.com/tas50))
+- windows_certificate: Add support to import Base 64 encoded CER certificates [#8267](https://github.com/chef/chef/pull/8267) ([tas50](https://github.com/tas50))
+- Update InSpec to 3.7.1 [#8268](https://github.com/chef/chef/pull/8268) ([tas50](https://github.com/tas50))
+- Update cacerts to 2019-01-22 file [#8270](https://github.com/chef/chef/pull/8270) ([tas50](https://github.com/tas50))
+- mount: Add proper new lines when on AIX to prevent failures [#8273](https://github.com/chef/chef/pull/8273) ([tas50](https://github.com/tas50))
+- Update Rubygems to 2.7.9 + Add release notes for Chef 14.11 [#8272](https://github.com/chef/chef/pull/8272) ([tas50](https://github.com/tas50))
+
 ## [v14.10.9](https://github.com/chef/chef/tree/v14.10.9) (2019-01-30)
 
 #### Merged Pull Requests
@@ -257,7 +283,6 @@
 - Allow for mixlib-archive 1.x [#8141](https://github.com/chef/chef/pull/8141) ([tas50](https://github.com/tas50))
 - systctl: Allow slashes in key or block name [#8142](https://github.com/chef/chef/pull/8142) ([tas50](https://github.com/tas50))
 - homebrew_cask: Ensure the resource is fully idempotent [#8143](https://github.com/chef/chef/pull/8143) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.8.12](https://github.com/chef/chef/tree/v14.8.12) (2018-12-13)
 
@@ -804,6 +829,21 @@
 - [CHEF-7026] Rewrite portage package provider candidate_version determination and fix tests [#7027](https://github.com/chef/chef/pull/7027) ([gengor](https://github.com/gengor))
 - Don&#39;t fail on every hostname with windows [#7107](https://github.com/chef/chef/pull/7107) ([tas50](https://github.com/tas50))
 - [windows_printer_port] fix typo + add action descriptions [#7093](https://github.com/chef/chef/pull/7093) ([brewn](https://github.com/brewn))
+
+## [v13.12.14](https://github.com/chef/chef/tree/v13.12.14) (2019-03-07)
+
+#### Merged Pull Requests
+- Update openssl to 1.0.2q and bring in latest omnibus-software [#8088](https://github.com/chef/chef/pull/8088) ([tas50](https://github.com/tas50))
+- Update Chef 13 to the latest gem deps [#8145](https://github.com/chef/chef/pull/8145) ([tas50](https://github.com/tas50))
+- Update omnibus Chef dep to 14.8 [#8146](https://github.com/chef/chef/pull/8146) ([tas50](https://github.com/tas50))
+- Fix for Property deprecations are broken in Chef 13 [#8132](https://github.com/chef/chef/pull/8132) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Update knife bootstrap template to use up to date omnitruck URL [#8208](https://github.com/chef/chef/pull/8208) ([tas50](https://github.com/tas50))
+- Update nokogiri to 1.10.1 [#8218](https://github.com/chef/chef/pull/8218) ([tas50](https://github.com/tas50))
+- Update Ohai to 13.12.6 [#8223](https://github.com/chef/chef/pull/8223) ([tas50](https://github.com/tas50))
+- Chef-13: add lazy module include to universal DSL [#8247](https://github.com/chef/chef/pull/8247) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update libxml2 to 2.9.9 [#8239](https://github.com/chef/chef/pull/8239) ([tas50](https://github.com/tas50))
+-  Update openssl to 1.0.2r and rubygems to 2.7.9  [#8280](https://github.com/chef/chef/pull/8280) ([tas50](https://github.com/tas50))
+- mount: Add proper new lines when on AIX to prevent failures  [#8281](https://github.com/chef/chef/pull/8281) ([tas50](https://github.com/tas50))
 
 ## [v13.12.3](https://github.com/chef/chef/tree/v13.12.3) (2018-11-01)
 
