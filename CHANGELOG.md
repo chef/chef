@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.179 -->
-## [v15.0.179](https://github.com/chef/chef/tree/v15.0.179) (2019-03-06)
+<!-- latest_release 15.0.180 -->
+## [v15.0.180](https://github.com/chef/chef/tree/v15.0.180) (2019-03-09)
 
 #### Merged Pull Requests
-- Update rubygems to 3.0.3 [#8276](https://github.com/chef/chef/pull/8276) ([tas50](https://github.com/tas50))
+- Refactor windows_service unit tests [#8279](https://github.com/chef/chef/pull/8279) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Refactor windows_service unit tests [#8279](https://github.com/chef/chef/pull/8279) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.180 -->
 - Update rubygems to 3.0.3 [#8276](https://github.com/chef/chef/pull/8276) ([tas50](https://github.com/tas50)) <!-- 15.0.179 -->
 - mount: Add proper new lines when on AIX to prevent failures [#8271](https://github.com/chef/chef/pull/8271) ([gsreynolds](https://github.com/gsreynolds)) <!-- 15.0.178 -->
 - windows_certificate: Import nested certificates while importing P7B certs. [#8242](https://github.com/chef/chef/pull/8242) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.177 -->
