@@ -19,7 +19,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::Service::Windows, "load_current_resource", :windows_only do
+describe Chef::Provider::Service::Windows, "load_current_resource" do
   include_context "Win32"
 
   let(:logger) { double("Mixlib::Log::Child").as_null_object }
@@ -88,7 +88,15 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
   let(:service_right) { Chef::Provider::Service::Windows::SERVICE_RIGHT }
 
   before(:all) do
+    Holder::Win32::Service = Win32::Service
+    Holder::Chef::ReservedNames::Win32::Security = Chef::ReservedNames::Win32::Security
     Win32::Service = Class.new
+    Chef::ReservedNames::Win32::Security = Class.new
+  end
+
+  after(:all) do
+    Win32::Service = Holder::Win32::Service
+    Chef::ReservedNames::Win32::Security = Holder::Chef::ReservedNames::Win32::Security
   end
 
   before(:each) do
