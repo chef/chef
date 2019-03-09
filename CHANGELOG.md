@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.11.22 -->
+## [v14.11.22](https://github.com/chef/chef/tree/v14.11.22) (2019-03-09)
+
+#### Merged Pull Requests
+- windows_certificate: Import nested certificates while importing P7B certs [#8274](https://github.com/chef/chef/pull/8274) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.11.21 -->
+### Changes since 14.11.21 release
+
+#### Merged Pull Requests
+- windows_certificate: Import nested certificates while importing P7B certs [#8274](https://github.com/chef/chef/pull/8274) ([tas50](https://github.com/tas50)) <!-- 14.11.22 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
