@@ -265,7 +265,8 @@ class Chef
 
         load_required_recipe(@rest, run_context) unless Chef::Config[:solo_legacy_mode]
 
-        converge_and_save(run_context)
+        converge_error = converge_and_save(run_context)
+        raise converge_error if converge_error
 
         run_status.stop_clock
         logger.info("Chef Run complete in #{run_status.elapsed_time} seconds")
@@ -652,6 +653,7 @@ class Chef
     # @api private
     #
     def converge(run_context)
+      converge_exception = nil
       catch(:end_client_run_early) do
         begin
           events.converge_start(run_context)
@@ -661,9 +663,11 @@ class Chef
           events.converge_complete
         rescue Exception => e
           events.converge_failed(e)
+          converge_exception = e
           raise e
         end
       end
+      converge_exception
     end
 
     #
@@ -684,8 +688,15 @@ class Chef
     # split this stuff up?
     #
     def converge_and_save(run_context)
-      converge(run_context)
-      save_updated_node
+      converge_exception = converge(run_context)
+      unless converge_exception
+        begin
+          save_updated_node
+        rescue Exception => e
+          converge_exception = e
+        end
+      end
+      converge_exception
     end
 
     #
