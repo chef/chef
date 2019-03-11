@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.180 -->
-## [v15.0.180](https://github.com/chef/chef/tree/v15.0.180) (2019-03-09)
+<!-- latest_release 15.0.181 -->
+## [v15.0.181](https://github.com/chef/chef/tree/v15.0.181) (2019-03-11)
 
 #### Merged Pull Requests
-- Refactor windows_service unit tests [#8279](https://github.com/chef/chef/pull/8279) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Extract ActionCollection out of ResourceReporter, overhaul DataCollector [#8063](https://github.com/chef/chef/pull/8063) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Extract ActionCollection out of ResourceReporter, overhaul DataCollector [#8063](https://github.com/chef/chef/pull/8063) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.181 -->
 - Refactor windows_service unit tests [#8279](https://github.com/chef/chef/pull/8279) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.180 -->
 - Update rubygems to 3.0.3 [#8276](https://github.com/chef/chef/pull/8276) ([tas50](https://github.com/tas50)) <!-- 15.0.179 -->
 - mount: Add proper new lines when on AIX to prevent failures [#8271](https://github.com/chef/chef/pull/8271) ([gsreynolds](https://github.com/gsreynolds)) <!-- 15.0.178 -->
