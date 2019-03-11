@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,6 +45,7 @@ require "chef/formatters/base"
 require "chef/formatters/doc"
 require "chef/formatters/minimal"
 require "chef/version"
+require "chef/action_collection"
 require "chef/resource_reporter"
 require "chef/data_collector"
 require "chef/audit/audit_reporter"
@@ -249,9 +250,14 @@ class Chef
       begin
         runlock.save_pid
 
-        request_id = Chef::RequestID.instance.request_id
+        events.register(Chef::DataCollector::Reporter.new(events))
+        events.register(Chef::ActionCollection.new(events))
+
+        run_status.run_id = request_id = Chef::RequestID.instance.request_id
+
         run_context = nil
-        events.run_start(Chef::VERSION)
+        events.run_start(Chef::VERSION, run_status)
+
         logger.info("*** Chef #{Chef::VERSION} ***")
         logger.info("Platform: #{RUBY_PLATFORM}")
         logger.info "Chef-client pid: #{Process.pid}"
@@ -259,16 +265,12 @@ class Chef
         enforce_path_sanity
         run_ohai
 
-        generate_guid
-
         register unless Chef::Config[:solo_legacy_mode]
-        register_data_collector_reporter
 
         load_node
 
         build_node
 
-        run_status.run_id = request_id
         run_status.start_clock
         logger.info("Starting Chef Run for #{node.name}")
         run_started
@@ -997,33 +999,6 @@ class Chef
       require "chef/win32/security"
 
       Chef::ReservedNames::Win32::Security.has_admin_privileges?
-    end
-
-    # Ensure that we have a GUID for this node
-    # If we've got the proper configuration, we'll simply set that.
-    # If we're registed with the data collector, we'll migrate that UUID into our configuration and use that
-    # Otherwise, we'll create a new GUID and save it
-    def generate_guid
-      Chef::Config[:chef_guid] ||=
-        if File.exists?(Chef::Config[:chef_guid_path])
-          File.read(Chef::Config[:chef_guid_path])
-        else
-          uuid = UUIDFetcher.node_uuid
-          File.open(Chef::Config[:chef_guid_path], "w+") do |fh|
-            fh.write(uuid)
-          end
-          uuid
-        end
-    end
-
-    class UUIDFetcher
-      extend Chef::DataCollector::Messages::Helpers
-    end
-
-    # Register the data collector reporter to send event information to the
-    # data collector server
-    def register_data_collector_reporter
-      events.register(Chef::DataCollector::Reporter.new) if Chef::DataCollector.register_reporter?
     end
   end
 end

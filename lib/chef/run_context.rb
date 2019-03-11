@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,6 +104,7 @@ class Chef
     #
     attr_reader :resource_collection
 
+    attr_accessor :action_collection
     #
     # The list of control groups to execute during the audit phase
     #
@@ -603,6 +604,8 @@ class Chef
     class ChildRunContext < RunContext
       extend Forwardable
       def_delegators :parent_run_context, *%w{
+        action_collection
+        action_collection=
         cancel_reboot
         config
         cookbook_collection

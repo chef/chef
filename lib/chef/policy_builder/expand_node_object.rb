@@ -3,7 +3,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -68,6 +68,11 @@ class Chef
         Chef.set_run_context(run_context)
       end
 
+      # This not only creates the run_context but this is where we kick off
+      # compiling the entire expanded run_list, loading all the libraries, resources,
+      # attribute files and recipes, and constructing the entire resource collection.
+      # (FIXME: break up creating the run_context and compiling the cookbooks)
+      #
       def setup_run_context(specific_recipes = nil)
         if Chef::Config[:solo_legacy_mode]
           Chef::Cookbook::FileVendor.fetch_from_disk(Chef::Config[:cookbook_path])
@@ -88,18 +93,20 @@ class Chef
           run_context = Chef::RunContext.new(node, cookbook_collection, @events)
         end
 
-        # TODO: this is really obviously not the place for this
-        # FIXME: need same edits
+        # TODO: move this into the cookbook_compilation_start hook
         setup_chef_class(run_context)
 
-        # TODO: this is not the place for this. It should be in Runner or
-        # CookbookCompiler or something.
+        events.cookbook_compilation_start(run_context)
+
         run_context.load(@run_list_expansion)
         if specific_recipes
           specific_recipes.each do |recipe_file|
             run_context.load_recipe_file(recipe_file)
           end
         end
+
+        events.cookbook_compilation_complete(run_context)
+
         run_context
       end
 

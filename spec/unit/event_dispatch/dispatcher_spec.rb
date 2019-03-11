@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,9 +43,9 @@ describe Chef::EventDispatch::Dispatcher do
 
     it "forwards events to the subscribed event sink" do
       # the events all have different arity and such so we just hit a few different events:
-
-      expect(event_sink).to receive(:run_start).with("12.4.0")
-      dispatcher.run_start("12.4.0")
+      run_status = Chef::RunStatus.new({}, {})
+      expect(event_sink).to receive(:run_start).with("12.4.0", run_status)
+      dispatcher.run_start("12.4.0", run_status)
 
       cookbook_version = double("cookbook_version")
       expect(event_sink).to receive(:synchronized_cookbook).with("apache2", cookbook_version)
@@ -117,6 +117,53 @@ describe Chef::EventDispatch::Dispatcher do
         expect(event_sink_1.synchronized_cookbook_args).to eq ["apache2"]
         expect(event_sink_2.synchronized_cookbook_args).to eq ["apache2", cookbook_version]
       end
+    end
+  end
+
+  context "events that queue events" do
+    class Accumulator
+      def self.sequence
+        @secuence ||= []
+      end
+    end
+
+    let(:event_sink_1) do
+      Class.new(Chef::EventDispatch::Base) do
+        def synchronized_cookbook(dispatcher, arg)
+          dispatcher.enqueue(:event_two, arg)
+          Accumulator.sequence << [ :sink_1_event_1, arg ]
+        end
+
+        def event_two(arg)
+          Accumulator.sequence << [ :sink_1_event_2, arg ]
+        end
+      end.new
+    end
+    let(:event_sink_2) do
+      Class.new(Chef::EventDispatch::Base) do
+        def synchronized_cookbook(dispatcher, arg)
+          Accumulator.sequence << [ :sink_2_event_1, arg ]
+        end
+
+        def event_two(arg)
+          Accumulator.sequence << [ :sink_2_event_2, arg ]
+        end
+      end.new
+    end
+
+    before do
+      dispatcher.register(event_sink_1)
+      dispatcher.register(event_sink_2)
+    end
+
+    it "runs the events in the correct order without interleaving the enqueued event" do
+      dispatcher.synchronized_cookbook(dispatcher, "two")
+      expect(Accumulator.sequence).to eql([
+        [:sink_1_event_1, "two"], # the call to enqueue the event happens here
+        [:sink_2_event_1, "two"], # event 1 fully finishes
+        [:sink_1_event_2, "two"],
+        [:sink_2_event_2, "two"], # then event 2 runs and finishes
+      ])
     end
   end
 end

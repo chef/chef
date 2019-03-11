@@ -192,7 +192,11 @@ class Chef
 
         setup_chef_class(run_context)
 
+        events.cookbook_compilation_start(run_context)
+
         run_context.load(run_list_expansion_ish)
+
+        events.cookbook_compilation_complete(run_context)
 
         setup_chef_class(run_context)
         run_context

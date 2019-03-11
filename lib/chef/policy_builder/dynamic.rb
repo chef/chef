@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,6 +74,7 @@ class Chef
         select_implementation(node)
         implementation.finish_load_node(node)
         node
+        events.node_load_success(node)
       rescue Exception => e
         events.node_load_failed(node_name, e, config)
         raise

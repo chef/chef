@@ -1,7 +1,7 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2019, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ describe Chef::EventLoggers::WindowsEventLogger, :windows_only do
   end
 
   it "writes run_start event with event_id 10000 and contains version" do
-    logger.run_start(version)
+    logger.run_start(version, run_status)
 
     expect(event_log.read(flags, offset).any? do |e|
              e.source == "Chef" && e.event_id == 10000 &&

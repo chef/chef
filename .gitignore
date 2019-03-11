@@ -47,6 +47,7 @@ kitchen-tests/Berksfile.lock
 # Temporary files present during spec runs
 spec/data/test-dir
 spec/data/nodes
+spec/data/chef_guid
 /config/
 
 vendor/

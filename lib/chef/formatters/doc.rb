@@ -42,7 +42,7 @@ class Chef
         message
       end
 
-      def run_start(version)
+      def run_start(version, run_status)
         puts_line "Starting Chef Client, version #{version}"
         puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
       end
