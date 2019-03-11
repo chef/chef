@@ -288,18 +288,12 @@ class Chef
           run_failed
         end
         events.run_failed(run_error, run_status)
+        Chef::Application.debug_stacktrace(run_error)
+        raise run_error
       ensure
         Chef::RequestID.instance.reset_request_id
         @run_status = nil
         runlock.release
-      end
-
-      # Raise converge, and other errors here so that we exit
-      # with the proper exit status code and everything gets raised
-      # as a RunFailedWrappingError
-      if run_error
-        Chef::Application.debug_stacktrace(run_error)
-        raise run_error
       end
 
       true
