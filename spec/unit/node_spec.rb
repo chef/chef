@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -951,14 +951,6 @@ describe Chef::Node do
       node.consume_external_attrs(@ohai_data, {})
       expect(node.automatic_attrs[:platform]).to eq("foobuntu")
       expect(node.automatic_attrs[:platform_version]).to eq("23.42")
-    end
-
-    it "sets the chef guid attribute correctly" do
-      guid = Chef::Config[:chef_guid]
-      Chef::Config[:chef_guid] = "test-guid-guid"
-      node.consume_external_attrs(@ohai_data, {})
-      expect(node.automatic_attrs[:chef_guid]).to eq("test-guid-guid")
-      Chef::Config[:chef_guid] = guid
     end
 
     it "consumes the run list from provided json attributes" do

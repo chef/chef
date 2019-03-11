@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -1197,10 +1197,23 @@ RSpec.describe ChefConfig::Config do
 
       end
 
-      context "for Chef Solo" do
+      context "for Chef Solo legacy mode" do
 
         before do
-          ChefConfig::Config[:solo] = true
+          ChefConfig::Config[:solo_legacy_mode] = true
+        end
+
+        it "sets the data collector server URL to nil" do
+          ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/myorg"
+          expect(ChefConfig::Config[:data_collector][:server_url]).to be_nil
+        end
+
+      end
+
+      context "for local mode" do
+
+        before do
+          ChefConfig::Config[:local_mode] = true
         end
 
         it "sets the data collector server URL to nil" do

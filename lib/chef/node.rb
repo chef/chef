@@ -2,7 +2,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@
 #
 
 require "forwardable"
+require "securerandom"
 require "chef/config"
 require "chef/nil_argument"
 require "chef/mixin/params_validate"
@@ -338,7 +339,7 @@ class Chef
       logger.debug("Platform is #{platform} version #{version}")
       automatic[:platform] = platform
       automatic[:platform_version] = version
-      automatic[:chef_guid] = Chef::Config[:chef_guid]
+      automatic[:chef_guid] = Chef::Config[:chef_guid] || ( Chef::Config[:chef_guid] = node_uuid )
       automatic[:name] = name
       automatic[:chef_environment] = chef_environment
     end
@@ -685,6 +686,25 @@ class Chef
         end
       end
       data
+    end
+
+    # Returns a UUID that uniquely identifies this node for reporting reasons.
+    #
+    # The node is read in from disk if it exists, or it's generated if it does
+    # does not exist.
+    #
+    # @return [String] UUID for the node
+    #
+    def node_uuid
+      path = File.expand_path(Chef::Config[:chef_guid_path])
+      dir = File.dirname(path)
+
+      unless File.exists?(path)
+        FileUtils.mkdir_p(dir)
+        File.write(path, SecureRandom.uuid)
+      end
+
+      File.open(path).first.chomp
     end
 
   end
