@@ -28,14 +28,8 @@ require "chef/server_api"
 class Chef
   module PolicyBuilder
 
-    # Policyfile is an experimental policy builder implementation that gets run
+    # Policyfile is a policy builder implementation that gets run
     # list and cookbook version information from a single document.
-    #
-    # == WARNING
-    # This implementation is experimental. It may be changed in incompatible
-    # ways in minor or even patch releases, or even abandoned altogether. If
-    # using this with other tools, you may be forced to upgrade those tools in
-    # lockstep with chef-client because of incompatible behavior changes.
     #
     # == Unsupported Options:
     # * override_runlist:: This could potentially be integrated into the
