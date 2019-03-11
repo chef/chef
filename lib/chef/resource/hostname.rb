@@ -253,6 +253,8 @@ class Chef
       end
 
       # this resource forces itself to run at compile_time
+      #
+      # @return [void]
       def after_created
         if compile_time
           Array(action).each do |action|

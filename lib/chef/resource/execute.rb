@@ -116,6 +116,9 @@ class Chef
         ancestor_attributes.concat(@class_inherited_attributes ? @class_inherited_attributes : []).uniq
       end
 
+      # post resource creation validation
+      #
+      # @return [void]
       def after_created
         validate_identity_platform(user, password, domain, elevated)
         identity = qualify_user(user, password, domain)

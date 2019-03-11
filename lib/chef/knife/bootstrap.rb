@@ -395,6 +395,7 @@ class Chef
         end
       end
 
+      # fail if the server_name is nil
       def validate_name_args!
         if server_name.nil?
           ui.error("Must pass an FQDN or ip to bootstrap")
