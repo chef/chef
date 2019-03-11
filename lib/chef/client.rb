@@ -373,17 +373,6 @@ class Chef
                                                       signing_key_filename: config[:client_key], validate_utf8: false)
     end
 
-    # Resource reporters send event information back to the chef server for
-    # processing.  Can only be called after we have a @rest object
-    # @api private
-    def register_reporters
-      [
-        Chef::ResourceReporter.new(rest_clean)
-      ].each do |r|
-        events.register(r)
-      end
-    end
-
     #
     # Callback to fire notifications that the Chef run is starting
     #
@@ -635,7 +624,9 @@ class Chef
                                                             signing_key_filename: config[:client_key])
       # force initialization of the rest_clean API object
       rest_clean(client_name, config)
-      register_reporters
+      # FIXME: we could initialize rest_clean much earlier and hang it off of the run_status and then
+      # have the ResourceReporter pull it off of the run_status and eliminate this tight coupling.
+      events.register(Chef::ResourceReporter.new(rest_clean))
     rescue Exception => e
       # TODO this should probably only ever fire if we *started* registration.
       # Move it to the block above.
