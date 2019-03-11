@@ -85,7 +85,7 @@ ConfigValidation should probably be merged into one renamed Config module to iso
 
 These are separated out into their own modules, which are very deliberately not mixed into the main Data Collector.  They use the Data Collector and Action Collection
 public interfaces.  They are stateless themselves.  This keeps the collaboration between them and the Data Collector very easy to understand.  The start message is
-relatively simple and straightforwards.  The complication of the end message is mostly due to walking through the Action Collection and all the collected action 
+relatively simple and straightforwards.  The complication of the end message is mostly due to walking through the Action Collection and all the collected action
 records from the entire run, along with a lot of defensive programming to deal with early errors.
 
 ## Relevant Event Sequence
@@ -112,6 +112,3 @@ As it happens in the actual chef-client run:
 13. `run_status.stop_clock`
 14. `run_status.exception = exception` if it failed
 15. `events.run_completed(node, run_status)` or `events.run_failed(exception, run_status)`
-
-
-
