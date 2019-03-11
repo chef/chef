@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.181 -->
-## [v15.0.181](https://github.com/chef/chef/tree/v15.0.181) (2019-03-11)
+<!-- latest_release 15.0.182 -->
+## [v15.0.182](https://github.com/chef/chef/tree/v15.0.182) (2019-03-11)
 
 #### Merged Pull Requests
-- Extract ActionCollection out of ResourceReporter, overhaul DataCollector [#8063](https://github.com/chef/chef/pull/8063) ([lamont-granquist](https://github.com/lamont-granquist))
+- Allow win32-service 2.x and bump InSpec to 3.7.1 [#8285](https://github.com/chef/chef/pull/8285) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Allow win32-service 2.x and bump InSpec to 3.7.1 [#8285](https://github.com/chef/chef/pull/8285) ([tas50](https://github.com/tas50)) <!-- 15.0.182 -->
 - Extract ActionCollection out of ResourceReporter, overhaul DataCollector [#8063](https://github.com/chef/chef/pull/8063) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.181 -->
 - Refactor windows_service unit tests [#8279](https://github.com/chef/chef/pull/8279) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.180 -->
 - Update rubygems to 3.0.3 [#8276](https://github.com/chef/chef/pull/8276) ([tas50](https://github.com/tas50)) <!-- 15.0.179 -->
