@@ -118,7 +118,6 @@ matrix:
   ### START TEST KITCHEN ONLY ###
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -135,7 +134,6 @@ matrix:
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -152,7 +150,6 @@ matrix:
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -169,7 +166,6 @@ matrix:
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -186,7 +182,6 @@ matrix:
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -203,7 +198,6 @@ matrix:
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -220,7 +214,6 @@ matrix:
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -237,7 +230,6 @@ matrix:
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -254,7 +246,6 @@ matrix:
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -271,7 +262,6 @@ matrix:
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -288,7 +278,6 @@ matrix:
       - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
     services: docker
-    sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -304,7 +293,6 @@ matrix:
      - OPENSUSELEAP=42
      - KITCHEN_YAML=kitchen.travis.yml
   - rvm: 2.5.3
-    sudo: required
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - rvm @global do gem uninstall bundler -a -x || true
