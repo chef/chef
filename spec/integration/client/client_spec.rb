@@ -407,45 +407,6 @@ describe "chef-client" do
     end
   end
 
-  when_the_repository "has a cookbook with only an audit recipe" do
-
-    before do
-      file "config/client.rb", <<~EOM
-        local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
-        audit_mode :enabled
-      EOM
-    end
-
-    it "should exit with a zero code when there is not an audit failure" do
-      file "cookbooks/audit_test/recipes/succeed.rb", <<~RECIPE
-        control_group "control group without top level control" do
-          it "should succeed" do
-            expect(2 - 2).to eq(0)
-          end
-        end
-      RECIPE
-
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed' -l info", cwd: chef_dir)
-      expect(result.error?).to be_falsey
-      expect(result.stdout).to include("Successfully executed all `control_group` blocks and contained examples")
-    end
-
-    it "should exit with a non-zero code when there is an audit failure" do
-      file "cookbooks/audit_test/recipes/fail.rb", <<~RECIPE
-        control_group "control group without top level control" do
-          it "should fail" do
-            expect(2 - 2).to eq(1)
-          end
-        end
-      RECIPE
-
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::fail'", cwd: chef_dir)
-      expect(result.error?).to be_truthy
-      expect(result.stdout).to include("Failure/Error: expect(2 - 2).to eq(1)")
-    end
-  end
-
   when_the_repository "has a cookbook that deploys a file" do
     before do
       file "cookbooks/x/recipes/default.rb", <<~RECIPE

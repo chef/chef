@@ -83,7 +83,7 @@ class Chef
         #     is part of object identity. Defaults to `false`.
         #   @option options [Boolean] :sensitive `true` if this property could
         #     contain sensitive information and whose value should be redacted
-        #     in any resource reporting / auditing output. Defaults to `false`.
+        #     in any resource reporting output. Defaults to `false`.
         #
         # @example Bare property
         #   property :x
@@ -175,9 +175,6 @@ class Chef
         # "state properties" usually modify the way Chef itself behaves, for example
         # by providing additional options for a package manager to use when
         # installing a package.
-        #
-        # This list is used by the Chef client auditing system to extract
-        # information from resources to describe changes made to the system.
         #
         # This method is unnecessary when declaring properties with `property`;
         # properties are added to state_properties by default, and can be turned off

@@ -44,13 +44,6 @@ describe Chef::RunContext::ChildRunContext do
         expect(child.parent_run_context).to eq run_context
       end
 
-      it "audits is not the same as the parent" do
-        expect(child.audits.object_id).not_to eq run_context.audits.object_id
-        child.audits["hi"] = "lo"
-        expect(child.audits["hi"]).to eq("lo")
-        expect(run_context.audits["hi"]).not_to eq("lo")
-      end
-
       it "resource_collection is not the same as the parent" do
         expect(child.resource_collection.object_id).not_to eq run_context.resource_collection.object_id
         f = Chef::Resource::File.new("hi", child)

@@ -8,8 +8,7 @@ class Chef
     # show context.
     class Doc < Formatters::Base
 
-      attr_reader :start_time, :end_time, :successful_audits, :failed_audits
-      private :successful_audits, :failed_audits
+      attr_reader :start_time, :end_time
 
       cli_name(:doc)
 
@@ -18,8 +17,6 @@ class Chef
 
         @updated_resources = 0
         @up_to_date_resources = 0
-        @successful_audits = 0
-        @failed_audits = 0
         @start_time = Time.now
         @end_time = @start_time
         @skipped_resources = 0
@@ -49,10 +46,6 @@ class Chef
 
       def total_resources
         @up_to_date_resources + @updated_resources + @skipped_resources
-      end
-
-      def total_audits
-        successful_audits + failed_audits
       end
 
       def run_completed(node)
@@ -85,9 +78,6 @@ class Chef
           puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
           puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
-          if total_audits > 0
-            puts_line "  #{successful_audits}/#{total_audits} controls succeeded"
-          end
         end
       end
 
@@ -97,9 +87,6 @@ class Chef
           puts_line "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
           puts_line "Chef Client failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
-          if total_audits > 0
-            puts_line "  #{successful_audits} controls succeeded"
-          end
         end
       end
 
@@ -239,37 +226,6 @@ class Chef
         converge_complete
       end
 
-      # Called before audit phase starts
-      def audit_phase_start(run_status)
-        puts_line "Starting audit phase"
-      end
-
-      def audit_phase_complete(audit_output)
-        puts_line audit_output
-        puts_line "Auditing complete"
-      end
-
-      def audit_phase_failed(error, audit_output)
-        puts_line audit_output
-        puts_line ""
-        puts_line "Audit phase exception:"
-        indent
-        puts_line (error.message).to_s
-        if error.backtrace
-          error.backtrace.each do |l|
-            puts_line l
-          end
-        end
-      end
-
-      def control_example_success(control_group_name, example_data)
-        @successful_audits += 1
-      end
-
-      def control_example_failure(control_group_name, example_data, error)
-        @failed_audits += 1
-      end
-
       # Called before action is executed on a resource.
       def resource_action_start(resource, action, notification_type = nil, notifier = nil)
         if resource.cookbook_name && resource.recipe_name
@@ -284,7 +240,7 @@ class Chef
           @current_recipe = resource_recipe
           indent
         end
-        # TODO: info about notifies
+        # @todo info about notifies
         start_line "* #{resource} action #{action}", stream: resource
         indent
       end

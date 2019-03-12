@@ -106,11 +106,6 @@ class Chef
 
     attr_accessor :action_collection
     #
-    # The list of control groups to execute during the audit phase
-    #
-    attr_reader :audits
-
-    #
     # Pointer back to the Chef::Runner that created this
     #
     attr_accessor :runner
@@ -204,7 +199,6 @@ class Chef
     # Initialize state that applies to both Chef::RunContext and Chef::ChildRunContext
     #
     def initialize_child_state
-      @audits = {}
       @resource_collection = Chef::ResourceCollection.new(self)
       @before_notification_collection = Hash.new { |h, k| h[k] = [] }
       @immediate_notification_collection = Hash.new { |h, k| h[k] = [] }
@@ -645,8 +639,6 @@ class Chef
       end
 
       CHILD_STATE = %w{
-        audits
-        audits=
         create_child
         add_delayed_action
         delayed_actions

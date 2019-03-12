@@ -26,7 +26,6 @@ require "chef/deprecated"
 require "chef/server_api"
 require "chef/api_client"
 require "chef/api_client/registration"
-require "chef/audit/runner"
 require "chef/node"
 require "chef/role"
 require "chef/file_cache"
@@ -48,7 +47,6 @@ require "chef/version"
 require "chef/action_collection"
 require "chef/resource_reporter"
 require "chef/data_collector"
-require "chef/audit/audit_reporter"
 require "chef/run_lock"
 require "chef/policy_builder"
 require "chef/request_id"
@@ -219,29 +217,10 @@ class Chef
     # @see #converge_and_save
     # @see Chef::Runner
     #
-    # Phase 4: Audit
-    # --------------
-    # Runs 'control_group' audits in recipes.  This entire section can be enabled or disabled with config.
-    #
-    # 1. 'control_group' DSL collects audits during Phase 2
-    # 2. Audits are run using RSpec
-    # 3. Errors are collected and reported using the formatters
-    #
-    # @see #run_audits
-    # @see Chef::Audit::Runner#run
-    #
-    # @raise [Chef::Exceptions::RunFailedWrappingError] If converge or audit failed.
-    #
-    # @see Chef::Config#enforce_path_sanity
-    # @see Chef::Config#solo
-    # @see Chef::Config#audit_mode
-    #
     # @return Always returns true.
     #
     def run
       start_profiling
-
-      run_error = nil
 
       runlock = RunLock.new(Chef::Config.lockfile)
       # TODO feels like acquire should have its own block arg for this
@@ -284,19 +263,7 @@ class Chef
 
         load_required_recipe(@rest, run_context) unless Chef::Config[:solo_legacy_mode]
 
-        if Chef::Config[:audit_mode] != :audit_only
-          converge_error = converge_and_save(run_context)
-        end
-
-        if Chef::Config[:why_run] == true
-          # why_run should probably be renamed to why_converge
-          logger.debug("Not running controls in 'why-run' mode - this mode is used to see potential converge changes")
-        elsif Chef::Config[:audit_mode] != :disabled
-          audit_error = run_audits(run_context)
-        end
-
-        # Raise converge_error so run_failed reporters/events are processed.
-        raise converge_error if converge_error
+        converge_and_save(run_context)
 
         run_status.stop_clock
         logger.info("Chef Run complete in #{run_status.elapsed_time} seconds")
@@ -318,30 +285,12 @@ class Chef
           run_failed
         end
         events.run_failed(run_error, run_status)
+        Chef::Application.debug_stacktrace(run_error)
+        raise run_error
       ensure
         Chef::RequestID.instance.reset_request_id
         @run_status = nil
         runlock.release
-      end
-
-      # Raise audit, converge, and other errors here so that we exit
-      # with the proper exit status code and everything gets raised
-      # as a RunFailedWrappingError
-      if run_error || converge_error || audit_error
-        error = if Chef::Config[:audit_mode] == :disabled
-                  run_error || converge_error
-                else
-                  e = if run_error == converge_error
-                        Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
-                      else
-                        Chef::Exceptions::RunFailedWrappingError.new(run_error, converge_error, audit_error)
-                      end
-                  e.fill_backtrace
-                  e
-                end
-
-        Chef::Application.debug_stacktrace(error)
-        raise error
       end
 
       true
@@ -349,7 +298,7 @@ class Chef
 
     #
     # Private API
-    # TODO make this stuff protected or private
+    # @todo make this stuff protected or private
     #
 
     # @api private
@@ -410,18 +359,6 @@ class Chef
       @rest_clean ||=
         Chef::ServerAPI.new(config[:chef_server_url], client_name: client_name,
                                                       signing_key_filename: config[:client_key], validate_utf8: false)
-    end
-
-    # Resource reporters send event information back to the chef server for
-    # processing.  Can only be called after we have a @rest object
-    # @api private
-    def register_reporters
-      [
-        Chef::ResourceReporter.new(rest_clean),
-        Chef::Audit::AuditReporter.new(rest_clean),
-      ].each do |r|
-        events.register(r)
-      end
     end
 
     #
@@ -675,7 +612,9 @@ class Chef
                                                             signing_key_filename: config[:client_key])
       # force initialization of the rest_clean API object
       rest_clean(client_name, config)
-      register_reporters
+      # FIXME: we could initialize rest_clean much earlier and hang it off of the run_status and then
+      # have the ResourceReporter pull it off of the run_status and eliminate this tight coupling.
+      events.register(Chef::ResourceReporter.new(rest_clean))
     rescue Exception => e
       # TODO this should probably only ever fire if we *started* registration.
       # Move it to the block above.
@@ -695,14 +634,9 @@ class Chef
     #
     # @param run_context The run context.
     #
-    # @return The thrown exception, if we are in audit mode. `nil` means the
-    #   converge was successful or ended early.
-    #
-    # @raise Any converge exception, unless we are in audit mode, in which case
-    #   we *return* the exception.
+    # @raise Any converge exception
     #
     # @see Chef::Runner#converge
-    # @see Chef::Config#audit_mode
     # @see Chef::EventDispatch#converge_start
     # @see Chef::EventDispatch#converge_complete
     # @see Chef::EventDispatch#converge_failed
@@ -710,7 +644,6 @@ class Chef
     # @api private
     #
     def converge(run_context)
-      converge_exception = nil
       catch(:end_client_run_early) do
         begin
           events.converge_start(run_context)
@@ -720,83 +653,23 @@ class Chef
           events.converge_complete
         rescue Exception => e
           events.converge_failed(e)
-          raise e if Chef::Config[:audit_mode] == :disabled
-          converge_exception = e
+          raise e
         end
       end
-      converge_exception
     end
 
-    #
     # Converge the node via and then save it if successful.
     #
-    # @param run_context The run context.
+    # If converge() raises it is important that save_updated_node is bypassed.
     #
-    # @return The thrown exception, if we are in audit mode. `nil` means the
-    #   converge was successful or ended early.
-    #
-    # @raise Any converge or node save exception, unless we are in audit mode,
-    #   in which case we *return* the exception.
-    #
-    # @see #converge
-    # @see #save_updated_mode
-    # @see Chef::Config#audit_mode
+    # @param run_context [Chef::RunContext] The run context.
+    # @raise Any converge or node save exception
     #
     # @api private
-    #
-    # We don't want to change the old API on the `converge` method to have it perform
-    # saving.  So we wrap it in this method.
-    # TODO given this seems to be pretty internal stuff, how badly do we need to
-    # split this stuff up?
     #
     def converge_and_save(run_context)
-      converge_exception = converge(run_context)
-      unless converge_exception
-        begin
-          save_updated_node
-        rescue Exception => e
-          raise e if Chef::Config[:audit_mode] == :disabled
-          converge_exception = e
-        end
-      end
-      converge_exception
-    end
-
-    #
-    # Run the audit phase.
-    #
-    # Triggers the audit_phase_start, audit_phase_complete and
-    # audit_phase_failed events.
-    #
-    # @param run_context The run context.
-    #
-    # @return Any thrown exceptions. `nil` if successful.
-    #
-    # @see Chef::Audit::Runner#run
-    # @see Chef::EventDispatch#audit_phase_start
-    # @see Chef::EventDispatch#audit_phase_complete
-    # @see Chef::EventDispatch#audit_phase_failed
-    #
-    # @api private
-    #
-    def run_audits(run_context)
-      begin
-        events.audit_phase_start(run_status)
-        logger.info("Starting audit phase")
-        auditor = Chef::Audit::Runner.new(run_context)
-        auditor.run
-        if auditor.failed?
-          audit_exception = Chef::Exceptions::AuditsFailed.new(auditor.num_failed, auditor.num_total)
-          @events.audit_phase_failed(audit_exception, Chef::Audit::Logger.read_buffer)
-        else
-          @events.audit_phase_complete(Chef::Audit::Logger.read_buffer)
-        end
-      rescue Exception => e
-        logger.error("Audit phase failed with error message: #{e.message}")
-        @events.audit_phase_failed(e, Chef::Audit::Logger.read_buffer)
-        audit_exception = e
-      end
-      audit_exception
+      converge(run_context)
+      save_updated_node
     end
 
     #

@@ -34,7 +34,7 @@ class Chef
         REBOOT_SCHEDULED: 35,
         REBOOT_NEEDED: 37,
         REBOOT_FAILED: 41,
-        AUDIT_MODE_FAILURE: 42,
+        # 42 was used by audit mode and should not be reused
         CLIENT_UPGRADED: 213,
       }.freeze
 
@@ -78,8 +78,6 @@ class Chef
             VALID_RFC_062_EXIT_CODES[:REBOOT_NEEDED]
           elsif reboot_failed?(exception)
             VALID_RFC_062_EXIT_CODES[:REBOOT_FAILED]
-          elsif audit_failure?(exception)
-            VALID_RFC_062_EXIT_CODES[:AUDIT_MODE_FAILURE]
           elsif client_upgraded?(exception)
             VALID_RFC_062_EXIT_CODES[:CLIENT_UPGRADED]
           else
@@ -102,12 +100,6 @@ class Chef
         def reboot_failed?(exception)
           resolve_exception_array(exception).any? do |e|
             e.is_a? Chef::Exceptions::RebootFailed
-          end
-        end
-
-        def audit_failure?(exception)
-          resolve_exception_array(exception).any? do |e|
-            e.is_a? Chef::Exceptions::AuditError
           end
         end
 

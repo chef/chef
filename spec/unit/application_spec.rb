@@ -305,8 +305,8 @@ describe Chef::Application do
 
     describe "when a standard exit code is supplied" do
       it "should exit with the given exit code" do
-        expect(Process).to receive(:exit).with(42).and_return(true)
-        Chef::Application.fatal! "blah", 42
+        expect(Process).to receive(:exit).with(41).and_return(true)
+        Chef::Application.fatal! "blah", 41
       end
     end
 

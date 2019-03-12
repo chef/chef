@@ -38,13 +38,6 @@ Gem::Specification.new do |s|
   s.add_dependency "plist", "~> 3.2"
   s.add_dependency "iniparse", "~> 1.4"
   s.add_dependency "addressable"
-
-  # Audit mode requires these, so they are non-developmental dependencies now
-  %w{rspec-core rspec-expectations rspec-mocks}.each { |gem| s.add_dependency gem, "~> 3.5" }
-  s.add_dependency "rspec_junit_formatter", "~> 0.2.0"
-  s.add_dependency "serverspec", "~> 2.7"
-  s.add_dependency "specinfra", "~> 2.10"
-
   s.add_dependency "syslog-logger", "~> 1.6"
   s.add_dependency "uuidtools", "~> 2.1.5"
 

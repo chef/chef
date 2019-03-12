@@ -54,6 +54,10 @@ group(:development, :test) do
   # if you bump the ruby version you should confirm we don't end up with
   # two rake gems installed again
   gem "rake", "<= 12.3.0"
+  gem "rspec-core", "~> 3.5"
+  gem "rspec-mocks", "~> 3.5"
+  gem "rspec-expectations", "~> 3.5"
+  gem "rspec_junit_formatter", "~> 0.2.0"
   gem "simplecov"
   gem "webmock"
 
