@@ -644,7 +644,6 @@ class Chef
     # @api private
     #
     def converge(run_context)
-      converge_exception = nil
       catch(:end_client_run_early) do
         begin
           events.converge_start(run_context)
@@ -654,11 +653,9 @@ class Chef
           events.converge_complete
         rescue Exception => e
           events.converge_failed(e)
-          converge_exception = e
           raise e
         end
       end
-      converge_exception
     end
 
     # Converge the node via and then save it if successful.
