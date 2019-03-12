@@ -1,4 +1,4 @@
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/../data/")
 CHEF_SPEC_ASSETS = File.expand_path(File.dirname(__FILE__) + "/../functional/assets/")
 CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, "test-backup-path")
@@ -29,9 +30,7 @@ def sha256_checksum(path)
   OpenSSL::Digest::SHA256.hexdigest(File.read(path))
 end
 
-# From Ruby 1.9.2+
-# Here for backwards compatibility with Ruby 1.8.7
-# http://rubydoc.info/stdlib/tmpdir/1.9.2/Dir/Tmpname
+# extracted from Ruby < 2.5 to return a unique temp file name without creating it
 def make_tmpname(prefix_suffix, n = nil)
   case prefix_suffix
   when String
