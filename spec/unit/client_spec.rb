@@ -252,7 +252,7 @@ shared_context "run failed" do
   end
 
   before do
-    expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
+    expect(Chef::Application).to receive(:debug_stacktrace).with(converge_error)
   end
 end
 
@@ -278,13 +278,7 @@ shared_examples "a failed run" do
   include_context "run failed"
 
   it "skips node save and raises the error in a wrapping error" do
-    expect { client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-      expect(error.wrapped_errors.size).to eq(run_errors.size)
-      run_errors.each do |run_error|
-        expect(error.wrapped_errors).to include(run_error)
-        expect(error.backtrace).to include(*run_error.backtrace)
-      end
-    end
+    expect { client.run }.to raise_error(converge_error)
   end
 end
 
@@ -505,6 +499,9 @@ describe Chef::Client do
     describe "when converge errors" do
       include_context "a client run"
       include_context "converge failed"
+      include_examples "a failed run" do
+        let(:run_errors) { [converge_error] }
+      end
     end
   end
 

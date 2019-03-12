@@ -222,8 +222,6 @@ class Chef
     def run
       start_profiling
 
-      run_error = nil
-
       runlock = RunLock.new(Chef::Config.lockfile)
       # TODO feels like acquire should have its own block arg for this
       runlock.acquire
@@ -265,8 +263,7 @@ class Chef
 
         load_required_recipe(@rest, run_context) unless Chef::Config[:solo_legacy_mode]
 
-        converge_error = converge_and_save(run_context)
-        raise converge_error if converge_error
+        converge_and_save(run_context)
 
         run_status.stop_clock
         logger.info("Chef Run complete in #{run_status.elapsed_time} seconds")
@@ -664,33 +661,18 @@ class Chef
       converge_exception
     end
 
-    #
     # Converge the node via and then save it if successful.
     #
-    # @param run_context The run context.
+    # If converge() raises it is important that save_updated_node is bypassed.
     #
+    # @param run_context [Chef::RunContext] The run context.
     # @raise Any converge or node save exception
-    #
-    # @see #converge
-    # @see #save_updated_mode
     #
     # @api private
     #
-    # We don't want to change the old API on the `converge` method to have it perform
-    # saving.  So we wrap it in this method.
-    # TODO given this seems to be pretty internal stuff, how badly do we need to
-    # split this stuff up?
-    #
     def converge_and_save(run_context)
-      converge_exception = converge(run_context)
-      unless converge_exception
-        begin
-          save_updated_node
-        rescue Exception => e
-          converge_exception = e
-        end
-      end
-      converge_exception
+      converge(run_context)
+      save_updated_node
     end
 
     #
