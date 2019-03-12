@@ -6,6 +6,10 @@ Chef 15 release notes will be added here as development progresses.
 
 ## Breaking Changes
 
+### Audit Mode
+
+Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superceded by InSpec and has been removed.
+
 ### powershell_script now allows overriding the default flags
 
 We now append `powershell_script`  user flags to the default flags, rather than the other way around, making user flags override the defaults.  This is the correct behavior, but it may cause scripts to execute differently than in previous Chef releases.
