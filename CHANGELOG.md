@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.185 -->
-## [v15.0.185](https://github.com/chef/chef/tree/v15.0.185) (2019-03-13)
+<!-- latest_release 15.0.186 -->
+## [v15.0.186](https://github.com/chef/chef/tree/v15.0.186) (2019-03-13)
 
 #### Merged Pull Requests
-- Loosen win32-certstore pin and bump to 0.3.0 [#8286](https://github.com/chef/chef/pull/8286) ([tas50](https://github.com/tas50))
+- Add misc YARD comments [#8287](https://github.com/chef/chef/pull/8287) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add misc YARD comments [#8287](https://github.com/chef/chef/pull/8287) ([tas50](https://github.com/tas50)) <!-- 15.0.186 -->
 - Loosen win32-certstore pin and bump to 0.3.0 [#8286](https://github.com/chef/chef/pull/8286) ([tas50](https://github.com/tas50)) <!-- 15.0.185 -->
 - Remove audit mode from chef-client [#7728](https://github.com/chef/chef/pull/7728) ([tas50](https://github.com/tas50)) <!-- 15.0.184 -->
 - Remove the rake task to generate a pre-announcement [#8288](https://github.com/chef/chef/pull/8288) ([tas50](https://github.com/tas50)) <!-- 15.0.183 -->
