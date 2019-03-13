@@ -27,29 +27,98 @@ describe "knife data bag create", :workstation do
   let(:err) { "Created data_bag[foo]\n" }
   let(:out) { "Created data_bag_item[bar]\n" }
   let(:exists) { "Data bag foo already exists\n" }
+  let(:secret) { "abc" }
 
   when_the_chef_server "is empty" do
-    it "creates a new data bag" do
-      knife("data bag create foo").should_succeed stderr: err
+    context "with encryption key" do
+      it "creates a new data bag and item" do
+        pretty_json = Chef::JSONCompat.to_json_pretty({ id: "bar", test: "pass" })
+        allow(Chef::JSONCompat).to receive(:to_json_pretty).and_return(pretty_json)
+        knife("data bag create foo bar --secret #{secret}").should_succeed stdout: out, stderr: err
+        expect(knife("data bag show foo bar --secret #{secret}").stderr).to eq("Encrypted data bag detected, decrypting with provided secret.\n")
+        expect(knife("data bag show foo bar --secret #{secret}").stdout).to eq("id:   bar\ntest: pass\n")
+      end
+
+      it "creates a new data bag and an empty item" do
+        knife("data bag create foo bar --secret #{secret}").should_succeed stdout: out, stderr: err
+        expect(knife("data bag show foo bar --secret #{secret}").stderr).to eq("WARNING: Unencrypted data bag detected, ignoring any provided secret options.\n")
+        expect(knife("data bag show foo bar --secret #{secret}").stdout).to eq("id: bar\n")
+      end
     end
 
-    it "creates a new data bag and item" do
-      knife("data bag create foo bar").should_succeed stdout: out, stderr: err
+    context "without encryption key" do
+      it "creates a new data bag" do
+        knife("data bag create foo").should_succeed stderr: err
+        expect(knife("data bag show foo").stderr).to eq("")
+      end
+
+      it "creates a new data bag and item" do
+        knife("data bag create foo bar").should_succeed stdout: out, stderr: err
+        expect(knife("data bag show foo").stdout).to eq("bar\n")
+      end
+    end
+  end
+
+  when_the_chef_server "has some data bags" do
+    before do
+      data_bag "foo", {}
+      data_bag "bag", { "box" => {} }
     end
 
-    it "adds a new item to an existing bag" do
-      knife("data bag create foo").should_succeed stderr: err
-      knife("data bag create foo bar").should_succeed stdout: out, stderr: exists
+    context "with encryption key" do
+      it "creates a new data bag and item" do
+        pretty_json = Chef::JSONCompat.to_json_pretty({ id: "bar", test: "pass" })
+        allow(Chef::JSONCompat).to receive(:to_json_pretty).and_return(pretty_json)
+        knife("data bag create rocket bar --secret #{secret}").should_succeed stdout: out, stderr: <<~EOM
+          Created data_bag[rocket]
+        EOM
+        expect(knife("data bag show rocket bar --secret #{secret}").stderr).to eq("Encrypted data bag detected, decrypting with provided secret.\n")
+        expect(knife("data bag show rocket bar --secret #{secret}").stdout).to eq("id:   bar\ntest: pass\n")
+      end
+
+      it "creates a new data bag and an empty item" do
+        knife("data bag create rocket bar --secret #{secret}").should_succeed stdout: out, stderr: <<~EOM
+          Created data_bag[rocket]
+        EOM
+        expect(knife("data bag show rocket bar --secret #{secret}").stderr).to eq("WARNING: Unencrypted data bag detected, ignoring any provided secret options.\n")
+        expect(knife("data bag show rocket bar --secret #{secret}").stdout).to eq("id: bar\n")
+      end
+
+      it "adds a new item to an existing bag" do
+        knife("data bag create foo bar --secret #{secret}").should_succeed stdout: out, stderr: exists
+        expect(knife("data bag show foo bar --secret #{secret}").stderr).to eq("WARNING: Unencrypted data bag detected, ignoring any provided secret options.\n")
+        expect(knife("data bag show foo bar --secret #{secret}").stdout).to eq("id: bar\n")
+      end
+
+      it "fails to add an existing item" do
+        expect { knife("data bag create bag box --secret #{secret}") }.to raise_error(Net::HTTPClientException)
+      end
     end
 
-    it "refuses to add an existing data bag" do
-      knife("data bag create foo").should_succeed stderr: err
-      knife("data bag create foo").should_succeed stderr: exists
-    end
+    context "without encryption key" do
+      it "creates a new data bag" do
+        knife("data bag create rocket").should_succeed stderr: <<~EOM
+          Created data_bag[rocket]
+        EOM
+      end
 
-    it "fails to add an existing item" do
-      knife("data bag create foo bar").should_succeed stdout: out, stderr: err
-      expect { knife("data bag create foo bar") }.to raise_error(Net::HTTPClientException)
+      it "creates a new data bag and item" do
+        knife("data bag create rocket bar").should_succeed stdout: out, stderr: <<~EOM
+          Created data_bag[rocket]
+        EOM
+      end
+
+      it "adds a new item to an existing bag" do
+        knife("data bag create foo bar").should_succeed stdout: out, stderr: exists
+      end
+
+      it "refuses to create an existing data bag" do
+        knife("data bag create foo").should_succeed stderr: exists
+      end
+
+      it "fails to add an existing item" do
+        expect { knife("data bag create bag box") }.to raise_error(Net::HTTPClientException)
+      end
     end
   end
 end
