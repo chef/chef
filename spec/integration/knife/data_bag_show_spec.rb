@@ -24,30 +24,71 @@ describe "knife data bag show", :workstation do
 
   include_context "default config options"
 
-  when_the_chef_server "has some data bags" do
+  when_the_chef_server "is empty" do
+    it "raises error if try to retrieve it" do
+      expect { knife("data bag show bag") }.to raise_error(Net::HTTPServerException)
+    end
+  end
+
+  when_the_chef_server "contains data bags" do
+    let(:right_secret) { "abc" }
+    let(:wrong_secret) { "ab" }
+    let(:err) { "Encrypted data bag detected, decrypting with provided secret.\n" }
     before do
       data_bag "x", {}
       data_bag "canteloupe", {}
       data_bag "rocket", { "falcon9" => { heavy: "true" }, "atlas" => {}, "ariane" => {} }
+      data_bag "encrypt", { "box" => { id: "box", foo: { "encrypted_data": "J8N0pJ+LFDQF3XvhzWgkSBOuZZn8Og==\n", "iv": "4S1sb4zLnMt71SXV\n", "auth_tag": "4ChINhxz4WmqOizvZNoPPg==\n", "version": 3, "cipher": "aes-256-gcm" } } }
     end
 
-    it "with an empty data bag" do
-      knife("data bag show canteloupe").should_succeed "\n"
+    context "with encrypted data" do
+      context "provided secret key" do
+        it "shows data if secret key is correct" do
+          knife("data bag show encrypt box --secret #{right_secret}").should_succeed stderr: err, stdout: <<~EOM
+            foo: bar
+            id:  box
+          EOM
+        end
+
+        it "raises error if secret key is incorrect" do
+          expect { knife("data bag show encrypt box --secret #{wrong_secret}") }.to raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+        end
+      end
+
+      context "not provided secret key" do
+        it "shows encrypted data with a warning" do
+          expect(knife("data bag show encrypt box").stderr).to eq("WARNING: Encrypted data bag detected, but no secret provided for decoding. Displaying encrypted data.\n")
+        end
+      end
     end
 
-    it "with a bag with some items" do
-      knife("data bag show rocket").should_succeed <<~EOM
-        ariane
-        atlas
-        falcon9
-      EOM
-    end
+    context "with unencrypted data" do
+      context "provided secret key" do
+        it "shows unencrypted data with a warning" do
+          expect(knife("data bag show rocket falcon9 --secret #{right_secret}").stderr).to eq("WARNING: Unencrypted data bag detected, ignoring any provided secret options.\n")
+        end
+      end
 
-    it "with a single item" do
-      knife("data bag show rocket falcon9").should_succeed <<~EOM
-        heavy: true
-        id:    falcon9
-      EOM
+      context "not provided secret key" do
+        it "shows null with an empty data bag" do
+          knife("data bag show canteloupe").should_succeed "\n"
+        end
+
+        it "show list of items in a bag" do
+          knife("data bag show rocket").should_succeed <<~EOM
+            ariane
+            atlas
+            falcon9
+          EOM
+        end
+
+        it "show data of the item" do
+          knife("data bag show rocket falcon9").should_succeed <<~EOM
+            heavy: true
+            id:    falcon9
+          EOM
+        end
+      end
     end
   end
 end
