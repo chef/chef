@@ -59,6 +59,7 @@ class Chef
     # @since 13.0
     # @param name [String, Symbol] Name of the action to define.
     # @param block [Proc] Body of the action.
+    #
     # @return [void]
     def self.action(name, &block)
       # We need the block directly in a method so that `super` works.
@@ -82,11 +83,10 @@ class Chef
     #
     def_delegators :@new_resource, :property_is_set?
 
-    #--
-    # TODO: this should be a reader, and the action should be passed in the
+    # @todo this should be a reader, and the action should be passed in the
     # constructor; however, many/most subclasses override the constructor so
     # changing the arity would be a breaking change. Change this at the next
-    # break, e.g., Chef 11.
+    # major release
     attr_accessor :action
 
     def initialize(new_resource, run_context)
@@ -107,10 +107,17 @@ class Chef
       self.class.include_resource_dsl_module(new_resource)
     end
 
+    # has why-run mode been enabled?
+    #
+    # @return [Boolean]
     def whyrun_mode?
       Chef::Config[:why_run]
     end
 
+    # as of Chef 13 we enable why-run by default and require resources to override this to set false.
+    # We're keeping this method to prevent breaking the cookbook world for no real gain on our part.
+    #
+    # @return [Boolean]
     def whyrun_supported?
       true
     end
@@ -131,6 +138,8 @@ class Chef
     def check_resource_semantics!
     end
 
+    # a simple placeholder method that will be called / raise if a resource tries to
+    # use current_resource without defining a load_current_resource method.
     def load_current_resource
       raise Chef::Exceptions::Override, "You must override load_current_resource in #{self}"
     end
@@ -141,6 +150,7 @@ class Chef
     def cleanup_after_converge
     end
 
+    # the :nothing action which is available on all resources by default
     def action_nothing
       logger.trace("Doing nothing for #{@new_resource}")
       true
@@ -153,9 +163,7 @@ class Chef
     def run_action(action = nil)
       @action = action unless action.nil?
 
-      # TODO: it would be preferable to get the action to be executed in the
-      # constructor...
-
+      # @todo it would be preferable to get the action to be executed in the constructor...
       check_resource_semantics!
 
       # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
@@ -372,6 +380,9 @@ class Chef
 
     protected
 
+    # stores all actions that have been converged
+    #
+    # @return [ConvergeActions]
     def converge_actions
       @converge_actions ||= ConvergeActions.new(@new_resource, run_context, @action)
     end

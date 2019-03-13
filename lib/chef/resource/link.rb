@@ -74,10 +74,9 @@ class Chef
 
       private
 
+      # On certain versions of windows links are not supported. Make
+      # sure we are not on such a platform.
       def verify_links_supported!
-        # On certain versions of windows links are not supported. Make
-        # sure we are not on such a platform.
-
         if Chef::Platform.windows?
           require "chef/win32/file"
           begin

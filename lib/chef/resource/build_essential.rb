@@ -121,7 +121,6 @@ class Chef
         # Determine if the XCode Command Line Tools are installed
         #
         # @return [true, false]
-        #
         def xcode_cli_installed?
           cmd = Mixlib::ShellOut.new("pkgutil --pkgs=com.apple.pkg.CLTools_Executables")
           cmd.run_command
@@ -131,6 +130,8 @@ class Chef
       end
 
       # this resource forces itself to run at compile_time
+      #
+      # @return [void]
       def after_created
         return unless compile_time
         Array(action).each do |action|

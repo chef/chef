@@ -87,6 +87,9 @@ class Chef
         alias_method :action_uncask, :action_remove
         alias_method :action_uninstall, :action_remove
 
+        # Is the desired cask already casked?
+        #
+        # @return [Boolean]
         def casked?
           unscoped_name = new_resource.cask_name.split("/").last
           shell_out!("#{new_resource.homebrew_path} cask list 2>/dev/null",

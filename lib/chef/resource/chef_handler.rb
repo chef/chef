@@ -92,6 +92,8 @@ class Chef
         #
         # @param handler_type [Symbol] such as :report or :exception.
         # @param class_full_name [String] such as 'Chef::Handler::ErrorReport'.
+        #
+        # @return [void]
         def unregister_handler(handler_type, class_full_name)
           Chef::Config.send("#{handler_type}_handlers").delete_if do |v|
             # avoid a bit of log spam
@@ -106,6 +108,7 @@ class Chef
         # If the class is not available, NameError is thrown.
         #
         # @param class_full_name [String] full class name such as 'Chef::Handler::Foo' or 'MyHandler'.
+        #
         # @return [Array] parent class and child class.
         def get_class(class_full_name)
           ancestors = class_full_name.split("::")
