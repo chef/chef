@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 44f52c320c3fe866e4d4186319fb6b5537f0656f
+  revision: 10c8c40cefd6c86319963a0485df4f7c29281b4a
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -31,8 +31,8 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-eventstream (1.0.1)
-    aws-partitions (1.141.0)
+    aws-eventstream (1.0.2)
+    aws-partitions (1.144.0)
     aws-sdk-core (3.46.2)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
@@ -41,11 +41,12 @@ GEM
     aws-sdk-kms (1.13.0)
       aws-sdk-core (~> 3, >= 3.39.0)
       aws-sigv4 (~> 1.0)
-    aws-sdk-s3 (1.30.1)
+    aws-sdk-s3 (1.31.0)
       aws-sdk-core (~> 3, >= 3.39.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.0)
-    aws-sigv4 (1.0.3)
+    aws-sigv4 (1.1.0)
+      aws-eventstream (~> 1.0, >= 1.0.2)
     berkshelf (7.0.7)
       chef (>= 13.6.52)
       chef-config
@@ -63,10 +64,10 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
     byebug (11.0.0)
-    chef (14.10.9)
+    chef (14.11.21)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.10.9)
+      chef-config (= 14.11.21)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -93,10 +94,10 @@ GEM
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.10.9-universal-mingw32)
+    chef (14.11.21-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.10.9)
+      chef-config (= 14.11.21)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -125,7 +126,7 @@ GEM
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
       win32-api (~> 1.5.3)
-      win32-certstore (>= 0.1.8)
+      win32-certstore (~> 0.2.4)
       win32-dir (~> 0.5.0)
       win32-event (~> 0.6.1)
       win32-eventlog (= 0.6.3)
@@ -136,7 +137,7 @@ GEM
       win32-taskscheduler (~> 2.0)
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
-    chef-config (14.10.9)
+    chef-config (14.11.21)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -152,7 +153,7 @@ GEM
     citrus (3.0.2)
     cleanroom (1.0.0)
     coderay (1.1.2)
-    concurrent-ruby (1.1.4)
+    concurrent-ruby (1.1.5)
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     erubis (2.7.0)
