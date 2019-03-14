@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.186 -->
-## [v15.0.186](https://github.com/chef/chef/tree/v15.0.186) (2019-03-13)
+<!-- latest_release 15.0.187 -->
+## [v15.0.187](https://github.com/chef/chef/tree/v15.0.187) (2019-03-14)
 
 #### Merged Pull Requests
-- Add misc YARD comments [#8287](https://github.com/chef/chef/pull/8287) ([tas50](https://github.com/tas50))
+- windows_service: Fix action :start to not resets credentials on service [#8278](https://github.com/chef/chef/pull/8278) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- windows_service: Fix action :start to not resets credentials on service [#8278](https://github.com/chef/chef/pull/8278) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.187 -->
 - Add misc YARD comments [#8287](https://github.com/chef/chef/pull/8287) ([tas50](https://github.com/tas50)) <!-- 15.0.186 -->
 - Loosen win32-certstore pin and bump to 0.3.0 [#8286](https://github.com/chef/chef/pull/8286) ([tas50](https://github.com/tas50)) <!-- 15.0.185 -->
 - Remove audit mode from chef-client [#7728](https://github.com/chef/chef/pull/7728) ([tas50](https://github.com/tas50)) <!-- 15.0.184 -->
