@@ -332,7 +332,7 @@ class Chef::Application::Client < Chef::Application
       else
         if Chef::Config[:delete_entire_chef_repo]
           Chef::Log.trace "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
-          FileUtils.rm_rf(recipes_path, secure: true)
+          FileUtils.rm_rf(Chef::Config.chef_repo_path, secure: true)
         end
         Chef::Log.trace "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
         FileUtils.mkdir_p(Chef::Config.chef_repo_path)

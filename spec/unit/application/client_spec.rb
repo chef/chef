@@ -91,7 +91,7 @@ describe Chef::Application::Client, "reconfigure" do
 
     # protect the unit tests against accidental --delete-entire-chef-repo from firing
     # for real during tests.  DO NOT delete this line.
-    expect(FileUtils).not_to receive(:rm_rf)
+    allow(FileUtils).to receive(:rm_rf)
   end
 
   after do
@@ -204,6 +204,111 @@ describe Chef::Application::Client, "reconfigure" do
           expect(Chef::Application).to receive(:fatal!).with('Unparsable config option "asdf"').and_raise("so ded")
           ARGV.replace(["--config-option", "asdf"])
           expect { app.reconfigure }.to raise_error "so ded"
+        end
+      end
+    end
+
+    describe "--recipe-url and --local-mode" do
+      let(:archive) { double }
+      let(:config_exists) { false }
+
+      before do
+        allow(Chef::Config).to receive(:chef_repo_path).and_return("the_path_to_the_repo")
+        allow(FileUtils).to receive(:rm_rf)
+        allow(FileUtils).to receive(:mkdir_p)
+        allow(app).to receive(:fetch_recipe_tarball)
+        allow(Mixlib::Archive).to receive(:new).and_return(archive)
+        allow(archive).to receive(:extract)
+        allow(Chef::Config).to receive(:from_string)
+        allow(IO).to receive(:read).with(File.join("the_path_to_the_repo", ".chef/config.rb")).and_return("new_config")
+        allow(File).to receive(:file?).with(File.join("the_path_to_the_repo", ".chef/config.rb")).and_return(config_exists)
+      end
+
+      context "local mode not set" do
+        it "fails with a message stating local mode required" do
+          expect(Chef::Application).to receive(:fatal!).with("chef-client recipe-url can be used only in local-mode").and_raise("error occured")
+          ARGV.replace(["--recipe-url=test_url"])
+          expect { app.reconfigure }.to raise_error "error occured"
+        end
+      end
+
+      context "local mode set" do
+        before do
+          ARGV.replace(["--local-mode", "--recipe-url=test_url"])
+        end
+
+        context "--delete-entire-chef-repo" do
+          before do
+            ARGV.replace(["--local-mode", "--recipe-url=test_url", "--delete-entire-chef-repo"])
+          end
+
+          it "deletes the repo" do
+            expect(FileUtils).to receive(:rm_rf)
+              .with("the_path_to_the_repo", secure: true)
+
+            app.reconfigure
+          end
+        end
+
+        it "does not delete the repo" do
+          expect(FileUtils).not_to receive(:rm_rf)
+
+          app.reconfigure
+        end
+
+        it "sets { recipe_url: 'test_url' }" do
+          app.reconfigure
+
+          expect(Chef::Config.configuration).to include recipe_url: "test_url"
+        end
+
+        it "makes the repo path" do
+          expect(FileUtils).to receive(:mkdir_p)
+            .with("the_path_to_the_repo")
+
+          app.reconfigure
+        end
+
+        it "fetches the tarball" do
+          expect(app).to receive(:fetch_recipe_tarball)
+            .with("test_url", File.join("the_path_to_the_repo", "recipes.tgz"))
+
+          app.reconfigure
+        end
+
+        it "extracts the archive" do
+          expect(Mixlib::Archive).to receive(:new)
+            .with(File.join("the_path_to_the_repo", "recipes.tgz"))
+            .and_return(archive)
+
+          expect(archive).to receive(:extract)
+            .with("the_path_to_the_repo", perms: false, ignore: /^\.$/)
+
+          app.reconfigure
+        end
+
+        context "when there is new config" do
+          let(:config_exists) { true }
+
+          it "updates the config from the extracted config" do
+            expect(Chef::Config).to receive(:from_string)
+              .with(
+                "new_config",
+                File.join("the_path_to_the_repo", ".chef/config.rb")
+              )
+
+            app.reconfigure
+          end
+        end
+
+        context "when there is no new config" do
+          let(:config_exists) { false }
+
+          it "does not updates the config" do
+            expect(Chef::Config).not_to receive(:from_string)
+
+            app.reconfigure
+          end
         end
       end
     end
