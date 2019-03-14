@@ -83,22 +83,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def start_service
     if Win32::Service.exists?(@new_resource.service_name)
-      # reconfiguration is idempotent, so just do it.
-      new_config = {
-        service_name: @new_resource.service_name,
-        service_start_name: @new_resource.run_as_user,
-        password: @new_resource.run_as_password,
-      }.reject { |k, v| v.nil? || v.length == 0 }
-
-      Win32::Service.configure(new_config)
-      logger.info "#{@new_resource} configured."
-
-      # LocalSystem is the default runas user, which is a special service account that should ultimately have the rights of BUILTIN\Administrators, but we wouldn't see that from get_account_right
-      if new_config.key?(:service_start_name) && new_config[:service_start_name].casecmp("localsystem") != 0
-        unless Chef::ReservedNames::Win32::Security.get_account_right(canonicalize_username(new_config[:service_start_name])).include?(SERVICE_RIGHT)
-          grant_service_logon(new_config[:service_start_name])
-        end
-      end
+      configure_service_run_as_properties
 
       state = current_state
       if state == RUNNING
@@ -281,6 +266,21 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   private
 
+  def configure_service_run_as_properties
+    return unless new_resource.property_is_set?(:run_as_user)
+
+    new_config = {
+      service_name: new_resource.service_name,
+      service_start_name: new_resource.run_as_user,
+      password: new_resource.run_as_password,
+    }.reject { |k, v| v.nil? || v.length == 0 }
+
+    Win32::Service.configure(new_config)
+    logger.info "#{new_resource} configured."
+
+    grant_service_logon(new_resource.run_as_user) if new_resource.run_as_user.casecmp("localsystem") != 0
+  end
+
   def current_delayed_start
     if service = Win32::Service.services.find { |x| x.service_name == new_resource.service_name }
       service.delayed_start == 0 ? false : true
@@ -290,6 +290,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   def grant_service_logon(username)
+    return if Chef::ReservedNames::Win32::Security.get_account_right(canonicalize_username(username)).include?(SERVICE_RIGHT)
+
     begin
       Chef::ReservedNames::Win32::Security.add_account_right(canonicalize_username(username), SERVICE_RIGHT)
     rescue Chef::Exceptions::Win32APIError => err
