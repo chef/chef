@@ -72,6 +72,13 @@ class Chef
     attr_reader :run_status
 
     #
+    # The run context of the Chef run.
+    #
+    # @return [Chef::RunContext]
+    #
+    attr_reader :run_context
+
+    #
     # The node represented by this client.
     #
     # @return [Chef::Node]
@@ -227,7 +234,7 @@ class Chef
 
         run_status.run_id = request_id = Chef::RequestID.instance.request_id
 
-        run_context = Chef::RunContext.new
+        @run_context = Chef::RunContext.new
         run_context.events = events
         run_status.run_context = run_context
 
