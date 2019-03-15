@@ -3,7 +3,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,25 +73,27 @@ class Chef
       # attribute files and recipes, and constructing the entire resource collection.
       # (FIXME: break up creating the run_context and compiling the cookbooks)
       #
-      def setup_run_context(specific_recipes = nil)
-        if Chef::Config[:solo_legacy_mode]
-          Chef::Cookbook::FileVendor.fetch_from_disk(Chef::Config[:cookbook_path])
-          cl = Chef::CookbookLoader.new(Chef::Config[:cookbook_path])
-          cl.load_cookbooks
-          cookbook_collection = Chef::CookbookCollection.new(cl)
-          cookbook_collection.validate!
-          cookbook_collection.install_gems(events)
+      def setup_run_context(specific_recipes = nil, run_context = nil)
+        run_context ||= Chef::RunContext.new
 
-          run_context = Chef::RunContext.new(node, cookbook_collection, @events)
-        else
-          Chef::Cookbook::FileVendor.fetch_from_remote(api_service)
-          cookbook_hash = sync_cookbooks
-          cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
-          cookbook_collection.validate!
-          cookbook_collection.install_gems(events)
+        run_context.events = events
+        run_context.node = node
 
-          run_context = Chef::RunContext.new(node, cookbook_collection, @events)
-        end
+        cookbook_collection =
+          if Chef::Config[:solo_legacy_mode]
+            Chef::Cookbook::FileVendor.fetch_from_disk(Chef::Config[:cookbook_path])
+            cl = Chef::CookbookLoader.new(Chef::Config[:cookbook_path])
+            cl.load_cookbooks
+            Chef::CookbookCollection.new(cl)
+          else
+            Chef::Cookbook::FileVendor.fetch_from_remote(api_service)
+            cookbook_hash = sync_cookbooks
+            Chef::CookbookCollection.new(cookbook_hash)
+          end
+
+        cookbook_collection.validate!
+        cookbook_collection.install_gems(events)
+        run_context.cookbook_collection = cookbook_collection
 
         # TODO: move this into the cookbook_compilation_start hook
         setup_chef_class(run_context)
