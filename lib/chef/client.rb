@@ -473,7 +473,7 @@ class Chef
     #
     # @api private
     def setup_run_context
-      run_context = policy_builder.setup_run_context(specific_recipes, run_context)
+      @run_context = policy_builder.setup_run_context(specific_recipes, run_context)
       assert_cookbook_path_not_empty(run_context)
       run_status.run_context = run_context # backcompat for chefspec
       run_context
