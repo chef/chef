@@ -263,7 +263,7 @@ class Chef
         Chef.resource_handler_map.lock!
         Chef.provider_handler_map.lock!
 
-        setup_run_context(run_context)
+        setup_run_context
 
         load_required_recipe(@rest, run_context) unless Chef::Config[:solo_legacy_mode]
 
@@ -465,9 +465,11 @@ class Chef
     # @return The newly set up run context
     #
     # @api private
-    def setup_run_context(run_context)
+    def setup_run_context
       policy_builder.setup_run_context(specific_recipes, run_context)
       assert_cookbook_path_not_empty(run_context)
+      run_status.run_context = run_context # backcompat for chefspec
+      run_context
     end
 
     #
