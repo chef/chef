@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.187 -->
-## [v15.0.187](https://github.com/chef/chef/tree/v15.0.187) (2019-03-14)
+<!-- latest_release 15.0.188 -->
+## [v15.0.188](https://github.com/chef/chef/tree/v15.0.188) (2019-03-15)
 
 #### Merged Pull Requests
-- windows_service: Fix action :start to not resets credentials on service [#8278](https://github.com/chef/chef/pull/8278) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- fix unsolvable Gemfile.lock [#8300](https://github.com/chef/chef/pull/8300) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- fix unsolvable Gemfile.lock [#8300](https://github.com/chef/chef/pull/8300) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.188 -->
 - windows_service: Fix action :start to not resets credentials on service [#8278](https://github.com/chef/chef/pull/8278) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.187 -->
 - Add misc YARD comments [#8287](https://github.com/chef/chef/pull/8287) ([tas50](https://github.com/tas50)) <!-- 15.0.186 -->
 - Loosen win32-certstore pin and bump to 0.3.0 [#8286](https://github.com/chef/chef/pull/8286) ([tas50](https://github.com/tas50)) <!-- 15.0.185 -->
