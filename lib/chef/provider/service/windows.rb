@@ -264,6 +264,13 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   def configure_service_run_as_properties
     return unless new_resource.property_is_set?(:run_as_user)
 
+    unless new_resource.action.include?(:configure)
+      new_actions = new_resource.action.dup
+      insert_position = new_actions.find_index(:start) || 0
+      new_actions.insert(insert_position, :configure)
+      Chef.deprecated(:windows_service_configure_startup, "The :start action no longer configures run_as_user or run_as_password. Please prepend :configure action, i.e. action #{new_actions.inspect}")
+    end
+
     new_config = {
       service_name: new_resource.service_name,
       service_start_name: new_resource.run_as_user,

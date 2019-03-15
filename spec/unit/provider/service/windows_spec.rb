@@ -494,6 +494,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
         double("StatusStruct", current_state: "stopped"),
         double("StatusStruct", current_state: "running")
       )
+      Chef::Config.treat_deprecation_warnings_as_errors(false)
     end
 
     context "run_as_user user is specified" do
@@ -501,12 +502,30 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
       before do
         provider.new_resource.run_as_user run_as_user
+        allow(provider).to receive(:configure_service_run_as_properties).and_call_original
       end
 
-      it "configures service run_as_user and run_as_password" do
-        expect(provider).to receive(:configure_service_run_as_properties).and_call_original
-        expect(Win32::Service).to receive(:configure)
-        provider.start_service
+      context "Chef::Config.treat_deprecation_warnings_as_errors is false" do
+        before { Chef::Config.treat_deprecation_warnings_as_errors(false) }
+
+        it "configures service run_as_user and run_as_password" do
+          expect(Win32::Service).to receive(:configure)
+          provider.start_service
+        end
+      end
+
+      context "Chef::Config.treat_deprecation_warnings_as_errors is true" do
+        before { Chef::Config.treat_deprecation_warnings_as_errors(true) }
+
+        it "does not configure service run_as_user and run_as_password" do
+          expect(Win32::Service).not_to receive(:configure)
+          expect { provider.start_service }.to raise_error(Chef::Exceptions::DeprecatedFeatureError, /The :start action no longer configures run_as_user or run_as_password/)
+        end
+
+        it "raises DeprecatedFeatureError with :configure action inserted right before the :start action" do
+          provider.new_resource.action %i{create start}
+          expect { provider.start_service }.to raise_error(Chef::Exceptions::DeprecatedFeatureError, /The :start action no longer configures run_as_user or run_as_password.*\[:create, :configure, :start\]/)
+        end
       end
     end
 
