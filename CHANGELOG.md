@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.188 -->
-## [v15.0.188](https://github.com/chef/chef/tree/v15.0.188) (2019-03-15)
+<!-- latest_release 15.0.189 -->
+## [v15.0.189](https://github.com/chef/chef/tree/v15.0.189) (2019-03-15)
 
 #### Merged Pull Requests
-- fix unsolvable Gemfile.lock [#8300](https://github.com/chef/chef/pull/8300) ([lamont-granquist](https://github.com/lamont-granquist))
+- Allow the use of `--delete-entire-chef-repo` [#8298](https://github.com/chef/chef/pull/8298) ([ABewsher](https://github.com/ABewsher))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Allow the use of `--delete-entire-chef-repo` [#8298](https://github.com/chef/chef/pull/8298) ([ABewsher](https://github.com/ABewsher)) <!-- 15.0.189 -->
 - fix unsolvable Gemfile.lock [#8300](https://github.com/chef/chef/pull/8300) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.188 -->
 - windows_service: Fix action :start to not resets credentials on service [#8278](https://github.com/chef/chef/pull/8278) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.187 -->
 - Add misc YARD comments [#8287](https://github.com/chef/chef/pull/8287) ([tas50](https://github.com/tas50)) <!-- 15.0.186 -->
