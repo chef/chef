@@ -102,8 +102,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.5.2)
-      public_suffix (>= 2.0.2, < 4.0)
+    addressable (2.4.0)
     appbundler (0.11.6)
       mixlib-cli (~> 1.4)
       mixlib-shellout (~> 2.0)
@@ -239,7 +238,6 @@ GEM
     pry-stack_explorer (0.4.9.3)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (3.0.3)
     pusher-client (0.6.2)
       json
       websocket (~> 1.0)
@@ -304,7 +302,7 @@ GEM
     timers (4.3.0)
     tins (1.20.2)
     tomlrb (1.2.8)
-    train-core (1.7.4)
+    train-core (1.7.5)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
     travis (1.8.9)
