@@ -32,6 +32,7 @@ class Chef
       CRON_PATTERN = /\A([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+|[a-zA-Z]{3})\s([-0-9*,\/]+|[a-zA-Z]{3})\s(.*)/.freeze
       SPECIAL_PATTERN = /\A(@(#{SPECIAL_TIME_VALUES.join('|')}))\s(.*)/.freeze
       ENV_PATTERN = /\A(\S+)=(\S*)/.freeze
+      ENVIRONMENT_PROPERTIES = %w{MAILTO PATH SHELL HOME}.freeze
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
@@ -89,16 +90,9 @@ class Chef
       end
 
       def cron_different?
-        logger.warn("It is not idempotent to use `environment` for an entry that can be specified as a `property`") if property_with_environment?
         CRON_ATTRIBUTES.any? do |cron_var|
           new_resource.send(cron_var) != current_resource.send(cron_var)
         end
-      end
-
-      # Returns true if user is using a `environment` for an entry that can also be specified as a `property`
-      def property_with_environment?
-        common_attribute = %w{MAILTO PATH SHELL HOME} & new_resource.environment.keys
-        common_attribute.any?
       end
 
       def action_create
@@ -199,7 +193,7 @@ class Chef
       private
 
       def set_environment_var(attr_name, attr_value)
-        if %w{MAILTO PATH SHELL HOME}.include?(attr_name)
+        if ENVIRONMENT_PROPERTIES.include?(attr_name)
           current_resource.send(attr_name.downcase.to_sym, attr_value.gsub(/^"|"$/, ""))
         else
           current_resource.environment(current_resource.environment.merge(attr_name => attr_value))
@@ -228,7 +222,18 @@ class Chef
           newcron << "#{v.to_s.upcase}=\"#{new_resource.send(v)}\"\n" if new_resource.send(v)
         end
         new_resource.environment.each do |name, value|
-          newcron << "#{name}=#{value}\n"
+          if ENVIRONMENT_PROPERTIES.include?(name)
+            unless new_resource.property_is_set?(name.downcase)
+              logger.warn("#{new_resource.name}: the environment property contains the '#{name}' variable, which should be set separately as a property.")
+              new_resource.send(name.downcase.to_sym, value.gsub(/^"|"$/, ""))
+              new_resource.environment.delete(name)
+              newcron << "#{name.to_s.upcase}=\"#{value}\"\n"
+            else
+              raise Chef::Exceptions::Cron, "#{new_resource.name}: the '#{name}' property is set and environment property also contains the '#{name}' variable. Remove the variable from the environment property."
+            end
+          else
+            newcron << "#{name}=#{value}\n"
+          end
         end
         if new_resource.time
           newcron << "@#{new_resource.time} #{new_resource.command}\n"

@@ -690,67 +690,19 @@ describe Chef::Provider::Cron do
     end
 
     context "when there is a crontab with a matching and identical section" do
-      before :each do
-        @provider.cron_exists = true
-        allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
-          0 2 * * * /some/other/command
-
-          # Chef Name: cronhole some stuff
-          * 5 * * * /bin/true
-
-          # Another comment
-        CRONTAB
-      end
-
-      context "when environment variable is used" do
-        context "contains an entry that can also be specified as a `property`" do
-          before do
-            @new_resource.environment = { "SHELL" => "/bash" }
-          end
-
-          it "should raise a warning for idempotency" do
-            expect(logger).to receive(:warn).with("It is not idempotent to use `environment` for an entry that can be specified as a `property`")
-            @provider.run_action(:create)
-          end
-
-          it "should update the crontab" do
-            expect(@provider).to receive(:write_crontab)
-            @provider.run_action(:create)
-          end
-
-          it "should mark the resource as updated" do
-            @provider.run_action(:create)
-            expect(@new_resource).to be_updated_by_last_action
-          end
-        end
-
-        context "contains an entry that cannot be specified as a `property`" do
-          before do
-            @new_resource.environment = { "ENV" => "environment" }
-          end
-
-          it "should not raise a warning for idempotency" do
-            expect(logger).not_to receive(:warn).with("It is not idempotent to use `environment` for an entry that can be specified as a `property`")
-            @provider.run_action(:create)
-          end
-
-          it "should not update the crontab" do
-            allow(@provider).to receive(:cron_different?).and_return(false)
-            expect(@provider).not_to receive(:write_crontab)
-            @provider.run_action(:create)
-          end
-
-          it "should not mark the resource as updated" do
-            allow(@provider).to receive(:cron_different?).and_return(false)
-            @provider.run_action(:create)
-            expect(@new_resource).not_to be_updated_by_last_action
-          end
-        end
-      end
-
       context "when environment variable is not used" do
-        before do
+        before :each do
+          @provider.cron_exists = true
           allow(@provider).to receive(:cron_different?).and_return(false)
+          allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
+            0 2 * * * /some/other/command
+
+            # Chef Name: cronhole some stuff
+            SHELL=/bash
+            * 5 * * * /bin/true
+
+            # Another comment
+          CRONTAB
         end
 
         it "should not update the crontab" do
@@ -767,6 +719,106 @@ describe Chef::Provider::Cron do
           expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
           expect(logger).to receive(:trace).with("Skipping existing cron entry '#{@new_resource.name}'")
           @provider.run_action(:create)
+        end
+      end
+
+      context "when environment variable is used" do
+        before :each do
+          @provider.cron_exists = true
+          allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
+            0 2 * * * /some/other/command
+
+            # Chef Name: cronhole some stuff
+            SHELL=/bash
+            ENV=environment
+            30 * * * * /bin/true
+
+            # Another comment
+          CRONTAB
+        end
+        context "contains an entry that can also be specified as a `property`" do
+          before :each do
+            @new_resource.environment = { "SHELL" => "/bash", "ENV" => "environment" }
+          end
+
+          it "should raise a warning for idempotency" do
+            expect(logger).to receive(:warn).with("cronhole some stuff: the environment property contains the 'SHELL' variable, which should be set separately as a property.")
+            @provider.run_action(:create)
+          end
+
+          it "should not update the crontab" do
+            expect(@provider).not_to receive(:write_crontab)
+            @provider.run_action(:create)
+          end
+
+          it "should not mark the resource as updated" do
+            expect(@new_resource).not_to be_updated_by_last_action
+            @provider.run_action(:create)
+          end
+        end
+
+        context "contains an entry that cannot be specified as a `property`" do
+          before :each do
+            @new_resource.environment = { "ENV" => "environment" }
+            @new_resource.shell "/bash"
+          end
+
+          it "should not raise a warning for idempotency" do
+            expect(logger).not_to receive(:warn).with("cronhole some stuff: the environment property contains the 'SHELL' variable, which should be set separately as a property.")
+            @provider.run_action(:create)
+          end
+
+          it "should not update the crontab" do
+            expect(@provider).not_to receive(:write_crontab)
+            @provider.run_action(:create)
+          end
+
+          it "should not mark the resource as updated" do
+            @provider.run_action(:create)
+            expect(@new_resource).not_to be_updated_by_last_action
+          end
+        end
+      end
+
+      context "when environment variable is used with property" do
+        before :each do
+          @provider.cron_exists = true
+          allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
+            0 2 * * * /some/other/command
+
+            # Chef Name: cronhole some stuff
+            SHELL=/bash
+            ENV=environment
+            30 * * * * /bin/true
+
+            # Another comment
+          CRONTAB
+        end
+
+        context "when environment variable is same as property" do
+          it "should throw an error" do
+            @new_resource.shell "/bash"
+            @new_resource.environment "SHELL" => "/bash"
+            expect do
+              @provider.run_action(:create)
+            end.to raise_error(Chef::Exceptions::Cron, /cronhole some stuff: the 'SHELL' property is set and environment property also contains the 'SHELL' variable. Remove the variable from the environment property./)
+          end
+        end
+
+        context "when environment variable is different from property" do
+          it "should not update the crontab" do
+            @new_resource.shell "/bash"
+            @new_resource.environment "ENV" => "environment"
+            expect(@provider).not_to receive(:write_crontab)
+            @provider.run_action(:create)
+          end
+
+          it "should not mark the resource as updated" do
+            @new_resource.shell "/bash"
+            @new_resource.environment "ENV" => "environment"
+            @provider.run_action(:create)
+            expect(@new_resource).not_to be_updated_by_last_action
+          end
         end
       end
     end
