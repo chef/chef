@@ -1,24 +1,24 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 10151d127fef039839ce0e6072b68fe695b1d3c5
+  revision: 7c1e039856513835f728b4e0c5a4106c339e99c2
   branch: master
   specs:
-    omnibus (6.0.19)
+    omnibus (6.0.20)
       aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
       ffi-yajl (~> 2.2)
       license_scout (~> 1.0)
-      mixlib-shellout (~> 2.0)
+      mixlib-shellout (>= 2.0, < 4.0)
       mixlib-versioning
-      ohai (>= 13, < 15)
+      ohai (>= 13, < 16)
       pedump
       ruby-progressbar (~> 1.7)
       thor (~> 0.18)
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 44f52c320c3fe866e4d4186319fb6b5537f0656f
+  revision: 93d8f49c8a5add0efd03a05c3311e49eea82b5ed
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -33,30 +33,31 @@ GEM
     awesome_print (1.8.0)
     aws-eventstream (1.0.2)
     aws-partitions (1.144.0)
-    aws-sdk-core (3.46.2)
-      aws-eventstream (~> 1.0)
+    aws-sdk-core (3.48.0)
+      aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1.0)
-      aws-sigv4 (~> 1.0)
+      aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.13.0)
-      aws-sdk-core (~> 3, >= 3.39.0)
-      aws-sigv4 (~> 1.0)
-    aws-sdk-s3 (1.31.0)
-      aws-sdk-core (~> 3, >= 3.39.0)
+    aws-sdk-kms (1.15.0)
+      aws-sdk-core (~> 3, >= 3.48.0)
+      aws-sigv4 (~> 1.1)
+    aws-sdk-s3 (1.33.0)
+      aws-sdk-core (~> 3, >= 3.48.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.0)
-    aws-sigv4 (1.0.3)
-    berkshelf (7.0.7)
+    aws-sigv4 (1.1.0)
+      aws-eventstream (~> 1.0, >= 1.0.2)
+    berkshelf (7.0.8)
       chef (>= 13.6.52)
       chef-config
       cleanroom (~> 1.0)
       concurrent-ruby (~> 1.0)
       minitar (>= 0.6)
-      mixlib-archive (~> 0.4)
+      mixlib-archive (>= 0.4, < 2.0)
       mixlib-config (>= 2.2.5)
-      mixlib-shellout (~> 2.0)
+      mixlib-shellout (>= 2.0, < 4.0)
       octokit (~> 4.0)
-      retryable (~> 2.0)
+      retryable (>= 2.0, < 4.0)
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.3)
@@ -173,7 +174,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.12.1)
     jmespath (1.4.0)
-    kitchen-vagrant (1.4.0)
+    kitchen-vagrant (1.5.0)
       test-kitchen (~> 1.4)
     libyajl2 (1.2.0)
     license_scout (1.0.22)
@@ -185,9 +186,9 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     minitar (0.8)
-    mixlib-archive (0.4.20)
+    mixlib-archive (1.0.1)
       mixlib-log
-    mixlib-archive (0.4.20-universal-mingw32)
+    mixlib-archive (1.0.1-universal-mingw32)
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
@@ -243,7 +244,7 @@ GEM
     proxifier (1.0.3)
     public_suffix (3.0.3)
     rack (2.0.6)
-    retryable (2.0.4)
+    retryable (3.0.4)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
