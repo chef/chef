@@ -72,6 +72,13 @@ class Chef
     attr_reader :run_status
 
     #
+    # The run context of the Chef run.
+    #
+    # @return [Chef::RunContext]
+    #
+    attr_reader :run_context
+
+    #
     # The node represented by this client.
     #
     # @return [Chef::Node]
@@ -90,13 +97,6 @@ class Chef
     # @return [Ohai::System]
     #
     attr_reader :ohai
-
-    #
-    # The rest object used to communicate with the Chef server.
-    #
-    # @return [Chef::ServerAPI]
-    #
-    attr_reader :rest
 
     #
     # The runner used to converge.
@@ -234,7 +234,10 @@ class Chef
 
         run_status.run_id = request_id = Chef::RequestID.instance.request_id
 
-        run_context = nil
+        @run_context = Chef::RunContext.new
+        run_context.events = events
+        run_status.run_context = run_context
+
         events.run_start(Chef::VERSION, run_status)
 
         logger.info("*** Chef #{Chef::VERSION} ***")
@@ -244,7 +247,15 @@ class Chef
         enforce_path_sanity
         run_ohai
 
-        register unless Chef::Config[:solo_legacy_mode]
+        unless Chef::Config[:solo_legacy_mode]
+          register
+
+          # create and save the rest objects in the run_context
+          run_context.rest = rest
+          run_context.rest_clean = rest_clean
+
+          events.register(Chef::ResourceReporter.new(rest_clean))
+        end
 
         load_node
 
@@ -259,7 +270,7 @@ class Chef
         Chef.resource_handler_map.lock!
         Chef.provider_handler_map.lock!
 
-        run_context = setup_run_context
+        setup_run_context
 
         load_required_recipe(@rest, run_context) unless Chef::Config[:solo_legacy_mode]
 
@@ -349,16 +360,27 @@ class Chef
       end
     end
 
+    # Standard rest object for talking to the Chef Server
+    #
+    # FIXME: Can we drop this and only use the rest_clean object?  Did I add rest_clean
+    # only out of some cant-break-a-minor-version paranoia?
+    #
+    # @api private
+    def rest
+      @rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: node_name,
+                                    signing_key_filename: Chef::Config[:client_key])
+    end
+
     # A rest object with validate_utf8 set to false.  This will not throw exceptions
     # on non-UTF8 strings in JSON but will sanitize them so that e.g. POSTs will
     # never fail.  Cannot be configured on a request-by-request basis, so we carry
     # around another rest object for it.
     #
     # @api private
-    def rest_clean(client_name = node_name, config = Chef::Config)
+    def rest_clean
       @rest_clean ||=
-        Chef::ServerAPI.new(config[:chef_server_url], client_name: client_name,
-                                                      signing_key_filename: config[:client_key], validate_utf8: false)
+        Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: node_name,
+                            signing_key_filename: Chef::Config[:client_key], validate_utf8: false)
     end
 
     #
@@ -451,9 +473,9 @@ class Chef
     #
     # @api private
     def setup_run_context
-      run_context = policy_builder.setup_run_context(specific_recipes)
+      @run_context = policy_builder.setup_run_context(specific_recipes, run_context)
       assert_cookbook_path_not_empty(run_context)
-      run_status.run_context = run_context
+      run_status.run_context = run_context # backcompat for chefspec
       run_context
     end
 
@@ -607,14 +629,6 @@ class Chef
         Chef::ApiClient::Registration.new(node_name, config[:client_key]).run
         events.registration_completed
       end
-      # We now have the client key, and should use it from now on.
-      @rest = Chef::ServerAPI.new(config[:chef_server_url], client_name: client_name,
-                                                            signing_key_filename: config[:client_key])
-      # force initialization of the rest_clean API object
-      rest_clean(client_name, config)
-      # FIXME: we could initialize rest_clean much earlier and hang it off of the run_status and then
-      # have the ResourceReporter pull it off of the run_status and eliminate this tight coupling.
-      events.register(Chef::ResourceReporter.new(rest_clean))
     rescue Exception => e
       # TODO this should probably only ever fire if we *started* registration.
       # Move it to the block above.

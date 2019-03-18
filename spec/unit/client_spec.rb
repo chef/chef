@@ -102,7 +102,6 @@ shared_context "a client run" do
   let(:api_client_exists?) { false }
   let(:enable_fork)        { false }
 
-  let(:http_data_collector)   { double("Chef::ServerAPI (data collector)") }
   let(:http_cookbook_sync)    { double("Chef::ServerAPI (cookbook sync)") }
   let(:http_node_load)        { double("Chef::ServerAPI (node)") }
   let(:http_node_save)        { double("Chef::ServerAPI (node save)") }

@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +35,20 @@ class Chef
     # Global state
     #
 
+    # Common rest object for using to talk to the Chef Server, this strictly 'validates' utf8
+    # and will throw.  (will be nil on solo-legacy runs)
+    #
+    # @return [Chef::ServerAPI]
+    #
+    attr_accessor :rest
+
+    # Common rest object for using to talk to the Chef Server, this has utf8 sanitization turned
+    # on and will replace invalid utf8 with valid characters.  (will be nil on solo-legacy runs)
+    #
+    # @return [Chef::ServerAPI]
+    #
+    attr_accessor :rest_clean
+
     #
     # The node for this run
     #
@@ -47,7 +61,7 @@ class Chef
     #
     # @return [Chef::CookbookCollection]
     #
-    attr_reader :cookbook_collection
+    attr_accessor :cookbook_collection
 
     #
     # Resource Definitions for this run. Populated when the files in
@@ -62,7 +76,7 @@ class Chef
     #
     # @return [Chef::EventDispatch::Dispatcher]
     #
-    attr_reader :events
+    attr_accessor :events
 
     #
     # Hash of factoids for a reboot request.
@@ -165,15 +179,11 @@ class Chef
     # @param events [EventDispatch::Dispatcher] The event dispatcher for this
     #   run.
     #
-    def initialize(node, cookbook_collection, events, logger = nil)
-      @node = node
-      @cookbook_collection = cookbook_collection
+    def initialize(node = nil, cookbook_collection = {}, events = nil, logger = nil)
       @events = events
       @logger = logger || Chef::Log.with_child
-
-      node.run_context = self
-      node.set_cookbook_attribute
-
+      @cookbook_collection = cookbook_collection
+      self.node = node if node
       @definitions = Hash.new
       @loaded_recipes_hash = {}
       @loaded_attributes_hash = {}
@@ -182,6 +192,12 @@ class Chef
       @delayed_actions = []
 
       initialize_child_state
+    end
+
+    def node=(node)
+      @node = node
+      node.run_context = self
+      node.set_cookbook_attribute
     end
 
     #
@@ -603,9 +619,11 @@ class Chef
         cancel_reboot
         config
         cookbook_collection
+        cookbook_collection=
         cookbook_compiler
         definitions
         events
+        events=
         has_cookbook_file_in_cookbook?
         has_template_in_cookbook?
         load
@@ -620,12 +638,17 @@ class Chef
         loaded_recipes_hash
         logger
         node
+        node=
         open_stream
         reboot_info
         reboot_info=
         reboot_requested?
         request_reboot
         resolve_attribute
+        rest
+        rest=
+        rest_clean
+        rest_clean=
         unreachable_cookbook?
       }
 
