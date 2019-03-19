@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.195 -->
-## [v15.0.195](https://github.com/chef/chef/tree/v15.0.195) (2019-03-19)
+<!-- latest_release 15.0.196 -->
+## [v15.0.196](https://github.com/chef/chef/tree/v15.0.196) (2019-03-19)
 
 #### Merged Pull Requests
-- Remove the travis gem from our gemfile [#8310](https://github.com/chef/chef/pull/8310) ([tas50](https://github.com/tas50))
+- Update chef-zero to 14.0.12 [#8312](https://github.com/chef/chef/pull/8312) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update chef-zero to 14.0.12 [#8312](https://github.com/chef/chef/pull/8312) ([tas50](https://github.com/tas50)) <!-- 15.0.196 -->
 - Remove the travis gem from our gemfile [#8310](https://github.com/chef/chef/pull/8310) ([tas50](https://github.com/tas50)) <!-- 15.0.195 -->
 - Pin expeditor to ruby 2.5.3 and bump train to 1.7.6 [#8308](https://github.com/chef/chef/pull/8308) ([tas50](https://github.com/tas50)) <!-- 15.0.193 -->
 - Update Ruby to 2.5.5 [#8296](https://github.com/chef/chef/pull/8296) ([tas50](https://github.com/tas50)) <!-- 15.0.192 -->
