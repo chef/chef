@@ -96,6 +96,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
     Win32::Service::DEMAND_START = 0x00000003
     Win32::Service::DISABLED = 0x00000004
 
+    allow(Win32::Service).to receive(:start).with(any_args).and_return(Win32::Service)
     allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
       double("StatusStruct", current_state: "running"))
     allow(Win32::Service).to receive(:config_info).with(new_resource.service_name)
@@ -503,6 +504,31 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
         double("StatusStruct", current_state: "stopped"),
         double("StatusStruct", current_state: "running"))
+    end
+
+    context "run_as_user user is specified" do
+      let(:run_as_user) { provider.new_resource.class.properties[:run_as_user].default }
+
+      before do
+        provider.new_resource.run_as_user run_as_user
+      end
+
+      it "configures service run_as_user and run_as_password" do
+        expect(provider).to receive(:configure_service_run_as_properties).and_call_original
+        expect(Win32::Service).to receive(:configure)
+        provider.start_service
+      end
+    end
+
+    context "run_as_user user is not specified" do
+      before do
+        expect(provider.new_resource.property_is_set?(:run_as_user)).to be false
+      end
+
+      it "does not configure service run_as_user and run_as_password" do
+        expect(Win32::Service).not_to receive(:configure)
+        provider.start_service
+      end
     end
 
     it "calls the start command if one is specified" do
