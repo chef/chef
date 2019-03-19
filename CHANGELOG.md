@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.190 -->
-## [v15.0.190](https://github.com/chef/chef/tree/v15.0.190) (2019-03-18)
+<!-- latest_release 15.0.191 -->
+## [v15.0.191](https://github.com/chef/chef/tree/v15.0.191) (2019-03-19)
 
 #### Merged Pull Requests
-- Early allocation of the Chef::RunContext [#8301](https://github.com/chef/chef/pull/8301) ([lamont-granquist](https://github.com/lamont-granquist))
+- Loosen mixlib deps to allow for the latest versions [#8304](https://github.com/chef/chef/pull/8304) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Loosen mixlib deps to allow for the latest versions [#8304](https://github.com/chef/chef/pull/8304) ([tas50](https://github.com/tas50)) <!-- 15.0.191 -->
 - Early allocation of the Chef::RunContext [#8301](https://github.com/chef/chef/pull/8301) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.190 -->
 - Allow the use of `--delete-entire-chef-repo` [#8298](https://github.com/chef/chef/pull/8298) ([ABewsher](https://github.com/ABewsher)) <!-- 15.0.189 -->
 - fix unsolvable Gemfile.lock [#8300](https://github.com/chef/chef/pull/8300) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.188 -->
