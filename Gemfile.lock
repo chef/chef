@@ -304,7 +304,7 @@ GEM
     timers (4.3.0)
     tins (1.20.2)
     tomlrb (1.2.8)
-    train-core (1.7.5)
+    train-core (1.7.6)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
     travis (1.8.9)
@@ -410,4 +410,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.17.3
+   2.0.1
