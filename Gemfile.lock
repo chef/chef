@@ -24,6 +24,35 @@ GIT
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
 
+GIT
+  remote: https://github.com/inspec/inspec.git
+  revision: 826b7267440921585aaadb66a7c9ab5cb184fb3c
+  branch: 4-stable
+  specs:
+    inspec-core (4.0.2.pre)
+      addressable (~> 2.4)
+      faraday (>= 0.9.0)
+      hashie (~> 3.4)
+      htmlentities
+      json (>= 1.8, < 3.0)
+      method_source (~> 0.8)
+      mixlib-log
+      multipart-post
+      parallel (~> 1.9)
+      parslet (~> 1.5)
+      pry (~> 0)
+      rspec (~> 3)
+      rspec-its (~> 1.2)
+      rubyzip (~> 1.1)
+      semverse
+      sslshake (~> 1.2)
+      term-ansicolor
+      thor (~> 0.20)
+      tomlrb (~> 1.2)
+      train-core (~> 2.0)
+      tty-prompt (~> 0.17)
+      tty-table (~> 0.10)
+
 PATH
   remote: .
   specs:
@@ -156,29 +185,6 @@ GEM
     highline (1.7.10)
     htmlentities (4.3.4)
     iniparse (1.4.4)
-    inspec-core (3.7.1)
-      addressable (~> 2.4)
-      faraday (>= 0.9.0)
-      hashie (~> 3.4)
-      htmlentities
-      json (>= 1.8, < 3.0)
-      method_source (~> 0.8)
-      mixlib-log
-      multipart-post
-      parallel (~> 1.9)
-      parslet (~> 1.5)
-      pry (~> 0)
-      rspec (~> 3)
-      rspec-its (~> 1.2)
-      rubyzip (~> 1.1)
-      semverse
-      sslshake (~> 1.2)
-      term-ansicolor
-      thor (~> 0.20)
-      tomlrb (~> 1.2)
-      train-core (~> 1.5, >= 1.7.2)
-      tty-prompt (~> 0.17)
-      tty-table (~> 0.10)
     ipaddress (0.8.3)
     iso8601 (0.12.1)
     jaro_winkler (1.5.2)
@@ -302,9 +308,9 @@ GEM
     timers (4.3.0)
     tins (1.20.2)
     tomlrb (1.2.8)
-    train-core (1.7.5)
+    train-core (2.0.2)
       json (>= 1.8, < 3.0)
-      mixlib-shellout (~> 2.0)
+      mixlib-shellout (>= 2.0, < 4.0)
     travis (1.8.9)
       backports
       faraday (~> 0.9)
@@ -385,7 +391,7 @@ DEPENDENCIES
   chef-vault
   cheffish (~> 14)
   chefstyle!
-  inspec-core (~> 3)
+  inspec-core!
   netrc
   octokit
   ohai!
