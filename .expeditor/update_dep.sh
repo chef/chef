@@ -11,6 +11,9 @@
 
 set -evx
 
+# this attempts to work around the bundle update making unsolvable dep tree
+asdf local ruby 2.5.3
+
 function new_gem_included() {
   git diff | grep -E '^\+' | grep "${EXPEDITOR_GEM_NAME} (${EXPEDITOR_VERSION})"
 }
