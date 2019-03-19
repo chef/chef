@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.192 -->
-## [v15.0.192](https://github.com/chef/chef/tree/v15.0.192) (2019-03-19)
+<!-- latest_release 15.0.193 -->
+## [v15.0.193](https://github.com/chef/chef/tree/v15.0.193) (2019-03-19)
 
 #### Merged Pull Requests
-- Update Ruby to 2.5.5 [#8296](https://github.com/chef/chef/pull/8296) ([tas50](https://github.com/tas50))
+- Pin expeditor to ruby 2.5.3 and bump train to 1.7.6 [#8308](https://github.com/chef/chef/pull/8308) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Pin expeditor to ruby 2.5.3 and bump train to 1.7.6 [#8308](https://github.com/chef/chef/pull/8308) ([tas50](https://github.com/tas50)) <!-- 15.0.193 -->
 - Update Ruby to 2.5.5 [#8296](https://github.com/chef/chef/pull/8296) ([tas50](https://github.com/tas50)) <!-- 15.0.192 -->
 - Loosen mixlib deps to allow for the latest versions [#8304](https://github.com/chef/chef/pull/8304) ([tas50](https://github.com/tas50)) <!-- 15.0.191 -->
 - Early allocation of the Chef::RunContext [#8301](https://github.com/chef/chef/pull/8301) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.190 -->
