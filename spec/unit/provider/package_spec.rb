@@ -61,24 +61,6 @@ describe Chef::Provider::Package do
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
 
-    it "should call preseed_package if a response_file is given" do
-      new_resource.response_file("foo")
-      expect(provider).to receive(:get_preseed_file).with(
-        new_resource.package_name,
-        provider.candidate_version
-      ).and_return("/var/cache/preseed-test")
-
-      expect(provider).to receive(:preseed_package).with(
-        "/var/cache/preseed-test"
-      ).and_return(true)
-      provider.run_action(:install)
-    end
-
-    it "should not call preseed_package if a response_file is not given" do
-      expect(provider).not_to receive(:preseed_package)
-      provider.run_action(:install)
-    end
-
     it "should install the package at the candidate_version if it is not already installed" do
       expect(provider).to receive(:install_package).with(
         new_resource.package_name,
@@ -281,53 +263,6 @@ describe Chef::Provider::Package do
 
   end
 
-  describe "when reconfiguring the package" do
-    before(:each) do
-      allow(provider).to receive(:reconfig_package).and_return(true)
-    end
-
-    it "should info log, reconfigure the package and update the resource" do
-      allow(current_resource).to receive(:version).and_return("1.0")
-      allow(new_resource).to receive(:response_file).and_return(true)
-      expect(provider).to receive(:get_preseed_file).and_return("/var/cache/preseed-test")
-      allow(provider).to receive(:preseed_package).and_return(true)
-      allow(provider).to receive(:reconfig_package).and_return(true)
-      expect(logger).to receive(:info).with("package[install emacs] reconfigured")
-      expect(provider).to receive(:reconfig_package)
-      provider.run_action(:reconfig)
-      expect(new_resource).to be_updated
-      expect(new_resource).to be_updated_by_last_action
-    end
-
-    it "should debug log and not reconfigure the package if the package is not installed" do
-      allow(current_resource).to receive(:version).and_return(nil)
-      expect(logger).to receive(:trace).with("package[install emacs] is NOT installed - nothing to do")
-      expect(provider).not_to receive(:reconfig_package)
-      provider.run_action(:reconfig)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
-
-    it "should debug log and not reconfigure the package if no response_file is given" do
-      allow(current_resource).to receive(:version).and_return("1.0")
-      allow(new_resource).to receive(:response_file).and_return(nil)
-      expect(logger).to receive(:trace).with("package[install emacs] no response_file provided - nothing to do")
-      expect(provider).not_to receive(:reconfig_package)
-      provider.run_action(:reconfig)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
-
-    it "should debug log and not reconfigure the package if the response_file has not changed" do
-      allow(current_resource).to receive(:version).and_return("1.0")
-      allow(new_resource).to receive(:response_file).and_return(true)
-      expect(provider).to receive(:get_preseed_file).and_return(false)
-      allow(provider).to receive(:preseed_package).and_return(false)
-      expect(logger).to receive(:trace).with("package[install emacs] preseeding has not changed - nothing to do")
-      expect(provider).not_to receive(:reconfig_package)
-      provider.run_action(:reconfig)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
-  end
-
   describe "When locking the package" do
     before(:each) do
       allow(provider).to receive(:lock_package).with(
@@ -421,7 +356,7 @@ describe Chef::Provider::Package do
     end
 
     it "should raise UnsupportedAction for reconfig" do
-      expect { provider.reconfig_package("emacs", "1.4.2") }.to raise_error(Chef::Exceptions::UnsupportedAction)
+      expect { provider.reconfig_package("emacs") }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end
 
     it "should raise UnsupportedAction for lock" do
@@ -431,91 +366,6 @@ describe Chef::Provider::Package do
     it "should raise UnsupportedAction for unlock" do
       expect { provider.unlock_package("emacs", nil) }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end
-  end
-
-  describe "when given a response file" do
-    let(:cookbook_repo) { File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")) }
-    let(:cookbook_loader) do
-      Chef::Cookbook::FileVendor.fetch_from_disk(cookbook_repo)
-      Chef::CookbookLoader.new(cookbook_repo)
-    end
-    let(:cookbook_collection) do
-      cookbook_loader.load_cookbooks
-      Chef::CookbookCollection.new(cookbook_loader)
-    end
-    let(:run_context) { Chef::RunContext.new(node, cookbook_collection, events) }
-    let(:new_resource) do
-      new_resource = Chef::Resource::Package.new("emacs")
-      new_resource.response_file("java.response")
-      new_resource.cookbook_name = "java"
-      new_resource
-    end
-
-    describe "creating the cookbook file resource to fetch the response file" do
-      before do
-        expect(Chef::FileCache).to receive(:create_cache_path).with("preseed/java").and_return("/tmp/preseed/java")
-      end
-
-      it "sets the preseed resource's runcontext to its own run context" do
-        allow(Chef::FileCache).to receive(:create_cache_path).and_return("/tmp/preseed/java")
-        expect(provider.preseed_resource("java", "6").run_context).not_to be_nil
-        expect(provider.preseed_resource("java", "6").run_context).to equal(provider.run_context)
-      end
-
-      it "should set the cookbook name of the remote file to the new resources cookbook name" do
-        expect(provider.preseed_resource("java", "6").cookbook_name).to eq("java")
-      end
-
-      it "should set remote files source to the new resources response file" do
-        expect(provider.preseed_resource("java", "6").source).to eq("java.response")
-      end
-
-      it "should never back up the cached response file" do
-        expect(provider.preseed_resource("java", "6").backup).to be_falsey
-      end
-
-      it "sets the install path of the resource to $file_cache/$cookbook/$pkg_name-$pkg_version.seed" do
-        expect(provider.preseed_resource("java", "6").path).to eq("/tmp/preseed/java/java-6.seed")
-      end
-    end
-
-    describe "when installing the preseed file to the cache location" do
-      let(:response_file_destination) { Dir.tmpdir + "/preseed--java--java-6.seed" }
-      let(:response_file_resource) do
-        response_file_resource = Chef::Resource::CookbookFile.new(response_file_destination, run_context)
-        response_file_resource.cookbook_name = "java"
-        response_file_resource.backup(false)
-        response_file_resource.source("java.response")
-        response_file_resource
-      end
-
-      before do
-        expect(provider).to receive(:preseed_resource).with("java", "6").and_return(response_file_resource)
-      end
-
-      after do
-        FileUtils.rm(response_file_destination) if ::File.exist?(response_file_destination)
-      end
-
-      it "creates the preseed file in the cache" do
-        expect(response_file_resource).to receive(:run_action).with(:create)
-        provider.get_preseed_file("java", "6")
-      end
-
-      it "returns the path to the response file if the response file was updated" do
-        expect(provider.get_preseed_file("java", "6")).to eq(response_file_destination)
-      end
-
-      it "should return false if the response file has not been updated" do
-        response_file_resource.updated_by_last_action(false)
-        expect(response_file_resource).not_to be_updated_by_last_action
-        # don't let the response_file_resource set updated to true
-        expect(response_file_resource).to receive(:run_action).with(:create)
-        expect(provider.get_preseed_file("java", "6")).to be(false)
-      end
-
-    end
-
   end
 end
 
@@ -621,22 +471,6 @@ describe "Subclass with use_multipackage_api" do
     provider.run_action(:purge)
     expect(new_resource).to be_updated_by_last_action
     expect(new_resource.version).to eql(nil)
-  end
-
-  it "when user passes string to package_name, passes arrays to reconfig_package" do
-    new_resource.package_name "vim"
-    current_resource.package_name "vim"
-    current_resource.version [ "1.0" ]
-    allow(new_resource).to receive(:response_file).and_return(true)
-    expect(provider).to receive(:get_preseed_file).and_return("/var/cache/preseed-test")
-    allow(provider).to receive(:preseed_package).and_return(true)
-    allow(provider).to receive(:reconfig_package).and_return(true)
-    expect(provider).to receive(:reconfig_package).with(
-      [ "vim" ],
-      [ "1.0" ]
-    ).and_return(true)
-    provider.run_action(:reconfig)
-    expect(new_resource).to be_updated_by_last_action
   end
 end
 

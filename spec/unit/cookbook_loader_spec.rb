@@ -101,7 +101,7 @@ describe Chef::CookbookLoader do
         cookbook_loader.each_key do |cookbook_name|
           seen << cookbook_name
         end
-        expect(seen).to eq %w{angrybash apache2 borken ignorken java name-mismatch openldap preseed supports-platform-constraints}
+        expect(seen).to eq %w{angrybash apache2 borken ignorken irssi java name-mismatch openldap preseed supports-platform-constraints wget}
       end
     end
 
