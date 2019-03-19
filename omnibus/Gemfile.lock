@@ -140,7 +140,7 @@ GEM
       mixlib-config (>= 2.2.12, < 3.0)
       mixlib-shellout (~> 2.0)
       tomlrb (~> 1.2)
-    chef-sugar (5.0.0)
+    chef-sugar (5.0.1)
     chef-zero (14.0.11)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
