@@ -65,10 +65,6 @@ group(:development, :test) do
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
 
-group(:travis) do
-  gem "travis"
-end
-
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
 # If you want to load debugging tools into the bundle exec sandbox,
