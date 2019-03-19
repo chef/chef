@@ -58,10 +58,6 @@ group(:development, :test) do
   gem "chefstyle", "=0.11.2"
 end
 
-group(:travis) do
-  gem "travis"
-end
-
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
 # If you want to load debugging tools into the bundle exec sandbox,
