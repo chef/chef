@@ -48,7 +48,7 @@ matrix:
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
       INTEGRATION_SPECS_26: 1
-    rvm: 2.6
+    rvm: 2.6.2
     sudo: true
     script: sudo -E $(which bundle) exec rake spec:integration;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
@@ -68,7 +68,7 @@ matrix:
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
       FUNCTIONAL_SPECS_26: 1
-    rvm: 2.6
+    rvm: 2.6.2
     sudo: true
     script: sudo rm -f /etc/apt/apt.conf.d/99-travis-apt-proxy; sudo -E $(which bundle) exec rake spec:functional;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
@@ -90,7 +90,7 @@ matrix:
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
       UNIT_SPECS_26: 1
-    rvm: 2.6
+    rvm: 2.6.2
     sudo: true
     script:
       - sudo -E $(which bundle) exec rake spec:unit;
