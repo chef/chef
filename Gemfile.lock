@@ -179,7 +179,7 @@ GEM
     mixlib-archive (1.0.1-universal-mingw32)
       mixlib-log
     mixlib-authentication (2.1.1)
-    mixlib-cli (2.0.1)
+    mixlib-cli (2.0.3)
     mixlib-config (2.2.18)
       tomlrb
     mixlib-log (3.0.1)
@@ -377,4 +377,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.17.3
+   2.0.1
