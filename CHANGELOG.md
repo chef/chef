@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.11.24 -->
-## [v14.11.24](https://github.com/chef/chef/tree/v14.11.24) (2019-03-19)
+<!-- latest_release 14.11.25 -->
+## [v14.11.25](https://github.com/chef/chef/tree/v14.11.25) (2019-03-20)
 
 #### Merged Pull Requests
-- Loosen the win32-cerstore and win32-service dependencies [#8295](https://github.com/chef/chef/pull/8295) ([tas50](https://github.com/tas50))
+- Remove travis gem dep and bump versions of multiple components  [#8315](https://github.com/chef/chef/pull/8315) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.11.21 -->
 ### Changes since 14.11.21 release
 
 #### Merged Pull Requests
+- Remove travis gem dep and bump versions of multiple components  [#8315](https://github.com/chef/chef/pull/8315) ([tas50](https://github.com/tas50)) <!-- 14.11.25 -->
 - Loosen the win32-cerstore and win32-service dependencies [#8295](https://github.com/chef/chef/pull/8295) ([tas50](https://github.com/tas50)) <!-- 14.11.24 -->
 - Backport fix for #8080 [#8303](https://github.com/chef/chef/pull/8303) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.11.23 -->
 - windows_certificate: Import nested certificates while importing P7B certs [#8274](https://github.com/chef/chef/pull/8274) ([tas50](https://github.com/tas50)) <!-- 14.11.22 -->
