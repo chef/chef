@@ -120,6 +120,8 @@ GEM
     erubis (2.7.0)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.12.2)
+      faraday (>= 0.7.4, < 1.0)
     ffi (1.10.0)
     ffi (1.10.0-x64-mingw32)
     ffi (1.10.0-x86-mingw32)
@@ -133,9 +135,10 @@ GEM
     highline (1.7.10)
     htmlentities (4.3.4)
     iniparse (1.4.4)
-    inspec-core (3.7.1)
+    inspec-core (3.7.11)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
+      faraday_middleware (~> 0.12.2)
       hashie (~> 3.4)
       htmlentities
       json (>= 1.8, < 3.0)
@@ -177,8 +180,8 @@ GEM
     multi_json (1.13.1)
     multipart-post (2.0.0)
     necromancer (0.4.0)
-    net-scp (1.2.1)
-      net-ssh (>= 2.6.5)
+    net-scp (2.0.0)
+      net-ssh (>= 2.6.5, < 6.0.0)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (4.2.0)
@@ -204,7 +207,7 @@ GEM
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
     parallel (1.14.0)
-    parser (2.6.0.0)
+    parser (2.6.2.0)
       ast (~> 2.4.0)
     parslet (1.8.2)
     pastel (0.7.2)
@@ -344,7 +347,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    win32-service (1.0.1)
+    win32-service (2.1.2)
       ffi
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
@@ -385,4 +388,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.17.3
+   2.0.1
