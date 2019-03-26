@@ -226,6 +226,10 @@ class Chef
       target 26
     end
 
+    class LocaleLcAll < Base
+      target 27
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client.html"
@@ -235,6 +239,5 @@ class Chef
         "Deprecation from #{location}\n\n  #{message}\n\n#{link}"
       end
     end
-
   end
 end

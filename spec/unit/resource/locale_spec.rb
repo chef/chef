@@ -1,5 +1,5 @@
 #
-# Author:: Vincent AUBERT (<vincentaubert88@gmail.com>)
+# Author:: Nimesh Patni (<nimesh.patni@msystechnologies.com>)
 # Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -21,40 +21,203 @@ require "spec_helper"
 describe Chef::Resource::Locale do
 
   let(:resource) { Chef::Resource::Locale.new("fakey_fakerton") }
+  let(:provider) { resource.provider_for_action(:update) }
 
-  it "has a name of locale" do
-    expect(resource.resource_name).to eq(:locale)
+  describe "default:" do
+    it "name would be locale" do
+      expect(resource.resource_name).to eq(:locale)
+    end
+    it "lang would be nil" do
+      expect(resource.lang).to be_nil
+    end
+    it "lc_env would be an empty hash" do
+      expect(resource.lc_env).to be_a(Hash)
+      expect(resource.lc_env).to be_empty
+    end
+    it "action would be :update" do
+      expect(resource.action).to eql([:update])
+    end
   end
 
-  it "the lang property is equal to en_US.utf8" do
-    expect(resource.lang).to eql("en_US.utf8")
+  describe "validations:" do
+    let(:validation) { Chef::Exceptions::ValidationFailed }
+    context "lang" do
+      it "is non empty" do
+        expect { resource.lang("") }.to raise_error(validation)
+      end
+      it "does not contain any leading whitespaces" do
+        expect { resource.lang("  XX") }.to raise_error(validation)
+      end
+    end
+
+    context "lc_env" do
+      it "is non empty" do
+        expect { resource.lc_env({ "LC_TIME" => "" }) }.to raise_error(validation)
+      end
+      it "does not contain any leading whitespaces" do
+        expect { resource.lc_env({ "LC_TIME" => " XX" }) }.to raise_error(validation)
+      end
+      it "keys are valid and case sensitive" do
+        expect { resource.lc_env({ "LC_TIMES" => " XX" }) }.to raise_error(validation)
+        expect { resource.lc_env({ "Lc_Time" => " XX" }) }.to raise_error(validation)
+        expect(resource.lc_env({ "LC_TIME" => "XX" })).to eql({ "LC_TIME" => "XX" })
+      end
+    end
   end
 
-  it "the lc_all property is equal to en_US.utf8" do
-    expect(resource.lc_all).to eql("en_US.utf8")
-  end
-
-  it "sets the default action as :update" do
-    expect(resource.action).to eql([:update])
-  end
-
-  it "supports :update action" do
-    expect { resource.action :update }.not_to raise_error
-  end
-
-  describe "when the language is not the default one" do
-    let(:resource) { Chef::Resource::Locale.new("fakey_fakerton") }
+  describe "#unavailable_locales" do
+    let(:available_locales) do
+      <<~LOC
+        C
+        C.UTF-8
+        en_AG
+        en_AG.utf8
+        en_US
+        POSIX
+      LOC
+    end
     before do
-      resource.lang("fr_FR.utf8")
-      resource.lc_all("fr_FR.utf8")
+      dummy = Mixlib::ShellOut.new
+      allow_any_instance_of(Chef::Mixin::ShellOut).to receive(:shell_out!).with("locale -a").and_return(dummy)
+      allow(dummy).to receive(:stdout).and_return(available_locales)
+    end
+    context "when all locales are available on system" do
+      context "with both properties" do
+        it "returns an empty array" do
+          resource.lang("en_US")
+          resource.lc_env({ "LC_TIME" => "en_AG.utf8", "LC_MESSAGES" => "en_AG.utf8" })
+          expect(provider.unavailable_locales).to eq([])
+        end
+      end
+      context "without lang" do
+        it "returns an empty array" do
+          resource.lang()
+          resource.lc_env({ "LC_TIME" => "en_AG.utf8", "LC_MESSAGES" => "en_AG.utf8" })
+          expect(provider.unavailable_locales).to eq([])
+        end
+      end
+      context "without lc_env" do
+        it "returns an empty array" do
+          resource.lang("en_US")
+          resource.lc_env()
+          expect(provider.unavailable_locales).to eq([])
+        end
+      end
+      context "without both" do
+        it "returns an empty array" do
+          resource.lang()
+          resource.lc_env()
+          expect(provider.unavailable_locales).to eq([])
+        end
+      end
     end
 
-    it "the lang property is equal to fr_FR.utf8" do
-      expect(resource.lang).to eql("fr_FR.utf8")
+    context "when some locales are not available" do
+      context "with both properties" do
+        it "returns list" do
+          resource.lang("de_DE")
+          resource.lc_env({ "LC_TIME" => "en_AG.utf8", "LC_MESSAGES" => "en_US.utf8" })
+          expect(provider.unavailable_locales).to eq(["de_DE", "en_US.utf8"])
+        end
+      end
+      context "without lang" do
+        it "returns list" do
+          resource.lang()
+          resource.lc_env({ "LC_TIME" => "en_AG.utf8", "LC_MESSAGES" => "en_US.utf8" })
+          expect(provider.unavailable_locales).to eq(["en_US.utf8"])
+        end
+      end
+      context "without lc_env" do
+        it "returns list" do
+          resource.lang("de_DE")
+          resource.lc_env()
+          expect(provider.unavailable_locales).to eq(["de_DE"])
+        end
+      end
+      context "without both" do
+        it "returns an empty array" do
+          resource.lang()
+          resource.lc_env()
+          expect(provider.unavailable_locales).to eq([])
+        end
+      end
+    end
+  end
+
+  describe "#new_content" do
+    context "with both properties" do
+      before do
+        resource.lang("en_US")
+        resource.lc_env({ "LC_TIME" => "en_AG.utf8", "LC_MESSAGES" => "en_AG.utf8" })
+      end
+      it "returns string" do
+        expect(provider.new_content).to be_a(String)
+        expect(provider.new_content).not_to be_empty
+      end
+      it "keys will be sorted" do
+        expect(provider.new_content.split("\n").map { |x| x.split("=") }.collect(&:first)).to eq(%w{LANG LC_MESSAGES LC_TIME})
+      end
+      it "ends with a new-line character" do
+        expect(provider.new_content[-1]).to eq("\n")
+      end
+      it "returns a valid string" do
+        expect(provider.new_content).to eq("LANG=en_US\nLC_MESSAGES=en_AG.utf8\nLC_TIME=en_AG.utf8\n")
+      end
+    end
+    context "without lang" do
+      it "returns a valid string" do
+        resource.lang()
+        resource.lc_env({ "LC_TIME" => "en_AG.utf8", "LC_MESSAGES" => "en_AG.utf8" })
+        expect(provider.new_content).to eq("LC_MESSAGES=en_AG.utf8\nLC_TIME=en_AG.utf8\n")
+      end
+    end
+    context "without lc_env" do
+      it "returns a valid string" do
+        resource.lang("en_US")
+        resource.lc_env()
+        expect(provider.new_content).to eq("LANG=en_US\n")
+      end
+    end
+    context "without both" do
+      it "returns string with only new-line character" do
+        resource.lang()
+        resource.lc_env()
+        expect(provider.new_content).to eq("\n")
+      end
+    end
+  end
+
+  describe "#up_to_date?" do
+    context "when file does not exists" do
+      it "returns false" do
+        allow(File).to receive(:read).and_raise(Errno::ENOENT, "No such file or directory")
+        expect(provider.up_to_date?).to be_falsy
+      end
     end
 
-    it "the lc_all property is equal to fr_FR.utf8" do
-      expect(resource.lc_all).to eql("fr_FR.utf8")
+    context "when file exists" do
+      let(:content) { "LANG=en_US\nLC_MESSAGES=en_AG.utf8\nLC_TIME=en_AG.utf8\n" }
+      before do
+        allow(provider).to receive(:new_content).and_return(content)
+      end
+      context "but is empty" do
+        it "returns false" do
+          allow(File).to receive(:read).and_return("")
+          expect(provider.up_to_date?).to be_falsy
+        end
+      end
+      context "and contains old key-vals" do
+        it "returns false" do
+          allow(File).to receive(:read).and_return("LC_MESSAGES=en_AG.utf8\n")
+          expect(provider.up_to_date?).to be_falsy
+        end
+      end
+      context "and contains new key-vals" do
+        it "returns true" do
+          allow(File).to receive(:read).and_return(content)
+          expect(provider.up_to_date?).to be_truthy
+        end
+      end
     end
   end
 end
