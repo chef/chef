@@ -281,11 +281,18 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     grant_service_logon(new_resource.run_as_user) if new_resource.run_as_user.casecmp("localsystem") != 0
   end
 
+  #
+  # Queries the delayed auto-start setting of the auto-start service. If
+  # the service is not auto-start, this will return nil.
+  #
+  # @return [Boolean, nil]
+  #
   def current_delayed_start
-    if service = Win32::Service.services.find { |x| x.service_name == new_resource.service_name }
-      service.delayed_start == 0 ? false : true
-    else
-      nil
+    case Win32::Service.delayed_start(new_resource.service_name)
+    when 0
+      false
+    when 1
+      true
     end
   end
 
