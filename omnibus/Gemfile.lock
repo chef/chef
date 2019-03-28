@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 7c1e039856513835f728b4e0c5a4106c339e99c2
+  revision: c824e911af6dab44e9866a5e05d2e0217518a76f
   branch: master
   specs:
-    omnibus (6.0.20)
+    omnibus (6.0.21)
       aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 93d8f49c8a5add0efd03a05c3311e49eea82b5ed
+  revision: 3d5181c28da3fdf602f86096c00d3a7c666b538c
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,17 +32,17 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
     aws-eventstream (1.0.2)
-    aws-partitions (1.144.0)
-    aws-sdk-core (3.48.1)
+    aws-partitions (1.147.0)
+    aws-sdk-core (3.48.3)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.15.0)
-      aws-sdk-core (~> 3, >= 3.48.0)
+    aws-sdk-kms (1.16.0)
+      aws-sdk-core (~> 3, >= 3.48.2)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.33.0)
-      aws-sdk-core (~> 3, >= 3.48.0)
+    aws-sdk-s3 (1.36.0)
+      aws-sdk-core (~> 3, >= 3.48.2)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.0)
     aws-sigv4 (1.1.0)
@@ -295,7 +295,7 @@ GEM
     solve (4.0.2)
       molinillo (~> 0.6)
       semverse (>= 1.1, < 4.0)
-    specinfra (2.76.9)
+    specinfra (2.77.0)
       net-scp
       net-ssh (>= 2.7)
       net-telnet (= 0.1.1)
