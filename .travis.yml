@@ -26,7 +26,6 @@ branches:
   only:
   - master
   - chef-14
-  - chef-13
 
 env:
   global:

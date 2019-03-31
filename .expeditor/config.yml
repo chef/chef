@@ -51,8 +51,6 @@ github:
         version_constraint: 15*
     - chef-14:
         version_constraint: 14*
-    - chef-13:
-        version_constraint: 13*
 
 # These actions are taken, in order they are specified, anytime a Pull Request is merged.
 merge_actions:
