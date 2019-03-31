@@ -4,6 +4,22 @@ This file holds "in progress" release notes for the current release under develo
 
 Chef 15 release notes will be added here as development progresses.
 
+## New Features / Functionality
+
+### Allow Using --delete-entire-chef-repo in Chef Local Mode
+
+### Data Collection Ground-Up Refactor
+
+### windows_uac resource
+
+### windows_dfs resources
+
+### windows_dns resources
+
+### snap_package resource
+
+### Ruby 2.5.5 / Rubygems 3.0.3
+
 ## Breaking Changes
 
 ### Audit Mode
