@@ -22,9 +22,8 @@ rubygems:
 docker_images:
   - chef
 
-habitat_packages:
-  - chef-client:
-      also_build_for_linux_kernel2: true
+pipelines:
+  - habitat/build
 
 github:
   # The file where the MAJOR.MINOR.PATCH version is kept. The version in this file
@@ -64,7 +63,7 @@ merge_actions:
       ignore_labels:
         - "Expeditor: Skip Changelog"
         - "Expeditor: Skip All"
-  - built_in:trigger_habitat_package_build:
+  - trigger_pipeline:habitat/build:
       ignore_labels:
         - "Expeditor: Skip Habitat"
         - "Expeditor: Skip All"
