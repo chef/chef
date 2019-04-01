@@ -53,7 +53,8 @@ group(:development, :test) do
   # we pin rake as a copy of rake is installed from the ruby source
   # if you bump the ruby version you should confirm we don't end up with
   # two rake gems installed again
-  gem "rake", "<= 12.3.0"
+  gem "rake", "<= 12.3.2"
+
   gem "rspec-core", "~> 3.5"
   gem "rspec-mocks", "~> 3.5"
   gem "rspec-expectations", "~> 3.5"

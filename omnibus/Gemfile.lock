@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 096b70201d073a4aaca8f3b9faf76d4c648d05d5
+  revision: 7ad32798cd5893191e4b9bfc5b53e4cc8f32646b
   branch: master
   specs:
-    omnibus (6.0.22)
+    omnibus (6.0.23)
       aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 3d5181c28da3fdf602f86096c00d3a7c666b538c
+  revision: 3f3bd5dd6d17212f2b90a2e45c63bf97224b48e6
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -177,7 +177,7 @@ GEM
     kitchen-vagrant (1.5.1)
       test-kitchen (>= 1.4, < 3)
     libyajl2 (1.2.0)
-    license_scout (1.0.22)
+    license_scout (1.0.24)
       ffi-yajl (~> 2.2)
       mixlib-shellout (~> 2.2)
       toml-rb (~> 1.0)

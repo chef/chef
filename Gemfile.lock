@@ -203,7 +203,7 @@ GEM
     netrc (0.11.0)
     octokit (4.14.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    parallel (1.16.2)
+    parallel (1.17.0)
     parser (2.6.2.0)
       ast (~> 2.4.0)
     parslet (1.8.2)
@@ -228,7 +228,7 @@ GEM
     public_suffix (3.0.3)
     rack (2.0.6)
     rainbow (3.0.0)
-    rake (12.3.0)
+    rake (12.3.2)
     rb-readline (0.5.5)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
@@ -366,7 +366,7 @@ DEPENDENCIES
   pry-byebug
   pry-remote
   pry-stack_explorer
-  rake (<= 12.3.0)
+  rake (<= 12.3.2)
   rb-readline
   rspec-core (~> 3.5)
   rspec-expectations (~> 3.5)
