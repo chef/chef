@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.198 -->
-## [v15.0.198](https://github.com/chef/chef/tree/v15.0.198) (2019-04-01)
+<!-- latest_release 15.0.199 -->
+## [v15.0.199](https://github.com/chef/chef/tree/v15.0.199) (2019-04-01)
 
 #### Merged Pull Requests
-- Update InSpec to 3.7.11 and mixlib-cli to 2.0.3 [#8329](https://github.com/chef/chef/pull/8329) ([tas50](https://github.com/tas50))
+- Remove Ubuntu 14.04 testing [#8330](https://github.com/chef/chef/pull/8330) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Remove Ubuntu 14.04 testing [#8330](https://github.com/chef/chef/pull/8330) ([tas50](https://github.com/tas50)) <!-- 15.0.199 -->
 - Update InSpec to 3.7.11 and mixlib-cli to 2.0.3 [#8329](https://github.com/chef/chef/pull/8329) ([tas50](https://github.com/tas50)) <!-- 15.0.198 -->
 - Update win32-service gem and fix #8195 [#8322](https://github.com/chef/chef/pull/8322) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.197 -->
 - Update chef-zero to 14.0.12 [#8312](https://github.com/chef/chef/pull/8312) ([tas50](https://github.com/tas50)) <!-- 15.0.196 -->
