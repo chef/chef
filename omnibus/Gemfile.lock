@@ -243,7 +243,7 @@ GEM
     progressbar (1.10.0)
     proxifier (1.0.3)
     public_suffix (3.0.3)
-    rack (2.0.6)
+    rack (2.0.7)
     retryable (3.0.4)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
