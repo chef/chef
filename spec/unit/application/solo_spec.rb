@@ -27,6 +27,7 @@ describe Chef::Application::Solo do
     allow(app).to receive(:configure_chef).and_return(true)
     allow(app).to receive(:configure_logging).and_return(true)
     allow(app).to receive(:trap)
+    allow(app).to receive(:cli_arguments).and_return([])
 
     Chef::Config[:json_attribs] = false
     Chef::Config[:solo] = true

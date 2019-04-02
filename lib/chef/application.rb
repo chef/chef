@@ -153,12 +153,13 @@ class Chef
     end
 
     def set_specific_recipes
-      if cli_arguments.is_a?(Array) && 
-          (cli_arguments.empty? || cli_arguments.all?{ |file| File.file?(file) } )
+      if cli_arguments.is_a?(Array) &&
+          (cli_arguments.empty? || cli_arguments.all? { |file| File.file?(file) } )
         chef_config[:specific_recipes] =
           cli_arguments.map { |file| File.expand_path(file) }
       else
-        Chef::Application.fatal!("Cannot read recipe file '': IOError: Cannot open or read #{File.expand_path(cli_arguments[0])}")
+        Chef::Application.fatal!("IOError: Cannot open or read: \"" +
+          cli_arguments.select { |file| !File.file?(file) }.join('", "') + '"' + ":  Invalid recipe found!")
       end
     end
 
