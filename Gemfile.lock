@@ -147,7 +147,7 @@ GEM
     highline (1.7.10)
     htmlentities (4.3.4)
     iniparse (1.4.4)
-    inspec-core (3.7.11)
+    inspec-core (3.9.0)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       faraday_middleware (~> 0.12.2)
@@ -226,7 +226,7 @@ GEM
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
     public_suffix (3.0.3)
-    rack (2.0.6)
+    rack (2.0.7)
     rainbow (3.0.0)
     rake (12.3.2)
     rb-readline (0.5.5)
@@ -344,7 +344,7 @@ GEM
       win32-api (>= 1.4.5)
     wisper (2.0.0)
     wmi-lite (1.0.2)
-    yard (0.9.18)
+    yard (0.9.19)
 
 PLATFORMS
   ruby
