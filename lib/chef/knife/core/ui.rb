@@ -76,7 +76,23 @@ class Chef
       #
       # @param message [String] the text string
       def log(message)
-        stderr.puts message
+        lines = message.split("\n")
+        first_line = lines.shift
+        stderr.puts first_line
+        # If the message is multiple lines,
+        # indent subsequent lines to align with the
+        # log type prefix ("ERROR: ", etc)
+        unless lines.empty?
+          prefix, _ = first_line.split(":", 2)
+          return if prefix.nil?
+          prefix_len = prefix.length
+          prefix_len -= 9 if color? # prefix includes 9 bytes of color escape sequences
+          prefix_len += 2 # include room to align to the ": " following PREFIX
+          padding = " " * prefix_len
+          lines.each do |line|
+            stderr.puts "#{padding}#{line}"
+          end
+        end
       rescue Errno::EPIPE => e
         raise e if @config[:verbosity] >= 2
         exit 0
