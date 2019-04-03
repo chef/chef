@@ -30,12 +30,12 @@ Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via
 
 ### powershell_script now allows overriding the default flags
 
-We now append `powershell_script`  user flags to the default flags, rather than the other way around, making user flags override the defaults.  This is the correct behavior, but it may cause scripts to execute differently than in previous Chef releases.
+We now append `powershell_script` user flags to the default flags, rather than the other way around, making user flags override the defaults. This is the correct behavior, but it may cause scripts to execute differently than in previous Chef releases.
 
 ### Chef packages now remove /opt/chef before installation
 
 The intent of this change is that on upgrading packages the /opt/chef directory is removed of any `chef_gem` installed gem versions and other
-modifications to /opt/chef that might be preserved and cause issues on upgrades.  Due to technical details with rpm script execution order
+modifications to /opt/chef that might be preserved and cause issues on upgrades. Due to technical details with rpm script execution order
 the way this was implemented was that a pre-installation script wipes /opt/chef before every install (done consistently this way on
 every package manager).
 
@@ -63,7 +63,7 @@ package "foo" do
 end
 ```
 
-That code is now what is necessary to specify that `foo` must be version `1.2.3` or higher.  Note that the yum provider supports syntax like `package "foo > 1.2.3"` which should be used and is preferred over using allow_downgrade.
+That code is now what is necessary to specify that `foo` must be version `1.2.3` or higher. Note that the yum provider supports syntax like `package "foo > 1.2.3"` which should be used and is preferred over using allow_downgrade.
 
 ### Node Attributes deep merge nil values
 
