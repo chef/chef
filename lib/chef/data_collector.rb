@@ -218,7 +218,7 @@ class Chef
       #
       def send_to_file_location(file_name, message)
         File.open(file_name, "a") do |fh|
-          fh.puts Chef::JSONCompat.to_json(message)
+          fh.puts Chef::JSONCompat.to_json(message, validate_utf8: false)
         end
       end
 
