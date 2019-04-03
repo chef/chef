@@ -18,7 +18,9 @@ Chef 15 release notes will be added here as development progresses.
 
 ### snap_package resource
 
-### Ruby 2.5.5 / Rubygems 3.0.3
+### Ruby 2.6.2
+
+Chef now ships with Ruby 2.6.2. This new version of Ruby improves performance and includes many new features to make more advanced Chef usage easier. See https://www.rubyguides.com/2018/11/ruby-2-6-new-features/ for a list of some of the new functionality.
 
 ## Breaking Changes
 
