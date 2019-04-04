@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.203 -->
-## [v15.0.203](https://github.com/chef/chef/tree/v15.0.203) (2019-04-03)
+<!-- latest_release 15.0.204 -->
+## [v15.0.204](https://github.com/chef/chef/tree/v15.0.204) (2019-04-04)
 
 #### Merged Pull Requests
-- Remove windows-api pin and update Gemfile.lock [#8328](https://github.com/chef/chef/pull/8328) ([jaymalasinha](https://github.com/jaymalasinha))
+- Update nokogiri to 1.10.2 [#8338](https://github.com/chef/chef/pull/8338) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update nokogiri to 1.10.2 [#8338](https://github.com/chef/chef/pull/8338) ([tas50](https://github.com/tas50)) <!-- 15.0.204 -->
 - Remove windows-api pin and update Gemfile.lock [#8328](https://github.com/chef/chef/pull/8328) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.0.203 -->
 - fix data collector non-utf8 file output [#8337](https://github.com/chef/chef/pull/8337) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.202 -->
 - Update inspec to 3.9.0 [#8336](https://github.com/chef/chef/pull/8336) ([tas50](https://github.com/tas50)) <!-- 15.0.201 -->
