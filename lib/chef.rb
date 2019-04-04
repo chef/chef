@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require "chef/version"
 
 require "chef_core/text"

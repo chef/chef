@@ -32,7 +32,7 @@ class Chef
       # so we'll keep this file a little smaller by splitting them out.
       include Bootstrap::Options
 
-      SUPPORTED_CONNECTION_PROTOCOLS = %w{ssh winrm}
+      SUPPORTED_CONNECTION_PROTOCOLS = %w{ssh winrm}.freeze
 
       attr_accessor :client_builder
       attr_accessor :chef_vault_handler
@@ -87,7 +87,6 @@ class Chef
           @server_name ||= host_descriptor.split("@").reverse[0]
         end
       end
-
 
       # @return [String] The CLI specific bootstrap template or the default
       def bootstrap_template
@@ -198,13 +197,12 @@ class Chef
           chef_vault_handler.run(client_builder.client)
         else
           ui.info <<~EOM
-              Doing old-style registration with the validation key at #{Chef::Config[:validation_key]}..."
-              Delete your validation key in order to use your user credentials instead
-            EOM
+            Doing old-style registration with the validation key at #{Chef::Config[:validation_key]}..."
+            Delete your validation key in order to use your user credentials instead
+          EOM
 
         end
       end
-
 
       def perform_bootstrap(remote_bootstrap_script_path)
         ui.info("Bootstrapping #{ui.color(server_name, :bold)}")
@@ -220,7 +218,6 @@ class Chef
       end
 
       def connect!
-
         ui.info("Connecting to #{ui.color(server_name, :bold)}")
         opts = connection_opts.dup
         do_connect(opts)
@@ -254,7 +251,7 @@ class Chef
 
       def connection_protocol
         return @connection_protocol if @connection_protocol
-        from_url = host_descriptor  =~ /^(.*):\/\// ? $1 : nil
+        from_url = host_descriptor =~ /^(.*):\/\// ? $1 : nil
         from_cli = config[:connection_protocol]
         from_knife = Chef::Config[:knife][:connection_protocol]
         @connection_protocol = from_url || from_cli || from_knife || "ssh"
@@ -287,18 +284,16 @@ class Chef
       def validate_winrm_transport_opts!
         return true if connection_protocol != "winrm"
 
-
-        if (Chef::Config[:validation_key] && !File.exist?(File.expand_path(Chef::Config[:validation_key])))
-          if (config_value(:winrm_auth_method) == "plaintext" &&
-              config_value(:winrm_ssl) != true)
+        if Chef::Config[:validation_key] && !File.exist?(File.expand_path(Chef::Config[:validation_key]))
+          if config_value(:winrm_auth_method) == "plaintext" &&
+              config_value(:winrm_ssl) != true
             ui.error <<~EOM
-                      Validatorless bootstrap over unsecure winrm channels could expose your
-                      key to network sniffing.
-
-                      Please use a 'winrm_auth_method' other than 'plaintext',
-                      or enable ssl on #{server_name} then use the --ssl flag
-                      to connect.
-                    EOM
+              Validatorless bootstrap over unsecure winrm channels could expose your
+              key to network sniffing.
+               Please use a 'winrm_auth_method' other than 'plaintext',
+              or enable ssl on #{server_name} then use the --ssl flag
+              to connect.
+            EOM
 
             exit 1
           end
@@ -340,13 +335,13 @@ class Chef
       # @return [TrueClass] If options are valid.
       def validate_protocol!
         from_cli = config[:connection_protocol]
-        if (from_cli && connection_protocol != from_cli)
+        if from_cli && connection_protocol != from_cli
           # Hanging indent to align with the ERROR: prefix
           ui.error <<~EOM
-             The URL '#{host_descriptor}' indicates protocol is '#{connection_protocol}'
-             while the --protocol flag specifies '#{from_cli}'.  Please include
-             only one or the other.
-           EOM
+            The URL '#{host_descriptor}' indicates protocol is '#{connection_protocol}'
+            while the --protocol flag specifies '#{from_cli}'.  Please include
+            only one or the other.
+          EOM
           exit 1
         end
 
@@ -502,7 +497,6 @@ class Chef
         opts
       end
 
-
       # use_sudo - tells bootstrap to use the sudo command to run bootstrap
       # use_sudo_password - tells bootstrap to use the sudo command to run bootstrap
       #                     and to use the password specified with --password
@@ -522,7 +516,7 @@ class Chef
             opts[:sudo_password] = config[:password]
           end
           if config[:preserve_home]
-             opts[:sudo_options] = "-H"
+            opts[:sudo_options] = "-H"
           end
         end
         opts
@@ -535,7 +529,7 @@ class Chef
           winrm_transport: auth_method, # winrm gem and train calls auth method 'transport'
           winrm_basic_auth_only: config_value(:winrm_basic_auth_only) || false,
           ssl: config_value(:winrm_ssl) === true,
-          ssl_peer_fingerprint: config_value(:winrm_ssl_peer_fingerprint)
+          ssl_peer_fingerprint: config_value(:winrm_ssl_peer_fingerprint),
         }
 
         if auth_method == "kerberos"
@@ -552,7 +546,6 @@ class Chef
         opts
       end
 
-
       # Config overrides to force password auth.
       def force_ssh_password_opts(password)
         {
@@ -560,7 +553,7 @@ class Chef
           non_interactive: false,
           keys_only: false,
           key_files: [],
-          auth_methods: [:password, :keyboard_interactive]
+          auth_methods: [:password, :keyboard_interactive],
         }
       end
 
@@ -593,14 +586,12 @@ class Chef
         :not_found
       end
 
-
       def upload_bootstrap(content)
         script_name = target_host.base_os == :windows ? "bootstrap.bat" : "bootstrap.sh"
         remote_path = target_host.normalize_path(File.join(target_host.temp_dir, script_name))
         target_host.save_as_remote_file(content, remote_path)
         remote_path
       end
-
 
       # build the command string for bootrapping
       # @return String
@@ -612,7 +603,6 @@ class Chef
         end
       end
 
-
       # To avoid cluttering the CLI options, some flags (such as port and user)
       # are shared between protocols.  However, there is still a need to allow the operator
       # to specify defaults separately, since they may not be the same values for different protocols.
@@ -621,7 +611,7 @@ class Chef
       # For example, :user CLI option will map to :winrm_user and :ssh_user Chef::Config keys,
       # based on the connection protocol in use.
       def knife_key_for_protocol(protocol, option)
-        "#{connection_protocol}_#{option.to_s}".to_sym
+        "#{connection_protocol}_#{option}".to_sym
       end
 
       private

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife/core/bootstrap_context'
-require 'chef/util/path_helper'
+require "chef/knife/core/bootstrap_context"
+require "chef/util/path_helper"
 
 class Chef
   class Knife
@@ -30,7 +30,7 @@ class Chef
       #
       class WindowsBootstrapContext < BootstrapContext
 
-        def initialize(config, run_list, chef_config, secret=nil)
+        def initialize(config, run_list, chef_config, secret = nil)
           @config       = config
           @run_list     = run_list
           @chef_config  = chef_config
@@ -85,24 +85,24 @@ class Chef
 
           # We configure :verify_api_cert only when it's overridden on the CLI
           # or when specified in the knife config.
-          if !@config[:node_verify_api_cert].nil? || knife_config.has_key?(:verify_api_cert)
+          if !@config[:node_verify_api_cert].nil? || knife_config.key?(:verify_api_cert)
             value = @config[:node_verify_api_cert].nil? ? knife_config[:verify_api_cert] : @config[:node_verify_api_cert]
             client_rb << %Q{verify_api_cert #{value}\n}
           end
 
           # We configure :ssl_verify_mode only when it's overridden on the CLI
           # or when specified in the knife config.
-          if @config[:node_ssl_verify_mode] || knife_config.has_key?(:ssl_verify_mode)
+          if @config[:node_ssl_verify_mode] || knife_config.key?(:ssl_verify_mode)
             value = case @config[:node_ssl_verify_mode]
-            when "peer"
-              :verify_peer
-            when "none"
-              :verify_none
-            when nil
-              knife_config[:ssl_verify_mode]
-            else
-              nil
-            end
+                    when "peer"
+                      :verify_peer
+                    when "none"
+                      :verify_none
+                    when nil
+                      knife_config[:ssl_verify_mode]
+                    else
+                      nil
+                    end
 
             if value
               client_rb << %Q{ssl_verify_mode :#{value}\n}
@@ -150,9 +150,9 @@ class Chef
             %Q{:#{@chef_config[:config_log_location]}\n}
           elsif @chef_config[:config_log_location].equal?(:syslog)
             raise "syslog is not supported for log_location on Windows OS\n"
-          elsif (@chef_config[:config_log_location].equal?(STDOUT))
+          elsif @chef_config[:config_log_location].equal?(STDOUT)
             "STDOUT\n"
-          elsif (@chef_config[:config_log_location].equal?(STDERR))
+          elsif @chef_config[:config_log_location].equal?(STDERR)
             "STDERR\n"
           elsif @chef_config[:config_log_location].nil? || @chef_config[:config_log_location].empty?
             "STDOUT\n"
@@ -164,7 +164,7 @@ class Chef
         end
 
         def start_chef
-          bootstrap_environment_option = bootstrap_environment.nil? ? '' : " -E #{bootstrap_environment}"
+          bootstrap_environment_option = bootstrap_environment.nil? ? "" : " -E #{bootstrap_environment}"
           start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\"\n"
           start_chef << "chef-client -c c:/chef/client.rb -j c:/chef/first-boot.json#{bootstrap_environment_option}\n"
         end
@@ -175,10 +175,10 @@ class Chef
             installer_version_string = "&prerelease=true"
           else
             chef_version_string = if knife_config[:bootstrap_version]
-              knife_config[:bootstrap_version]
-            else
-              Chef::VERSION.split(".").first
-            end
+                                    knife_config[:bootstrap_version]
+                                  else
+                                    Chef::VERSION.split(".").first
+                                  end
 
             installer_version_string = "&v=#{chef_version_string}"
 
@@ -285,18 +285,18 @@ class Chef
         def install_chef
           # The normal install command uses regular double quotes in
           # the install command, so request such a string from install_command
-          install_chef = install_command('"') + "\n" + fallback_install_task_command
+          install_command('"') + "\n" + fallback_install_task_command
         end
 
         def bootstrap_directory
-          bootstrap_directory = "C:\\chef"
+          "C:\\chef"
         end
 
         def local_download_path
-          local_download_path = "%TEMP%\\chef-client-latest.msi"
+          "%TEMP%\\chef-client-latest.msi"
         end
 
-        def msi_url(machine_os=nil, machine_arch=nil, download_context=nil)
+        def msi_url(machine_os = nil, machine_arch = nil, download_context = nil)
           # The default msi path has a number of url query parameters - we attempt to substitute
           # such parameters in as long as they are provided by the template.
 
@@ -339,7 +339,7 @@ class Chef
           if @chef_config[:trusted_certs_dir]
             Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(@chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
               content << "> #{bootstrap_directory}/trusted_certs/#{File.basename(cert)} (\n" +
-                         escape_and_echo(IO.read(File.expand_path(cert))) + "\n)\n"
+                escape_and_echo(IO.read(File.expand_path(cert))) + "\n)\n"
             end
           end
           content
@@ -352,7 +352,7 @@ class Chef
             root.find do |f|
               relative = f.relative_path_from(root)
               if f != root
-                file_on_node = "#{bootstrap_directory}/client.d/#{relative}".gsub("/","\\")
+                file_on_node = "#{bootstrap_directory}/client.d/#{relative}".tr("/", "\\")
                 if f.directory?
                   content << "mkdir #{file_on_node}\n"
                 else
@@ -370,7 +370,7 @@ class Chef
           # code below. To handle tasks that contain arguments that
           # need to be double quoted, schtasks allows the use of single
           # quotes that will later be converted to double quotes
-          command = install_command('\'')
+          command = install_command("'")
           <<~EOH
             @set MSIERRORCODE=!ERRORLEVEL!
             @if ERRORLEVEL 1 (

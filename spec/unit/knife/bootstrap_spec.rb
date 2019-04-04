@@ -514,43 +514,41 @@ describe Chef::Knife::Bootstrap do
         Chef::Util::PathHelper.cleanpath(
           File.join(File.dirname(__FILE__), "../../data/client.d_00")) end
 
-        it "creates /etc/chef/client.d" do
-          expect(rendered_template).to match("mkdir -p /etc/chef/client\.d")
+      it "creates /etc/chef/client.d" do
+        expect(rendered_template).to match("mkdir -p /etc/chef/client\.d")
+      end
+
+      context "a flat directory structure" do
+        it "escapes single-quotes" do
+          expect(rendered_template).to match("cat > /etc/chef/client.d/02-strings.rb <<'EOP'")
+          expect(rendered_template).to match("something '\\\\''/foo/bar'\\\\''")
         end
 
-        context "a flat directory structure" do
-          it "escapes single-quotes" do
-            expect(rendered_template).to match("cat > /etc/chef/client.d/02-strings.rb <<'EOP'")
-            expect(rendered_template).to match("something '\\\\''/foo/bar'\\\\''")
-          end
-
-          it "creates a file 00-foo.rb" do
-            expect(rendered_template).to match("cat > /etc/chef/client.d/00-foo.rb <<'EOP'")
-            expect(rendered_template).to match("d6f9b976-289c-4149-baf7-81e6ffecf228")
-          end
-          it "creates a file bar" do
-            expect(rendered_template).to match("cat > /etc/chef/client.d/bar <<'EOP'")
-            expect(rendered_template).to match("1 / 0")
-          end
+        it "creates a file 00-foo.rb" do
+          expect(rendered_template).to match("cat > /etc/chef/client.d/00-foo.rb <<'EOP'")
+          expect(rendered_template).to match("d6f9b976-289c-4149-baf7-81e6ffecf228")
         end
-
-        context "a nested directory structure" do
-          let(:client_d_dir) do
-            Chef::Util::PathHelper.cleanpath(
-              File.join(File.dirname(__FILE__), "../../data/client.d_01")) end
-            it "creates a file foo/bar.rb" do
-              expect(rendered_template).to match("cat > /etc/chef/client.d/foo/bar.rb <<'EOP'")
-              expect(rendered_template).to match("1 / 0")
-            end
+        it "creates a file bar" do
+          expect(rendered_template).to match("cat > /etc/chef/client.d/bar <<'EOP'")
+          expect(rendered_template).to match("1 / 0")
         end
+      end
+
+      context "a nested directory structure" do
+        let(:client_d_dir) do
+          Chef::Util::PathHelper.cleanpath(
+            File.join(File.dirname(__FILE__), "../../data/client.d_01")) end
+        it "creates a file foo/bar.rb" do
+          expect(rendered_template).to match("cat > /etc/chef/client.d/foo/bar.rb <<'EOP'")
+          expect(rendered_template).to match("1 / 0")
+        end
+      end
     end
   end
 
-
-
   describe "#connection_protocol" do
     let(:host_descriptor) { "example.com" }
-    let(:config) { { } }
+    let(:config) { {} }
     let(:knife_connection_protocol) { nil }
     before do
       allow(knife).to receive(:config).and_return config
@@ -574,9 +572,8 @@ describe Chef::Knife::Bootstrap do
         expect(knife.connection_protocol).to eq "winrm"
       end
 
-
     end
-    context "when protocol is provided via the host argument and the CLI flag"  do
+    context "when protocol is provided via the host argument and the CLI flag" do
       let(:host_descriptor) { "ssh://example.com" }
       let(:config) { { connection_protocol: "winrm" } }
 
@@ -604,7 +601,7 @@ describe Chef::Knife::Bootstrap do
 
   describe "#validate_protocol!" do
     let(:host_descriptor) { "example.com" }
-    let(:config) { { } }
+    let(:config) { {} }
     let(:connection_protocol) { "ssh" }
     before do
       allow(knife).to receive(:config).and_return config
@@ -619,7 +616,7 @@ describe Chef::Knife::Bootstrap do
         let(:config) { { connection_protocol: "winrm" } }
         it "outputs an error and exits" do
           expect(knife.ui).to receive(:error)
-          expect{ knife.validate_protocol! }.to raise_error SystemExit
+          expect { knife.validate_protocol! }.to raise_error SystemExit
         end
       end
 
@@ -646,7 +643,7 @@ describe Chef::Knife::Bootstrap do
       let(:connection_protocol) { "invalid" }
       it "outputs an error and exits" do
         expect(knife.ui).to receive(:error).with(/Unsupported protocol '#{connection_protocol}'/)
-        expect{ knife.validate_protocol! }.to raise_error SystemExit
+        expect { knife.validate_protocol! }.to raise_error SystemExit
       end
     end
   end
@@ -731,15 +728,13 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
-
-
   context "#connection_opts" do
     let(:connection_protocol) { "ssh" }
     before do
       allow(knife).to receive(:connection_protocol).and_return connection_protocol
     end
     context "behavioral test: " do
-      let(:expected_connection_opts) {
+      let(:expected_connection_opts) do
         { base_opts: true,
           ssh_identity_opts: true,
           ssh_opts: true,
@@ -747,7 +742,7 @@ describe Chef::Knife::Bootstrap do
           host_verify_opts: true,
           sudo_opts: true,
           winrm_opts: true }
-      }
+      end
 
       it "queries and merges only expected configurations" do
         expect(knife).to receive(:base_opts).and_return({ base_opts: true })
@@ -798,7 +793,7 @@ describe Chef::Knife::Bootstrap do
             before do
               knife.config = {}
             end
-            let(:expected_result) {
+            let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
                 ca_trust_file: "trust.me",
@@ -812,9 +807,9 @@ describe Chef::Knife::Bootstrap do
                 self_signed: true,
                 ssl: true,
                 kerberos_realm: "realm",
-                kerberos_service: "service"
+                kerberos_service: "service",
               }
-            }
+            end
 
             it "generates a config hash using the Chef::Config values" do
               expect(knife.connection_opts).to match expected_result
@@ -823,7 +818,7 @@ describe Chef::Knife::Bootstrap do
           end
 
           context "and some CLI options have been given" do
-            let(:expected_result) {
+            let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
                 ca_trust_file: "no trust",
@@ -838,9 +833,9 @@ describe Chef::Knife::Bootstrap do
                 ssl: true,
                 kerberos_realm: "realm",
                 kerberos_service: "service",
-                password: "lobster"
+                password: "lobster",
               }
-            }
+            end
 
             before do
               knife.config[:ca_trust_file] = "no trust"
@@ -878,7 +873,7 @@ describe Chef::Knife::Bootstrap do
               knife.config[:winrm_ssl] = false
               knife.config[:winrm_ssl_peer_fingerprint] = "FEDCBA"
             end
-            let(:expected_result) {
+            let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
                 ca_trust_file: "trust.the.internet",
@@ -893,9 +888,9 @@ describe Chef::Knife::Bootstrap do
                 ssl: false,
                 kerberos_realm: "otherrealm",
                 kerberos_service: "otherservice",
-                password: "blue"
+                password: "blue",
               }
-            }
+            end
             it "generates a config hash using the CLI options and pulling nothing from Chef::Config" do
               expect(knife.connection_opts).to match expected_result
             end
@@ -906,7 +901,7 @@ describe Chef::Knife::Bootstrap do
           before do
             knife.config = {}
           end
-          let(:expected_result) {
+          let(:expected_result) do
             {
               logger: Chef::Log,
               operation_timeout: 60,
@@ -914,14 +909,14 @@ describe Chef::Knife::Bootstrap do
               ssl: false,
               ssl_peer_fingerprint: nil,
               winrm_basic_auth_only: false,
-              winrm_transport: "negotiate"
+              winrm_transport: "negotiate",
             }
-          }
+          end
           it "populates appropriate defaults" do
             expect(knife.connection_opts).to match expected_result
           end
         end
-      end  # winrm
+      end # winrm
 
       context "when protocol is ssh" do
         let(:connection_protocol) { "ssh" }
@@ -945,7 +940,7 @@ describe Chef::Knife::Bootstrap do
             before do
               knife.config = {}
             end
-            let(:expected_result) {
+            let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
                 max_wait_until_ready: 9999,
@@ -955,12 +950,12 @@ describe Chef::Knife::Bootstrap do
                 bastion_user: "admin",
                 forward_agent: false,
                 keys_only: true,
-                key_files: ['/identity.pem', '/gateway.pem'],
+                key_files: ["/identity.pem", "/gateway.pem"],
                 sudo: false,
                 verify_host_key: false,
-                port: 9999
+                port: 9999,
               }
-            }
+            end
 
             it "generates a correct config hash using the Chef::Config values" do
               expect(knife.connection_opts).to match expected_result
@@ -995,24 +990,23 @@ describe Chef::Knife::Bootstrap do
               knife.config[:ssh_forward_agent] = true
             end
 
-            let(:expected_result) {
+            let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
-                max_wait_until_ready: 150, #cli
+                max_wait_until_ready: 150, # cli
                 user: "sshalice", # cli
                 password: "feta cheese", # cli
                 bastion_host: "mygateway.local", # Config
                 bastion_port: 1234,              # Config
                 bastion_user: "admin",           # Config
-                forward_agent: true,            # cli
+                forward_agent: true, # cli
                 keys_only: false, # implied false from config password present
-                key_files: ['/identity.pem', '/gateway.pem'], # Config
+                key_files: ["/identity.pem", "/gateway.pem"], # Config
                 sudo: true, # ccli
                 verify_host_key: false, # Config
-                port: 12 # cli
+                port: 12, # cli
               }
-            }
-
+            end
 
             it "generates a config hash using the CLI options when available and falling back to Chef::Config values" do
               expect(knife.connection_opts).to match expected_result
@@ -1042,7 +1036,7 @@ describe Chef::Knife::Bootstrap do
               knife.config[:ssh_user] = "do not use"
               knife.config[:ssh_port] = 1001
             end
-            let(:expected_result) {
+            let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
                 max_wait_until_ready: 150,
@@ -1054,13 +1048,13 @@ describe Chef::Knife::Bootstrap do
                 bastion_user: "me",
                 forward_agent: true,
                 keys_only: false,
-                key_files: ['/my-identity.pem', '/gateway-identity.pem'],
+                key_files: ["/my-identity.pem", "/gateway-identity.pem"],
                 sudo: true,
                 sudo_options: "-H",
                 sudo_password: "blah",
                 verify_host_key: true,
               }
-            }
+            end
             it "generates a config hash using the CLI options and pulling nothing from Chef::Config" do
               expect(knife.connection_opts).to match expected_result
             end
@@ -1070,25 +1064,25 @@ describe Chef::Knife::Bootstrap do
           before do
             knife.config = {}
           end
-          let(:expected_result) {
+          let(:expected_result) do
             {
               forward_agent: false,
               key_files: [],
               logger: Chef::Log,
               keys_only: false,
               sudo: false,
-              verify_host_key: true
+              verify_host_key: true,
             }
-          }
+          end
           it "populates appropriate defaults" do
             expect(knife.connection_opts).to match expected_result
           end
         end
 
-      end #ssh
-    end #functional tests
+      end # ssh
+    end # functional tests
 
-  end #connection_opts
+  end # connection_opts
 
   context "#base_opts" do
     let(:connection_protocol) { nil }
@@ -1116,14 +1110,14 @@ describe Chef::Knife::Bootstrap do
           knife.config[:password] = "opscode"
         end
 
-        let(:expected_opts) {
+        let(:expected_opts) do
           {
             port: 250,
             user: "test",
             logger: Chef::Log,
-            password: "opscode"
+            password: "opscode",
           }
-        }
+        end
         it "generates the correct options" do
           expect(knife.base_opts).to eq expected_opts
         end
@@ -1136,13 +1130,13 @@ describe Chef::Knife::Bootstrap do
           knife.config[:connection_user] = "test"
         end
 
-        let(:expected_opts) {
+        let(:expected_opts) do
           {
             port: 250,
             user: "test",
-            logger: Chef::Log
+            logger: Chef::Log,
           }
-        }
+        end
         it "generates the correct options" do
           expect(knife.base_opts).to eq expected_opts
         end
@@ -1202,7 +1196,7 @@ describe Chef::Knife::Bootstrap do
         it "generates the expected configuration" do
           expect(knife.ssh_identity_opts).to eq({
             key_files: [ "/identity.pem" ],
-            keys_only: true
+            keys_only: true,
           })
         end
         context "and a password is also specified" do
@@ -1212,7 +1206,7 @@ describe Chef::Knife::Bootstrap do
           it "generates the expected configuration (key, keys_only false)" do
             expect(knife.ssh_identity_opts).to eq({
               key_files: [ "/identity.pem" ],
-              keys_only: false
+              keys_only: false,
             })
           end
         end
@@ -1222,7 +1216,7 @@ describe Chef::Knife::Bootstrap do
             it "does not include the gateway identity file in keys" do
               expect(knife.ssh_identity_opts).to eq({
                 key_files: ["/identity.pem"],
-                keys_only: true
+                keys_only: true,
               })
             end
 
@@ -1238,7 +1232,7 @@ describe Chef::Knife::Bootstrap do
             it "config includes only identity file and not gateway identity" do
               expect(knife.ssh_identity_opts).to eq({
                 key_files: [ "/identity.pem" ],
-                keys_only: true
+                keys_only: true,
               })
             end
           end
@@ -1251,7 +1245,7 @@ describe Chef::Knife::Bootstrap do
             it "generates the expected configuration (both keys, keys_only true)" do
               expect(knife.ssh_identity_opts).to eq({
                 key_files: [ "/identity.pem", "/gateway.pem" ],
-                keys_only: true
+                keys_only: true,
               })
             end
           end
@@ -1262,7 +1256,7 @@ describe Chef::Knife::Bootstrap do
         it "generates the expected configuration (no keys, keys_only false)" do
           expect(knife.ssh_identity_opts).to eq( {
             key_files: [ ],
-            keys_only: false
+            keys_only: false,
           })
         end
         context "and a gateway with gateway identity file is specified" do
@@ -1274,7 +1268,7 @@ describe Chef::Knife::Bootstrap do
           it "generates the expected configuration (gateway key, keys_only false)" do
             expect(knife.ssh_identity_opts).to eq({
               key_files: [ "/gateway.pem" ],
-              keys_only: false
+              keys_only: false,
             })
           end
         end
@@ -1305,7 +1299,7 @@ describe Chef::Knife::Bootstrap do
           expect(knife.gateway_opts).to eq({
             bastion_user: "testuser",
             bastion_host: "gateway",
-            bastion_port: 9021
+            bastion_port: 9021,
           })
         end
       end
@@ -1317,7 +1311,7 @@ describe Chef::Knife::Bootstrap do
           expect(knife.gateway_opts).to eq({
             bastion_user: nil,
             bastion_host: "gateway",
-            bastion_port: nil
+            bastion_port: nil,
           })
         end
       end
@@ -1329,7 +1323,7 @@ describe Chef::Knife::Bootstrap do
           expect(knife.gateway_opts).to eq({
             bastion_user: "testuser",
             bastion_host: "gateway",
-            bastion_port: nil
+            bastion_port: nil,
           })
         end
       end
@@ -1342,7 +1336,7 @@ describe Chef::Knife::Bootstrap do
           expect(knife.gateway_opts).to eq({
             bastion_user: nil,
             bastion_host: "gateway",
-            bastion_port: 11234
+            bastion_port: 11234,
           })
         end
       end
@@ -1376,7 +1370,7 @@ describe Chef::Knife::Bootstrap do
         end
 
         it "returns a config that enables sudo" do
-          expect(knife.sudo_opts).to eq( { sudo: true} )
+          expect(knife.sudo_opts).to eq( { sudo: true } )
         end
 
         context "when use_sudo_password is also set" do
@@ -1387,7 +1381,7 @@ describe Chef::Knife::Bootstrap do
           it "includes :password value in a sudo-enabled configuration" do
             expect(knife.sudo_opts).to eq({
               sudo: true,
-              sudo_password: "opscode"
+              sudo_password: "opscode",
             })
           end
         end
@@ -1399,7 +1393,7 @@ describe Chef::Knife::Bootstrap do
           it "enables sudo with sudo_option to preserve home" do
             expect(knife.sudo_opts).to eq({
               sudo_options: "-H",
-              sudo: true
+              sudo: true,
             })
           end
         end
@@ -1411,7 +1405,7 @@ describe Chef::Knife::Bootstrap do
           knife.config[:preserve_home] = true
         end
         it "returns configuration for sudo off, ignoring other related options" do
-          expect(knife.sudo_opts).to eq( { sudo: false} )
+          expect(knife.sudo_opts).to eq( { sudo: false } )
         end
       end
     end
@@ -1457,22 +1451,23 @@ describe Chef::Knife::Bootstrap do
 
     context "for winrm" do
       let(:connection_protocol) { "winrm" }
-      let(:expected) { {
+      let(:expected) do
+        {
         winrm_transport: "negotiate",
         winrm_basic_auth_only: false,
         ssl: false,
         ssl_peer_fingerprint: nil,
         operation_timeout: 60,
-      }}
+      } end
 
       it "generates a correct configuration hash with expected defaults" do
         expect(knife.winrm_opts).to eq expected
       end
 
       context "with ssl_peer_fingerprint" do
-        let(:ssl_peer_fingerprint_expected) {
-          expected.merge({ ssl_peer_fingerprint: "ABCD"})
-        }
+        let(:ssl_peer_fingerprint_expected) do
+          expected.merge({ ssl_peer_fingerprint: "ABCD" })
+        end
 
         before do
           knife.config[:winrm_ssl_peer_fingerprint] = "ABCD"
@@ -1484,9 +1479,9 @@ describe Chef::Knife::Bootstrap do
       end
 
       context "with winrm_ssl" do
-        let(:ssl_expected) {
+        let(:ssl_expected) do
           expected.merge({ ssl: true })
-        }
+        end
         before do
           knife.config[:winrm_ssl] = true
         end
@@ -1497,9 +1492,9 @@ describe Chef::Knife::Bootstrap do
       end
 
       context "with winrm_auth_method" do
-        let(:winrm_auth_method_expected) {
+        let(:winrm_auth_method_expected) do
           expected.merge({ winrm_transport: "freeaccess" })
-        }
+        end
 
         before do
           knife.config[:winrm_auth_method] = "freeaccess"
@@ -1511,9 +1506,9 @@ describe Chef::Knife::Bootstrap do
       end
 
       context "with ca_trust_file" do
-        let(:ca_trust_expected) {
-          expected.merge({ ca_trust_file: "/trust.me"})
-        }
+        let(:ca_trust_expected) do
+          expected.merge({ ca_trust_file: "/trust.me" })
+        end
         before do
           knife.config[:ca_trust_file] = "/trust.me"
         end
@@ -1524,13 +1519,13 @@ describe Chef::Knife::Bootstrap do
       end
 
       context "with kerberos auth" do
-        let(:kerberos_expected) {
+        let(:kerberos_expected) do
           expected.merge({
             kerberos_service: "testsvc",
             kerberos_realm: "TESTREALM",
-            winrm_transport: "kerberos"
+            winrm_transport: "kerberos",
           })
-        }
+        end
 
         before do
           knife.config[:winrm_auth_method] = "kerberos"
@@ -1547,9 +1542,9 @@ describe Chef::Knife::Bootstrap do
         before do
           knife.config[:winrm_basic_auth_only] = true
         end
-        let(:basic_auth_expected) {
+        let(:basic_auth_expected) do
           expected.merge( { winrm_basic_auth_only: true } )
-        }
+        end
         it "generates a correct options hash containing winrm_basic_auth_only from the config provided" do
           expect(knife.winrm_opts).to eq basic_auth_expected
         end
@@ -1568,7 +1563,7 @@ describe Chef::Knife::Bootstrap do
       allow(knife.client_builder).to receive(:client_path).and_return("/key.pem")
     end
 
-    it "performs the steps we expect to run a bootstrap"  do
+    it "performs the steps we expect to run a bootstrap" do
       expect(knife).to receive(:validate_name_args!).ordered
       expect(knife).to receive(:validate_protocol!).ordered
       expect(knife).to receive(:validate_first_boot_attributes!).ordered
@@ -1618,7 +1613,7 @@ describe Chef::Knife::Bootstrap do
         let(:node_name) { nil }
         it "shows an error and exits" do
           expect(knife.ui).to receive(:error)
-          expect{knife.register_client}.to raise_error(SystemExit)
+          expect { knife.register_client }.to raise_error(SystemExit)
         end
       end
     end
@@ -1662,14 +1657,14 @@ describe Chef::Knife::Bootstrap do
     end
     it "runs the remote script and logs the output" do
       expect(knife.ui).to receive(:info).with(/Bootstrapping.*/)
-      expect(knife).to receive(:bootstrap_command).
-        with("/path.sh").
-        and_return("sh /path.sh")
-      expect(target_host).
-        to receive(:run_command).
-        with("sh /path.sh").
-        and_yield("output here").
-        and_return result_mock
+      expect(knife).to receive(:bootstrap_command)
+        .with("/path.sh")
+        .and_return("sh /path.sh")
+      expect(target_host)
+        .to receive(:run_command)
+        .with("sh /path.sh")
+        .and_yield("output here")
+        .and_return result_mock
 
       expect(knife.ui).to receive(:msg).with(/testhost/)
       knife.perform_bootstrap("/path.sh")
@@ -1678,15 +1673,14 @@ describe Chef::Knife::Bootstrap do
       let(:exit_status) { 1 }
       it "shows an error and exits" do
         expect(knife.ui).to receive(:info).with(/Bootstrapping.*/)
-        expect(knife).to receive(:bootstrap_command).
-          with("/path.sh").
-          and_return("sh /path.sh")
+        expect(knife).to receive(:bootstrap_command)
+          .with("/path.sh")
+          .and_return("sh /path.sh")
         expect(target_host).to receive(:run_command).with("sh /path.sh").and_return result_mock
-        expect{knife.perform_bootstrap("/path.sh")}.to raise_error(SystemExit)
+        expect { knife.perform_bootstrap("/path.sh") }.to raise_error(SystemExit)
       end
     end
   end
-
 
   describe "#connect!" do
     context "in the normal case" do
@@ -1704,12 +1698,12 @@ describe Chef::Knife::Bootstrap do
         allow(knife).to receive(:do_connect).and_raise(expected_error)
       end
       it "re-raises the exception" do
-        expect{knife.connect!}.to raise_error(expected_error)
+        expect { knife.connect! }.to raise_error(expected_error)
       end
     end
 
     context "when an auth failure occurs" do
-      let(:expected_error) {
+      let(:expected_error) do
         # TODO This is awkward and ugly. Requires some refactor of chef_core/error
         # to make it not so.  See comment in rescue block of connect! for details.
         e = RuntimeError.new
@@ -1718,10 +1712,10 @@ describe Chef::Knife::Bootstrap do
         allow(interim).to receive(:cause).and_return(actual)
         allow(e).to receive(:cause).and_return(interim)
         e
-      }
+      end
 
       before do
-        require 'net/ssh'
+        require "net/ssh"
       end
 
       context "and password auth was used" do
@@ -1731,7 +1725,7 @@ describe Chef::Knife::Bootstrap do
 
         it "re-raises the error so as not to resubmit the same failing password" do
           expect(knife).to receive(:do_connect).and_raise(expected_error)
-          expect{knife.connect!}.to raise_error(expected_error)
+          expect { knife.connect! }.to raise_error(expected_error)
         end
       end
 
@@ -1757,8 +1751,6 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
-
-
   it "verifies that a server to bootstrap was given as a command line arg" do
     knife.name_args = nil
     expect { knife.run }.to raise_error(SystemExit)
@@ -1769,7 +1761,7 @@ describe Chef::Knife::Bootstrap do
     context "under Windows" do
       let(:base_os) { :windows }
       it "creates a WindowsBootstrapContext" do
-        require 'chef/knife/core/windows_bootstrap_context'
+        require "chef/knife/core/windows_bootstrap_context"
         expect(knife.bootstrap_context.class).to eq Chef::Knife::Core::WindowsBootstrapContext
       end
     end
@@ -1777,12 +1769,11 @@ describe Chef::Knife::Bootstrap do
     context "under linux" do
       let(:base_os) { :linux }
       it "creates a BootstrapContext" do
-        require 'chef/knife/core/bootstrap_context'
+        require "chef/knife/core/bootstrap_context"
         expect(knife.bootstrap_context.class).to eq Chef::Knife::Core::BootstrapContext
       end
     end
   end
-
 
   describe "#config_value" do
     before do
@@ -1856,7 +1847,6 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
-
   describe "#default_bootstrap_template" do
     context "under Windows" do
       let(:base_os) { :windows }
@@ -1924,7 +1914,7 @@ describe Chef::Knife::Bootstrap do
             end
 
             it "will error because we will generate and send a client key over the wire in plaintext" do
-              expect{knife.validate_winrm_transport_opts!}.to raise_error(SystemExit)
+              expect { knife.validate_winrm_transport_opts! }.to raise_error(SystemExit)
             end
 
           end
@@ -2023,5 +2013,3 @@ describe Chef::Knife::Bootstrap do
     end
   end
 end
-
-

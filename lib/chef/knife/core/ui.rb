@@ -83,7 +83,7 @@ class Chef
         # indent subsequent lines to align with the
         # log type prefix ("ERROR: ", etc)
         unless lines.empty?
-          prefix, _ = first_line.split(":", 2)
+          prefix, = first_line.split(":", 2)
           return if prefix.nil?
           prefix_len = prefix.length
           prefix_len -= 9 if color? # prefix includes 9 bytes of color escape sequences
