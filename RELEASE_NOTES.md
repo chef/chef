@@ -1,5 +1,24 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.12:
+
+## Updated Resources
+
+### windows_service
+
+The windows_service resource no longer resets credentials on a service when using the :start action without the :configure action. Thanks [@jasonwbarnett](https://github.com/jasonwbarnett) for fixing this.
+
+### windows_certificate
+
+The windows_certificate resource now imports nested certificates while importing P7B certs.
+
+## Updated Components
+
+- nokogiri 1.10.1 -> 1.10.2
+- ruby 2.5.3 -> 2.5.5
+- InSpec 3.7.1 -> 3.9.0
+- The unused windows-api gem is no longer bundled with Chef on Windows hosts
+
 # Chef Client Release Notes 14.11:
 
 ## Updated Resources
