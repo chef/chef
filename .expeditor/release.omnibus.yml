@@ -1,0 +1,68 @@
+---
+project-name: chef
+config: omnibus/omnibus.rb
+test-path: omnibus/omnibus-test.sh
+test-path-windows: omnibus/omnibus-test.ps1
+fips-platforms:
+  - el-*-x86_64
+  - windows-*
+builder-to-testers-map:
+  # aix-7.1-powerpc:
+  #   - aix-7.1-powerpc
+  debian-8-x86_64:
+    - debian-8-x86_64
+    - debian-9-x86_64
+  el-6-i386:
+    - el-6-i386
+  # el-6-s390x:
+  #   - el-6-s390x
+  el-6-x86_64:
+    - el-6-x86_64
+  # el-7-aarch64:
+  #   - el-7-aarch64
+  # el-7-ppc64:
+  #   - el-7-ppc64
+  # el-7-ppc64le:
+  #   - el-7-ppc64le
+  # el-7-s390x:
+  #   - el-7-s390x
+  el-7-x86_64:
+    - el-7-x86_64
+  # freebsd-10-x86_64:
+  #   - freebsd-10-x86_64
+  #   - freebsd-11-x86_64
+  mac_os_x-10.12-x86_64:
+    - mac_os_x-10.12-x86_64
+    - mac_os_x-10.13-x86_64
+    - mac_os_x-10.14-x86_64
+  # sles-11-s390x:
+  #   - sles-11-s390x
+  sles-11-x86_64:
+    - sles-11-x86_64
+  # sles-12-s390x:
+  #   - sles-12-s390x
+  #   - sles-15-s390x
+  sles-12-x86_64:
+    - sles-12-x86_64
+    - sles-15-x86_64
+  # solaris-11-i86pc:
+  #   - solaris-11-i86pc
+  # solaris-11-sparc:
+  #   - solaris-11-sparc
+  ubuntu-14.04-i386:
+    - ubuntu-14.04-i386
+  # ubuntu-14.04-ppc64le:
+  #   - ubuntu-14.04-ppc64le
+  ubuntu-14.04-x86_64:
+    - ubuntu-14.04-x86_64
+  ubuntu-16.04-x86_64:
+    - ubuntu-16.04-x86_64
+    - ubuntu-18.04-x86_64
+  windows-2012r2-i386:
+    - windows-2012r2-i386
+  windows-2012r2-x86_64:
+    - windows-2008r2-x86_64
+    - windows-2012-x86_64
+    - windows-2012r2-x86_64
+    - windows-2016-x86_64
+    - windows-2019-x86_64
