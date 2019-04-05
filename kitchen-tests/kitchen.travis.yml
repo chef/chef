@@ -48,7 +48,7 @@ platforms:
     image: dokken/debian-8
     pid_one_command: /bin/systemd
     intermediate_instructions:
-      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get update -y
 
 - name: debian-9
   driver:
