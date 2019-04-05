@@ -1,7 +1,7 @@
 ---
 name: 💪 Resource Request
 about: I have a suggestion for a new resource in Chef (and may want to implement it 🙌)!
-
+labels: "Status: Untriaged"
 ---
 
 ### Core Chef Resource Checklist

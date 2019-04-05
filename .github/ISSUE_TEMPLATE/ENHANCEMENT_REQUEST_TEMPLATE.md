@@ -1,7 +1,7 @@
 ---
 name: 🚀 Enhancement Request
 about: I have a suggestion (and may want to implement it 🙂)!
-
+labels: "Status: Untriaged"
 ---
 
 ### Describe the Enhancement:
