@@ -23,6 +23,7 @@ end
 require "chef/config"
 require "chef/exceptions"
 require "timeout"
+require "chef/dist"
 
 class Chef
 
@@ -95,7 +96,7 @@ class Chef
     # Waits until acquiring the system-wide lock.
     #
     def wait
-      Chef::Log.warn("Chef client #{runpid} is running, will wait for it to finish and then run.")
+      Chef::Log.warn("#{Chef::Dist::PRODUCT} client #{runpid} is running, will wait for it to finish and then run.")
       if Chef::Platform.windows?
         mutex.wait
       else

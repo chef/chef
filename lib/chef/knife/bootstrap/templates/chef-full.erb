@@ -173,7 +173,7 @@ do_download() {
 <% else %>
   install_sh="<%= knife_config[:bootstrap_url] ? knife_config[:bootstrap_url] : "https://omnitruck.chef.io/chef/install.sh" %>"
   if test -f /usr/bin/chef-client; then
-    echo "-----> Existing Chef installation detected"
+    echo "-----> Existing <%= Chef::Dist::PRODUCT %> installation detected"
   else
     echo "-----> Installing Chef Omnibus (<%= latest_current_chef_version_string %>)"
     do_download ${install_sh} $tmp_dir/install.sh
@@ -237,6 +237,6 @@ mkdir -p /etc/chef/client.d
 <%= client_d %>
 <% end -%>
 
-echo "Starting the first Chef Client run..."
+echo "Starting the first <%= Chef::Dist::PRODUCT %> Client run..."
 
 <%= start_chef %>'

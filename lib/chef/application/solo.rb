@@ -29,6 +29,7 @@ require "chef/mixin/shell_out"
 require "pathname"
 require "chef-config/mixin/dot_d"
 require "mixlib/archive"
+require "chef/dist"
 
 class Chef::Application::Solo < Chef::Application
   include Chef::Mixin::ShellOut
@@ -68,7 +69,7 @@ class Chef::Application::Solo < Chef::Application
 
   option :profile_ruby,
     long: "--[no-]profile-ruby",
-    description: "Dump complete Ruby call graph stack of entire Chef run (expert only)",
+    description: "Dump complete Ruby call graph stack of entire #{Chef::Dist::PRODUCT} run (expert only)",
     boolean: true,
     default: false
 
@@ -127,7 +128,7 @@ class Chef::Application::Solo < Chef::Application
   option :interval,
     short: "-i SECONDS",
     long: "--interval SECONDS",
-    description: "Run chef-client periodically, in seconds",
+    description: "Run #{Chef::Dist::CLIENT} periodically, in seconds",
     proc: lambda { |s| s.to_i }
 
   option :json_attribs,
@@ -156,9 +157,9 @@ class Chef::Application::Solo < Chef::Application
   option :version,
     short: "-v",
     long: "--version",
-    description: "Show chef version",
+    description: "Show #{Chef::Dist::EXEC} version",
     boolean: true,
-    proc: lambda { |v| puts "Chef: #{::Chef::VERSION}" },
+    proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
     exit: 0
 
   option :override_runlist,
@@ -191,7 +192,7 @@ class Chef::Application::Solo < Chef::Application
   option :environment,
     short: "-E ENVIRONMENT",
     long: "--environment ENVIRONMENT",
-    description: "Set the Chef Environment on the node"
+    description: "Set the #{Chef::Dist::PRODUCT} Environment on the node"
 
   option :run_lock_timeout,
     long: "--run-lock-timeout SECONDS",
@@ -200,7 +201,7 @@ class Chef::Application::Solo < Chef::Application
 
   option :minimal_ohai,
     long: "--minimal-ohai",
-    description: "Only run the bare minimum ohai plugins chef needs to function",
+    description: "Only run the bare minimum ohai plugins #{Chef::Dist::PRODUCT} needs to function",
     boolean: true
 
   option :delete_entire_chef_repo,
@@ -365,9 +366,9 @@ class Chef::Application::Solo < Chef::Application
   end
 
   def unforked_interval_error_message
-    "Unforked chef-client interval runs are disabled in Chef 12." +
+    "Unforked #{Chef::Dist::CLIENT} interval runs are disabled in #{Chef::Dist::PRODUCT} 12." +
       "\nConfiguration settings:" +
       ("\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]).to_s +
-      "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+      "\nEnable #{Chef::Dist::CLIENT} interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 end

@@ -22,6 +22,7 @@
 #
 require "uri"
 require "net/http"
+require "chef/dist"
 
 # To load faster, we only want ohai's version string.
 # However, in ohai before 0.6.0, the version is defined
@@ -40,8 +41,8 @@ class Chef
 
       engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
 
-      UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +https://chef.io)".freeze
-      DEFAULT_UA = "Chef Client" << UA_COMMON
+      UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +#{Chef::Dist::WEBSITE})".freeze
+      DEFAULT_UA = "#{Chef::Dist::PRODUCT} Client" << UA_COMMON
 
       USER_AGENT = "User-Agent".freeze
 
