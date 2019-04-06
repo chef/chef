@@ -20,12 +20,13 @@ require "chef/application"
 require "mixlib/log"
 require "ohai/config"
 require "chef/monkey_patches/net_http.rb"
+require "chef/dist"
 
 class Chef::Application::Knife < Chef::Application
 
-  NO_COMMAND_GIVEN = "You need to pass a sub-command (e.g., knife SUB-COMMAND)\n".freeze
+  NO_COMMAND_GIVEN = "You need to pass a sub-command (e.g., #{Chef::Dist::KNIFE} SUB-COMMAND)\n".freeze
 
-  banner "Usage: knife sub-command (options)"
+  banner "Usage: #{Chef::Dist::KNIFE} sub-command (options)"
 
   option :config_file,
     short: "-c CONFIG",
@@ -58,7 +59,7 @@ class Chef::Application::Knife < Chef::Application
   option :environment,
     short: "-E ENVIRONMENT",
     long: "--environment ENVIRONMENT",
-    description: "Set the Chef environment (except for in searches, where this will be flagrantly ignored)"
+    description: "Set the #{Chef::Dist::PRODUCT} environment (except for in searches, where this will be flagrantly ignored)"
 
   option :editor,
     short: "-e EDITOR",
@@ -94,7 +95,7 @@ class Chef::Application::Knife < Chef::Application
   option :chef_server_url,
     short: "-s URL",
     long: "--server-url URL",
-    description: "Chef Server URL"
+    description: "#{Chef::Dist::PRODUCT} Server URL"
 
   option :yes,
     short: "-y",
@@ -118,7 +119,7 @@ class Chef::Application::Knife < Chef::Application
   option :local_mode,
     short: "-z",
     long: "--local-mode",
-    description: "Point knife commands at local repository instead of server",
+    description: "Point #{Chef::Dist::KNIFE} commands at local repository instead of server",
     boolean: true
 
   option :chef_zero_host,
@@ -137,9 +138,9 @@ class Chef::Application::Knife < Chef::Application
   option :version,
     short: "-v",
     long: "--version",
-    description: "Show chef version",
+    description: "Show #{Chef::Dist::PRODUCT} version",
     boolean: true,
-    proc: lambda { |v| puts "Chef: #{::Chef::VERSION}" },
+    proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
     exit: 0
 
   option :fips,
