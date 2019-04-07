@@ -458,7 +458,7 @@ describe Chef::Knife do
         allow(knife).to receive(:username).and_return("sadpanda")
         knife.run_with_pretty_exceptions
         expect(stderr.string).to match(%r{ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action})
-        expect(stderr.string).to match(%r{ERROR: There are proxy servers configured, your #{Chef::Dist::PRODUCT} server may need to be added to NO_PROXY.})
+        expect(stderr.string).to match(%r{ERROR: There are proxy servers configured, your .* server may need to be added to NO_PROXY.})
         expect(stderr.string).to match(%r{Response:  y u no administrator})
       end
     end
@@ -494,9 +494,9 @@ describe Chef::Knife do
       allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("406 Not Acceptable", response))
 
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to include("The request that #{Chef::Dist::KNIFE} sent was using API version 10000000")
-      expect(stderr.string).to include("The #{Chef::Dist::PRODUCT} server you sent the request to supports a min API verson of 0 and a max API version of 1")
-      expect(stderr.string).to include("Please either update your #{Chef::Dist::PRODUCT} client or server to be a compatible set")
+      expect(stderr.string).to match(/The request that .* sent was using API version 10000000/)
+      expect(stderr.string).to match(/The .* server you sent the request to supports a min API verson of 0 and a max API version of 1/)
+      expect(stderr.string).to match(/Please either update your .* client or server to be a compatible set/)
     end
 
     it "formats 500s nicely" do
@@ -542,8 +542,8 @@ describe Chef::Knife do
     it "formats NameError and NoMethodError nicely" do
       allow(knife).to receive(:run).and_raise(NameError.new("Undefined constant FUUU"))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: #{Chef::Dist::KNIFE} encountered an unexpected error})
-      expect(stderr.string).to match(%r{This may be a bug in the 'knife' #{Chef::Dist::KNIFE} command or plugin})
+      expect(stderr.string).to match(%r{ERROR: .* encountered an unexpected error})
+      expect(stderr.string).to match(%r{This may be a bug in the 'knife' .* command or plugin})
       expect(stderr.string).to match(%r{Exception: NameError: Undefined constant FUUU})
     end
 
@@ -562,7 +562,7 @@ describe Chef::Knife do
       # *nix = Errno::ECONNREFUSED: Connection refused
       # win32: Errno::ECONNREFUSED: No connection could be made because the target machine actively refused it.
       expect(stderr.string).to match(%r{ERROR: Network Error: .* - y u no shut up})
-      expect(stderr.string).to match(%r{Check your #{Chef::Dist::KNIFE} configuration and network settings})
+      expect(stderr.string).to match(%r{Check your .* configuration and network settings})
     end
 
     it "formats SSL errors nicely and suggests to use `knife ssl check` and `knife ssl fetch`" do
@@ -573,11 +573,11 @@ describe Chef::Knife do
 
       expected_message = <<~MSG
         ERROR: Could not establish a secure connection to the server.
-        Use `#{Chef::Dist::KNIFE} ssl check` to troubleshoot your SSL configuration.
-        If your #{Chef::Dist::PRODUCT} Server uses a self-signed certificate, you can use
-        `#{Chef::Dist::KNIFE} ssl fetch` to make #{Chef::Dist::KNIFE} trust the server's certificates.
+        Use `.* ssl check` to troubleshoot your SSL configuration.
+        If your .* Server uses a self-signed certificate, you can use
+        `.* ssl fetch` to make .* trust the server's certificates.
       MSG
-      expect(stderr.string).to include(expected_message)
+      expect(stderr.string).to match(expected_message)
     end
 
   end
