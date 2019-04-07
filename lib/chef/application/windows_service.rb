@@ -121,7 +121,7 @@ class Chef
 
       def service_stop
         run_warning_displayed = false
-        Chef::Log.info("STOP requeschefm.")
+        Chef::Log.info("STOP request from operating system.")
         loop do
           # See if a run is in flight
           if @service_action_mutex.try_lock

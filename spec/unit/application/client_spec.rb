@@ -1,4 +1,4 @@
-#
+
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
@@ -326,10 +326,10 @@ describe Chef::Application::Client, "reconfigure" do
       Chef::Config[:interval] = 600
       allow(ChefConfig).to receive(:windows?).and_return(false)
       expect(Chef::Application).to receive(:fatal!).with(
-        "Unforked #{Chef::Dist::CLIENT} interval runs are disabled in #{Chef::Dist::PRODUCT} 12.
+        /Unforked .* interval runs are disabled in .* 12\.
 Configuration settings:
   interval  = 600 seconds
-Enable #{Chef::Dist::CLIENT} interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+Enable .* interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options\./
       )
       app.reconfigure
     end
