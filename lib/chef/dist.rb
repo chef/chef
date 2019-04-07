@@ -9,7 +9,7 @@ class Chef
     DISCLAIMER = "You're running the community's experimental distribution `cinc` and not the official Chef Infra product. Visit https://Chef.io to learn more about Chef Infra by Chef".freeze
 
     # A shorter reminder
-    REMINDER = "You're using `cinc`, the community distribution of chef"
+    REMINDER = "You're using `cinc`, the community distribution of chef".freeze
 
     # The name of this distro
     DIST = "Cinc Infra".freeze
@@ -18,7 +18,7 @@ class Chef
     module DistHelpers
       # Intended to suppress the message where appropriate
       def enterprise_distro?
-        DIST == 'Chef Infra'
+        DIST == "Chef Infra"
       end
     end
   end
