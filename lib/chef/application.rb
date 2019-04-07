@@ -28,14 +28,16 @@ require "mixlib/cli"
 require "tmpdir"
 require "rbconfig"
 require "chef/application/exit_code"
+require "chef/dist"
 
 class Chef
   class Application
     include Mixlib::CLI
-
+    include Chef::Dist::DistHelpers
     def initialize
       super
 
+      logger.warn(Chef::Dist::DISCLAIMER) unless enterprise_distro?
       @chef_client = nil
       @chef_client_json = nil
 

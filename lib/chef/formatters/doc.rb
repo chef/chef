@@ -1,13 +1,13 @@
 require "chef/formatters/base"
 require "chef/config"
+require "chef/dist"
 
 class Chef
   module Formatters
-
     # Formatter similar to RSpec's documentation formatter. Uses indentation to
     # show context.
     class Doc < Formatters::Base
-
+      include Chef::Dist::DistHelpers
       attr_reader :start_time, :end_time
 
       cli_name(:doc)
@@ -79,6 +79,7 @@ class Chef
         else
           puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
         end
+        puts_line Chef::Dist::DISCLAIMER unless enterprise_distro?
       end
 
       def run_failed(exception)
@@ -88,6 +89,8 @@ class Chef
         else
           puts_line "Chef Client failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
         end
+        # intentionally omiting a disclaimer here
+        # to avoiding suggesting the run crashed due to distro
       end
 
       # Called right after ohai runs.
