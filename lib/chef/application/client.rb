@@ -441,7 +441,7 @@ class Chef::Application::Client < Chef::Application
 
   def interval_run_chef_client
     if Chef::Config[:daemonize]
-      Chef::Daemon.daemonize(Chef::DIST::CLIENT)
+      Chef::Daemon.daemonize(Chef::Dist::CLIENT)
 
       # Start first daemonized run after configured number of seconds
       if Chef::Config[:daemonize].is_a?(Integer)
@@ -504,7 +504,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def unforked_interval_error_message
-    "Unforked #{Chef::Dist::CLIENT} interval runs are disabled in Chef 12." +
+    "Unforked #{Chef::Dist::CLIENT} interval runs are disabled in #{Chef::Dist::PRODUCT} 12." +
       "\nConfiguration settings:" +
       ("\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]).to_s +
       "\nEnable #{Chef::Dist::CLIENT} interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
