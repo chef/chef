@@ -1564,6 +1564,7 @@ describe Chef::Knife::Bootstrap do
     end
 
     it "performs the steps we expect to run a bootstrap" do
+      expect(knife).to receive(:warn_and_map_deprecated_flags).ordered
       expect(knife).to receive(:validate_name_args!).ordered
       expect(knife).to receive(:validate_protocol!).ordered
       expect(knife).to receive(:validate_first_boot_attributes!).ordered
@@ -1582,6 +1583,38 @@ describe Chef::Knife::Bootstrap do
       # Post-run verify expected state changes (not many directly in #run)
       expect(knife.bootstrap_context.client_pem).to eq "/key.pem"
       expect($stdout.sync).to eq true
+    end
+  end
+
+  describe "#warn_and_map_deprecated_flags" do
+    before do
+      Chef::Config[:silence_deprecation_warnings] = false
+    end
+
+
+    context "when a deprecated CLI flag is given on the CLI" do
+      before do
+        knife.config[:ssh_user] = "sshuser"
+        knife.merge_configs
+      end
+      it "maps the key value to the new key and points the human to the new flag" do
+        expect(knife.ui).to receive(:warn).with(/--ssh-user USER is deprecated. Use --connection-user USERNAME instead./)
+        knife.warn_and_map_deprecated_flags
+        expect(knife.config[:connection_user]).to eq "sshuser"
+      end
+    end
+
+    context "when a deprecated CLI flag is given on the CLI, along with its replacement" do
+      before do
+        knife.config[:ssh_user] = "sshuser"
+        knife.config[:connection_user] = "real-user"
+        knife.merge_configs
+      end
+      it "warns that both are provided and takes the non-deprecated value" do
+        expect(knife.ui).to receive(:warn).with(/You provided both --connection-user and --ssh-user.*'--connection-user real-user'/m)
+        knife.warn_and_map_deprecated_flags
+        expect(knife.config[:connection_user]).to eq "real-user"
+      end
     end
   end
 

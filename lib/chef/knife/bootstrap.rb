@@ -338,6 +338,28 @@ class Chef
           Chef::Config[:knife][:bootstrap_vault_item]
         }
 
+      # OPTIONAL: This can be exposed as an class method on Knife
+      # subclasses instead - that would let us move deprecation handling
+      # up into the base clase.
+      DEPRECATED_FLAGS = {
+        ssh_user: [:connection_user, "USER"],
+        ssh_port: [:connection_port, "PORT"],
+        winrm_user: [:connection_user, "USER"],
+        winrm_port: [:connection_port, "USER"],
+        ssl_peer_fingerprint: [:winrm_ssl_peer_fingerprint, "FINGERPRINT"],
+        winrm_authentication_protocol: [:winrm_auth_method, "AUTH-METHOD"]
+      }
+
+      DEPRECATED_FLAGS.each do |flag, new_flag_config|
+        new_flag, arg = new_flag_config
+        flag_name = flag.to_s.gsub("_", "-")
+        long = "--#{flag_name} #{arg}"
+        new_long = options[new_flag][:long]
+
+        option(flag, long: long,
+               description: "#{long} is deprecated. Use #{new_long} instead.")
+      end
+
       attr_accessor :client_builder
       attr_accessor :chef_vault_handler
       attr_reader   :target_host
@@ -459,7 +481,38 @@ class Chef
         Erubis::Eruby.new(template).evaluate(bootstrap_context)
       end
 
+      # Check deprecated flags are used; map them to their new keys,
+      # and print a warning. Will not map a value to a new key if the
+      # CLI flag for that new key has also been specified.
+      # If both old and new flags are specified, this will warn
+      # and take the new flag value.
+      # This can be moved up to the base knife class if it's agreeable.
+      def warn_and_map_deprecated_flags
+        DEPRECATED_FLAGS.each do |old_key, new_flag_config|
+          new_key, _ = new_flag_config
+          if (config.key?(old_key) && config_source(old_key) == :cli)
+            # TODO - do we want the same warnings for knife config keys
+            #        in absence of CLI keys?
+            if config.key?(new_key) && config_source(new_key) == :cli
+              new_key_name = "--#{new_key.to_s.gsub("_", "-")}"
+              old_key_name = "--#{old_key.to_s.gsub("_", "-")}"
+              ui.warn <<~EOM
+                You provided both #{new_key_name} and #{old_key_name}.
+                Using: '#{new_key_name.split(" ").first} #{config[new_key]}' because #{old_key_name} is deprecated.
+              EOM
+            else
+              config[new_key] = config[old_key]
+              unless Chef::Config[:silence_deprecation_warnings] == true
+                ui.warn options[old_key][:description]
+              end
+            end
+          end
+        end
+      end
+
       def run
+        warn_and_map_deprecated_flags
+
         validate_name_args!
         validate_protocol!
         validate_first_boot_attributes!
@@ -880,14 +933,6 @@ class Chef
             default
           end
         end
-      end
-
-      # Tells us where a config value has come from ,
-      # :cli_config, :knife_config, :not_found
-      def config_source(key, knife_config_key = nil)
-        return :cli_config if config.key? key
-        return :knife_config if config.key?(key) || config.key?(knife_config_key)
-        :not_found
       end
 
       def upload_bootstrap(content)
