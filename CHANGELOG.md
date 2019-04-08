@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.206 -->
-## [v15.0.206](https://github.com/chef/chef/tree/v15.0.206) (2019-04-08)
+<!-- latest_release 15.0.207 -->
+## [v15.0.207](https://github.com/chef/chef/tree/v15.0.207) (2019-04-08)
 
 #### Merged Pull Requests
-- Add PROJECT_NAME to omnibus-test scripts [#8346](https://github.com/chef/chef/pull/8346) ([tas50](https://github.com/tas50))
+- Add Ruby 2.6 testing Appveyor [#8349](https://github.com/chef/chef/pull/8349) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add Ruby 2.6 testing Appveyor [#8349](https://github.com/chef/chef/pull/8349) ([tas50](https://github.com/tas50)) <!-- 15.0.207 -->
 - Add PROJECT_NAME to omnibus-test scripts [#8346](https://github.com/chef/chef/pull/8346) ([tas50](https://github.com/tas50)) <!-- 15.0.206 -->
 - locale: Add support to set all LC ENV variables and deprecate LC_ALL [#8324](https://github.com/chef/chef/pull/8324) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.205 -->
 - Update nokogiri to 1.10.2 [#8338](https://github.com/chef/chef/pull/8338) ([tas50](https://github.com/tas50)) <!-- 15.0.204 -->
