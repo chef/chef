@@ -15,6 +15,7 @@ echo "--- Testing $channel $product $version"
 
 export INSTALL_DIR=/opt/chef
 export PATH="/opt/chef/bin:$PATH"
+export PROJECT_NAME=$product
 
 echo "Verifying ownership of package files"
 
