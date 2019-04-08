@@ -344,8 +344,15 @@ class Chef
     # Chef::Config[:knife] would break the defaults in the cli that we would otherwise
     # overwrite.
     def config_file_settings
+      @key_sources = { cli: [], config: [] }
       cli_keys.each_with_object({}) do |key, memo|
-        memo[key] = Chef::Config[:knife][key] if Chef::Config[:knife].key?(key)
+        if config.key?(key)
+          @key_sources[:cli] << key
+        end
+        if Chef::Config[:knife].key?(key)
+          @key_sources[:config] << key
+          memo[key] = Chef::Config[:knife][key] if Chef::Config[:knife].key?(key)
+        end
       end
     end
 
@@ -356,9 +363,16 @@ class Chef
     def merge_configs
       # other code may have a handle to the config object, so use Hash#replace to deliberately
       # update-in-place.
-      config.replace(
-        default_config.merge(config_file_settings).merge(config)
-      )
+      config.replace(default_config.merge(config_file_settings).merge(config))
+    end
+
+    # Return where a config key has been sourced,
+    # :cli, :config, or nil if the key is not set.
+
+    def config_source(key)
+      return :cli if @key_sources[:cli].include? key
+      return :config if @key_sources[:config].include? key
+      nil
     end
 
     # Catch-all method that does any massaging needed for various config
