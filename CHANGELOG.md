@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.205 -->
-## [v15.0.205](https://github.com/chef/chef/tree/v15.0.205) (2019-04-05)
+<!-- latest_release 15.0.206 -->
+## [v15.0.206](https://github.com/chef/chef/tree/v15.0.206) (2019-04-08)
 
 #### Merged Pull Requests
-- locale: Add support to set all LC ENV variables and deprecate LC_ALL [#8324](https://github.com/chef/chef/pull/8324) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Add PROJECT_NAME to omnibus-test scripts [#8346](https://github.com/chef/chef/pull/8346) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add PROJECT_NAME to omnibus-test scripts [#8346](https://github.com/chef/chef/pull/8346) ([tas50](https://github.com/tas50)) <!-- 15.0.206 -->
 - locale: Add support to set all LC ENV variables and deprecate LC_ALL [#8324](https://github.com/chef/chef/pull/8324) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.205 -->
 - Update nokogiri to 1.10.2 [#8338](https://github.com/chef/chef/pull/8338) ([tas50](https://github.com/tas50)) <!-- 15.0.204 -->
 - Remove windows-api pin and update Gemfile.lock [#8328](https://github.com/chef/chef/pull/8328) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.0.203 -->
