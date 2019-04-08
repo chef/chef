@@ -35,14 +35,7 @@ class Chef
           @run_list     = run_list
           @chef_config  = chef_config
           @secret       = secret
-          # Compatibility with Chef 12 and Chef 11 versions
-          begin
-            # Pass along the secret parameter for Chef 12
-            super(config, run_list, chef_config, secret)
-          rescue ArgumentError
-            # The Chef 11 base class only has parameters for initialize
-            super(config, run_list, chef_config)
-          end
+          super(config, run_list, chef_config, secret)
         end
 
         def validation_key
