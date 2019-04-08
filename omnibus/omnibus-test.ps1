@@ -30,6 +30,7 @@ Start-Process "$package_file" /quiet -Wait
 Write-Output "--- Testing $channel $product $version"
 
 $Env:PATH = "C:\opscode\chef\bin;${Env:PATH}"
+$Env:PROJECT_NAME = $product
 
 Write-Output "Running verification for $product"
 
