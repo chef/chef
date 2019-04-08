@@ -5,7 +5,7 @@
 ### Issues Resolved
 
 [List any existing issues this PR resolves, or any Discourse or
-StackOverflow discussion that's relevant]
+StackOverflow discussions that are relevant]
 
 ### Check List
 
@@ -13,3 +13,4 @@ StackOverflow discussion that's relevant]
 - [ ] All tests pass
 - [ ] RELEASE\_NOTES.md has been updated if required (not required for bugfixes, required for API changes)
 - [ ] All commits have been signed-off for the Developer Certificate of Origin. See <https://github.com/chef/chef/blob/master/CONTRIBUTING.md#developer-certification-of-origin-dco>
+- [ ] PR title is a worthy inclusion in the CHANGELOG
