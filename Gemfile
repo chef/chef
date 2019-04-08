@@ -14,11 +14,8 @@ gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.ex
 gem "cheffish", "~> 14"
 
 # The chef_core gems are sourced from git.
-# gem "chef_core", git: "https://github.com/chef/chef_core", branch: "chef-core-split"
-# gem "chef_core-actions", git: "https://github.com/chef/chef_core-actions", branch: "chef-core-split"
-# gem "chef_core-cliux", git: "https://github.com/chef/chef_core-cliux", branch: "chef-core-split"
+gem "chef_core", git: "https://github.com/chef/chef_core", branch: "chef-core-split"
 # Temporary for testing:
-#gem "train", path: "../train"
 # gem "chef_core", path: "../chef_core"
 # gem "chef_core-actions", path: "../chef_core-actions"
 # gem "chef_core-cliux", path: "../chef_core-cliux"
