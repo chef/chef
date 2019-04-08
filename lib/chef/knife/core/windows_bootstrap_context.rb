@@ -136,7 +136,7 @@ class Chef
             client_rb << <<~CONFIG
               fips true
               chef_version = ::Chef::VERSION.split(".")
-              unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 8)
+              unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 20)
                 raise "FIPS Mode requested but not supported by this client"
               end
             CONFIG
@@ -170,25 +170,13 @@ class Chef
         end
 
         def latest_current_windows_chef_version_query
-          installer_version_string = nil
-          if @config[:prerelease]
-            installer_version_string = "&prerelease=true"
-          else
-            chef_version_string = if knife_config[:bootstrap_version]
-                                    knife_config[:bootstrap_version]
-                                  else
-                                    Chef::VERSION.split(".").first
-                                  end
+          chef_version_string = if knife_config[:bootstrap_version]
+                                  knife_config[:bootstrap_version]
+                                else
+                                  Chef::VERSION.split(".").first
+                                end
 
-            installer_version_string = "&v=#{chef_version_string}"
-
-            # If bootstrapping a pre-release version add the prerelease query string
-            if chef_version_string.split(".").length > 3
-              installer_version_string << "&prerelease=true"
-            end
-          end
-
-          installer_version_string
+          "&v=#{chef_version_string}"
         end
 
         def win_wget
@@ -325,11 +313,7 @@ class Chef
         private
 
         def install_command(executor_quote)
-          if @config[:install_as_service]
-            "msiexec /qn /log #{executor_quote}%CHEF_CLIENT_MSI_LOG_PATH%#{executor_quote} /i #{executor_quote}%LOCAL_DESTINATION_MSI_PATH%#{executor_quote} ADDLOCAL=#{executor_quote}ChefClientFeature,ChefServiceFeature#{executor_quote}"
-          else
-            "msiexec /qn /log #{executor_quote}%CHEF_CLIENT_MSI_LOG_PATH%#{executor_quote} /i #{executor_quote}%LOCAL_DESTINATION_MSI_PATH%#{executor_quote}"
-          end
+          "msiexec /qn /log #{executor_quote}%CHEF_CLIENT_MSI_LOG_PATH%#{executor_quote} /i #{executor_quote}%LOCAL_DESTINATION_MSI_PATH%#{executor_quote}"
         end
 
         # Returns a string for copying the trusted certificates on the workstation to the system being bootstrapped

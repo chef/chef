@@ -165,7 +165,7 @@ class Chef
               fips true
               require "chef/version"
               chef_version = ::Chef::VERSION.split(".")
-              unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 8)
+              unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 20)
                 raise "FIPS Mode requested but not supported by this client"
               end
             CONFIG
@@ -194,28 +194,15 @@ class Chef
 
         #
         # chef version string to fetch the latest current version from omnitruck
-        # If user is on X.Y.Z bootstrap will use the latest X release
-        # X here can be 10 or 11
+        # If user is on X.Y.Z, bootstrap will use the latest X release
         def latest_current_chef_version_string
-          installer_version_string = nil
-          if @config[:prerelease]
-            installer_version_string = ["-p"]
-          else
-            chef_version_string = if knife_config[:bootstrap_version]
-                                    knife_config[:bootstrap_version]
-                                  else
-                                    Chef::VERSION.split(".").first
-                                  end
+          chef_version_string = if knife_config[:bootstrap_version]
+                                  knife_config[:bootstrap_version]
+                                else
+                                  Chef::VERSION.split(".").first
+                                end
 
-            installer_version_string = ["-v", chef_version_string]
-
-            # If bootstrapping a pre-release version add -p to the installer string
-            if chef_version_string.split(".").length > 3
-              installer_version_string << "-p"
-            end
-          end
-
-          installer_version_string.join(" ")
+          "-v #{chef_version_string}"
         end
 
         def first_boot
