@@ -7,7 +7,7 @@
 
 **Umbrella Project**: Chef Infra
 
-**Project State**: Active
+**Project State**: [Active](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md#active)
 
 **Issues Response SLA**: 10 business days
 
