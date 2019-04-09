@@ -386,6 +386,94 @@ describe Chef::Application do
 
   end
 
+  describe "#set_specific_recipes" do
+    let(:app) { Chef::Application.new }
+    context "when cli arguments does not containing any value" do
+      before do
+        allow(app).to receive(:cli_arguments).and_return([])
+      end
+
+      it "returns a empty array" do
+        app.set_specific_recipes
+        expect(Chef::Config[:specific_recipes]).to eq([])
+      end
+    end
+
+    context "when cli arguments containing valid recipe file path" do
+      let(:tempfile) { Tempfile.new("default.rb").path }
+      before do
+        allow(app).to receive(:cli_arguments).and_return([tempfile])
+      end
+
+      it "sets the specific recipes to config" do
+        app.set_specific_recipes
+        expect(Chef::Config[:specific_recipes]).to eq([tempfile])
+      end
+    end
+
+    context "when cli arguments containing invalid recipe file path" do
+      let(:fatal) { false }
+      before do
+        tempfile = "/root/default.rb"
+        allow(app).to receive(:cli_arguments).and_return([tempfile])
+        allow(Chef::Application).to receive(:fatal!).and_return(fatal)
+      end
+
+      it "raises an error with application exit" do
+        expect(app.set_specific_recipes).to eq(fatal)
+      end
+    end
+
+    context "when cli arguments containing empty string" do
+      let(:fatal) { false }
+      before do
+        allow(app).to receive(:cli_arguments).and_return([""])
+        allow(Chef::Application).to receive(:fatal!).and_return(fatal)
+      end
+
+      it "raises an arguments error" do
+        expect(app.set_specific_recipes).to eq(fatal)
+      end
+    end
+
+    context "when cli arguments containing any string" do
+      let(:fatal) { false }
+      before do
+        allow(app).to receive(:cli_arguments).and_return(["test"])
+        allow(Chef::Application).to receive(:fatal!).and_return(fatal)
+      end
+
+      it "raises an arguments error" do
+        expect(app.set_specific_recipes).to eq(fatal)
+      end
+    end
+
+    context "when cli arguments containing multiple invalid strings" do
+      let(:fatal) { false }
+      before do
+        allow(app).to receive(:cli_arguments).and_return(["", "test"])
+        allow(Chef::Application).to receive(:fatal!).and_return(fatal)
+      end
+
+      it "raises an arguments error" do
+        expect(app.set_specific_recipes).to eq(fatal)
+      end
+    end
+
+    context "when cli arguments containing valid recipe file path and invalid string" do
+      let(:fatal) { false }
+      before do
+        tempfile = Tempfile.new("default.rb").path
+        allow(app).to receive(:cli_arguments).and_return([tempfile, "test"])
+        allow(Chef::Application).to receive(:fatal!).and_return(fatal)
+      end
+
+      it "raises an arguments error" do
+        expect(app.set_specific_recipes).to eq(fatal)
+      end
+    end
+  end
+
   describe "configuration errors" do
     before do
       expect(Process).to receive(:exit)

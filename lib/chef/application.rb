@@ -158,8 +158,8 @@ class Chef
         chef_config[:specific_recipes] =
           cli_arguments.map { |file| File.expand_path(file) }
       else
-        Chef::Application.fatal!("IOError: Cannot open or read: \"" +
-          cli_arguments.select { |file| !File.file?(file) }.join('", "') + '"' + ":  Invalid recipe found!")
+        Chef::Application.fatal!("Invalid arguments are not supported by the chef-client: \"" +
+          cli_arguments.select { |file| !File.file?(file) }.join('", "') + '"')
       end
     end
 
