@@ -315,6 +315,41 @@ class Chef
         raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
         property.description
       end
+
+      # Copy properties from another property object (resource)
+      #
+      # By default this copies all properties other than the name property (that is required to create the
+      # destination object so it has already been done in advance and this way we do not clobber the name
+      # that was set in that constructor).  By default it copies everything, optional arguments can be use
+      # to only select a subset.  Or specific excludes can be set (and the default exclude on the name property
+      # can also be overridden).  Exclude has priority over include, although the caller is likely better
+      # off doing the set arithmetic themselves for explicitness.
+      #
+      # action :doit do
+      #   # use it inside a block
+      #   file "/etc/whatever.xyz" do
+      #     copy_properties_from new_resource
+      #   end
+      #
+      #   # or directly call it
+      #   r = declare_resource(:file, "etc/whatever.xyz")
+      #   r.copy_properties_from(new_resource, :owner, :group, :mode)
+      # end
+      #
+      # @param other [Object] the other object (Chef::Resource) which implements the properties API
+      # @param includes [Array<Symbol>] splat-args list of symbols of the properties to copy.
+      # @param exclude [Array<Symbol>] list of symbosl of the properties to exclude.
+      # @return the self object the properties were copied to for method chaining
+      #
+      def copy_properties_from(other, *includes, exclude: [ :name ])
+        includes = other.class.properties.keys if includes.empty?
+        includes -= exclude
+        includes.each do |p|
+          send(p, other.send(p)) if other.property_is_set?(p)
+        end
+        self
+      end
+
     end
   end
 end
