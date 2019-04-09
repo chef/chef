@@ -41,33 +41,6 @@ to report issues against in the Chef docs in the
 If you can't determine the appropriate place to report an issue, then please open it
 against the repository you think best fits and it will be directed to the appropriate project.
 
-## Installing From Git for Developers
-
-**NOTE:** As a Chef user, please download the [Chef](https://downloads.chef.io/chef) or [Chef-DK](https://downloads.chef.io/chef) packages, which provide Ruby and other necessary libraries for running Chef.
-
-We do not recommend end users install Chef from gems or build from source. The following instructions apply only to those doing software development on Chef.
-
-### Prerequisites
-
-Install:
-
-- git
-- C compiler, header files, etc.
-- Ruby 2.4 or later
-- bundler gem
-
-**NOTE:** Chef supports a large number of platforms, and there are many different ways to manage Ruby installs on each of those platforms. We assume you will install Ruby in a way appropriate for your development platform, but do not provide instructions for setting up Ruby.
-
-### Chef Installation
-
-Once you have your development environment configured you can clone the Chef repository and install Chef:
-
-```bash
-git clone https://github.com/chef/chef.git
-cd chef
-bundle install
-bundle exec rake install
-```
 
 ## Contributing/Development
 
@@ -99,41 +72,6 @@ bundle exec rspec spec/PATH/TO/DIR
 
 When you submit a PR rspec tests will run automatically on [Travis-CI](https://travis-ci.org/) and [AppVeyor](https://www.appveyor.com/).
 
-## Building the Full Package
-
-To build Chef as a standalone package, we use the [omnibus](omnibus/README.md) packaging system.
-
-To build:
-
-```bash
-git clone https://github.com/chef/chef.git
-cd chef/omnibus
-bundle install
-bundle exec omnibus build chef
-```
-
-The prerequisites necessary to run omnibus itself are not documented in this repository. See the [Omnibus repository](https://github.com/chef/omnibus) for additional details.
-
-## Updating Dependencies
-
-If you want to change our constraints (change which packages and versions we accept in the chef), there are several places to do so:
-
-* [Gemfile](Gemfile) and [Gemfile.lock](Gemfile.lock):  All gem version constraints (update with `bundle update`)
-* [omnibus_overrides.rb](omnibus_overrides_rb):  Pinned versions of omnibus packages.
-* [omnibus/Gemfile](omnibus/Gemfile) and [omnibus/Gemfile.lock](omnibus/Gemfile.lock):  Gems for the omnibus build system itself.
-
-In addition there are several places versions are pinned for CI tasks:
-
-* [kitchen-tests/Gemfile](kitchen-tests/Gemfile) and [kitchen-tests/Gemfile.lock](kitchen-tests/Gemfile.lock): Gems for test-kitchen tests (travis)
-
-In order to update everything run `rake dependencies`.  Note that the [Gemfile.lock](Gemfile.lock) pins windows platforms and to fully regenerate the lockfile
-you must use the following commands or run `rake dependencies:update_gemfile_lock`:
-
-```bash
-bundle lock --update --add-platform ruby
-bundle lock --update --add-platform x64-mingw32
-bundle lock --update --add-platform x86-mingw32
-```
 
 # How Chef Builds and Versions
 
