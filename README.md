@@ -29,10 +29,8 @@ Other useful resources for Chef Infra users:
 
 Issues can be reported by using [GitHub Issues](https://github.com/chef/chef/issues).
 
-Full details on how to report issues can be found in the [CONTRIBUTING](https://github.com/chef/chef/blob/master/CONTRIBUTING.md#-chef-issue-tracking) doc.
+Note that this repository is primarily for reporting issues in the chef-client itself. For reporting issues against other Chef projects, please look up the appropriate repository. If you're unsure where to submit an issue please ask in the #chef-dev channel in [Chef Community Slack](https://community-slack.chef.io/).
 
-Note that this repository is primarily for reporting issues in the chef-client itself. For reporting issues against other Chef projects, please look up the appropriate repository to report issues against in the Chef docs in the [community contributions section](https://docs.chef.io/community_contributions.html#issues-and-bug-reports).
-If you can't determine the appropriate place to report an issue, then please open it against the repository you think best fits and it will be directed to the appropriate project.
 
 ## Contributing/Development
 
