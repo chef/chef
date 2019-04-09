@@ -5,6 +5,10 @@
 [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
 [![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef-rfc/blob/master/rfc086-chef-oss-project-policies.md#cadence-release)
 
+**Project State: Active**
+**Issues Response SLA: 10 business days**
+**Pull Request Response SLA: 10 business days**
+
 ## Getting Started
 
 Chef Infra is a configuration management tool designed to bring automation to your entire infrastructure.
