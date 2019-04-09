@@ -25,8 +25,6 @@ skip_commits:
   message: /Bump version to [0-9.]+ by Chef Expeditor/
   # if ONLY the files listed below are changed in a commit, skip
   files:
-    - MAINTAINERS.md
-    - MAINTAINERS.toml
     - CHANGELOG.md
     - RELEASE_NOTES.md
 
