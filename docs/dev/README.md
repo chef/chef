@@ -12,4 +12,8 @@ This directory contains a collection of useful how-to guides for both new and se
 ## Design Documents
 
 - [Data Collection](./design_documents/data_collector.md)
-- [Action Collect](./design_documents/action_collection.md)
+- [Action Collection](./design_documents/action_collection.md)
+- [Deprecations Within Resources](./design_documents/deprecations-in-resources.md)
+- [Resource Guard Interpreters](./design_documents/resource_guard_interpreters.md)
+- [Resource Property Validation Messaging](./design_documents/resource-property-validation-messaging.md)
+- [Self Documenting Resources](./design_documents/self-documenting-resources.md)
