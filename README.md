@@ -1,4 +1,4 @@
-# Chef
+# Chef Infra
 [![Code Climate](https://codeclimate.com/github/chef/chef.svg)](https://codeclimate.com/github/chef/chef)
 [![Build Status Master](https://travis-ci.org/chef/chef.svg?branch=master)](https://travis-ci.org/chef/chef)
 [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
@@ -7,9 +7,13 @@
 
 ## Getting Started
 
-Want to try Chef?
-For Chef user, please refer to [Quick Start](https://docs.chef.io/quick_start.html)
-For more details, please refer to [learnchef](https://learn.chef.io)
+Chef Infra is a configuration management tool designed to bring automation to your entire infrastructure.
+
+### Want to try Chef Infra?
+
+For Chef Infra usage please refer to our [Learn Chef Rally](https://learn.chef.io/) website, which includes module based training for Chef Infra as well as Automate, Habitat, and InSpec.
+
+Other useful resources for Chef Infra users:
 
 - Documentation: <https://docs.chef.io>
 - Source: <https://github.com/chef/chef/tree/master>
@@ -17,30 +21,14 @@ For more details, please refer to [learnchef](https://learn.chef.io)
 - Slack: [Chef Community Slack](https://community-slack.chef.io/)
 - Mailing list: <https://discourse.chef.io>
 
-Chef is a configuration management tool designed to bring automation to your
-entire infrastructure.
-
-This README focuses on developers who want to modify Chef source code.
-If you just want to use Chef, check out these resources:
-
-- [learnchef](https://learn.chef.io): Getting started guide
-- [docs.chef.io](https://docs.chef.io): Comprehensive User Docs
-- [Installer Downloads](https://downloads.chef.io/chef/): Install Chef as a complete package
-- [chef/chef](https://hub.docker.com/r/chef/chef/): Docker image for use with [kitchen-dokken](https://github.com/someara/kitchen-dokken/)
-
 ## Reporting Issues
 
 Issues can be reported by using [GitHub Issues](https://github.com/chef/chef/issues).
 
 Full details on how to report issues can be found in the [CONTRIBUTING](https://github.com/chef/chef/blob/master/CONTRIBUTING.md#-chef-issue-tracking) doc.
 
-Note that this repository is primarily for reporting chef-client issues.
-For reporting issues against other Chef projects, please look up the appropriate repository
-to report issues against in the Chef docs in the
-[community contributions section](https://docs.chef.io/community_contributions.html#issues-and-bug-reports).
-If you can't determine the appropriate place to report an issue, then please open it
-against the repository you think best fits and it will be directed to the appropriate project.
-
+Note that this repository is primarily for reporting issues in the chef-client itself. For reporting issues against other Chef projects, please look up the appropriate repository to report issues against in the Chef docs in the [community contributions section](https://docs.chef.io/community_contributions.html#issues-and-bug-reports).
+If you can't determine the appropriate place to report an issue, then please open it against the repository you think best fits and it will be directed to the appropriate project.
 
 ## Contributing/Development
 
