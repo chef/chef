@@ -1228,4 +1228,97 @@ describe "Chef::Resource.property" do
       end
     end
   end
+
+  context "#copy_properties_from" do
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:node) { Chef::Node.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+
+    let(:thing_one_class) do
+      Class.new(Chef::Resource) do
+        resource_name :thing_one
+        provides :thing_two
+        property :foo, String
+        property :bar, String
+      end
+    end
+
+    let(:thing_two_class) do
+      Class.new(Chef::Resource) do
+        resource_name :thing_two
+        provides :thing_two
+        property :foo, String
+        property :bar, String
+      end
+    end
+
+    let(:thing_three_class) do
+      Class.new(Chef::Resource) do
+        resource_name :thing_three
+        provides :thing_three
+        property :foo, String
+        property :bar, String
+        property :baz, String
+      end
+    end
+
+    let(:thing_one_resource) do
+      thing_one_class.new("name_one", run_context)
+    end
+
+    let(:thing_two_resource) do
+      thing_two_class.new("name_two", run_context)
+    end
+
+    let(:thing_three_resource) do
+      thing_three_class.new("name_three", run_context)
+    end
+
+    it "copies foo and bar" do
+      thing_one_resource.foo "foo"
+      thing_one_resource.bar "bar"
+      thing_two_resource.copy_properties_from thing_one_resource
+      expect(thing_two_resource.name).to eql("name_two")
+      expect(thing_two_resource.foo).to eql("foo")
+      expect(thing_two_resource.bar).to eql("bar")
+    end
+
+    it "copies only foo when it is only included" do
+      thing_one_resource.foo "foo"
+      thing_one_resource.bar "bar"
+      thing_two_resource.copy_properties_from(thing_one_resource, :foo)
+      expect(thing_two_resource.name).to eql("name_two")
+      expect(thing_two_resource.foo).to eql("foo")
+      expect(thing_two_resource.bar).to eql(nil)
+    end
+
+    it "copies foo and name when bar is excluded" do
+      thing_one_resource.foo "foo"
+      thing_one_resource.bar "bar"
+      thing_two_resource.copy_properties_from(thing_one_resource, exclude: [ :bar ])
+      expect(thing_two_resource.name).to eql("name_one")
+      expect(thing_two_resource.foo).to eql("foo")
+      expect(thing_two_resource.bar).to eql(nil)
+    end
+
+    it "copies only foo when bar and name are excluded" do
+      thing_one_resource.foo "foo"
+      thing_one_resource.bar "bar"
+      thing_two_resource.copy_properties_from(thing_one_resource, exclude: [ :name, :bar ])
+      expect(thing_two_resource.name).to eql("name_two")
+      expect(thing_two_resource.foo).to eql("foo")
+      expect(thing_two_resource.bar).to eql(nil)
+    end
+
+    it "blows up if the target resource does not implement a set property" do
+      thing_three_resource.baz "baz"
+      expect { thing_two_resource.copy_properties_from(thing_three_resource) }.to raise_error(NoMethodError)
+    end
+
+    it "does not blow up if blows up if the target resource does not implement a set propery" do
+      thing_three_resource.foo "foo"
+      thing_three_resource.bar "bar"
+      thing_two_resource.copy_properties_from(thing_three_resource)
+    end
+  end
 end
