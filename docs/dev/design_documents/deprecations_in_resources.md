@@ -7,7 +7,7 @@ This design extends the deprecation functionality to custom resources, allowing 
 ## Motivation
 
     As an author of custom resources,
-    I want to warn users of my resources of future breaking changes to resources,
+    I want to warn resource consumers of future breaking changes to resources,
     so that they can update their wrapper cookbooks before my next release.
 
 	As an author of custom resources,
