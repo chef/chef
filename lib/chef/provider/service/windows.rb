@@ -208,11 +208,6 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       return
     end
 
-    # Until #6300 is solved this is required
-    if new_resource.run_as_user == new_resource.class.properties[:run_as_user].default
-      new_resource.run_as_user = new_resource.class.properties[:run_as_user].default
-    end
-
     converge_if_changed :service_type, :startup_type, :error_control,
                         :binary_path_name, :load_order_group, :dependencies,
                         :run_as_user, :display_name, :description do
@@ -400,16 +395,11 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   def converge_delayed_start
-    config = {}
-    config[:service_name]  = new_resource.service_name
-    config[:delayed_start] = new_resource.delayed_start ? 1 : 0
-
-    # Until #6300 is solved this is required
-    if new_resource.delayed_start == new_resource.class.properties[:delayed_start].default
-      new_resource.delayed_start = new_resource.class.properties[:delayed_start].default
-    end
-
     converge_if_changed :delayed_start do
+      config = {}
+      config[:service_name]  = new_resource.service_name
+      config[:delayed_start] = new_resource.delayed_start ? 1 : 0
+
       Win32::Service.configure(config)
     end
   end
