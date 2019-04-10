@@ -82,7 +82,6 @@ IF "%PIPELINE_NAME%" == "chef-fips" (
 REM ; ffi-yajl must run in c-extension mode for perf, so force it so we don't accidentally fall back to ffi
 set FORCE_FFI_YAJL=ext
 
-set
 REM ; we should use bundler, but aren't because of a bug
 REM ; this should be `bundle exec rspec yadda yadda...`
 REM ; the bug is here: https://github.com/bundler/bundler/issues/5644
