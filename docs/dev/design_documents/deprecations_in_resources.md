@@ -1,8 +1,8 @@
 # Deprecation Warnings Within Custom Resources
 
-In Chef 12, we introduced deprecation warnings within the chef-client. This allowed us to communicate future breaking changes to users. The warnings and integration within Test Kitchen have become a powerful tool allowing users to future proof their cookbooks and ease chef-client migration projects.
+In Chef 12, we introduced deprecation warnings within the chef-client. This allowed us to communicate future breaking changes to users. The warnings and integration within Test Kitchen have become a powerful tool, allowing users to future-proof their cookbooks and ease chef-client migration projects.
 
-This design extends the deprecation functionality to custom resources allowing authors to warn consumers of future breaking changes to their resources.
+This design extends the deprecation functionality to custom resources, allowing authors to warn consumers of future breaking changes to their resources.
 
 ## Motivation
 
@@ -26,7 +26,7 @@ This design extends the deprecation functionality to custom resources allowing a
 
 ### deprecated method for resources
 
-This new method will let authors communicate to consumers that a resource is going away in the future. Right now we rely on readme or changelog entries, which are not a very effective way to communicate to consumers. This method will accept a string which becomes the warning message.
+This new method will let authors communicate to consumers that a resource is going away in the future. Right now, we rely on readme or changelog entries, which are not a very effective way to communicate to consumers. This method will accept a string, which becomes the warning message.
 
 #### Example
 
@@ -38,7 +38,7 @@ deprecated 'This resource will be removed in the 3.0 release of the example cook
 
 ### deprecated method for properties
 
-This new option for properties will let authors communicate to consumers that an individual property is going away in the future. Right now we rely on readme or changelog entries, which are not a very effective way to communicate to consumers. This method will accept a string which becomes the warning message.
+This new option for properties will let authors communicate to consumers that an individual property is going away in the future. Right now, we rely on readme or changelog entries, which are not a very effective way to communicate to consumers. This method will accept a string, which becomes the warning message.
 
 #### Example
 
@@ -53,11 +53,11 @@ property :destroy_everything,
 
 ### deprecated_property_alias
 
-Currently if a resource author decides to change the name of a property they have two options:
-	- Use alias_method which silently routes old properties to the new names
-	- Define both properties in the resource and include functionality to set the new value using the old value while warning the user.
+Currently if a resource author decides to change the name of a property, they have two options:
+    - Use `alias_method`, which silently routes old properties to the new names, or
+    - Define both properties in the resource, and include functionality to set the new value while using the old value and warning the user.
 
-`alias_method` doesn't alert cookbook consumers to the change and writing your own code to perform deprecation warnings is cumbersome and rarely done. A new deprecated_property_alias would behave similar to a `alias_method`, but throw deprecation warnings while providing backwards compatibility. It would accept and optional String value that would be used in place of a generic deprecation message.
+`alias_method` doesn't alert cookbook consumers to the change, and writing your own code to perform deprecation warnings is cumbersome and rarely done. A new `deprecated_property_alias` would behave similar to a `alias_method`, but throw deprecation warnings while providing backwards compatibility. It would accept and optional `String` value that would be used in place of a generic deprecation message.
 
 #### Example
 

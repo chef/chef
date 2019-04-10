@@ -1,8 +1,8 @@
 # Chef Release Cadence
 
 Chef follows [Semantic Versioning](https://semver.org/) for releases. Major
-versions (eg. 11.x -> 12.x) will include backwards-incompatible changes, minor
-versions (eg 12.1 -> 12.2) will include new features and bug fixes but will be
+versions (eg. 11.x -> 12.x) will include backwards-incompatible changes. Minor
+versions (eg 12.1 -> 12.2) will include new features and bug fixes, but will be
 backwards-compatible to the best of our ability. Patch versions are governed
 by [RFC 47](rfc047-release-process.md).
 
@@ -26,8 +26,8 @@ Discourse and Slack in March that will summarize the changes slated for the rele
 Monthly releases help ensure we get new features and minor bug fixes out to Chef
 users in a timely fashion while not overloading the maintainer teams.
 Similarly, offsetting the Chef and ChefDK releases allows the full attention of
-the Chef development team on each of those releases and leaves time for any
+the Chef development team on each of those releases, and leaves time for any
 potential hot fixes or follow-up.
 
 Major releases in April avoids releasing during winter holidays, summer
-vacations, ChefConf and Chef Summits.
+vacations, ChefConf, and Chef Summits.

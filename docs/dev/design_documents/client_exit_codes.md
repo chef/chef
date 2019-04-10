@@ -6,7 +6,7 @@ Signal outside tools of specific Chef-Client run status. Ability to determine re
 
     As a Chef user,
     I want to be able to determine when a chef-client run is rebooting the node,
-    so that Test-Kitchen/Vagrant/any outside tool can wait for node to reboot, and continue converging.
+    so that Test-Kitchen/Vagrant/any outside tool can wait for the node to reboot, and continue converging.
 
 ## Specification
 
@@ -20,7 +20,7 @@ Signal outside tools of specific Chef-Client run status. Ability to determine re
 
 ### Remaining Available Exit Codes
 
-All exit codes defined should be usable on all supported Chef Platforms.  Also the exit codes used should be identical across platforms.  That limits the total range from 1-255.  Exit codes not explicitly used by Linux/Windows are listed below.  There are 59 exit codes that are available on both platforms.
+All exit codes defined should be usable on all supported Chef Platforms. Also, the exit codes used should be identical across all platforms. That limits the total range from 1-255. Exit codes not explicitly used by Linux/Windows are listed below. There are 59 exit codes that are available on both platforms.
  * Any numbers below that have a strike-through are used below in the **Exit Codes in Use** section
  * Exit Codes Available for Chef use :
      * ~~35,37,40,41,42~~,43,44,45,46,47,48,49,79,81,90,91,92,93,94,95,96,97
@@ -31,7 +31,7 @@ All exit codes defined should be usable on all supported Chef Platforms.  Also t
 
 * Reboot exit codes should take precedence over Chef Execution State
 * Precedence within a table should be evaluated from the top down.
-    *  Example - Audit Mode Failure would only apply on a successful execution.  But if the chef-run failed for any other reason, no reason to exit with audit mode.
+    *  Example - Audit Mode Failure would only apply on a successful execution, but if the chef-run failed for any other reason, there is no reason to exit with audit mode.
 
 ## Exit Codes in Use
 
@@ -60,4 +60,4 @@ Exit Code        | Reason             | Details
 
 ## Extend
 
-If there is a need for additional exit codes pleae open a Design Proposal PR to discuss the change and then a PR to update this document.
+If there is a need for additional exit codes, please open a Design Proposal PR to discuss the change, and then a PR to update this document.

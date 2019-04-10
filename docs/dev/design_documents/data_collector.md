@@ -33,21 +33,21 @@ The implementation must work with Chef running in any mode:
 
 All payloads will be sent to the Data Collector server via HTTP POST to the URL specified in the `data_collector_server_url` configuration parameter. Users should be encouraged to use a TLS-protected endpoint.
 
-Optionally, payloads may also be written out to multiple HTTP endpoints or JSON files on the local filesystem (of the node running chef-client) by specifying the `data_collector_output_locations` configuration parameter.
+Optionally, payloads may also be written out to multiple HTTP endpoints or JSON files on the local filesystem (of the node running `chef-client`) by specifying the `data_collector_output_locations` configuration parameter.
 
 For the initial implementation, transmissions to the Data Collector server can optionally be authenticated with the use of a pre-shared token which will be sent in a HTTP header. Given that the receiver is not the Chef Server, existing methods of using a Chef `client` key to authenticate the request are unavailable.
 
 #### Configuration
 
-The configuration required for this new functionality can be placed in the client.rb or any other `Chef::Config`-supported location (such as a client.d or solo.d directory).
+The configuration required for this new functionality can be placed in the `client.rb` or any other `Chef::Config`-supported location (such as a client.d or solo.d directory).
 
 ##### Parameters
 
  * **data\_collector\_server\_url**: required*. The full URL to the data collector server API. All messages will be POST'd to this URL. The Data Collector class will be registered and enabled if this config parameter is specified. * If the `data_collector_output_locations` configuration parameter is specified, this setting may be omitted.
  * **data\_collector\_token**: optional. A pre-shared token that, if present, will be passed as an HTTP header named `x-data-collector-token` to the Data Collector server. The server can choose to accept or reject the data posted based on the token or lack thereof.
  * **data\_collector\_mode**: The Chef mode in which the Data Collector will be enabled. For example, you may wish to only enable the Data Collector when running in Chef Solo Mode. Must be one of: `:solo`, `:client`, or `:both`. The `:solo` value is used for Chef operating in Chef Solo Mode or Chef Solo Legacy Mode. Default: `:both`.
- * **data\_collector\_raise\_on\_failure**: If true, the Chef run will fatally exit if it is unable to successfully POST to the Data Collector server. Default: `false`
- * **data\_collector\_output\_locations**: optional. An array of URLs and/or file paths to which data collection payloads will also be written. This may be used without specifying the `data_collector_server_url` configuration parameter
+ * **data\_collector\_raise\_on\_failure**: If true, the Chef run will fatally exit if it is unable to successfully POST to the Data Collector server. Default: `false`.
+ * **data\_collector\_output\_locations**: optional. An array of URLs and/or file paths to which data collection payloads will also be written. This may be used without specifying the `data_collector_server_url` configuration parameter.
 
 ### Schemas
 
@@ -258,7 +258,7 @@ The Run Start Schema will be used by Chef to notify the data collection server a
 
 ##### Run End Schema
 
-The Run End Schema will be used by Chef Client to notify the data collection server at the completion of the Chef Client's converge phase and report data on the Chef Client run, including resources changed and any errors encountered.
+The Run End Schema will be used by Chef Client to notify the data collection server at the completion of the Chef Client's converge phase, and to report data on the Chef Client run, including resources changed and any errors encountered.
 
 ```json
 {
@@ -462,12 +462,13 @@ The Run End Schema will be used by Chef Client to notify the data collection ser
 
 ## Technical Implementation
 
-The remainder of document will focus entirely on the nuts and bolts of the Data Collector
+The remainder of document will focus entirely on the nuts and bolts of the Data Collector.
 
 ### Action Collection Integration
 
-Most of the work is done by a separate Action Collection to track the actions of Chef resources.  If the Data Collector is not enabled, it never registers with the
-Action Collection and no work will be done by the Action Collection to track resources.
+Most of the work is done by a separate Action Collection to track the actions of Chef resources.
+If the Data Collector is not enabled, it never registers with the Action Collection and 
+no work will be done by the Action Collection to track resources.
 
 ### Additional Collected Information
 
@@ -478,15 +479,13 @@ The Data Collector also collects:
 - the node
 - formatted error output for exceptions
 
-Most of this is done through hooking events directly in the Data Collector itself.  The ErrorHandlers module is broken out into a module which is directly mixed into
-the Data Collector to separate that concern out into a different file (it is straightforward with fairly little state, but is just a lot of hooked methods).
+Most of this is done through hooking events directly in the Data Collector itself. The ErrorHandlers module is broken out into a module, which is directly mixed into the Data Collector to separate that concern out into a different file. This ErrorHandlers module is straightforward with fairly little state, but involves just a lot of hooked methods.
 
 ### Basic Configuration Modes
 
 #### Configured for Automate
 
-Do nothing.  The URL is constructed from the base `Chef::Config[:chef_server_url]`, auth is just Chef Server API authentication, and the default behavior is that it
-is configured.
+Do nothing. The URL is constructed from the base `Chef::Config[:chef_server_url]`, `auth` is just Chef Server API authentication, and the default behavior is that it is configured.
 
 #### Configured to Log to a File
 
@@ -507,10 +506,10 @@ Chef::Config[:data_collector][:server_url] = "https://chef.acme.local/myendpoint
 Chef::Config[:data_collector][:token] = "mytoken"
 ```
 
-This works for chef-clients which are configured to hit a chef server, but use a custom non-Chef-Automate endpoint for reporting, or for chef-solo/zero users.
+This works for chef-clients, which are configured to hit a Chef server, but use a custom non-Chef-Automate endpoint for reporting, or for chef-solo/zero users.
 
-XXX: There is also the `Chef::Config[:data_collector][:output_locations] = { uri: [ "https://chef.acme.local/myendpoint.html" ] }` method -- which is going to behave
-differently, particularly on non-chef-solo use cases.  In that case the Data Collector `server_url` will still be automatically derived from the `chef_server_url` and
+XXX: There is also the `Chef::Config[:data_collector][:output_locations] = { uri: [ "https://chef.acme.local/myendpoint.html" ] }` method -- which will behave
+differently, particularly on non-chef-solo use cases.  In that case, the Data Collector `server_url` will still be automatically derived from the `chef_server_url` and
 the Data Collector will attempt to contact that endpoint, but with the token being supplied it will use that and will not use Chef Server authentication, and the
 server should 403 back, and if `raise_on_failure` is left to the default of false then it will simply drop that failure and continue without raising, which will
 appear to work, and output will be send to the configured `output_locations`.  Note that the presence of a token flips all external URIs to using the token so that
@@ -520,8 +519,8 @@ using any `url` options in the `output_locations` since that feature is fairly p
 
 ### Resiliency to Failures
 
-The Data Collector in Chef >= 15.0 is resilient to failures that occur anywhere in the main loop of the `Chef::Client#run` method.  In order to do this there is a lot
-of defensive coding around internal data structures that may be nil (e.g. failures before the node is loaded will result in the node being nil).  The spec tests for
+The Data Collector in Chef >= 15.0 is resilient to failures that occur anywhere in the main loop of the `Chef::Client#run` method. In order to do this there is a lot
+of defensive coding around internal data structures that may be `nil`. (e.g. failures before the node is loaded will result in the node being nil). The spec tests for
 the Data Collector now run through a large sequence of events (which must, unfortunately, be manually kept in sync with the events in the Chef::Client if those events
 are ever 'moved' around) which should catch any issues in the Data Collector with early failures.  The specs should also serve as documentation for what the messages
 will look like under different failure conditions.  The goal was to keep the format of the messages to look as near as possible to the same schema as possible even
@@ -532,7 +531,7 @@ have sent a start message.
 
 ### Decision to Be Enabled
 
-This is complicated due to over-design and is encapsulated in the `#should_be_enabled?` method and the ConfigValidation module.  The `#should_be_enabled?` message and
+This is complicated due to over-design and is encapsulated in the `#should_be_enabled?` method and the ConfigValidation module. The `#should_be_enabled?` message and
 ConfigValidation should probably be merged into one renamed Config module to isolate the concern of processing the Chef::Config options and doing the correct thing.
 
 ### Run Start and Run End Message modules

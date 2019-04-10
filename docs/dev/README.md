@@ -1,8 +1,8 @@
 # Chef Infra Development Documentation
 
-This directory contains a collection of useful how-to guides for both new and seasoned Chef contributors. There are many guides explaining how to build, test, and contribute to Chef Infra as well as documents describing how the many subsystems function.
+This directory contains a collection of useful how-to guides for both new and seasoned Chef contributors. There are many guides explaining how to build, test, and contribute to Chef Infra, as well as documents describing how the many subsystems function.
 
-A good first start is our [How Chef Infra Is Built](how_chef_is_built.md) and [Chef Infra Release and Support Schedule](release_and_support_schedule.md)
+A good first start is our [How Chef Infra Is Built](how_chef_is_built.md) and [Chef Infra Release and Support Schedule](./policy/release_and_support_schedule.md.md)
 
 ## How-To Guides
 
@@ -13,7 +13,7 @@ A good first start is our [How Chef Infra Is Built](how_chef_is_built.md) and [C
 
 ## Design Documents
 
-- [Client Release Cadence](./design_documents/client_release_cadence.mdÂ)
+- [Client Release Cadence](./design_documents/client_release_cadence.md)
 - [Data Collection](./design_documents/data_collector.md)
 - [Action Collection](./design_documents/action_collection.md)
 - [Deprecations Within Resources](./design_documents/deprecations_in_resources.md)
