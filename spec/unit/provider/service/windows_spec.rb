@@ -354,13 +354,6 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
         allow(Win32::Service).to receive(:configure).with(anything).and_return(true)
       end
 
-      it "works around #6300 if run_as_user is default" do
-        new_resource.run_as_user = new_resource.class.properties[:run_as_user].default
-        expect(provider.new_resource).to receive(:run_as_user=)
-          .with(new_resource.class.properties[:run_as_user].default)
-        provider.action_configure
-      end
-
       # properties that are Strings
       %i{binary_path_name load_order_group dependencies run_as_user
          display_name description}.each do |attr|
@@ -434,13 +427,6 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
   describe Chef::Provider::Service::Windows, "converge_delayed_start" do
     before do
       allow(Win32::Service).to receive(:configure).and_return(true)
-    end
-
-    it "works around #6300 if delayed_start is default" do
-      new_resource.delayed_start = new_resource.class.properties[:delayed_start].default
-      expect(provider.new_resource).to receive(:delayed_start=)
-        .with(new_resource.class.properties[:delayed_start].default)
-      provider.send(:converge_delayed_start)
     end
 
     context "delayed start needs to be updated" do
