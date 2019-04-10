@@ -31,7 +31,6 @@ All exit codes defined should be usable on all supported Chef Platforms. Also, t
 
 * Reboot exit codes should take precedence over Chef Execution State
 * Precedence within a table should be evaluated from the top down.
-    *  Example - Audit Mode Failure would only apply on a successful execution, but if the chef-run failed for any other reason, there is no reason to exit with audit mode.
 
 ## Exit Codes in Use
 
