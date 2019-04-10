@@ -162,6 +162,10 @@ def rhel6?
   rhel? && !!(ohai[:platform_version].to_i == 6)
 end
 
+def sles11?
+  suse? && !!(ohai[:platform_version].to_i == 11)
+end
+
 def rhel7?
   rhel? && !!(ohai[:platform_version].to_i == 7)
 end
