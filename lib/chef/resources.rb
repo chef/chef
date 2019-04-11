@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2019, Chef Software, Inc.
+# Copyright:: Copyright 2010-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,6 +57,7 @@ require_relative "resource/homebrew_package"
 require_relative "resource/homebrew_tap"
 require_relative "resource/ifconfig"
 require_relative "resource/kernel_module"
+require_relative "resource/rekey"
 require_relative "resource/ksh"
 require_relative "resource/launchd"
 require_relative "resource/link"
