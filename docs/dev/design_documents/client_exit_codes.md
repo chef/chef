@@ -1,6 +1,6 @@
 # Chef-Client Exit Codes
 
-Signal outside tools of specific Chef-Client run status. Ability to determine results of a Chef-Client run.
+Chef-client exit codes signal outside tools to the result of the Chef-Client run.
 
 ## Motivation
 
