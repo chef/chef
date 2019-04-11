@@ -292,7 +292,18 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
   end
 
-  let(:number) { rand(2000..9999) } # avoid low group numbers
+  let(:number) do
+    # Loop until we pick a gid that is not in use.
+    loop do
+      begin
+        gid = rand(2000..9999) # avoid low group numbers
+        return nil if Etc.getgrgid(gid).nil? # returns nil on windows
+      rescue ArgumentError # group does not exist
+        return gid
+      end
+    end
+  end
+
   let(:group_name) { "grp#{number}" } # group name should be 8 characters or less for Solaris, and possibly others
   # https://community.aegirproject.org/developing/architecture/unix-group-limitations/index.html#Group_name_length_limits
   let(:included_members) { [] }
