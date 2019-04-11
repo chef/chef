@@ -18,61 +18,73 @@
 
 require "spec_helper"
 
-describe Chef::Resource::Locale, :requires_root, :not_supported_on_windows do
-
-  let(:node) { Chef::Node.new }
+describe Chef::Resource::Locale, :requires_root do
+  let(:node) do
+    n = Chef::Node.new
+    n.consume_external_attrs(OHAI_SYSTEM.data, {})
+    n
+  end
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::Locale.new("fakey_fakerton", run_context) }
 
-  def sets_system_locale(*locales)
-    system_locales = File.readlines("/etc/locale.conf")
-    expect(system_locales.map(&:strip)).to eq(locales)
-  end
-
-  def unsets_system_locale(*locales)
-    system_locales = File.readlines("/etc/locale.conf")
-    expect(system_locales.map(&:strip)).not_to eq(locales)
-  end
-
-  describe "action: update" do
-    context "Sets system variable" do
-      it "when LC var is given" do
-        resource.lc_env({ "LC_MESSAGES" => "en_US" })
-        resource.run_action(:update)
-        sets_system_locale("LC_MESSAGES=en_US")
-      end
-      it "when lang is given" do
-        resource.lang("en_US")
-        resource.run_action(:update)
-        sets_system_locale("LANG=en_US")
-      end
-      it "when both lang & LC vars are given" do
-        resource.lang("en_US")
-        resource.lc_env({ "LC_TIME" => "en_IN" })
-        resource.run_action(:update)
-        sets_system_locale("LANG=en_US", "LC_TIME=en_IN")
-      end
+  context "on linux", :linux_only do
+    def sets_system_locale(*locales)
+      system_locales = File.readlines("/etc/locale.conf")
+      expect(system_locales.map(&:strip)).to eq(locales)
     end
 
-    context "Unsets system variable" do
-      it "when LC var is not given" do
-        resource.lc_env()
-        resource.run_action(:update)
-        unsets_system_locale("LC_MESSAGES=en_US")
+    def unsets_system_locale(*locales)
+      system_locales = File.readlines("/etc/locale.conf")
+      expect(system_locales.map(&:strip)).not_to eq(locales)
+    end
+
+    describe "action: update" do
+      context "Sets system variable" do
+        it "when LC var is given" do
+          resource.lc_env({ "LC_MESSAGES" => "en_US" })
+          resource.run_action(:update)
+          sets_system_locale("LC_MESSAGES=en_US")
+        end
+        it "when lang is given" do
+          resource.lang("en_US")
+          resource.run_action(:update)
+          sets_system_locale("LANG=en_US")
+        end
+        it "when both lang & LC vars are given" do
+          resource.lang("en_US")
+          resource.lc_env({ "LC_TIME" => "en_IN" })
+          resource.run_action(:update)
+          sets_system_locale("LANG=en_US", "LC_TIME=en_IN")
+        end
       end
-      it "when lang is not given" do
-        resource.lang()
-        resource.run_action(:update)
-        unsets_system_locale("LANG=en_US")
+
+      context "Unsets system variable" do
+        it "when LC var is not given" do
+          resource.lc_env()
+          resource.run_action(:update)
+          unsets_system_locale("LC_MESSAGES=en_US")
+        end
+        it "when lang is not given" do
+          resource.lang()
+          resource.run_action(:update)
+          unsets_system_locale("LANG=en_US")
+        end
+        it "when both lang & LC vars are not given" do
+          resource.lang()
+          resource.lc_env()
+          resource.run_action(:update)
+          unsets_system_locale("LANG=en_US", "LC_TIME=en_IN")
+          sets_system_locale("")
+        end
       end
-      it "when both lang & LC vars are not given" do
-        resource.lang()
-        resource.lc_env()
-        resource.run_action(:update)
-        unsets_system_locale("LANG=en_US", "LC_TIME=en_IN")
-        sets_system_locale("")
-      end
+    end
+  end
+
+  context "on macos", :macos_only do
+    it "raises an exception due to being an unsupported platform" do
+      resource.lang("en_US")
+      expect { resource.run_action(:update) }.to raise_error(Chef::Exceptions::ProviderNotFound)
     end
   end
 end
