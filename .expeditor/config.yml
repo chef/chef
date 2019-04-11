@@ -23,6 +23,8 @@ docker_images:
   - chef
 
 pipelines:
+  - verify:
+      public: true
   - habitat/build
   - omnibus/release
   - omnibus/adhoc:
