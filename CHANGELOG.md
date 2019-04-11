@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.210 -->
-## [v15.0.210](https://github.com/chef/chef/tree/v15.0.210) (2019-04-11)
+<!-- latest_release 15.0.211 -->
+## [v15.0.211](https://github.com/chef/chef/tree/v15.0.211) (2019-04-11)
 
 #### Merged Pull Requests
-- Avoid occasionally randomly reusing a gid in tests [#8352](https://github.com/chef/chef/pull/8352) ([btm](https://github.com/btm))
+- Don&#39;t force DSC functional tests to PS4 [#8359](https://github.com/chef/chef/pull/8359) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Don&#39;t force DSC functional tests to PS4 [#8359](https://github.com/chef/chef/pull/8359) ([btm](https://github.com/btm)) <!-- 15.0.211 -->
 - Avoid occasionally randomly reusing a gid in tests [#8352](https://github.com/chef/chef/pull/8352) ([btm](https://github.com/btm)) <!-- 15.0.210 -->
 - Add Debian 10 testing to Travis [#8348](https://github.com/chef/chef/pull/8348) ([tas50](https://github.com/tas50)) <!-- 15.0.209 -->
 - Implement Chef::Resource#copy_properties_from [#8344](https://github.com/chef/chef/pull/8344) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.208 -->
