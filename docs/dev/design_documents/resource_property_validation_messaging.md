@@ -1,6 +1,6 @@
 # Resource Validation Messaging
 
-Custom resources provide multiple property validators allowing authors to control property input beyond just simple data types. Authors can expect strings to match predefined strings, match a regex, or return true from a callback method. This gives the author great control over the input data, but doesn't provide the consumer with much information when the validator fails. This RFC provides the author with the ability control the error text when the validator fails.
+Custom resources provide multiple property validators, allowing authors to control property input beyond just simple data types. Authors can expect strings to match predefined strings, match a regex, or return true from a callback method. This gives the author great control over the input data, but doesn't provide the consumer with much information when the validator fails. This RFC provides the author with the ability to control the error text when the validator fails.
 
 ## Motivation
 

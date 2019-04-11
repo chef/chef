@@ -1,6 +1,6 @@
 # Self Documenting Resources
 
-Chef has allowed organizations to embrace infrastructure as code, but with codified infrastructure comes the need for accurate documentation for that codebase. This RFC aims to improve the ability to document resources within Chef code so that we can ensure documentation is accurate and automatically generated. This is applicable to both resources within chef-client and those which ship in cookbooks.
+Chef has allowed organizations to embrace infrastructure as code, but with codified infrastructure comes the need for accurate documentation for that codebase. This RFC aims to improve the ability to document resources within Chef code, so that we can ensure documentation is accurate and automatically generated. This is applicable to both resources within chef-client and those which ship in cookbooks.
 
 ## Motivation
 
@@ -20,7 +20,7 @@ so that I can easily write cookbooks utilizing custom resources
 
 ## Specification
 
-This dessign specifies 4 documentation methods in custom resources:
+This design specifies 4 documentation methods in custom resources:
 
 ### description (resource level)
 
@@ -28,7 +28,7 @@ Description is a String value that allows the user to describe the resource and 
 
 ### introduced (resource level)
 
-Introduced is a String value that documents when the resource was introduced. In a cookbook this would be a particular cookbook release. In the chef-client itself this would be a chef-client release.
+Introduced is a String value that documents when the resource was introduced. In a cookbook, this would be a particular cookbook release. In the chef-client itself, this would be a chef-client release.
 
 ### examples (resource level)
 
@@ -77,4 +77,4 @@ end
 
 ## Reasons for not using YARD
 
-The goal of introducing minimal DSL changes is to extend the existing data already contained within each resource to include the necessary information to fully document resources. Documenting resources in YARD would require significant duplication of documentation, which most users probably won't do. Out of the box even without these new DSL extensions we can already document resources fairly well. These new extensions incentivize users to provide us with a small amount of addition information that would fully fill out the resource documentation. Within our own configuration management industry other projects have gone different routes to document their equivalence of resources. One project uses a hybrid comment / code method, which feels bolted on and overly complex. The other project fully documents code in comments which results in near 100% duplication of effort. Simple DSL extensions seem like they are more likely to be utilized and provide a better user experience.
+The goal of introducing minimal DSL changes is to extend the existing data already contained within each resource to include the necessary information to fully document resources. Documenting resources in YARD would require significant duplication of documentation, which most users probably won't do. Out of the box, even without these new DSL extensions, we can already document resources fairly well. These new extensions incentivize users to provide us with a small amount of additional information that would fully fill out the resource documentation. Within our own configuration management industry, other projects have gone different routes to document their equivalence of resources. One project uses a hybrid comment / code method, which feels bolted on and overly complex. The other project fully documents code in comments, which results in near 100% duplication of effort. Simple DSL extensions seem like they are more likely to be utilized and provide a better user experience.

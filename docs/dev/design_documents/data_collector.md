@@ -35,7 +35,7 @@ All payloads will be sent to the Data Collector server via HTTP POST to the URL 
 
 Optionally, payloads may also be written out to multiple HTTP endpoints or JSON files on the local filesystem (of the node running `chef-client`) by specifying the `data_collector_output_locations` configuration parameter.
 
-For the initial implementation, transmissions to the Data Collector server can optionally be authenticated with the use of a pre-shared token which will be sent in a HTTP header. Given that the receiver is not the Chef Server, existing methods of using a Chef `client` key to authenticate the request are unavailable.
+For the initial implementation, transmissions to the Data Collector server can optionally be authenticated with the use of a pre-shared token, which will be sent in a HTTP header. Given that the receiver is not the Chef Server, existing methods of using a Chef `client` key to authenticate the request are unavailable.
 
 #### Configuration
 
@@ -467,8 +467,7 @@ The remainder of document will focus entirely on the nuts and bolts of the Data 
 ### Action Collection Integration
 
 Most of the work is done by a separate Action Collection to track the actions of Chef resources.
-If the Data Collector is not enabled, it never registers with the Action Collection and 
-no work will be done by the Action Collection to track resources.
+If the Data Collector is not enabled, it never registers with the Action Collection and no work will be done by the Action Collection to track resources.
 
 ### Additional Collected Information
 
@@ -479,7 +478,7 @@ The Data Collector also collects:
 - the node
 - formatted error output for exceptions
 
-Most of this is done through hooking events directly in the Data Collector itself. The ErrorHandlers module is broken out into a module, which is directly mixed into the Data Collector to separate that concern out into a different file. This ErrorHandlers module is straightforward with fairly little state, but involves just a lot of hooked methods.
+Most of this is done through hooking events directly in the Data Collector itself. The ErrorHandlers module is broken out into a module, which is directly mixed into the Data Collector, to separate that concern out into a different file. This ErrorHandlers module is straightforward with fairly little state, but involves a lot of hooked methods.
 
 ### Basic Configuration Modes
 
@@ -508,38 +507,39 @@ Chef::Config[:data_collector][:token] = "mytoken"
 
 This works for chef-clients, which are configured to hit a Chef server, but use a custom non-Chef-Automate endpoint for reporting, or for chef-solo/zero users.
 
-XXX: There is also the `Chef::Config[:data_collector][:output_locations] = { uri: [ "https://chef.acme.local/myendpoint.html" ] }` method -- which will behave
-differently, particularly on non-chef-solo use cases.  In that case, the Data Collector `server_url` will still be automatically derived from the `chef_server_url` and
-the Data Collector will attempt to contact that endpoint, but with the token being supplied it will use that and will not use Chef Server authentication, and the
-server should 403 back, and if `raise_on_failure` is left to the default of false then it will simply drop that failure and continue without raising, which will
-appear to work, and output will be send to the configured `output_locations`.  Note that the presence of a token flips all external URIs to using the token so that
-it is **not** possible to use this feature to talk to both a Chef Automate endpoint and a custom URI reporting endpoint (which would seem to be the most useful of an
-incredibly marginally useful feature and it does not work).  But given how hopelessly complicated this is, the recommendation is to use the `server_url` and to avoid
-using any `url` options in the `output_locations` since that feature is fairly poorly designed at this point in time.
+XXX: There is also the `Chef::Config[:data_collector][:output_locations] = { uri: [ "https://chef.acme.local/myendpoint.html" ] }` method, which will behave differently, particularly on non-chef-solo use cases. 
+In that case, the Data Collector `server_url` will still be automatically derived from the `chef_server_url` and the Data Collector will attempt to contact that endpoint. 
+But with the token being supplied, the Data Collector will use that token and will not use Chef Server authentication. 
+Thus, the server should 403 back.
+Also, if `raise_on_failure` is left to the default of `false`, then the Data Collector will simply drop that failure and continue without raising, which will appear to work, and output will be send to the configured `output_locations`. 
+Note that the presence of a token flips all external URIs to using the token. So it is **not** possible to use this feature to talk to both a Chef Automate endpoint and a custom URI reporting endpoint.
+This would seem to be the most useful of an incredibly marginally useful feature and it does not work. 
+But given how hopelessly complicated this is, the recommendation is to use the `server_url` and to avoid using any `url` options in the `output_locations` since that feature is fairly poorly designed at this point in time.
 
 ### Resiliency to Failures
 
-The Data Collector in Chef >= 15.0 is resilient to failures that occur anywhere in the main loop of the `Chef::Client#run` method. In order to do this there is a lot
-of defensive coding around internal data structures that may be `nil`. (e.g. failures before the node is loaded will result in the node being nil). The spec tests for
-the Data Collector now run through a large sequence of events (which must, unfortunately, be manually kept in sync with the events in the Chef::Client if those events
-are ever 'moved' around) which should catch any issues in the Data Collector with early failures.  The specs should also serve as documentation for what the messages
-will look like under different failure conditions.  The goal was to keep the format of the messages to look as near as possible to the same schema as possible even
-in the presence of failures.  But some data structures will be entirely empty.
+The Data Collector in Chef >= 15.0 is resilient to failures that occur anywhere in the main loop of the `Chef::Client#run` method. 
+In order to do this, there is a lot of defensive coding around internal data structures that may be `nil`. (e.g. failures before the node is loaded will result in the node being nil.)
+The spec tests for the Data Collector now run through a large sequence of events -- which must, unfortunately, be manually kept in sync with the events in the Chef::Client if those events are ever 'moved' around -- which should catch any issues in the Data Collector with early failures. 
+The specs should also serve as documentation for what the messages will look like under different failure conditions. 
+The goal was to keep the format of the messages to look as near as possible to the same schema as possible, even in the presence of failures, but some data structures will be entirely empty.
 
-When the Data Collector fails extraordinarily early it still sends both a start and an end message.  This will happen if it fails so early that it would not normally
-have sent a start message.
+When the Data Collector fails extraordinarily early, it still sends both a start and an end message. 
+This will happen if it fails so early that it would not normally have sent a start message.
 
 ### Decision to Be Enabled
 
 This is complicated due to over-design and is encapsulated in the `#should_be_enabled?` method and the ConfigValidation module. The `#should_be_enabled?` message and
-ConfigValidation should probably be merged into one renamed Config module to isolate the concern of processing the Chef::Config options and doing the correct thing.
+ConfigValidation should probably be merged into one renamed Config module to isolate the concern of processing the Chef::Config options and of doing the correct thing.
 
 ### Run Start and Run End Message modules
 
-These are separated out into their own modules, which are very deliberately not mixed into the main Data Collector.  They use the Data Collector and Action Collection
-public interfaces.  They are stateless themselves.  This keeps the collaboration between them and the Data Collector very easy to understand.  The start message is
-relatively simple and straightforwards.  The complication of the end message is mostly due to walking through the Action Collection and all the collected action
-records from the entire run, along with a lot of defensive programming to deal with early errors.
+These are separated out into their own modules, which are very deliberately not mixed into the main Data Collector.
+They use the Data Collector and Action Collection public interfaces. 
+They are stateless themselves.
+This keeps the collaboration between them and the Data Collector very easy to understand.
+The start message is relatively simple and straightforwards.
+The complication of the end message is mostly due to walking through the Action Collection and all the collected action records from the entire run, along with a lot of defensive programming to deal with early errors.
 
 ### Relevant Event Sequence
 
@@ -560,7 +560,7 @@ As it happens in the actual chef-client run:
   * failures during cookbook resolution will cause `events.cookbook_resolution_failed(node, exception)` here and skip to #13
   * failures during cookbook synch will cause `events.cookbook_sync_failed(node, exception)` and skip to #13
 10. `events.cookbook_compilation_start(run_context)`
-11. < the resource events happen here which hit the Action Collection, may throw any of the other failure events >
+11. < the resource events happen here, which hit the Action Collection, may throw any of the other failure events >
 12. `events.converge_complete` or `events.converge_failed(exception)`
 13. `run_status.stop_clock`
 14. `run_status.exception = exception` if it failed

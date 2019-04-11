@@ -22,7 +22,7 @@ blessed way to get the actual value of the resource. This proposal adds
 
 ### `load_current_value`: in-place resource load
 
-When using `action`, one needs a way to load the *actual* system value of the resource, so that it can be compared to the desired value and a decision made as to whether to change anything.
+When using `action`, one needs a way to load the *actual* system value of the resource, so that it can be compared to the desired value, and a decision made as to whether to change anything.
 
 When the resource writer defines `load_current_value` on the resource class, it can be called to load the real system value into the resource. Before any action runs, this will be used by `load_current_resource` to load the resource. `action` will do some important work before calling the new method:
 
@@ -60,9 +60,9 @@ end
 
 #### Non-existence
 
-To appropriately handle actual value loading, the user needs a way to specify that the actual value legitimately does not exist (rather than simply not filling in the object and getting `nil`s in it). If `load_current_value` raises `Chef::Exceptions::ActualValueDoesNotExist`, the new resource will be discarded and `current_resource` becomes `nil`. The `current_value_does_not_exist!` method can be called to raise this.
+To appropriately handle actual value loading, the user needs a way to specify that the actual value legitimately does not exist, rather than simply not filling in the object and getting `nil`s in it. If `load_current_value` raises `Chef::Exceptions::ActualValueDoesNotExist`, the new resource will be discarded and `current_resource` becomes `nil`. The `current_value_does_not_exist!` method can be called to raise this.
 
-NOTE: The alternative was to have users return `false` if the resource does not exist; but I didn't want users to be forced into the ceremony of a trailing `true` line.
+NOTE: The alternative was to have users return `false` if the resource does not exist, but I didn't want users to be forced into the ceremony of a trailing `true` line.
 
 ```ruby
   load_current_value do
@@ -173,7 +173,7 @@ end
 
 > The easiest way to write a resource must be the most correct one.
 
-There is a subtle pitfall when updating a resource, where the user has set *some* values, but not all. One can easily end up writing a resource which will overwrite perfectly good system properties with their defaults, which can cause instability. If the user does not specify a property, it is generally preferable to preserve its existing value rather than overwrite it.
+There is a subtle pitfall when updating a resource, where the user has set *some* values, but not all. One can easily end up writing a resource, which will overwrite perfectly good system properties with their defaults, and can cause instability. If the user does not specify a property, it is generally preferable to preserve its existing value rather than overwrite it.
 
 To prevent this, referencing the bare property in an `action` will now yield the *actual* value if load_current_value succeeded, and the *default* value if we are creating a new resource (if `load_current_value` raised `ActualValueDoesNotExist`).
 
@@ -210,7 +210,7 @@ There are no backwards-compatibility issues with this because it only applies to
 
 #### Compound Resource Convergence
 
-Some resources perform several different (possibly expensive) operations depending on what is set. `converge_if_changed :attribute1, :attribute2, ... do` allows the user to target different groups of changes based on exactly which attributes have changed:
+Some resources perform several different (possibly expensive) operations, depending on what is set. `converge_if_changed :attribute1, :attribute2, ... do` allows the user to target different groups of changes based on exactly which attributes have changed:
 
 ```ruby
 class File < Chef::Resource

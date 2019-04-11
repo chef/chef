@@ -39,7 +39,7 @@ secondary run list for several reasons:
 
 * Cookbooks are Chef Server objects that are organization-scoped and subject to
   authorization restrictions. Allowing some cookbooks to be global requires
-  additional complexity which is not needed for the intended uses.
+  additional complexity, which is not needed for the intended uses.
 * Cookbooks have versions and dependencies, which have to be solved. There are
   several ways this could be addressed, but all options introduce unneeded
   complexity into the solution.
@@ -47,7 +47,7 @@ secondary run list for several reasons:
   the enforced recipe code may have no control over the node data, roles, JSON
   files, or policyfiles used by the nodes being managed.
 * Other cookbook features, such as libraries and the various flavors of
-  resources and providers set ruby constants which could interfere with the
+  resources and providers, set ruby constants, which could interfere with the
   correct operation of the end user's cookbooks.
 * Templates and cookbook files would be useful, but expert practitioners will
   be able to be effective without them.
