@@ -98,7 +98,6 @@ class Chef
 
           fcontent = comment_lines.join("\n")
 
-
           file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr('/', '.')}.conf" do
             content fcontent
           end
