@@ -26,6 +26,14 @@ class Chef
       property :client_key, String, default: lazy { Chef::Config[:client_key] }
 
       action_class do
+        def client_key
+          new_resource.client_key
+        end
+
+        def node_name
+          new_resource.node_name
+        end
+
         def assert_destination_writable!
           if (File.exist?(client_key) && !File.writable?(client_key)) || !File.writable?(File.dirname(client_key))
             raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{client_key} - check permissions?"
