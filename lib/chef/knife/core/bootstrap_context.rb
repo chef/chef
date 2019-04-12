@@ -161,14 +161,7 @@ class Chef
           end
 
           if Chef::Config[:fips]
-            client_rb << <<~CONFIG
-              fips true
-              require "chef/version"
-              chef_version = ::Chef::VERSION.split(".")
-              unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 20)
-                raise "FIPS Mode requested but not supported by this client"
-              end
-            CONFIG
+            client_rb << "fips true\n"
           end
 
           client_rb
