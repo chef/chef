@@ -351,7 +351,7 @@ class Chef
         end
         if Chef::Config[:knife].key?(key)
           @key_sources[:config] << key
-          memo[key] = Chef::Config[:knife][key] if Chef::Config[:knife].key?(key)
+          memo[key] = Chef::Config[:knife][key]
         end
       end
     end
