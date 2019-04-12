@@ -7,6 +7,7 @@ steps:
 - label: "Integration Specs :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
+    - cd /workdir; bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -15,10 +16,12 @@ steps:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
           - INTEGRATION_SPECS_26=1
+          - BUNDLE_GEMFILE=$PWD/Gemfile
 
 - label: "Functional Specs :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
+    - cd /workdir; bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -31,7 +34,8 @@ steps:
 - label: "Unit Specs :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle exec rake spec:unit;
+    - bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
+    - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
     executor:
@@ -40,3 +44,148 @@ steps:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
           - UNIT_SPECS_26=1
+
+- label: "Chefstyle :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle exec rake style
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - CHEFSTYLE=1
+
+- label: "Test chef-sugar gem :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle exec tasks/bin/run_external_test sethvargo/chef-sugar master rake
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - TEST_GEM=sethvargo/chef-sugar
+
+- label: "Test chef-zero gem :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - TEST_GEM=chef/chef-zero
+          - PEDANT_OPTS=--skip-oc_id
+          - CHEF_FS=true
+
+- label: "Test cheffish gem :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle exec tasks/bin/run_external_test chef/cheffish master rake spec
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - TEST_GEM=chef/cheffish
+
+- label: "Test chefspec gem :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle exec tasks/bin/run_external_test chefspec/chefspec master rake
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - TEST_GEM=chefspec/chefspec
+
+- label: "Test poise/halite gem :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle exec tasks/bin/run_external_test poise/halite master rake spec
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - TEST_GEM=poise/halite
+
+- label: "Test knife-windows gem :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle exec tasks/bin/run_external_test chef/knife-windows master rake unit_spec
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - TEST_GEM=chef/knife-windows
+
+#########################################################################
+  # Tests Ruby 2.5
+#########################################################################
+
+- label: "Integration Specs :ruby: 2.5"
+  commands:
+    - asdf local ruby 2.5.5
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - INTEGRATION_SPECS_25=1
+
+- label: "Functional Specs :ruby: 2.5"
+  commands:
+    - asdf local ruby 2.5.5
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - FUNCTIONAL_SPECS_25=1
+
+- label: "Unit Specs :ruby: 2.5"
+  commands:
+    - asdf local ruby 2.5.5
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
+    - bundle exec rake spec:unit
+    - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - UNIT_SPECS_25=1
+
+#########################################################################
+  # START TEST KITCHEN ONLY
+#########################################################################
+
+- label: "Kitchen Tests :ruby: 2.5"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - asdf local ruby 2.5.5
+    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - cd /workdir/kitchen-tests
+    - bundle exec kitchen test end-to-end-amazonlinux-2
+  expeditor:
+    executor:
+      docker:
+        environment:
+          - AMAZON=2
+          - KITCHEN_YAML=kitchen.travis.yml
+          - BUNDLE_GEMFILE=$PWD/kitchen-tests/Gemfile
