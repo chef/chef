@@ -94,6 +94,14 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
       new_resource.run_action(:start)
       service_should_be_started("inittest.txt")
     end
+
+    it "should be idempotent" do
+      new_resource.run_action(:start)
+      service_should_be_started("inittest.txt")
+      new_resource.run_action(:start)
+      service_should_be_started("inittest.txt")
+      expect(new_resource).not_to be_updated_by_last_action
+    end
   end
 
   describe "stop service" do
@@ -104,6 +112,14 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
     it "should stop the service" do
       new_resource.run_action(:stop)
       service_should_be_stopped("inittest.txt")
+    end
+
+    it "should be idempotent" do
+      new_resource.run_action(:stop)
+      service_should_be_stopped("inittest.txt")
+      new_resource.run_action(:stop)
+      service_should_be_stopped("inittest.txt")
+      expect(new_resource).not_to be_updated_by_last_action
     end
   end
 
@@ -116,6 +132,14 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
       new_resource.run_action(:restart)
       service_should_be_started("inittest_restart.txt")
     end
+
+    it "should be idempotent" do
+      new_resource.run_action(:restart)
+      service_should_be_started("inittest_restart.txt")
+      new_resource.run_action(:restart)
+      service_should_be_started("inittest_restart.txt")
+      expect(new_resource).not_to be_updated_by_last_action
+    end
   end
 
   describe "reload service" do
@@ -127,6 +151,14 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
       new_resource.run_action(:reload)
       service_should_be_started("inittest_reload.txt")
     end
+
+    it "should be idempotent" do
+      new_resource.run_action(:reload)
+      service_should_be_started("inittest_reload.txt")
+      new_resource.run_action(:reload)
+      service_should_be_started("inittest_reload.txt")
+      expect(new_resource).not_to be_updated_by_last_action
+    end
   end
 
   describe "enable service" do
@@ -134,12 +166,28 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
       new_resource.run_action(:enable)
       service_should_be_enabled
     end
+
+    it "should be idempotent" do
+      new_resource.run_action(:enable)
+      service_should_be_enabled
+      new_resource.run_action(:enable)
+      service_should_be_enabled
+      expect(new_resource).not_to be_updated_by_last_action
+    end
   end
 
   describe "disable_service" do
     it "should disable the service" do
       new_resource.run_action(:disable)
       service_should_be_disabled
+    end
+
+    it "should be idempotent" do
+      new_resource.run_action(:disable)
+      service_should_be_disabled
+      new_resource.run_action(:disable)
+      service_should_be_disabled
+      expect(new_resource).not_to be_updated_by_last_action
     end
   end
 end
