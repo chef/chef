@@ -35,7 +35,7 @@ class Chef
         end
 
         def assert_destination_writable!
-          if (File.exist?(client_key) && !File.writable?(client_key)) || !File.writable?(File.dirname(client_key))
+          if (::File.exist?(client_key) && !::File.writable?(client_key)) || !::File.writable?(::File.dirname(client_key))
             raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{client_key} - check permissions?"
           end
         end
@@ -69,9 +69,9 @@ class Chef
         end
 
         def file_flags
-          base_flags = File::CREAT | File::TRUNC | File::RDWR
+          base_flags = ::File::CREAT | ::File::TRUNC | ::File::RDWR
           # Windows doesn't have symlinks, so it doesn't have NOFOLLOW
-          base_flags |= File::NOFOLLOW if defined?(File::NOFOLLOW)
+          base_flags |= ::File::NOFOLLOW if defined?(::File::NOFOLLOW)
           base_flags
         end
       end
