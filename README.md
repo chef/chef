@@ -37,7 +37,7 @@ Note that this repository is primarily for reporting issues in the chef-client i
 
 ## How We Build & Release Chef
 
-For information on how a contribution goes from PR to released package, see [How Chef Infra Is Built](docs/dev/design_documents/how_chef_is_built.md)
+For information on how a contribution goes from PR to released package, see [How Chef Infra Is Built](docs/dev/design_documents/how_chef_is_tested_and_built.md)
 
 To learn more about our monthly feature releases and yearly major releases, see [Chef Infra Release and Support Schedule](./docs/dev/policy/release_and_support_schedule.md).
 

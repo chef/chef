@@ -2,7 +2,7 @@
 
 This directory contains a collection of useful how-to guides for both new and seasoned Chef contributors. There are many guides explaining how to build, test, and contribute to Chef Infra, as well as documents describing how the many subsystems function.
 
-A good first start is our [How Chef Infra Is Built](how_chef_is_built.md) and [Chef Infra Release and Support Schedule](./policy/release_and_support_schedule.md.md)
+A good first start is our [How Chef Infra Is Built](./design_documents/how_chef_is_tested_and_built.md) and [Chef Infra Release and Support Schedule](./policy/release_and_support_schedule.md.md)
 
 ## How-To Guides
 
