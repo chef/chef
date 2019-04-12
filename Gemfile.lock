@@ -1,13 +1,16 @@
 GIT
-  remote: https://github.com/chef/chef_core
-  revision: b7cd7f480af87d1166217f099255803c55c83e96
-  branch: chef-core-split
+  remote: https://github.com/chef/chef-core
+  revision: 777ab84fd0b6ad2c4fc0341a61f4ee68c1309eeb
   specs:
-    chef_core (0.0.1)
+    chef-core (0.0.1)
       chef-telemetry
       mixlib-log
+      pastel
       r18n-desktop
-      train (~> 2.0)
+      train (~> 2)
+      tty-color
+      tty-cursor
+      tty-spinner
 
 GIT
   remote: https://github.com/chef/chefstyle.git
@@ -446,6 +449,8 @@ GEM
       tty-screen (~> 0.6.4)
       wisper (~> 2.0.0)
     tty-screen (0.6.5)
+    tty-spinner (0.9.0)
+      tty-cursor (~> 0.6.0)
     tty-table (0.10.0)
       equatable (~> 0.5.0)
       necromancer (~> 0.4.0)
@@ -515,8 +520,8 @@ DEPENDENCIES
   bcrypt_pbkdf
   chef!
   chef-config!
+  chef-core!
   chef-vault
-  chef_core!
   cheffish (~> 14)
   chefstyle!
   ed25519
