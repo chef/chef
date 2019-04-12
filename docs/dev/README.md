@@ -22,7 +22,7 @@ A good first start is our [How Chef Infra Is Built](./design_documents/how_chef_
 - [Resource Property Validation Messaging](./design_documents/resource_property_validation_messaging.md)
 - [Self Documenting Resources](./design_documents/self_documenting_resources.md)
 - [Resource Before Notifications](./design_documents/resource_before_notifications.md)
-- [Resource File Content Verification](resource_file_content_verification.md)
+- [Resource File Content Verification](./design_documents/resource_file_content_verification.md)
 - [Ohai Cookbook Segment](./design_documents/ohai_cookbook_segment.md)
 - [Cookbook Root Aliases](./design_documents/cookbook_root_aliases.md)
 - [Event Handler Recipe DSL](./design_documents/event_handler_recipe_dsl.md)
