@@ -20,7 +20,7 @@ We can't just merge any old change, so we run various checks against your submit
 
 ## PR is Reviewed and Merged
 
-Once your pull request passes the above tests, it will need to be reviewed by at least two members of the Chef Infra project owners, approvers, or reviewers groups. For a list of owners, approvers, and reviewers, see https://github.com/chef/chef-oss-practices/blob/master/teams/chef-infra.md. GitHub will automatically assign these groups as reviewers. Reviews will happen adhoc as members in those groups have time, or during our weekly issue triage. Check the above team doc link for information on when that review takes place.
+Once your pull request passes the above tests, it will need to be reviewed by at least two members of the Chef Infra project owners, approvers, or reviewers groups. For a list of owners, approvers, and reviewers, see https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md. GitHub will automatically assign these groups as reviewers. Reviews will happen adhoc as members in those groups have time, or during our weekly issue triage. Check the above team doc link for information on when that review takes place.
 
 Your PR will be reviewed for Chef and Ruby correctness, overall design, and likelihood of impact on the community. We do our best to make sure all the changes made to Chef are high quality and easy to maintain going forward, while also having the lowest chance of negatively impacting our end users. If your PR meets that criteria, we'll merge the change into our master branch.
 
