@@ -22,7 +22,7 @@ require "functional/resource/base"
 require "chef/mixin/shell_out"
 require "fileutils"
 
-describe Chef::Resource::Service, :requires_root, :sles11 do
+describe Chef::Resource::Service, :requires_root, :sles11, :rhel6 do
 
   include Chef::Mixin::ShellOut
 
@@ -132,14 +132,6 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
       new_resource.run_action(:restart)
       service_should_be_started("inittest_restart.txt")
     end
-
-    it "should be idempotent" do
-      new_resource.run_action(:restart)
-      service_should_be_started("inittest_restart.txt")
-      new_resource.run_action(:restart)
-      service_should_be_started("inittest_restart.txt")
-      expect(new_resource).not_to be_updated_by_last_action
-    end
   end
 
   describe "reload service" do
@@ -150,14 +142,6 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
     it "should reload the service" do
       new_resource.run_action(:reload)
       service_should_be_started("inittest_reload.txt")
-    end
-
-    it "should be idempotent" do
-      new_resource.run_action(:reload)
-      service_should_be_started("inittest_reload.txt")
-      new_resource.run_action(:reload)
-      service_should_be_started("inittest_reload.txt")
-      expect(new_resource).not_to be_updated_by_last_action
     end
   end
 
