@@ -38,4 +38,4 @@ Once the builds complete Jenkins will move to the test phase where each of these
 
 Once a build has been blessed by our Jenkins gauntlet and everyone has agreed we're ready to release an artifact can be promoted from current to stable channels via Expeditor in Slack:
 
-```/expeditor promote chef/chef:master 14.6.47``
+``/expeditor promote chef/chef:master 14.6.47``
