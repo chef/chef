@@ -6,9 +6,6 @@ class Chef
     # The client's alias (chef-client)
     CLIENT = "chef-client".freeze
 
-    # the server tool's name (knife)
-    KNIFE = "knife".freeze
-
     # Name used for certain directories. Merge with chef_executable?
     GENERIC = "chef".freeze
 

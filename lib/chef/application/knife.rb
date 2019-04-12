@@ -24,9 +24,9 @@ require "chef/dist"
 
 class Chef::Application::Knife < Chef::Application
 
-  NO_COMMAND_GIVEN = "You need to pass a sub-command (e.g., #{Chef::Dist::KNIFE} SUB-COMMAND)\n".freeze
+  NO_COMMAND_GIVEN = "You need to pass a sub-command (e.g., knife SUB-COMMAND)\n".freeze
 
-  banner "Usage: #{Chef::Dist::KNIFE} sub-command (options)"
+  banner "Usage: knife sub-command (options)"
 
   option :config_file,
     short: "-c CONFIG",
@@ -119,7 +119,7 @@ class Chef::Application::Knife < Chef::Application
   option :local_mode,
     short: "-z",
     long: "--local-mode",
-    description: "Point #{Chef::Dist::KNIFE} commands at local repository instead of server",
+    description: "Point knife commands at local repository instead of server",
     boolean: true
 
   option :chef_zero_host,

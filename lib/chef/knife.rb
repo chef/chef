@@ -36,7 +36,7 @@ require "chef/dist"
 class Chef
   class Knife
 
-    Chef::HTTP::HTTPRequest.user_agent = "#{Chef::Dist::PRODUCT} #{Chef::Dist::KNIFE} #{Chef::HTTP::HTTPRequest::UA_COMMON}"
+    Chef::HTTP::HTTPRequest.user_agent = "#{Chef::Dist::PRODUCT} Knife#{Chef::HTTP::HTTPRequest::UA_COMMON}"
 
     include Mixlib::CLI
     include Chef::Mixin::PathSanity
@@ -183,7 +183,7 @@ class Chef
       config_loader.profile = profile
       config_loader.load
 
-      ui.warn("No config.rb (formerly #{Chef::Dist::KNIFE}.rb) configuration file found. See https://docs.chef.io/config_rb_knife.html for details.") if config_loader.no_config_found?
+      ui.warn("No knife configuration file found. See https://docs.chef.io/config_rb_knife.html for details.") if config_loader.no_config_found?
 
       config_loader
     rescue Exceptions::ConfigurationError => e
@@ -240,7 +240,7 @@ class Chef
     class << self
       def list_commands(preferred_category = nil)
         category_desc = preferred_category ? preferred_category + " " : ""
-        msg "Available #{category_desc}subcommands: (for details, #{Chef::Dist::KNIFE} SUB-COMMAND --help)\n\n"
+        msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
         subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
           next if category =~ /deprecated/i
           msg "** #{category.upcase} COMMANDS **"
@@ -267,7 +267,7 @@ class Chef
 
         # Mention rehash when the subcommands cache(plugin_manifest.json) is used
         if subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::HashedCommandLoader)
-          ui.info("If this is a recently installed plugin, please run '#{Chef::Dist::KNIFE} rehash' to update the subcommands cache.")
+          ui.info("If this is a recently installed plugin, please run 'knife rehash' to update the subcommands cache.")
         end
 
         if category_commands = guess_category(args)
@@ -439,7 +439,7 @@ class Chef
 
     def run_with_pretty_exceptions(raise_exception = false)
       unless respond_to?(:run)
-        ui.error "You need to add a #run method to your #{Chef::Dist::KNIFE} command before you can use it"
+        ui.error "You need to add a #run method to your knife command before you can use it"
       end
       enforce_path_sanity
       maybe_setup_fips
@@ -460,17 +460,17 @@ class Chef
         humanize_http_exception(e)
       when OpenSSL::SSL::SSLError
         ui.error "Could not establish a secure connection to the server."
-        ui.info "Use `#{Chef::Dist::KNIFE} ssl check` to troubleshoot your SSL configuration."
+        ui.info "Use `knife ssl check` to troubleshoot your SSL configuration."
         ui.info "If your #{Chef::Dist::PRODUCT} Server uses a self-signed certificate, you can use"
-        ui.info "`#{Chef::Dist::KNIFE} ssl fetch` to make #{Chef::Dist::KNIFE} trust the server's certificates."
+        ui.info "`knife ssl fetch` to make knife trust the server's certificates."
         ui.info ""
         ui.info  "Original Exception: #{e.class.name}: #{e.message}"
       when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
         ui.error "Network Error: #{e.message}"
-        ui.info "Check your #{Chef::Dist::KNIFE} configuration and network settings"
+        ui.info "Check your knife configuration and network settings"
       when NameError, NoMethodError
-        ui.error "#{Chef::Dist::KNIFE} encountered an unexpected error"
-        ui.info  "This may be a bug in the '#{self.class.common_name}' #{Chef::Dist::KNIFE} command or plugin"
+        ui.error "knife encountered an unexpected error"
+        ui.info  "This may be a bug in the '#{self.class.common_name}' knife command or plugin"
         ui.info  "Please collect the output of this command with the `-VVV` option before filing a bug report."
         ui.info  "Exception: #{e.class.name}: #{e.message}"
       when Chef::Exceptions::PrivateKeyMissing
@@ -478,7 +478,7 @@ class Chef
         ui.info  "Check your configuration file and ensure that your private key is readable"
       when Chef::Exceptions::InvalidRedirect
         ui.error "Invalid Redirect: #{e.message}"
-        ui.info  "Change your server location in config.rb (formerly #{Chef::Dist::KNIFE}.rb) to the server's FQDN to avoid unwanted redirections."
+        ui.info  "Change your server location in knife.rb to the server's FQDN to avoid unwanted redirections."
       else
         ui.error "#{e.class.name}: #{e.message}"
       end
@@ -517,8 +517,8 @@ class Chef
         client_api_version = version_header["request_version"]
         min_server_version = version_header["min_version"]
         max_server_version = version_header["max_version"]
-        ui.error "The version of #{Chef::Dist::PRODUCT} that #{Chef::Dist::KNIFE} is using is not supported by the #{Chef::Dist::PRODUCT} server you sent this request to"
-        ui.info "The request that #{Chef::Dist::KNIFE} sent was using API version #{client_api_version}"
+        ui.error "The version of #{Chef::Dist::PRODUCT} that Knife is using is not supported by the #{Chef::Dist::PRODUCT} server you sent this request to"
+        ui.info "The request that Knife sent was using API version #{client_api_version}"
         ui.info "The #{Chef::Dist::PRODUCT} server you sent the request to supports a min API verson of #{min_server_version} and a max API version of #{max_server_version}"
         ui.info "Please either update your #{Chef::Dist::PRODUCT} client or server to be a compatible set"
       else
