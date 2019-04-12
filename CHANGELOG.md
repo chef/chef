@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.12.1 -->
-## [v14.12.1](https://github.com/chef/chef/tree/v14.12.1) (2019-04-04)
+<!-- latest_release 14.12.2 -->
+## [v14.12.2](https://github.com/chef/chef/tree/v14.12.2) (2019-04-12)
 
 #### Merged Pull Requests
-- Update Ruby to 2.5.5 and nokogiri to 1.10.2 [#8339](https://github.com/chef/chef/pull/8339) ([tas50](https://github.com/tas50))
+- Backport two test fixes/changes to chef-14 [#8364](https://github.com/chef/chef/pull/8364) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.11.21 -->
 ### Changes since 14.11.21 release
 
 #### Merged Pull Requests
+- Backport two test fixes/changes to chef-14 [#8364](https://github.com/chef/chef/pull/8364) ([btm](https://github.com/btm)) <!-- 14.12.2 -->
 - Update Ruby to 2.5.5 and nokogiri to 1.10.2 [#8339](https://github.com/chef/chef/pull/8339) ([tas50](https://github.com/tas50)) <!-- 14.12.1 -->
 - Remove windows-api pin and update InSpec to 3.9.0 [#8327](https://github.com/chef/chef/pull/8327) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.12.0 -->
 - Remove travis gem dep and bump versions of multiple components  [#8315](https://github.com/chef/chef/pull/8315) ([tas50](https://github.com/tas50)) <!-- 14.11.25 -->
