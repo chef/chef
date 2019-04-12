@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.211 -->
-## [v15.0.211](https://github.com/chef/chef/tree/v15.0.211) (2019-04-11)
+<!-- latest_release 15.0.212 -->
+## [v15.0.212](https://github.com/chef/chef/tree/v15.0.212) (2019-04-12)
 
 #### Merged Pull Requests
-- Don&#39;t force DSC functional tests to PS4 [#8359](https://github.com/chef/chef/pull/8359) ([btm](https://github.com/btm))
+- Add Verification tests in Buildkite [#8357](https://github.com/chef/chef/pull/8357) ([jaymalasinha](https://github.com/jaymalasinha))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add Verification tests in Buildkite [#8357](https://github.com/chef/chef/pull/8357) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.0.212 -->
 - Don&#39;t force DSC functional tests to PS4 [#8359](https://github.com/chef/chef/pull/8359) ([btm](https://github.com/btm)) <!-- 15.0.211 -->
 - Avoid occasionally randomly reusing a gid in tests [#8352](https://github.com/chef/chef/pull/8352) ([btm](https://github.com/btm)) <!-- 15.0.210 -->
 - Add Debian 10 testing to Travis [#8348](https://github.com/chef/chef/pull/8348) ([tas50](https://github.com/tas50)) <!-- 15.0.209 -->
