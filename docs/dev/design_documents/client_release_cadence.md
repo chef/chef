@@ -3,8 +3,8 @@
 Chef follows [Semantic Versioning](https://semver.org/) for releases. Major
 versions (eg. 11.x -> 12.x) will include backwards-incompatible changes. Minor
 versions (eg 12.1 -> 12.2) will include new features and bug fixes, but will be
-backwards-compatible to the best of our ability. Patch versions are governed
-by [RFC 47](rfc047-release-process.md).
+backwards-compatible to the best of our ability. Patch releases will contain bug
+and security fixes only
 
 Chef feature releases are promoted to the stable channel once per month. It is
 expected that this occur during the second week of the month unless
