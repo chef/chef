@@ -18,6 +18,9 @@
 class Chef
   class Resource
     class Rekey < Chef::Resource
+      provides :rekey
+      resource_name :rekey
+
       property :name, String, default: ""
       property :node_name, String, default: lazy { Chef::Config[:node_name] }
       property :client_key, String, default: lazy { Chef::Config[:client_key] }
