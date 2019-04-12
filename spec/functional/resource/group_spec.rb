@@ -292,14 +292,27 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
   end
 
-  let(:group_name) { "group#{SecureRandom.random_number(9999)}" }
+  let(:number) do
+    # Loop until we pick a gid that is not in use.
+    loop do
+      begin
+        gid = rand(2000..9999) # avoid low group numbers
+        return nil if Etc.getgrgid(gid).nil? # returns nil on windows
+      rescue ArgumentError # group does not exist
+        return gid
+      end
+    end
+  end
+
+  let(:group_name) { "grp#{number}" } # group name should be 8 characters or less for Solaris, and possibly others
+  # https://community.aegirproject.org/developing/architecture/unix-group-limitations/index.html#Group_name_length_limits
   let(:included_members) { [] }
   let(:excluded_members) { [] }
   let(:group_resource) do
     group = Chef::Resource::Group.new(group_name, run_context)
     group.members(included_members)
     group.excluded_members(excluded_members)
-    group.gid(30000) unless ohai[:platform_family] == "mac_os_x"
+    group.gid(number) unless ohai[:platform_family] == "mac_os_x"
     group
   end
 
