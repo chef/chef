@@ -17,7 +17,7 @@ provisioner:
   github_repo: "chef"
   ohai_refname: "master"
   refname: <%= %x(git rev-parse HEAD) %>
-  github: "bobchaos/chef"
+  github: "cc-build/chef"
   branch: "alternate_distro_proposal"
   client_rb:
     diff_disabled: true
