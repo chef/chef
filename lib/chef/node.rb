@@ -300,13 +300,37 @@ class Chef
       @primary_runlist
     end
 
-    attr_writer :override_runlist
+    # This boolean can be useful to determine if an override_runlist is set, it can be true
+    # even if the override_runlist is empty.
+    #
+    # (Mutators can set the override_runlist so any non-empty override_runlist is considered set)
+    #
+    # @return [Boolean] if the override run list has been set
+    def override_runlist_set?
+      !!@override_runlist_set || !override_runlist.empty?
+    end
+
+    # Accessor for override_runlist (this cannot set an empty override run list)
+    #
+    # @params args [Array] override run list to set
+    # @return [Chef::RunList] the override run list
     def override_runlist(*args)
-      args.length > 0 ? @override_runlist.reset!(args) : @override_runlist
+      return @override_runlist if args.length == 0
+      @override_runlist_set = true
+      @override_runlist.reset!(args)
+    end
+
+    # Setter for override_runlist which allows setting an empty override run list and marking it to be used
+    #
+    # @params array [Array] override run list to set
+    # @return [Chef::RunList] the override run list
+    def override_runlist=(array)
+      @override_runlist_set = true
+      @override_runlist.reset!(array)
     end
 
     def select_run_list
-      @override_runlist.empty? ? @primary_runlist : @override_runlist
+      override_runlist_set? ? @override_runlist : @primary_runlist
     end
 
     # Returns an Array of roles and recipes, in the order they will be applied.

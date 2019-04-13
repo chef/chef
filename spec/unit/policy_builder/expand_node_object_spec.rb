@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2017, Chef Software Inc.
+# Copyright:: Copyright 2014-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:finish_load_node)
     end
 
-    it "implements  a build_node method" do
+    it "implements a build_node method" do
       expect(policy_builder).to respond_to(:build_node)
     end
 
@@ -224,7 +224,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       end
 
       it "reports that a temporary policy is being used" do
-        expect(policy_builder.temporary_policy?).to be_truthy
+        expect(policy_builder.temporary_policy?).to be true
       end
 
     end

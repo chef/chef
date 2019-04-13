@@ -214,7 +214,7 @@ class Chef
       # override_runlist was provided. Chef::Client uses this to decide whether
       # to do the final node save at the end of the run or not.
       def temporary_policy?
-        !node.override_runlist.empty?
+        node.override_runlist_set?
       end
 
       ########################################
@@ -222,9 +222,9 @@ class Chef
       ########################################
 
       def setup_run_list_override
-        runlist_override_sanity_check!
-        unless override_runlist.empty?
-          node.override_runlist(*override_runlist)
+        unless override_runlist.nil?
+          runlist_override_sanity_check!
+          node.override_runlist = override_runlist
           Chef::Log.warn "Run List override has been provided."
           Chef::Log.warn "Original Run List: [#{node.primary_runlist}]"
           Chef::Log.warn "Overridden Run List: [#{node.run_list}]"
