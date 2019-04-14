@@ -1,0 +1,12 @@
+find_executable: checking for windmc... -------------------- no
+
+--------------------
+
+find_executable: checking for windres... -------------------- no
+
+--------------------
+
+find_executable: checking for gcc... -------------------- yes
+
+--------------------
+

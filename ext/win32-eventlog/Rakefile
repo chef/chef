@@ -1,6 +1,8 @@
 require "rubygems"
 require "rake"
 require "mkmf"
+require "erb"
+require "chef/dist"
 
 desc "Building event log dll"
 
@@ -11,6 +13,12 @@ def ensure_present(commands)
     end
   end
 end
+
+# Templating the windows event log messages
+# So we can inject distro constants in there
+template = ERB.new(IO.read("chef-log.man.erb"))
+chef_log_man = template.result
+File.open("chef-log.man", "w") { |f| f.write(chef_log_man) }
 
 EVT_MC_FILE = "chef-log.man".freeze
 EVT_RC_FILE = "chef-log.rc".freeze

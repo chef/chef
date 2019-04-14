@@ -62,3 +62,6 @@ nodes/
 # chef-config
 chef-config/.bundle
 chef-config/Gemfile.lock
+
+# Rendered Templates
+ext/win32-eventlog/chef-log.man
