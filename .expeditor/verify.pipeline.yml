@@ -4,21 +4,19 @@ steps:
   # Tests Ruby 2.6
 #########################################################################
 
-# - label: "Integration Specs :ruby: 2.6"
-#   commands:
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-#     - cp /etc/hosts.noip6 /etc/hosts
-#     - cd /workdir; bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
-#     - bundle exec rake spec:integration
-#   expeditor:
-#     executor:
-#       docker:
-#         environment:
-#           - FORCE_FFI_YAJL=ext
-#           - CHEF_LICENSE=accept-no-persist
-#           - INTEGRATION_SPECS_26=1
-#           - BUNDLE_GEMFILE=/workdir/Gemfile
+- label: "Integration Specs :ruby: 2.6"
+  commands:
+    - scripts/bk_tests/bk_install.sh
+    - bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      linux:
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - INTEGRATION_SPECS_26=1
+          - BUNDLE_GEMFILE=/workdir/Gemfile
 #
 # - label: "Functional Specs :ruby: 2.6"
 #   commands:
