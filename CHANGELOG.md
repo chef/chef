@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.212 -->
-## [v15.0.212](https://github.com/chef/chef/tree/v15.0.212) (2019-04-12)
+<!-- latest_release 15.0.213 -->
+## [v15.0.213](https://github.com/chef/chef/tree/v15.0.213) (2019-04-15)
 
 #### Merged Pull Requests
-- Add Verification tests in Buildkite [#8357](https://github.com/chef/chef/pull/8357) ([jaymalasinha](https://github.com/jaymalasinha))
+- Drop privileges before creating files in solo mode [#8361](https://github.com/chef/chef/pull/8361) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Drop privileges before creating files in solo mode [#8361](https://github.com/chef/chef/pull/8361) ([btm](https://github.com/btm)) <!-- 15.0.213 -->
 - Add Verification tests in Buildkite [#8357](https://github.com/chef/chef/pull/8357) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.0.212 -->
 - Don&#39;t force DSC functional tests to PS4 [#8359](https://github.com/chef/chef/pull/8359) ([btm](https://github.com/btm)) <!-- 15.0.211 -->
 - Avoid occasionally randomly reusing a gid in tests [#8352](https://github.com/chef/chef/pull/8352) ([btm](https://github.com/btm)) <!-- 15.0.210 -->
