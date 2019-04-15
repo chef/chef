@@ -22,7 +22,7 @@ require "functional/resource/base"
 require "chef/mixin/shell_out"
 require "fileutils"
 
-describe Chef::Resource::Service, :requires_root, :sles11, :rhel6 do
+describe Chef::Resource::Service, :requires_root, :sles11 do
 
   include Chef::Mixin::ShellOut
 
