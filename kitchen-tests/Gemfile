@@ -9,4 +9,4 @@ gem "kitchen-dokken", "=1.1.1" # 2.x fails atm: https://travis-ci.org/chef/chef/
 gem "kitchen-docker", git: "https://github.com/test-kitchen/kitchen-docker.git", branch: "master"
 gem "kitchen-inspec", git: "https://github.com/chef/kitchen-inspec.git", branch: "master"
 gem "kitchen-vagrant", git: "https://github.com/test-kitchen/kitchen-vagrant.git", branch: "master"
-gem "test-kitchen", git: "https://github.com/test-kitchen/test-kitchen.git", branch: "master"
+gem "test-kitchen", git: "https://github.com/test-kitchen/test-kitchen.git", branch: "chef_license_accept"
