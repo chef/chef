@@ -233,6 +233,7 @@ describe "chef-client" do
             THECONSTANT = '1'
           end
         EOM
+
         file "arbitrary.rb", <<~EOM
           file #{path_to('tempfile.txt').inspect} do
             content ::Blah::THECONSTANT
@@ -240,6 +241,72 @@ describe "chef-client" do
         EOM
 
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", cwd: path_to(""))
+        result.error!
+
+        expect(IO.read(path_to("tempfile.txt"))).to eq("1")
+      end
+
+      it "should run recipes specified directly on the command line AFTER recipes in the run list (without an override_runlist this time)" do
+        file "config/client.rb", <<~EOM
+          local_mode true
+          client_key #{path_to('mykey.pem').inspect}
+          cookbook_path #{path_to('cookbooks').inspect}
+        EOM
+
+        file "config/dna.json", <<~EOM
+          {
+            "run_list": [ "recipe[x::constant_definition]" ]
+          }
+        EOM
+
+        file "cookbooks/x/recipes/constant_definition.rb", <<~EOM
+          class ::Blah
+            THECONSTANT = '1'
+          end
+        EOM
+
+        file "arbitrary.rb", <<~EOM
+          file #{path_to('tempfile.txt').inspect} do
+            content ::Blah::THECONSTANT
+          end
+        EOM
+
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -j \"#{path_to('config/dna.json')}\" arbitrary.rb", cwd: path_to(""))
+        result.error!
+
+        expect(IO.read(path_to("tempfile.txt"))).to eq("1")
+      end
+
+      it "an override_runlist of an empty string should allow a recipe specified directly on the command line to be the only one run" do
+        file "config/client.rb", <<~EOM
+          local_mode true
+          client_key #{path_to('mykey.pem').inspect}
+          cookbook_path #{path_to('cookbooks').inspect}
+          class ::Blah
+            THECONSTANT = "1"
+          end
+        EOM
+
+        file "config/dna.json", <<~EOM
+          {
+            "run_list": [ "recipe[x::constant_definition]" ]
+          }
+        EOM
+
+        file "cookbooks/x/recipes/constant_definition.rb", <<~EOM
+          class ::Blah
+            THECONSTANT = "2"
+          end
+        EOM
+
+        file "arbitrary.rb", <<~EOM
+          raise "this test failed" unless ::Blah::THECONSTANT == "1"
+          file #{path_to('tempfile.txt').inspect} do
+            content ::Blah::THECONSTANT
+          end
+        EOM
+
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -j \"#{path_to('config/dna.json')}\" -o \"\" arbitrary.rb", cwd: path_to(""))
         result.error!
 
         expect(IO.read(path_to("tempfile.txt"))).to eq("1")
