@@ -1,0 +1,38 @@
+---
+driver:
+  name: docker
+  use_internal_docker_network: true
+  # socket: "tcp://127.0.0.1:2375"
+
+
+verifier:
+  name: inspec
+  format: progress
+
+provisioner:
+  name: chef_github
+  chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
+  chef_omnibus_install_options: "-c current"
+  github_owner: "chef"
+  github_repo: "chef"
+  ohai_refname: "master"
+  refname: <%= %x(git rev-parse HEAD) %>
+  client_rb:
+    diff_disabled: true
+
+platforms:
+  - name: amazonlinux
+  # - name: amazonlinux-2
+  - name: centos-6
+  - name: centos-7
+  - name: debian-8
+  - name: debian-9
+  - name: opensuse-leap-42
+  - name: ubuntu-16.04
+  - name: ubuntu-18.04
+
+suites:
+  - name: end-to-end
+    run_list:
+      - recipe[end_to_end::default]
+      - recipe[end_to_end::tests]
