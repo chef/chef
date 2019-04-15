@@ -218,12 +218,12 @@ class Chef::Application::Solo < Chef::Application
   # Get this party started
   def run
     setup_signal_handlers
+    setup_application
     reconfigure
     for_ezra if Chef::Config[:ez]
     if !Chef::Config[:solo_legacy_mode]
       Chef::Application::Client.new.run
     else
-      setup_application
       run_application
     end
   end
