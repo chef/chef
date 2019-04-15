@@ -46,8 +46,7 @@ class Chef
                required: true
 
       property :comment, [Array, String],
-               description: "Optional comments, placed above the resource setting in the generated file."\
-                            " For multi-line comments, use an array of strings, one per line.",
+               description: "Optional comments, placed above the resource setting in the generated file. For multi-line comments, use an array of strings, one per line.",
                default: []
 
       property :conf_dir, String,
