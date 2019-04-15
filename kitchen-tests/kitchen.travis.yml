@@ -14,6 +14,7 @@ provisioner:
   require_chef_omnibus: latest
   chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
   chef_omnibus_install_options: "-c current"
+  command_prefix: "env CHEF_LICENSE=accept-no-prefix"
   github_owner: "chef"
   github_repo: "chef"
   refname: <%= ENV['TRAVIS_COMMIT'] %>
