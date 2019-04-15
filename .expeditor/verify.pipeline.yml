@@ -7,6 +7,8 @@ steps:
 # - label: "Integration Specs :ruby: 2.6"
 #   commands:
 #     - /workdir/scripts/bk_tests/bk_install.sh
+#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
+#     - cp /etc/hosts.noip6 /etc/hosts
 #     - cd /workdir; bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
 #     - bundle exec rake spec:integration
 #   expeditor:
@@ -21,6 +23,8 @@ steps:
 # - label: "Functional Specs :ruby: 2.6"
 #   commands:
 #     - /workdir/scripts/bk_tests/bk_install.sh
+#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
+#     - cp /etc/hosts.noip6 /etc/hosts
 #     - cd /workdir; bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
 #     - bundle exec rake spec:functional
 #   expeditor:
@@ -130,8 +134,10 @@ steps:
 
 # - label: "Integration Specs :ruby: 2.5"
 #   commands:
-#     - asdf local ruby 2.5.5
 #     - /workdir/scripts/bk_tests/bk_install.sh
+#     - asdf local ruby 2.5.5
+#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
+#     - cp /etc/hosts.noip6 /etc/hosts
 #     - bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
 #     - bundle exec rake spec:integration
 #   expeditor:
@@ -146,6 +152,8 @@ steps:
 #   commands:
 #     - asdf local ruby 2.5.5
 #     - /workdir/scripts/bk_tests/bk_install.sh
+#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
+#     - cp /etc/hosts.noip6 /etc/hosts
 #     - bundle install --without ci docgen guard integration maintenance omnibus_package --frozen
 #     - bundle exec rake spec:functional
 #   expeditor:
@@ -175,17 +183,19 @@ steps:
   # START TEST KITCHEN ONLY
 #########################################################################
 
-- label: "Kitchen Tests :ruby: 2.5"
-  commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
-    - asdf local ruby 2.5.5
-    - cd /workdir/kitchen-tests
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
-    - bundle exec kitchen test end-to-end-amazonlinux-2
-  expeditor:
-    executor:
-      docker:
-        environment:
-          - AMAZON=2
-          - KITCHEN_YAML=/workdir/kitchen-tests/kitchen.bk.yml
-          - BUNDLE_GEMFILE=/workdir/kitchen-tests/Gemfile
+# - label: "Kitchen Tests :ruby: 2.5"
+#   commands:
+#     - /workdir/scripts/bk_tests/bk_install.sh
+#     - asdf local ruby 2.5.5
+#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
+#     - cp /etc/hosts.noip6 /etc/hosts
+#     - cd /workdir/kitchen-tests
+#     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+#     - bundle exec kitchen test end-to-end-amazonlinux-2
+#   expeditor:
+#     executor:
+#       docker:
+#         environment:
+#           - AMAZON=2
+#           - KITCHEN_YAML=/workdir/kitchen-tests/kitchen.bk.yml
+#           - BUNDLE_GEMFILE=/workdir/kitchen-tests/Gemfile

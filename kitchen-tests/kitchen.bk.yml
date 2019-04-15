@@ -1,10 +1,8 @@
 ---
 driver:
   name: docker
-  customize:
-    cpus: 4
-    memory: 2048
-    use_internal_docker_network: true
+  use_internal_docker_network: true
+  # socket: "tcp://127.0.0.1:2375"
 
 
 verifier:
@@ -24,9 +22,7 @@ provisioner:
 
 platforms:
   - name: amazonlinux
-    driver_config:
-      box: mvbcoding/awslinux
-  - name: amazonlinux-2
+  # - name: amazonlinux-2
   - name: centos-6
   - name: centos-7
   - name: debian-8
