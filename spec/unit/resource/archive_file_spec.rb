@@ -26,7 +26,7 @@ describe Chef::Resource::ArchiveFile do
   end
 
   it "has a name property of path" do
-    expect(resource.path).to eql("foo")
+    expect(resource.path).to match(/.*foo$/)
   end
 
   it "sets the default action as :extract" do
@@ -37,4 +37,11 @@ describe Chef::Resource::ArchiveFile do
     expect { resource.action :extract }.not_to raise_error
   end
 
+  it "mode property defaults to '755'" do
+    expect(resource.mode).to eql("755")
+  end
+
+  it "options property defaults to [:time]" do
+    expect(resource.options).to eql([:time])
+  end
 end
