@@ -28,6 +28,7 @@ class Chef
       LC_VARIABLES = %w{LC_ADDRESS LC_COLLATE LC_CTYPE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE LC_TIME}.freeze
       LOCALE_CONF = "/etc/locale.conf".freeze
       LOCALE_REGEX = /\A\S+/.freeze
+      LOCALE_PLATFORM_FAMILIES = %w{debian}.freeze
 
       property :lang, String,
                description: "Sets the default system language.",
@@ -71,28 +72,31 @@ class Chef
               update_locale
             end
           end
-        rescue
-          # It might affect debugging
-          raise "#{node['platform']} platform is not supported by the chef locale resource. " +
-            "If you believe this is in error please file an issue at https://github.com/chef/chef/issues"
         end
       end
 
       action_class do
+        # Avoid running this resource on platforms that don't use /etc/locale.conf
+        #
+        def define_resource_requirements
+          requirements.assert(:all_actions) do |a|
+            a.assertion { LOCALE_PLATFORM_FAMILIES.include?(node[:platform_family]) }
+            a.failure_message(Chef::Exceptions::ProviderNotFound, "The locale resource is not supported on platform family: #{node[:platform_family]}")
+          end
+
+          requirements.assert(:all_actions) do |a|
+            # RHEL/CentOS type platforms don't have locale-gen
+            a.assertion { shell_out("locale-gen") }
+            a.failure_message(Chef::Exceptions::ProviderNotFound, "The locale resource requires the locale-gen tool")
+          end
+        end
 
         # Generates the localisation files from templates using locale-gen.
         # @see http://manpages.ubuntu.com/manpages/cosmic/man8/locale-gen.8.html
         # @raise [Mixlib::ShellOut::ShellCommandFailed] not a supported language or locale
         #
         def generate_locales
-          bash "Generating locales: #{unavailable_locales.join(' ')}" do
-            code <<~CODE
-              if type locale-gen >/dev/null 2>&1
-              then
-                locale-gen #{unavailable_locales.join(' ')}
-              fi
-            CODE
-          end
+          shell_out!("locale-gen #{unavailable_locales.join(' ')}")
         end
 
         # Updates system locale by appropriately writing them in /etc/locale.conf
