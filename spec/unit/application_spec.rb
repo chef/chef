@@ -436,7 +436,7 @@ describe Chef::Application do
       end
     end
 
-    context "when cli arguments containing any string" do
+    context "when cli arguments contain any string" do
       let(:fatal) { false }
       before do
         allow(app).to receive(:cli_arguments).and_return(["test"])
