@@ -388,7 +388,7 @@ describe Chef::Application do
 
   describe "#set_specific_recipes" do
     let(:app) { Chef::Application.new }
-    context "when cli arguments does not containing any value" do
+    context "when cli arguments does not containing any values" do
       before do
         allow(app).to receive(:cli_arguments).and_return([])
       end
