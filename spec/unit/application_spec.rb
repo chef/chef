@@ -399,7 +399,7 @@ describe Chef::Application do
       end
     end
 
-    context "when cli arguments containing valid recipe file path" do
+    context "when cli arguments contain valid recipe file path" do
       let(:tempfile) { Tempfile.new("default.rb").path }
       before do
         allow(app).to receive(:cli_arguments).and_return([tempfile])
