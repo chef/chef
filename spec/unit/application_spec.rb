@@ -411,7 +411,7 @@ describe Chef::Application do
       end
     end
 
-    context "when cli arguments containing invalid recipe file path" do
+    context "when cli arguments contain invalid recipe file path" do
       let(:fatal) { false }
       before do
         tempfile = "/root/default.rb"
