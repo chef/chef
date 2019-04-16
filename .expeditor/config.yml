@@ -143,3 +143,6 @@ subscriptions:
   - workload: ruby_gem_published:cheffish-*
     actions:
       - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:license-acceptance-*
+    actions:
+      - bash:.expeditor/update_dep.sh
