@@ -152,6 +152,8 @@ class Chef
       Chef::Application.fatal!(e.message)
     end
 
+    # Set the specific recipes to Chef::Config if the recipes are valid
+    # otherwise log a fatal error message and exit the application.
     def set_specific_recipes
       if cli_arguments.is_a?(Array) &&
           (cli_arguments.empty? || cli_arguments.all? { |file| File.file?(file) } )
