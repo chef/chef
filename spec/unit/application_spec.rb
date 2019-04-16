@@ -393,7 +393,7 @@ describe Chef::Application do
         allow(app).to receive(:cli_arguments).and_return([])
       end
 
-      it "returns a empty array" do
+      it "returns an empty array" do
         app.set_specific_recipes
         expect(Chef::Config[:specific_recipes]).to eq([])
       end
