@@ -1,26 +1,24 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.12.3 -->
-## [v14.12.3](https://github.com/chef/chef/tree/v14.12.3) (2019-04-15)
-
-#### Merged Pull Requests
-- Drop privileges before creating files in solo mode [#8372](https://github.com/chef/chef/pull/8372) ([btm](https://github.com/btm))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.11.21 -->
-### Changes since 14.11.21 release
-
-#### Merged Pull Requests
-- Drop privileges before creating files in solo mode [#8372](https://github.com/chef/chef/pull/8372) ([btm](https://github.com/btm)) <!-- 14.12.3 -->
-- Backport two test fixes/changes to chef-14 [#8364](https://github.com/chef/chef/pull/8364) ([btm](https://github.com/btm)) <!-- 14.12.2 -->
-- Update Ruby to 2.5.5 and nokogiri to 1.10.2 [#8339](https://github.com/chef/chef/pull/8339) ([tas50](https://github.com/tas50)) <!-- 14.12.1 -->
-- Remove windows-api pin and update InSpec to 3.9.0 [#8327](https://github.com/chef/chef/pull/8327) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.12.0 -->
-- Remove travis gem dep and bump versions of multiple components  [#8315](https://github.com/chef/chef/pull/8315) ([tas50](https://github.com/tas50)) <!-- 14.11.25 -->
-- Loosen the win32-cerstore and win32-service dependencies [#8295](https://github.com/chef/chef/pull/8295) ([tas50](https://github.com/tas50)) <!-- 14.11.24 -->
-- Backport fix for #8080 [#8303](https://github.com/chef/chef/pull/8303) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.11.23 -->
-- windows_certificate: Import nested certificates while importing P7B certs [#8274](https://github.com/chef/chef/pull/8274) ([tas50](https://github.com/tas50)) <!-- 14.11.22 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.12.3](https://github.com/chef/chef/tree/v14.12.3) (2019-04-16)
+
+#### Merged Pull Requests
+- windows_certificate: Import nested certificates while importing P7B certs [#8274](https://github.com/chef/chef/pull/8274) ([tas50](https://github.com/tas50))
+- Backport fix for #8080 [#8303](https://github.com/chef/chef/pull/8303) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Loosen the win32-cerstore and win32-service dependencies [#8295](https://github.com/chef/chef/pull/8295) ([tas50](https://github.com/tas50))
+- Remove travis gem dep and bump versions of multiple components  [#8315](https://github.com/chef/chef/pull/8315) ([tas50](https://github.com/tas50))
+- Remove windows-api pin and update InSpec to 3.9.0 [#8327](https://github.com/chef/chef/pull/8327) ([jaymalasinha](https://github.com/jaymalasinha))
+- Update Ruby to 2.5.5 and nokogiri to 1.10.2 [#8339](https://github.com/chef/chef/pull/8339) ([tas50](https://github.com/tas50))
+- Backport two test fixes/changes to chef-14 [#8364](https://github.com/chef/chef/pull/8364) ([btm](https://github.com/btm))
+- Drop privileges before creating files in solo mode [#8372](https://github.com/chef/chef/pull/8372) ([btm](https://github.com/btm))
+<!-- latest_stable_release -->
+
 ## [v14.11.21](https://github.com/chef/chef/tree/v14.11.21) (2019-03-07)
 
 #### Merged Pull Requests
@@ -46,7 +44,6 @@
 - Update cacerts to 2019-01-22 file [#8270](https://github.com/chef/chef/pull/8270) ([tas50](https://github.com/tas50))
 - mount: Add proper new lines when on AIX to prevent failures [#8273](https://github.com/chef/chef/pull/8273) ([tas50](https://github.com/tas50))
 - Update Rubygems to 2.7.9 + Add release notes for Chef 14.11 [#8272](https://github.com/chef/chef/pull/8272) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.10.9](https://github.com/chef/chef/tree/v14.10.9) (2019-01-30)
 
