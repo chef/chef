@@ -781,7 +781,7 @@ describe Chef::Knife::Bootstrap do
 
           context "and unsupported Chef::Config options are given in Chef::Config, not in CLI" do
             before do
-              Chef::Config[:knife][:password] = "blah"
+              Chef::Config[:knife][:connection_password] = "blah"
               Chef::Config[:knife][:winrm_password] = "blah"
             end
             it "does not include the corresponding option in the connection options" do
@@ -842,7 +842,7 @@ describe Chef::Knife::Bootstrap do
               knife.config[:connection_user] = "microsoftbob"
               knife.config[:connection_port] = 12
               knife.config[:winrm_port] = "13" # indirectly verify we're not looking for the wrong CLI flag
-              knife.config[:password] = "lobster"
+              knife.config[:connection_password] = "lobster"
             end
 
             it "generates a config hash using the CLI options when available and falling back to Chef::Config values" do
@@ -857,7 +857,7 @@ describe Chef::Knife::Bootstrap do
               # Chef::Config is different so we can be sure that we didn't
               # pull in the Chef::Config value
               Chef::Config[:knife][:winrm_auth_method] = "negotiate"
-              knife.config[:password] = "blue"
+              knife.config[:connection_password] = "blue"
               knife.config[:max_wait] = 1000
               knife.config[:connection_user] = "clippy"
               knife.config[:connection_port] = 1000
@@ -983,7 +983,7 @@ describe Chef::Knife::Bootstrap do
               knife.config[:connection_user] = "sshalice"
               knife.config[:connection_port] = 12
               knife.config[:ssh_port] = "13" # canary to indirectly verify we're not looking for the wrong CLI flag
-              knife.config[:password] = "feta cheese"
+              knife.config[:connection_password] = "feta cheese"
               knife.config[:max_wait] = 150
               knife.config[:use_sudo] = true
               knife.config[:use_sudo_pasword] = true
@@ -1018,7 +1018,7 @@ describe Chef::Knife::Bootstrap do
               knife.config[:max_wait] = 150
               knife.config[:connection_user] = "sshroot"
               knife.config[:connection_port] = 1000
-              knife.config[:password] = "blah"
+              knife.config[:connection_password] = "blah"
               knife.config[:forward_agent] = true
               knife.config[:use_sudo] = true
               knife.config[:use_sudo_password] = true
@@ -1107,7 +1107,7 @@ describe Chef::Knife::Bootstrap do
         before do
           knife.config[:connection_port] = 250
           knife.config[:connection_user] = "test"
-          knife.config[:password] = "opscode"
+          knife.config[:connection_password] = "opscode"
         end
 
         let(:expected_opts) do
@@ -1201,7 +1201,7 @@ describe Chef::Knife::Bootstrap do
         end
         context "and a password is also specified" do
           before do
-            knife.config[:password] = "blah"
+            knife.config[:connection_password] = "blah"
           end
           it "generates the expected configuration (key, keys_only false)" do
             expect(knife.ssh_identity_opts).to eq({
@@ -1376,9 +1376,9 @@ describe Chef::Knife::Bootstrap do
         context "when use_sudo_password is also set" do
           before do
             knife.config[:use_sudo_password] = true
-            knife.config[:password] = "opscode"
+            knife.config[:connection_password] = "opscode"
           end
-          it "includes :password value in a sudo-enabled configuration" do
+          it "includes :connection_password value in a sudo-enabled configuration" do
             expect(knife.sudo_opts).to eq({
               sudo: true,
               sudo_password: "opscode",
@@ -1753,7 +1753,7 @@ describe Chef::Knife::Bootstrap do
 
       context "and password auth was used" do
         before do
-          knife.config[:password] = "tryme"
+          knife.config[:connection_password] = "tryme"
         end
 
         it "re-raises the error so as not to resubmit the same failing password" do
@@ -1764,7 +1764,7 @@ describe Chef::Knife::Bootstrap do
 
       context "and password auth was not used" do
         before do
-          knife.config[:password] = nil
+          knife.config.delete :connection_password
           allow(target_host).to receive(:user).and_return "testuser"
         end
 

@@ -37,7 +37,7 @@ class Chef
         long: "--connection-user USERNAME",
         description: "Authenticate to the target host with this user account"
 
-      option :password,
+      option :connection_password,
         short: "-P PASSWORD",
         long: "--connection-password PASSWORD",
         description: "Authenticate to the target host with this password"
@@ -69,7 +69,8 @@ class Chef
 
       option :winrm_no_verify_cert,
         long: "--winrm-no-verify-cert",
-        description: "Do not verify the SSL certificate of the target node for WinRM."
+        description: "Do not verify the SSL certificate of the target node for WinRM.",
+        boolean: true
 
       option :winrm_ssl,
         long: "--winrm-ssl",
@@ -135,7 +136,7 @@ class Chef
         description: "The SSH identity file used for authentication"
 
       option :ssh_verify_host_key,
-        long: "--ssh-[no-]verify-host-key",
+        long: "--[no-]ssh-verify-host-key",
         description: "Verify host key, enabled by default.",
         boolean: true
 
@@ -342,22 +343,45 @@ class Chef
       # subclasses instead - that would let us move deprecation handling
       # up into the base clase.
       DEPRECATED_FLAGS = {
-        ssh_user: [:connection_user, "USER"],
-        ssh_port: [:connection_port, "PORT"],
-        winrm_user: [:connection_user, "USER"],
-        winrm_port: [:connection_port, "USER"],
-        ssl_peer_fingerprint: [:winrm_ssl_peer_fingerprint, "FINGERPRINT"],
-        winrm_authentication_protocol: [:winrm_auth_method, "AUTH-METHOD"]
+        # old_key: [:new_key, old_long, new_long]
+        auth_timeout: [:max_wait, "--max-wait SECONDS"],
+        host_key_verify: [:ssh_verify_host_key,
+                          "--[no-]host-key-verify",
+                          ],
+        ssh_user: [:connection_user,
+                   "--ssh-user USER",
+                   ],
+        ssh_password: [:connection_password,
+                       "--ssh-password PASSWORD",
+                       ],
+        ssh_port: [:connection_port,
+                   "-ssh-port",
+                   ],
+        ssl_peer_fingerprint: [:winrm_ssl_peer_fingerprint,
+                               "--ssl-peer-fingerprint FINGERPRINT",
+                               ],
+        winrm_user: [:connection_user,
+                     "--winrm-user USER",
+                     ],
+        winrm_password: [:connection_password,
+                         "--winrm-password",
+                         ],
+        winrm_port: [:connection_port,
+                     "--winrm-port",
+                     ],
+        winrm_authentication_protocol: [:winrm_auth_method,
+                                        "--winrm-authentication-protocol PROTOCOL",
+                                        ]
       }
 
       DEPRECATED_FLAGS.each do |flag, new_flag_config|
-        new_flag, arg = new_flag_config
-        flag_name = flag.to_s.gsub("_", "-")
-        long = "--#{flag_name} #{arg}"
+        new_flag, old_long = new_flag_config
         new_long = options[new_flag][:long]
+        new_flag_name = new_long.split(" ").first
 
-        option(flag, long: long,
-               description: "#{long} is deprecated. Use #{new_long} instead.")
+        option(flag, long: new_long,
+               description: "#{old_long} is deprecated. Use #{new_long} instead.",
+               boolean: options[new_flag][:boolean])
       end
 
       attr_accessor :client_builder
@@ -727,17 +751,18 @@ class Chef
           ui.warn <<~WARN
             * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
             SSL validation of HTTPS requests for the WinRM transport is disabled.
-            HTTPS WinRM # connections are still encrypted, but knife is not able
-            to detect forged replies # or spoofing attacks.
+            HTTPS WinRM connections are still encrypted, but knife is not able
+            to detect forged replies or spoofing attacks.
 
-            To fix this issue add an entry like this to your knife configuration file:
+            To work around this issue you can use the flag `--winrm-no-verify-cert`
+            or add an entry like this to your knife configuration file:
 
-               # Verify all WinRM HTTPS connections (default, recommended)
-               knife[:winrm_no_verify_cert] = false
+               # Verify all WinRM HTTPS connections
+               knife[:winrm_no_verify_cert] = true
 
             You can also specify a ca_trust_file via --ca-trust-file,
-            or the expected fingerprint of the target host via
-            --winrm-ssl-peer-fingerprint.
+            or the expected fingerprint of the target host's certificate
+            via --winrm-ssl-peer-fingerprint.
           WARN
         end
       end
@@ -772,7 +797,7 @@ class Chef
         {}.tap do |opts|
           opts[:logger] = Chef::Log
           # We do not store password in Chef::Config, so only use CLI `config` here
-          opts[:password] = config[:password] if config.key?(:password)
+          opts[:password] = config[:connection_password] if config.key?(:connection_password)
           opts[:user] = user if user
           opts[:max_wait_until_ready] = config_value(:max_wait) unless config_value(:max_wait).nil?
           # TODO - when would we need to provide rdp_port vs port?  Or are they not mutually exclusive?
@@ -785,10 +810,7 @@ class Chef
         when "winrm"
           { self_signed: config_value(:winrm_no_verify_cert) === true }
         when "ssh"
-          # TODO is this a safe footgun to provide?  Seems a security risk
-          #      if someone forgets to If someone forgets ssh_verify_host_key is
-          #      is in knife config, s- setting ssh_verify_host_key to true
-          # in knife.rb, and forgetting it's there?
+          # Fall back to the old knife config key name for back compat.
           { verify_host_key: config_value(:ssh_verify_host_key,
                                           :host_key_verify, true) === true }
         else
@@ -820,7 +842,7 @@ class Chef
           # and no password.
           # If both are present, train(via net/ssh)  will prefer keys, falling back to password.
           # Reference: https://github.com/chef/chef/blob/master/lib/chef/knife/ssh.rb#L272
-          opts[:keys_only] = config.key?(:password) == false
+          opts[:keys_only] = config.key?(:connection_password) == false
         else
           opts[:key_files] = []
           opts[:keys_only] = false
@@ -870,7 +892,7 @@ class Chef
         if config[:use_sudo]
           opts[:sudo] = true
           if config[:use_sudo_password]
-            opts[:sudo_password] = config[:password]
+            opts[:sudo_password] = config[:connection_password]
           end
           if config[:preserve_home]
             opts[:sudo_options] = "-H"
