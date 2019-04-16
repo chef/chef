@@ -460,7 +460,7 @@ describe Chef::Application do
       end
     end
 
-    context "when cli arguments containing valid recipe file path and invalid string" do
+    context "when cli arguments contain valid recipe file path and invalid string" do
       let(:fatal) { false }
       before do
         tempfile = Tempfile.new("default.rb").path
