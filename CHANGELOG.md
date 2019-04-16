@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.216 -->
-## [v15.0.216](https://github.com/chef/chef/tree/v15.0.216) (2019-04-16)
+<!-- latest_release 15.0.217 -->
+## [v15.0.217](https://github.com/chef/chef/tree/v15.0.217) (2019-04-16)
 
 #### Merged Pull Requests
-- Limit locale resource to Linux [#8375](https://github.com/chef/chef/pull/8375) ([btm](https://github.com/btm))
+- Prevent accidentally configuring windows_service properties [#8351](https://github.com/chef/chef/pull/8351) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Prevent accidentally configuring windows_service properties [#8351](https://github.com/chef/chef/pull/8351) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.217 -->
 - Limit locale resource to Linux [#8375](https://github.com/chef/chef/pull/8375) ([btm](https://github.com/btm)) <!-- 15.0.216 -->
 - Allow empty strings in -o to result in empty override run list [#8370](https://github.com/chef/chef/pull/8370) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.215 -->
 - Add a new archive_file resource from the libarchive cookbook [#8028](https://github.com/chef/chef/pull/8028) ([tas50](https://github.com/tas50)) <!-- 15.0.214 -->
