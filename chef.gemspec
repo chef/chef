@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"
   s.add_dependency "net-sftp", "~> 2.1", ">= 2.1.2"
   s.add_dependency "highline", "~> 1.6", ">= 1.6.9"
+  s.add_dependency "tty-screen", "~> 0.6" # knife list
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
   s.add_dependency "ffi-libarchive"
