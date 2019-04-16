@@ -448,7 +448,7 @@ describe Chef::Application do
       end
     end
 
-    context "when cli arguments containing multiple invalid strings" do
+    context "when cli arguments contain multiple invalid strings" do
       let(:fatal) { false }
       before do
         allow(app).to receive(:cli_arguments).and_return(["", "test"])
