@@ -424,7 +424,7 @@ describe Chef::Application do
       end
     end
 
-    context "when cli arguments containing empty string" do
+    context "when cli arguments contain empty string" do
       let(:fatal) { false }
       before do
         allow(app).to receive(:cli_arguments).and_return([""])
