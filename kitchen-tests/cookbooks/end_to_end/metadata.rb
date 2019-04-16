@@ -5,7 +5,7 @@ version          "1.0.0"
 
 gem              "chef-sugar"
 
-# depends          "chef-client"
+depends          "chef-client"
 depends          "logrotate"
 depends          "multipackage"
 depends          "nscd"
