@@ -25,30 +25,35 @@ class Chef
 
       deps do
         require "chef/chef_fs/file_system"
-        require "highline"
+        require "tty-screen"
       end
 
       option :recursive,
         short: "-R",
         boolean: true,
         description: "List directories recursively"
+
       option :bare_directories,
         short: "-d",
         boolean: true,
         description: "When directories match the pattern, do not show the directories' children"
+
       option :local,
         long: "--local",
         boolean: true,
         description: "List local directory instead of remote"
+
       option :flat,
         short: "-f",
         long: "--flat",
         boolean: true,
         description: "Show a list of filenames rather than the prettified ls-like output normally produced"
+
       option :one_column,
         short: "-1",
         boolean: true,
         description: "Show only one column of results"
+
       option :trailing_slashes,
         short: "-p",
         boolean: true,
@@ -143,7 +148,7 @@ class Chef
         if config[:one_column] || !stdout.isatty
           columns = 0
         else
-          columns = HighLine::SystemExtensions.terminal_size[0]
+          columns = TTY::Screen.columns
         end
         current_line = ""
         results.each do |result|

@@ -51,6 +51,7 @@ PATH
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
+      tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
     chef (15.0.217-universal-mingw32)
       addressable
@@ -77,6 +78,7 @@ PATH
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
+      tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
       win32-api (~> 1.5.3)
       win32-certstore (~> 0.3)
