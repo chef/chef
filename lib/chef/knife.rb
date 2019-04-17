@@ -368,7 +368,6 @@ class Chef
 
     # Return where a config key has been sourced,
     # :cli, :config, or nil if the key is not set.
-
     def config_source(key)
       return :cli if @key_sources[:cli].include? key
       return :config if @key_sources[:config].include? key
