@@ -132,10 +132,10 @@ class Chef
       config[:config_file] = config_fetcher.expanded_path
 
       if config[:config_file].nil?
-        logger.warn("No config file found or specified on command line, using command line options instead.")
+        logger.warn("No config file found or specified on command line. Using command line options instead.")
       elsif config_fetcher.config_missing?
         logger.warn("*****************************************")
-        logger.warn("Did not find config file: #{config[:config_file]}, using command line options instead.")
+        logger.warn("Did not find config file: #{config[:config_file]}. Using command line options instead.")
         logger.warn("*****************************************")
       else
         config_content = config_fetcher.read_config
