@@ -27,10 +27,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (15.0.219)
+    chef (15.0.220)
       addressable
       bundler (>= 1.10)
-      chef-config (= 15.0.219)
+      chef-config (= 15.0.220)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -53,10 +53,10 @@ PATH
       syslog-logger (~> 1.6)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (15.0.219-universal-mingw32)
+    chef (15.0.220-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 15.0.219)
+      chef-config (= 15.0.220)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -95,7 +95,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (15.0.219)
+    chef-config (15.0.220)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
@@ -339,7 +339,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    win32-service (2.1.2)
+    win32-service (2.1.4)
       ffi
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
