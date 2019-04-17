@@ -46,8 +46,10 @@ The LC_ALL property in the locale resource has been deprecated as the usage of t
 
 ### Knife Bootstrap
 
-Knife bootstrap has been updated, and Windows bootstrap has been merged in core Chef's `knife bootstrap`. This marks the deprecation of the `knife-windows` plugin's `bootstrap` behavior.
+Knife bootstrap has been updated, and Windows bootstrap has been merged into core Chef's `knife bootstrap`. This marks the deprecation of the `knife-windows` plugin's `bootstrap` behavior.
 This change also addresses [CVE-2015-8559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8559): The knife bootstrap command in chef leaks the validator.pem private RSA key to /var/log/messages.
+
+*Important*: `knife bootstrap` works with all supported versions of Chef client.  Older versions may continue to work as far back as 12.20
 
 In order to accomodate a combined bootstrap that supports both SSH and WinRM,
 CLI flags have been added, removed, or changed.  Using the changed options will
@@ -93,8 +95,10 @@ Using removed options will cause the command to fail.
 | Flag | Notes |
 |-----:|:------|
 |--kerberos-keytab-file| This option existed but was not implemented.|
-|--winrm-codepage| This was used under knife-windows because bootstrapping was performed over a `cmd` shell. It is now invoked from `powershell`, so this option is no longer required.|
-|--winrm-shell| This option was ignored for bootstrap.|
+|--winrm-codepage| This was used under knife-windows because bootstrapping was performed over a `cmd` shell. It is now invoked from `powershell`, so this option is no longer used.|
+|--winrm-shell|This option was ignored for bootstrap.|
+|--prerelease|Prerelease Chef hasn't existed for some time.|
+|--install-as-service|Installing Chef client as a service is not supported|
 
 #### Usage Changes
 
@@ -109,10 +113,10 @@ the target hostname with the protocol in URL format. For example:
 ```
 
 
-#### Win2008
+#### Windows Server 2008
 
 The new bootstrap on Windows uses Powershell, and is compatible only in
-versions of Powershell included in Win2008R2 and later. To bootstrap older/unpatched
+versions of Powershell included in Windows Server 2008R2 and later. To bootstrap older/unpatched
 Win2k8 nodes, please continue to use the `knife-bootstrap` plugin.
 
 ### Audit Mode
