@@ -313,7 +313,7 @@ class Chef
           end
         rescue Errno::ENOENT
           Chef::Log.warn("*****************************************")
-          Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
+          Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options instead.")
           Chef::Log.warn("*****************************************")
 
           Chef::Config.merge!(config)
