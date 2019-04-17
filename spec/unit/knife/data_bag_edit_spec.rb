@@ -49,8 +49,7 @@ describe Chef::Knife::DataBagEdit do
 
   let(:is_encrypted?) { false }
   let(:transmitted_hash) { raw_edited_hash }
-  let(:data_to_edit) { db }
-
+  let(:data_to_edit) { db.raw_data }
   shared_examples_for "editing a data bag" do
     it "correctly edits then uploads the data bag" do
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(db)
