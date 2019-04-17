@@ -59,25 +59,6 @@ describe Chef::DSL::RebootPending, :windows_only do
       end
     end
 
-    describe 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired' do
-      let(:reg_key) { 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired' }
-      let(:original_set) { registry.key_exists?(reg_key) }
-
-      it "returns true if the registry key exists" do
-        skip "found existing registry key" if original_set
-        pending "Permissions are limited to 'TrustedInstaller' by default"
-        registry.create_key(reg_key, false)
-
-        expect(recipe.reboot_pending?).to be_truthy
-      end
-
-      after do
-        unless original_set
-          registry.delete_key(reg_key, false)
-        end
-      end
-    end
-
     describe 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired' do
       let(:reg_key) { 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired' }
       let(:original_set) { registry.key_exists?(reg_key) }
