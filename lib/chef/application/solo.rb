@@ -81,13 +81,13 @@ class Chef::Application::Solo < Chef::Application
   option :log_level,
     short: "-l LEVEL",
     long: "--log_level LEVEL",
-    description: "Set the log level (trace, debug, info, warn, error, fatal)",
+    description: "Set the log level (auto, trace, debug, info, warn, error, fatal)",
     proc: lambda { |l| l.to_sym }
 
   option :log_location,
     short: "-L LOGLOCATION",
     long: "--logfile LOGLOCATION",
-    description: "Set the log file location, defaults to STDOUT",
+    description: "Set the log file location, defaults to STDOUT - recommended for daemonizing",
     proc: nil
 
   option :help,
@@ -121,7 +121,7 @@ class Chef::Application::Solo < Chef::Application
 
   option :lockfile,
     long: "--lockfile LOCKFILE",
-    description: "Set the lockfile location. Prevents multiple processes from converging at the same time",
+    description: "Set the lockfile location. Prevents multiple solo processes from converging at the same time",
     proc: nil
 
   option :interval,
@@ -164,7 +164,7 @@ class Chef::Application::Solo < Chef::Application
   option :override_runlist,
     short: "-o RunlistItem,RunlistItem...",
     long: "--override-runlist RunlistItem,RunlistItem...",
-    description: "Replace current run list with specified items",
+    description: "Replace current run list with specified items for a single run",
     proc: lambda { |items|
       items = items.split(",")
       items.compact.map do |item|
@@ -296,8 +296,8 @@ class Chef::Application::Solo < Chef::Application
 
   def run_application
     if !Chef::Config[:client_fork] || Chef::Config[:once]
-      # Run immediately without interval sleep or splay
       begin
+        # run immediately without interval sleep, or splay
         run_chef_client(Chef::Config[:specific_recipes])
       rescue SystemExit
         raise
