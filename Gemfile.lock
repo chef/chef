@@ -138,7 +138,7 @@ GEM
   specs:
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
-    appbundler (0.12.0)
+    appbundler (0.12.3)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.0)
@@ -188,7 +188,7 @@ GEM
     jaro_winkler (1.5.2)
     json (2.2.0)
     libyajl2 (1.2.0)
-    license-acceptance (0.2.8)
+    license-acceptance (0.2.10)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
