@@ -320,7 +320,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    win32-service (2.1.2)
+    win32-service (2.1.4)
       ffi
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
