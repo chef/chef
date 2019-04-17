@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.217 -->
-## [v15.0.217](https://github.com/chef/chef/tree/v15.0.217) (2019-04-16)
+<!-- latest_release 15.0.218 -->
+## [v15.0.218](https://github.com/chef/chef/tree/v15.0.218) (2019-04-17)
 
 #### Merged Pull Requests
-- Prevent accidentally configuring windows_service properties [#8351](https://github.com/chef/chef/pull/8351) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Allow encrypting a previously unencrypted data bag [#8077](https://github.com/chef/chef/pull/8077) ([vijaymmali1990](https://github.com/vijaymmali1990))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Allow encrypting a previously unencrypted data bag [#8077](https://github.com/chef/chef/pull/8077) ([vijaymmali1990](https://github.com/vijaymmali1990)) <!-- 15.0.218 -->
 - Prevent accidentally configuring windows_service properties [#8351](https://github.com/chef/chef/pull/8351) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.217 -->
 - Limit locale resource to Linux [#8375](https://github.com/chef/chef/pull/8375) ([btm](https://github.com/btm)) <!-- 15.0.216 -->
 - Allow empty strings in -o to result in empty override run list [#8370](https://github.com/chef/chef/pull/8370) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.215 -->
