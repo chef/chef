@@ -13,8 +13,6 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
 gem "cheffish", "~> 14"
 
-gem "chef-core", git: "https://github.com/chef/chef-core"
-
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
