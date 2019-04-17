@@ -46,18 +46,20 @@ The LC_ALL property in the locale resource has been deprecated as the usage of t
 
 ### Knife Bootstrap
 
-Knife bootstrap has been updated, and Windows bootstrap has been merged in Knife core bootstrap. This marks the deprecation of knife-windows plugin's `bootstrap` behavior.
+Knife bootstrap has been updated, and Windows bootstrap has been merged in core Chef's `knife bootstrap`. This marks the deprecation of the `knife-windows` plugin's `bootstrap` behavior.
 This addresses [CVE-2015-8559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8559): The knife bootstrap command in chef leaks the validator.pem private RSA key to /var/log/messages.
 
 In order to accomodate a combined bootstrap that supports both SSH and WinRM,
 CLI flags have been added/removed/changed.  Using the changed options will
-result in deprecation warnings, but will accept those options unless otherwise noted.
+result in deprecation warnings, but `knife bootstrap` will accept those options
+unless otherwise noted.
+
 Using removed options will cause the command to fail.
 
 #### New Flags
 
 | Flag | Description |
-|-----:|:-=----------|
+|-----:|:------------|
 | --max-wait SECONDS | Maximum time to wait for initial connection to be established. |
 | --winrm-basic-auth-only | Perform only Basic Authentication to the target WinRM node. |
 | --connection-protocol PROTOCOL|Connection protocol to use. Valid values are 'winrm' and 'ssh'. Default is 'ssh'. |
@@ -71,7 +73,7 @@ Using removed options will cause the command to fail.
 |-----:|:-----------|:------|
 | --[no-]host-key-verify |--[no-]ssh-verify-host-key| |
 | --forward-agent | --ssh-forward-agent| |
-| --session-timeout MINUTES | --session-timeout SECONDS| the unit has changed from MINUTES to SECONDS for consistency with other timeouts.|
+| --session-timeout MINUTES | --session-timeout SECONDS|New for ssh, existing for winrm. The unit has changed from MINUTES to SECONDS for consistency with other timeouts.|
 | --ssh-password | --connection-password | |
 | --ssh-port | --connection-port | `knife[:ssh_port]` config setting remains available.
 | --ssh-user | --connection-user | `knife[:ssh_user]` config setting remains available.
@@ -91,10 +93,8 @@ Using removed options will cause the command to fail.
 | Flag | Notes |
 |-----:|:------|
 |--kerberos-keytab-file| This option existed but was not implemented.|
-|--winrm-codepage| This was used under knife-windows because bootstrapping
-                   was performed over a `cmd` shell. It is now invoked
-                   from `powershell`, so this option is no longer required.|
-|--winrm-shell| n/a | This option was ignored for bootstrap. |
+|--winrm-codepage| This was used under knife-windows because bootstrapping was performed over a `cmd` shell. It is now invoked from `powershell`, so this option is no longer required.|
+|--winrm-shell| This option was ignored for bootstrap.|
 
 #### Usage Changes
 
