@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.218 -->
-## [v15.0.218](https://github.com/chef/chef/tree/v15.0.218) (2019-04-17)
+<!-- latest_release 15.0.219 -->
+## [v15.0.219](https://github.com/chef/chef/tree/v15.0.219) (2019-04-17)
 
 #### Merged Pull Requests
-- Allow encrypting a previously unencrypted data bag [#8077](https://github.com/chef/chef/pull/8077) ([vijaymmali1990](https://github.com/vijaymmali1990))
+- Remove a functional test for the reboot_pending DSL [#8383](https://github.com/chef/chef/pull/8383) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Remove a functional test for the reboot_pending DSL [#8383](https://github.com/chef/chef/pull/8383) ([btm](https://github.com/btm)) <!-- 15.0.219 -->
 - Allow encrypting a previously unencrypted data bag [#8077](https://github.com/chef/chef/pull/8077) ([vijaymmali1990](https://github.com/vijaymmali1990)) <!-- 15.0.218 -->
 - Prevent accidentally configuring windows_service properties [#8351](https://github.com/chef/chef/pull/8351) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.217 -->
 - Limit locale resource to Linux [#8375](https://github.com/chef/chef/pull/8375) ([btm](https://github.com/btm)) <!-- 15.0.216 -->
