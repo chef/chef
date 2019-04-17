@@ -40,8 +40,8 @@ describe "Chef::Log::Syslog", unix_only: true do
   end
 
   it "should send message with severity warning to syslog." do
-    expect(syslog).to receive(:add).with(2, "No config file found or specified on command line, using command line options.", nil)
-    Chef::Log.warn("No config file found or specified on command line, using command line options.")
+    expect(syslog).to receive(:add).with(2, "No config file found or specified on command line. Using command line options instead.", nil)
+    Chef::Log.warn("No config file found or specified on command line. Using command line options instead.")
   end
 
   it "should fallback into send message with severity info to syslog when wrong format." do
