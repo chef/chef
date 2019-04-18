@@ -45,7 +45,6 @@ describe Chef::Application::Knife do
     @knife = Chef::Application::Knife.new
     allow(@knife).to receive(:puts)
     allow(@knife).to receive(:trap)
-    allow(@knife).to receive(:check_license_acceptance)
     allow(Chef::Knife).to receive(:list_commands)
   end
 
@@ -66,7 +65,6 @@ describe Chef::Application::Knife do
     with_argv(*%w{noop knife command with some args}) do
       knife = double(Chef::Knife)
       expect(Chef::Knife).to receive(:run).with(ARGV, @knife.options).and_return(knife)
-      expect(@knife).to receive(:check_license_acceptance)
       expect(@knife).to receive(:exit).with(0)
       @knife.run
     end

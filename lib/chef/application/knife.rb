@@ -21,10 +21,8 @@ require "mixlib/log"
 require "ohai/config"
 require "chef/monkey_patches/net_http.rb"
 require "chef/dist"
-require "license_acceptance/cli_flags/mixlib_cli"
 
 class Chef::Application::Knife < Chef::Application
-  include LicenseAcceptance::CLIFlags::MixlibCLI
 
   NO_COMMAND_GIVEN = "You need to pass a sub-command (e.g., knife SUB-COMMAND)\n".freeze
 
@@ -161,7 +159,6 @@ class Chef::Application::Knife < Chef::Application
     Mixlib::Log::Formatter.show_time = false
     validate_and_parse_options
     quiet_traps
-    check_license_acceptance
     Chef::Knife.run(ARGV, options)
     exit 0
   end
