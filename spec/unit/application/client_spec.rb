@@ -326,7 +326,7 @@ describe Chef::Application::Client, "reconfigure" do
       Chef::Config[:interval] = 600
       allow(ChefConfig).to receive(:windows?).and_return(false)
       expect(Chef::Application).to receive(:fatal!).with(
-        "Unforked chef-client interval runs are disabled in Chef 12.
+        "Unforked chef-client interval runs are only supported on Windows..
 Configuration settings:
   interval  = 600 seconds
 Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."

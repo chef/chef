@@ -57,18 +57,26 @@ describe Chef::Application::Solo do
           Chef::Config[:splay] = nil
         end
 
-        context "when interval is given" do
-          before do
-            Chef::Config[:interval] = 600
-          end
-
-          it "should terminate with message" do
-            expect(Chef::Application).to receive(:fatal!).with(
-              "Unforked chef-client interval runs are disabled in Chef 12.
+        it "should terminal with message when interval is given" do
+          Chef::Config[:interval] = 600
+          allow(ChefConfig).to receive(:windows?).and_return(false)
+          expect(Chef::Application).to receive(:fatal!).with(
+            "Unforked chef-client interval runs are only supported on Windows.
 Configuration settings:
   interval  = 600 seconds
 Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
-            )
+          )
+          app.reconfigure
+        end
+
+        context "when interval is given on windows" do
+          before do
+            Chef::Config[:interval] = 600
+            allow(ChefConfig).to receive(:windows?).and_return(true)
+          end
+
+          it "should not terminate" do
+            expect(Chef::Application).not_to receive(:fatal!)
             app.reconfigure
           end
         end
