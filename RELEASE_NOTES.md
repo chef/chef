@@ -10,6 +10,14 @@ Chef 15 release notes will be added here as development progresses.
 
 ### Data Collection Ground-Up Refactor
 
+### copy_properties_from in Custom Resources
+
+### locale resource
+
+The locale resource now allows setting all possible LC_* environmental variables.
+
+## New Resources
+
 ### archive resource
 
 ### windows_uac resource
@@ -29,6 +37,10 @@ Chef now ships with Ruby 2.6.2. This new version of Ruby improves performance an
 ### knife cookbook site deprecated in favor of knife supermarket
 
 The knife cookbook site command has been deprecated in favor of the knife supermarket command. Under the hood they are both actually the same codebase, but running knife cookbook site will now product a warning message. In Chef 16 we will remove the knife cookbook site command entirely.
+
+### locale LC_ALL property
+
+The LC_ALL property in the locale resource has been deprecated as the usage of this environmental variable is not recommended by distribution maintainers.
 
 ## Breaking Changes
 
