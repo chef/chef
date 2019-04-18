@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.222 -->
-## [v15.0.222](https://github.com/chef/chef/tree/v15.0.222) (2019-04-18)
+<!-- latest_release 15.0.223 -->
+## [v15.0.223](https://github.com/chef/chef/tree/v15.0.223) (2019-04-18)
 
 #### Merged Pull Requests
-- Sync the CLI option descriptions between chef-client and chef-solo [#8391](https://github.com/chef/chef/pull/8391) ([tas50](https://github.com/tas50))
+- Replace highline with tty-screen in knife list [#8381](https://github.com/chef/chef/pull/8381) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Replace highline with tty-screen in knife list [#8381](https://github.com/chef/chef/pull/8381) ([tas50](https://github.com/tas50)) <!-- 15.0.223 -->
 - Sync the CLI option descriptions between chef-client and chef-solo [#8391](https://github.com/chef/chef/pull/8391) ([tas50](https://github.com/tas50)) <!-- 15.0.222 -->
 - Use color in chef-solo by default on Windows [#8390](https://github.com/chef/chef/pull/8390) ([tas50](https://github.com/tas50)) <!-- 15.0.221 -->
 - Improve the error message when no config can be loaded [#8389](https://github.com/chef/chef/pull/8389) ([tas50](https://github.com/tas50)) <!-- 15.0.220 -->
