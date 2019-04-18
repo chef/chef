@@ -52,12 +52,12 @@ remains largely unchanged.
 We will also remove the following obsolete or unsupported behaviors:
 
 * `--prelease` flag - Chef hasn't been pre-released in quite some time.
-* `--install-as-service` - this is an anti-pattern on Windows that we have
+* `--install-as-service` - For many years we have suggested users not run chef-client as a service due to memory leaks in long running Ruby processes.
 * `--kerberos-keytab-file` - this is not implemented in the WinRM gem we use, and so was
 passed through to no effect.
 * remove explicit support for versions of Chef older than 12.8. Versions older than the supported
   Chef client distributions will continue to be use at your own risk.
-* Remove support for Windows 2003 in the Windows bootstrap template.
+* Remove support for Windows 2003 in the Windows bootstrap template as Chef does not support EOL Windows 2003 installs.
 
 ### CLI Flag Changes
 
