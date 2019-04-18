@@ -10,6 +10,8 @@ Chef 15 release notes will be added here as development progresses.
 
 ### Data Collection Ground-Up Refactor
 
+### archive resource
+
 ### windows_uac resource
 
 ### windows_dfs resources
@@ -21,6 +23,12 @@ Chef 15 release notes will be added here as development progresses.
 ### Ruby 2.6.2
 
 Chef now ships with Ruby 2.6.2. This new version of Ruby improves performance and includes many new features to make more advanced Chef usage easier. See https://www.rubyguides.com/2018/11/ruby-2-6-new-features/ for a list of some of the new functionality.
+
+## New Deprecations
+
+### knife cookbook site deprecated in favor of knife supermarket
+
+The knife cookbook site command has been deprecated in favor of the knife supermarket command. Under the hood they are both actually the same codebase, but running knife cookbook site will now product a warning message. In Chef 16 we will remove the knife cookbook site command entirely.
 
 ## Breaking Changes
 
@@ -126,10 +134,6 @@ The ``knife bootstrap --identity_file`` flag has been removed. This flag was dep
 ### knife user support for Chef Server < 12 removed
 
 The `knife user` command no longer supports open source Chef Server version prior to 12.
-
-### knife cookbook site deprecated in favor of knife supermarket
-
-The knife cookbook site command has been deprecated in favor of the knife supermarket command. Under the hood they are both actually the same codebase, but running knife cookbook site will now product a warning message. In Chef 16 we will remove the knife cookbook site command entirely.
 
 ### attributes in metadata.rb
 
