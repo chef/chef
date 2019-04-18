@@ -371,8 +371,8 @@ class Chef
                      ],
         winrm_authentication_protocol: [:winrm_auth_method,
                                         "--winrm-authentication-protocol PROTOCOL",
-                                        ]
-      }
+                                        ],
+      }.freeze
 
       DEPRECATED_FLAGS.each do |flag, new_flag_config|
         new_flag, old_long = new_flag_config
@@ -513,13 +513,13 @@ class Chef
       # This can be moved up to the base knife class if it's agreeable.
       def warn_and_map_deprecated_flags
         DEPRECATED_FLAGS.each do |old_key, new_flag_config|
-          new_key, _ = new_flag_config
-          if (config.key?(old_key) && config_source(old_key) == :cli)
+          new_key, = new_flag_config
+          if config.key?(old_key) && config_source(old_key) == :cli
             # TODO - do we want the same warnings for knife config keys
             #        in absence of CLI keys?
             if config.key?(new_key) && config_source(new_key) == :cli
-              new_key_name = "--#{new_key.to_s.gsub("_", "-")}"
-              old_key_name = "--#{old_key.to_s.gsub("_", "-")}"
+              new_key_name = "--#{new_key.to_s.tr("_", "-")}"
+              old_key_name = "--#{old_key.to_s.tr("_", "-")}"
               ui.warn <<~EOM
                 You provided both #{new_key_name} and #{old_key_name}.
                 Using: '#{new_key_name.split(" ").first} #{config[new_key]}' because #{old_key_name} is deprecated.

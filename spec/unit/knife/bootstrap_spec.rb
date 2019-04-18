@@ -1591,7 +1591,6 @@ describe Chef::Knife::Bootstrap do
       Chef::Config[:silence_deprecation_warnings] = false
     end
 
-
     context "when a deprecated CLI flag is given on the CLI" do
       before do
         knife.config[:ssh_user] = "sshuser"
