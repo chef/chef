@@ -47,7 +47,7 @@ The LC_ALL property in the locale resource has been deprecated as the usage of t
 ### Knife Bootstrap
 
 Knife bootstrap has been updated, and Windows bootstrap has been merged into core Chef's `knife bootstrap`. This marks the deprecation of the `knife-windows` plugin's `bootstrap` behavior.
-This change also addresses [CVE-2015-8559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8559): The knife bootstrap command in chef leaks the validator.pem private RSA key to /var/log/messages.
+This change also addresses [CVE-2015-8559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8559): The `knife bootstrap` command in chef leaks the validator.pem private RSA key to /var/log/messages.
 
 *Important*: `knife bootstrap` works with all supported versions of Chef client.  Older versions may continue to work as far back as 12.20
 

@@ -64,7 +64,7 @@ passed through to no effect.
 As part of this change, CLI options from `knife bootstrap windows winrm` and `knife bootstrap`
 need to be merged.  The majority will be untouched, but we'll also take this opportunity
 to make flag names more accurately describe what they're doing, and updating several options that are
-protocol-specific to be prefixed with the protocol (e.g. --ssl-peer-fingerprint to --winrm-ssl-peer-fingerprint`)
+protocol-specific to be prefixed with the protocol (e.g. `--ssl-peer-fingerprint` to `--winrm-ssl-peer-fingerprint`)
 When a direct mapping exists, the original names will continue to work with backward
 compatibility and a deprecation warning if they have changed.
 
@@ -80,7 +80,7 @@ compatibility and a deprecation warning if they have changed.
 | --connection-port | port to connect to, regardless of protocol |
 
 `--connection-user`, `--connection-port`, and `--connection-password` replace their protocol-specific counterparts, since
-these are applicable to all supported transports.  Their original knife config keys (`ssh\_user`, `ssh\_password`, etc) remain
+these are applicable to all supported transports.  Their original knife config keys (`ssh\_user`, `ssh\_password`, etc.) remain
 available for use.
 
 Note that auth-related configuration may see further changes as work proceeds on credential set support for train.
@@ -111,7 +111,7 @@ Note that auth-related configuration may see further changes as work proceeds on
 | Flag | Notes |
 |-----:|:------|
 |--kerberos-keytab-file| This option existed but was not implemented.|
-|--winrm-codepage| This was used under knife-windows because bootstrapping was performed over a `cmd` shell. It is now invoked from `powershell`, so this option is no longer required.|
+|--winrm-codepage| This was used under `knife-windows` because bootstrapping was performed over a `cmd` shell. It is now invoked from `powershell`, so this option is no longer required.|
 |--winrm-shell| This option was ignored for bootstrap.|
 |--prerelease|Prerelease Chef hasn't existed for some time.|
 |--install-as-service|Installing Chef client as a service is not supported|
