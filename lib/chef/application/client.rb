@@ -302,6 +302,11 @@ class Chef::Application::Client < Chef::Application
     description: "Use cached cookbooks without overwriting local differences from the server",
     boolean: false
 
+  option :chef_license,
+    long: "--chef-license ACCEPTANCE",
+    description: "Placeholder option for Chef license acceptance to provide compatibility with Chef Infra 15+ command line options.",
+    required: false
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
   RECONFIGURE_SIGNAL = "H".freeze
 

@@ -213,6 +213,11 @@ class Chef::Application::Solo < Chef::Application
     description: "Run chef-solo in legacy mode",
     boolean: true
 
+  option :chef_license,
+    long: "--chef-license ACCEPTANCE",
+    description: "Placeholder option for Chef license acceptance to provide compatibility with Chef Infra 15+ command line options.",
+    required: false
+
   attr_reader :chef_client_json
 
   # Get this party started
