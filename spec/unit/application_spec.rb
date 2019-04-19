@@ -162,7 +162,7 @@ describe Chef::Application do
 
         it "should emit a warning" do
           expect(Chef::Config).not_to receive(:from_file).with("/etc/chef/default.rb")
-          expect(Chef::Log).to receive(:warn).with("No config file found or specified on command line, using command line options.")
+          expect(Chef::Log).to receive(:warn).with("No config file found or specified on command line. Using command line options instead.")
           @app.configure_chef
         end
       end

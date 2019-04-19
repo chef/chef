@@ -43,8 +43,8 @@ describe Chef::Log::WinEvt do
   end
 
   it "should send message with severity warning to Windows Event Log." do
-    expect(winevt).to receive(:add).with(2, "No config file found or specified on command line, using command line options.", nil)
-    Chef::Log.warn("No config file found or specified on command line, using command line options.")
+    expect(winevt).to receive(:add).with(2, "No config file found or specified on command line. Using command line options instead.", nil)
+    Chef::Log.warn("No config file found or specified on command line. Using command line options instead.")
   end
 
   it "should fallback into send message with severity info to Windows Event Log when wrong format." do
