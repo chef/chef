@@ -26,10 +26,10 @@ GIT
 
 GIT
   remote: https://github.com/inspec/inspec.git
-  revision: e3999a0814cffdb97257350352fa66272499a687
+  revision: 50a8fd7370032c11d1b4640813444e9b1c604716
   branch: master
   specs:
-    inspec-core (4.1.2)
+    inspec-core (4.1.3)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       faraday_middleware (~> 0.12.2)
@@ -57,7 +57,7 @@ GIT
 
 GIT
   remote: https://github.com/inspec/train.git
-  revision: 5d9b4f561883ee7946053fe83ef833f2137fa1b3
+  revision: d6c7b34d2b1d3558a6098614a5a09a96603979d8
   branch: ed25519
   specs:
     train-core (2.0.7)
