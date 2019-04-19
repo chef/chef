@@ -75,10 +75,12 @@ PATH
   specs:
     chef (15.0.224)
       addressable
+      bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
       chef-config (= 15.0.224)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
+      ed25519 (~> 1.2)
       erubis (~> 2.7)
       ffi (~> 1.9, >= 1.9.25)
       ffi-libarchive
@@ -101,10 +103,12 @@ PATH
       uuidtools (~> 2.1.5)
     chef (15.0.224-universal-mingw32)
       addressable
+      bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
       chef-config (= 15.0.224)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
+      ed25519 (~> 1.2)
       erubis (~> 2.7)
       ffi (~> 1.9, >= 1.9.25)
       ffi-libarchive
