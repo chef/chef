@@ -113,6 +113,11 @@ class Chef::Application::Apply < Chef::Application
     description: "Only run the bare minimum ohai plugins chef needs to function",
     boolean: true
 
+  option :chef_license,
+    long: "--chef-license ACCEPTANCE",
+    description: "Placeholder option for Chef license acceptance to provide compatibility with Chef Infra 15+ command line options.",
+    required: false
+
   attr_reader :json_attribs
 
   def initialize

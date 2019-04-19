@@ -250,6 +250,11 @@ class Chef
           Chef::Config[:knife][:bootstrap_vault_item]
         }
 
+      option :chef_license,
+        long: "--chef-license ACCEPTANCE",
+        description: "Placeholder option for Chef license acceptance to provide compatibility with Chef Infra 15+ command line options.",
+        required: false
+
       def initialize(argv = [])
         super
         @client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(
