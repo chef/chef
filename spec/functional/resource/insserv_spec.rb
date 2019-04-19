@@ -93,11 +93,13 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
     it "should start the service" do
       new_resource.run_action(:start)
       service_should_be_started("inittest.txt")
+      expect(new_resource).to be_updated_by_last_action
     end
 
     it "should be idempotent" do
       new_resource.run_action(:start)
       service_should_be_started("inittest.txt")
+      expect(new_resource).to be_updated_by_last_action
       new_resource.run_action(:start)
       service_should_be_started("inittest.txt")
       expect(new_resource).not_to be_updated_by_last_action
@@ -112,11 +114,13 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
     it "should stop the service" do
       new_resource.run_action(:stop)
       service_should_be_stopped("inittest.txt")
+      expect(new_resource).to be_updated_by_last_action
     end
 
     it "should be idempotent" do
       new_resource.run_action(:stop)
       service_should_be_stopped("inittest.txt")
+      expect(new_resource).to be_updated_by_last_action
       new_resource.run_action(:stop)
       service_should_be_stopped("inittest.txt")
       expect(new_resource).not_to be_updated_by_last_action
@@ -131,6 +135,17 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
     it "should restart the service" do
       new_resource.run_action(:restart)
       service_should_be_started("inittest_restart.txt")
+      expect(new_resource).to be_updated_by_last_action
+    end
+
+    it "should be idempotent" do
+      skip "FIXME: restart is not idempotent"
+      new_resource.run_action(:restart)
+      service_should_be_disabled
+      expect(new_resource).to be_updated_by_last_action
+      new_resource.run_action(:restart)
+      service_should_be_disabled
+      expect(new_resource).not_to be_updated_by_last_action
     end
   end
 
@@ -142,6 +157,17 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
     it "should reload the service" do
       new_resource.run_action(:reload)
       service_should_be_started("inittest_reload.txt")
+      expect(new_resource).to be_updated_by_last_action
+    end
+
+    it "should be idempotent" do
+      skip "FIXME: reload is not idempotent"
+      new_resource.run_action(:reload)
+      service_should_be_disabled
+      expect(new_resource).to be_updated_by_last_action
+      new_resource.run_action(:reload)
+      service_should_be_disabled
+      expect(new_resource).not_to be_updated_by_last_action
     end
   end
 
@@ -149,11 +175,13 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
     it "should enable the service" do
       new_resource.run_action(:enable)
       service_should_be_enabled
+      expect(new_resource).to be_updated_by_last_action
     end
 
     it "should be idempotent" do
       new_resource.run_action(:enable)
       service_should_be_enabled
+      expect(new_resource).to be_updated_by_last_action
       new_resource.run_action(:enable)
       service_should_be_enabled
       expect(new_resource).not_to be_updated_by_last_action
@@ -164,11 +192,13 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
     it "should disable the service" do
       new_resource.run_action(:disable)
       service_should_be_disabled
+      expect(new_resource).to be_updated_by_last_action
     end
 
     it "should be idempotent" do
       new_resource.run_action(:disable)
       service_should_be_disabled
+      expect(new_resource).to be_updated_by_last_action
       new_resource.run_action(:disable)
       service_should_be_disabled
       expect(new_resource).not_to be_updated_by_last_action
