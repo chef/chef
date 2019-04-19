@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.224 -->
-## [v15.0.224](https://github.com/chef/chef/tree/v15.0.224) (2019-04-19)
+<!-- latest_release 15.0.225 -->
+## [v15.0.225](https://github.com/chef/chef/tree/v15.0.225) (2019-04-19)
 
 #### Merged Pull Requests
-- fix default/override attribute blacklists and whitelists [#8396](https://github.com/chef/chef/pull/8396) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add ed25519 deps, bump highline and net-ssh pins and pull inspec from git [#8380](https://github.com/chef/chef/pull/8380) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Add ed25519 deps, bump highline and net-ssh pins and pull inspec from git [#8380](https://github.com/chef/chef/pull/8380) ([tas50](https://github.com/tas50)) <!-- 15.0.225 -->
 - fix default/override attribute blacklists and whitelists [#8396](https://github.com/chef/chef/pull/8396) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.224 -->
 - Replace highline with tty-screen in knife list [#8381](https://github.com/chef/chef/pull/8381) ([tas50](https://github.com/tas50)) <!-- 15.0.223 -->
 - Sync the CLI option descriptions between chef-client and chef-solo [#8391](https://github.com/chef/chef/pull/8391) ([tas50](https://github.com/tas50)) <!-- 15.0.222 -->
