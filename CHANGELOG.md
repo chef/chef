@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.12.8 -->
-## [v14.12.8](https://github.com/chef/chef/tree/v14.12.8) (2019-04-19)
+<!-- latest_release 14.12.9 -->
+## [v14.12.9](https://github.com/chef/chef/tree/v14.12.9) (2019-04-19)
 
 #### Merged Pull Requests
-- Improve the error message when no config can be loaded  [#8401](https://github.com/chef/chef/pull/8401) ([tas50](https://github.com/tas50))
+- Sync the CLI option descriptions between chef-client and chef-solo [#8402](https://github.com/chef/chef/pull/8402) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.12.3 -->
 ### Changes since 14.12.3 release
 
 #### Merged Pull Requests
+- Sync the CLI option descriptions between chef-client and chef-solo [#8402](https://github.com/chef/chef/pull/8402) ([tas50](https://github.com/tas50)) <!-- 14.12.9 -->
 - Improve the error message when no config can be loaded  [#8401](https://github.com/chef/chef/pull/8401) ([tas50](https://github.com/tas50)) <!-- 14.12.8 -->
 - Fix default/override attribute blacklists and whitelists [#8400](https://github.com/chef/chef/pull/8400) ([tas50](https://github.com/tas50)) <!-- 14.12.7 -->
 - Add placeholder license acceptance flags [#8398](https://github.com/chef/chef/pull/8398) ([tas50](https://github.com/tas50)) <!-- 14.12.6 -->
