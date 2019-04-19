@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.12.6 -->
-## [v14.12.6](https://github.com/chef/chef/tree/v14.12.6) (2019-04-19)
+<!-- latest_release 14.12.7 -->
+## [v14.12.7](https://github.com/chef/chef/tree/v14.12.7) (2019-04-19)
 
 #### Merged Pull Requests
-- Add placeholder license acceptance flags [#8398](https://github.com/chef/chef/pull/8398) ([tas50](https://github.com/tas50))
+- Fix default/override attribute blacklists and whitelists [#8400](https://github.com/chef/chef/pull/8400) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.12.3 -->
 ### Changes since 14.12.3 release
 
 #### Merged Pull Requests
+- Fix default/override attribute blacklists and whitelists [#8400](https://github.com/chef/chef/pull/8400) ([tas50](https://github.com/tas50)) <!-- 14.12.7 -->
 - Add placeholder license acceptance flags [#8398](https://github.com/chef/chef/pull/8398) ([tas50](https://github.com/tas50)) <!-- 14.12.6 -->
 - Update win32-service + bump inspec to 3.9.3 [#8387](https://github.com/chef/chef/pull/8387) ([tas50](https://github.com/tas50)) <!-- 14.12.5 -->
 - Backport #8077 to Chef 14 [#8384](https://github.com/chef/chef/pull/8384) ([btm](https://github.com/btm)) <!-- 14.12.4 -->
