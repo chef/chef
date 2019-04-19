@@ -57,10 +57,10 @@ GIT
 
 GIT
   remote: https://github.com/inspec/train.git
-  revision: d6c7b34d2b1d3558a6098614a5a09a96603979d8
-  branch: ed25519
+  revision: e68511376de81172d69bcd3c773438b8754b9ee4
+  branch: master
   specs:
-    train-core (2.0.7)
+    train-core (2.0.8)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
       json (>= 1.8, < 3.0)
