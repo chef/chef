@@ -8,5 +8,6 @@ gem "kitchen-appbundle-updater"
 gem "kitchen-dokken", "=1.1.1" # 2.x fails atm: https://travis-ci.org/chef/chef/jobs/199125787
 gem "kitchen-docker", git: "https://github.com/test-kitchen/kitchen-docker.git", branch: "master"
 gem "kitchen-inspec", git: "https://github.com/chef/kitchen-inspec.git", branch: "master"
+gem "inspec", git: "https://github.com/inspec/inspec.git", branch: "master" # this goes away when we ship inspec 4
 gem "kitchen-vagrant", git: "https://github.com/test-kitchen/kitchen-vagrant.git", branch: "master"
 gem "test-kitchen", git: "https://github.com/test-kitchen/test-kitchen.git", branch: "master"
