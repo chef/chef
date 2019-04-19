@@ -455,13 +455,10 @@ class Chef
 
     # Transform the node to a Hash
     def to_hash
-      index_hash = Hash.new
+      index_hash = attributes.to_hash
       index_hash["chef_type"] = "node"
       index_hash["name"] = name
       index_hash["chef_environment"] = chef_environment
-      attribute.each do |key, value|
-        index_hash[key] = value
-      end
       index_hash["recipe"] = run_list.recipe_names if run_list.recipe_names.length > 0
       index_hash["role"] = run_list.role_names if run_list.role_names.length > 0
       index_hash["run_list"] = run_list.run_list_items
@@ -472,10 +469,10 @@ class Chef
       display = {}
       display["name"]             = name
       display["chef_environment"] = chef_environment
-      display["automatic"]        = automatic_attrs
-      display["normal"]           = normal_attrs
-      display["default"]          = attributes.combined_default
-      display["override"]         = attributes.combined_override
+      display["automatic"]        = attributes.automatic.to_hash
+      display["normal"]           = attributes.normal.to_hash
+      display["default"]          = attributes.combined_default.to_hash
+      display["override"]         = attributes.combined_override.to_hash
       display["run_list"]         = run_list.run_list_items
       display
     end
@@ -490,11 +487,11 @@ class Chef
         "name" => name,
         "chef_environment" => chef_environment,
         "json_class" => self.class.name,
-        "automatic" => attributes.automatic,
-        "normal" => attributes.normal,
+        "automatic" => attributes.automatic.to_hash,
+        "normal" => attributes.normal.to_hash,
         "chef_type" => "node",
-        "default" => attributes.combined_default,
-        "override" => attributes.combined_override,
+        "default" => attributes.combined_default.to_hash,
+        "override" => attributes.combined_override.to_hash,
         # Render correctly for run_list items so malformed json does not result
         "run_list" => @primary_runlist.run_list.map { |item| item.to_s },
       }
