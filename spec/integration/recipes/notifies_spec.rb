@@ -5,7 +5,7 @@ describe "notifications" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.expand_path("../../../../bin", __FILE__) }
+  let(:chef_dir) { File.expand_path("../../../support/bin", __FILE__) }
   let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
 
   when_the_repository "notifies a nameless resource" do
