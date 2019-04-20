@@ -1,24 +1,22 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.12.9 -->
-## [v14.12.9](https://github.com/chef/chef/tree/v14.12.9) (2019-04-19)
-
-#### Merged Pull Requests
-- Sync the CLI option descriptions between chef-client and chef-solo [#8402](https://github.com/chef/chef/pull/8402) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.12.3 -->
-### Changes since 14.12.3 release
-
-#### Merged Pull Requests
-- Sync the CLI option descriptions between chef-client and chef-solo [#8402](https://github.com/chef/chef/pull/8402) ([tas50](https://github.com/tas50)) <!-- 14.12.9 -->
-- Improve the error message when no config can be loaded  [#8401](https://github.com/chef/chef/pull/8401) ([tas50](https://github.com/tas50)) <!-- 14.12.8 -->
-- Fix default/override attribute blacklists and whitelists [#8400](https://github.com/chef/chef/pull/8400) ([tas50](https://github.com/tas50)) <!-- 14.12.7 -->
-- Add placeholder license acceptance flags [#8398](https://github.com/chef/chef/pull/8398) ([tas50](https://github.com/tas50)) <!-- 14.12.6 -->
-- Update win32-service + bump inspec to 3.9.3 [#8387](https://github.com/chef/chef/pull/8387) ([tas50](https://github.com/tas50)) <!-- 14.12.5 -->
-- Backport #8077 to Chef 14 [#8384](https://github.com/chef/chef/pull/8384) ([btm](https://github.com/btm)) <!-- 14.12.4 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.12.9](https://github.com/chef/chef/tree/v14.12.9) (2019-04-20)
+
+#### Merged Pull Requests
+- Backport #8077 to Chef 14 [#8384](https://github.com/chef/chef/pull/8384) ([btm](https://github.com/btm))
+- Update win32-service + bump inspec to 3.9.3 [#8387](https://github.com/chef/chef/pull/8387) ([tas50](https://github.com/tas50))
+- Add placeholder license acceptance flags [#8398](https://github.com/chef/chef/pull/8398) ([tas50](https://github.com/tas50))
+- Fix default/override attribute blacklists and whitelists [#8400](https://github.com/chef/chef/pull/8400) ([tas50](https://github.com/tas50))
+- Improve the error message when no config can be loaded  [#8401](https://github.com/chef/chef/pull/8401) ([tas50](https://github.com/tas50))
+- Sync the CLI option descriptions between chef-client and chef-solo [#8402](https://github.com/chef/chef/pull/8402) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v14.12.3](https://github.com/chef/chef/tree/v14.12.3) (2019-04-16)
 
 #### Merged Pull Requests
@@ -30,7 +28,6 @@
 - Update Ruby to 2.5.5 and nokogiri to 1.10.2 [#8339](https://github.com/chef/chef/pull/8339) ([tas50](https://github.com/tas50))
 - Backport two test fixes/changes to chef-14 [#8364](https://github.com/chef/chef/pull/8364) ([btm](https://github.com/btm))
 - Drop privileges before creating files in solo mode [#8372](https://github.com/chef/chef/pull/8372) ([btm](https://github.com/btm))
-<!-- latest_stable_release -->
 
 ## [v14.11.21](https://github.com/chef/chef/tree/v14.11.21) (2019-03-07)
 
