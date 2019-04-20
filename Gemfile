@@ -18,6 +18,7 @@ group(:omnibus_package) do
   gem "rb-readline"
   gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "master"
   gem "train-core", git: "https://github.com/inspec/train.git", branch: "master"
+  gem "train", git: "https://github.com/inspec/train.git", branch: "master"
   gem "chef-vault"
 end
 
