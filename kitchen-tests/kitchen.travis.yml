@@ -18,8 +18,8 @@ provisioner:
 lifecycle:
   pre_converge:
     - remote: /opt/chef/embedded/bin/gem install appbundle-updater
-    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['TRAVIS_COMMIT'] %>
-    - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %>
+    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['TRAVIS_COMMIT'] %> --tarball --github chef/chef
+    - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
 
 #  github_access_token: <%= ENV['KITCHEN_GITHUB_TOKEN'] %>
 
