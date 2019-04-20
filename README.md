@@ -169,7 +169,7 @@ Submit a PR with the changes made by the above.
 
 ## Branch Structure
 
-We develop and ship the current release of Chef off the master branch of this repository. Our goal is that master should always be in a shipable state. Previous stable releases of Chef are developed on their own branches named by the major version (ex: chef-13 or chef-12). We do not perform direct development on these stable branches except to resolve build failures. Instead we backport fixes from our master branch to these stable branches. Stable branches receive critical bugfixes and security releases and stable Chef releases are made as necessary for security purposes.
+We develop and ship the current release of Chef off the master branch of this repository.  Our goal is that master should always be in a shipable state.  Previous stable releases of Chef are developed on their own branches named by the major version (ex: chef-13 or chef-12). We do not perform direct development on these stable branches except to resolve build failures. Instead we backport fixes from our master branch to these stable branches. Stable branches receive critical bugfixes and security releases and stable Chef releases are made as necessary for security purposes.
 
 ## Backporting Fixes to Stable Releases
 
