@@ -447,11 +447,13 @@ describe Chef::Knife::Bootstrap do
       end
     end
 
-    it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty", :focus do
-      allow(Dir).to receive(:glob).and_call_original # ensure the template can be found
-      expect(Dir).to receive(:glob).with(File.join(trusted_certs_dir, "*.{crt,pem}")).and_return([])
-      expect(rendered_template).not_to match(%r{mkdir -p /etc/chef/trusted_certs})
+    context "when :trusted_cets_dir is empty" do
+      let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(File.dirname(__FILE__), "../../data/trusted_certs_empty")) }
+      it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty" do
+        expect(rendered_template).not_to match(%r{mkdir -p /etc/chef/trusted_certs})
+      end
     end
+
   end
 
   context "when doing fips things" do
