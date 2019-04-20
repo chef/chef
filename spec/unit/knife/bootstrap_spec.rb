@@ -1661,7 +1661,7 @@ describe Chef::Knife::Bootstrap do
       before do
         Chef::Config[:validation_key] = "/blah"
         allow(vault_handler_mock).to receive(:doing_chef_vault?).and_return false
-        allow(File).to receive(:exist?).with("/blah").and_return false
+        allow(File).to receive(:exist?).with(/\/blah/).and_return false
       end
       it_behaves_like "creating the client locally"
     end
@@ -1669,7 +1669,7 @@ describe Chef::Knife::Bootstrap do
     context "when a valid validation key is given and we're doing old-style client creation" do
       before do
         Chef::Config[:validation_key] = "/blah"
-        allow(File).to receive(:exist?).with("/blah").and_return true
+        allow(File).to receive(:exist?).with(/\/blah/).and_return true
         allow(vault_handler_mock).to receive(:doing_chef_vault?).and_return false
       end
 
