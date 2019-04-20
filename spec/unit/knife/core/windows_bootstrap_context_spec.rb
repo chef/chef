@@ -86,11 +86,11 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
 
   describe "validation_key" do
     before do
-      bootstrap_context.instance_variable_set(:@config, Mash.new(validation_key: "C:\\chef\\key.pem"))
+      bootstrap_context.instance_variable_set(:@chef_config, Mash.new(validation_key: "C:\\chef\\key.pem"))
     end
 
     it "should return false if validation_key does not exist" do
-      allow(::File).to receive(:expand_path)
+      allow(::File).to receive(:expand_path).with("C:\\chef\\key.pem").and_call_original
       allow(::File).to receive(:exist?).and_return(false)
       expect(bootstrap_context.validation_key).to eq(false)
     end
