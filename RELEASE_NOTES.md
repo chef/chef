@@ -16,8 +16,8 @@ Chef Client requires a EULA to be accepted by users before it can run. Users can
 `CHEF_LICENSE=accept-no-persist chef-client`
 
 Finally, if users run `chef-client` without any of these options, they will receive an interactive prompt asking for
-license acceptance. If the license is accepted, a marker file will be written to the filesystem (unless `no-persist` is
-specified). Once this marker file is persisted, users no longer need to set any of these flags.
+license acceptance. If the license is accepted, a marker file will be written to the filesystem (unless
+`accept-no-persist` is specified). Once this marker file is persisted, users no longer need to set any of these flags.
 
 ### Allow Using --delete-entire-chef-repo in Chef Local Mode
 

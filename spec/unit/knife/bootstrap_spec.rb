@@ -40,6 +40,7 @@ describe Chef::Knife::Bootstrap do
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)
     Chef::Config[:knife][:bootstrap_template] = bootstrap_template unless bootstrap_template.nil?
+    expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!)
 
     k = Chef::Knife::Bootstrap.new(bootstrap_cli_options)
     allow(k.ui).to receive(:stderr).and_return(stderr)
@@ -47,6 +48,11 @@ describe Chef::Knife::Bootstrap do
     allow(k).to receive(:connection).and_return connection
     k.merge_configs
     k
+  end
+
+  it "fails when LicenseAcceptance fails" do
+    expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!).and_raise("foo")
+    expect { k = Chef::Knife::Bootstrap.new(bootstrap_cli_options) }.to raise_error("foo")
   end
 
   context "#bootstrap_template" do
@@ -293,7 +299,6 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "raises a Chef::Exceptions::BootstrapCommandInputError with the proper error message" do
-          # expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!)
         knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
         knife.parse_options(["--json-attribute-file", jsonfile.path])
         knife.merge_configs
@@ -324,6 +329,7 @@ describe Chef::Knife::Bootstrap do
 
   describe "specifying no_proxy with various entries" do
     subject(:knife) do
+      expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!)
       k = described_class.new
       Chef::Config[:knife][:bootstrap_template] = template_file
       allow(k).to receive(:connection).and_return connection
@@ -1794,16 +1800,12 @@ describe Chef::Knife::Bootstrap do
   end
 
   it "verifies that a server to bootstrap was given as a command line arg" do
-    # expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!)
     knife.name_args = nil
     expect { knife.run }.to raise_error(SystemExit)
     expect(stderr.string).to match(/ERROR:.+FQDN or ip/)
   end
 
   describe "#bootstrap_context" do
-    # before do
-      # expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!)
-    # end
     context "under Windows" do
       let(:windows_test) { true }
       it "creates a WindowsBootstrapContext" do
