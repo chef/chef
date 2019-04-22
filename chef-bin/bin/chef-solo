@@ -21,4 +21,4 @@
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 require "chef/application/solo"
 
-Chef::Application::Solo.new.run
+Chef::Application::Solo.new.run(true)
