@@ -4,7 +4,7 @@ Here we seek to provide end-to-end testing of Chef Client through cookbooks whic
 
 ## Getting started
 
-These tests run in Docker containers so make sure to install Docker on your workstation. Once docker is installed all the gems needed to run these tests can be installed with Bundler.
+These tests run in Docker containers, so make sure to install Docker on your workstation. Once Docker is installed, all the gems needed to run these tests can be installed with Bundler.
 
 ```shell
 chef/kitchen-tests$ bundle install
@@ -25,7 +25,7 @@ end-to-end-amazonlinux    Dokken  Dokken       Inspec    Dokken     <Not Created
 
 ## Testing
 
-We use Test Kitchen to build instances, test client code, and destroy instances. If you are unfamiliar with Test Kitchen we recommend checking out the [tutorial](http://kitchen.ci/) along with the `kitchen-dokken` [driver documentation](https://github.com/someara/kitchen-dokken). Test Kitchen is configured to manipulate instances using [Docker](https://www.docker.com/) when testing locally and when testing pull requests on [Travis CI](https://travis-ci.com/).
+We use Test Kitchen to build instances, test client code, and destroy instances. If you are unfamiliar with Test Kitchen, we recommend checking out the [tutorial](http://kitchen.ci/) along with the `kitchen-dokken` [driver documentation](https://github.com/someara/kitchen-dokken). Test Kitchen is configured to manipulate instances using [Docker](https://www.docker.com/) when testing locally, and when testing, pull requests on [Travis CI](https://travis-ci.com/).
 
 ### Commands
 
@@ -53,7 +53,7 @@ To see a list of available commands, type `bundle exec kitchen help`. To see mor
 
 ### Configuring your tests
 
-Test Kitchen is configured in the `kitchen.yml` file which resides in this directory. You will need to configure the provisioner before running the tests.
+Test Kitchen is configured in the `kitchen.yml` file, which resides in this directory. You will need to configure the provisioner before running the tests.
 
 The provisioner can be configured to pull client source code from a GitHub repository using any valid Git reference. You are encouraged to modify any of these settings, but please return them to their original values before submitting a pull request for review (unless, of course, your changes are enhancements to the default provisioner settings).
 
@@ -66,7 +66,7 @@ The branch you choose must be accessible on GitHub. You cannot use a local commi
 
 ### Testing pull requests
 
-These end-to-end tests are also configured to run on Travis-CI with docker containers when you submit a pull request to `chef/chef`. Kitchen is configured to pull chef client source code from the branch it is testing. There is no need to modify `kitchen.yml` unless you are contributing tests.
+These end-to-end tests are also configured to run on Travis-CI with Docker containers when you submit a pull request to `chef/chef`. Kitchen is configured to pull chef client source code from the branch it is testing. There is no need to modify `kitchen.yml` unless you are contributing tests.
 
 ## Contributing
 
