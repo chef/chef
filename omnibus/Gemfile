@@ -14,7 +14,7 @@ group :development do
   gem "berkshelf", ">= 7.0"
 
   # We pin here to the last release Ohai so prevent more current chef coming in
-  gem "ohai", "~> 14.0"
+  gem "ohai"
 
   # Use Test Kitchen with Vagrant for converging the build environment
   gem "test-kitchen", ">= 1.23"
