@@ -1,40 +1,115 @@
 ---
 driver:
-  name: vagrant
-  customize:
-    cpus: 4
-    memory: 2048
+  name: dokken
+  privileged: true
+  chef_image: chef/chef
+  chef_version: current
+
+transport:
+  name: dokken
+
+provisioner:
+  name: dokken
+  client_rb:
+    diff_disabled: true
+
+lifecycle:
+  pre_converge:
+    - remote: /opt/chef/embedded/bin/gem install appbundle-updater
+    - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
+    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['TRAVIS_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
 
 verifier:
   name: inspec
   format: progress
 
-provisioner:
-  name: chef_github
-  chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
-  chef_omnibus_install_options: "-c current"
-  github_owner: "chef"
-  github_repo: "chef"
-  ohai_refname: "master"
-  refname: <%= %x(git rev-parse HEAD) %>
-  client_rb:
-    diff_disabled: true
-
 platforms:
-  - name: amazonlinux
-    driver_config:
-      box: mvbcoding/awslinux
-  - name: amazonlinux-2
-  - name: centos-6
-  - name: centos-7
-  - name: debian-8
-  - name: debian-9
-  - name: opensuse-leap-42
-  - name: ubuntu-16.04
-  - name: ubuntu-18.04
+- name: amazonlinux
+  driver:
+    image: dokken/amazonlinux
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: amazonlinux-2
+  driver:
+    image: dokken/amazonlinux-2
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: debian-8
+  driver:
+    image: dokken/debian-8
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+
+- name: debian-9
+  driver:
+    image: dokken/debian-9
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+
+- name: debian-10
+  driver:
+    image: dokken/debian-10
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+
+- name: centos-6
+  driver:
+    image: dokken/centos-6
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: centos-7
+  driver:
+    image: dokken/centos-7
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install e2fsprogs
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: fedora-latest
+  driver:
+    image: dokken/fedora-latest
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: ubuntu-16.04
+  driver:
+    image: dokken/ubuntu-16.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+
+- name: ubuntu-18.04
+  driver:
+    image: dokken/ubuntu-18.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+
+- name: opensuse-leap
+  driver:
+    image: dokken/opensuse-leap
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/zypper --non-interactive update
+      - RUN /usr/bin/zypper --non-interactive install cron
 
 suites:
   - name: end-to-end
     run_list:
       - recipe[end_to_end::default]
-      - recipe[end_to_end::tests]
+  - name: rspec
+    run_list:
+      - recipe[rspec]
+    lifecycle:
+      post_converge:
+        - remote: /usr/local/bin/run-chef-rspec
