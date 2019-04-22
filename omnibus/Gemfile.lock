@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 34aaf2346d3467aac2d40b051ffb68852a3af896
+  revision: 3d4327c0032b8cc7d25eb33290a7aec2fce20a2a
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -38,10 +38,10 @@ GEM
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.16.0)
+    aws-sdk-kms (1.17.0)
       aws-sdk-core (~> 3, >= 3.48.2)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.36.0)
+    aws-sdk-s3 (1.36.1)
       aws-sdk-core (~> 3, >= 3.48.2)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.0)
@@ -64,10 +64,10 @@ GEM
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.3)
-    chef (14.12.3)
+    chef (14.12.9)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.12.3)
+      chef-config (= 14.12.9)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -94,10 +94,10 @@ GEM
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.12.3-universal-mingw32)
+    chef (14.12.9-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.12.3)
+      chef-config (= 14.12.9)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -136,7 +136,7 @@ GEM
       win32-service (>= 1.0, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
-    chef-config (14.12.3)
+    chef-config (14.12.9)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
@@ -254,7 +254,7 @@ GEM
       rspec-mocks (~> 3.8.0)
     rspec-core (3.8.0)
       rspec-support (~> 3.8.0)
-    rspec-expectations (3.8.2)
+    rspec-expectations (3.8.3)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
     rspec-its (1.3.0)
@@ -360,7 +360,7 @@ PLATFORMS
 DEPENDENCIES
   berkshelf (>= 7.0)
   kitchen-vagrant (>= 1.3.1)
-  ohai (~> 14.0)
+  ohai
   omnibus!
   omnibus-software!
   pedump

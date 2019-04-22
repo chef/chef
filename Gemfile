@@ -16,9 +16,7 @@ gem "cheffish", "~> 14"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "master"
-  gem "train-core", git: "https://github.com/inspec/train.git", branch: "master"
-  gem "train", git: "https://github.com/inspec/train.git", branch: "master"
+  gem "inspec-core", ">= 4.0.0.a", "< 5"
   gem "chef-vault"
 end
 
