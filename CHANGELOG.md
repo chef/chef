@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.227 -->
-## [v15.0.227](https://github.com/chef/chef/tree/v15.0.227) (2019-04-22)
+<!-- latest_release 15.0.228 -->
+## [v15.0.228](https://github.com/chef/chef/tree/v15.0.228) (2019-04-22)
 
 #### Merged Pull Requests
-- Replace kitchen-appbundle-updater in Travis tests with Test Kitchen lifecycle hooks [#8403](https://github.com/chef/chef/pull/8403) ([lamont-granquist](https://github.com/lamont-granquist))
+- Merge the local and travis kitchen tests into a single config [#8406](https://github.com/chef/chef/pull/8406) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Merge the local and travis kitchen tests into a single config [#8406](https://github.com/chef/chef/pull/8406) ([tas50](https://github.com/tas50)) <!-- 15.0.228 -->
 - Replace kitchen-appbundle-updater in Travis tests with Test Kitchen lifecycle hooks [#8403](https://github.com/chef/chef/pull/8403) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.227 -->
 - Triggering expeditor version bump [#8405](https://github.com/chef/chef/pull/8405) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.226 -->
 - Add ed25519 deps, bump highline and net-ssh pins and pull inspec from git [#8380](https://github.com/chef/chef/pull/8380) ([tas50](https://github.com/tas50)) <!-- 15.0.225 -->
