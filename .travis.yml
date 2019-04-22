@@ -125,7 +125,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - AMAZON=2
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -141,7 +141,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - AMAZON=201X
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -157,7 +157,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - UBUNTU=16.04
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -173,7 +173,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - UBUNTU=18.04
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -189,7 +189,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - DEBIAN=8
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -205,7 +205,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - DEBIAN=9
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -221,7 +221,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - DEBIAN=10
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -237,7 +237,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - CENTOS=6
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -253,7 +253,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - CENTOS=7
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -269,7 +269,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - FEDORA=latest
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -285,7 +285,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
      - OPENSUSELEAP=42
-     - KITCHEN_YAML=kitchen.travis.yml
+     - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -322,7 +322,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - RSPEC_CENTOS=7
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -339,7 +339,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
      - RSPEC_OPENSUSELEAP=42
-     - KITCHEN_YAML=kitchen.travis.yml
+     - KITCHEN_YAML=kitchen.yml
   allow_failures:
     - rvm: 2.5.5
       services: docker
@@ -357,7 +357,7 @@ matrix:
         - cat .kitchen/logs/kitchen.log
       env:
        - RSPEC_OPENSUSELEAP=42
-       - KITCHEN_YAML=kitchen.travis.yml
+       - KITCHEN_YAML=kitchen.yml
     - env:
         TEST_GEM: poise/halite
       script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
