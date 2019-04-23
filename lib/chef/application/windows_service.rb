@@ -131,7 +131,7 @@ class Chef
             break
           else
             unless run_warning_displayed
-              Chef::Log.info("Currently a #{Chef::Dist::GENERIC} run is happening on this system.")
+              Chef::Log.info("Currently a #{Chef::Dist::PRODUCT} run is happening on this system.")
               Chef::Log.info("Service will stop when run is completed.")
               run_warning_displayed = true
             end
