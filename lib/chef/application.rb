@@ -251,7 +251,12 @@ class Chef
     end
 
     def check_license_acceptance
-      LicenseAcceptance::Acceptor.check_and_persist!("chef-client", Chef::VERSION.to_s, logger: logger)
+      LicenseAcceptance::Acceptor.check_and_persist!(
+        "infra-client",
+        Chef::VERSION.to_s,
+        logger: logger,
+        provided: Chef::Config[:chef_license]
+      )
     end
 
     # Actually run the application
