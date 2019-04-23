@@ -153,7 +153,7 @@ gem_package now supports installing gems into Ruby 2.6 or later installations.
 
 ### scm / git / subversion
 
-scm now supports the path property in favour of destination. However destination will continue to work at this time.
+`scm` resource now supports the `path` property rather than the `destination` property. While currently supported, the `destination` property will be deprecated eventually.
 
 ### windows_ad_join
 
