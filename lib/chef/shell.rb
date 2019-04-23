@@ -25,6 +25,7 @@ require "chef/version"
 require "chef/client"
 require "chef/config"
 require "chef/config_fetcher"
+require "chef/dist"
 
 require "chef/shell/shell_session"
 require "chef/workstation_config_loader"
@@ -253,7 +254,7 @@ module Shell
     option :client,
       short: "-z",
       long: "--client",
-      description: "chef-client session",
+      description: "#{Chef::Dist::CLIENT} session",
       boolean: true
 
     option :solo_legacy_shell,
@@ -271,15 +272,15 @@ module Shell
     option :chef_server_url,
       short: "-S CHEFSERVERURL",
       long: "--server CHEFSERVERURL",
-      description: "The chef server URL",
+      description: "The #{Chef::Dist::PRODUCT} server URL",
       proc: nil
 
     option :version,
       short: "-v",
       long: "--version",
-      description: "Show chef version",
+      description: "Show #{Chef::Dist::PRODUCT} version",
       boolean: true,
-      proc: lambda { |v| puts "Chef: #{::Chef::VERSION}" },
+      proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
       exit: 0
 
     option :override_runlist,

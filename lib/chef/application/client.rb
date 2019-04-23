@@ -29,6 +29,7 @@ require "chef/mixin/shell_out"
 require "chef-config/mixin/dot_d"
 require "mixlib/archive"
 require "uri"
+require "chef/dist"
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut
@@ -70,7 +71,7 @@ class Chef::Application::Client < Chef::Application
 
   option :profile_ruby,
     long: "--[no-]profile-ruby",
-    description: "Dump complete Ruby call graph stack of entire Chef run (expert only)",
+    description: "Dump complete Ruby call graph stack of entire #{Chef::Dist::PRODUCT} run (expert only)",
     boolean: true,
     default: false
 
@@ -125,7 +126,7 @@ class Chef::Application::Client < Chef::Application
   option :pid_file,
     short: "-P PID_FILE",
     long: "--pid PIDFILE",
-    description: "Set the PID file location, for the chef-client daemon process. Defaults to /tmp/chef-client.pid",
+    description: "Set the PID file location, for the #{Chef::Dist::CLIENT} daemon process. Defaults to /tmp/chef-client.pid",
     proc: nil
 
   option :lockfile,
@@ -136,12 +137,12 @@ class Chef::Application::Client < Chef::Application
   option :interval,
     short: "-i SECONDS",
     long: "--interval SECONDS",
-    description: "Run chef-client periodically, in seconds",
+    description: "Run #{Chef::Dist::CLIENT} periodically, in seconds",
     proc: lambda { |s| s.to_i }
 
   option :once,
     long: "--once",
-    description: "Cancel any interval or splay options, run chef once and exit",
+    description: "Cancel any interval or splay options, run #{Chef::Dist::CLIENT} once and exit",
     boolean: true
 
   option :json_attribs,
@@ -165,7 +166,7 @@ class Chef::Application::Client < Chef::Application
   option :chef_server_url,
     short: "-S CHEFSERVERURL",
     long: "--server CHEFSERVERURL",
-    description: "The chef server URL",
+    description: "The #{Chef::Dist::PRODUCT} server URL",
     proc: nil
 
   option :validation_key,
@@ -188,14 +189,14 @@ class Chef::Application::Client < Chef::Application
   option :environment,
     short: "-E ENVIRONMENT",
     long: "--environment ENVIRONMENT",
-    description: "Set the Chef Environment on the node"
+    description: "Set the #{Chef::Dist::PRODUCT} Environment on the node"
 
   option :version,
     short: "-v",
     long: "--version",
-    description: "Show chef version",
+    description: "Show #{Chef::Dist::PRODUCT} version",
     boolean: true,
-    proc: lambda { |v| puts "Chef: #{::Chef::VERSION}" },
+    proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
     exit: 0
 
   option :override_runlist,
@@ -237,13 +238,13 @@ class Chef::Application::Client < Chef::Application
   option :enable_reporting,
     short: "-R",
     long: "--enable-reporting",
-    description: "Enable reporting data collection for chef runs",
+    description: "Enable reporting data collection for #{Chef::Dist::PRODUCT} runs",
     boolean: true
 
   option :local_mode,
     short: "-z",
     long: "--local-mode",
-    description: "Point chef-client at local repository",
+    description: "Point #{Chef::Dist::CLIENT} at local repository",
     boolean: true
 
   option :chef_zero_host,
@@ -268,13 +269,13 @@ class Chef::Application::Client < Chef::Application
     option :fatal_windows_admin_check,
       short: "-A",
       long: "--fatal-windows-admin-check",
-      description: "Fail the run when chef-client doesn't have administrator privileges on Windows",
+      description: "Fail the run when #{Chef::Dist::CLIENT} doesn't have administrator privileges on Windows",
       boolean: true
   end
 
   option :minimal_ohai,
     long: "--minimal-ohai",
-    description: "Only run the bare minimum ohai plugins chef needs to function",
+    description: "Only run the bare minimum ohai plugins #{Chef::Dist::CLIENT} needs to function",
     boolean: true
 
   option :listen,
@@ -328,7 +329,7 @@ class Chef::Application::Client < Chef::Application
 
     if Chef::Config[:recipe_url]
       if !Chef::Config.local_mode
-        Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode")
+        Chef::Application.fatal!("recipe-url can be used only in local-mode")
       else
         if Chef::Config[:delete_entire_chef_repo]
           Chef::Log.trace "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
@@ -419,7 +420,7 @@ class Chef::Application::Client < Chef::Application
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
     if Chef::Config[:version]
-      puts "Chef version: #{::Chef::VERSION}"
+      puts "#{Chef::Dist::PRODUCT} version: #{::Chef::VERSION}"
     end
 
     if !Chef::Config[:client_fork] || Chef::Config[:once]
@@ -440,7 +441,7 @@ class Chef::Application::Client < Chef::Application
 
   def interval_run_chef_client
     if Chef::Config[:daemonize]
-      Chef::Daemon.daemonize("chef-client")
+      Chef::Daemon.daemonize(Chef::Dist::CLIENT)
 
       # Start first daemonized run after configured number of seconds
       if Chef::Config[:daemonize].is_a?(Integer)
@@ -503,10 +504,10 @@ class Chef::Application::Client < Chef::Application
   end
 
   def unforked_interval_error_message
-    "Unforked chef-client interval runs are disabled in Chef 12." +
+    "Unforked #{Chef::Dist::CLIENT} interval runs are disabled in #{Chef::Dist::PRODUCT} 12." +
       "\nConfiguration settings:" +
       ("\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]).to_s +
-      "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+      "\nEnable #{Chef::Dist::CLIENT} interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 
   def fetch_recipe_tarball(url, path)

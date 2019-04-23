@@ -54,6 +54,7 @@ require "chef/platform/rebooter"
 require "chef/mixin/deprecation"
 require "ohai"
 require "rbconfig"
+require "chef/dist"
 
 class Chef
   # == Chef::Client
@@ -240,10 +241,10 @@ class Chef
 
         events.run_start(Chef::VERSION, run_status)
 
-        logger.info("*** Chef #{Chef::VERSION} ***")
+        logger.info("*** #{Chef::Dist::PRODUCT} #{Chef::VERSION} ***")
         logger.info("Platform: #{RUBY_PLATFORM}")
-        logger.info "Chef-client pid: #{Process.pid}"
-        logger.debug("Chef-client request_id: #{request_id}")
+        logger.info "#{Chef::Dist::CLIENT.capitalize} pid: #{Process.pid}"
+        logger.debug("#{Chef::Dist::CLIENT.capitalize} request_id: #{request_id}")
         enforce_path_sanity
         run_ohai
 
@@ -262,7 +263,7 @@ class Chef
         build_node
 
         run_status.start_clock
-        logger.info("Starting Chef Run for #{node.name}")
+        logger.info("Starting #{Chef::Dist::PRODUCT} Run for #{node.name}")
         run_started
 
         do_windows_admin_check
@@ -277,7 +278,7 @@ class Chef
         converge_and_save(run_context)
 
         run_status.stop_clock
-        logger.info("Chef Run complete in #{run_status.elapsed_time} seconds")
+        logger.info("#{Chef::Dist::PRODUCT} Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
         events.run_completed(node, run_status)
 
@@ -715,7 +716,7 @@ class Chef
         logger.trace("Checking for administrator privileges....")
 
         if !has_admin_privileges?
-          message = "chef-client doesn't have administrator privileges on node #{node_name}."
+          message = "#{Chef::Dist::CLIENT} doesn't have administrator privileges on node #{node_name}."
           if Chef::Config[:fatal_windows_admin_check]
             logger.fatal(message)
             logger.fatal("fatal_windows_admin_check is set to TRUE.")
@@ -724,7 +725,7 @@ class Chef
             logger.warn("#{message} This might cause unexpected resource failures.")
           end
         else
-          logger.trace("chef-client has administrator privileges on node #{node_name}.")
+          logger.trace("#{Chef::Dist::CLIENT} has administrator privileges on node #{node_name}.")
         end
       end
     end

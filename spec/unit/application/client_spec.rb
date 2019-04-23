@@ -1,4 +1,4 @@
-#
+
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
@@ -226,7 +226,7 @@ describe Chef::Application::Client, "reconfigure" do
 
       context "local mode not set" do
         it "fails with a message stating local mode required" do
-          expect(Chef::Application).to receive(:fatal!).with("chef-client recipe-url can be used only in local-mode").and_raise("error occured")
+          expect(Chef::Application).to receive(:fatal!).with("recipe-url can be used only in local-mode").and_raise("error occured")
           ARGV.replace(["--recipe-url=test_url"])
           expect { app.reconfigure }.to raise_error "error occured"
         end
@@ -326,10 +326,10 @@ describe Chef::Application::Client, "reconfigure" do
       Chef::Config[:interval] = 600
       allow(ChefConfig).to receive(:windows?).and_return(false)
       expect(Chef::Application).to receive(:fatal!).with(
-        "Unforked chef-client interval runs are disabled in Chef 12.
+        /Unforked .* interval runs are disabled in .* 12\.
 Configuration settings:
   interval  = 600 seconds
-Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+Enable .* interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options\./
       )
       app.reconfigure
     end

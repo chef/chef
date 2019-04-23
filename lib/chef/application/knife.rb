@@ -20,6 +20,7 @@ require "chef/application"
 require "mixlib/log"
 require "ohai/config"
 require "chef/monkey_patches/net_http.rb"
+require "chef/dist"
 
 class Chef::Application::Knife < Chef::Application
 
@@ -58,7 +59,7 @@ class Chef::Application::Knife < Chef::Application
   option :environment,
     short: "-E ENVIRONMENT",
     long: "--environment ENVIRONMENT",
-    description: "Set the Chef environment (except for in searches, where this will be flagrantly ignored)"
+    description: "Set the #{Chef::Dist::PRODUCT} environment (except for in searches, where this will be flagrantly ignored)"
 
   option :editor,
     short: "-e EDITOR",
@@ -94,7 +95,7 @@ class Chef::Application::Knife < Chef::Application
   option :chef_server_url,
     short: "-s URL",
     long: "--server-url URL",
-    description: "Chef Server URL"
+    description: "#{Chef::Dist::PRODUCT} Server URL"
 
   option :yes,
     short: "-y",
@@ -137,9 +138,9 @@ class Chef::Application::Knife < Chef::Application
   option :version,
     short: "-v",
     long: "--version",
-    description: "Show chef version",
+    description: "Show #{Chef::Dist::PRODUCT} version",
     boolean: true,
-    proc: lambda { |v| puts "Chef: #{::Chef::VERSION}" },
+    proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
     exit: 0
 
   option :fips,

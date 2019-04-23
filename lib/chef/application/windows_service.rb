@@ -29,6 +29,7 @@ require "socket"
 require "uri"
 require "win32/daemon"
 require "chef/mixin/shell_out"
+require "chef/dist"
 
 class Chef
   class Application
@@ -66,7 +67,7 @@ class Chef
         @service_signal = ConditionVariable.new
 
         reconfigure
-        Chef::Log.info("Chef Client Service initialized")
+        Chef::Log.info("#{Chef::Dist::CLIENT} Service initialized")
       end
 
       def service_main(*startup_parameters)
@@ -78,7 +79,7 @@ class Chef
           # Grab the service_action_mutex to make a chef-client run
           @service_action_mutex.synchronize do
             begin
-              Chef::Log.info("Next chef-client run will happen in #{timeout} seconds")
+              Chef::Log.info("Next #{Chef::Dist::CLIENT} run will happen in #{timeout} seconds")
               @service_signal.wait(@service_action_mutex, timeout)
 
               # Continue only if service is RUNNING
@@ -95,7 +96,7 @@ class Chef
               # run chef-client only if service is in RUNNING state
               next if state != RUNNING
 
-              Chef::Log.info("Chef-Client service is starting a chef-client run...")
+              Chef::Log.info("#{Chef::Dist::CLIENT} service is starting a #{Chef::Dist::CLIENT} run...")
               run_chef_client
             rescue SystemExit => e
               # Do not raise any of the errors here in order to
@@ -130,12 +131,12 @@ class Chef
             break
           else
             unless run_warning_displayed
-              Chef::Log.info("Currently a chef run is happening on this system.")
-              Chef::Log.info("Service  will stop when run is completed.")
+              Chef::Log.info("Currently a #{Chef::Dist::PRODUCT} run is happening on this system.")
+              Chef::Log.info("Service will stop when run is completed.")
               run_warning_displayed = true
             end
 
-            Chef::Log.trace("Waiting for chef-client run...")
+            Chef::Log.trace("Waiting for #{Chef::Dist::CLIENT} run...")
             sleep 1
           end
         end
@@ -149,7 +150,7 @@ class Chef
         # since this is a PAUSE signal.
 
         if @service_action_mutex.locked?
-          Chef::Log.info("Currently a chef-client run is happening.")
+          Chef::Log.info("Currently a #{Chef::Dist::CLIENT} run is happening.")
           Chef::Log.info("Service will pause once it's completed.")
         else
           Chef::Log.info("Service is pausing....")
@@ -184,7 +185,7 @@ class Chef
         # The log_location and config_file of the parent process is passed to the new chef-client process.
         # We need to add the --no-fork, as by default it is set to fork=true.
 
-        Chef::Log.info "Starting chef-client in a new process"
+        Chef::Log.info "Starting #{Chef::Dist::CLIENT} in a new process"
         # Pass config params to the new process
         config_params = " --no-fork"
         config_params += " -c #{Chef::Config[:config_file]}" unless Chef::Config[:config_file].nil?
@@ -196,20 +197,20 @@ class Chef
         # Starts a new process and waits till the process exits
 
         result = shell_out(
-          "chef-client.bat #{config_params}",
+          "#{Chef::Dist::CLIENT}.bat #{config_params}",
           timeout: Chef::Config[:windows_service][:watchdog_timeout],
           logger: Chef::Log
         )
         Chef::Log.trace (result.stdout).to_s
         Chef::Log.trace (result.stderr).to_s
       rescue Mixlib::ShellOut::CommandTimeout => e
-        Chef::Log.error "chef-client timed out\n(#{e})"
+        Chef::Log.error "#{Chef::Dist::CLIENT} timed out\n(#{e})"
         Chef::Log.error(<<-EOF)
-            Your chef-client run timed out. You can increase the time chef-client is given
+            Your #{Chef::Dist::CLIENT} run timed out. You can increase the time #{Chef::Dist::CLIENT} is given
             to complete by configuring windows_service.watchdog_timeout in your client.rb.
         EOF
       rescue Mixlib::ShellOut::ShellCommandFailed => e
-        Chef::Log.warn "Not able to start chef-client in new process (#{e})"
+        Chef::Log.warn "Not able to start #{Chef::Dist::CLIENT} in new process (#{e})"
       rescue => e
         Chef::Log.error e
       ensure

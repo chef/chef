@@ -26,6 +26,7 @@ require "fileutils"
 require "tempfile"
 require "chef/providers"
 require "chef/resources"
+require "chef/dist"
 
 class Chef::Application::Apply < Chef::Application
 
@@ -85,9 +86,9 @@ class Chef::Application::Apply < Chef::Application
   option :version,
     short: "-v",
     long: "--version",
-    description: "Show chef version",
+    description: "Show #{Chef::Dist::PRODUCT} version",
     boolean: true,
-    proc: lambda { |v| puts "Chef: #{::Chef::VERSION}" },
+    proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
     exit: 0
 
   option :why_run,
@@ -98,7 +99,7 @@ class Chef::Application::Apply < Chef::Application
 
   option :profile_ruby,
     long: "--[no-]profile-ruby",
-    description: "Dump complete Ruby call graph stack of entire Chef run (expert only)",
+    description: "Dump complete Ruby call graph stack of entire #{Chef::Dist::PRODUCT} run (expert only)",
     boolean: true,
     default: false
 
@@ -110,7 +111,7 @@ class Chef::Application::Apply < Chef::Application
 
   option :minimal_ohai,
     long: "--minimal-ohai",
-    description: "Only run the bare minimum ohai plugins chef needs to function",
+    description: "Only run the bare minimum ohai plugins #{Chef::Dist::CLIENT} needs to function",
     boolean: true
 
   attr_reader :json_attribs

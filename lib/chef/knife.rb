@@ -31,11 +31,12 @@ require "chef/http/authenticator"
 require "chef/http/http_request"
 require "chef/http"
 require "pp"
+require "chef/dist"
 
 class Chef
   class Knife
 
-    Chef::HTTP::HTTPRequest.user_agent = "Chef Knife#{Chef::HTTP::HTTPRequest::UA_COMMON}"
+    Chef::HTTP::HTTPRequest.user_agent = "#{Chef::Dist::PRODUCT} Knife#{Chef::HTTP::HTTPRequest::UA_COMMON}"
 
     include Mixlib::CLI
     include Chef::Mixin::PathSanity
@@ -272,7 +273,7 @@ class Chef
         if category_commands = guess_category(args)
           list_commands(category_commands)
         elsif OFFICIAL_PLUGINS.include?(args[0]) # command was an uninstalled official chef knife plugin
-          ui.info("Use `chef gem install knife-#{args[0]}` to install the plugin into ChefDK")
+          ui.info("Use `#{Chef::Dist::EXEC} gem install knife-#{args[0]}` to install the plugin into ChefDK")
         else
           list_commands
         end
@@ -460,7 +461,7 @@ class Chef
       when OpenSSL::SSL::SSLError
         ui.error "Could not establish a secure connection to the server."
         ui.info "Use `knife ssl check` to troubleshoot your SSL configuration."
-        ui.info "If your Chef Server uses a self-signed certificate, you can use"
+        ui.info "If your #{Chef::Dist::PRODUCT} Server uses a self-signed certificate, you can use"
         ui.info "`knife ssl fetch` to make knife trust the server's certificates."
         ui.info ""
         ui.info  "Original Exception: #{e.class.name}: #{e.message}"
@@ -493,7 +494,7 @@ class Chef
         ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action."
         proxy_env_vars = ENV.to_hash.keys.map(&:downcase) & %w{http_proxy https_proxy ftp_proxy socks_proxy no_proxy}
         unless proxy_env_vars.empty?
-          ui.error "There are proxy servers configured, your Chef server may need to be added to NO_PROXY."
+          ui.error "There are proxy servers configured, your #{Chef::Dist::PRODUCT} server may need to be added to NO_PROXY."
         end
         ui.info "Response:  #{format_rest_error(response)}"
       when Net::HTTPBadRequest
@@ -516,10 +517,10 @@ class Chef
         client_api_version = version_header["request_version"]
         min_server_version = version_header["min_version"]
         max_server_version = version_header["max_version"]
-        ui.error "The version of Chef that Knife is using is not supported by the Chef server you sent this request to"
+        ui.error "The version of #{Chef::Dist::PRODUCT} that Knife is using is not supported by the #{Chef::Dist::PRODUCT} server you sent this request to"
         ui.info "The request that Knife sent was using API version #{client_api_version}"
-        ui.info "The Chef server you sent the request to supports a min API verson of #{min_server_version} and a max API version of #{max_server_version}"
-        ui.info "Please either update your Chef client or server to be a compatible set"
+        ui.info "The #{Chef::Dist::PRODUCT} server you sent the request to supports a min API verson of #{min_server_version} and a max API version of #{max_server_version}"
+        ui.info "Please either update your #{Chef::Dist::PRODUCT} client or server to be a compatible set"
       else
         ui.error response.message
         ui.info "Response: #{format_rest_error(response)}"
