@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.230 -->
-## [v15.0.230](https://github.com/chef/chef/tree/v15.0.230) (2019-04-23)
+<!-- latest_release 15.0.231 -->
+## [v15.0.231](https://github.com/chef/chef/tree/v15.0.231) (2019-04-24)
 
 #### Merged Pull Requests
-- Add Chef::Dist to abstract branding details to a single location [#8368](https://github.com/chef/chef/pull/8368) ([bobchaos](https://github.com/bobchaos))
+- Implement new owner/review structure + expand dev docs [#8350](https://github.com/chef/chef/pull/8350) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Implement new owner/review structure + expand dev docs [#8350](https://github.com/chef/chef/pull/8350) ([tas50](https://github.com/tas50)) <!-- 15.0.231 -->
 - Add Chef::Dist to abstract branding details to a single location [#8368](https://github.com/chef/chef/pull/8368) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.230 -->
 - Switch to inspec/train from gems [#8407](https://github.com/chef/chef/pull/8407) ([tas50](https://github.com/tas50)) <!-- 15.0.229 -->
 - Merge the local and travis kitchen tests into a single config [#8406](https://github.com/chef/chef/pull/8406) ([tas50](https://github.com/tas50)) <!-- 15.0.228 -->
