@@ -29,12 +29,12 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
   def service_should_be_enabled
     expect(shell_out!("/sbin/insserv -r -f #{new_resource.service_name}").exitstatus).to eq(0)
     expect(shell_out!("/sbin/insserv -d -f #{new_resource.service_name}").exitstatus).to eq(0)
-    !Dir.glob("/etc/rc**/**/S*#{service_name}").empty?
+    !Dir.glob("/etc/rc*/**/S*#{service_name}").empty?
   end
 
   def service_should_be_disabled
     expect(shell_out!("/sbin/insserv -r -f #{new_resource.service_name}").exitstatus).to eq(0)
-    Dir.glob("/etc/rc**/**/S*#{service_name}").empty?
+    Dir.glob("/etc/rc*/**/S*#{service_name}").empty?
   end
 
   # Platform specific validation routines.
