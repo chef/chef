@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.231 -->
-## [v15.0.231](https://github.com/chef/chef/tree/v15.0.231) (2019-04-24)
+<!-- latest_release 15.0.232 -->
+## [v15.0.232](https://github.com/chef/chef/tree/v15.0.232) (2019-04-24)
 
 #### Merged Pull Requests
-- Implement new owner/review structure + expand dev docs [#8350](https://github.com/chef/chef/pull/8350) ([tas50](https://github.com/tas50))
+-  Move ed25519 gems into omnibus [#8410](https://github.com/chef/chef/pull/8410) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+-  Move ed25519 gems into omnibus [#8410](https://github.com/chef/chef/pull/8410) ([tas50](https://github.com/tas50)) <!-- 15.0.232 -->
 - Implement new owner/review structure + expand dev docs [#8350](https://github.com/chef/chef/pull/8350) ([tas50](https://github.com/tas50)) <!-- 15.0.231 -->
 - Add Chef::Dist to abstract branding details to a single location [#8368](https://github.com/chef/chef/pull/8368) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.230 -->
 - Switch to inspec/train from gems [#8407](https://github.com/chef/chef/pull/8407) ([tas50](https://github.com/tas50)) <!-- 15.0.229 -->
