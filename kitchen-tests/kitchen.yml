@@ -17,7 +17,7 @@ lifecycle:
   pre_converge:
     - remote: /opt/chef/embedded/bin/gem install appbundle-updater
     - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
-    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['TRAVIS_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef --extra-bin-files chef-client,chef-solo,chef-shell,chef-apply,chef-resource-inspector
+    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['TRAVIS_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef --extra-bin-files chef-client,chef-solo,chef-shell,chef-apply,chef-resource-inspector --binstubs-source spec/support/bin
 
 verifier:
   name: inspec
