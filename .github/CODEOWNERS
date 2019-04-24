@@ -1,7 +1,5 @@
 # Order is important. The last matching pattern has the most precedence.
 
-*                          @chef/client-maintainers
+*                          @chef-infra-reviewers
 .expeditor/**              @chef/jex-team
-README.md                  @chef/docs-team
-RELEASE_NOTES.md           @chef/docs-team
-.github/ISSUE_TEMPLATE/**  @chef/docs-team
+*.md                       @chef/docs-team
