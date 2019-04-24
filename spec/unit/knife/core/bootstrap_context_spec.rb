@@ -168,18 +168,6 @@ describe Chef::Knife::Core::BootstrapContext do
     end
   end
 
-  describe "when a pre-release bootstrap_version is specified" do
-    let(:chef_config) do
-      {
-        knife: { bootstrap_version: "11.12.4.rc.0" },
-      }
-    end
-
-    it "should send the full version to the installer and set the pre-release flag" do
-      expect(bootstrap_context.latest_current_chef_version_string).to eq("-v 11.12.4.rc.0 -p")
-    end
-  end
-
   describe "when a bootstrap_version is not specified" do
     it "should send the latest current to the installer" do
       # Intentionally hard coded in order not to replicate the logic.
@@ -218,15 +206,12 @@ describe Chef::Knife::Core::BootstrapContext do
       Chef::Config[:fips] = true
     end
 
-    it "adds the chef version check" do
-      expect(bootstrap_context.config_content).to include <<-CONFIG.gsub(/^ {8}/, "")
-        fips true
-        require "chef/version"
-        chef_version = ::Chef::VERSION.split(".")
-        unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 8)
-          raise "FIPS Mode requested but not supported by this client"
-        end
-      CONFIG
+    after do
+      Chef::Config.reset!
+    end
+
+    it "sets fips mode in the client.rb" do
+      expect(bootstrap_context.config_content).to match(/fips true/)
     end
   end
 
@@ -252,20 +237,6 @@ describe Chef::Knife::Core::BootstrapContext do
         it "uses CLI value" do
           expect(bootstrap_context.config_content).to include("verify_api_cert true")
         end
-      end
-    end
-  end
-
-  describe "prerelease" do
-    it "isn't set in the config_content by default" do
-      expect(bootstrap_context.config_content).not_to include("prerelease")
-    end
-
-    describe "when configured via cli" do
-      let(:config) { { prerelease: true } }
-
-      it "uses CLI value" do
-        expect(bootstrap_context.latest_current_chef_version_string).to eq("-p")
       end
     end
   end

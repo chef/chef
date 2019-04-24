@@ -44,6 +44,74 @@ The LC_ALL property in the locale resource has been deprecated as the usage of t
 
 ## Breaking Changes
 
+### Knife Bootstrap
+
+Knife bootstrap has been updated, and Windows bootstrap has been merged into core Chef's `knife bootstrap`. This marks the deprecation of the `knife-windows` plugin's `bootstrap` behavior.
+This change also addresses [CVE-2015-8559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8559): The `knife bootstrap` command in chef leaks the validator.pem private RSA key to /var/log/messages.
+
+*Important*: `knife bootstrap` works with all supported versions of Chef client.  Older versions may continue to work as far back as 12.20
+
+In order to accomodate a combined bootstrap that supports both SSH and WinRM,
+CLI flags have been added, removed, or changed.  Using the changed options will
+result in deprecation warnings, but `knife bootstrap` will accept those options
+unless otherwise noted.
+
+Using removed options will cause the command to fail.
+
+#### New Flags
+
+| Flag | Description |
+|-----:|:------------|
+| --max-wait SECONDS | Maximum time to wait for initial connection to be established. |
+| --winrm-basic-auth-only | Perform only Basic Authentication to the target WinRM node. |
+| --connection-protocol PROTOCOL|Connection protocol to use. Valid values are 'winrm' and 'ssh'. Default is 'ssh'. |
+| --connection-user | user to authenticate as, regardless of protocol |
+| --connection-password| Password to authenticate as, regardless of protocol |
+| --connection-port | port to connect to, regardless of protocol |
+
+#### Changed Flags
+
+| Flag | New Option | Notes |
+|-----:|:-----------|:------|
+| --[no-]host-key-verify |--[no-]ssh-verify-host-key| |
+| --forward-agent | --ssh-forward-agent| |
+| --session-timeout MINUTES | --session-timeout SECONDS|New for ssh, existing for winrm. The unit has changed from MINUTES to SECONDS for consistency with other timeouts.|
+| --ssh-password | --connection-password | |
+| --ssh-port | --connection-port | `knife[:ssh_port]` config setting remains available.
+| --ssh-user | --connection-user | `knife[:ssh_user]` config setting remains available.
+| --ssl-peer-fingerprint | --winrm-ssl-peer-fingerprint | |
+| --winrm-authentication-protocol=PROTO | --winrm-auth-method=AUTH-METHOD | Valid values: plaintext, kerberos, ssl, _negotiate_|
+| --winrm-password| --connection-password | |
+| --winrm-port| --connection-port | `knife[:winrm_port]` config setting remains available.|
+| --winrm-ssl-verify-mode MODE | --winrm-no-verify-cert | [1] Mode is not accepted. When flag is present, SSL cert will not be verified. Same as original mode of 'verify_none'. |
+| --winrm-transport TRANSPORT | --winrm-ssl | [1] Use this flag if the target host is accepts WinRM connections over SSL.
+| --winrm-user | --connection-user | `knife[:winrm_user]` config setting remains available.|
+
+1. These flags do not have an automatic mapping of old flag -> new flag. The
+   new flag must be used.
+
+#### Removed Flags
+
+| Flag | Notes |
+|-----:|:------|
+|--kerberos-keytab-file| This option existed but was not implemented.|
+|--winrm-codepage| This was used under knife-windows because bootstrapping was performed over a `cmd` shell. It is now invoked from `powershell`, so this option is no longer used.|
+|--winrm-shell|This option was ignored for bootstrap.|
+|--prerelease|Chef now releases all development builds to our current channel and does not perform pre-release gem releases.|
+|--install-as-service|Installing Chef client as a service is not supported|
+
+#### Usage Changes
+
+Instead of specifying protocol with `-o`, it's also possible to prefix
+the target hostname with the protocol in URL format. For example:
+
+```
+  knife bootstrap example.com -o ssh
+  knife bootstrap ssh://example.com
+  knife bootstrap example.com -o winrm
+  knife bootstrap winrm://example.com
+```
+
 ### Audit Mode
 
 Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superceded by InSpec and has been removed.

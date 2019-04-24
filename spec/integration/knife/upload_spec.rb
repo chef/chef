@@ -641,8 +641,8 @@ EOM
                                  (right here) ------^
 
             ERROR: /environments/x.json failed to write: Parse error reading JSON: parse error: premature EOF
-                                                   {
-                                 (right here) ------^
+                                                          {
+                                        (right here) ------^
           EOH
 
           warn = <<~EOH

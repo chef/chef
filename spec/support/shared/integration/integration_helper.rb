@@ -19,6 +19,7 @@
 
 require "tmpdir"
 require "fileutils"
+require "chef_core/text"
 require "chef/config"
 require "chef/json_compat"
 require "chef/server_api"
