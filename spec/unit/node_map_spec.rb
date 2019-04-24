@@ -210,6 +210,40 @@ describe Chef::NodeMap do
     end
   end
 
+  # When in target mode, only match when target_mode is explicitly supported
+  context "when target mode is enabled" do
+    before do
+      allow(Chef::Config).to receive(:target_mode?).and_return(true)
+    end
+
+    it "returns the value when target_mode matches" do
+      node_map.set(:something, :network, target_mode: true)
+      expect(node_map.get(node, :something)).to eql(:network)
+    end
+
+    it "returns nil when target_mode does not match" do
+      node_map.set(:something, :local, target_mode: false)
+      expect(node_map.get(node, :something)).to eql(nil)
+    end
+  end
+
+  # When not in target mode, match regardless of target_mode filter
+  context "when target mode is not enabled" do
+    before do
+      allow(Chef::Config).to receive(:target_mode?).and_return(false)
+    end
+
+    it "returns the value if target_mode matches" do
+      node_map.set(:something, :local, target_mode: true)
+      expect(node_map.get(node, :something)).to eql(:local)
+    end
+
+    it "returns the value if target_mode does not match" do
+      node_map.set(:something, :local, target_mode: false)
+      expect(node_map.get(node, :something)).to eql(:local)
+    end
+  end
+
   describe "locked mode" do
     context "while unlocked" do
       it "allows setting the same key twice" do

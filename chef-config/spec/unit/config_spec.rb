@@ -248,9 +248,10 @@ RSpec.describe ChefConfig::Config do
       end
 
       describe "default values" do
+        let(:system_drive) { ChefConfig::Config.env["SYSTEMDRIVE"] } if is_windows
         let :primary_cache_path do
           if is_windows
-            "#{ChefConfig::Config.env['SYSTEMDRIVE']}\\chef"
+            "#{system_drive}\\chef"
           else
             "/var/chef"
           end
@@ -273,6 +274,35 @@ RSpec.describe ChefConfig::Config do
           end
 
           allow(ChefConfig::Config).to receive(:path_accessible?).and_return(false)
+        end
+
+        describe "ChefConfig::Config[:client_key]" do
+          let(:path_to_client_key) { to_platform("/etc/chef") + ChefConfig::PathHelper.path_separator }
+
+          it "sets the default path to the client key" do
+            expect(ChefConfig::Config.client_key).to eq(path_to_client_key + "client.pem")
+          end
+
+          context "when target mode is enabled" do
+            let(:target_mode_host) { "fluffy.kittens.org" }
+
+            before do
+              ChefConfig::Config.target_mode.enabled = true
+              ChefConfig::Config.target_mode.host = target_mode_host
+            end
+
+            it "sets the default path to the client key with the target host name" do
+              expect(ChefConfig::Config.client_key).to eq(path_to_client_key + target_mode_host + ChefConfig::PathHelper.path_separator + "client.pem")
+            end
+          end
+
+          context "when local mode is enabled" do
+            before { ChefConfig::Config[:local_mode] = true }
+
+            it "returns nil" do
+              expect(ChefConfig::Config.client_key).to be_nil
+            end
+          end
         end
 
         describe "ChefConfig::Config[:fips]" do
@@ -370,15 +400,31 @@ RSpec.describe ChefConfig::Config do
         end
 
         describe "ChefConfig::Config[:cache_path]" do
+          let(:target_mode_host) { "fluffy.kittens.org" }
+          let(:target_mode_primary_cache_path) { "#{primary_cache_path}/#{target_mode_host}" }
+          let(:target_mode_secondary_cache_path) { "#{secondary_cache_path}/#{target_mode_host}" }
+
           before do
             if is_windows
-              allow(File).to receive(:expand_path).and_return("#{ChefConfig::Config.env["SYSTEMDRIVE"]}/Path/To/Executable")
+              allow(File).to receive(:expand_path).and_return("#{system_drive}/Path/To/Executable")
             end
           end
+
           context "when /var/chef exists and is accessible" do
-            it "defaults to /var/chef" do
+            before do
               allow(ChefConfig::Config).to receive(:path_accessible?).with(to_platform("/var/chef")).and_return(true)
+            end
+
+            it "defaults to /var/chef" do
               expect(ChefConfig::Config[:cache_path]).to eq(primary_cache_path)
+            end
+
+            context "and target mode is enabled" do
+              it "cache path includes the target host name" do
+                ChefConfig::Config.target_mode.enabled = true
+                ChefConfig::Config.target_mode.host = target_mode_host
+                expect(ChefConfig::Config[:cache_path]).to eq(target_mode_primary_cache_path)
+              end
             end
           end
 
@@ -399,12 +445,22 @@ RSpec.describe ChefConfig::Config do
           end
 
           context "when /var/chef exists and is not accessible" do
-            it "defaults to $HOME/.chef" do
+            before do
               allow(File).to receive(:exists?).with(to_platform("/var/chef")).and_return(true)
               allow(File).to receive(:readable?).with(to_platform("/var/chef")).and_return(true)
               allow(File).to receive(:writable?).with(to_platform("/var/chef")).and_return(false)
+            end
 
+            it "defaults to $HOME/.chef" do
               expect(ChefConfig::Config[:cache_path]).to eq(secondary_cache_path)
+            end
+
+            context "and target mode is enabled" do
+              it "cache path defaults to $HOME/.chef with the target host name" do
+                ChefConfig::Config.target_mode.enabled = true
+                ChefConfig::Config.target_mode.host = target_mode_host
+                expect(ChefConfig::Config[:cache_path]).to eq(target_mode_secondary_cache_path)
+              end
             end
           end
 
