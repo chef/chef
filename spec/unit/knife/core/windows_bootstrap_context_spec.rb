@@ -264,4 +264,12 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       end
     end
   end
+
+  describe "#start_chef" do
+    it "the command includes the license acceptance environment variable" do
+      expect(bootstrap_context.start_chef).to match(/SET "CHEF_LICENSE=accept"\n/m)
+    end
+
+  end
+
 end
