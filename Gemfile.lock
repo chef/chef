@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 5c70e89388ebc8ddf7d2d7bfd489024b11c0aece
+  revision: a1ec73298d623d18cbe05c2b53ac57c8cc9beae0
   branch: master
   specs:
     ohai (15.0.34)
@@ -32,7 +32,6 @@ PATH
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
       chef-config (= 15.0.237)
-      chef-core (~> 0.0.3)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -54,6 +53,7 @@ PATH
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
+      train-core (~> 2.0, >= 2.0.12)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
     chef (15.0.237-universal-mingw32)
@@ -61,7 +61,6 @@ PATH
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
       chef-config (= 15.0.237)
-      chef-core (~> 0.0.3)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -84,6 +83,7 @@ PATH
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
+      train-core (~> 2.0, >= 2.0.12)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
       win32-api (~> 1.5.3)
@@ -113,7 +113,7 @@ GEM
   specs:
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
-    appbundler (0.12.4)
+    appbundler (0.12.5)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.0)
@@ -124,20 +124,6 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
     byebug (11.0.1)
-    chef-core (0.0.3)
-      chef-telemetry
-      mixlib-log
-      pastel
-      r18n-desktop
-      train-core (~> 2.0, >= 2.0.12)
-      tty-color
-      tty-cursor
-      tty-spinner
-    chef-telemetry (0.1.8)
-      chef-config
-      concurrent-ruby (~> 1.0)
-      ffi-yajl (~> 2.2)
-      http (~> 2.2)
     chef-vault (3.4.3)
     chef-zero (14.0.12)
       ffi-yajl (~> 2.2)
@@ -149,14 +135,11 @@ GEM
       chef-zero (~> 14.0)
       net-ssh
     coderay (1.1.2)
-    concurrent-ruby (1.1.5)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     docile (1.3.1)
-    domain_name (0.5.20180417)
-      unf (>= 0.0.5, < 1.0.0)
     ed25519 (1.2.4)
     equatable (0.5.0)
     erubis (2.7.0)
@@ -182,15 +165,6 @@ GEM
     hashie (3.6.0)
     highline (1.7.10)
     htmlentities (4.3.4)
-    http (2.2.2)
-      addressable (~> 2.3)
-      http-cookie (~> 1.0)
-      http-form_data (~> 1.0.1)
-      http_parser.rb (~> 0.6.0)
-    http-cookie (1.0.3)
-      domain_name (~> 0.5)
-    http-form_data (1.0.3)
-    http_parser.rb (0.6.0)
     httpclient (2.8.3)
     iniparse (1.4.4)
     inspec-core (4.1.4.preview)
@@ -223,7 +197,7 @@ GEM
     jaro_winkler (1.5.2)
     json (2.2.0)
     libyajl2 (1.2.0)
-    license-acceptance (0.2.13)
+    license-acceptance (0.2.16)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
@@ -264,7 +238,7 @@ GEM
     octokit (4.14.0)
       sawyer (~> 0.8.0, >= 0.5.3)
     parallel (1.17.0)
-    parser (2.6.2.1)
+    parser (2.6.3.0)
       ast (~> 2.4.0)
     parslet (1.8.2)
     pastel (0.7.2)
@@ -286,9 +260,6 @@ GEM
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
     public_suffix (3.0.3)
-    r18n-core (3.2.0)
-    r18n-desktop (3.2.0)
-      r18n-core (= 3.2.0)
     rack (2.0.7)
     rainbow (3.0.0)
     rake (12.3.2)
@@ -375,17 +346,12 @@ GEM
       tty-screen (~> 0.6.4)
       wisper (~> 2.0.0)
     tty-screen (0.6.5)
-    tty-spinner (0.9.0)
-      tty-cursor (~> 0.6.0)
     tty-table (0.10.0)
       equatable (~> 0.5.0)
       necromancer (~> 0.4.0)
       pastel (~> 0.7.2)
       strings (~> 0.1.0)
       tty-screen (~> 0.6.4)
-    unf (0.1.4)
-      unf_ext
-    unf_ext (0.0.7.6)
     unicode-display_width (1.4.1)
     unicode_utils (1.4.0)
     uuidtools (2.1.5)
@@ -417,7 +383,7 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    winrm (2.3.1)
+    winrm (2.3.2)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)

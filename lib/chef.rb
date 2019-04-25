@@ -18,18 +18,6 @@
 
 require "chef/version"
 
-# Ensure that this loads ahead of anything that
-# might cause rubygems to hit Gem.load_yaml, including
-# evaluating gemspecs. When load_yaml is invoked,
-# it stubs out  the YAML::Syck namespace. This causes
-# r18n to break, which expects either YAML::Syck to be there
-# and fully defined (particularly, the Syck::PrivateType class),
-# or for it to not be there at all.
-#
-# When it's not - because it's a stub - r18n explodes on loading.
-# Ensuring chef_core/text and r18n are loaded first prevents this.
-require "chef_core/text"
-
 require "chef/nil_argument"
 require "chef/mash"
 require "chef/exceptions"
