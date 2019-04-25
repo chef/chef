@@ -53,7 +53,7 @@ github:
         version_constraint: 14*
 
 changelog:
-  rollup_header: Changes not yet released to rubygems.orgs
+  rollup_header: Changes not yet released to rubygems.org
 
 # These actions are taken, in order they are specified, anytime a Pull Request is merged.
 merge_actions:
