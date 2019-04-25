@@ -334,7 +334,8 @@ class Chef
             task.parameters != new_resource.command_arguments.to_s ||
             task.principals[:run_level] != run_level ||
             task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_if_on_batteries ||
-            task.settings[:stop_if_going_on_batteries] != new_resource.stop_if_going_on_batteries)
+            task.settings[:stop_if_going_on_batteries] != new_resource.stop_if_going_on_batteries ||
+            task.settings[:start_when_available] != new_resource.start_when_available)
           else
             current_task_trigger = task.trigger(0)
             new_task_trigger = trigger
@@ -360,7 +361,8 @@ class Chef
                 task.principals[:run_level] != run_level ||
                 PRIORITY[task.priority] != new_resource.priority ||
                 task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_if_on_batteries ||
-                task.settings[:stop_if_going_on_batteries] != new_resource.stop_if_going_on_batteries
+                task.settings[:stop_if_going_on_batteries] != new_resource.stop_if_going_on_batteries ||
+                task.settings[:start_when_available] != new_resource.start_when_available
               if trigger_type == TaskScheduler::MONTHLYDATE
                 flag = true if current_task_trigger[:run_on_last_day_of_month] != new_task_trigger[:run_on_last_day_of_month]
               end
@@ -560,12 +562,13 @@ class Chef
           settings[:priority] = new_resource.priority
           settings[:disallow_start_if_on_batteries] = new_resource.disallow_start_if_on_batteries
           settings[:stop_if_going_on_batteries] = new_resource.stop_if_going_on_batteries
+          settings[:start_when_available] = new_resource.start_when_available
           settings
         end
 
         def principal_settings
           settings = {}
-          settings [:run_level] = run_level
+          settings[:run_level] = run_level
           settings[:logon_type] = logon_type
           settings
         end

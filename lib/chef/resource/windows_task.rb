@@ -120,6 +120,10 @@ class Chef
                introduced: "14.7",
                description: "The task description."
 
+      property :start_when_available, [TrueClass, FalseClass],
+               introduced: "15.0", default: false,
+               description: "To start the task at any time after its scheduled time has passed."
+
       attr_accessor :exists, :task, :command_arguments
 
       VALID_WEEK_DAYS = %w{ mon tue wed thu fri sat sun * }.freeze
