@@ -76,6 +76,7 @@ def setup_symlink
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(true)
     allow(file_symlink_class).to receive(:symlink?).with(path).and_return(true)
+    allow(file_symlink_class).to receive(:realpath).with(path).and_return(path)
   end
   allow(File).to receive(:directory?).with(enclosing_directory).and_return(true)
 end
