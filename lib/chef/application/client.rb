@@ -301,7 +301,7 @@ class Chef::Application::Client < Chef::Application
   option :target,
     short: "-t TARGET",
     long: "--target TARGET",
-    description: "Target the Chef Client run against a remote system or device",
+    description: "Target #{Chef::Dist::PRODUCT} against a remote system or device",
     proc: lambda { |target|
       Chef::Log.warn "-- EXPERIMENTAL -- Target mode activated, resources and dsl may change without warning -- EXPERIMENTAL --"
       target
