@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::TrainTransport do
   describe "load_credentials" do
     let(:transport) { Chef::TrainTransport.new }
-    let(:good_credentials) { Mash.from_hash({ "switch.cisco.com": { user: "cisco", password: "cisco", enable_password: "secret" } }) }
+    let(:good_credentials) { { "switch.cisco.com" => { "user" => "cisco", "password" => "cisco", "enable_password" => "secret" } } }
 
     before do
       allow(Chef::TrainTransport).to receive(:parse_credentials_file).and_return(good_credentials)
@@ -40,7 +40,7 @@ describe Chef::TrainTransport do
     # [foo.example.org]   => {"foo"=>{"example"=>{"org"=>{}}}}
     # ['foo.example.org'] => {"foo.example.org"=>{}}
     it "warns if the host has been split by toml" do
-      allow(Chef::TrainTransport).to receive(:parse_credentials_file).and_return(Mash.from_hash( { "foo" => { "example" => { "org" => {} } } }))
+      allow(Chef::TrainTransport).to receive(:parse_credentials_file).and_return({ "foo" => { "example" => { "org" => {} } } })
       expect(Chef::Log).to receive(:warn).with(/as a Hash/)
       expect(Chef::Log).to receive(:warn).with(/Hostnames must be surrounded by single quotes/)
       expect(Chef::TrainTransport.load_credentials("foo.example.org")).to be_nil

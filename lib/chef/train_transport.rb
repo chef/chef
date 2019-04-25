@@ -35,7 +35,7 @@ class Chef
 
       # host names must be specified in credentials file as ['foo.example.org'] with quotes
       if !credentials.nil? && !credentials[profile].nil?
-        Mash.from_hash(credentials[profile]).symbolize_keys
+        credentials[profile].map { |k, v| [k.to_sym, v] }.to_h # return symbolized keys to match Train.options()
       else
         nil
       end
@@ -50,25 +50,14 @@ class Chef
     # This will be a common mistake so we should catch it
     #
     def self.contains_split_fqdn?(hash, fqdn)
-      n = 0
-      matches = 0
-      fqdn_split = fqdn.split(".")
-
-      # if the top level of the hash matches the first part of the fqdn, continue
-      if hash.key?(fqdn_split[n])
-        matches += 1
-        until n == fqdn_split.length - 1
-          # if we still have fqdn elements but ran out of depth, return false
-          return false if !hash[fqdn_split[n]].is_a?(Hash)
-          if hash[fqdn_split[n]].key?(fqdn_split[n + 1])
-            matches += 1
-            return true if matches == fqdn_split.length
-          end
-          hash = hash[fqdn_split[n]]
-          n += 1
+      fqdn.split(".").reduce(hash) do |h, k|
+        v = h[k]
+        if Hash === v
+          v
+        else
+          break false
         end
       end
-      false
     end
 
     # ChefConfig::Mixin::Credentials.credentials_file_path is designed around knife,

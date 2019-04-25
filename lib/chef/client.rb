@@ -55,7 +55,6 @@ require "chef/mixin/deprecation"
 require "ohai"
 require "rbconfig"
 require "chef/dist"
-require "ostruct"
 require "forwardable"
 
 class Chef
@@ -157,11 +156,8 @@ class Chef
       @json_attribs = json_attribs || {}
       @logger = args.delete(:logger) || Chef::Log.with_child
 
-      @ohai = if Chef::Config.target_mode?
-                OpenStruct.new(data: Mash.new)
-              else
-                Ohai::System.new(logger: logger)
-              end
+      @ohai = Ohai::System.new(logger: logger)
+
       event_handlers = configure_formatters + configure_event_loggers
       event_handlers += Array(Chef::Config[:event_handlers])
 
