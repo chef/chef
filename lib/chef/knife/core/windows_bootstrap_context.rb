@@ -18,6 +18,7 @@
 
 require "chef/knife/core/bootstrap_context"
 require "chef/util/path_helper"
+require "chef/dist"
 
 class Chef
   class Knife
@@ -268,7 +269,7 @@ class Chef
         end
 
         def local_download_path
-          "%TEMP%\\chef-client-latest.msi"
+          "%TEMP%\\#{Chef::Dist::CLIENT}-latest.msi"
         end
 
         def msi_url(machine_os = nil, machine_arch = nil, download_context = nil)

@@ -18,6 +18,7 @@
 # limitations under the License.
 
 require "chef-config/exceptions"
+require "chef/dist"
 
 class Chef
   # == Chef::Exceptions
@@ -401,7 +402,7 @@ class Chef
       def initialize(response_length, content_length)
         super <<~EOF
           Response body length #{response_length} does not match HTTP Content-Length header #{content_length}.
-          This error is most often caused by network issues (proxies, etc) outside of chef-client.
+          This error is most often caused by network issues (proxies, etc) outside of #{Chef::Dist::CLIENT}.
         EOF
       end
     end

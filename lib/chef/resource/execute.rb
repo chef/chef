@@ -18,6 +18,7 @@
 #
 
 require "chef/resource"
+require "chef/dist"
 
 class Chef
   class Resource
@@ -65,7 +66,7 @@ class Chef
                description: "The group name or group ID that must be changed before running a command."
 
       property :live_stream, [ TrueClass, FalseClass ], default: false,
-               description: "Send the output of the command run by this execute resource block to the chef-client event stream."
+               description: "Send the output of the command run by this execute resource block to the #{Chef::Dist::CLIENT} event stream."
 
       # default_env defaults to `false` so that the command execution more exactly matches what the user gets on the command line without magic
       property :default_env, [ TrueClass, FalseClass ], desired_state: false, default: false,
@@ -91,7 +92,7 @@ class Chef
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [ TrueClass, FalseClass ],
-               description: "Ensure that sensitive resource data is not logged by the chef-client.",
+               description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
                default: lazy { |r| r.password ? true : false }, default_description: "True if the password property is set. False otherwise."
 
       property :elevated, [ TrueClass, FalseClass ], default: false,

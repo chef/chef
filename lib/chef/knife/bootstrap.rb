@@ -22,6 +22,7 @@ require "erubis"
 require "chef/knife/bootstrap/chef_vault_handler"
 require "chef/knife/bootstrap/client_builder"
 require "chef/util/path_helper"
+require "chef/dist"
 
 class Chef
   class Knife
@@ -251,14 +252,14 @@ class Chef
       option :first_boot_attributes,
         short: "-j JSON_ATTRIBS",
         long: "--json-attributes",
-        description: "A JSON string to be added to the first run of chef-client",
+        description: "A JSON string to be added to the first run of #{Chef::Dist::CLIENT}",
         proc: lambda { |o| Chef::JSONCompat.parse(o) },
         default: nil
 
       # bootstrap template
       option :first_boot_attributes_from_file,
         long: "--json-attribute-file FILE",
-        description: "A JSON file to be used to the first run of chef-client",
+        description: "A JSON file to be used to the first run of #{Chef::Dist::CLIENT}",
         proc: lambda { |o| Chef::JSONCompat.parse(File.read(o)) },
         default: nil
 
@@ -296,25 +297,25 @@ class Chef
       # bootstrap override: Do this instead of our own setup.sh from omnitruck. Causes bootstrap_url to be ignored.
       option :bootstrap_install_command,
         long: "--bootstrap-install-command COMMANDS",
-        description: "Custom command to install chef-client",
+        description: "Custom command to install #{Chef::Dist::CLIENT}",
         proc: Proc.new { |ic| Chef::Config[:knife][:bootstrap_install_command] = ic }
 
       # bootstrap template: Run this command first in the bootstrap script
       option :bootstrap_preinstall_command,
         long: "--bootstrap-preinstall-command COMMANDS",
-        description: "Custom commands to run before installing chef-client",
+        description: "Custom commands to run before installing #{Chef::Dist::CLIENT}",
         proc: Proc.new { |preic| Chef::Config[:knife][:bootstrap_preinstall_command] = preic }
 
       # bootstrap template
       option :bootstrap_wget_options,
         long: "--bootstrap-wget-options OPTIONS",
-        description: "Add options to wget when installing chef-client",
+        description: "Add options to wget when installing #{Chef::Dist::CLIENT}",
         proc: Proc.new { |wo| Chef::Config[:knife][:bootstrap_wget_options] = wo }
 
       # bootstrap template
       option :bootstrap_curl_options,
         long: "--bootstrap-curl-options OPTIONS",
-        description: "Add options to curl when install chef-client",
+        description: "Add options to curl when install #{Chef::Dist::CLIENT}",
         proc: Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
       # chef_vault_handler
@@ -417,7 +418,7 @@ class Chef
       # @return [String] Default bootstrap template
       def default_bootstrap_template
         if target_host.base_os == :windows
-          "windows-chef-client-msi"
+          "windows-#{Chef::Dist::CLIENT}-msi"
         else
           "chef-full"
         end

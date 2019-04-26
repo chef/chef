@@ -110,7 +110,7 @@ goto chef_installed
 
 :chef_installed
 @echo Checking for existing chef installation
-WHERE chef-client >nul 2>nul
+WHERE <%= Chef::Dist::CLIENT %> >nul 2>nul
 If !ERRORLEVEL!==0 (
   @echo Existing Chef installation detected, skipping download
   goto key_create
@@ -120,14 +120,14 @@ If !ERRORLEVEL!==0 (
 )
 
 :install
-@rem If user has provided the custom installation command for chef-client then execute it
+@rem If user has provided the custom installation command for <%= Chef::Dist::CLIENT %> then execute it
 <% if @chef_config[:knife][:bootstrap_install_command] %>
   <%= @chef_config[:knife][:bootstrap_install_command] %>
 <% else %>
-  @rem Install Chef using chef-client MSI installer
+  @rem Install Chef using <%= Chef::Dist::CLIENT %> MSI installer
 
   @set "LOCAL_DESTINATION_MSI_PATH=<%= local_download_path %>"
-  @set "CHEF_CLIENT_MSI_LOG_PATH=%TEMP%\chef-client-msi%RANDOM%.log"
+  @set "CHEF_CLIENT_MSI_LOG_PATH=%TEMP%\<%= Chef::Dist::CLIENT %>-msi%RANDOM%.log"
 
   @rem Clear any pre-existing downloads
   @echo Checking for existing downloaded package at "%LOCAL_DESTINATION_MSI_PATH%"
@@ -197,7 +197,7 @@ If !ERRORLEVEL!==0 (
   <%= install_chef %>
 
   @if ERRORLEVEL 1 (
-      echo Chef-client package failed to install with status code !ERRORLEVEL!. > "&2"
+      echo <%= Chef::Dist::CLIENT %> package failed to install with status code !ERRORLEVEL!. > "&2"
       echo See installation log for additional detail: %CHEF_CLIENT_MSI_LOG_PATH%. > "&2"
   ) else (
       @echo Installation completed successfully

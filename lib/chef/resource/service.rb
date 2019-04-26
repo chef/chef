@@ -19,6 +19,7 @@
 
 require "chef/resource"
 require "shellwords"
+require "chef/dist"
 
 class Chef
   class Resource
@@ -33,7 +34,7 @@ class Chef
 
       # this is a poor API please do not re-use this pattern
       property :supports, Hash, default: { restart: nil, reload: nil, status: nil },
-               description: "A list of properties that controls how the chef-client is to attempt to manage a service: :restart, :reload, :status. For :restart, the init script or other service provider can use a restart command; if :restart is not specified, the chef-client attempts to stop and then start a service. For :reload, the init script or other service provider can use a reload command. For :status, the init script or other service provider can use a status command to determine if the service is running; if :status is not specified, the chef-client attempts to match the service_name against the process table as a regular expression, unless a pattern is specified as a parameter property. Default value: { restart: false, reload: false, status: false } for all platforms (except for the Red Hat platform family, which defaults to { restart: false, reload: false, status: true }.)",
+               description: "A list of properties that controls how the #{Chef::Dist::CLIENT} is to attempt to manage a service: :restart, :reload, :status. For :restart, the init script or other service provider can use a restart command; if :restart is not specified, the #{Chef::Dist::CLIENT} attempts to stop and then start a service. For :reload, the init script or other service provider can use a reload command. For :status, the init script or other service provider can use a status command to determine if the service is running; if :status is not specified, the #{Chef::Dist::CLIENT} attempts to match the service_name against the process table as a regular expression, unless a pattern is specified as a parameter property. Default value: { restart: false, reload: false, status: false } for all platforms (except for the Red Hat platform family, which defaults to { restart: false, reload: false, status: true }.)",
                coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
       property :service_name, String,
@@ -76,7 +77,7 @@ class Chef
       # specify overrides for the start_command, stop_command and
       # restart_command properties.
       property :init_command, String,
-               description: "The path to the init script that is associated with the service. Use init_command to prevent the need to specify overrides for the start_command, stop_command, and restart_command properties. When this property is not specified, the chef-client will use the default init command for the service provider being used.",
+               description: "The path to the init script that is associated with the service. Use init_command to prevent the need to specify overrides for the start_command, stop_command, and restart_command properties. When this property is not specified, the #{Chef::Dist::CLIENT} will use the default init command for the service provider being used.",
                desired_state: false
 
       # if the service is enabled or not

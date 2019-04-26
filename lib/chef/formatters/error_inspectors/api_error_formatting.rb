@@ -17,6 +17,7 @@
 #
 
 require "chef/http/authenticator"
+require "chef/dist"
 
 class Chef
   module Formatters
@@ -39,7 +40,7 @@ class Chef
       def describe_eof_error(error_description)
         error_description.section("Authentication Error:", <<~E)
           Received an EOF on transport socket.  This almost always indicates a network
-          error external to chef-client.  Some causes include:
+          error external to #{Chef::Dist::CLIENT}.  Some causes include:
 
             - Blocking ICMP Dest Unreachable (breaking Path MTU Discovery)
             - IPsec or VPN tunnelling / TCP Encapsulation MTU issues

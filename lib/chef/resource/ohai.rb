@@ -18,6 +18,7 @@
 #
 
 require "chef/resource"
+require "chef/dist"
 
 class Chef
   class Resource
@@ -25,10 +26,10 @@ class Chef
       resource_name :ohai
       provides :ohai
 
-      description "Use the ohai resource to reload the Ohai configuration on a node. This allows recipes that change system attributes (like a recipe that adds a user) to refer to those attributes later on during the chef-client run."
+      description "Use the ohai resource to reload the Ohai configuration on a node. This allows recipes that change system attributes (like a recipe that adds a user) to refer to those attributes later on during the #{Chef::Dist::CLIENT} run."
 
       property :plugin, String,
-               description: "The name of an Ohai plugin to be reloaded. If this property is not specified, the chef-client will reload all plugins."
+               description: "The name of an Ohai plugin to be reloaded. If this property is not specified, the #{Chef::Dist::CLIENT} will reload all plugins."
 
       default_action :reload
       allowed_actions :reload

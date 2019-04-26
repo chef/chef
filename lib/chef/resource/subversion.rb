@@ -18,6 +18,7 @@
 #
 
 require "chef/resource/scm"
+require "chef/dist"
 
 class Chef
   class Resource
@@ -32,7 +33,7 @@ class Chef
                default: "--no-auth-cache"
 
       property :svn_info_args, [String, nil, FalseClass],
-               description: "Use when the svn info command is used by the chef-client and arguments need to be passed. The svn_arguments command does not work when the svn info command is used.",
+               description: "Use when the svn info command is used by the #{Chef::Dist::CLIENT} and arguments need to be passed. The svn_arguments command does not work when the svn info command is used.",
                coerce: proc { |v| v == false ? nil : v }, # coerce false to nil
                default: "--no-auth-cache"
 

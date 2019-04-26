@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require "chef/dist"
 
 class Chef
   module Formatters
@@ -55,7 +56,7 @@ class Chef
             require "chef/win32/security"
 
             if !Chef::ReservedNames::Win32::Security.has_admin_privileges?
-              error_description.section("Missing Windows Admin Privileges", "chef-client doesn't have administrator privileges. This can be a possible reason for the resource failure.")
+              error_description.section("Missing Windows Admin Privileges", "#{Chef::Dist::CLIENT} doesn't have administrator privileges. This can be a possible reason for the resource failure.")
             end
           end
         end

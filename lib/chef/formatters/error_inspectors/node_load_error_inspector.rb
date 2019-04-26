@@ -17,6 +17,7 @@
 #
 
 require "chef/formatters/error_inspectors/api_error_formatting"
+require "chef/dist"
 
 class Chef
   module Formatters
@@ -45,7 +46,7 @@ class Chef
           when Chef::Exceptions::PrivateKeyMissing
             error_description.section("Private Key Not Found:", <<~E)
               Your private key could not be loaded. If the key file exists, ensure that it is
-              readable by chef-client.
+              readable by #{Chef::Dist::CLIENT}.
             E
             error_description.section("Relevant Config Settings:", <<~E)
               client_key        "#{api_key}"

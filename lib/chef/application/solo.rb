@@ -324,7 +324,7 @@ class Chef::Application::Solo < Chef::Application
 
   def interval_run_chef_client
     if Chef::Config[:daemonize]
-      Chef::Daemon.daemonize("chef-client")
+      Chef::Daemon.daemonize("#{Chef::Dist::CLIENT}")
     end
 
     loop do
