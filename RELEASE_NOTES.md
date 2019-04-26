@@ -12,9 +12,7 @@ Chef 15 release notes will be added here as development progresses.
 
 ### copy_properties_from in Custom Resources
 
-### locale resource
-
-The locale resource now allows setting all possible LC_* environmental variables.
+### ed25519 SSH key support
 
 ## New Resources
 
@@ -28,9 +26,45 @@ The locale resource now allows setting all possible LC_* environmental variables
 
 ### snap_package resource
 
-### Ruby 2.6.2
+## Resource Improvements
 
-Chef now ships with Ruby 2.6.2. This new version of Ruby improves performance and includes many new features to make more advanced Chef usage easier. See https://www.rubyguides.com/2018/11/ruby-2-6-new-features/ for a list of some of the new functionality.
+### windows_task
+
+windows_task now supports the Start When Available option with a new ``start_when_available`` property.
+
+### locale
+
+The locale resource now allows setting all possible LC_* environmental variables.
+
+### directory
+
+The directory resource now property supports passing ``deny_rights :write`` on Windows nodes.
+
+### windows_service
+
+The windows_service resource has been improved to prevent accidently reverting a service back to default settings in a subsequent definition.
+
+This example will no longer result in the MyApp service reverting to default RunAsUser:
+```ruby
+windows_service 'MyApp' do
+  run_as_user 'MyAppsUser'
+  run_as_password 'MyAppsUserPassword'
+  startup_type :automatic
+  delayed_start true
+  action [:configure, :start]
+end
+
+...
+
+windows_service 'MyApp' do
+  startup_type :automatic
+  action [:configure, :start]
+end
+```
+
+### Ruby 2.6.3
+
+Chef now ships with Ruby 2.6.3. This new version of Ruby improves performance and includes many new features to make more advanced Chef usage easier. See https://www.rubyguides.com/2018/11/ruby-2-6-new-features/ for a list of some of the new functionality.
 
 ## New Deprecations
 
