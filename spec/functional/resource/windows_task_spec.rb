@@ -1283,6 +1283,57 @@ describe Chef::Resource::WindowsTask, :windows_only do
         expect(subject).not_to be_updated_by_last_action
       end
     end
+
+    context "when start_when_available is passed" do
+      subject do
+        new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
+        new_resource.command task_name
+        new_resource.run_level :highest
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource
+      end
+
+      it "sets start_when_available to true" do
+        subject.frequency :minute
+        subject.start_when_available true
+        call_for_create_action
+        # loading current resource again to check new task is creted and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.settings[:start_when_available]).to eql(true)
+      end
+
+      it "sets start_when_available to false" do
+        subject.frequency :minute
+        subject.start_when_available false
+        call_for_create_action
+        # loading current resource again to check new task is created and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.settings[:start_when_available]).to eql(false)
+      end
+
+      it "sets the default if start_when_available is nil" do
+        subject.frequency :minute
+        subject.start_when_available nil
+        call_for_create_action
+        # loading current resource again to check new task is created and it matches task parameters
+        current_resource = call_for_load_current_resource
+        expect(current_resource.exists).to eq(true)
+        expect(current_resource.task.settings[:start_when_available]).to eql(false)
+      end
+
+      it "does not converge the resource if it is already converged" do
+        subject.frequency :minute
+        subject.start_when_available true
+        subject.run_action(:create)
+        subject.frequency :minute
+        subject.start_when_available true
+        subject.disallow_start_if_on_batteries false
+        subject.run_action(:create)
+        expect(subject).not_to be_updated_by_last_action
+      end
+    end
   end
 
   context "task_name with parent folder" do
