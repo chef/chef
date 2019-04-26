@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.233 -->
-## [v15.0.233](https://github.com/chef/chef/tree/v15.0.233) (2019-04-24)
+<!-- latest_release 15.0.234 -->
+## [v15.0.234](https://github.com/chef/chef/tree/v15.0.234) (2019-04-26)
 
 #### Merged Pull Requests
-- Refactor bootstrapping to use train as the transport with full Windows bootstrap support [#8253](https://github.com/chef/chef/pull/8253) ([marcparadise](https://github.com/marcparadise))
+- Fix for write permissions were not working properly on windows [#8168](https://github.com/chef/chef/pull/8168) ([vijaymmali1990](https://github.com/vijaymmali1990))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Fix for write permissions were not working properly on windows [#8168](https://github.com/chef/chef/pull/8168) ([vijaymmali1990](https://github.com/vijaymmali1990)) <!-- 15.0.234 -->
 - Refactor bootstrapping to use train as the transport with full Windows bootstrap support [#8253](https://github.com/chef/chef/pull/8253) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.233 -->
 -  Move ed25519 gems into omnibus [#8410](https://github.com/chef/chef/pull/8410) ([tas50](https://github.com/tas50)) <!-- 15.0.232 -->
 - Implement new owner/review structure + expand dev docs [#8350](https://github.com/chef/chef/pull/8350) ([tas50](https://github.com/tas50)) <!-- 15.0.231 -->
