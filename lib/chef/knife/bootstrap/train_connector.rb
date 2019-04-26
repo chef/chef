@@ -36,16 +36,12 @@ class Chef
         MKTEMP_NIX_COMMAND = "bash -c 'd=$(mktemp -d ${TMPDIR:-/tmp}/chef_XXXXXX); echo $d'".freeze
 
         def initialize(host_url, default_transport, opts)
-
           uri_opts = opts_from_uri(host_url)
           uri_opts[:backend] ||= @default_transport
           @transport_type = uri_opts[:backend]
 
           # opts in the URI will override user-provided options
           @config = transport_config(host_url, opts.merge(uri_opts))
-
-          Train.validate_backend(@config)
-          @train = Train.create(@transport_type, @config)
         end
 
         # Because creating a valid train connection for testing is a two-step process in which
@@ -59,25 +55,19 @@ class Chef
           # Specifying sudo: false ensures that attempted operations
           # don't fail because the mock platform doesn't support sudo
           tc = TrainConnector.new(url, protocol, { sudo: false }.merge(opts))
-
-          # Don't pull in the platform-specific mixins automatically during connect
-          # Otherwise, it will raise since it can't resolve the OS without the mock.
           tc.connect!
-          # We need to provide this mock before invoking mix_in_target_platform,
-          # otherwise it will fail with an unknown OS (since we don't have a real connection).
-          tc.backend.mock_os(
+          tc.connection.mock_os(
             family: family,
             name: name,
             release: release,
             arch: arch
           )
           tc
-
         end
 
         def connect!
-          # Force connection to establish:
-          backend.wait_until_ready
+          # Force connection to establish
+          connection.wait_until_ready
           true
         end
 
@@ -91,7 +81,7 @@ class Chef
 
         # True if we're connected to a linux host
         def linux?
-          backend.platform.linux?
+          connection.platform.linux?
         end
 
         # True if we're connected to a unix host.
@@ -99,12 +89,12 @@ class Chef
         # for a linux host because train classifies
         # linux as a unix
         def unix?
-          backend.platform.unix?
+          connection.platform.unix?
         end
 
         # True if we're connected to a windows host
         def windows?
-          backend.platform.windows?
+          connection.platform.windows?
         end
 
         def winrm?
@@ -118,13 +108,17 @@ class Chef
         # Creates a temporary directory on the remote host if it
         # hasn't already. Caches directory location.
         #
-        # Returns the path.
+        # Returns the path on the remote host.
         def temp_dir
           cmd = windows? ? MKTEMP_WIN_COMMAND : MKTEMP_NIX_COMMAND
           @tmpdir ||= begin
                         res = run_command!(cmd)
                         dir = res.stdout.chomp.strip
                         unless windows?
+                          # Ensure that dir has the correct owner.  We are possibly
+                          # running with sudo right now - so this directory would be owned by root.
+                          # File upload is performed over SCP as the current logged-in user,
+                          # so we'll set ownership to ensure that works.
                           run_command!("chown #{@config[:user]} '#{dir}'")
                         end
                         dir
@@ -132,7 +126,7 @@ class Chef
         end
 
         def upload_file!(local_path, remote_path)
-          backend.upload(local_path, remote_path)
+          connection.upload(local_path, remote_path)
         end
 
         def upload_file_content!(content, remote_path)
@@ -159,7 +153,7 @@ class Chef
         end
 
         def run_command(command, &data_handler)
-          backend.run_command(command, &data_handler)
+          connection.run_command(command, &data_handler)
         end
 
         def run_command!(command, &data_handler)
@@ -170,12 +164,12 @@ class Chef
           result
         end
 
-        # Should be private, but we use them for test validation/mocking
-        def train
-          @train
-        end
-        def backend
-          @train.connection
+        def connection
+          @connection ||= begin
+                       Train.validate_backend(@config)
+                       train = Train.create(@transport_type, @config)
+                       train.connection
+                     end
         end
 
         private
@@ -185,7 +179,6 @@ class Chef
         def transport_config(host_url, opts_in)
           opts = { target: host_url,
                    sudo: opts_in[:sudo] === false ? false : true,
-                   # TODO - we should be always encoding password
                    www_form_encoded_password: true,
                    key_files: opts_in[:key_files],
                    non_interactive: true, # Prevent password prompts
@@ -234,8 +227,8 @@ class Chef
           # to the transport type we're using.
           valid_opts = Train.options(config[:backend])
           opts_in.select do |key, _v|
-            valid_opts.key?(key) &&
-              !config.key?(key) end
+            valid_opts.key?(key) && !config.key?(key)
+          end
         end
 
         # Extract any of username/password/host/port/transport
