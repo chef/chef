@@ -387,14 +387,10 @@ class Chef
 
       attr_accessor :client_builder
       attr_accessor :chef_vault_handler
-      attr_reader   :target_host
+      attr_reader   :connection
 
       deps do
         require "chef/json_compat"
-        require "tempfile"
-        require "chef_core/text" # i18n and standardized error structures
-        require "chef_core/target_host"
-        require "chef_core/target_resolver"
       end
 
       banner "knife bootstrap [PROTOCOL://][USER@]FQDN (options)"
@@ -417,7 +413,7 @@ class Chef
       #
       # @return [String] Default bootstrap template
       def default_bootstrap_template
-        if target_host.base_os == :windows
+        if connection.windows?
           "windows-#{Chef::Dist::CLIENT}-msi"
         else
           "chef-full"
@@ -482,11 +478,11 @@ class Chef
       end
 
       # Establish bootstrap context for template rendering.
-      # Requires target_host to be a live connection in order to determine
+      # Requires connection to be a live connection in order to determine
       # the correct platform.
       def bootstrap_context
         @bootstrap_context ||=
-          if target_host.base_os == :windows
+          if connection.windows?
             require "chef/knife/core/windows_bootstrap_context"
             Knife::Core::WindowsBootstrapContext.new(config, config[:run_list], Chef::Config, secret)
           else
@@ -556,17 +552,12 @@ class Chef
         bootstrap_path = upload_bootstrap(content)
         perform_bootstrap(bootstrap_path)
       ensure
-        target_host.del_file(bootstrap_path) if target_host && bootstrap_path
+        connection.del_file!(bootstrap_path) if connection && bootstrap_path
       end
 
       def register_client
         # chef-vault integration must use the new client-side hawtness, otherwise to use the
         # new client-side hawtness, just delete your validation key.
-        # 2019-04-01 TODO
-        # TODO -  should this raise if config says to use vault because json/file/item exists
-        #         but we still have a validation key?  That means we can't use the new client hawtness,
-        #         but we also don't tell the operator that their requested vault operations
-        #         won't be performed
         if chef_vault_handler.doing_chef_vault? ||
             (Chef::Config[:validation_key] &&
              !File.exist?(File.expand_path(Chef::Config[:validation_key])))
@@ -589,8 +580,8 @@ class Chef
       def perform_bootstrap(remote_bootstrap_script_path)
         ui.info("Bootstrapping #{ui.color(server_name, :bold)}")
         cmd = bootstrap_command(remote_bootstrap_script_path)
-        r = target_host.run_command(cmd) do |data|
-          ui.msg("#{ui.color(" [#{target_host.hostname}]", :cyan)} #{data}")
+        r = connection.run_command(cmd) do |data|
+          ui.msg("#{ui.color(" [#{connection.hostname}]", :cyan)} #{data}")
         end
         if r.exit_status != 0
           ui.error("The following error occurred on #{server_name}:")
@@ -603,24 +594,13 @@ class Chef
         ui.info("Connecting to #{ui.color(server_name, :bold)}")
         opts = connection_opts.dup
         do_connect(opts)
-      rescue => e
-        # Ugh. TODO: Train raises a Train::Transports::SSHFailed for a number of different errors. chef_core makes that
-        # a more general ConnectionFailed, with an error code based on the specific error text/reason provided from trainm.
-        # This means we have to look three layers into the exception to find out what actually happened instead of just
-        # looking at the exception type
-        #
-        # It doesn't help to provide our own error if it does't let the caller know what they need to identify the problem.
-        # Let's update chef_core to be a bit smarter about resolving the errors to an appropriate exception type
-        # (eg ChefCore::ConnectionFailed::AuthError or similar) that will work across protocols, instead of just a single
-        # ConnectionFailure type
-        #
-
-        if e.cause && e.cause.cause && e.cause.cause.class == Net::SSH::AuthenticationFailed
-          if opts[:password]
+      rescue Train::Error => e
+        if e.cause && e.cause.class == Net::SSH::AuthenticationFailed
+          if connection.password_auth?
             raise
           else
             ui.warn("Failed to authenticate #{opts[:user]} to #{server_name} - trying password auth")
-            password = ui.ask("Enter password for #{opts[:user]}@#{server_name} - trying password auth") do |q|
+            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}.") do |q|
               q.echo = false
             end
           end
@@ -631,6 +611,9 @@ class Chef
         end
       end
 
+      # TODO - maybe remove the footgun detection this was built on.
+      # url values override CLI flags, if you provide both
+      # we'll use the one that you gave in the URL.
       def connection_protocol
         return @connection_protocol if @connection_protocol
         from_url = host_descriptor =~ /^(.*):\/\// ? $1 : nil
@@ -640,14 +623,10 @@ class Chef
       end
 
       def do_connect(conn_options)
-        # Resolve the given host name to a TargetHost instance. We will limit
-        # the number of hosts to 1 (effectivly eliminating wildcard support) since
-        # we only support running bootstrap against one host at a time.
-        resolver = ChefCore::TargetResolver.new(host_descriptor, connection_protocol,
-                                                conn_options, max_expanded_targets: 1)
-        @target_host = resolver.targets.first
-        target_host.connect!
-        target_host
+        require "chef/knife/bootstrap/train_connector"
+
+        @connection = TrainConnector.new(host_descriptor, connection_protocol, conn_options)
+        connection.connect!
       end
 
       # Fail if both first_boot_attributes and first_boot_attributes_from_file
@@ -664,7 +643,7 @@ class Chef
       # TODO test for this method
       # TODO check that the protoocol is valid.
       def validate_winrm_transport_opts!
-        return true if connection_protocol != "winrm"
+        return true unless winrm?
 
         if Chef::Config[:validation_key] && !File.exist?(File.expand_path(Chef::Config[:validation_key]))
           if config_value(:winrm_auth_method) == "plaintext" &&
@@ -739,7 +718,7 @@ class Chef
       end
 
       def winrm_warn_no_ssl_verification
-        return if connection_protocol != "winrm"
+        return unless winrm?
 
         # REVIEWER NOTE
         # The original check from knife plugin did not include winrm_ssl_peer_fingerprint
@@ -768,13 +747,8 @@ class Chef
         end
       end
 
-        #
-
-      # Create a configuration hash for TargetHost to connect
-      # to the remote host via Train.
-      #
       # @return a configuration hash suitable for connecting to the remote
-      # host via TargetHost.
+      # host via train
       def connection_opts
         return @connection_opts unless @connection_opts.nil?
         @connection_opts = {}
@@ -788,9 +762,16 @@ class Chef
         @connection_opts
       end
 
+      def winrm?
+        connection_protocol == "winrm"
+      end
+
+      def ssh?
+        connection_protocol == "ssh"
+      end
+
       # Common configuration for all protocols
       def base_opts
-        #
         port = config_value(:connection_port,
                             knife_key_for_protocol(connection_protocol, :port))
         user = config_value(:connection_user,
@@ -807,10 +788,9 @@ class Chef
       end
 
       def host_verify_opts
-        case connection_protocol
-        when "winrm"
+        if winrm?
           { self_signed: config_value(:winrm_no_verify_cert) === true }
-        when "ssh"
+        elsif ssh?
           # Fall back to the old knife config key name for back compat.
           { verify_host_key: config_value(:ssh_verify_host_key,
                                           :host_key_verify, true) === true }
@@ -959,16 +939,16 @@ class Chef
       end
 
       def upload_bootstrap(content)
-        script_name = target_host.base_os == :windows ? "bootstrap.bat" : "bootstrap.sh"
-        remote_path = target_host.normalize_path(File.join(target_host.temp_dir, script_name))
-        target_host.save_as_remote_file(content, remote_path)
+        script_name = connection.windows? ? "bootstrap.bat" : "bootstrap.sh"
+        remote_path = connection.normalize_path(File.join(connection.temp_dir, script_name))
+        connection.upload_file_content!(content, remote_path)
         remote_path
       end
 
       # build the command string for bootrapping
       # @return String
       def bootstrap_command(remote_path)
-        if target_host.base_os == :windows
+        if connection.windows?
           "cmd.exe /C #{remote_path}"
         else
           "sh #{remote_path}"
@@ -977,8 +957,9 @@ class Chef
 
       # To avoid cluttering the CLI options, some flags (such as port and user)
       # are shared between protocols.  However, there is still a need to allow the operator
-      # to specify defaults separately, since they may not be the same values for different protocols.
-      #
+      # to specify defaults separately, since they may not be the same values for different
+      # protocols.
+
       # These keys are available in Chef::Config, and are prefixed with the protocol name.
       # For example, :user CLI option will map to :winrm_user and :ssh_user Chef::Config keys,
       # based on the connection protocol in use.

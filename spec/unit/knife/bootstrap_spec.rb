@@ -25,8 +25,17 @@ describe Chef::Knife::Bootstrap do
   let(:bootstrap_template) { nil }
   let(:stderr) { StringIO.new }
   let(:bootstrap_cli_options) { [ ] }
-  let(:base_os) { :linux }
-  let(:target_host) { double("TargetHost") }
+  let(:linux_test) { true }
+  let(:windows_test) { false }
+  let(:linux_test) { false }
+  let(:unix_test) { false }
+  let(:ssh_test) { false }
+
+  let(:connection) do
+    double("TrainConnector",
+                            windows?: windows_test,
+                            linux?: linux_test,
+                            unix?: unix_test) end
 
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)
@@ -35,13 +44,9 @@ describe Chef::Knife::Bootstrap do
     k = Chef::Knife::Bootstrap.new(bootstrap_cli_options)
     allow(k.ui).to receive(:stderr).and_return(stderr)
     allow(k).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(false)
-    allow(k).to receive(:target_host).and_return target_host
+    allow(k).to receive(:connection).and_return connection
     k.merge_configs
     k
-  end
-
-  before do
-    allow(target_host).to receive(:base_os).and_return base_os
   end
 
   context "#bootstrap_template" do
@@ -320,7 +325,7 @@ describe Chef::Knife::Bootstrap do
     subject(:knife) do
       k = described_class.new
       Chef::Config[:knife][:bootstrap_template] = template_file
-      allow(k).to receive(:target_host).and_return target_host
+      allow(k).to receive(:connection).and_return connection
       k.parse_options(options)
       k.merge_configs
       k
@@ -1578,7 +1583,7 @@ describe Chef::Knife::Bootstrap do
       expect(knife).to receive(:render_template).and_return "content"
       expect(knife).to receive(:upload_bootstrap).with("content").and_return "/remote/path.sh"
       expect(knife).to receive(:perform_bootstrap).with("/remote/path.sh")
-      expect(target_host).to receive(:del_file) # Make sure cleanup happens
+      expect(connection).to receive(:del_file!) # Make sure cleanup happens
 
       knife.run
 
@@ -1687,14 +1692,14 @@ describe Chef::Knife::Bootstrap do
     let(:result_mock) { double("result", exit_status: exit_status, stderr: "A message") }
 
     before do
-      allow(target_host).to receive(:hostname).and_return "testhost"
+      allow(connection).to receive(:hostname).and_return "testhost"
     end
     it "runs the remote script and logs the output" do
       expect(knife.ui).to receive(:info).with(/Bootstrapping.*/)
       expect(knife).to receive(:bootstrap_command)
         .with("/path.sh")
         .and_return("sh /path.sh")
-      expect(target_host)
+      expect(connection)
         .to receive(:run_command)
         .with("sh /path.sh")
         .and_yield("output here")
@@ -1710,7 +1715,7 @@ describe Chef::Knife::Bootstrap do
         expect(knife).to receive(:bootstrap_command)
           .with("/path.sh")
           .and_return("sh /path.sh")
-        expect(target_host).to receive(:run_command).with("sh /path.sh").and_return result_mock
+        expect(connection).to receive(:run_command).with("sh /path.sh").and_return result_mock
         expect { knife.perform_bootstrap("/path.sh") }.to raise_error(SystemExit)
       end
     end
@@ -1738,13 +1743,11 @@ describe Chef::Knife::Bootstrap do
 
     context "when an auth failure occurs" do
       let(:expected_error) do
-        # TODO This is awkward and ugly. Requires some refactor of chef_core/error
-        # to make it not so.  See comment in rescue block of connect! for details.
-        e = RuntimeError.new
-        interim = RuntimeError.new
+        e = Train::Error.new
         actual = Net::SSH::AuthenticationFailed.new
-        allow(interim).to receive(:cause).and_return(actual)
-        allow(e).to receive(:cause).and_return(interim)
+        # Simulate train's nested error - they wrap
+        # ssh/network errors in a TrainError.
+        allow(e).to receive(:cause).and_return(actual)
         e
       end
 
@@ -1754,7 +1757,7 @@ describe Chef::Knife::Bootstrap do
 
       context "and password auth was used" do
         before do
-          knife.config[:connection_password] = "tryme"
+          allow(connection).to receive(:password_auth?).and_return true
         end
 
         it "re-raises the error so as not to resubmit the same failing password" do
@@ -1765,8 +1768,8 @@ describe Chef::Knife::Bootstrap do
 
       context "and password auth was not used" do
         before do
-          knife.config.delete :connection_password
-          allow(target_host).to receive(:user).and_return "testuser"
+          allow(connection).to receive(:password_auth?).and_return false
+          allow(connection).to receive(:user).and_return "testuser"
         end
 
         it "warns, prompts for password, then reconnects with a password-enabled configuration using the new password" do
@@ -1793,7 +1796,7 @@ describe Chef::Knife::Bootstrap do
 
   describe "#bootstrap_context" do
     context "under Windows" do
-      let(:base_os) { :windows }
+      let(:windows_test) { true }
       it "creates a WindowsBootstrapContext" do
         require "chef/knife/core/windows_bootstrap_context"
         expect(knife.bootstrap_context.class).to eq Chef::Knife::Core::WindowsBootstrapContext
@@ -1801,7 +1804,7 @@ describe Chef::Knife::Bootstrap do
     end
 
     context "under linux" do
-      let(:base_os) { :linux }
+      let(:linux_test) { true }
       it "creates a BootstrapContext" do
         require "chef/knife/core/bootstrap_context"
         expect(knife.bootstrap_context.class).to eq Chef::Knife::Core::BootstrapContext
@@ -1841,25 +1844,25 @@ describe Chef::Knife::Bootstrap do
 
   describe "#upload_bootstrap" do
     before do
-      allow(target_host).to receive(:temp_dir).and_return(temp_dir)
-      allow(target_host).to receive(:normalize_path) { |a| a }
+      allow(connection).to receive(:temp_dir).and_return(temp_dir)
+      allow(connection).to receive(:normalize_path) { |a| a }
     end
 
     let(:content) { "bootstrap script content" }
     context "under Windows" do
-      let(:base_os) { :windows }
+      let(:windows_test) { true }
       let(:temp_dir) { "C:/Temp/bootstrap" }
-      it "creates a bat file in the temp dir provided by target_host, using given content" do
-        expect(target_host).to receive(:save_as_remote_file).with(content, "C:/Temp/bootstrap/bootstrap.bat")
+      it "creates a bat file in the temp dir provided by connection, using given content" do
+        expect(connection).to receive(:upload_file_content!).with(content, "C:/Temp/bootstrap/bootstrap.bat")
         expect(knife.upload_bootstrap(content)).to eq "C:/Temp/bootstrap/bootstrap.bat"
       end
     end
 
     context "under Linux" do
-      let(:base_os) { :linux }
+      let(:linux_test) { true }
       let(:temp_dir) { "/tmp/bootstrap" }
-      it "creates a 'sh file in the temp dir provided by target_host, using given content" do
-        expect(target_host).to receive(:save_as_remote_file).with(content, "/tmp/bootstrap/bootstrap.sh")
+      it "creates a 'sh file in the temp dir provided by connection, using given content" do
+        expect(connection).to receive(:upload_file_content!).with(content, "/tmp/bootstrap/bootstrap.sh")
         expect(knife.upload_bootstrap(content)).to eq "/tmp/bootstrap/bootstrap.sh"
       end
     end
@@ -1867,14 +1870,14 @@ describe Chef::Knife::Bootstrap do
 
   describe "#bootstrap_command" do
     context "under Windows" do
-      let(:base_os) { :windows }
+      let(:windows_test) { true }
       it "prefixes the command to run under cmd.exe" do
         expect(knife.bootstrap_command("autoexec.bat")).to eq "cmd.exe /C autoexec.bat"
       end
 
     end
     context "under Linux" do
-      let(:base_os) { :linux }
+      let(:linux_test) { true }
       it "prefixes the command to run under sh" do
         expect(knife.bootstrap_command("bootstrap")).to eq "sh bootstrap"
       end
@@ -1883,14 +1886,14 @@ describe Chef::Knife::Bootstrap do
 
   describe "#default_bootstrap_template" do
     context "under Windows" do
-      let(:base_os) { :windows }
+      let(:windows_test) { true }
       it "is windows-chef-client-msi" do
         expect(knife.default_bootstrap_template).to eq "windows-chef-client-msi"
       end
 
     end
     context "under Linux" do
-      let(:base_os) { :linux }
+      let(:linux_test) { true }
       it "is chef-full" do
         expect(knife.default_bootstrap_template).to eq "chef-full"
       end
@@ -1899,15 +1902,15 @@ describe Chef::Knife::Bootstrap do
 
   describe "#do_connect" do
     let(:host_descriptor) { "example.com" }
-    let(:target_host) { double("TargetHost") }
-    let(:resolver_mock) { double("TargetResolver", targets: [ target_host ]) }
+    let(:connection) { double("TrainConnector") }
+    let(:connector_mock) { double("TargetResolver", targets: [ connection ]) }
     before do
       allow(knife).to receive(:host_descriptor).and_return host_descriptor
     end
 
-    it "resolves the target and connects it" do
-      expect(ChefCore::TargetResolver).to receive(:new).and_return resolver_mock
-      expect(target_host).to receive(:connect!)
+    it "creates a TrainConnector and connects it" do
+      expect(Chef::Knife::Bootstrap::TrainConnector).to receive(:new).and_return connection
+      expect(connection).to receive(:connect!)
       knife.do_connect({})
     end
   end
