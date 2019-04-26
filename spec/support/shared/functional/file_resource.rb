@@ -899,11 +899,11 @@ shared_examples_for "a configured file resource" do
   end
 
   # Set up the context for security tests
-  def allowed_acl(sid, expected_perms)
+  def allowed_acl(sid, expected_perms, _flags = 0)
     [ ACE.access_allowed(sid, expected_perms[:specific]) ]
   end
 
-  def denied_acl(sid, expected_perms)
+  def denied_acl(sid, expected_perms, _flags = 0)
     [ ACE.access_denied(sid, expected_perms[:specific]) ]
   end
 
