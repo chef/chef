@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.237 -->
-## [v15.0.237](https://github.com/chef/chef/tree/v15.0.237) (2019-04-29)
+<!-- latest_release 15.0.238 -->
+## [v15.0.238](https://github.com/chef/chef/tree/v15.0.238) (2019-04-29)
 
 #### Merged Pull Requests
-- &quot;chef-client&quot; =&gt; #{Chef::Dist::CLIENT} [#8418](https://github.com/chef/chef/pull/8418) ([bobchaos](https://github.com/bobchaos))
+- Implement bootstrap directly with train [#8419](https://github.com/chef/chef/pull/8419) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Implement bootstrap directly with train [#8419](https://github.com/chef/chef/pull/8419) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.238 -->
 - &quot;chef-client&quot; =&gt; #{Chef::Dist::CLIENT} [#8418](https://github.com/chef/chef/pull/8418) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.237 -->
 - Add the introduced field to snap_package [#8412](https://github.com/chef/chef/pull/8412) ([tas50](https://github.com/tas50)) <!-- 15.0.236 -->
 - windows_task: Add start_when_available support [#8420](https://github.com/chef/chef/pull/8420) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.235 -->
