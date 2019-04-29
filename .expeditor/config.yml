@@ -1,5 +1,5 @@
 # Documentation available at https://expeditor.chef.io/docs/getting-started/
-
+---
 # the name we use for this project when interacting with expeditor chatbot
 project:
   alias: chef-15
@@ -11,7 +11,7 @@ product_key:
 
 # Slack channel in Chef Software slack to send notifications about build failures, etc
 slack:
-  notify_channel: chef-notify
+  notify_channel: chef-infra-notify
 
 # Which Ruby Gems, built when the Omnibus package is built, to publish to rubygems.org
 # This publish is triggered by the `built_in:publish_rubygems` artifact_action.
@@ -33,12 +33,6 @@ pipelines:
         - ADHOC: true
 
 github:
-  # The file where the MAJOR.MINOR.PATCH version is kept. The version in this file
-  # is bumped automatically via the `built_in:bump_version` merge_action.
-  version_file: "VERSION"
-  # The file where our CHANGELOG is kept. This file is updated automatically with
-  # details from the Pull Request via the `built_in:update_changelog` merge_action.
-  changelog_file: "CHANGELOG.md"
   # This deletes the GitHub PR branch after successfully merged into the release branch
   delete_branch_on_merge: true
   # The tag format to use (e.g. v1.0.0)
@@ -57,6 +51,9 @@ github:
         version_constraint: 15*
     - chef-14:
         version_constraint: 14*
+
+changelog:
+  rollup_header: Changes not yet released to rubygems.org
 
 # These actions are taken, in order they are specified, anytime a Pull Request is merged.
 merge_actions:
