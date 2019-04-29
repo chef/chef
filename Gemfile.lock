@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 5c70e89388ebc8ddf7d2d7bfd489024b11c0aece
+  revision: a1ec73298d623d18cbe05c2b53ac57c8cc9beae0
   branch: master
   specs:
     ohai (15.0.34)
@@ -99,6 +99,12 @@ PATH
       wmi-lite (~> 1.0)
 
 PATH
+  remote: chef-bin
+  specs:
+    chef-bin (15.0.237)
+      chef (= 15.0.237)
+
+PATH
   remote: chef-config
   specs:
     chef-config (15.0.237)
@@ -113,7 +119,7 @@ GEM
   specs:
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
-    appbundler (0.12.4)
+    appbundler (0.12.5)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.0)
@@ -223,7 +229,7 @@ GEM
     jaro_winkler (1.5.2)
     json (2.2.0)
     libyajl2 (1.2.0)
-    license-acceptance (0.2.13)
+    license-acceptance (0.2.16)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
@@ -417,7 +423,7 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    winrm (2.3.1)
+    winrm (2.3.2)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
@@ -444,6 +450,7 @@ DEPENDENCIES
   appbundler
   bcrypt_pbkdf
   chef!
+  chef-bin!
   chef-config!
   chef-vault
   cheffish (~> 14)

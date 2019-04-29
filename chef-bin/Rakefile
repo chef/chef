@@ -1,0 +1,15 @@
+# we need to force the install in order to overwrite the binstubs from
+# old chef gems.
+
+Bundler::GemHelper.install_tasks
+
+# this is necessary to use to overwrite any chef-14 or earlier era gem which has the bin files in
+# the chef gem itself
+desc "force install the chef-bin gem"
+task "install:force" do
+  sh "gem build -V chef-bin.gemspec"
+  built_gem_path = Dir["chef-bin-*.gem"].sort_by { |f| File.mtime(f) }.last
+  FileUtils.mkdir_p("pkg") unless Dir.exist?("pkg")
+  FileUtils.mv(built_gem_path, "pkg")
+  sh "gem install -f pkg/#{built_gem_path}"
+end

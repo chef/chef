@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ describe "notifying_block" do
   include Chef::Mixin::ShellOut
 
   let(:chef_dir) { File.expand_path("../../../../bin", __FILE__) }
-  let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
+  let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
 
   when_the_repository "notifying_block test one" do
     before do

@@ -6,7 +6,7 @@ describe "notifications" do
   include Chef::Mixin::ShellOut
 
   let(:chef_dir) { File.expand_path("../../../../bin", __FILE__) }
-  let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
+  let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
 
   when_the_repository "notifies a nameless resource" do
     before do

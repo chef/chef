@@ -51,7 +51,7 @@ Gem::Specification.new do |s|
   s.add_dependency "bundler", ">= 1.10"
 
   s.bindir       = "bin"
-  s.executables  = %w{ chef-client chef-solo knife chef-shell chef-apply chef-resource-inspector }
+  s.executables  = %w{ knife }
 
   s.require_paths = %w{ lib }
   s.files = %w{Gemfile Rakefile LICENSE README.md} + Dir.glob("{lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } + Dir.glob("*.gemspec")
