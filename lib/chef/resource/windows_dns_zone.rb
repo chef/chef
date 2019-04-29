@@ -32,7 +32,7 @@ class Chef
                name_property: true
 
       property :replication_scope, String,
-               description: "The replication scope for the zone, required if server_type set to 'Domain'",
+               description: "The replication scope for the zone, required if server_type set to 'Domain'.",
                default: "Domain"
 
       property :server_type, String,

@@ -36,19 +36,19 @@ class Chef
                required: true
 
       property :full_users, Array,
-               description: "Which users should have full access to the share.",
+               description: "Determines which users should have full access to the share.",
                default: ['BUILTIN\\administrators']
 
       property :change_users, Array,
-               description: " Which users should have change access to the share.",
+               description: "Determines which users should have change access to the share.",
                default: []
 
       property :read_users, Array,
-               description: "Which users should have read access to the share.",
+               description: "Determines which users should have read access to the share.",
                default: []
 
       property :root, String,
-               description: "The root from which to create the DFS tree, defaults to C:\\DFSRoots.",
+               description: "The root from which to create the DFS tree. Defaults to C:\\DFSRoots.",
                default: 'C:\\DFSRoots'
 
       action :install do
