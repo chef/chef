@@ -34,6 +34,13 @@ task install: :super_install
 gemspec = Gem.win_platform? ? "chef-universal-mingw32" : "chef"
 Bundler::GemHelper.install_tasks name: gemspec
 
+# this gets appended to the normal bundler install helper
+task :install do
+  chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
+  Dir.chdir(chef_bin_path)
+  sh("rake install:force")
+end
+
 task :pedant, :chef_zero_spec
 
 task :build_eventlog do

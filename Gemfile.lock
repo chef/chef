@@ -99,6 +99,12 @@ PATH
       wmi-lite (~> 1.0)
 
 PATH
+  remote: chef-bin
+  specs:
+    chef-bin (15.0.237)
+      chef (= 15.0.237)
+
+PATH
   remote: chef-config
   specs:
     chef-config (15.0.239)
@@ -410,6 +416,7 @@ DEPENDENCIES
   appbundler
   bcrypt_pbkdf
   chef!
+  chef-bin!
   chef-config!
   chef-vault
   cheffish (~> 14)

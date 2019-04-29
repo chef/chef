@@ -45,10 +45,8 @@ describe "chef-client" do
   # machine that has omnibus chef installed. In that case we need to ensure
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
-  let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
-  let(:chef_solo) { "ruby '#{chef_dir}/chef-solo' --legacy-mode --minimal-ohai" }
-
-  let(:critical_env_vars) { %w{_ORIGINAL_GEM_PATH GEM_PATH GEM_HOME GEM_ROOT BUNDLE_BIN_PATH BUNDLE_GEMFILE RUBYLIB RUBYOPT RUBY_ENGINE RUBY_ROOT RUBY_VERSION PATH}.map { |o| "#{o}=#{ENV[o]}" } .join(" ") }
+  let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
+  let(:chef_solo) { "bundle exec chef-solo --legacy-mode --minimal-ohai" }
 
   when_the_repository "has a cookbook with a no-op recipe" do
     before { file "cookbooks/x/recipes/default.rb", "" }
@@ -60,22 +58,6 @@ describe "chef-client" do
       EOM
 
       shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
-    end
-
-    it "should complete successfully with no other environment variables", skip: (Chef::Platform.windows?) do
-      file "config/client.rb", <<~EOM
-        local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
-      EOM
-
-      begin
-        result = shell_out("env -i #{critical_env_vars} #{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
-        result.error!
-      rescue
-        Chef::Log.info "Bare invocation will have the following load-path."
-        Chef::Log.info shell_out!("env -i #{critical_env_vars} ruby -e 'puts $:'").stdout
-        raise
-      end
     end
 
     it "should complete successfully with --no-listen" do

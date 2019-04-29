@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,7 +75,7 @@ describe "chef-client" do
 
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
 
-  let(:chef_client_cmd) { %Q{ruby '#{chef_dir}/chef-client' --minimal-ohai -c "#{path_to('config/client.rb')}" -lwarn} }
+  let(:chef_client_cmd) { %Q{bundle exec chef-client --minimal-ohai -c "#{path_to('config/client.rb')}" -lwarn} }
 
   after do
     FileUtils.rm_rf(cache_path)
