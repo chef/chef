@@ -1,0 +1,155 @@
+#
+# Copyright:: Copyright (c) 2019 Chef Software Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require "spec_helper"
+require "ostruct"
+require "chef/knife/bootstrap/train_connector"
+
+describe Chef::Knife::Bootstrap::TrainConnector do
+  let(:protocol) { "mock" }
+  let(:family) { "unknown" }
+  let(:release) { "unknown" } # version
+  let(:name) { "unknown" }
+  let(:arch) { "x86_64" }
+  let(:host_url) { "mock://user1@example.com" }
+  let(:opts) { {} }
+  subject do
+    # Create a valid TargetHost with the backend stubbed out.
+    Chef::Knife::Bootstrap::TrainConnector.test_instance(host_url,
+                                                         protocol: protocol,
+                                                         family: family,
+                                                         name: name,
+                                                         release: release,
+                                                         arch: arch,
+                                                         opts: opts)
+  end
+
+  context "connect!" do
+  end
+
+  describe "platform helpers" do
+    context "on linux" do
+      let(:family) { "debian" }
+      let(:name) { "ubuntu" }
+      it "reports that it is linux and unix, because that is how train classifies it" do
+        expect(subject.unix?).to eq true
+        expect(subject.linux?).to eq true
+        expect(subject.windows?).to eq false
+      end
+    end
+    context "on unix" do
+      let(:family) { "os" }
+      let(:name) { "mac_os_x" }
+      it "reports only a unix OS" do
+        expect(subject.unix?).to eq true
+        expect(subject.linux?).to eq false
+        expect(subject.windows?).to eq false
+      end
+    end
+    context "on windows" do
+      let(:family) { "windows" }
+      let(:name) { "windows" }
+      it "reports only a windows OS" do
+        expect(subject.unix?).to eq false
+        expect(subject.linux?).to eq false
+        expect(subject.windows?).to eq true
+      end
+    end
+  end
+
+  describe "#connect!" do
+    it "establishes the connection to the remote host by waiting for it" do
+      expect(subject.connection).to receive(:wait_until_ready)
+      subject.connect!
+    end
+  end
+
+  describe "#temp_dir" do
+    context "under windows" do
+      let(:family) { "windows" }
+      let(:name) { "windows" }
+
+      it "uses the windows command to create the temp dir" do
+        expected_command = Chef::Knife::Bootstrap::TrainConnector::MKTEMP_WIN_COMMAND
+        expect(subject).to receive(:run_command!).with(expected_command)
+          .and_return double("result", stdout: "C:/a/path")
+        expect(subject.temp_dir).to eq "C:/a/path"
+      end
+
+    end
+    context "under linux and unix-like" do
+      let(:family) { "debian" }
+      let(:name) { "ubuntu" }
+      it "uses the *nix command to create the temp dir and sets ownership to logged-in user" do
+        expected_command = Chef::Knife::Bootstrap::TrainConnector::MKTEMP_NIX_COMMAND
+        expect(subject).to receive(:run_command!).with(expected_command)
+          .and_return double("result", stdout: "/a/path")
+        expect(subject).to receive(:run_command!).with("chown user1 '/a/path'")
+        expect(subject.temp_dir).to eq "/a/path"
+      end
+
+    end
+  end
+  context "#upload_file_content!" do
+    it "creates a local file with expected content and uploads it" do
+      expect(subject).to receive(:upload_file!) do |local_path, remote_path|
+        expect(File.read(local_path)).to eq "test data"
+        expect(remote_path).to eq "/target/path"
+      end
+      subject.upload_file_content!("test data", "/target/path")
+    end
+  end
+
+  context "del_file" do
+    context "on windows" do
+      let(:family) { "windows" }
+      let(:name) { "windows" }
+      it "deletes the file with a windows command" do
+        expect(subject).to receive(:run_command!) do |cmd, &_handler|
+          expect(cmd).to match(/Test-Path "deleteme\.txt".*/)
+        end
+        subject.del_file!("deleteme.txt")
+      end
+    end
+    context "on unix-like" do
+      let(:family) { "debian" }
+      let(:name) { "ubuntu" }
+      it "deletes the file with a windows command" do
+        expect(subject).to receive(:run_command!) do |cmd, &_handler|
+          expect(cmd).to match(/rm -f "deleteme\.txt".*/)
+        end
+        subject.del_file!("deleteme.txt")
+      end
+    end
+  end
+
+  context "#run_command!" do
+    it "raises a RemoteExecutionFailed when the remote execution failed" do
+      command_result = double("results", stdout: "", stderr: "failed", exit_status: 1)
+      expect(subject).to receive(:run_command).and_return command_result
+
+      expect { subject.run_command!("test") }.to raise_error do |e|
+        expect(e.hostname).to eq subject.hostname
+        expect(e.class).to eq Chef::Knife::Bootstrap::RemoteExecutionFailed
+        expect(e.stderr).to eq "failed"
+        expect(e.stdout).to eq ""
+        expect(e.exit_status).to eq 1
+      end
+    end
+  end
+
+end
