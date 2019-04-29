@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.236 -->
-## [v15.0.236](https://github.com/chef/chef/tree/v15.0.236) (2019-04-29)
+<!-- latest_release 15.0.237 -->
+## [v15.0.237](https://github.com/chef/chef/tree/v15.0.237) (2019-04-29)
 
 #### Merged Pull Requests
-- Add the introduced field to snap_package [#8412](https://github.com/chef/chef/pull/8412) ([tas50](https://github.com/tas50))
+- &quot;chef-client&quot; =&gt; #{Chef::Dist::CLIENT} [#8418](https://github.com/chef/chef/pull/8418) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- &quot;chef-client&quot; =&gt; #{Chef::Dist::CLIENT} [#8418](https://github.com/chef/chef/pull/8418) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.237 -->
 - Add the introduced field to snap_package [#8412](https://github.com/chef/chef/pull/8412) ([tas50](https://github.com/tas50)) <!-- 15.0.236 -->
 - windows_task: Add start_when_available support [#8420](https://github.com/chef/chef/pull/8420) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.235 -->
 - Fix for write permissions were not working properly on windows [#8168](https://github.com/chef/chef/pull/8168) ([vijaymmali1990](https://github.com/vijaymmali1990)) <!-- 15.0.234 -->
