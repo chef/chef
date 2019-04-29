@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.239 -->
-## [v15.0.239](https://github.com/chef/chef/tree/v15.0.239) (2019-04-29)
+<!-- latest_release 15.0.240 -->
+## [v15.0.240](https://github.com/chef/chef/tree/v15.0.240) (2019-04-29)
 
 #### Merged Pull Requests
-- Enable license acceptance during bootstrap  [#8411](https://github.com/chef/chef/pull/8411) ([marcparadise](https://github.com/marcparadise))
+- Remove chef-* bin files from chef gem [#8413](https://github.com/chef/chef/pull/8413) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Remove chef-* bin files from chef gem [#8413](https://github.com/chef/chef/pull/8413) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.240 -->
 - Enable license acceptance during bootstrap  [#8411](https://github.com/chef/chef/pull/8411) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.239 -->
 - Implement bootstrap directly with train [#8419](https://github.com/chef/chef/pull/8419) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.238 -->
 - &quot;chef-client&quot; =&gt; #{Chef::Dist::CLIENT} [#8418](https://github.com/chef/chef/pull/8418) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.237 -->
