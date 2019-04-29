@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.238 -->
-## [v15.0.238](https://github.com/chef/chef/tree/v15.0.238) (2019-04-29)
+<!-- latest_release 15.0.239 -->
+## [v15.0.239](https://github.com/chef/chef/tree/v15.0.239) (2019-04-29)
 
 #### Merged Pull Requests
-- Implement bootstrap directly with train [#8419](https://github.com/chef/chef/pull/8419) ([marcparadise](https://github.com/marcparadise))
+- Enable license acceptance during bootstrap  [#8411](https://github.com/chef/chef/pull/8411) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Enable license acceptance during bootstrap  [#8411](https://github.com/chef/chef/pull/8411) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.239 -->
 - Implement bootstrap directly with train [#8419](https://github.com/chef/chef/pull/8419) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.238 -->
 - &quot;chef-client&quot; =&gt; #{Chef::Dist::CLIENT} [#8418](https://github.com/chef/chef/pull/8418) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.237 -->
 - Add the introduced field to snap_package [#8412](https://github.com/chef/chef/pull/8412) ([tas50](https://github.com/tas50)) <!-- 15.0.236 -->
