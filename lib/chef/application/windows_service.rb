@@ -57,7 +57,7 @@ class Chef
       option :interval,
         short: "-i SECONDS",
         long: "--interval SECONDS",
-        description: "Set the number of seconds to wait between chef-client runs",
+        description: "Set the number of seconds to wait between #{Chef::Dist::CLIENT} runs",
         proc: lambda { |s| s.to_i }
 
       DEFAULT_LOG_LOCATION ||= "#{ENV['SYSTEMDRIVE']}/chef/client.log".freeze

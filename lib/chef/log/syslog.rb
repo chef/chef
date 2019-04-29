@@ -19,6 +19,7 @@
 require "logger"
 require "syslog-logger"
 require "chef/mixin/unformatter"
+require "chef/dist"
 
 class Chef
   class Log
@@ -32,7 +33,7 @@ class Chef
 
       attr_accessor :sync, :formatter
 
-      def initialize(program_name = "chef-client", facility = ::Syslog::LOG_DAEMON, logopts = nil)
+      def initialize(program_name = "#{Chef::Dist::CLIENT}", facility = ::Syslog::LOG_DAEMON, logopts = nil)
         super
         return if defined? ::Logger::Syslog::SYSLOG
         ::Logger::Syslog.const_set :SYSLOG, SYSLOG

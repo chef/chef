@@ -24,6 +24,7 @@ require "chef/run_context"
 require "chef/config"
 require "chef/node"
 require "chef/server_api"
+require "chef/dist"
 
 class Chef
   module PolicyBuilder
@@ -90,7 +91,7 @@ class Chef
         @node = nil
 
         if Chef::Config[:solo_legacy_mode]
-          raise UnsupportedFeature, "Policyfile does not support chef-solo. Use chef-client local mode instead."
+          raise UnsupportedFeature, "Policyfile does not support chef-solo. Use #{Chef::Dist::CLIENT} local mode instead."
         end
 
         if override_runlist

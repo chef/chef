@@ -1,7 +1,8 @@
+require "chef/dist"
+
 class Chef
   module Formatters
     module ErrorInspectors
-
       # == RegistrationErrorInspector
       # Wraps exceptions that occur during the client registration process and
       # suggests possible causes.
@@ -38,7 +39,7 @@ class Chef
           when Chef::Exceptions::PrivateKeyMissing
             error_description.section("Private Key Not Found:", <<~E)
               Your private key could not be loaded. If the key file exists, ensure that it is
-              readable by chef-client.
+              readable by #{Chef::Dist::CLIENT}.
             E
             error_description.section("Relevant Config Settings:", <<~E)
               validation_key "#{api_key}"

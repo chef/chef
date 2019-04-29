@@ -28,6 +28,7 @@ require "mixlib/cli"
 require "tmpdir"
 require "rbconfig"
 require "chef/application/exit_code"
+require "chef/dist"
 
 class Chef
   class Application
@@ -313,7 +314,7 @@ class Chef
             " finishing converge to exit normally (send SIGINT to terminate immediately)")
         end
 
-        client_solo = chef_config[:solo] ? "chef-solo" : "chef-client"
+        client_solo = chef_config[:solo] ? "chef-solo" : "#{Chef::Dist::CLIENT}"
         $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
         begin
           logger.trace "Forked instance now converging"

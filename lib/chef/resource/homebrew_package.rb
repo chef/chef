@@ -20,6 +20,7 @@
 
 require "chef/provider/package"
 require "chef/resource/package"
+require "chef/dist"
 
 class Chef
   class Resource
@@ -31,7 +32,7 @@ class Chef
       introduced "12.0"
 
       property :homebrew_user, [ String, Integer ],
-               description: "The name of the Homebrew owner to be used by the chef-client when executing a command."
+               description: "The name of the Homebrew owner to be used by the #{Chef::Dist::CLIENT} when executing a command."
 
     end
   end

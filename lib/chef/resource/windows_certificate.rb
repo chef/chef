@@ -21,6 +21,7 @@ require "chef/util/path_helper"
 require "chef/resource"
 require "win32-certstore" if Chef::Platform.windows?
 require "openssl"
+require "chef/dist"
 
 class Chef
   class Resource
@@ -53,7 +54,7 @@ class Chef
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [TrueClass, FalseClass],
-               description: "Ensure that sensitive resource data is not logged by the chef-client.",
+               description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
                default: lazy { |r| r.pfx_password ? true : false }, skip_docs: true
 
       action :create do

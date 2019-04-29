@@ -31,6 +31,7 @@ require "chef/util/backup"
 require "chef/util/diff"
 require "chef/util/selinux"
 require "chef/file_content_management/deploy"
+require "chef/dist"
 
 # The Tao of File Providers:
 #  - the content provider must always return a tempfile that we can delete/mv
@@ -389,7 +390,7 @@ class Chef
         return if tempfile.nil?
         # but a tempfile that has no path or doesn't exist should not happen
         if tempfile.path.nil? || !::File.exists?(tempfile.path)
-          raise "chef-client is confused, trying to deploy a file that has no path or does not exist..."
+          raise "#{Chef::Dist::CLIENT} is confused, trying to deploy a file that has no path or does not exist..."
         end
 
         # the file? on the next line suppresses the case in why-run when we have a not-file here that would have otherwise been removed
