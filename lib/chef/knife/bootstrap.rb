@@ -335,11 +335,8 @@ class Chef
           Chef::Config[:knife][:bootstrap_vault_item]
         }
 
-      # OPTIONAL: This can be exposed as an class method on Knife
-      # subclasses instead - that would let us move deprecation handling
-      # up into the base clase.
       DEPRECATED_FLAGS = {
-        # old_key: [:new_key, old_long, new_long]
+        # deprecated_key: [new_key, deprecated_long]
         auth_timeout: [:max_wait, "--max-wait SECONDS"],
         host_key_verify: [:ssh_verify_host_key,
                           "--[no-]host-key-verify",
@@ -370,14 +367,12 @@ class Chef
                                         ],
       }.freeze
 
-      DEPRECATED_FLAGS.each do |flag, new_flag_config|
-        new_flag, old_long = new_flag_config
-        new_long = options[new_flag][:long]
-        new_flag_name = new_long.split(" ").first
-
-        option(flag, long: new_long,
-               description: "#{old_long} is deprecated. Use #{new_long} instead.",
-               boolean: options[new_flag][:boolean])
+      DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
+        new_key, deprecated_long = deprecation_entry
+        new_long = options[new_key][:long]
+        option(deprecated_key, long: deprecated_long,
+                               description: "#{deprecated_long} is deprecated. Use #{new_long} instead.",
+                               boolean: options[new_key][:boolean])
       end
 
       attr_accessor :client_builder
@@ -503,37 +498,8 @@ class Chef
         Erubis::Eruby.new(template).evaluate(bootstrap_context)
       end
 
-      # Check deprecated flags are used; map them to their new keys,
-      # and print a warning. Will not map a value to a new key if the
-      # CLI flag for that new key has also been specified.
-      # If both old and new flags are specified, this will warn
-      # and take the new flag value.
-      # This can be moved up to the base knife class if it's agreeable.
-      def warn_and_map_deprecated_flags
-        DEPRECATED_FLAGS.each do |old_key, new_flag_config|
-          new_key, = new_flag_config
-          if config.key?(old_key) && config_source(old_key) == :cli
-            # TODO - do we want the same warnings for knife config keys
-            #        in absence of CLI keys?
-            if config.key?(new_key) && config_source(new_key) == :cli
-              new_key_name = "--#{new_key.to_s.tr("_", "-")}"
-              old_key_name = "--#{old_key.to_s.tr("_", "-")}"
-              ui.warn <<~EOM
-                You provided both #{new_key_name} and #{old_key_name}.
-                Using: '#{new_key_name.split(" ").first} #{config[new_key]}' because #{old_key_name} is deprecated.
-              EOM
-            else
-              config[new_key] = config[old_key]
-              unless Chef::Config[:silence_deprecation_warnings] == true
-                ui.warn options[old_key][:description]
-              end
-            end
-          end
-        end
-      end
-
       def run
-        warn_and_map_deprecated_flags
+        verify_deprecated_flags!
 
         validate_name_args!
         validate_protocol!
@@ -659,6 +625,34 @@ class Chef
           end
         end
         true
+      end
+
+      # If any deprecated flags are used, let the user know and
+      # update config[new-key] to the value given to the deprecated flag.
+      # If a deprecated flag and its corresponding replacement
+      # are both used, raise an error.
+      def verify_deprecated_flags!
+        DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
+          new_key, deprecated_long = deprecation_entry
+          if config.key?(deprecated_key) && config_source(deprecated_key) == :cli
+            if config.key?(new_key) && config_source(new_key) == :cli
+              new_long = options[new_key][:long].split(" ").first
+              deprecated_long = deprecated_long.split(" ").first
+              ui.error <<~EOM
+                You provided both #{new_long} and #{deprecated_long}.
+
+                Please use one or the other, but note that
+                #{deprecated_long} is deprecated.
+              EOM
+              exit 1
+            else
+              config[new_key] = config[deprecated_key]
+              unless Chef::Config[:silence_deprecation_warnings] == true
+                ui.warn options[deprecated_key][:description]
+              end
+            end
+          end
+        end
       end
 
       # fail if the server_name is nil
