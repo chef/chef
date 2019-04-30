@@ -51,11 +51,11 @@ class Chef
                required: true
 
       property :options, [Array, Symbol],
-               description: "An array of symbols representing extraction flags. Example: :no_overwrite to prevent overwriting files on disk. By default this properly sets :time which preserves the modification timestamps of files in the archive when writing them to disk.",
+               description: "An array of symbols representing extraction flags. Example: :no_overwrite to prevent overwriting files on disk. By default, this properly sets :time which preserves the modification timestamps of files in the archive when writing them to disk.",
                default: lazy { [:time] }
 
       property :overwrite, [TrueClass, FalseClass, :auto],
-               description: "Should the resource overwrite the destination file contents if they already exist? If set to :auto the date stamp of files within the archive will be compared to those on disk and disk contents will be overwritten if they differ. This may cause unintented consequences if on disk date stamps are changed between runs, which will result in the files being overwritten during each client run. Make sure to properly test any change to this property.",
+               description: "Should the resource overwrite the destination file contents if they already exist? If set to :auto the date stamp of files within the archive will be compared to those on disk and disk contents will be overwritten if they differ. This may cause unintended consequences if disk date stamps are changed between runs, which will result in the files being overwritten during each client run. Make sure to properly test any change to this property.",
                default: false
 
       # backwards compatibility for the legacy cookbook names
