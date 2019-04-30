@@ -277,7 +277,7 @@ class Chef
           # The default msi path has a number of url query parameters - we attempt to substitute
           # such parameters in as long as they are provided by the template.
 
-          if @config[:msi_url].nil? && @config[:msi_url].empty?
+          if @config[:msi_url].nil? || @config[:msi_url].empty?
             url = "https://www.chef.io/chef/download?p=windows"
             url += "&pv=#{machine_os}" unless machine_os.nil?
             url += "&m=#{machine_arch}" unless machine_arch.nil?
