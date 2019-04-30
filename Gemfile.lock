@@ -173,7 +173,7 @@ GEM
     htmlentities (4.3.4)
     httpclient (2.8.3)
     iniparse (1.4.4)
-    inspec-core (4.1.4.preview)
+    inspec-core (4.2.0.preview)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       faraday_middleware (~> 0.12.2)
