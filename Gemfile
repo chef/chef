@@ -11,7 +11,15 @@ gem "chef", path: "."
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
 
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
-gem "chef-bin", path: File.expand_path("../chef-bin", __FILE__) if File.exist?(File.expand_path("../chef-bin", __FILE__))
+
+if File.exist?(File.expand_path("../chef-bin", __FILE__))
+  # bundling in a git checkout
+  gem "chef-bin", path: File.expand_path("../chef-bin", __FILE__)
+else
+  # bundling in omnibus
+  gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
+end
+
 gem "cheffish", "~> 14"
 
 group(:omnibus_package) do
