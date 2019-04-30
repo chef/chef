@@ -18,6 +18,7 @@ slack:
 rubygems:
   - chef
   - chef-config
+  - chef-bin
 
 docker_images:
   - chef
