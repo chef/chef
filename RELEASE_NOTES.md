@@ -131,7 +131,6 @@ Using removed options will cause the command to fail.
 |--kerberos-keytab-file| This option existed but was not implemented.|
 |--winrm-codepage| This was used under knife-windows because bootstrapping was performed over a `cmd` shell. It is now invoked from `powershell`, so this option is no longer used.|
 |--winrm-shell|This option was ignored for bootstrap.|
-|--prerelease|Chef now releases all development builds to our current channel and does not perform pre-release gem releases.|
 |--install-as-service|Installing Chef client as a service is not supported|
 
 #### Usage Changes

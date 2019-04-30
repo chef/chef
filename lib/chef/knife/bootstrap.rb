@@ -156,6 +156,10 @@ class Chef
         description: "The version of #{Chef::Dist::PRODUCT} to install.",
         proc: lambda { |v| Chef::Config[:knife][:bootstrap_version] = v }
 
+      option :prerelease,
+        long: "--prerelease",
+        description: "Install from 'current' channel"
+
       # client.rb content via chef-full/bootstrap_context
       option :bootstrap_proxy,
         long: "--bootstrap-proxy PROXY_URL",

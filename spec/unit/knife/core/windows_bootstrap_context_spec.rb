@@ -177,9 +177,34 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
   end
 
   describe "latest_current_windows_chef_version_query" do
-    it "returns the major version of the current version of Chef" do
+    it "includes the major version of the current version of Chef" do
       stub_const("Chef::VERSION", "15.1.2")
       expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&v=15")
+    end
+
+    context "when bootstrap_version is given" do
+      before do
+        Chef::Config[:knife][:bootstrap_version] = "15.1.2"
+      end
+      it "includes the requested version" do
+        expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&v=15.1.2")
+      end
+    end
+
+    context "when prerelease is true" do
+      let(:config) { { prerelease: true } }
+      it "includes prerelease indicator " do
+        expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&prerelease=true")
+      end
+    end
+
+    context "when a prerelease bootstrap_version is specified" do
+      before do
+        Chef::Config[:knife][:bootstrap_version] = "15.1.2.xyz"
+      end
+      it "includes prerelease indicator and the given version" do
+        expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&v=15.1.2.xyz&prerelease=true")
+      end
     end
 
   end

@@ -159,13 +159,25 @@ class Chef
         end
 
         def latest_current_windows_chef_version_query
-          chef_version_string = if knife_config[:bootstrap_version]
-                                  knife_config[:bootstrap_version]
-                                else
-                                  Chef::VERSION.split(".").first
-                                end
+          installer_version_string = nil
+          if @config[:prerelease]
+            installer_version_string = "&prerelease=true"
+          else
+            chef_version_string = if knife_config[:bootstrap_version]
+                                    knife_config[:bootstrap_version]
+                                  else
+                                    Chef::VERSION.split(".").first
+                                  end
 
-          "&v=#{chef_version_string}"
+            installer_version_string = "&v=#{chef_version_string}"
+
+            # If bootstrapping a pre-release version add the prerelease query string
+            if chef_version_string.split(".").length > 3
+              installer_version_string << "&prerelease=true"
+            end
+          end
+
+          installer_version_string
         end
 
         def win_wget

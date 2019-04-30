@@ -166,6 +166,27 @@ describe Chef::Knife::Core::BootstrapContext do
     it "should send the full version to the installer" do
       expect(bootstrap_context.latest_current_chef_version_string).to eq("-v 11.12.4")
     end
+
+    describe "and it is a prerelease version" do
+      let(:chef_config) do
+        {
+          knife: { bootstrap_version: "11.12.4.xyz" },
+        }
+      end
+
+      it "should set the version and set -p" do
+        expect(bootstrap_context.latest_current_chef_version_string).to eq("-v 11.12.4.xyz -p")
+      end
+    end
+
+  end
+
+  describe "when prerelease is specified" do
+    let(:config) { { prerelease: true } }
+
+    it "should send -p to the installer" do
+      expect(bootstrap_context.latest_current_chef_version_string).to eq("-p")
+    end
   end
 
   describe "when a bootstrap_version is not specified" do
