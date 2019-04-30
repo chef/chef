@@ -58,42 +58,62 @@ class Chef
                      end
         end
 
+        #
+        # Establish a connection to the configured host.
+        #
+        # @raise [TrainError]
+        # @raise [TrainUserError]
+        #
+        # @return [TrueClass] true if the connection could be established.
         def connect!
           # Force connection to establish
           connection.wait_until_ready
           true
         end
 
+        #
+        # @return [String] the configured hostname
         def hostname
           config[:host]
         end
 
+        # Answers the question, "is this connection configured for password auth?"
+        # @return [Boolean] true if the connection is configured with password auth
         def password_auth?
           config.key? :password
         end
 
-        # True if we're connected to a linux host
+        # Answers the question, "Am I connected to a linux host?"
+        #
+        # @return [Boolean] true if the connected host is linux.
         def linux?
           connection.platform.linux?
         end
 
-        # True if we're connected to a unix host.
-        # NOTE: this is always true
-        # for a linux host because train classifies
-        # linux as a unix
+        # Answers the question, "Am I connected to a unix host?"
+        #
+        # @note this will alwys return true for a linux host
+        # because train classifies linux as a unix
+        #
+        # @return [Boolean] true if the connected host is unix or linux
         def unix?
           connection.platform.unix?
         end
 
-        # True if we're connected to a windows host
+        #
+        # Answers the question, "Am I connected to a Windows host?"
+        #
+        # @return [Boolean] true if the connected host is Windows
         def windows?
           connection.platform.windows?
         end
 
-        # Creates a temporary directory on the remote host if it
-        # hasn't already. Caches directory location.
         #
-        # Returns the path on the remote host.
+        # Creates a temporary directory on the remote host if it
+        # hasn't already. Caches directory location. For *nix,
+        # it will ensure that the directory is owned by the logged-in user
+        #
+        # @return [String] the temporary path created on the remote host.
         def temp_dir
           cmd = windows? ? MKTEMP_WIN_COMMAND : MKTEMP_NIX_COMMAND
           @tmpdir ||= begin
@@ -110,37 +130,81 @@ class Chef
                       end
         end
 
+        #
+        # Uploads a file from "local_path" to "remote_path"
+        #
+        # @param local_path [String] The path to a file on the local file system
+        # @param remote_path [String] The destination path on the remote file system.
+        # @return NilClass
         def upload_file!(local_path, remote_path)
           connection.upload(local_path, remote_path)
+          nil
         end
 
+        #
+        # Uploads the provided content into the file "remote_path" on the remote host.
+        #
+        # @param content [String] The content to upload into remote_path
+        # @param remote_path [String] The destination path on the remote file system.
+        # @return NilClass
         def upload_file_content!(content, remote_path)
           t = Tempfile.new("chef-content")
           t << content
           t.close
           upload_file!(t.path, remote_path)
+          nil
         ensure
           t.close
           t.unlink
         end
 
+        #
+        # Force-deletes the file at "path" from the remote host.
+        #
+        # @param path [String] The path of the file on the remote host
         def del_file!(path)
           if windows?
             run_command!("If (Test-Path \"#{path}\") { Remove-Item -Force -Path \"#{path}\" }")
           else
             run_command!("rm -f \"#{path}\"")
           end
+          nil
         end
 
-        # normalizes path across OS's
+        #
+        # normalizes path across OS's - always use forward slashes, which
+        # Windows and *nix understand.
+        #
+        # @param path [String] The path to normalize
+        #
+        # @return [String] the normalized path
         def normalize_path(path)
           path.tr("\\", "/")
         end
 
+        #
+        # Runs a command on the remote host.
+        #
+        # @param command [String] The command to run.
+        # @param data_handler [Proc] An optional block. When provided, inbound data will be
+        # published via `data_handler.call(data)`. This can allow
+        # callers to receive and render updates from remote command execution.
+        #
+        # @return [Train::Extras::CommandResult] an object containing stdout, stderr, and exit_status
         def run_command(command, &data_handler)
           connection.run_command(command, &data_handler)
         end
 
+        #
+        # Runs a command the remote host
+        #
+        # @param command [String] The command to run.
+        # @param data_handler [Proc] An optional block. When provided, inbound data will be
+        # published via `data_handler.call(data)`. This can allow
+        # callers to receive and render updates from remote command execution.
+        #
+        # @raise Chef::Knife::Bootstrap::RemoteExecutionFailed if an error occurs (non-zero exit status)
+        # @return [Train::Extras::CommandResult] an object containing stdout, stderr, and exit_status
         def run_command!(command, &data_handler)
           result = run_command(command, &data_handler)
           if result.exit_status != 0
