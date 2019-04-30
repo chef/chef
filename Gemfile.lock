@@ -173,14 +173,14 @@ GEM
     htmlentities (4.3.4)
     httpclient (2.8.3)
     iniparse (1.4.4)
-    inspec-core (4.2.0.preview)
+    inspec-core (4.3.2)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       faraday_middleware (~> 0.12.2)
       hashie (~> 3.4)
       htmlentities
       json (>= 1.8, < 3.0)
-      license-acceptance (~> 0.2)
+      license-acceptance (>= 0.2.13, < 2.0)
       method_source (~> 0.8)
       mixlib-log
       multipart-post
@@ -203,7 +203,7 @@ GEM
     jaro_winkler (1.5.2)
     json (2.2.0)
     libyajl2 (1.2.0)
-    license-acceptance (0.2.16)
+    license-acceptance (1.0.0)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
@@ -444,4 +444,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.17.3
+   2.0.1
