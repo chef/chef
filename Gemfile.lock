@@ -416,7 +416,9 @@ DEPENDENCIES
   cheffish (~> 14)
   chefstyle!
   ed25519
-  inspec-core (>= 4.0.0.a, < 5)
+  inspec-core (~> 4.3)
+  netrc
+  octokit
   ohai!
   pry
   pry-byebug
