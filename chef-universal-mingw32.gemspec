@@ -19,6 +19,4 @@ gemspec.add_dependency "win32-certstore", "~> 0.3"
 gemspec.extensions << "ext/win32-eventlog/Rakefile"
 gemspec.files += Dir.glob("{distro,ext}/**/*")
 
-gemspec.executables += %w{ chef-service-manager chef-windows-service }
-
 gemspec
