@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.243 -->
-## [v15.0.243](https://github.com/chef/chef/tree/v15.0.243) (2019-04-30)
+<!-- latest_release 15.0.244 -->
+## [v15.0.244](https://github.com/chef/chef/tree/v15.0.244) (2019-04-30)
 
 #### Merged Pull Requests
-- remove windows executables from windows gemspec [#8430](https://github.com/chef/chef/pull/8430) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fixed bootstrap error while using --msi-url option with knife bootstrap winrm [#8435](https://github.com/chef/chef/pull/8435) ([Vasu1105](https://github.com/Vasu1105))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Fixed bootstrap error while using --msi-url option with knife bootstrap winrm [#8435](https://github.com/chef/chef/pull/8435) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.244 -->
 - remove windows executables from windows gemspec [#8430](https://github.com/chef/chef/pull/8430) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.243 -->
 - Update property descriptions for new resources [#8424](https://github.com/chef/chef/pull/8424) ([tas50](https://github.com/tas50)) <!-- 15.0.242 -->
 - Update InSpec preview to 4.2.0 [#8426](https://github.com/chef/chef/pull/8426) ([tas50](https://github.com/tas50)) <!-- 15.0.241 -->
