@@ -35,13 +35,27 @@ class Chef
 
         MKTEMP_NIX_COMMAND = "bash -c 'd=$(mktemp -d ${TMPDIR:-/tmp}/chef_XXXXXX); echo $d'".freeze
 
-        def initialize(host_url, default_transport, opts)
-          uri_opts = opts_from_uri(host_url)
-          uri_opts[:backend] ||= @default_transport
-          @transport_type = uri_opts[:backend]
+        def initialize(host_url, default_protocol, opts)
+          @host_url = host_url
+          @default_protocol = default_protocol
+          @opts_in = opts
+        end
 
-          # opts in the URI will override user-provided options
-          @config = transport_config(host_url, opts.merge(uri_opts))
+        def config
+          @config ||= begin
+                        uri_opts = opts_from_uri(@host_url, @default_protocol)
+                        transport_config(@host_url, @opts_in.merge(uri_opts))
+                      end
+        end
+
+        def connection
+          @connection ||= begin
+                       Train.validate_backend(config)
+                       train = Train.create(config[:backend], config)
+                       # Note that the train connection is not currently connected
+                       # to the remote host, but it's ready to go.
+                       train.connection
+                     end
         end
 
         def connect!
@@ -51,11 +65,11 @@ class Chef
         end
 
         def hostname
-          @config[:host]
+          config[:host]
         end
 
         def password_auth?
-          @config.key? :password
+          config.key? :password
         end
 
         # True if we're connected to a linux host
@@ -76,14 +90,6 @@ class Chef
           connection.platform.windows?
         end
 
-        def winrm?
-          @transport_type == "winrm"
-        end
-
-        def ssh?
-          @transport_type == "ssh"
-        end
-
         # Creates a temporary directory on the remote host if it
         # hasn't already. Caches directory location.
         #
@@ -98,7 +104,7 @@ class Chef
                           # running with sudo right now - so this directory would be owned by root.
                           # File upload is performed over SCP as the current logged-in user,
                           # so we'll set ownership to ensure that works.
-                          run_command!("chown #{@config[:user]} '#{dir}'")
+                          run_command!("chown #{config[:user]} '#{dir}'")
                         end
                         dir
                       end
@@ -143,37 +149,28 @@ class Chef
           result
         end
 
-        def connection
-          @connection ||= begin
-                       Train.validate_backend(@config)
-                       train = Train.create(@transport_type, @config)
-                       train.connection
-                     end
-        end
-
         private
 
         # For a given url and set of options, create a config
         # hash suitable for passing into train.
         def transport_config(host_url, opts_in)
+          # These baseline opts are not protocol-specific
           opts = { target: host_url,
-                   sudo: opts_in[:sudo] === false ? false : true,
                    www_form_encoded_password: true,
-                   key_files: opts_in[:key_files],
-                   non_interactive: true, # Prevent password prompts
                    transport_retries: 2,
                    transport_retry_sleep: 1,
-                   logger: opts_in[:logger],
-                   backend: @transport_type }
+                   backend: opts_in[:backend],
+                   logger: opts_in[:logger] }
 
-          # Base opts are those provided by the caller directly
+          # Accepts options provided by caller if they're not already configured,
+          # but note that they will be constrained to valid options for the backend protocol
           opts.merge!(opts_from_caller(opts, opts_in))
 
           # WinRM has some additional computed options
           opts.merge!(opts_inferred_from_winrm(opts, opts_in))
 
-          # Now that everything is populated, fill in anything left
-          # from user ssh config that may be present
+          # Now that everything is populated, fill in anything missing
+          # that may be found in user ssh config
           opts.merge!(missing_opts_from_ssh_config(opts, opts_in))
 
           Train.target_config(opts)
@@ -182,7 +179,7 @@ class Chef
         # Some winrm options are inferred based on other options.
         # Return a hash of winrm options based on configuration already built.
         def opts_inferred_from_winrm(config, opts_in)
-          return {} unless winrm?
+          return {} unless config[:backend] == "winrm"
           opts_out = {}
 
           if opts_in[:ssl]
@@ -212,14 +209,14 @@ class Chef
 
         # Extract any of username/password/host/port/transport
         # that are in the URI and return them as a config has
-        def opts_from_uri(uri)
+        def opts_from_uri(uri, default_protocol)
           # Train.unpack_target_from_uri only works for complete URIs in
           # form of proto://[user[:pass]@]host[:port]/
           # So we'll add the protocol prefix if it's not supplied.
           uri_to_check = if URI.regexp.match(uri)
                            uri
                          else
-                           "#{@transport_type}://#{uri}"
+                           "#{default_protocol}://#{uri}"
                          end
 
           Train.unpack_target_from_uri(uri_to_check)
@@ -231,7 +228,7 @@ class Chef
         # This is necessary because train will default these values
         # itself - causing SSH config data to be ignored
         def missing_opts_from_ssh_config(config, opts_in)
-          return {} unless ssh?
+          return {} unless config[:backend] == "ssh"
           host_cfg = ssh_config_for_host(config[:host])
           opts_out = {}
           opts_in.each do |key, _value|

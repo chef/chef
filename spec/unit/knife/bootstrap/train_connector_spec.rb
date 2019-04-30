@@ -20,26 +20,31 @@ require "ostruct"
 require "chef/knife/bootstrap/train_connector"
 
 describe Chef::Knife::Bootstrap::TrainConnector do
-  let(:transport) { "mock" }
+  let(:protocol) { "mock" }
   let(:family) { "unknown" }
   let(:release) { "unknown" } # version
   let(:name) { "unknown" }
   let(:arch) { "x86_64" }
+  let(:connection_opts) { {} } # connection opts
   let(:host_url) { "mock://user1@example.com" }
-  let(:opts) { {} }
+  let(:mock_connection) { true }
+
   subject do
-    # Specifying sudo: false ensures that attempted operations
-    # don't fail because the mock platform doesn't support sudo.
-    # Example groups can still override by setting explicitly it in 'opts'
-    tc = Chef::Knife::Bootstrap::TrainConnector.new(host_url, transport, { sudo: false }.merge(opts))
-    tc.connect!
-    tc.connection.mock_os(
-      family: family,
-      name: name,
-      release: release,
-      arch: arch
-    )
+    # Example groups can still override by setting explicitly it in 'connection_opts'
+    tc = Chef::Knife::Bootstrap::TrainConnector.new(host_url, protocol, connection_opts)
     tc
+  end
+
+  before(:each) do
+    if mock_connection
+      subject.connect!
+      subject.connection.mock_os(
+        family: family,
+        name: name,
+        release: release,
+        arch: arch
+      )
+    end
   end
 
   describe "platform helpers" do
@@ -79,8 +84,59 @@ describe Chef::Knife::Bootstrap::TrainConnector do
     end
   end
 
-  describe "::new" do
+  describe "#initialize" do
+    let(:mock_connection) { false }
 
+    context "when provided target is a proper URL" do
+      let(:protocol) { "ssh" }
+      let(:host_url) { "mock://user1@localhost:2200" }
+      it "correctly configures the instance from the URL" do
+        expect(subject.config[:backend]).to eq "mock"
+        expect(subject.config[:port]).to eq 2200
+        expect(subject.config[:host]).to eq "localhost"
+        expect(subject.config[:user]).to eq "user1"
+      end
+
+      context "and conflicting options are given" do
+        let(:connection_opts) { { user: "user2", host: "example.com", port: 15 } }
+        it "resolves them from the URI" do
+          expect(subject.config[:backend]).to eq "mock"
+          expect(subject.config[:port]).to eq 2200
+          expect(subject.config[:host]).to eq "localhost"
+          expect(subject.config[:user]).to eq "user1"
+        end
+      end
+    end
+
+    context "when provided target is just a hostname" do
+      let(:host_url) { "localhost" }
+      let(:protocol) { "mock" }
+      it "correctly sets backend protocol from the default" do
+        expect(subject.config[:backend]).to eq "mock"
+      end
+
+      context "and options have been provided that are supported by the transport" do
+        let(:protocol) { "ssh" }
+        let(:connection_opts) { { port: 15, user: "user2" } }
+
+        it "sets hostname and transport from arguments and provided fields from options" do
+          expect(subject.config[:backend]).to eq "ssh"
+          expect(subject.config[:host]).to eq "localhost"
+          expect(subject.config[:user]).to eq "user2"
+          expect(subject.config[:port]).to eq 15
+        end
+
+      end
+
+    end
+
+    context "when provided target is just a an IP address" do
+      let(:host_url) { "127.0.0.1" }
+      let(:protocol) { "mock" }
+      it "correctly sets backend protocol from the default" do
+        expect(subject.config[:backend]).to eq "mock"
+      end
+    end
   end
 
   describe "#temp_dir" do
