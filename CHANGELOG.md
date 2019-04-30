@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.241 -->
-## [v15.0.241](https://github.com/chef/chef/tree/v15.0.241) (2019-04-30)
+<!-- latest_release 15.0.242 -->
+## [v15.0.242](https://github.com/chef/chef/tree/v15.0.242) (2019-04-30)
 
 #### Merged Pull Requests
-- Update InSpec preview to 4.2.0 [#8426](https://github.com/chef/chef/pull/8426) ([tas50](https://github.com/tas50))
+- Update property descriptions for new resources [#8424](https://github.com/chef/chef/pull/8424) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update property descriptions for new resources [#8424](https://github.com/chef/chef/pull/8424) ([tas50](https://github.com/tas50)) <!-- 15.0.242 -->
 - Update InSpec preview to 4.2.0 [#8426](https://github.com/chef/chef/pull/8426) ([tas50](https://github.com/tas50)) <!-- 15.0.241 -->
 - Remove chef-* bin files from chef gem [#8413](https://github.com/chef/chef/pull/8413) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.240 -->
 - Enable license acceptance during bootstrap  [#8411](https://github.com/chef/chef/pull/8411) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.239 -->
