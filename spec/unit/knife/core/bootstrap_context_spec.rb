@@ -241,6 +241,17 @@ describe Chef::Knife::Core::BootstrapContext do
     end
   end
 
+  describe "#channel" do
+    it "defaults to stable" do
+      expect(bootstrap_context.channel).to eq "stable"
+    end
+
+    it "when configured it sets the value" do
+      let(:chef_config) { { channel: "current" } }
+      expect(bootstrap_context.channel).to eq "current"
+    end
+  end
+
   describe "#config_log_location" do
     context "when config_log_location is nil" do
       let(:chef_config) { { config_log_location: nil } }
