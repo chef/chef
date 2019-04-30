@@ -44,27 +44,6 @@ class Chef
           @config = transport_config(host_url, opts.merge(uri_opts))
         end
 
-        # Because creating a valid train connection for testing is a two-step process in which
-        # we need to connect before mocking config,
-        # we expose test_instance as a way for tests to create actual instances
-        # but ensure that they don't connect to any back end.
-        def self.test_instance(url, protocol: "ssh",
-                               family: "unknown", name: "unknown",
-                               release: "unknown", arch: "x86_64",
-                               opts: {})
-          # Specifying sudo: false ensures that attempted operations
-          # don't fail because the mock platform doesn't support sudo
-          tc = TrainConnector.new(url, protocol, { sudo: false }.merge(opts))
-          tc.connect!
-          tc.connection.mock_os(
-            family: family,
-            name: name,
-            release: release,
-            arch: arch
-          )
-          tc
-        end
-
         def connect!
           # Force connection to establish
           connection.wait_until_ready

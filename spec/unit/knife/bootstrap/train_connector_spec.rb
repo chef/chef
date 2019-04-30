@@ -20,7 +20,7 @@ require "ostruct"
 require "chef/knife/bootstrap/train_connector"
 
 describe Chef::Knife::Bootstrap::TrainConnector do
-  let(:protocol) { "mock" }
+  let(:transport) { "mock" }
   let(:family) { "unknown" }
   let(:release) { "unknown" } # version
   let(:name) { "unknown" }
@@ -28,17 +28,18 @@ describe Chef::Knife::Bootstrap::TrainConnector do
   let(:host_url) { "mock://user1@example.com" }
   let(:opts) { {} }
   subject do
-    # Create a valid TargetHost with the backend stubbed out.
-    Chef::Knife::Bootstrap::TrainConnector.test_instance(host_url,
-                                                         protocol: protocol,
-                                                         family: family,
-                                                         name: name,
-                                                         release: release,
-                                                         arch: arch,
-                                                         opts: opts)
-  end
-
-  context "connect!" do
+    # Specifying sudo: false ensures that attempted operations
+    # don't fail because the mock platform doesn't support sudo.
+    # Example groups can still override by setting explicitly it in 'opts'
+    tc = Chef::Knife::Bootstrap::TrainConnector.new(host_url, transport, { sudo: false }.merge(opts))
+    tc.connect!
+    tc.connection.mock_os(
+      family: family,
+      name: name,
+      release: release,
+      arch: arch
+    )
+    tc
   end
 
   describe "platform helpers" do
@@ -76,6 +77,10 @@ describe Chef::Knife::Bootstrap::TrainConnector do
       expect(subject.connection).to receive(:wait_until_ready)
       subject.connect!
     end
+  end
+
+  describe "::new" do
+
   end
 
   describe "#temp_dir" do
