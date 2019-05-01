@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.247 -->
-## [v15.0.247](https://github.com/chef/chef/tree/v15.0.247) (2019-05-01)
+<!-- latest_release 15.0.248 -->
+## [v15.0.248](https://github.com/chef/chef/tree/v15.0.248) (2019-05-01)
 
 #### Merged Pull Requests
-- file: Tell people what file a link is pointing at in warning messages [#8417](https://github.com/chef/chef/pull/8417) ([jaymzh](https://github.com/jaymzh))
+- Update InSpec to 4.3.2 [#8444](https://github.com/chef/chef/pull/8444) ([jaymalasinha](https://github.com/jaymalasinha))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update InSpec to 4.3.2 [#8444](https://github.com/chef/chef/pull/8444) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.0.248 -->
 - file: Tell people what file a link is pointing at in warning messages [#8417](https://github.com/chef/chef/pull/8417) ([jaymzh](https://github.com/jaymzh)) <!-- 15.0.247 -->
 - fix chef-bin bundling in omnibus [#8439](https://github.com/chef/chef/pull/8439) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.245 -->
 - Fixed bootstrap error while using --msi-url option with knife bootstrap winrm [#8435](https://github.com/chef/chef/pull/8435) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.244 -->
