@@ -299,37 +299,26 @@ describe Chef::Knife do
         expect(Chef::Config[:log_level]).to eql(:warn)
       end
 
-      it "prefers the default value if no config or command line value is present and reports the source as default" do
+      it "prefers the default value from option definition if no config or command line value is present and reports the source as default" do
         knife_command = KnifeSpecs::TestYourself.new([]) # empty argv
         knife_command.configure_chef
         expect(knife_command.config[:opt_with_default]).to eq("default-value")
+        expect(knife_command.config_source(:opt_with_default)).to eq(:cli_default)
       end
 
-      it "prefers a value in Chef::Config[:knife] to the default" do
+      it "prefers a value in Chef::Config[:knife] to the default and reports the source as config" do
         Chef::Config[:knife][:opt_with_default] = "from-knife-config"
         knife_command = KnifeSpecs::TestYourself.new([]) # empty argv
         knife_command.configure_chef
         expect(knife_command.config[:opt_with_default]).to eq("from-knife-config")
-        expect(knife_command.config_source(:opt_with_default)).to eq (:config)
-      end
-
-      it "correctly reports Chef::Config as the source when a a config entry comes from there" do
-        Chef::Config[:knife][:opt_with_default] = "from-knife-config"
-        knife_command = KnifeSpecs::TestYourself.new([]) # empty argv
-        knife_command.configure_chef
-        expect(knife_command.config_source(:opt_with_default)).to eq (:config)
+        expect(knife_command.config_source(:opt_with_default)).to eq(:config)
       end
 
       it "prefers a value from command line over Chef::Config and the default and reports the source as CLI" do
         knife_command = KnifeSpecs::TestYourself.new(["-D", "from-cli"])
         knife_command.configure_chef
         expect(knife_command.config[:opt_with_default]).to eq("from-cli")
-        expect(knife_command.config_source(:opt_with_default)).to eq (:cli)
-      end
-      it "correctly reports CLI as the source when a config entry comes from the CLI" do
-        knife_command = KnifeSpecs::TestYourself.new(["-D", "from-cli"])
-        knife_command.configure_chef
-        expect(knife_command.config_source(:opt_with_default)).to eq (:cli)
+        expect(knife_command.config_source(:opt_with_default)).to eq(:cli)
       end
 
       it "merges `listen` config to Chef::Config" do

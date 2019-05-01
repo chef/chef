@@ -344,13 +344,8 @@ class Chef
     # Chef::Config[:knife] would break the defaults in the cli that we would otherwise
     # overwrite.
     def config_file_settings
-      @key_sources = { cli: [], config: [] }
       cli_keys.each_with_object({}) do |key, memo|
-        if config.key?(key)
-          @key_sources[:cli] << key
-        end
         if Chef::Config[:knife].key?(key)
-          @key_sources[:config] << key
           memo[key] = Chef::Config[:knife][key]
         end
       end
@@ -361,16 +356,28 @@ class Chef
     #  config_file_settings - Chef::Config[:knife] sub-hash
     #  config               - mixlib-cli settings (accessor from the mixin)
     def merge_configs
+      # This is the config after user CLI options have been evaluated, and it contains only
+      # user-supplied values.
+      @original_config = config.dup
       # other code may have a handle to the config object, so use Hash#replace to deliberately
       # update-in-place.
       config.replace(default_config.merge(config_file_settings).merge(config))
     end
 
-    # Return where a config key has been sourced,
-    # :cli, :config, or nil if the key is not set.
+    #
+    # Determine the source of a given configuration key
+    #
+    # @argument key [Symbol] a configuration key
+    # @return [Symbol,NilClass] return the source of the config key,
+    # one of:
+    #   - :cli - this was explicitly provided on the CLI
+    #   - :config - this came from Chef::Config[:knife]
+    #   - :cli_default - came from a declared CLI `option`'s `default` value.
+    #   - nil - if they key does not exist
     def config_source(key)
-      return :cli if @key_sources[:cli].include? key
-      return :config if @key_sources[:config].include? key
+      return :cli if @original_config.include? key
+      return :config if config_file_settings.key? key
+      return :cli_default if default_config.include? key
       nil
     end
 
