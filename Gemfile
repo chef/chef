@@ -42,14 +42,6 @@ group(:docgen) do
   gem "yard"
 end
 
-group(:maintenance) do
-  gem "tomlrb"
-
-  # To sync maintainers with github
-  gem "octokit"
-  gem "netrc"
-end
-
 # Everything except AIX
 group(:ruby_prof) do
   gem "ruby-prof"
