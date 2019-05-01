@@ -191,19 +191,18 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       end
     end
 
-    context "when prerelease is true" do
-      let(:config) { { prerelease: true } }
+    context "when channel is current" do
+      let(:config) { { channel: "current" } }
       it "includes prerelease indicator " do
         expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&prerelease=true")
       end
-    end
-
-    context "when a prerelease bootstrap_version is specified" do
-      before do
-        Chef::Config[:knife][:bootstrap_version] = "15.1.2.xyz"
-      end
-      it "includes prerelease indicator and the given version" do
-        expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&v=15.1.2.xyz&prerelease=true")
+      context "and bootstrap_version is given" do
+        before do
+          Chef::Config[:knife][:bootstrap_version] = "16.2.2"
+        end
+        it "includes the requested version" do
+          expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&prerelease=true&v=16.2.2")
+        end
       end
     end
 

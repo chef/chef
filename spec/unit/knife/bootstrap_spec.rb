@@ -1603,10 +1603,7 @@ describe Chef::Knife::Bootstrap do
     end
 
     context "when a deprecated CLI flag is given on the CLI" do
-      before do
-        knife.config[:ssh_user] = "sshuser"
-        knife.merge_configs
-      end
+      let(:bootstrap_cli_options) { %w{--ssh-user sshuser} }
       it "maps the key value to the new key and points the human to the new flag" do
         expect(knife.ui).to receive(:warn).with(/You provided --ssh-user. This flag is deprecated. Please use '--connection-user USERNAME' instead./)
         knife.verify_deprecated_flags!
@@ -1616,11 +1613,6 @@ describe Chef::Knife::Bootstrap do
 
     context "when a deprecated CLI flag is given on the CLI, along with its replacement" do
       let(:bootstrap_cli_options) { %w{--connection-user a --ssh-user b} }
-      before do
-        knife.config[:ssh_user] = "sshuser"
-        knife.config[:connection_user] = "real-user"
-        knife.merge_configs
-      end
 
       it "informs the human that both are provided and exits" do
         expect(knife.ui).to receive(:error).with(/You provided both --connection-user and --ssh-user.*Please use.*/m)

@@ -158,24 +158,33 @@ class Chef
           start_chef << "chef-client -c c:/chef/client.rb -j c:/chef/first-boot.json#{bootstrap_environment_option}\n"
         end
 
+        #
+        # Provide the query arguments to a URL that will be appeded to the URL in #msi_url().  This is used
+        # to get the latest version of Chef Infra Client via omnitruck
+        # By default, bootstrap will look for the latest version of the currently-running major release of on stable.
+        #
+        # @return [String] query arguments to append to the download request.
         def latest_current_windows_chef_version_query
-          installer_version_string = nil
-          if @config[:prerelease]
-            installer_version_string = "&prerelease=true"
-          else
-            chef_version_string = if knife_config[:bootstrap_version]
-                                    knife_config[:bootstrap_version]
+          # NOTE: Changes here should also be reflected in Knife::Core::BootstrapContext#latest_current_chef_version_string
+          use_current_channel = (@config[:channel] == "current")
+          installer_version_string = use_current_channel ? "&prerelease=true" : ""
+
+          chef_version_string = if knife_config[:bootstrap_version]
+                                  knife_config[:bootstrap_version]
+                                else
+                                  if use_current_channel
+                                    # We will take the latest current by default,
+                                    # if no specific version is given.
+                                    nil
                                   else
+                                    # Take the latest stable version from the current major release.
+                                    # Note that if the current major release is not yet in stable,
+                                    # you must also specify channel "current".
                                     Chef::VERSION.split(".").first
                                   end
+                                end
 
-            installer_version_string = "&v=#{chef_version_string}"
-
-            # If bootstrapping a pre-release version add the prerelease query string
-            if chef_version_string.split(".").length > 3
-              installer_version_string << "&prerelease=true"
-            end
-          end
+          installer_version_string << "&v=#{chef_version_string}" if chef_version_string
 
           installer_version_string
         end
