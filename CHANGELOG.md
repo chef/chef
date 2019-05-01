@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.250 -->
-## [v15.0.250](https://github.com/chef/chef/tree/v15.0.250) (2019-05-01)
+<!-- latest_release 15.0.251 -->
+## [v15.0.251](https://github.com/chef/chef/tree/v15.0.251) (2019-05-01)
 
 #### Merged Pull Requests
-- Remove old maintainer gems from the Gemfile [#8445](https://github.com/chef/chef/pull/8445) ([tas50](https://github.com/tas50))
+- Update to Ruby 2.6.3 [#8446](https://github.com/chef/chef/pull/8446) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Update to Ruby 2.6.3 [#8446](https://github.com/chef/chef/pull/8446) ([tas50](https://github.com/tas50)) <!-- 15.0.251 -->
 - Remove old maintainer gems from the Gemfile [#8445](https://github.com/chef/chef/pull/8445) ([tas50](https://github.com/tas50)) <!-- 15.0.250 -->
 - [CHEF-8422] Fix incorrect deprecation warnings [#8429](https://github.com/chef/chef/pull/8429) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.249 -->
 - Update InSpec to 4.3.2 [#8444](https://github.com/chef/chef/pull/8444) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.0.248 -->
