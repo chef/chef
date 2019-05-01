@@ -1,14 +1,14 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 0f3c0afe4e875c8c17627b8986f23bd4e4dc75cb
+  revision: c9f82052de99484c69fdc368a0c239d03eb4e6d2
   branch: master
   specs:
-    chefstyle (0.12.0)
+    chefstyle (0.12.1)
       rubocop (= 0.62.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: a1ec73298d623d18cbe05c2b53ac57c8cc9beae0
+  revision: 8d66449940f04237586b2f928231c6b26e2cc19a
   branch: master
   specs:
     ohai (15.0.34)
@@ -163,7 +163,7 @@ GEM
     ffi-yajl (2.3.1)
       libyajl2 (~> 1.2)
     fuzzyurl (0.9.0)
-    gssapi (1.2.0)
+    gssapi (1.3.0)
       ffi (>= 1.0.1)
     gyoku (1.3.1)
       builder (>= 2.1.2)
@@ -173,14 +173,14 @@ GEM
     htmlentities (4.3.4)
     httpclient (2.8.3)
     iniparse (1.4.4)
-    inspec-core (4.2.0.preview)
+    inspec-core (4.3.2)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       faraday_middleware (~> 0.12.2)
       hashie (~> 3.4)
       htmlentities
       json (>= 1.8, < 3.0)
-      license-acceptance (~> 0.2)
+      license-acceptance (>= 0.2.13, < 2.0)
       method_source (~> 0.8)
       mixlib-log
       multipart-post
@@ -203,7 +203,7 @@ GEM
     jaro_winkler (1.5.2)
     json (2.2.0)
     libyajl2 (1.2.0)
-    license-acceptance (0.2.16)
+    license-acceptance (1.0.0)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
