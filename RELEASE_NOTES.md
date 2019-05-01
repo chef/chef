@@ -114,10 +114,11 @@ Using removed options will cause the command to fail.
 | --ssh-port | --connection-port | `knife[:ssh_port]` config setting remains available.
 | --ssh-user | --connection-user | `knife[:ssh_user]` config setting remains available.
 | --ssl-peer-fingerprint | --winrm-ssl-peer-fingerprint | |
+| --prerelease |--channel CHANNEL | This now allows you to specify the channel that Chef Infra Client gets installed from. Valid values: _stable_, current.  'current' has the same effect as using the old --prerelease. |
 | --winrm-authentication-protocol=PROTO | --winrm-auth-method=AUTH-METHOD | Valid values: plaintext, kerberos, ssl, _negotiate_|
 | --winrm-password| --connection-password | |
 | --winrm-port| --connection-port | `knife[:winrm_port]` config setting remains available.|
-| --winrm-ssl-verify-mode MODE | --winrm-no-verify-cert | [1] Mode is not accepted. When flag is present, SSL cert will not be verified. Same as original mode of 'verify_none'. |
+| --winrm-ssl-verify-mode MODE | --winrm-no-verify-cert | [1] Mode is not accepted. When flag is present, SSL cert will not be verified. Same as original mode of 'verify\_none'. |
 | --winrm-transport TRANSPORT | --winrm-ssl | [1] Use this flag if the target host is accepts WinRM connections over SSL.
 | --winrm-user | --connection-user | `knife[:winrm_user]` config setting remains available.|
 
