@@ -41,7 +41,7 @@ install:
   - echo %PATH%
   - appveyor DownloadFile http://curl.haxx.se/ca/cacert.pem -FileName C:\cacert.pem
   - set SSL_CERT_FILE=C:\cacert.pem
-  - SET BUNDLE_WITHOUT=server:docgen:maintenance:pry:travis:integration:ci
+  - SET BUNDLE_WITHOUT=server:docgen:pry:integration:ci
   - bundle config --local path vendor/bundle # use the cache we define above
   - bundle install || bundle install || bundle install
   - SET SPEC_OPTS=--format progress

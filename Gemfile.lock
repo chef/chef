@@ -117,7 +117,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.5.2)
+    addressable (2.6.0)
       public_suffix (>= 2.0.2, < 4.0)
     appbundler (0.12.5)
       mixlib-cli (>= 1.4, < 3.0)
@@ -203,7 +203,7 @@ GEM
     jaro_winkler (1.5.2)
     json (2.2.0)
     libyajl2 (1.2.0)
-    license-acceptance (1.0.0)
+    license-acceptance (1.0.2)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
@@ -239,10 +239,7 @@ GEM
     net-ssh-multi (1.2.1)
       net-ssh (>= 2.6.5)
       net-ssh-gateway (>= 1.2.0)
-    netrc (0.11.0)
     nori (2.6.0)
-    octokit (4.14.0)
-      sawyer (~> 0.8.0, >= 0.5.3)
     parallel (1.17.0)
     parser (2.6.3.0)
       ast (~> 2.4.0)
@@ -303,9 +300,6 @@ GEM
     rubyntlm (0.6.2)
     rubyzip (1.2.2)
     safe_yaml (1.0.5)
-    sawyer (0.8.1)
-      addressable (>= 2.3.5, < 2.6)
-      faraday (~> 0.8, < 1.0)
     semverse (3.0.0)
     simplecov (0.16.1)
       docile (~> 1.1)
@@ -423,8 +417,6 @@ DEPENDENCIES
   chefstyle!
   ed25519
   inspec-core (>= 4.0.0.a, < 5)
-  netrc
-  octokit
   ohai!
   pry
   pry-byebug
@@ -439,7 +431,6 @@ DEPENDENCIES
   ruby-prof
   ruby-shadow
   simplecov
-  tomlrb
   webmock
   yard
 

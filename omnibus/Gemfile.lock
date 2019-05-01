@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: b6e267d0554feca5fd0a09d306cccfac7f7e43b9
+  revision: 968307c129ee54416f5a4d07ca8f8ca2d2b12825
   branch: master
   specs:
-    omnibus (6.0.26)
+    omnibus (6.0.27)
       aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
@@ -28,7 +28,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.5.2)
+    addressable (2.6.0)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
@@ -181,7 +181,7 @@ GEM
     kitchen-vagrant (1.5.1)
       test-kitchen (>= 1.4, < 3)
     libyajl2 (1.2.0)
-    license-acceptance (1.0.0)
+    license-acceptance (1.0.2)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
@@ -280,9 +280,9 @@ GEM
     ruby-progressbar (1.10.0)
     rubyntlm (0.6.2)
     rubyzip (1.2.2)
-    sawyer (0.8.1)
-      addressable (>= 2.3.5, < 2.6)
-      faraday (~> 0.8, < 1.0)
+    sawyer (0.8.2)
+      addressable (>= 2.3.5)
+      faraday (> 0.8, < 2.0)
     semverse (3.0.0)
     serverspec (2.41.3)
       multi_json
