@@ -1608,13 +1608,14 @@ describe Chef::Knife::Bootstrap do
         knife.merge_configs
       end
       it "maps the key value to the new key and points the human to the new flag" do
-        expect(knife.ui).to receive(:warn).with(/--ssh-user USER is deprecated. Use --connection-user USERNAME instead./)
+        expect(knife.ui).to receive(:warn).with(/You provided --ssh-user. This flag is deprecated. Please use '--connection-user USERNAME' instead./)
         knife.verify_deprecated_flags!
         expect(knife.config[:connection_user]).to eq "sshuser"
       end
     end
 
     context "when a deprecated CLI flag is given on the CLI, along with its replacement" do
+      let(:bootstrap_cli_options) { %w{--connection-user a --ssh-user b} }
       before do
         knife.config[:ssh_user] = "sshuser"
         knife.config[:connection_user] = "real-user"
@@ -1624,6 +1625,15 @@ describe Chef::Knife::Bootstrap do
       it "informs the human that both are provided and exits" do
         expect(knife.ui).to receive(:error).with(/You provided both --connection-user and --ssh-user.*Please use.*/m)
         expect { knife.verify_deprecated_flags! }.to raise_error SystemExit
+      end
+    end
+
+    context "when a deprecated boolean CLI flag is given on the CLI, and its non-boolean replacement is used" do
+      let(:bootstrap_cli_options) { %w{--prerelease} }
+      it "correctly maps the old boolean value to the new value" do
+        expect(knife.ui).to receive(:warn)
+        knife.verify_deprecated_flags!
+        expect(knife.config[:channel]).to eq "current"
       end
     end
   end
