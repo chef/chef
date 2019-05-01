@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.245 -->
-## [v15.0.245](https://github.com/chef/chef/tree/v15.0.245) (2019-04-30)
+<!-- latest_release 15.0.247 -->
+## [v15.0.247](https://github.com/chef/chef/tree/v15.0.247) (2019-05-01)
 
 #### Merged Pull Requests
-- fix chef-bin bundling in omnibus [#8439](https://github.com/chef/chef/pull/8439) ([lamont-granquist](https://github.com/lamont-granquist))
+- file: Tell people what file a link is pointing at in warning messages [#8417](https://github.com/chef/chef/pull/8417) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- file: Tell people what file a link is pointing at in warning messages [#8417](https://github.com/chef/chef/pull/8417) ([jaymzh](https://github.com/jaymzh)) <!-- 15.0.247 -->
 - fix chef-bin bundling in omnibus [#8439](https://github.com/chef/chef/pull/8439) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.245 -->
 - Fixed bootstrap error while using --msi-url option with knife bootstrap winrm [#8435](https://github.com/chef/chef/pull/8435) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.244 -->
 - remove windows executables from windows gemspec [#8430](https://github.com/chef/chef/pull/8430) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.243 -->
