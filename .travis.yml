@@ -102,10 +102,6 @@ matrix:
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
     rvm: 2.6.3
   - env:
-      TEST_GEM: poise/halite
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
-    rvm: 2.6.3
-  - env:
       TEST_GEM: chef/knife-windows
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
     rvm: 2.6.3
@@ -358,10 +354,6 @@ matrix:
       env:
        - RSPEC_OPENSUSELEAP=42
        - KITCHEN_YAML=kitchen.yml
-    - env:
-        TEST_GEM: poise/halite
-      script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
-      rvm: 2.6.3
 
 notifications:
   on_change: true
