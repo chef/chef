@@ -64,7 +64,9 @@ group(:development, :test) do
   gem "rspec_junit_formatter", "~> 0.2.0"
   gem "simplecov"
   gem "webmock"
+end
 
+group(:chefstyle) do
   # for testing new chefstyle rules
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
