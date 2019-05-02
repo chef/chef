@@ -50,6 +50,10 @@ describe Chef::Knife::Bootstrap do
     k
   end
 
+  it "purposefully fails to prevent Chef Infra from promoting unstable -> current" do
+    expect(0).to eq(1)
+  end
+
   it "fails when LicenseAcceptance fails" do
     expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!).and_raise("foo")
     expect { k = Chef::Knife::Bootstrap.new(bootstrap_cli_options) }.to raise_error("foo")
