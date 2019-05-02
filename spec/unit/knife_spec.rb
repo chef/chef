@@ -472,7 +472,7 @@ describe Chef::Knife do
         allow(knife).to receive(:username).and_return("sadpanda")
         knife.run_with_pretty_exceptions
         expect(stderr.string).to match(%r{ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action})
-        expect(stderr.string).to match(%r{ERROR: There are proxy servers configured, your .* server may need to be added to NO_PROXY.})
+        expect(stderr.string).to match(%r{ERROR: There are proxy servers configured, your server url may need to be added to NO_PROXY.})
         expect(stderr.string).to match(%r{Response:  y u no administrator})
       end
     end
@@ -508,9 +508,9 @@ describe Chef::Knife do
       allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("406 Not Acceptable", response))
 
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(/The request that .* sent was using API version 10000000/)
-      expect(stderr.string).to match(/The .* server you sent the request to supports a min API verson of 0 and a max API version of 1/)
-      expect(stderr.string).to match(/Please either update your .* client or server to be a compatible set/)
+      expect(stderr.string).to match(/The request that .* sent was using API version 10000000./)
+      expect(stderr.string).to match(/The server you sent the request to supports a min API verson of 0 and a max API version of 1./)
+      expect(stderr.string).to match(/Please either update your .* or the server to be a compatible set./)
     end
 
     it "formats 500s nicely" do
@@ -588,7 +588,7 @@ describe Chef::Knife do
       expected_message = <<~MSG
         ERROR: Could not establish a secure connection to the server.
         Use `.* ssl check` to troubleshoot your SSL configuration.
-        If your .* Server uses a self-signed certificate, you can use
+        If your server uses a self-signed certificate, you can use
         `.* ssl fetch` to make .* trust the server's certificates.
       MSG
       expect(stderr.string).to match(expected_message)

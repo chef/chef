@@ -18,6 +18,7 @@
 
 require "chef/knife"
 require "chef/knife/data_bag_secret_options"
+require "chef/dist"
 
 class Chef
   class Knife
@@ -286,7 +287,7 @@ class Chef
       option :msi_url, # Windows target only
         short: "-m URL",
         long: "--msi-url URL",
-        description: "Location of the Chef Client MSI. The default templates will prefer to download from this location. The MSI will be downloaded from chef.io if not provided (windows).",
+        description: "Location of the #{Chef::Dist::PRODUCT} MSI. The default templates will prefer to download from this location. The MSI will be downloaded from chef.io if not provided (windows).",
         default: ""
 
       # bootstrap override: Do this instead of our own setup.sh from omnitruck. Causes bootstrap_url to be ignored.
