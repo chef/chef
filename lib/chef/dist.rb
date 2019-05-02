@@ -2,7 +2,7 @@ class Chef
   class Dist
     # This class is not fully implemented, depending on it is not recommended!
     # When referencing a product directly, like Chef (Now Chef Infra)
-    PRODUCT = "Chef Infra".freeze
+    PRODUCT = "Chef Infra Client".freeze
 
     # The client's alias (chef-client)
     CLIENT = "chef-client".freeze

@@ -1,5 +1,6 @@
 require "chef/formatters/base"
 require "chef/config"
+require "chef/dist"
 
 class Chef
   module Formatters
@@ -40,7 +41,7 @@ class Chef
       end
 
       def run_start(version, run_status)
-        puts_line "Starting Chef Client, version #{version}"
+        puts_line "Starting #{Chef::Dist::PRODUCT}, version #{version}"
         puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
       end
 
@@ -75,18 +76,18 @@ class Chef
           puts_line ""
         end
         if Chef::Config[:why_run]
-          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
+          puts_line "#{Chef::Dist::PRODUCT} finished, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
-          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
+          puts_line "#{Chef::Dist::PRODUCT} finished, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
         end
       end
 
       def run_failed(exception)
         @end_time = Time.now
         if Chef::Config[:why_run]
-          puts_line "Chef Client failed. #{@updated_resources} resources would have been updated"
+          puts_line "#{Chef::Dist::PRODUCT} failed. #{@updated_resources} resources would have been updated"
         else
-          puts_line "Chef Client failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
+          puts_line "#{Chef::Dist::PRODUCT} failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
         end
       end
 

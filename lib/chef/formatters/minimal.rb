@@ -1,4 +1,5 @@
 require "chef/formatters/base"
+require "chef/dist"
 
 class Chef
 
@@ -27,18 +28,18 @@ class Chef
 
       # Called at the very start of a Chef Run
       def run_start(version, run_status)
-        puts_line "Starting Chef Client, version #{version}"
+        puts_line "Starting #{Chef::Dist::PRODUCT}, version #{version}"
         puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
       end
 
       # Called at the end of the Chef run.
       def run_completed(node)
-        puts "chef client finished, #{@updated_resources.size} resources updated"
+        puts "#{Chef::Dist::PRODUCT} finished, #{@updated_resources.size} resources updated"
       end
 
       # called at the end of a failed run
       def run_failed(exception)
-        puts "chef client failed. #{@updated_resources.size} resources updated"
+        puts "#{Chef::Dist::PRODUCT} failed. #{@updated_resources.size} resources updated"
       end
 
       # Called right after ohai runs.

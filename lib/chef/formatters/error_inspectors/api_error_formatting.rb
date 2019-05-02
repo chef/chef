@@ -112,10 +112,10 @@ class Chef
           max_server_version = version_header["max_version"]
 
           error_description.section("Incompatible server API version:", <<~E)
-            This version of the API that this Chef request specified is not supported by the Chef server you sent this request to.
+            This version of the API that this request specified is not supported by the server you sent this request to.
             The server supports a min API version of #{min_server_version} and a max API version of #{max_server_version}.
-            Chef just made a request with an API version of #{client_api_version}.
-            Please either update your Chef client or server to be a compatible set.
+            #{Chef::Dist::PRODUCT} just made a request with an API version of #{client_api_version}.
+            Please either update your #{Chef::Dist::PRODUCT} or the server to be a compatible set.
           E
         else
           describe_http_error(error_description)
