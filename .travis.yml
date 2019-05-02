@@ -18,7 +18,6 @@ before_script:
  # force all .rspec tests into progress display to reduce line count
  - echo --color > .rspec
  - echo -fp >> .rspec
- # necessary for sudo: true tests, ingore failures on tests invoked with sudo: false
  - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers
 
 # do not run expensive spec tests on PRs, only on branches
@@ -37,32 +36,27 @@ matrix:
   - env:
       INTEGRATION_SPECS_25: 1
     rvm: 2.5.5
-    sudo: true
     script: sudo -E $(which bundle) exec rake spec:integration;
     bundler_args: --without docgen integration omnibus_package --frozen
   - env:
       INTEGRATION_SPECS_26: 1
     rvm: 2.6.3
-    sudo: true
     script: sudo -E $(which bundle) exec rake spec:integration;
     bundler_args: --without docgen integration omnibus_package --frozen
   - env:
       FUNCTIONAL_SPECS_25: 1
     rvm: 2.5.5
-    sudo: true
     # the travis apt proxy screws with our functional testing something fierce
     script: sudo rm -f /etc/apt/apt.conf.d/99-travis-apt-proxy; sudo -E $(which bundle) exec rake spec:functional;
     bundler_args: --without docgen integration omnibus_package --frozen
   - env:
       FUNCTIONAL_SPECS_26: 1
     rvm: 2.6.3
-    sudo: true
     script: sudo rm -f /etc/apt/apt.conf.d/99-travis-apt-proxy; sudo -E $(which bundle) exec rake spec:functional;
     bundler_args: --without docgen integration omnibus_package --frozen
   - env:
       UNIT_SPECS_25: 1
     rvm: 2.5.5
-    sudo: true
     script:
       - sudo -E $(which bundle) exec rake spec:unit;
       - sudo -E $(which bundle) exec rake component_specs
@@ -70,7 +64,6 @@ matrix:
   - env:
       UNIT_SPECS_26: 1
     rvm: 2.6.3
-    sudo: true
     script:
       - sudo -E $(which bundle) exec rake spec:unit;
       - sudo -E $(which bundle) exec rake component_specs
