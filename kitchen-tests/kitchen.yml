@@ -100,9 +100,6 @@ platforms:
   driver:
     image: dokken/opensuse-leap-42
     pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/zypper --non-interactive update
-      - RUN /usr/bin/zypper --non-interactive install cron
 
 - name: opensuse-leap-15
   driver:
