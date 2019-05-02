@@ -530,10 +530,10 @@ class Chef
         client_api_version = version_header["request_version"]
         min_server_version = version_header["min_version"]
         max_server_version = version_header["max_version"]
-        ui.error "The version of #{Chef::Dist::PRODUCT} that Knife is using is not supported by the #{Chef::Dist::PRODUCT} server you sent this request to"
-        ui.info "The request that Knife sent was using API version #{client_api_version}"
-        ui.info "The #{Chef::Dist::PRODUCT} server you sent the request to supports a min API verson of #{min_server_version} and a max API version of #{max_server_version}"
-        ui.info "Please either update your #{Chef::Dist::PRODUCT} client or server to be a compatible set"
+        ui.error "The version of #{Chef::Dist::PRODUCT} API that Knife is using is not supported by the server you sent this request to."
+        ui.info "The request that Knife sent was using API version #{client_api_version}."
+        ui.info "The server you sent the request to supports a min API verson of #{min_server_version} and a max API version of #{max_server_version}."
+        ui.info "Please either update your #{Chef::Dist::PRODUCT} or the server to be a compatible set."
       else
         ui.error response.message
         ui.info "Response: #{format_rest_error(response)}"
