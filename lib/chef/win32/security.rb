@@ -404,7 +404,7 @@ class Chef
         system_name = system_name.to_wstring if system_name
         if LookupAccountNameW(system_name, name.to_wstring, nil, sid_size, nil, referenced_domain_name_size, nil)
           raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupAccountName, and got no error!"
-        elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
+        elsif !([NO_ERROR, ERROR_INSUFFICIENT_BUFFER].include?(FFI::LastError.error))
           Chef::ReservedNames::Win32::Error.raise!
         end
 
