@@ -326,7 +326,7 @@ describe Chef::Application::Client, "reconfigure" do
       Chef::Config[:interval] = 600
       allow(ChefConfig).to receive(:windows?).and_return(false)
       expect(Chef::Application).to receive(:fatal!).with(
-        /Unforked .* interval runs are disabled in .* 12\.
+        /Unforked .* interval runs are disabled by default\.
 Configuration settings:
   interval  = 600 seconds
 Enable .* interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options\./

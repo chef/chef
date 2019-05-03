@@ -64,7 +64,7 @@ describe Chef::Application::Solo do
 
           it "should terminate with message" do
             expect(Chef::Application).to receive(:fatal!).with(
-              /Unforked .* interval runs are disabled in .* 12\.
+              /Unforked .* interval runs are disabled by default\.
 Configuration settings:
   interval  = 600 seconds
 Enable .* interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options\./
