@@ -114,7 +114,7 @@ Using removed options will cause the command to fail.
 | --ssh-port | --connection-port | `knife[:ssh_port]` config setting remains available.
 | --ssh-user | --connection-user | `knife[:ssh_user]` config setting remains available.
 | --ssl-peer-fingerprint | --winrm-ssl-peer-fingerprint | |
-| --prerelease |--channel CHANNEL | This now allows you to specify the channel that Chef Infra Client gets installed from. Valid values: _stable_, current.  'current' has the same effect as using the old --prerelease. |
+| --prerelease |--channel CHANNEL | This now allows you to specify the channel that Chef Infra Client gets installed from. Valid values are _stable_, current, and unstable.  'current' has the same effect as using the old --prerelease. |
 | --winrm-authentication-protocol=PROTO | --winrm-auth-method=AUTH-METHOD | Valid values: plaintext, kerberos, ssl, _negotiate_|
 | --winrm-password| --connection-password | |
 | --winrm-port| --connection-port | `knife[:winrm_port]` config setting remains available.|

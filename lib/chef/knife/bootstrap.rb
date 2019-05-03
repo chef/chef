@@ -159,9 +159,9 @@ class Chef
 
       option :channel,
         long: "--channel CHANNEL",
-        description: "Install from the given channel. Valid values are 'current' and 'stable'. Default is 'stable'",
+        description: "Install from the given channel.  Valid values are 'stable, 'current', and 'unstable'. Default is 'stable'",
         default: "stable",
-        in: %w{stable current}
+        in: %w{stable current unstable}
 
       # client.rb content via chef-full/bootstrap_context
       option :bootstrap_proxy,

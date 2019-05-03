@@ -176,52 +176,29 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
     end
   end
 
-  describe "latest_current_windows_chef_version_query" do
-    it "includes the major version of the current version of Chef" do
-      stub_const("Chef::VERSION", "15.1.2")
-      expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&v=15")
-    end
-
-    context "when bootstrap_version is given" do
-      before do
-        Chef::Config[:knife][:bootstrap_version] = "15.1.2"
-      end
-      it "includes the requested version" do
-        expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&v=15.1.2")
-      end
-    end
-
-    context "when channel is current" do
-      let(:config) { { channel: "current" } }
-      it "includes prerelease indicator " do
-        expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&prerelease=true")
-      end
-      context "and bootstrap_version is given" do
-        before do
-          Chef::Config[:knife][:bootstrap_version] = "16.2.2"
-        end
-        it "includes the requested version" do
-          expect(bootstrap_context.latest_current_windows_chef_version_query).to eq("&prerelease=true&v=16.2.2")
-        end
-      end
-    end
-
-  end
-
   describe "msi_url" do
-    context "when config option is not set" do
+    context "when msi_url config option is not set" do
+      let(:config) { { channel: "stable" } }
       before do
-        expect(bootstrap_context).to receive(:latest_current_windows_chef_version_query).and_return("&v=something")
+        expect(bootstrap_context).to receive(:version_to_install).and_return("something")
       end
 
       it "returns a chef.io msi url with minimal url parameters" do
-        reference_url = "https://www.chef.io/chef/download?p=windows&v=something"
+        reference_url = "https://www.chef.io/chef/download?p=windows&channel=stable&v=something"
         expect(bootstrap_context.msi_url).to eq(reference_url)
       end
 
       it "returns a chef.io msi url with provided url parameters substituted" do
-        reference_url = "https://www.chef.io/chef/download?p=windows&pv=machine&m=arch&DownloadContext=ctx&v=something"
+        reference_url = "https://www.chef.io/chef/download?p=windows&pv=machine&m=arch&DownloadContext=ctx&channel=stable&v=something"
         expect(bootstrap_context.msi_url("machine", "arch", "ctx")).to eq(reference_url)
+      end
+
+      context "when a channel is provided in config" do
+        let(:config) { { channel: "current" } }
+        it "returns a chef.io msi url with the requested channel" do
+          reference_url = "https://www.chef.io/chef/download?p=windows&channel=current&v=something"
+          expect(bootstrap_context.msi_url).to eq(reference_url)
+        end
       end
     end
 

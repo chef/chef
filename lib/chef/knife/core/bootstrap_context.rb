@@ -187,32 +187,17 @@ class Chef
         end
 
         #
-        # Determine that CLI arguments to retrieve the correct version of Chef Infra Client from omnitruck
-        # By default, bootstrap will look for the latest version of the currently-running major release of on stable.
+        # Returns the version of Chef to install (as recognized by the Omnitruck API)
         #
-        # @return [String] CLI arguments to pass into the chef download helper script
-        def latest_current_chef_version_string
-          # NOTE: Changes here should also be reflected in Knife::Core::BootstrapContext#latest_current_chef_version_string
-          installer_version_string = []
-          use_current_channel = (@config[:channel] == "current")
-          installer_version_string << "-p" if use_current_channel
-          version = if knife_config[:bootstrap_version]
-                      knife_config[:bootstrap_version]
-                    else
-                      # We will take the latest current by default,
-                      # if no specific version is given.
-                      if use_current_channel
-                        # Take the latest stable version from the current major release.
-                        # Note that if the current major release is not yet in stable,
-                        # you must also specify channel "current".
-                        nil
-                      else
-                        Chef::VERSION.split(".").first
-                      end
-                    end
+        # @return [String] download version string
+        def version_to_install
+          return knife_config[:bootstrap_version] if knife_config[:bootstrap_version]
 
-          installer_version_string.concat(["-v", version]) unless version.nil?
-          installer_version_string.join(" ")
+          if @config[:channel] == "stable"
+            Chef::VERSION.split(".").first
+          else
+            "latest"
+          end
         end
 
         def first_boot
