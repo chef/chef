@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.254 -->
-## [v15.0.254](https://github.com/chef/chef/tree/v15.0.254) (2019-05-02)
+<!-- latest_release 15.0.255 -->
+## [v15.0.255](https://github.com/chef/chef/tree/v15.0.255) (2019-05-03)
 
 #### Merged Pull Requests
-- Replace Chef Client by its constant in Chef::Dist [#8448](https://github.com/chef/chef/pull/8448) ([Tensibai](https://github.com/Tensibai))
+- [CHEF-8432] Ensure default protocol is used properly. Use correct &#39;require&#39; before accessing Net::SSH constants. [#8440](https://github.com/chef/chef/pull/8440) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- [CHEF-8432] Ensure default protocol is used properly. Use correct &#39;require&#39; before accessing Net::SSH constants. [#8440](https://github.com/chef/chef/pull/8440) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.255 -->
 - Replace Chef Client by its constant in Chef::Dist [#8448](https://github.com/chef/chef/pull/8448) ([Tensibai](https://github.com/Tensibai)) <!-- 15.0.254 -->
 - Update to Ruby 2.6.3 [#8446](https://github.com/chef/chef/pull/8446) ([tas50](https://github.com/tas50)) <!-- 15.0.251 -->
 - Remove old maintainer gems from the Gemfile [#8445](https://github.com/chef/chef/pull/8445) ([tas50](https://github.com/tas50)) <!-- 15.0.250 -->
