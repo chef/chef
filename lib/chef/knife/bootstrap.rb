@@ -547,8 +547,8 @@ class Chef
           chef_vault_handler.run(client_builder.client)
         else
           ui.info <<~EOM
-            Doing old-style registration with the validation key at #{Chef::Config[:validation_key]}..."
-            Delete your validation key in order to use your user credentials instead
+            Performing legacy client registration with the validation key at #{Chef::Config[:validation_key]}..."
+            Delete your validation key in order to use your user credentials for client registration instead.
           EOM
 
         end
