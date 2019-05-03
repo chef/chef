@@ -176,7 +176,7 @@ class Chef::Application::Solo < Chef::Application
   option :client_fork,
     short: "-f",
     long: "--[no-]fork",
-    description: "Fork client."
+    description: "Fork #{Chef::Dist::CLIENT} process."
 
   option :why_run,
     short: "-W",
