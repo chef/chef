@@ -61,7 +61,7 @@ class Chef
     end
 
     # Get this party started
-    def run(enforce_license = false)
+    def run(enforce_license: false)
       setup_signal_handlers
       reconfigure
       setup_application

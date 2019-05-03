@@ -90,7 +90,7 @@ describe Chef::Application do
         describe "when enforce_license is set to true" do
           it "should check the license acceptance" do
             expect(@app).to receive(:check_license_acceptance)
-            @app.run(true)
+            @app.run(enforce_license: true)
           end
         end
 

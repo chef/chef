@@ -217,7 +217,7 @@ class Chef::Application::Solo < Chef::Application
   attr_reader :chef_client_json
 
   # Get this party started
-  def run(enforce_license = false)
+  def run(enforce_license: false)
     setup_signal_handlers
     setup_application
     reconfigure
