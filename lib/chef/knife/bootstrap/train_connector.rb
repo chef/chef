@@ -35,80 +35,85 @@ class Chef
 
         MKTEMP_NIX_COMMAND = "bash -c 'd=$(mktemp -d ${TMPDIR:-/tmp}/chef_XXXXXX); echo $d'".freeze
 
-        def initialize(host_url, default_transport, opts)
-          uri_opts = opts_from_uri(host_url)
-          uri_opts[:backend] ||= @default_transport
-          @transport_type = uri_opts[:backend]
-
-          # opts in the URI will override user-provided options
-          @config = transport_config(host_url, opts.merge(uri_opts))
+        def initialize(host_url, default_protocol, opts)
+          @host_url = host_url
+          @default_protocol = default_protocol
+          @opts_in = opts
         end
 
-        # Because creating a valid train connection for testing is a two-step process in which
-        # we need to connect before mocking config,
-        # we expose test_instance as a way for tests to create actual instances
-        # but ensure that they don't connect to any back end.
-        def self.test_instance(url, protocol: "ssh",
-                               family: "unknown", name: "unknown",
-                               release: "unknown", arch: "x86_64",
-                               opts: {})
-          # Specifying sudo: false ensures that attempted operations
-          # don't fail because the mock platform doesn't support sudo
-          tc = TrainConnector.new(url, protocol, { sudo: false }.merge(opts))
-          tc.connect!
-          tc.connection.mock_os(
-            family: family,
-            name: name,
-            release: release,
-            arch: arch
-          )
-          tc
+        def config
+          @config ||= begin
+                        uri_opts = opts_from_uri(@host_url, @default_protocol)
+                        transport_config(@host_url, @opts_in.merge(uri_opts))
+                      end
         end
 
+        def connection
+          @connection ||= begin
+                       Train.validate_backend(config)
+                       train = Train.create(config[:backend], config)
+                       # Note that the train connection is not currently connected
+                       # to the remote host, but it's ready to go.
+                       train.connection
+                     end
+        end
+
+        #
+        # Establish a connection to the configured host.
+        #
+        # @raise [TrainError]
+        # @raise [TrainUserError]
+        #
+        # @return [TrueClass] true if the connection could be established.
         def connect!
           # Force connection to establish
           connection.wait_until_ready
           true
         end
 
+        #
+        # @return [String] the configured hostname
         def hostname
-          @config[:host]
+          config[:host]
         end
 
+        # Answers the question, "is this connection configured for password auth?"
+        # @return [Boolean] true if the connection is configured with password auth
         def password_auth?
-          @config.key? :password
+          config.key? :password
         end
 
-        # True if we're connected to a linux host
+        # Answers the question, "Am I connected to a linux host?"
+        #
+        # @return [Boolean] true if the connected host is linux.
         def linux?
           connection.platform.linux?
         end
 
-        # True if we're connected to a unix host.
-        # NOTE: this is always true
-        # for a linux host because train classifies
-        # linux as a unix
+        # Answers the question, "Am I connected to a unix host?"
+        #
+        # @note this will alwys return true for a linux host
+        # because train classifies linux as a unix
+        #
+        # @return [Boolean] true if the connected host is unix or linux
         def unix?
           connection.platform.unix?
         end
 
-        # True if we're connected to a windows host
+        #
+        # Answers the question, "Am I connected to a Windows host?"
+        #
+        # @return [Boolean] true if the connected host is Windows
         def windows?
           connection.platform.windows?
         end
 
-        def winrm?
-          @transport_type == "winrm"
-        end
-
-        def ssh?
-          @transport_type == "ssh"
-        end
-
-        # Creates a temporary directory on the remote host if it
-        # hasn't already. Caches directory location.
         #
-        # Returns the path on the remote host.
+        # Creates a temporary directory on the remote host if it
+        # hasn't already. Caches directory location. For *nix,
+        # it will ensure that the directory is owned by the logged-in user
+        #
+        # @return [String] the temporary path created on the remote host.
         def temp_dir
           cmd = windows? ? MKTEMP_WIN_COMMAND : MKTEMP_NIX_COMMAND
           @tmpdir ||= begin
@@ -119,43 +124,87 @@ class Chef
                           # running with sudo right now - so this directory would be owned by root.
                           # File upload is performed over SCP as the current logged-in user,
                           # so we'll set ownership to ensure that works.
-                          run_command!("chown #{@config[:user]} '#{dir}'")
+                          run_command!("chown #{config[:user]} '#{dir}'")
                         end
                         dir
                       end
         end
 
+        #
+        # Uploads a file from "local_path" to "remote_path"
+        #
+        # @param local_path [String] The path to a file on the local file system
+        # @param remote_path [String] The destination path on the remote file system.
+        # @return NilClass
         def upload_file!(local_path, remote_path)
           connection.upload(local_path, remote_path)
+          nil
         end
 
+        #
+        # Uploads the provided content into the file "remote_path" on the remote host.
+        #
+        # @param content [String] The content to upload into remote_path
+        # @param remote_path [String] The destination path on the remote file system.
+        # @return NilClass
         def upload_file_content!(content, remote_path)
           t = Tempfile.new("chef-content")
           t << content
           t.close
           upload_file!(t.path, remote_path)
+          nil
         ensure
           t.close
           t.unlink
         end
 
+        #
+        # Force-deletes the file at "path" from the remote host.
+        #
+        # @param path [String] The path of the file on the remote host
         def del_file!(path)
           if windows?
             run_command!("If (Test-Path \"#{path}\") { Remove-Item -Force -Path \"#{path}\" }")
           else
             run_command!("rm -f \"#{path}\"")
           end
+          nil
         end
 
-        # normalizes path across OS's
+        #
+        # normalizes path across OS's - always use forward slashes, which
+        # Windows and *nix understand.
+        #
+        # @param path [String] The path to normalize
+        #
+        # @return [String] the normalized path
         def normalize_path(path)
           path.tr("\\", "/")
         end
 
+        #
+        # Runs a command on the remote host.
+        #
+        # @param command [String] The command to run.
+        # @param data_handler [Proc] An optional block. When provided, inbound data will be
+        # published via `data_handler.call(data)`. This can allow
+        # callers to receive and render updates from remote command execution.
+        #
+        # @return [Train::Extras::CommandResult] an object containing stdout, stderr, and exit_status
         def run_command(command, &data_handler)
           connection.run_command(command, &data_handler)
         end
 
+        #
+        # Runs a command the remote host
+        #
+        # @param command [String] The command to run.
+        # @param data_handler [Proc] An optional block. When provided, inbound data will be
+        # published via `data_handler.call(data)`. This can allow
+        # callers to receive and render updates from remote command execution.
+        #
+        # @raise Chef::Knife::Bootstrap::RemoteExecutionFailed if an error occurs (non-zero exit status)
+        # @return [Train::Extras::CommandResult] an object containing stdout, stderr, and exit_status
         def run_command!(command, &data_handler)
           result = run_command(command, &data_handler)
           if result.exit_status != 0
@@ -164,37 +213,28 @@ class Chef
           result
         end
 
-        def connection
-          @connection ||= begin
-                       Train.validate_backend(@config)
-                       train = Train.create(@transport_type, @config)
-                       train.connection
-                     end
-        end
-
         private
 
         # For a given url and set of options, create a config
         # hash suitable for passing into train.
         def transport_config(host_url, opts_in)
+          # These baseline opts are not protocol-specific
           opts = { target: host_url,
-                   sudo: opts_in[:sudo] === false ? false : true,
                    www_form_encoded_password: true,
-                   key_files: opts_in[:key_files],
-                   non_interactive: true, # Prevent password prompts
                    transport_retries: 2,
                    transport_retry_sleep: 1,
-                   logger: opts_in[:logger],
-                   backend: @transport_type }
+                   backend: opts_in[:backend],
+                   logger: opts_in[:logger] }
 
-          # Base opts are those provided by the caller directly
+          # Accepts options provided by caller if they're not already configured,
+          # but note that they will be constrained to valid options for the backend protocol
           opts.merge!(opts_from_caller(opts, opts_in))
 
           # WinRM has some additional computed options
           opts.merge!(opts_inferred_from_winrm(opts, opts_in))
 
-          # Now that everything is populated, fill in anything left
-          # from user ssh config that may be present
+          # Now that everything is populated, fill in anything missing
+          # that may be found in user ssh config
           opts.merge!(missing_opts_from_ssh_config(opts, opts_in))
 
           Train.target_config(opts)
@@ -203,7 +243,7 @@ class Chef
         # Some winrm options are inferred based on other options.
         # Return a hash of winrm options based on configuration already built.
         def opts_inferred_from_winrm(config, opts_in)
-          return {} unless winrm?
+          return {} unless config[:backend] == "winrm"
           opts_out = {}
 
           if opts_in[:ssl]
@@ -233,14 +273,14 @@ class Chef
 
         # Extract any of username/password/host/port/transport
         # that are in the URI and return them as a config has
-        def opts_from_uri(uri)
+        def opts_from_uri(uri, default_protocol)
           # Train.unpack_target_from_uri only works for complete URIs in
           # form of proto://[user[:pass]@]host[:port]/
           # So we'll add the protocol prefix if it's not supplied.
           uri_to_check = if URI.regexp.match(uri)
                            uri
                          else
-                           "#{@transport_type}://#{uri}"
+                           "#{default_protocol}://#{uri}"
                          end
 
           Train.unpack_target_from_uri(uri_to_check)
@@ -252,7 +292,7 @@ class Chef
         # This is necessary because train will default these values
         # itself - causing SSH config data to be ignored
         def missing_opts_from_ssh_config(config, opts_in)
-          return {} unless ssh?
+          return {} unless config[:backend] == "ssh"
           host_cfg = ssh_config_for_host(config[:host])
           opts_out = {}
           opts_in.each do |key, _value|

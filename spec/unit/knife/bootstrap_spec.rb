@@ -961,6 +961,7 @@ describe Chef::Knife::Bootstrap do
                 sudo: false,
                 verify_host_key: false,
                 port: 9999,
+                non_interactive: true,
               }
             end
 
@@ -1012,6 +1013,7 @@ describe Chef::Knife::Bootstrap do
                 sudo: true, # ccli
                 verify_host_key: false, # Config
                 port: 12, # cli
+                non_interactive: true,
               }
             end
 
@@ -1060,6 +1062,7 @@ describe Chef::Knife::Bootstrap do
                 sudo_options: "-H",
                 sudo_password: "blah",
                 verify_host_key: true,
+                non_interactive: true,
               }
             end
             it "generates a config hash using the CLI options and pulling nothing from Chef::Config" do
@@ -1079,6 +1082,7 @@ describe Chef::Knife::Bootstrap do
               keys_only: false,
               sudo: false,
               verify_host_key: true,
+              non_interactive: true,
             }
           end
           it "populates appropriate defaults" do
@@ -1430,13 +1434,13 @@ describe Chef::Knife::Bootstrap do
         before do
           knife.config[:ssh_forward_agent] = true
         end
-        it "returns a configuration hash with forward_agent set to true" do
-          expect(knife.ssh_opts).to eq({ forward_agent: true })
+        it "returns a configuration hash with forward_agent set to true. non-interactive is always true" do
+          expect(knife.ssh_opts).to eq({ forward_agent: true, non_interactive: true })
         end
       end
       context "when ssh_forward_agent is not set" do
-        it "returns a configuration hash with forward_agent set to false" do
-          expect(knife.ssh_opts).to eq({ forward_agent: false })
+        it "returns a configuration hash with forward_agent set to false. non-interactive is always true" do
+          expect(knife.ssh_opts).to eq({ forward_agent: false, non_interactive: true })
         end
       end
     end
