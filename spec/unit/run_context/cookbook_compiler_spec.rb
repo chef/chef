@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2018, Chef Software Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,6 +49,14 @@ describe Chef::RunContext::CookbookCompiler do
 
   let(:compiler) do
     Chef::RunContext::CookbookCompiler.new(run_context, run_list_expansion, events)
+  end
+
+  describe "loading a cookbook fully" do
+    it "does not error" do
+      run_context.instance_variable_set(:@cookbook_compiler, compiler)
+      node.run_list("dependency1::default")
+      compiler.compile
+    end
   end
 
   describe "loading attribute files" do

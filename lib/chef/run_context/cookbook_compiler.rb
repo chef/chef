@@ -206,13 +206,13 @@ class Chef
         end
 
         list_of_attr_files.each do |filename|
+          next unless File.extname(filename) == ".rb"
           load_attribute_file(cookbook_name.to_s, filename)
         end
       end
 
       def load_attribute_file(cookbook_name, filename)
-        # FIXME(log): should be trace
-        logger.debug("Node #{node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
+        logger.trace("Node #{node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
         attr_file_basename = ::File.basename(filename, ".rb")
         node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
       rescue Exception => e
@@ -224,8 +224,7 @@ class Chef
         files_in_cookbook_by_segment(cookbook_name, :libraries).each do |filename|
           next unless File.extname(filename) == ".rb"
           begin
-            # FIXME(log): should be trace
-            logger.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
+            logger.trace("Loading cookbook #{cookbook_name}'s library file: #{filename}")
             Kernel.require(filename)
             @events.library_file_loaded(filename)
           rescue Exception => e
@@ -237,16 +236,17 @@ class Chef
 
       def load_lwrps_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :providers).each do |filename|
+          next unless File.extname(filename) == ".rb"
           load_lwrp_provider(cookbook_name, filename)
         end
         files_in_cookbook_by_segment(cookbook_name, :resources).each do |filename|
+          next unless File.extname(filename) == ".rb"
           load_lwrp_resource(cookbook_name, filename)
         end
       end
 
       def load_lwrp_provider(cookbook_name, filename)
-        # FIXME(log): should be trace
-        logger.debug("Loading cookbook #{cookbook_name}'s providers from #{filename}")
+        logger.trace("Loading cookbook #{cookbook_name}'s providers from #{filename}")
         Chef::Provider::LWRPBase.build_from_file(cookbook_name, filename, self)
         @events.lwrp_file_loaded(filename)
       rescue Exception => e
@@ -255,8 +255,7 @@ class Chef
       end
 
       def load_lwrp_resource(cookbook_name, filename)
-        # FIXME(log): should be trace
-        logger.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
+        logger.trace("Loading cookbook #{cookbook_name}'s resources from #{filename}")
         Chef::Resource::LWRPBase.build_from_file(cookbook_name, filename, self)
         @events.lwrp_file_loaded(filename)
       rescue Exception => e
@@ -269,8 +268,7 @@ class Chef
         files_in_cookbook_by_segment(cookbook_name, :ohai).each do |filename|
           next unless File.extname(filename) == ".rb"
 
-          # FIXME(log): should be trace
-          logger.debug "Loading Ohai plugin: #{filename} from #{cookbook_name}"
+          logger.trace "Loading Ohai plugin: #{filename} from #{cookbook_name}"
           target_name = File.join(target, cookbook_name.to_s, File.basename(filename))
 
           FileUtils.mkdir_p(File.dirname(target_name))
@@ -280,9 +278,10 @@ class Chef
 
       def load_resource_definitions_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :definitions).each do |filename|
+          next unless File.extname(filename) == ".rb"
+
           begin
-            # FIXME(log): should be trace
-            logger.debug("Loading cookbook #{cookbook_name}'s definitions from #{filename}")
+            logger.trace("Loading cookbook #{cookbook_name}'s definitions from #{filename}")
             resourcelist = Chef::ResourceDefinitionList.new
             resourcelist.from_file(filename)
             definitions.merge!(resourcelist.defines) do |key, oldval, newval|
