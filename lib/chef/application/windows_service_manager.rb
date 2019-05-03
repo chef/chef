@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright 2011-2019, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 end
 require "chef/config"
 require "mixlib/cli"
+require "chef/dist"
 
 class Chef
   class Application
@@ -40,23 +41,23 @@ class Chef
         short: "-a ACTION",
         long: "--action ACTION",
         default: "status",
-        description: "Action to carry out on chef-service (install, uninstall, status, start, stop, pause, or resume)"
+        description: "Action to carry out on chef-service (install, uninstall, status, start, stop, pause, or resume)."
 
       option :config_file,
         short: "-c CONFIG",
         long: "--config CONFIG",
         default: "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
-        description: "The configuration file to use for chef runs"
+        description: "The configuration file to use for #{Chef::Dist::PRODUCT} runs."
 
       option :log_location,
         short: "-L LOGLOCATION",
         long: "--logfile LOGLOCATION",
-        description: "Set the log file location for chef-service"
+        description: "Set the log file location for chef-service."
 
       option :help,
         short: "-h",
         long: "--help",
-        description: "Show this message",
+        description: "Show this help message.",
         on: :tail,
         boolean: true,
         show_options: true,
@@ -65,9 +66,9 @@ class Chef
       option :version,
         short: "-v",
         long: "--version",
-        description: "Show chef version",
+        description: "Show #{Chef::Dist::PRODUCT} version.",
         boolean: true,
-        proc: lambda { |v| puts "Chef: #{::Chef::VERSION}" },
+        proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
         exit: 0
 
       def initialize(service_options)

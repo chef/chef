@@ -41,23 +41,23 @@ class Chef
         short: "-c CONFIG",
         long: "--config CONFIG",
         default: "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
-        description: ""
+        description: "The configuration file to use for #{Chef::Dist::PRODUCT} runs."
 
       option :log_location,
         short: "-L LOGLOCATION",
         long: "--logfile LOGLOCATION",
-        description: "Set the log file location"
+        description: "Set the log file location."
 
       option :splay,
         short: "-s SECONDS",
         long: "--splay SECONDS",
-        description: "The splay time for running at intervals, in seconds",
+        description: "The splay time for running at intervals, in seconds.",
         proc: lambda { |s| s.to_i }
 
       option :interval,
         short: "-i SECONDS",
         long: "--interval SECONDS",
-        description: "Set the number of seconds to wait between #{Chef::Dist::CLIENT} runs",
+        description: "Set the number of seconds to wait between #{Chef::Dist::PRODUCT} runs.",
         proc: lambda { |s| s.to_i }
 
       DEFAULT_LOG_LOCATION ||= "#{ENV['SYSTEMDRIVE']}/chef/client.log".freeze
@@ -136,7 +136,7 @@ class Chef
               run_warning_displayed = true
             end
 
-            Chef::Log.trace("Waiting for #{Chef::Dist::CLIENT} run...")
+            Chef::Log.trace("Waiting for #{Chef::Dist::PRODUCT} run...")
             sleep 1
           end
         end
@@ -150,7 +150,7 @@ class Chef
         # since this is a PAUSE signal.
 
         if @service_action_mutex.locked?
-          Chef::Log.info("Currently a #{Chef::Dist::CLIENT} run is happening.")
+          Chef::Log.info("Currently a #{Chef::Dist::PRODUCT} run is happening.")
           Chef::Log.info("Service will pause once it's completed.")
         else
           Chef::Log.info("Service is pausing....")
