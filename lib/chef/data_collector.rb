@@ -26,6 +26,7 @@ require "chef/data_collector/run_end_message"
 require "chef/data_collector/run_start_message"
 require "chef/data_collector/config_validation"
 require "chef/data_collector/error_handlers"
+require "chef/dist"
 
 class Chef
   class DataCollector
@@ -303,7 +304,7 @@ class Chef
           return false
         when running_mode == :client && Chef::Config[:data_collector][:token]
           Chef::Log.warn("Data collector token authentication is not recommended for client-server mode. " \
-                         "Please upgrade Chef Server to 12.11.0 and remove the token from your config file " \
+                         "Please upgrade #{Chef::Dist::SERVER_PRODUCT} to 12.11 or later and remove the token from your config file " \
                          "to use key based authentication instead")
           return true
         when Chef::Config[:data_collector][:output_locations] && Chef::Config[:data_collector][:output_locations][:files] && !Chef::Config[:data_collector][:output_locations][:files].empty?
@@ -311,7 +312,7 @@ class Chef
           return true
         when running_mode == :solo && !Chef::Config[:data_collector][:token]
           # we are in solo mode and are not logging to a file, so must have a token
-          Chef::Log.trace("Data collector token must be configured to use Chef Automate data collector with Chef Solo")
+          Chef::Log.trace("Data collector token must be configured to use Chef Automate data collector with #{Chef::Dist::PRODUCT} Solo")
           return false
         else
           return true

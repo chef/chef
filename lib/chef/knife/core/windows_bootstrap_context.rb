@@ -347,7 +347,7 @@ class Chef
           <<~EOH
             @set MSIERRORCODE=!ERRORLEVEL!
             @if ERRORLEVEL 1 (
-                @echo WARNING: Failed to install Chef Client MSI package in remote context with status code !MSIERRORCODE!.
+                @echo WARNING: Failed to install #{Chef::Dist::PRODUCT} MSI package in remote context with status code !MSIERRORCODE!.
                 @echo WARNING: This may be due to a defect in operating system update KB2918614: http://support.microsoft.com/kb/2918614
                 @set OLDLOGLOCATION="%CHEF_CLIENT_MSI_LOG_PATH%-fail.log"
                 @move "%CHEF_CLIENT_MSI_LOG_PATH%" "!OLDLOGLOCATION!" > NUL
@@ -356,26 +356,26 @@ class Chef
                 @schtasks /create /f  /sc once /st 00:00:00 /tn chefclientbootstraptask /ru SYSTEM /rl HIGHEST /tr \"cmd /c #{command} & sleep 2 & waitfor /s %computername% /si chefclientinstalldone\"
 
                 @if ERRORLEVEL 1 (
-                    @echo ERROR: Failed to create Chef Client installation scheduled task with status code !ERRORLEVEL! > "&2"
+                    @echo ERROR: Failed to create #{Chef::Dist::PRODUCT} installation scheduled task with status code !ERRORLEVEL! > "&2"
                 ) else (
-                    @echo Successfully created scheduled task to install Chef Client.
+                    @echo Successfully created scheduled task to install #{Chef::Dist::PRODUCT}.
                     @schtasks /run /tn chefclientbootstraptask
                     @if ERRORLEVEL 1 (
-                        @echo ERROR: Failed to execut Chef Client installation scheduled task with status code !ERRORLEVEL!. > "&2"
+                        @echo ERROR: Failed to execut #{Chef::Dist::PRODUCT} installation scheduled task with status code !ERRORLEVEL!. > "&2"
                     ) else (
-                        @echo Successfully started Chef Client installation scheduled task.
+                        @echo Successfully started #{Chef::Dist::PRODUCT} installation scheduled task.
                         @echo Waiting for installation to complete -- this may take a few minutes...
                         waitfor chefclientinstalldone /t 600
                         if ERRORLEVEL 1 (
-                            @echo ERROR: Timed out waiting for Chef Client package to install
+                            @echo ERROR: Timed out waiting for #{Chef::Dist::PRODUCT} package to install
                         ) else (
-                            @echo Finished waiting for Chef Client package to install.
+                            @echo Finished waiting for #{Chef::Dist::PRODUCT} package to install.
                         )
                         @schtasks /delete /f /tn chefclientbootstraptask > NUL
                     )
                 )
             ) else (
-                @echo Successfully installed Chef Client package.
+                @echo Successfully installed #{Chef::Dist::PRODUCT} package.
             )
           EOH
         end

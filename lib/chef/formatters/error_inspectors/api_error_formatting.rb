@@ -130,7 +130,7 @@ class Chef
       end
 
       def describe_503_error(error_description)
-        error_description.section("Server Unavailable", "The Chef Server is temporarily unavailable")
+        error_description.section("Server Unavailable", "The #{Chef::Dist::SERVER_PRODUCT} is temporarily unavailable")
         error_description.section("Server Response:", format_rest_error)
       end
 
