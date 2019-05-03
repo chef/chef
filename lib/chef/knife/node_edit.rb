@@ -35,7 +35,7 @@ class Chef
         short: "-a",
         long: "--all",
         boolean: true,
-        description: "Display all attributes when editing"
+        description: "Display all attributes when editing."
 
       def run
         if node_name.nil?

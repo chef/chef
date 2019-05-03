@@ -32,13 +32,13 @@ class Chef
       option :cookbook_path,
         short: "-o PATH:PATH",
         long: "--cookbook-path PATH:PATH",
-        description: "A colon-separated path to look for cookbooks in",
+        description: "A colon-separated path to look for cookbooks in.",
         proc: lambda { |o| o.split(":") }
 
       option :all,
         short: "-a",
         long: "--all",
-        description: "Generate metadata for all cookbooks, rather than just a single cookbook"
+        description: "Generate metadata for all cookbooks, rather than just a single cookbook."
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]

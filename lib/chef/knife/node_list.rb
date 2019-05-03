@@ -32,7 +32,7 @@ class Chef
       option :with_uri,
         short: "-w",
         long: "--with-uri",
-        description: "Show corresponding URIs"
+        description: "Show corresponding URIs."
 
       def run
         env = Chef::Config[:environment]

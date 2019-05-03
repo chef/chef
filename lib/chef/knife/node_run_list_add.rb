@@ -32,12 +32,12 @@ class Chef
       option :after,
         short: "-a ITEM",
         long: "--after ITEM",
-        description: "Place the ENTRY in the run list after ITEM"
+        description: "Place the ENTRY in the run list after ITEM."
 
       option :before,
-             short: "-b ITEM",
-             long: "--before ITEM",
-             description: "Place the ENTRY in the run list before ITEM"
+        short: "-b ITEM",
+        long: "--before ITEM",
+        description: "Place the ENTRY in the run list before ITEM."
 
       def run
         node = Chef::Node.load(@name_args[0])

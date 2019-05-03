@@ -31,33 +31,33 @@ class Chef
       option :recursive,
         short: "-R",
         boolean: true,
-        description: "List directories recursively"
+        description: "List directories recursively."
 
       option :bare_directories,
         short: "-d",
         boolean: true,
-        description: "When directories match the pattern, do not show the directories' children"
+        description: "When directories match the pattern, do not show the directories' children."
 
       option :local,
         long: "--local",
         boolean: true,
-        description: "List local directory instead of remote"
+        description: "List local directory instead of remote."
 
       option :flat,
         short: "-f",
         long: "--flat",
         boolean: true,
-        description: "Show a list of filenames rather than the prettified ls-like output normally produced"
+        description: "Show a list of filenames rather than the prettified ls-like output normally produced."
 
       option :one_column,
         short: "-1",
         boolean: true,
-        description: "Show only one column of results"
+        description: "Show only one column of results."
 
       option :trailing_slashes,
         short: "-p",
         boolean: true,
-        description: "Show trailing slashes after directories"
+        description: "Show trailing slashes after directories."
 
       attr_accessor :exit_code
 
