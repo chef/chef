@@ -95,13 +95,10 @@ platforms:
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
 
-- name: opensuse-leap
+- name: opensuse-leap-42
   driver:
-    image: dokken/opensuse-leap
+    image: dokken/opensuse-leap-42
     pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/zypper --non-interactive update
-      - RUN /usr/bin/zypper --non-interactive install cron
 
 suites:
   - name: end-to-end
