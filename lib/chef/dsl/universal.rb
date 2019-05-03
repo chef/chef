@@ -18,6 +18,9 @@
 #
 
 require "chef/dsl/platform_introspection"
+require "chef/dsl/data_query"
+require "chef/dsl/registry_helper"
+require "chef/dsl/powershell"
 require "chef/mixin/powershell_exec"
 require "chef/mixin/powershell_out"
 require "chef/mixin/shell_out"
@@ -45,6 +48,9 @@ class Chef
     #
     module Universal
       include Chef::DSL::PlatformIntrospection
+      include Chef::DSL::DataQuery
+      include Chef::DSL::RegistryHelper
+      include Chef::DSL::Powershell
       include Chef::Mixin::PowershellExec
       include Chef::Mixin::PowershellOut
       include Chef::Mixin::ShellOut
