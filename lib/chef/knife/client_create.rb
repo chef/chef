@@ -17,6 +17,7 @@
 #
 
 require "chef/knife"
+require "chef/dist"
 
 class Chef
   class Knife
@@ -50,7 +51,7 @@ class Chef
       option :prevent_keygen,
              short: "-k",
              long: "--prevent-keygen",
-             description: "API V1 (Chef Server 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --public-key.",
+             description: "API V1 (#{Chef::Dist::SERVER_PRODUCT} 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --public-key.",
              boolean: true
 
       banner "knife client create CLIENTNAME (options)"

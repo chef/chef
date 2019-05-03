@@ -26,12 +26,12 @@ class Chef::Knife::Exec < Chef::Knife
   option :exec,
     short: "-E CODE",
     long: "--exec CODE",
-    description: "a string of Chef code to execute"
+    description: "A string of Chef code to execute."
 
   option :script_path,
     short: "-p PATH:PATH",
     long: "--script-path PATH:PATH",
-    description: "A colon-separated path to look for scripts in",
+    description: "A colon-separated path to look for scripts in.",
     proc: lambda { |o| o.split(":") }
 
   deps do

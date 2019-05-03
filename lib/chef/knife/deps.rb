@@ -32,14 +32,16 @@ class Chef
         long: "--[no-]recurse",
         boolean: true,
         description: "List dependencies recursively (default: true). Only works with --tree."
+
       option :tree,
         long: "--tree",
         boolean: true,
         description: "Show dependencies in a visual tree. May show duplicates."
+
       option :remote,
         long: "--remote",
         boolean: true,
-        description: "List dependencies on the server instead of the local filesystem"
+        description: "List dependencies on the server instead of the local filesystem."
 
       attr_accessor :exit_code
 

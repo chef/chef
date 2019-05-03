@@ -35,49 +35,49 @@ class Chef::Application::Apply < Chef::Application
   option :execute,
     short: "-e RECIPE_TEXT",
     long: "--execute RECIPE_TEXT",
-    description: "Execute resources supplied in a string",
+    description: "Execute resources supplied in a string.",
     proc: nil
 
   option :stdin,
     short: "-s",
     long: "--stdin",
-    description: "Execute resources read from STDIN",
+    description: "Execute resources read from STDIN.",
     boolean: true
 
   option :json_attribs,
     short: "-j JSON_ATTRIBS",
     long: "--json-attributes JSON_ATTRIBS",
-    description: "Load attributes from a JSON file or URL",
+    description: "Load attributes from a JSON file or URL.",
     proc: nil
 
   option :force_logger,
     long: "--force-logger",
-    description: "Use logger output instead of formatter output",
+    description: "Use logger output instead of formatter output.",
     boolean: true,
     default: false
 
   option :force_formatter,
     long: "--force-formatter",
-    description: "Use formatter output instead of logger output",
+    description: "Use formatter output instead of logger output.",
     boolean: true,
     default: false
 
   option :formatter,
     short: "-F FORMATTER",
     long: "--format FORMATTER",
-    description: "output format to use",
+    description: "The output format to use.",
     proc: lambda { |format| Chef::Config.add_formatter(format) }
 
   option :log_level,
     short: "-l LEVEL",
     long: "--log_level LEVEL",
-    description: "Set the log level (trace, debug, info, warn, error, fatal)",
+    description: "Set the log level (trace, debug, info, warn, error, fatal).",
     proc: lambda { |l| l.to_sym }
 
   option :help,
     short: "-h",
     long: "--help",
-    description: "Show this message",
+    description: "Show this help message.",
     on: :tail,
     boolean: true,
     show_options: true,
@@ -86,7 +86,7 @@ class Chef::Application::Apply < Chef::Application
   option :version,
     short: "-v",
     long: "--version",
-    description: "Show #{Chef::Dist::PRODUCT} version",
+    description: "Show #{Chef::Dist::PRODUCT} version.",
     boolean: true,
     proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
     exit: 0
@@ -94,12 +94,12 @@ class Chef::Application::Apply < Chef::Application
   option :why_run,
     short: "-W",
     long: "--why-run",
-    description: "Enable whyrun mode",
+    description: "Enable whyrun mode.",
     boolean: true
 
   option :profile_ruby,
     long: "--[no-]profile-ruby",
-    description: "Dump complete Ruby call graph stack of entire #{Chef::Dist::PRODUCT} run (expert only)",
+    description: "Dump complete Ruby call graph stack of entire #{Chef::Dist::PRODUCT} run (expert only).",
     boolean: true,
     default: false
 
@@ -107,11 +107,11 @@ class Chef::Application::Apply < Chef::Application
     long: "--[no-]color",
     boolean: true,
     default: true,
-    description: "Use colored output, defaults to enabled"
+    description: "Use colored output, defaults to enabled."
 
   option :minimal_ohai,
     long: "--minimal-ohai",
-    description: "Only run the bare minimum ohai plugins #{Chef::Dist::CLIENT} needs to function",
+    description: "Only run the bare minimum Ohai plugins #{Chef::Dist::PRODUCT} needs to function.",
     boolean: true
 
   attr_reader :json_attribs

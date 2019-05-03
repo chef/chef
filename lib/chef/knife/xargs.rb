@@ -32,7 +32,7 @@ class Chef
       option :local,
         long: "--local",
         boolean: true,
-        description: "Xargs local files instead of remote"
+        description: "Xargs local files instead of remote."
 
       option :patterns,
         long: "--pattern [PATTERN]",

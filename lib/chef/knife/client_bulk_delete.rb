@@ -29,7 +29,7 @@ class Chef
       option :delete_validators,
        short: "-D",
        long: "--delete-validators",
-       description: "Force deletion of clients if they're validators"
+       description: "Force deletion of clients if they're validators."
 
       banner "knife client bulk delete REGEX (options)"
 

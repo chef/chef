@@ -4,6 +4,9 @@ class Chef
     # When referencing a product directly, like Chef (Now Chef Infra)
     PRODUCT = "Chef Infra Client".freeze
 
+    # The name of the server product
+    SERVER_PRODUCT = "Chef Infra Server".freeze
+
     # The client's alias (chef-client)
     CLIENT = "chef-client".freeze
 

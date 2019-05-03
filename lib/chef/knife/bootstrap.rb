@@ -28,16 +28,25 @@ class Chef
       SUPPORTED_CONNECTION_PROTOCOLS = %w{ssh winrm}.freeze
       WINRM_AUTH_PROTOCOL_LIST = %w{plaintext kerberos ssl negotiate}.freeze
 
+      # @param opt_arry [Array]
+      #
+      # @return [String] a friendly quoted list of items complete with "and"
+      def self.friendly_opt_list(opt_array)
+        opts = opt_array.map { |x| "'#{x}'" }
+        return opts.join(" and ") if opts.size < 3
+        opts[0..-2].join(", ") + " and " + opts[-1]
+      end
+
       # Common connectivity options
       option :connection_user,
         short: "-U USERNAME",
         long: "--connection-user USERNAME",
-        description: "Authenticate to the target host with this user account"
+        description: "Authenticate to the target host with this user account."
 
       option :connection_password,
         short: "-P PASSWORD",
         long: "--connection-password PASSWORD",
-        description: "Authenticate to the target host with this password"
+        description: "Authenticate to the target host with this password."
 
       option :connection_port,
         short: "-p PORT",
@@ -47,7 +56,7 @@ class Chef
       option :connection_protocol,
         short: "-o PROTOCOL",
         long: "--connection-protocol PROTOCOL",
-        description: "The protocol to use to connect to the target node.  Supports: #{SUPPORTED_CONNECTION_PROTOCOLS.join(" ")}"
+        description: "The protocol to use to connect to the target node. Supports: #{friendly_opt_list(SUPPORTED_CONNECTION_PROTOCOLS)}."
 
       option :max_wait,
         short: "-W SECONDS",
@@ -62,7 +71,7 @@ class Chef
       option :ca_trust_file,
         short: "-f CA_TRUST_PATH",
         long: "--ca-trust-file CA_TRUST_PATH",
-        description: "The Certificate Authority (CA) trust file used for SSL transport"
+        description: "The Certificate Authority (CA) trust file used for SSL transport."
 
       option :winrm_no_verify_cert,
         long: "--winrm-no-verify-cert",
@@ -71,17 +80,17 @@ class Chef
 
       option :winrm_ssl,
         long: "--winrm-ssl",
-        description: "Connect to WinRM using SSL"
+        description: "Use SSL in the WinRM connection."
 
       option :winrm_auth_method,
         short: "-w AUTH-METHOD",
         long: "--winrm-auth-method AUTH-METHOD",
-        description: "The WinRM authentication method to use. Valid choices are #{WINRM_AUTH_PROTOCOL_LIST}",
+        description: "The WinRM authentication method to use. Valid choices are #{friendly_opt_list(WINRM_AUTH_PROTOCOL_LIST)}.",
         proc: Proc.new { |protocol| Chef::Config[:knife][:winrm_auth_method] = protocol }
 
       option :winrm_basic_auth_only,
         long: "--winrm-basic-auth-only",
-        description: "For WinRM basic authentication when using the 'ssl' auth method",
+        description: "For WinRM basic authentication when using the 'ssl' auth method.",
         boolean: true
 
         # This option was provided in knife bootstrap windows winrm,
@@ -95,42 +104,42 @@ class Chef
       option :kerberos_realm,
         short: "-R KERBEROS_REALM",
         long: "--kerberos-realm KERBEROS_REALM",
-        description: "The Kerberos realm used for authentication",
+        description: "The Kerberos realm used for authentication.",
         proc: Proc.new { |protocol| Chef::Config[:knife][:kerberos_realm] = protocol }
 
       option :kerberos_service,
         short: "-S KERBEROS_SERVICE",
         long: "--kerberos-service KERBEROS_SERVICE",
-        description: "The Kerberos service used for authentication",
+        description: "The Kerberos service used for authentication.",
         proc: Proc.new { |protocol| Chef::Config[:knife][:kerberos_service] = protocol }
 
       option :winrm_session_timeout,
         long: "--winrm-session-timeout SECONDS",
-        description: "The number of seconds to wait for each WinRM operation to be acknowledged while running bootstrap",
+        description: "The number of seconds to wait for each WinRM operation to be acknowledged while running bootstrap.",
         proc: Proc.new { |protocol| Chef::Config[:knife][:winrm_session_timeout] = protocol }
 
       ## SSH Authentication
       option :ssh_gateway,
         short: "-G GATEWAY",
         long: "--ssh-gateway GATEWAY",
-        description: "The ssh gateway",
+        description: "The SSH gateway.",
         proc: Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
 
       option :ssh_gateway_identity,
         long: "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
-        description: "The SSH identity file used for gateway authentication",
+        description: "The SSH identity file used for gateway authentication.",
         proc: Proc.new { |key| Chef::Config[:knife][:ssh_gateway_identity] = key }
 
       option :ssh_forward_agent,
         short: "-A",
         long: "--ssh-forward-agent",
-        description: "Enable SSH agent forwarding",
+        description: "Enable SSH agent forwarding.",
         boolean: true
 
       option :ssh_identity_file,
         short: "-i IDENTITY_FILE",
         long: "--ssh-identity-file IDENTITY_FILE",
-        description: "The SSH identity file used for authentication"
+        description: "The SSH identity file used for authentication."
 
       option :ssh_verify_host_key,
         long: "--[no-]ssh-verify-host-key",
@@ -144,36 +153,36 @@ class Chef
       # client.rb content via chef-full/bootstrap_context
       option :bootstrap_version,
         long: "--bootstrap-version VERSION",
-        description: "The version of Chef to install",
+        description: "The version of #{Chef::Dist::PRODUCT} to install.",
         proc: lambda { |v| Chef::Config[:knife][:bootstrap_version] = v }
 
       # client.rb content via chef-full/bootstrap_context
       option :bootstrap_proxy,
         long: "--bootstrap-proxy PROXY_URL",
-        description: "The proxy server for the node being bootstrapped",
+        description: "The proxy server for the node being bootstrapped.",
         proc: Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
 
       # client.rb content via bootstrap_context
       option :bootstrap_proxy_user,
         long: "--bootstrap-proxy-user PROXY_USER",
-        description: "The proxy authentication username for the node being bootstrapped"
+        description: "The proxy authentication username for the node being bootstrapped."
 
       # client.rb content via bootstrap_context
       option :bootstrap_proxy_pass,
         long: "--bootstrap-proxy-pass PROXY_PASS",
-        description: "The proxy authentication password for the node being bootstrapped"
+        description: "The proxy authentication password for the node being bootstrapped."
 
       # client.rb content via bootstrap_context
       option :bootstrap_no_proxy,
         long: "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]",
-        description: "Do not proxy locations for the node being bootstrapped; this option is used internally by Chef",
+        description: "Do not proxy locations for the node being bootstrapped; this option is used internally by Chef.",
         proc: Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
 
       # client.rb content via bootstrap_context
       option :bootstrap_template,
         short: "-t TEMPLATE",
         long: "--bootstrap-template TEMPLATE",
-        description: "Bootstrap Chef using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates."
+        description: "Bootstrap #{Chef::Dist::PRODUCT} using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates."
 
       # client.rb content via bootstrap_context
       option :node_ssl_verify_mode,
@@ -190,57 +199,57 @@ class Chef
       # bootstrap_context - client.rb
       option :node_verify_api_cert,
         long: "--[no-]node-verify-api-cert",
-        description: "Verify the SSL cert for HTTPS requests to the Chef server API.",
+        description: "Verify the SSL cert for HTTPS requests to the #{Chef::Dist::SERVER_PRODUCT} API.",
         boolean: true
 
       # runtime - sudo settings (train handles sudo)
       option :use_sudo,
         long: "--sudo",
-        description: "Execute the bootstrap via sudo",
+        description: "Execute the bootstrap via sudo.",
         boolean: true
 
       # runtime - sudo settings (train handles sudo)
       option :preserve_home,
         long: "--sudo-preserve-home",
-        description: "Preserve non-root user HOME environment variable with sudo",
+        description: "Preserve non-root user HOME environment variable with sudo.",
         boolean: true
 
       # runtime - sudo settings (train handles sudo)
       option :use_sudo_password,
         long: "--use-sudo-password",
-        description: "Execute the bootstrap via sudo with password",
+        description: "Execute the bootstrap via sudo with password.",
         boolean: false
 
       # runtime - client_builder
       option :chef_node_name,
         short: "-N NAME",
         long: "--node-name NAME",
-        description: "The Chef node name for your new node"
+        description: "The node name for your new node."
 
       # runtime - client_builder - set runlist when creating node
       option :run_list,
         short: "-r RUN_LIST",
         long: "--run-list RUN_LIST",
-        description: "Comma separated list of roles/recipes to apply",
+        description: "Comma separated list of roles/recipes to apply.",
         proc: lambda { |o| o.split(/[\s,]+/) },
         default: []
 
       # runtime - client_builder - set policy name when creating node
       option :policy_name,
         long: "--policy-name POLICY_NAME",
-        description: "Policyfile name to use (--policy-group must also be given)",
+        description: "Policyfile name to use (--policy-group must also be given).",
         default: nil
 
       # runtime - client_builder - set policy group when creating node
       option :policy_group,
         long: "--policy-group POLICY_GROUP",
-        description: "Policy group name to use (--policy-name must also be given)",
+        description: "Policy group name to use (--policy-name must also be given).",
         default: nil
 
       # runtime - client_builder -  node tags
       option :tags,
         long: "--tags TAGS",
-        description: "Comma separated list of tags to apply to the node",
+        description: "Comma separated list of tags to apply to the node.",
         proc: lambda { |o| o.split(/[\s,]+/) },
         default: []
 
@@ -248,14 +257,14 @@ class Chef
       option :first_boot_attributes,
         short: "-j JSON_ATTRIBS",
         long: "--json-attributes",
-        description: "A JSON string to be added to the first run of #{Chef::Dist::CLIENT}",
+        description: "A JSON string to be added to the first run of #{Chef::Dist::CLIENT}.",
         proc: lambda { |o| Chef::JSONCompat.parse(o) },
         default: nil
 
       # bootstrap template
       option :first_boot_attributes_from_file,
         long: "--json-attribute-file FILE",
-        description: "A JSON file to be used to the first run of #{Chef::Dist::CLIENT}",
+        description: "A JSON file to be used to the first run of #{Chef::Dist::CLIENT}.",
         proc: lambda { |o| Chef::JSONCompat.parse(File.read(o)) },
         default: nil
 
@@ -269,7 +278,7 @@ class Chef
       # Create ohai hints in /etc/chef/ohai/hints, fname=hintname, content=value
       option :hint,
         long: "--hint HINT_NAME[=HINT_FILE]",
-        description: "Specify Ohai Hint to be set on the bootstrap target. Use multiple --hint options to specify multiple hints.",
+        description: "Specify an Ohai hint to be set on the bootstrap target. Use multiple --hint options to specify multiple hints.",
         proc: Proc.new { |h|
           Chef::Config[:knife][:hints] ||= Hash.new
           name, path = h.split("=")
@@ -281,53 +290,53 @@ class Chef
       # the provided options to knife bootstrap, so we set the Chef::Config option here.
       option :bootstrap_url,
         long: "--bootstrap-url URL",
-        description: "URL to a custom installation script",
+        description: "URL to a custom installation script.",
         proc: Proc.new { |u| Chef::Config[:knife][:bootstrap_url] = u }
 
       option :msi_url, # Windows target only
         short: "-m URL",
         long: "--msi-url URL",
-        description: "Location of the #{Chef::Dist::PRODUCT} MSI. The default templates will prefer to download from this location. The MSI will be downloaded from chef.io if not provided (windows).",
+        description: "Location of the #{Chef::Dist::PRODUCT} MSI. The default templates will prefer to download from this location. The MSI will be downloaded from #{Chef::Dist::WEBSITE} if not provided (Windows).",
         default: ""
 
       # bootstrap override: Do this instead of our own setup.sh from omnitruck. Causes bootstrap_url to be ignored.
       option :bootstrap_install_command,
         long: "--bootstrap-install-command COMMANDS",
-        description: "Custom command to install #{Chef::Dist::CLIENT}",
+        description: "Custom command to install #{Chef::Dist::PRODUCT}.",
         proc: Proc.new { |ic| Chef::Config[:knife][:bootstrap_install_command] = ic }
 
       # bootstrap template: Run this command first in the bootstrap script
       option :bootstrap_preinstall_command,
         long: "--bootstrap-preinstall-command COMMANDS",
-        description: "Custom commands to run before installing #{Chef::Dist::CLIENT}",
+        description: "Custom commands to run before installing #{Chef::Dist::PRODUCT}.",
         proc: Proc.new { |preic| Chef::Config[:knife][:bootstrap_preinstall_command] = preic }
 
       # bootstrap template
       option :bootstrap_wget_options,
         long: "--bootstrap-wget-options OPTIONS",
-        description: "Add options to wget when installing #{Chef::Dist::CLIENT}",
+        description: "Add options to wget when installing #{Chef::Dist::PRODUCT}.",
         proc: Proc.new { |wo| Chef::Config[:knife][:bootstrap_wget_options] = wo }
 
       # bootstrap template
       option :bootstrap_curl_options,
         long: "--bootstrap-curl-options OPTIONS",
-        description: "Add options to curl when install #{Chef::Dist::CLIENT}",
+        description: "Add options to curl when install #{Chef::Dist::PRODUCT}.",
         proc: Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
       # chef_vault_handler
       option :bootstrap_vault_file,
         long: "--bootstrap-vault-file VAULT_FILE",
-        description: "A JSON file with a list of vault(s) and item(s) to be updated"
+        description: "A JSON file with a list of vault(s) and item(s) to be updated."
 
       # chef_vault_handler
       option :bootstrap_vault_json,
         long: "--bootstrap-vault-json VAULT_JSON",
-        description: "A JSON string with the vault(s) and item(s) to be updated"
+        description: "A JSON string with the vault(s) and item(s) to be updated."
 
       # chef_vault_handler
       option :bootstrap_vault_item,
         long: "--bootstrap-vault-item VAULT_ITEM",
-        description: 'A single vault and item to update as "vault:item"',
+        description: 'A single vault and item to update as "vault:item".',
         proc: Proc.new { |i|
           (vault, item) = i.split(/:/)
           Chef::Config[:knife][:bootstrap_vault_item] ||= {}
@@ -538,8 +547,8 @@ class Chef
           chef_vault_handler.run(client_builder.client)
         else
           ui.info <<~EOM
-            Doing old-style registration with the validation key at #{Chef::Config[:validation_key]}..."
-            Delete your validation key in order to use your user credentials instead
+            Performing legacy client registration with the validation key at #{Chef::Config[:validation_key]}..."
+            Delete your validation key in order to use your user credentials for client registration instead.
           EOM
 
         end
