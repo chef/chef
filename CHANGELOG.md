@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.258 -->
-## [v15.0.258](https://github.com/chef/chef/tree/v15.0.258) (2019-05-03)
+<!-- latest_release 15.0.259 -->
+## [v15.0.259](https://github.com/chef/chef/tree/v15.0.259) (2019-05-04)
 
 #### Merged Pull Requests
-- Update more brand names to current [#8454](https://github.com/chef/chef/pull/8454) ([tas50](https://github.com/tas50))
+- Chef-15: cookbook compiler should parse only .rb files [#8456](https://github.com/chef/chef/pull/8456) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Chef-15: cookbook compiler should parse only .rb files [#8456](https://github.com/chef/chef/pull/8456) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.259 -->
 - Update more brand names to current [#8454](https://github.com/chef/chef/pull/8454) ([tas50](https://github.com/tas50)) <!-- 15.0.258 -->
 - Add connstant for Chef Server and improve help messaging [#8452](https://github.com/chef/chef/pull/8452) ([tas50](https://github.com/tas50)) <!-- 15.0.257 -->
 - Fixed empty value for knife status long output [#8415](https://github.com/chef/chef/pull/8415) ([vijaymmali1990](https://github.com/vijaymmali1990)) <!-- 15.0.256 -->
