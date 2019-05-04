@@ -220,6 +220,8 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       let(:bootstrap) { Chef::Knife::Bootstrap.new(["--bootstrap-install-command", "chef-client"]) }
       before do
         bootstrap.config[:bootstrap_install_command] = "chef-client"
+        @old_env = ENV["CHEF_LICENSE"]
+        ENV["CHEF_LICENSE"] = "accept"
       end
 
       it "sets the bootstrap_install_command option under Chef::Config::Knife object" do
@@ -229,6 +231,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       after do
         bootstrap.config.delete(:bootstrap_install_command)
         Chef::Config[:knife].delete(:bootstrap_install_command)
+        ENV["CHEF_LICENSE"] = @old_env
       end
     end
 
@@ -245,6 +248,8 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       let(:bootstrap) { Chef::Knife::Bootstrap.new(["--bootstrap-install-command", "chef-client"]) }
       before do
         bootstrap.config[:bootstrap_install_command] = "chef-client"
+        @old_env = ENV["CHEF_LICENSE"]
+        ENV["CHEF_LICENSE"] = "accept"
       end
 
       it "sets the bootstrap_install_command option under Chef::Config::Knife object" do
@@ -254,6 +259,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       after do
         bootstrap.config.delete(:bootstrap_install_command)
         Chef::Config[:knife].delete(:bootstrap_install_command)
+        ENV["CHEF_LICENSE"] = @old_env
       end
     end
 
