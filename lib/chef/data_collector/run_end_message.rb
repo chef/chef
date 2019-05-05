@@ -16,6 +16,7 @@
 #
 
 require_relative "message_helpers"
+require_relative "../../dist"
 
 class Chef
   class DataCollector
@@ -61,7 +62,7 @@ class Chef
             "policy_group" => node&.policy_group,
             "start_time" => run_status.start_time.utc.iso8601,
             "end_time" => run_status.end_time.utc.iso8601,
-            "source" => solo_run? ? "chef_solo" : "chef_client",
+            "source" => solo_run? ? Chef::Dist::SOLOEXEC : CHEF::DIST::CLIENT,
             "status" => status,
             "total_resource_count" => all_action_records(action_collection).count,
             "updated_resource_count" => updated_resource_count(action_collection),

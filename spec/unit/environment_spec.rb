@@ -299,7 +299,7 @@ describe Chef::Environment do
         expect do
           Chef::Environment.validate_cookbook_version("= 1.2.3.4")
         end.to raise_error Chef::Exceptions::IllegalVersionConstraint,
-                             "Environment cookbook version constraints not allowed in chef-solo"
+                             "Environment cookbook version constraints not allowed in .*"
       end
     end
 

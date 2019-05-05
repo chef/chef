@@ -16,6 +16,7 @@
 
 require_relative "../knife"
 require_relative "../local_mode"
+require_relative "../dist"
 
 class Chef
   class Knife
@@ -33,7 +34,7 @@ class Chef
 
       option :chef_zero_host,
         long: "--chef-zero-host IP",
-        description: "Overrides the host upon which chef-zero listens. Default is 127.0.0.1."
+        description: "Overrides the host upon which #{Chef::Dist::ZERO} listens. Default is 127.0.0.1."
 
       def configure_chef
         super

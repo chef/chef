@@ -16,6 +16,7 @@
 #
 
 require_relative "message_helpers"
+require_relative "../../dist"
 
 class Chef
   class DataCollector
@@ -50,7 +51,7 @@ class Chef
             "node_name" => node&.name || data_collector.node_name,
             "organization_name" => organization,
             "run_id" => run_status&.run_id,
-            "source" => solo_run? ? "chef_solo" : "chef_client",
+            "source" => solo_run? ? Chef::Dist::SOLOEXEC : Chef::Dist::CLIENT,
             "start_time" => run_status.start_time.utc.iso8601,
           }
         end

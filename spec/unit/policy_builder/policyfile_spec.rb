@@ -150,7 +150,7 @@ describe Chef::PolicyBuilder::Policyfile do
       expect(initialize_pb.temporary_policy?).to be_falsey
     end
 
-    context "chef-solo" do
+    context "#{Chef::Dist::SOLOEXEC}" do
       before { Chef::Config[:solo_legacy_mode] = true }
 
       it "errors on create" do
