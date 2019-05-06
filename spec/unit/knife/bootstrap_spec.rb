@@ -40,7 +40,6 @@ describe Chef::Knife::Bootstrap do
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)
     Chef::Config[:knife][:bootstrap_template] = bootstrap_template unless bootstrap_template.nil?
-    expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!)
 
     k = Chef::Knife::Bootstrap.new(bootstrap_cli_options)
     allow(k.ui).to receive(:stderr).and_return(stderr)
@@ -50,9 +49,31 @@ describe Chef::Knife::Bootstrap do
     k
   end
 
-  it "fails when LicenseAcceptance fails" do
-    expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!).and_raise("foo")
-    expect { k = Chef::Knife::Bootstrap.new(bootstrap_cli_options) }.to raise_error("foo")
+  context "#check_license" do
+    let(:acceptor) { instance_double(LicenseAcceptance::Acceptor) }
+
+    before do
+      expect(LicenseAcceptance::Acceptor).to receive(:new).and_return(acceptor)
+    end
+
+    describe "when a license is not required" do
+      it "does not set the chef_license" do
+        expect(acceptor).to receive(:license_required?).and_return(false)
+        knife.check_license
+        expect(Chef::Config[:chef_license]).to eq(nil)
+      end
+    end
+
+    describe "when a license is required" do
+      it "sets the chef_license" do
+        expect(acceptor).to receive(:license_required?).and_return(true)
+        expect(acceptor).to receive(:id_from_mixlib).and_return("id")
+        expect(acceptor).to receive(:check_and_persist)
+        expect(acceptor).to receive(:acceptance_value).and_return("accept-no-persist")
+        knife.check_license
+        expect(Chef::Config[:chef_license]).to eq("accept-no-persist")
+      end
+    end
   end
 
   context "#bootstrap_template" do
@@ -303,6 +324,7 @@ describe Chef::Knife::Bootstrap do
         knife.parse_options(["--json-attribute-file", jsonfile.path])
         knife.merge_configs
         allow(knife).to receive(:validate_name_args!)
+        expect(knife).to receive(:check_license)
 
         expect { knife.run }.to raise_error(Chef::Exceptions::BootstrapCommandInputError)
         jsonfile.close
@@ -329,7 +351,6 @@ describe Chef::Knife::Bootstrap do
 
   describe "specifying no_proxy with various entries" do
     subject(:knife) do
-      expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!)
       k = described_class.new
       Chef::Config[:knife][:bootstrap_template] = template_file
       allow(k).to receive(:connection).and_return connection
@@ -1582,6 +1603,7 @@ describe Chef::Knife::Bootstrap do
     end
 
     it "performs the steps we expect to run a bootstrap" do
+      expect(knife).to receive(:check_license)
       expect(knife).to receive(:verify_deprecated_flags!).ordered
       expect(knife).to receive(:validate_name_args!).ordered
       expect(knife).to receive(:validate_protocol!).ordered
@@ -1803,6 +1825,7 @@ describe Chef::Knife::Bootstrap do
 
   it "verifies that a server to bootstrap was given as a command line arg" do
     knife.name_args = nil
+    expect(knife).to receive(:check_license)
     expect { knife.run }.to raise_error(SystemExit)
     expect(stderr.string).to match(/ERROR:.+FQDN or ip/)
   end
