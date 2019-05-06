@@ -181,7 +181,6 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
     it "should be idempotent" do
       new_resource.run_action(:enable)
       service_should_be_enabled
-      expect(new_resource).to be_updated_by_last_action
       new_resource.run_action(:enable)
       service_should_be_enabled
       expect(new_resource).not_to be_updated_by_last_action
@@ -198,7 +197,6 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
     it "should be idempotent" do
       new_resource.run_action(:disable)
       service_should_be_disabled
-      expect(new_resource).to be_updated_by_last_action
       new_resource.run_action(:disable)
       service_should_be_disabled
       expect(new_resource).not_to be_updated_by_last_action
