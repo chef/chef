@@ -114,10 +114,11 @@ Using removed options will cause the command to fail.
 | --ssh-port | --connection-port | `knife[:ssh_port]` config setting remains available.
 | --ssh-user | --connection-user | `knife[:ssh_user]` config setting remains available.
 | --ssl-peer-fingerprint | --winrm-ssl-peer-fingerprint | |
+| --prerelease |--channel CHANNEL | This now allows you to specify the channel that Chef Infra Client gets installed from. Valid values are _stable_, current, and unstable.  'current' has the same effect as using the old --prerelease. |
 | --winrm-authentication-protocol=PROTO | --winrm-auth-method=AUTH-METHOD | Valid values: plaintext, kerberos, ssl, _negotiate_|
 | --winrm-password| --connection-password | |
 | --winrm-port| --connection-port | `knife[:winrm_port]` config setting remains available.|
-| --winrm-ssl-verify-mode MODE | --winrm-no-verify-cert | [1] Mode is not accepted. When flag is present, SSL cert will not be verified. Same as original mode of 'verify_none'. |
+| --winrm-ssl-verify-mode MODE | --winrm-no-verify-cert | [1] Mode is not accepted. When flag is present, SSL cert will not be verified. Same as original mode of 'verify\_none'. |
 | --winrm-transport TRANSPORT | --winrm-ssl | [1] Use this flag if the target host is accepts WinRM connections over SSL.
 | --winrm-user | --connection-user | `knife[:winrm_user]` config setting remains available.|
 
@@ -131,7 +132,6 @@ Using removed options will cause the command to fail.
 |--kerberos-keytab-file| This option existed but was not implemented.|
 |--winrm-codepage| This was used under knife-windows because bootstrapping was performed over a `cmd` shell. It is now invoked from `powershell`, so this option is no longer used.|
 |--winrm-shell|This option was ignored for bootstrap.|
-|--prerelease|Chef now releases all development builds to our current channel and does not perform pre-release gem releases.|
 |--install-as-service|Installing Chef client as a service is not supported|
 
 #### Usage Changes

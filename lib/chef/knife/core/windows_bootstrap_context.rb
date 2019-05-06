@@ -158,16 +158,6 @@ class Chef
           start_chef << "chef-client -c c:/chef/client.rb -j c:/chef/first-boot.json#{bootstrap_environment_option}\n"
         end
 
-        def latest_current_windows_chef_version_query
-          chef_version_string = if knife_config[:bootstrap_version]
-                                  knife_config[:bootstrap_version]
-                                else
-                                  Chef::VERSION.split(".").first
-                                end
-
-          "&v=#{chef_version_string}"
-        end
-
         def win_wget
           # I tried my best to figure out how to properly url decode and switch / to \
           # but this is VBScript - so I don't really care that badly.
@@ -273,16 +263,16 @@ class Chef
           "%TEMP%\\#{Chef::Dist::CLIENT}-latest.msi"
         end
 
+        # Build a URL to query www.chef.io that will redirect to the correct
+        # Chef Infra msi download.
         def msi_url(machine_os = nil, machine_arch = nil, download_context = nil)
-          # The default msi path has a number of url query parameters - we attempt to substitute
-          # such parameters in as long as they are provided by the template.
-
           if @config[:msi_url].nil? || @config[:msi_url].empty?
             url = "https://www.chef.io/chef/download?p=windows"
             url += "&pv=#{machine_os}" unless machine_os.nil?
             url += "&m=#{machine_arch}" unless machine_arch.nil?
             url += "&DownloadContext=#{download_context}" unless download_context.nil?
-            url += latest_current_windows_chef_version_query
+            url += "&channel=#{@config[:channel]}"
+            url += "&v=#{version_to_install}"
           else
             @config[:msi_url]
           end

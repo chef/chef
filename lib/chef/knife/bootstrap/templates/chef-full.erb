@@ -175,9 +175,9 @@ do_download() {
   if test -f /usr/bin/<%= Chef::Dist::CLIENT %>}; then
     echo "-----> Existing <%= Chef::Dist::PRODUCT %> installation detected"
   else
-    echo "-----> Installing Chef Omnibus (<%= latest_current_chef_version_string %>)"
+    echo "-----> Installing Chef Omnibus (<%= @config[:channel] %>/<%= version_to_install %>)"
     do_download ${install_sh} $tmp_dir/install.sh
-    sh $tmp_dir/install.sh -P chef <%= latest_current_chef_version_string %>
+    sh $tmp_dir/install.sh -P chef -c <%= @config[:channel] %> -v <%= version_to_install %>
   fi
 <% end %>
 

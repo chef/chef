@@ -187,16 +187,17 @@ class Chef
         end
 
         #
-        # chef version string to fetch the latest current version from omnitruck
-        # If user is on X.Y.Z, bootstrap will use the latest X release
-        def latest_current_chef_version_string
-          chef_version_string = if knife_config[:bootstrap_version]
-                                  knife_config[:bootstrap_version]
-                                else
-                                  Chef::VERSION.split(".").first
-                                end
+        # Returns the version of Chef to install (as recognized by the Omnitruck API)
+        #
+        # @return [String] download version string
+        def version_to_install
+          return knife_config[:bootstrap_version] if knife_config[:bootstrap_version]
 
-          "-v #{chef_version_string}"
+          if @config[:channel] == "stable"
+            Chef::VERSION.split(".").first
+          else
+            "latest"
+          end
         end
 
         def first_boot
