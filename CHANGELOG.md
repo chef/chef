@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.262 -->
-## [v15.0.262](https://github.com/chef/chef/tree/v15.0.262) (2019-05-06)
+<!-- latest_release 15.0.263 -->
+## [v15.0.263](https://github.com/chef/chef/tree/v15.0.263) (2019-05-06)
 
 #### Merged Pull Requests
-- Restore bootstrap pre-release support [#8442](https://github.com/chef/chef/pull/8442) ([marcparadise](https://github.com/marcparadise))
+- Move more DSL helpers into universal so they&#39;re available everywhere [#8457](https://github.com/chef/chef/pull/8457) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Move more DSL helpers into universal so they&#39;re available everywhere [#8457](https://github.com/chef/chef/pull/8457) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.263 -->
 - Restore bootstrap pre-release support [#8442](https://github.com/chef/chef/pull/8442) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.262 -->
 - Fix for cron resource get confused by environment/property mismatch [#8455](https://github.com/chef/chef/pull/8455) ([btm](https://github.com/btm)) <!-- 15.0.261 -->
 - Resolve exceptions when running knife diff [#8459](https://github.com/chef/chef/pull/8459) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.260 -->
