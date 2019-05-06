@@ -66,7 +66,7 @@ class Chef
     #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, allow_cookbook_override: false, __core_override__: false, chef_version: nil, &block) # rubocop:disable Lint/UnderscorePrefixedVariableName
+    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, allow_cookbook_override: false, __core_override__: false, chef_version: nil, target_mode: nil, &block) # rubocop:disable Lint/UnderscorePrefixedVariableName
       new_matcher = { klass: klass }
       new_matcher[:platform] = platform if platform
       new_matcher[:platform_version] = platform_version if platform_version
@@ -77,6 +77,7 @@ class Chef
       new_matcher[:override] = override if override
       new_matcher[:cookbook_override] = allow_cookbook_override
       new_matcher[:core_override] = __core_override__
+      new_matcher[:target_mode] = target_mode
 
       if chef_version && Chef::VERSION !~ chef_version
         return map
@@ -269,11 +270,21 @@ class Chef
         end
     end
 
+    # Succeeds if:
+    # - we are in target mode, and the target_mode filter is true
+    # - we are not in target mode
+    #
+    def matches_target_mode?(filters)
+      return true unless Chef::Config.target_mode?
+      !!filters[:target_mode]
+    end
+
     def filters_match?(node, filters)
       matches_black_white_list?(node, filters, :os) &&
         matches_black_white_list?(node, filters, :platform_family) &&
         matches_black_white_list?(node, filters, :platform) &&
-        matches_version_list?(node, filters, :platform_version)
+        matches_version_list?(node, filters, :platform_version) &&
+        matches_target_mode?(filters)
     end
 
     def block_matches?(node, block)
@@ -295,6 +306,8 @@ class Chef
     # "provides" lines with identical filters sort by class name (ascending).
     #
     def compare_matchers(key, new_matcher, matcher)
+      cmp = compare_matcher_properties(new_matcher[:target_mode], matcher[:target_mode])
+      return cmp if cmp != 0
       cmp = compare_matcher_properties(new_matcher[:block], matcher[:block])
       return cmp if cmp != 0
       cmp = compare_matcher_properties(new_matcher[:platform_version], matcher[:platform_version])

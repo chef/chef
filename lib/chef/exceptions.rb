@@ -132,7 +132,7 @@ class Chef
     # Can't find a Resource of this type that is valid on this platform.
     class NoSuchResourceType < NameError
       def initialize(short_name, node)
-        super "Cannot find a resource for #{short_name} on #{node[:platform]} version #{node[:platform_version]}"
+        super "Cannot find a resource for #{short_name} on #{node[:platform]} version #{node[:platform_version]} with target_mode? #{Chef::Config.target_mode?}"
       end
     end
 

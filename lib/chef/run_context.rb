@@ -25,6 +25,7 @@ require "chef/log"
 require "chef/recipe"
 require "chef/run_context/cookbook_compiler"
 require "chef/event_dispatch/events_output_stream"
+require "chef/train_transport"
 require "forwardable"
 
 class Chef
@@ -590,6 +591,22 @@ class Chef
       reboot_info.size > 0
     end
 
+    # Remote transport from Train
+    #
+    # @return [Train::Plugins::Transport] The child class for our train transport.
+    #
+    def transport
+      @transport ||= Chef::TrainTransport.build_transport(logger)
+    end
+
+    # Remote connection object from Train
+    #
+    # @return [Train::Plugins::Transport::BaseConnection]
+    #
+    def transport_connection
+      transport.connection
+    end
+
     #
     # Create a child RunContext.
     #
@@ -650,6 +667,8 @@ class Chef
         rest_clean
         rest_clean=
         unreachable_cookbook?
+        transport
+        transport_connection
       }
 
       def initialize(parent_run_context)

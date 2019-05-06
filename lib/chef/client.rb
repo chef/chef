@@ -55,6 +55,7 @@ require "chef/mixin/deprecation"
 require "ohai"
 require "rbconfig"
 require "chef/dist"
+require "forwardable"
 
 class Chef
   # == Chef::Client
@@ -65,6 +66,7 @@ class Chef
 
     extend Chef::Mixin::Deprecation
 
+    extend Forwardable
     #
     # The status of the Chef run.
     #
@@ -136,6 +138,9 @@ class Chef
     attr_reader :events
 
     attr_reader :logger
+
+    def_delegator :@run_context, :transport_connection
+
     #
     # Creates a new Chef::Client.
     #
@@ -244,9 +249,15 @@ class Chef
         logger.info("*** #{Chef::Dist::PRODUCT} #{Chef::VERSION} ***")
         logger.info("Platform: #{RUBY_PLATFORM}")
         logger.info "#{Chef::Dist::CLIENT.capitalize} pid: #{Process.pid}"
+        logger.info "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
         logger.debug("#{Chef::Dist::CLIENT.capitalize} request_id: #{request_id}")
         enforce_path_sanity
-        run_ohai
+
+        if Chef::Config.target_mode?
+          get_ohai_data_remotely
+        else
+          run_ohai
+        end
 
         unless Chef::Config[:solo_legacy_mode]
           register
@@ -553,6 +564,32 @@ class Chef
         logger.debug("Saving the current state of node #{node_name}")
         node.save
       end
+    end
+
+    #
+    # Populate the minimal ohai attributes defined in #run_ohai with data train collects.
+    #
+    # Eventually ohai may support colleciton of data.
+    #
+    def get_ohai_data_remotely
+      ohai.data[:fqdn] = if transport_connection.respond_to?(:hostname)
+                           transport_connection.hostname
+                         else
+                           Chef::Config[:target_mode][:host]
+                         end
+      if transport_connection.respond_to?(:os)
+        ohai.data[:platform] = transport_connection.os.name
+        ohai.data[:platform_version] = transport_connection.os.release
+        ohai.data[:os] = transport_connection.os.family_hierarchy[1]
+        ohai.data[:platform_family] = transport_connection.os.family
+      end
+      # train does not collect these specifically
+      # ohai.data[:machinename] = nil
+      # ohai.data[:hostname] = nil
+      # ohai.data[:os_version] = nil # kernel version
+
+      ohai.data[:ohai_time] = Time.now.to_f
+      events.ohai_completed(node)
     end
 
     #

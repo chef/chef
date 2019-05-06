@@ -293,10 +293,11 @@ module ChefConfig
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
           secondary_cache_path = PathHelper.join(user_home, ".chef")
+          secondary_cache_path = target_mode? ? "#{secondary_cache_path}/#{target_mode.host}" : secondary_cache_path
           ChefConfig.logger.trace("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
           secondary_cache_path
         else
-          primary_cache_path
+          target_mode? ? "#{primary_cache_path}/#{target_mode.host}" : primary_cache_path
         end
       end
     end
@@ -435,6 +436,22 @@ module ChefConfig
       # * Chef 11 mode doesn't expose RBAC objects
       default :osc_compat, false
     end
+
+    # RFCxxx Target Mode support, value is the name of a remote device to Chef against
+    # --target exists as a shortcut to enabling target_mode and setting the host
+    configurable(:target)
+
+    config_context :target_mode do
+      config_strict_mode false # we don't want to have to add all train configuration keys here
+      default :enabled, false
+      default :protocol, "ssh"
+      # typical additional keys: host, user, password
+    end
+
+    def self.target_mode?
+      target_mode.enabled
+    end
+
     default :chef_server_url, "https://localhost:443"
 
     default(:chef_server_root) do
@@ -625,7 +642,15 @@ module ChefConfig
     # `node_name` of the client.
     #
     # If chef-zero is enabled, this defaults to nil (no authentication).
-    default(:client_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/client.pem") }
+    default(:client_key) do
+      if chef_zero.enabled
+        nil
+      elsif target_mode?
+        platform_specific_path("/etc/chef/#{target_mode.host}/client.pem")
+      else
+        platform_specific_path("/etc/chef/client.pem")
+      end
+    end
 
     # A credentials file may contain a complete client key, rather than the path
     # to one.
@@ -645,7 +670,9 @@ module ChefConfig
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
-      if File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
+      if target_mode? && File.exist?(platform_specific_path("/etc/chef/#{target_mode.host}/encrypted_data_bag_secret"))
+        platform_specific_path("/etc/chef/#{target_mode.host}/encrypted_data_bag_secret")
+      elsif File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
         platform_specific_path("/etc/chef/encrypted_data_bag_secret")
       else
         nil

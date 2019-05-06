@@ -145,14 +145,14 @@ describe Chef::NodeMap do
   describe "deleting classes" do
     it "deletes a class and removes the mapping completely" do
       node_map.set(:thing, Bar)
-      expect( node_map.delete_class(Bar) ).to include({ thing: [{ klass: Bar, cookbook_override: false, core_override: false }] })
+      expect( node_map.delete_class(Bar) ).to include({ thing: [{ klass: Bar, cookbook_override: false, core_override: false, target_mode: nil }] })
       expect( node_map.get(node, :thing) ).to eql(nil)
     end
 
     it "deletes a class and leaves the mapping that still has an entry" do
       node_map.set(:thing, Bar)
       node_map.set(:thing, Foo)
-      expect( node_map.delete_class(Bar) ).to eql({ thing: [{ klass: Bar, cookbook_override: false, core_override: false }] })
+      expect( node_map.delete_class(Bar) ).to eql({ thing: [{ klass: Bar, cookbook_override: false, core_override: false, target_mode: nil }] })
       expect( node_map.get(node, :thing) ).to eql(Foo)
     end
 
@@ -160,7 +160,7 @@ describe Chef::NodeMap do
       node_map.set(:thing1, Bar)
       node_map.set(:thing2, Bar)
       node_map.set(:thing2, Foo)
-      expect( node_map.delete_class(Bar) ).to eql({ thing1: [{ klass: Bar, cookbook_override: false, core_override: false }], thing2: [{ klass: Bar, cookbook_override: false, core_override: false }] })
+      expect( node_map.delete_class(Bar) ).to eql({ thing1: [{ klass: Bar, cookbook_override: false, core_override: false, target_mode: nil }], thing2: [{ klass: Bar, cookbook_override: false, core_override: false, target_mode: nil }] })
       expect( node_map.get(node, :thing1) ).to eql(nil)
       expect( node_map.get(node, :thing2) ).to eql(Foo)
     end
@@ -207,6 +207,40 @@ describe Chef::NodeMap do
         allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
         expect(node_map.get(node, :thing)).to eql(:foo)
       end
+    end
+  end
+
+  # When in target mode, only match when target_mode is explicitly supported
+  context "when target mode is enabled" do
+    before do
+      allow(Chef::Config).to receive(:target_mode?).and_return(true)
+    end
+
+    it "returns the value when target_mode matches" do
+      node_map.set(:something, :network, target_mode: true)
+      expect(node_map.get(node, :something)).to eql(:network)
+    end
+
+    it "returns nil when target_mode does not match" do
+      node_map.set(:something, :local, target_mode: false)
+      expect(node_map.get(node, :something)).to eql(nil)
+    end
+  end
+
+  # When not in target mode, match regardless of target_mode filter
+  context "when target mode is not enabled" do
+    before do
+      allow(Chef::Config).to receive(:target_mode?).and_return(false)
+    end
+
+    it "returns the value if target_mode matches" do
+      node_map.set(:something, :local, target_mode: true)
+      expect(node_map.get(node, :something)).to eql(:local)
+    end
+
+    it "returns the value if target_mode does not match" do
+      node_map.set(:something, :local, target_mode: false)
+      expect(node_map.get(node, :something)).to eql(:local)
     end
   end
 
