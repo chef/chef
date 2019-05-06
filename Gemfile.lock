@@ -203,7 +203,7 @@ GEM
     jaro_winkler (1.5.2)
     json (2.2.0)
     libyajl2 (1.2.0)
-    license-acceptance (1.0.2)
+    license-acceptance (1.0.5)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
@@ -322,7 +322,7 @@ GEM
     timers (4.3.0)
     tins (1.20.2)
     tomlrb (1.2.8)
-    train-core (2.0.12)
+    train-core (2.1.0)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 3.0)
@@ -435,4 +435,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.17.3
+   2.0.1
