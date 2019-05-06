@@ -296,7 +296,7 @@ We removed the system_profile plugin because it incorrectly returned data on mod
 
 We removed the Ohai::Util::Win32::GroupHelper helper class from Ohai. This class was intended for use internally in several Windows plugins, but it was never marked private in the codebase. If any of your Ohai plugins rely on this helper class, you will need to update your plugins for Ohai 15.
 
-# Chef Client Release Notes 14.11:
+# Chef Infra Client Release Notes 14.11:
 
 ## Updated Resources
 
