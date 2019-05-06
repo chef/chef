@@ -18,6 +18,7 @@
 
 require_relative "../knife"
 require_relative "supermarket_search"
+require_relative "../dist"
 
 class Chef
   class Knife
@@ -31,7 +32,7 @@ class Chef
       category "deprecated"
 
       def run
-        Chef::Log.warn("knife cookbook site search has been deprecated in favor of knife supermarket search. In Chef 16 (April 2020) this will result in an error!")
+        Chef::Log.warn("knife cookbook site search has been deprecated in favor of knife supermarket search. In #{Chef::Dist::PRODUCT} 16 (April 2020) this will result in an error!")
         super
       end
 

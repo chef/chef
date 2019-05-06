@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 require_relative "../dsl/powershell"
+require_relative "../dist"
 
 class Chef
   class Resource
@@ -23,7 +24,7 @@ class Chef
       resource_name :dsc_resource
       provides :dsc_resource
 
-      description "The dsc_resource resource allows any DSC resource to be used in a Chef recipe, as well as any custom resources that have been added to your Windows PowerShell environment. Microsoft frequently adds new resources to the DSC resource collection."
+      description "The dsc_resource resource allows any DSC resource to be used in a #{Chef::Dist::PRODUCT} recipe, as well as any custom resources that have been added to your Windows PowerShell environment. Microsoft frequently adds new resources to the DSC resource collection."
       introduced "12.2"
 
       # This class will check if the object responds to

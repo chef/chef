@@ -18,6 +18,7 @@
 
 require_relative "../knife"
 require_relative "../util/path_helper"
+require_relative "../dist"
 
 class Chef::Knife::Exec < Chef::Knife
 
@@ -26,7 +27,7 @@ class Chef::Knife::Exec < Chef::Knife
   option :exec,
     short: "-E CODE",
     long: "--exec CODE",
-    description: "A string of Chef code to execute."
+    description: "A string of #{Chef::Dist::PRODUCT} code to execute."
 
   option :script_path,
     short: "-p PATH:PATH",

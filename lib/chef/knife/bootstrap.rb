@@ -177,7 +177,7 @@ class Chef
       # client.rb content via bootstrap_context
       option :bootstrap_no_proxy,
         long: "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]",
-        description: "Do not proxy locations for the node being bootstrapped; this option is used internally by Chef.",
+        description: "Do not proxy locations for the node being bootstrapped; this option is used internally by #{Chef::Dist::PRODUCT}.",
         proc: Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
 
       # client.rb content via bootstrap_context

@@ -17,6 +17,7 @@
 
 require_relative "../resource"
 require "shellwords" unless defined?(Shellwords)
+require_relative "../dist"
 
 class Chef
   class Resource
@@ -162,7 +163,7 @@ class Chef
 
       # warn if someone passes the deprecated cookbook property
       def after_created
-        raise ArgumentError, "The 'cookbook' property for the cron_d resource is no longer supported now that this resource ships in Chef itself." if cookbook
+        raise ArgumentError, "The 'cookbook' property for the cron_d resource is no longer supported now that this resource ships in #{Chef::Dist::PRODUCT} itself." if cookbook
       end
 
       action :create do
