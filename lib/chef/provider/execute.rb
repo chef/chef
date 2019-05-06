@@ -19,6 +19,7 @@
 require "chef/log"
 require "chef/provider"
 require "forwardable"
+require "chef/mixin/train_or_shell"
 
 class Chef
   class Provider
@@ -28,6 +29,8 @@ class Chef
       provides :execute, target_mode: true
 
       def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env
+
+      include Chef::Mixin::TrainOrShell
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
