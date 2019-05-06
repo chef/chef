@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.261 -->
-## [v15.0.261](https://github.com/chef/chef/tree/v15.0.261) (2019-05-06)
+<!-- latest_release 15.0.262 -->
+## [v15.0.262](https://github.com/chef/chef/tree/v15.0.262) (2019-05-06)
 
 #### Merged Pull Requests
-- Fix for cron resource get confused by environment/property mismatch [#8455](https://github.com/chef/chef/pull/8455) ([btm](https://github.com/btm))
+- Restore bootstrap pre-release support [#8442](https://github.com/chef/chef/pull/8442) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Restore bootstrap pre-release support [#8442](https://github.com/chef/chef/pull/8442) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.262 -->
 - Fix for cron resource get confused by environment/property mismatch [#8455](https://github.com/chef/chef/pull/8455) ([btm](https://github.com/btm)) <!-- 15.0.261 -->
 - Resolve exceptions when running knife diff [#8459](https://github.com/chef/chef/pull/8459) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.260 -->
 - Chef-15: cookbook compiler should parse only .rb files [#8456](https://github.com/chef/chef/pull/8456) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.259 -->
