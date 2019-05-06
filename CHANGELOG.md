@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.265 -->
-## [v15.0.265](https://github.com/chef/chef/tree/v15.0.265) (2019-05-06)
+<!-- latest_release 15.0.266 -->
+## [v15.0.266](https://github.com/chef/chef/tree/v15.0.266) (2019-05-06)
 
 #### Merged Pull Requests
-- Add logic to require acceptannce of the Chef license to run the client [#8354](https://github.com/chef/chef/pull/8354) ([tyler-ball](https://github.com/tyler-ball))
+- Initial target_mode implementation [#7758](https://github.com/chef/chef/pull/7758) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Initial target_mode implementation [#7758](https://github.com/chef/chef/pull/7758) ([btm](https://github.com/btm)) <!-- 15.0.266 -->
 - Add logic to require acceptannce of the Chef license to run the client [#8354](https://github.com/chef/chef/pull/8354) ([tyler-ball](https://github.com/tyler-ball)) <!-- 15.0.265 -->
 - [CHEF-8423] Upgrade train-core to 2.1.0 for windows detection over ssh [#8465](https://github.com/chef/chef/pull/8465) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.264 -->
 - Move more DSL helpers into universal so they&#39;re available everywhere [#8457](https://github.com/chef/chef/pull/8457) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.263 -->
