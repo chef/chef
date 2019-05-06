@@ -103,7 +103,7 @@ class Chef
         end
 
         if Chef::Config[:environment] && !Chef::Config[:environment].chomp.empty?
-          raise UnsupportedFeature, "Policyfile does not work with #{Chef::Dist::PRODUCT} Environments."
+          raise UnsupportedFeature, "Policyfile does not work with an Environment configured."
         end
       end
 

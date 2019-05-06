@@ -25,6 +25,7 @@ require_relative "shell_session"
 require_relative "model_wrapper"
 require_relative "../server_api"
 require_relative "../json_compat"
+require_relative "../dist"
 
 module Shell
   module Extensions
@@ -229,7 +230,7 @@ module Shell
         :attributes
       end
 
-      desc "run chef using the current recipe"
+      desc "run #{Chef::Dist::PRODUCT} using the current recipe"
       def run_chef
         Chef::Log.level = :debug
         session = Shell.session
@@ -238,8 +239,8 @@ module Shell
         runrun
       end
 
-      desc "returns an object to control a paused chef run"
-      subcommands resume: "resume the chef run",
+      desc "returns an object to control a paused #{Chef::Dist::PRODUCT} run"
+      subcommands resume: "resume the #{Chef::Dist::PRODUCT} run",
                   step: "run only the next resource",
                   skip_back: "move back in the run list",
                   skip_forward: "move forward in the run list"

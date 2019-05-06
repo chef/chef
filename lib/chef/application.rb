@@ -316,7 +316,7 @@ class Chef
     end
 
     def fork_chef_client
-      logger.info "Forking chef instance to converge..."
+      logger.info "Forking #{Chef::Dist::PRODUCT} instance to converge..."
       pid = fork do
         # Want to allow forked processes to finish converging when
         # TERM singal is received (exit gracefully)

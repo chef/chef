@@ -11,7 +11,7 @@ class Chef
     CLIENT = "chef-client".freeze
 
     # name of the automate product
-    AUTOMATE = "Chef Automate"
+    AUTOMATE = "Chef Automate".freeze
 
     # The chef executable, as in `chef gem install` or `chef generate cookbook`
     EXEC = "chef".freeze
@@ -20,15 +20,15 @@ class Chef
     WEBSITE = "https://chef.io".freeze
 
     # Chef-Zero's product name
-    ZERO = "Chef Infra Zero"
+    ZERO = "Chef Infra Zero".freeze
 
     # Chef-Solo's product name
-    SOLO = "Chef Infra Solo"
+    SOLO = "Chef Infra Solo".freeze
 
     # The chef-zero executable (local mode)
-    ZEROEXEC = "chef-zero"
+    ZEROEXEC = "chef-zero".freeze
 
     # The chef-solo executable (legacy local mode)
-    SOLOEXEC = "chef-solo"
+    SOLOEXEC = "chef-solo".freeze
   end
 end
