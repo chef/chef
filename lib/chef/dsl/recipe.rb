@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,11 +20,8 @@
 require "chef/exceptions"
 require "chef/dsl/resources"
 require "chef/dsl/definitions"
-require "chef/dsl/data_query"
 require "chef/dsl/include_recipe"
-require "chef/dsl/registry_helper"
 require "chef/dsl/reboot_pending"
-require "chef/dsl/powershell"
 require "chef/dsl/core"
 require "chef/mixin/lazy_module_include"
 
@@ -50,11 +47,8 @@ class Chef
     #
     module Recipe
       include Chef::DSL::Core
-      include Chef::DSL::DataQuery
       include Chef::DSL::IncludeRecipe
-      include Chef::DSL::RegistryHelper
       include Chef::DSL::RebootPending
-      include Chef::DSL::Powershell
       include Chef::DSL::Resources
       include Chef::DSL::Definitions
       extend Chef::Mixin::LazyModuleInclude
