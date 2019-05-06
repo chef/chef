@@ -75,11 +75,7 @@ describe Chef::Application::Knife do
       expect(@knife).to receive(:exit).with(0)
       @knife.run
     end
-    if windows?
-      expect(Chef::Config[:color]).to be_truthy
-    else
-      expect(Chef::Config[:color]).to be_truthy
-    end
+    expect(Chef::Config[:color]).to be_truthy
   end
 
   context "when given fips flags" do

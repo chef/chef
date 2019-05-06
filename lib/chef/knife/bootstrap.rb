@@ -19,11 +19,14 @@
 require "chef/knife"
 require "chef/knife/data_bag_secret_options"
 require "chef/dist"
+require "license_acceptance/cli_flags/mixlib_cli"
+require "license_acceptance/acceptor"
 
 class Chef
   class Knife
     class Bootstrap < Knife
       include DataBagSecretOptions
+      include LicenseAcceptance::CLIFlags::MixlibCLI
 
       SUPPORTED_CONNECTION_PROTOCOLS = %w{ssh winrm}.freeze
       WINRM_AUTH_PROTOCOL_LIST = %w{plaintext kerberos ssl negotiate}.freeze
@@ -413,6 +416,7 @@ class Chef
 
       def initialize(argv = [])
         super
+        LicenseAcceptance::Acceptor.check_and_persist!("infra-client", Chef::VERSION.to_s, logger: Chef::Log, provided: Chef::Config[:chef_license])
         @client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(
           chef_config: Chef::Config,
           knife_config: config,

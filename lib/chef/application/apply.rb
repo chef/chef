@@ -214,8 +214,9 @@ class Chef::Application::Apply < Chef::Application
   end
 
     # Get this party started
-  def run
+  def run(enforce_license = false)
     reconfigure
+    check_license_acceptance if enforce_license
     run_application
   end
 

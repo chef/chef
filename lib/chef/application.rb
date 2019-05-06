@@ -29,6 +29,7 @@ require "tmpdir"
 require "rbconfig"
 require "chef/application/exit_code"
 require "chef/dist"
+require "license_acceptance/acceptor"
 
 class Chef
   class Application
@@ -60,10 +61,11 @@ class Chef
     end
 
     # Get this party started
-    def run
+    def run(enforce_license: false)
       setup_signal_handlers
       reconfigure
       setup_application
+      check_license_acceptance if enforce_license
       run_application
     end
 
@@ -246,6 +248,15 @@ class Chef
     # Called prior to starting the application, by the run method
     def setup_application
       raise Chef::Exceptions::Application, "#{self}: you must override setup_application"
+    end
+
+    def check_license_acceptance
+      LicenseAcceptance::Acceptor.check_and_persist!(
+        "infra-client",
+        Chef::VERSION.to_s,
+        logger: logger,
+        provided: Chef::Config[:chef_license]
+      )
     end
 
     # Actually run the application

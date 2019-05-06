@@ -30,10 +30,12 @@ require "chef-config/mixin/dot_d"
 require "mixlib/archive"
 require "uri"
 require "chef/dist"
+require "license_acceptance/cli_flags/mixlib_cli"
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut
   include ChefConfig::Mixin::DotD
+  include LicenseAcceptance::CLIFlags::MixlibCLI
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
   SELF_PIPE = [] # rubocop:disable Style/MutableConstant
@@ -220,6 +222,7 @@ class Chef::Application::Client < Chef::Application
         Chef::RunList::RunListItem.new(item)
       end
     }
+
   option :why_run,
     short: "-W",
     long: "--why-run",

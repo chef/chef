@@ -40,6 +40,7 @@ describe Chef::Knife::Bootstrap do
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)
     Chef::Config[:knife][:bootstrap_template] = bootstrap_template unless bootstrap_template.nil?
+    expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!)
 
     k = Chef::Knife::Bootstrap.new(bootstrap_cli_options)
     allow(k.ui).to receive(:stderr).and_return(stderr)
@@ -47,6 +48,15 @@ describe Chef::Knife::Bootstrap do
     allow(k).to receive(:connection).and_return connection
     k.merge_configs
     k
+  end
+
+  it "purposefully fails to prevent Chef Infra from promoting unstable -> current" do
+    expect(0).to eq(1)
+  end
+
+  it "fails when LicenseAcceptance fails" do
+    expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!).and_raise("foo")
+    expect { k = Chef::Knife::Bootstrap.new(bootstrap_cli_options) }.to raise_error("foo")
   end
 
   context "#bootstrap_template" do
@@ -323,6 +333,7 @@ describe Chef::Knife::Bootstrap do
 
   describe "specifying no_proxy with various entries" do
     subject(:knife) do
+      expect(LicenseAcceptance::Acceptor).to receive(:check_and_persist!)
       k = described_class.new
       Chef::Config[:knife][:bootstrap_template] = template_file
       allow(k).to receive(:connection).and_return connection

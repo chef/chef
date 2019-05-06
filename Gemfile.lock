@@ -41,6 +41,7 @@ PATH
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 2)
       iniparse (~> 1.4)
+      license-acceptance (~> 1.0)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (~> 2.1)
       mixlib-cli (>= 1.7, < 3.0)
@@ -71,6 +72,7 @@ PATH
       highline (>= 1.6.9, < 2)
       iniparse (~> 1.4)
       iso8601 (~> 0.12.1)
+      license-acceptance (~> 1.0)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (~> 2.1)
       mixlib-cli (>= 1.7, < 3.0)
@@ -203,7 +205,7 @@ GEM
     jaro_winkler (1.5.2)
     json (2.2.0)
     libyajl2 (1.2.0)
-    license-acceptance (1.0.2)
+    license-acceptance (1.0.5)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
@@ -416,7 +418,7 @@ DEPENDENCIES
   cheffish (~> 14)
   chefstyle!
   ed25519
-  inspec-core (>= 4.0.0.a, < 5)
+  inspec-core (~> 4.3)
   ohai!
   pry
   pry-byebug
