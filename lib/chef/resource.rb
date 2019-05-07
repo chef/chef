@@ -1346,12 +1346,6 @@ class Chef
         remove_canonical_dsl
       end
 
-      # If a resource is in preview mode, set allow_cookbook_override on all its
-      # mappings by default.
-      if preview_resource && !options.include?(:allow_cookbook_override)
-        options[:allow_cookbook_override] = true
-      end
-
       if @chef_version_for_provides && !options.include?(:chef_version)
         options[:chef_version] = @chef_version_for_provides
       end

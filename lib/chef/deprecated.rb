@@ -216,9 +216,9 @@ class Chef
       end
     end
 
-    class MapCollision < Base
-      target 25
-    end
+    # id 25 was deleted
+
+    # id 3694 was deleted
 
     class ShellOut < Base
       target 26

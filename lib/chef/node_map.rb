@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2018, Chef Software Inc.
+# Copyright:: Copyright 2014-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,12 +37,7 @@
 #
 class Chef
   class NodeMap
-    COLLISION_WARNING_14 = <<~EOH.gsub(/\s+/, " ").strip
-      %{type_caps} %{key} from a cookbook is overriding the %{type} from the client.  Please upgrade your cookbook
-        or remove the cookbook from your run_list before the next major release of Chef.
-EOH
-
-    COLLISION_WARNING_15 = <<~EOH.gsub(/\s+/, " ").strip
+    COLLISION_WARNING = <<~EOH.gsub(/\s+/, " ").strip
       %{type_caps} %{key} from the client is overriding the %{type} from a cookbook.  Please upgrade your cookbook
         or remove the cookbook from your run_list.
 EOH
@@ -54,19 +49,13 @@ EOH
     # @param key [Object] Key to store
     # @param value [Object] Value associated with the key
     # @param filters [Hash] Node filter options to apply to key retrieval
-    # @param allow_cookbook_override [Boolean, String] Allow a cookbook to add
-    #   to this key even in locked mode. If a string is given, it should be a
-    #   Gem::Requirement-compatible value indicating for which Chef versions an
-    #   override from cookbooks is allowed.
-    # @param __core_override__ [Boolean] Advanced-mode override to add to a key
-    #   even in locked mode.
     # @param chef_version [String] version constraint to match against the running Chef::VERSION
     #
     # @yield [node] Arbitrary node filter as a block which takes a node argument
     #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, allow_cookbook_override: false, __core_override__: false, chef_version: nil, &block) # rubocop:disable Lint/UnderscorePrefixedVariableName
+    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, chef_version: nil, target_mode: nil, &block)
       new_matcher = { klass: klass }
       new_matcher[:platform] = platform if platform
       new_matcher[:platform_version] = platform_version if platform_version
@@ -75,8 +64,6 @@ EOH
       new_matcher[:block] = block if block
       new_matcher[:canonical] = canonical if canonical
       new_matcher[:override] = override if override
-      new_matcher[:cookbook_override] = allow_cookbook_override
-      new_matcher[:core_override] = __core_override__
 
       if chef_version && Chef::VERSION !~ chef_version
         return map
@@ -87,9 +74,7 @@ EOH
       # 1. Core override mode is not set.
       # 2. The key exists.
       # 3. At least one previous `provides` is now locked.
-      # 4. No previous `provides` had `allow_cookbook_override`, either set to
-      #    true or with a string version matcher that still matches Chef::VERSION
-      if !__core_override__ && map[key] && map[key].any? { |matcher| matcher[:locked] } && !map[key].any? { |matcher| matcher[:cookbook_override].is_a?(String) ? Chef::VERSION =~ matcher[:cookbook_override] : matcher[:cookbook_override] }
+      if map[key] && map[key].any? { |matcher| matcher[:locked] } && !map[key].any? { |matcher| matcher[:cookbook_override].is_a?(String) ? Chef::VERSION =~ matcher[:cookbook_override] : matcher[:cookbook_override] }
         # If we ever use locked mode on things other than the resource and provider handler maps, this probably needs a tweak.
         type_of_thing = if klass < Chef::Resource
                           "resource"
@@ -98,11 +83,7 @@ EOH
                         else
                           klass.superclass.to_s
                         end
-        # For now, only log the warning.
-        Chef.deprecated(:map_collision, COLLISION_WARNING_14 % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize })
-        # In 15.0, uncomment this and remove the log above.
-        # Chef.deprecated(:map_collision, COLLISION_WARNING_15 % {type: type_of_thing, key: key, type_caps: type_of_thing.capitalize}))
-        # return
+        Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize } )
       end
 
       # The map is sorted in order of preference already; we just need to find
