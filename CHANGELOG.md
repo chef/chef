@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.273 -->
-## [v15.0.273](https://github.com/chef/chef/tree/v15.0.273) (2019-05-07)
+<!-- latest_release 15.0.274 -->
+## [v15.0.274](https://github.com/chef/chef/tree/v15.0.274) (2019-05-07)
 
 #### Merged Pull Requests
-- Check for directories on Windows before creating [#8487](https://github.com/chef/chef/pull/8487) ([marcparadise](https://github.com/marcparadise))
+- Target mode code tweaks [#8480](https://github.com/chef/chef/pull/8480) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Target mode code tweaks [#8480](https://github.com/chef/chef/pull/8480) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.274 -->
 - Check for directories on Windows before creating [#8487](https://github.com/chef/chef/pull/8487) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.273 -->
 - Remove resource collision deprecations [#8470](https://github.com/chef/chef/pull/8470) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.272 -->
 - Point people to Learn Chef in the post install message [#8483](https://github.com/chef/chef/pull/8483) ([tas50](https://github.com/tas50)) <!-- 15.0.271 -->
