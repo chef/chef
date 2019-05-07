@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.270 -->
-## [v15.0.270](https://github.com/chef/chef/tree/v15.0.270) (2019-05-07)
+<!-- latest_release 15.0.271 -->
+## [v15.0.271](https://github.com/chef/chef/tree/v15.0.271) (2019-05-07)
 
 #### Merged Pull Requests
-- Update a few more knife.rb references to include config.rb [#8474](https://github.com/chef/chef/pull/8474) ([tas50](https://github.com/tas50))
+- Point people to Learn Chef in the post install message [#8483](https://github.com/chef/chef/pull/8483) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Point people to Learn Chef in the post install message [#8483](https://github.com/chef/chef/pull/8483) ([tas50](https://github.com/tas50)) <!-- 15.0.271 -->
 - Update a few more knife.rb references to include config.rb [#8474](https://github.com/chef/chef/pull/8474) ([tas50](https://github.com/tas50)) <!-- 15.0.270 -->
 - package: move response_file and response_file_variables out of base package resource [#8307](https://github.com/chef/chef/pull/8307) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.269 -->
 - Remove the Chef 11 admin flag from knife client create [#8473](https://github.com/chef/chef/pull/8473) ([tas50](https://github.com/tas50)) <!-- 15.0.268 -->
