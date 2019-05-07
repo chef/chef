@@ -235,13 +235,19 @@ echo Validation key written.
 <% end -%>
 
 <% unless trusted_certs_script.empty? -%>
-mkdir <%= bootstrap_directory %>\trusted_certs
+  @if NOT EXIST <%= bootstrap_directory %>\trusted_certs (
+      mkdir <%= bootstrap_directory %>\trusted_certs
+    )
+  )
+
 <%= trusted_certs_script %>
 <% end -%>
 
 <%# Generate Ohai Hints -%>
 <% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
-mkdir <%= bootstrap_directory %>\ohai\hints
+  @if NOT EXIST <%= bootstrap_directory %>\ohai\hints (
+      mkdir <%= bootstrap_directory %>\ohai\hints
+   )
 
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
 > <%= bootstrap_directory %>\ohai\hints\<%= name %>.json (
@@ -259,7 +265,10 @@ mkdir <%= bootstrap_directory %>\ohai\hints
 )
 
 <% unless client_d.empty? -%>
-  mkdir <%= bootstrap_directory %>\client.d
+  @if NOT EXIST <%= bootstrap_directory %>\client.d (
+      mkdir <%= bootstrap_directory %>\client.d
+   )
+
   <%= client_d %>
 <% end -%>
 
