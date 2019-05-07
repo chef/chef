@@ -317,7 +317,7 @@ class Chef
         exit 1
       end
 
-      # copy Mixlib::CLI over so that it can be configured in knife.rb
+      # copy Mixlib::CLI over so that it can be configured in config.rb/knife.rb
       # config file
       Chef::Config[:verbosity] = config[:verbosity] if config[:verbosity]
     end
@@ -498,7 +498,7 @@ class Chef
         ui.info  "Check your configuration file and ensure that your private key is readable"
       when Chef::Exceptions::InvalidRedirect
         ui.error "Invalid Redirect: #{e.message}"
-        ui.info  "Change your server location in knife.rb to the server's FQDN to avoid unwanted redirections."
+        ui.info  "Change your server location in config.rb/knife.rb to the server's FQDN to avoid unwanted redirections."
       else
         ui.error "#{e.class.name}: #{e.message}"
       end
