@@ -28,8 +28,7 @@ class Chef
         MKTEMP_WIN_COMMAND = <<~EOM.freeze
           $parent = [System.IO.Path]::GetTempPath();
           [string] $name = [System.Guid]::NewGuid();
-          $tmp = New-Item -ItemType Directory -Path;
-          (Join-Path $parent $name);
+          $tmp = New-Item -ItemType Directory -Path (Join-Path $parent $name);
           $tmp.FullName
         EOM
 
