@@ -1166,10 +1166,9 @@ class Chef
 
     # Set or return if this resource is in preview mode.
     #
-    # This is used in Chef core as part of the process of migrating resources
-    # from a cookbook into core. It should be set to `true` when a cookbook
-    # resource is added to core, and then removed (set to `false`) in the next
-    # major release.
+    # This only has value in the resource_inspector to mark a resource as being new-to-chef-core.
+    # Its meaning is probably more equivalent to "experimental" in that the API might change even
+    # in minor versions due to bugfixing and is NOT considered "stable" yet.
     #
     # @param value [nil, Boolean] If nil, get the current value. If not nil, set
     #   the value of the flag.
