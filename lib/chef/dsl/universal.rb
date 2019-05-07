@@ -55,6 +55,7 @@ class Chef
       include Chef::Mixin::PowershellExec
       include Chef::Mixin::PowershellOut
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::TrainOrShell
       extend Chef::Mixin::LazyModuleInclude
     end
   end

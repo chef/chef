@@ -16,23 +16,18 @@
 # limitations under the License.
 #
 
-require "chef/mixin/shell_out"
 require "chef/mixin/train_or_shell"
+require "chef/exceptions"
 
 class Chef
   class GuardInterpreter
     class DefaultGuardInterpreter
-      include Chef::Mixin::ShellOut
       include Chef::Mixin::TrainOrShell
-
-      protected
 
       def initialize(command, opts)
         @command = command
         @command_opts = opts
       end
-
-      public
 
       def evaluate
         result = train_or_shell(@command, default_env: false, **@command_opts)
