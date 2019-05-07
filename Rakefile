@@ -21,7 +21,7 @@ require_relative "tasks/rspec"
 require_relative "tasks/dependencies"
 require_relative "tasks/announce"
 
-ENV['CHEF_LICENSE'] = "accept-no-persist"
+ENV["CHEF_LICENSE"] = "accept-no-persist"
 
 # hack the chef-config install to run before the traditional install task
 task :super_install do
