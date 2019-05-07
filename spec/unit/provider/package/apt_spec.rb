@@ -24,10 +24,11 @@ describe Chef::Provider::Package::Apt do
   # XXX: sorry this is ugly and was done quickly to get 12.0.2 out, this file needs a rewrite to use
   # let blocks and shared examples
 
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+
   before(:each) do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
+    @run_context = Chef::RunContext.new(node, {}, events)
     allow(@run_context).to receive(:logger).and_return(logger)
     @new_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
 
@@ -428,6 +429,27 @@ describe Chef::Provider::Package::Apt do
       end
     end
 
+    describe "when given a response file" do
+      it_behaves_like "given a response file" do
+        before do
+          @provider = Chef::Provider::Package::Apt.new(new_resource, run_context)
+        end
+        let(:new_resource) do
+          new_resource = Chef::Resource::AptPackage.new("irssi", run_context)
+          new_resource.response_file("irssi.response")
+          new_resource.cookbook_name = "irssi"
+          new_resource
+        end
+        let(:path) { "preseed/irssi" }
+        let(:tmp_path) { "/tmp/preseed/irssi" }
+        let(:package_name) { "irssi" }
+        let(:package_version) { "1.0.5-1" }
+        let(:response) { "irssi.response" }
+        let(:tmp_preseed_path) { "/tmp/preseed/irssi/irssi-1.0.5-1.seed" }
+        let(:preseed_path) { "/preseed--irssi--irssi-1.0.5-1.seed" }
+      end
+    end
+
     describe "when preseeding a package" do
       before(:each) do
         allow(@provider).to receive(:get_preseed_file).and_return("/tmp/irssi-0.8.12-7.seed")
@@ -472,7 +494,7 @@ describe Chef::Provider::Package::Apt do
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout
         )
-        @provider.reconfig_package("irssi", "0.8.12-7")
+        @provider.reconfig_package("irssi")
       end
     end
 

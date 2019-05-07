@@ -88,14 +88,7 @@ class Chef
           return
         end
 
-        # @todo: move the preseed code out of the base class (and complete the fix for Array of preseeds? ugh...)
-        if new_resource.response_file
-          if preseed_file = get_preseed_file(package_names_for_targets, versions_for_targets)
-            converge_by("preseed package #{package_names_for_targets}") do
-              preseed_package(preseed_file)
-            end
-          end
-        end
+        prepare_for_installation
 
         converge_by(install_description) do
           multipackage_api_adapter(package_names_for_targets, versions_for_targets) do |name, version|
@@ -194,31 +187,6 @@ class Chef
         end
       end
 
-      action :reconfig do
-        if current_resource.version.nil?
-          logger.trace("#{new_resource} is NOT installed - nothing to do")
-          return
-        end
-
-        unless new_resource.response_file
-          logger.trace("#{new_resource} no response_file provided - nothing to do")
-          return
-        end
-
-        if preseed_file = get_preseed_file(new_resource.package_name, current_resource.version)
-          converge_by("reconfigure package #{new_resource.package_name}") do
-            preseed_package(preseed_file)
-            multipackage_api_adapter(new_resource.package_name, current_resource.version) do |name, version|
-              reconfig_package(name, version)
-
-            end
-            logger.info("#{new_resource} reconfigured")
-          end
-        else
-          logger.trace("#{new_resource} preseeding has not changed - nothing to do")
-        end
-      end
-
       def action_lock
         packages_locked = if respond_to?(:packages_all_locked?, true)
                             packages_all_locked?(Array(new_resource.package_name), Array(new_resource.version))
@@ -262,6 +230,10 @@ class Chef
         raise Chef::Exceptions::UnsupportedAction, "#{self} has no way to detect if package is locked"
       end
 
+      # Subclasses will override this to a method and provide a preseed file path
+      def prepare_for_installation
+      end
+
       # @todo use composition rather than inheritance
 
       def multipackage_api_adapter(name, version)
@@ -292,7 +264,7 @@ class Chef
         raise Chef::Exceptions::UnsupportedAction, "#{self} does not support pre-seeding package install/upgrade instructions"
       end
 
-      def reconfig_package(name, version)
+      def reconfig_package(name)
         raise( Chef::Exceptions::UnsupportedAction, "#{self} does not support :reconfig" )
       end
 
@@ -384,46 +356,6 @@ class Chef
         target_version_already_installed?(current_version, new_version)
       end
 
-      # @todo: extract apt/dpkg specific preseeding to a helper class
-      def get_preseed_file(name, version)
-        resource = preseed_resource(name, version)
-        resource.run_action(:create)
-        logger.trace("#{new_resource} fetched preseed file to #{resource.path}")
-
-        if resource.updated_by_last_action?
-          resource.path
-        else
-          false
-        end
-      end
-
-      # @todo: extract apt/dpkg specific preseeding to a helper class
-      def preseed_resource(name, version)
-        # A directory in our cache to store this cookbook's preseed files in
-        file_cache_dir = Chef::FileCache.create_cache_path("preseed/#{new_resource.cookbook_name}")
-        # The full path where the preseed file will be stored
-        cache_seed_to = "#{file_cache_dir}/#{name}-#{version}.seed"
-
-        logger.trace("#{new_resource} fetching preseed file to #{cache_seed_to}")
-
-        if template_available?(new_resource.response_file)
-          logger.trace("#{new_resource} fetching preseed file via Template")
-          remote_file = Chef::Resource::Template.new(cache_seed_to, run_context)
-          remote_file.variables(new_resource.response_file_variables)
-        elsif cookbook_file_available?(new_resource.response_file)
-          logger.trace("#{new_resource} fetching preseed file via cookbook_file")
-          remote_file = Chef::Resource::CookbookFile.new(cache_seed_to, run_context)
-        else
-          message = "No template or cookbook file found for response file #{new_resource.response_file}"
-          raise Chef::Exceptions::FileNotFound, message
-        end
-
-        remote_file.cookbook_name = new_resource.cookbook_name
-        remote_file.source(new_resource.response_file)
-        remote_file.backup(false)
-        remote_file
-      end
-
       # helper method used by subclasses
       #
       def as_array(thing)
@@ -479,7 +411,6 @@ class Chef
         @target_version_array ||=
           begin
             target_version_array = []
-
             each_package do |package_name, new_version, current_version, candidate_version|
               case action
               when :upgrade
@@ -655,16 +586,6 @@ class Chef
               end
             end
           end
-      end
-
-      # @todo: extract apt/dpkg specific preseeding to a helper class
-      def template_available?(path)
-        run_context.has_template_in_cookbook?(new_resource.cookbook_name, path)
-      end
-
-      # @todo: extract apt/dpkg specific preseeding to a helper class
-      def cookbook_file_available?(path)
-        run_context.has_cookbook_file_in_cookbook?(new_resource.cookbook_name, path)
       end
 
       def allow_downgrade

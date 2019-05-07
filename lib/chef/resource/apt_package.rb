@@ -35,6 +35,14 @@ class Chef
                description: "Overwrite existing configuration files with those supplied by the package, if prompted by APT.",
                default: false
 
+      property :response_file, String,
+               description: "The direct path to the file used to pre-seed a package.",
+               desired_state: false
+
+      property :response_file_variables, Hash,
+               description: "A Hash of response file variables in the form of {'VARIABLE' => 'VALUE'}.",
+               default: lazy { Hash.new }, desired_state: false
+
     end
   end
 end

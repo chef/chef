@@ -17,12 +17,14 @@
 #
 
 require "chef/provider/package"
+require "chef/provider/package/deb"
 require "chef/resource/apt_package"
 
 class Chef
   class Provider
     class Package
       class Apt < Chef::Provider::Package
+        include Chef::Provider::Package::Deb
         use_multipackage_api
 
         provides :package, platform_family: "debian"
@@ -114,16 +116,6 @@ class Chef
           run_noninteractive("apt-get", "-q", "-y", options, "purge", package_name)
         end
 
-        def preseed_package(preseed_file)
-          logger.info("#{new_resource} pre-seeding package installation instructions")
-          run_noninteractive("debconf-set-selections", preseed_file)
-        end
-
-        def reconfig_package(name, version)
-          logger.info("#{new_resource} reconfiguring")
-          run_noninteractive("dpkg-reconfigure", name)
-        end
-
         def lock_package(name, version)
           run_noninteractive("apt-mark", options, "hold", name)
         end
@@ -159,13 +151,6 @@ class Chef
           else
             -1
           end
-        end
-
-        # Runs command via shell_out with magic environment to disable
-        # interactive prompts. Command is run with default localization rather
-        # than forcing locale to "C", so command output may not be stable.
-        def run_noninteractive(*args)
-          shell_out!(*args, env: { "DEBIAN_FRONTEND" => "noninteractive" })
         end
 
         def default_release_options

@@ -53,7 +53,6 @@ describe Chef::Provider::Package::Dpkg do
   before(:each) do
     allow(provider).to receive(:shell_out_compacted!).with("dpkg-deb", "-W", source, timeout: 900).and_return(dpkg_deb_status)
     allow(provider).to receive(:shell_out_compacted!).with("dpkg", "-s", package, timeout: 900, returns: [0, 1]).and_return(double(stdout: "", exitstatus: 1))
-    allow(::File).to receive(:exist?).with(source).and_return(true)
   end
 
   describe "#define_resource_requirements" do
@@ -104,6 +103,9 @@ describe Chef::Provider::Package::Dpkg do
   end
 
   describe "when loading the current resource state" do
+    before(:each) do
+      allow(::File).to receive(:exist?).with(source).and_return(true)
+    end
 
     it "should create a current resource with the name of the new_resource" do
       provider.load_current_resource
@@ -213,6 +215,10 @@ describe Chef::Provider::Package::Dpkg do
   end
 
   describe Chef::Provider::Package::Dpkg, "install and upgrade" do
+    before(:each) do
+      allow(::File).to receive(:exist?).with(source).and_return(true)
+    end
+
     it "should run dpkg -i with the package source" do
       expect(provider).to receive(:run_noninteractive).with(
         "dpkg", "-i", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
@@ -282,6 +288,27 @@ describe Chef::Provider::Package::Dpkg do
       allow(new_resource).to receive(:options).and_return("--force-yes")
 
       provider.purge_package(["wget"], ["1.11.4-1ubuntu1"])
+    end
+  end
+
+  describe "when given a response file" do
+    it_behaves_like "given a response file" do
+      before do
+        @provider = Chef::Provider::Package::Dpkg.new(new_resource, run_context)
+      end
+      let(:new_resource) do
+        new_resource = Chef::Resource::DpkgPackage.new("wget", run_context)
+        new_resource.response_file("wget.response")
+        new_resource.cookbook_name = "wget"
+        new_resource
+      end
+      let(:path) { "preseed/wget" }
+      let(:tmp_path) { "/tmp/preseed/wget" }
+      let(:package_name) { "wget" }
+      let(:package_version) { "1.11.4" }
+      let(:response) { "wget.response" }
+      let(:tmp_preseed_path) { "/tmp/preseed/wget/wget-1.11.4.seed" }
+      let(:preseed_path) { "/preseed--wget--wget-1.11.4.seed" }
     end
   end
 end

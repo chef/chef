@@ -28,6 +28,14 @@ class Chef
 
       property :source, [ String, Array, nil ],
                description: "The path to a package in the local file system."
+
+      property :response_file, String,
+               description: "The direct path to the file used to pre-seed a package.",
+               desired_state: false
+
+      property :response_file_variables, Hash,
+               description: "A Hash of response file variables in the form of {'VARIABLE' => 'VALUE'}.",
+               default: lazy { Hash.new }, desired_state: false
     end
   end
 end

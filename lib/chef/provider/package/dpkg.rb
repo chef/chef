@@ -17,12 +17,14 @@
 #
 
 require "chef/provider/package"
+require "chef/provider/package/deb"
 require "chef/resource/package"
 
 class Chef
   class Provider
     class Package
       class Dpkg < Chef::Provider::Package
+        include Chef::Provider::Package::Deb
         DPKG_REMOVED   = /^Status: deinstall ok config-files/.freeze
         DPKG_INSTALLED = /^Status: install ok installed/.freeze
         DPKG_VERSION   = /^Version: (.+)$/.freeze
@@ -91,16 +93,6 @@ class Chef
           install_package(name, version)
         end
 
-        def preseed_package(preseed_file)
-          logger.info("#{new_resource} pre-seeding package installation instructions")
-          run_noninteractive("debconf-set-selections", *preseed_file)
-        end
-
-        def reconfig_package(name, version)
-          logger.info("#{new_resource} reconfiguring")
-          run_noninteractive("dpkg-reconfigure", *name)
-        end
-
         # Override the superclass check.  Multiple sources are required here.
         def check_resource_semantics!; end
 
@@ -147,12 +139,6 @@ class Chef
           array.map do |name|
             read_current_version_of_package(name)
           end
-        end
-
-        # Runs command via shell_out with magic environment to disable
-        # interactive prompts.
-        def run_noninteractive(*command)
-          shell_out!(*command, env: { "DEBIAN_FRONTEND" => "noninteractive" })
         end
 
         # Returns true if all sources exist.  Returns false if any do not, or if no
