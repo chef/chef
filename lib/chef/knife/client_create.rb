@@ -30,13 +30,7 @@ class Chef
       option :file,
              short: "-f FILE",
              long: "--file FILE",
-             description: "Write the private key to a file if the server generated one."
-
-      option :admin,
-             short: "-a",
-             long: "--admin",
-             description: "Open Source Chef Server 11 only. Create the client as an admin.",
-             boolean: true
+             description: "Write the private key to a file if the #{Chef::Dist::SERVER_PRODUCT} generated one."
 
       option :validator,
              long: "--validator",
@@ -51,7 +45,7 @@ class Chef
       option :prevent_keygen,
              short: "-k",
              long: "--prevent-keygen",
-             description: "API V1 (#{Chef::Dist::SERVER_PRODUCT} 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --public-key.",
+             description: "Prevent #{Chef::Dist::SERVER_PRODUCT} from generating a default key pair for you. Cannot be passed with --public-key.",
              boolean: true
 
       banner "knife client create CLIENTNAME (options)"
@@ -77,10 +71,6 @@ class Chef
 
         if !config[:prevent_keygen] && !config[:public_key]
           client.create_key(true)
-        end
-
-        if config[:admin]
-          client.admin(true)
         end
 
         if config[:validator]
