@@ -376,7 +376,7 @@ matrix:
         - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
         - cd kitchen-tests
       script:
-        - bundle exec kitchen test end-to-end-opensuse-leap
+        - bundle exec kitchen test end-to-end-opensuse-leap-42
       after_failure:
         - cat .kitchen/logs/kitchen.log
       env:
