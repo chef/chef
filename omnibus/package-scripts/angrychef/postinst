@@ -106,6 +106,6 @@ ln -sf $INSTALLER_DIR/bin/chef-client $PREFIX/bin || error_exit "Cannot link che
 # be manually fixed.
 chown -Rh 0:0 $INSTALLER_DIR
 
-echo "Thank you for installing Chef!"
+echo "Thank you for installing Chef Infra Client! For help getting started visit https://learn.chef.io"
 
 exit 0
