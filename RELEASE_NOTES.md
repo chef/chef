@@ -8,7 +8,7 @@ Chef 15 release notes will be added here as development progresses.
 
 ### Chef EULA
 
-Chef Client requires a EULA to be accepted by users before it can run. Users can accept the EULA in a variety of ways:
+Chef Infra Client requires a EULA to be accepted by users before it can run. Users can accept the EULA in a variety of ways:
 
 `chef-client --chef-license accept`
 `chef-client --chef-license accept-no-persist`
