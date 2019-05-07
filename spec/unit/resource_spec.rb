@@ -867,7 +867,7 @@ describe Chef::Resource do
       snitch_var1 = snitch_var2 = 0
       runner = Chef::Runner.new(run_context)
 
-      Chef::Provider::SnakeOil.provides :cat, __core_override__: true
+      Chef::Provider::SnakeOil.provides :cat
 
       resource1.only_if { snitch_var1 = 1 }
       resource1.not_if { snitch_var2 = 2 }
@@ -1190,18 +1190,6 @@ describe Chef::Resource do
     it "does not affect provides by default" do
       expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, { canonical: true })
       klass.resource_name(:test_resource)
-    end
-
-    it "adds allow_cookbook_override when true" do
-      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, { canonical: true, allow_cookbook_override: true })
-      klass.preview_resource(true)
-      klass.resource_name(:test_resource)
-    end
-
-    it "allows manually overriding back to false" do
-      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, { allow_cookbook_override: false })
-      klass.preview_resource(true)
-      klass.provides(:test_resource, allow_cookbook_override: false)
     end
   end
 
