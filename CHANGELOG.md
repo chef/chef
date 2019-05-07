@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.268 -->
-## [v15.0.268](https://github.com/chef/chef/tree/v15.0.268) (2019-05-07)
+<!-- latest_release 15.0.269 -->
+## [v15.0.269](https://github.com/chef/chef/tree/v15.0.269) (2019-05-07)
 
 #### Merged Pull Requests
-- Remove the Chef 11 admin flag from knife client create [#8473](https://github.com/chef/chef/pull/8473) ([tas50](https://github.com/tas50))
+- package: move response_file and response_file_variables out of base package resource [#8307](https://github.com/chef/chef/pull/8307) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- package: move response_file and response_file_variables out of base package resource [#8307](https://github.com/chef/chef/pull/8307) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.269 -->
 - Remove the Chef 11 admin flag from knife client create [#8473](https://github.com/chef/chef/pull/8473) ([tas50](https://github.com/tas50)) <!-- 15.0.268 -->
 - Chef 15: Unable to create temp dir on windows system [#8476](https://github.com/chef/chef/pull/8476) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.267 -->
 - Initial target_mode implementation [#7758](https://github.com/chef/chef/pull/7758) ([btm](https://github.com/btm)) <!-- 15.0.266 -->
