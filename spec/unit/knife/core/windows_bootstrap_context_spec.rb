@@ -174,6 +174,15 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       EXPECTED
       expect(bootstrap_context.config_content).to eq expected
     end
+
+    describe "when chef_license is set" do
+      before do
+        bootstrap_context.instance_variable_set(:@chef_config, Mash.new(chef_license: "accept-no-persist"))
+      end
+      it "sets chef_license in the generated config file" do
+        expect(bootstrap_context.config_content).to include("chef_license \"accept-no-persist\"")
+      end
+    end
   end
 
   describe "msi_url" do
@@ -270,13 +279,6 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
         expect(Chef::Config[:knife][:bootstrap_install_command]). to eq(nil)
       end
     end
-  end
-
-  describe "#start_chef" do
-    it "the command includes the license acceptance environment variable" do
-      expect(bootstrap_context.start_chef).to match(/SET "CHEF_LICENSE=accept"\n/m)
-    end
-
   end
 
 end

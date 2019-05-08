@@ -398,9 +398,7 @@ class Chef
                                on: :tail)
       end
 
-      attr_accessor :client_builder
-      attr_accessor :chef_vault_handler
-      attr_reader   :connection
+      attr_reader :connection
 
       deps do
         require "erubis"
@@ -414,18 +412,33 @@ class Chef
 
       banner "knife bootstrap [PROTOCOL://][USER@]FQDN (options)"
 
-      def initialize(argv = [])
-        super
-        LicenseAcceptance::Acceptor.check_and_persist!("infra-client", Chef::VERSION.to_s, logger: Chef::Log, provided: Chef::Config[:chef_license])
-        @client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(
+      def client_builder
+        @client_builder ||= Chef::Knife::Bootstrap::ClientBuilder.new(
           chef_config: Chef::Config,
           knife_config: config,
           ui: ui
         )
-        @chef_vault_handler = Chef::Knife::Bootstrap::ChefVaultHandler.new(
+      end
+
+      def chef_vault_handler
+        @chef_vault_handler ||= Chef::Knife::Bootstrap::ChefVaultHandler.new(
           knife_config: config,
           ui: ui
         )
+      end
+
+      # Determine if we need to accept the Chef Infra license locally in order to successfully bootstrap
+      # the remote node. Remote 'chef-client' run will fail if it is >= 15 and the license is not accepted locally.
+      def check_license
+        Chef::Log.debug("Checking if we need to accept Chef license to bootstrap node")
+        version = config[:bootstrap_version] || Chef::VERSION.split(".").first
+        acceptor = LicenseAcceptance::Acceptor.new(logger: Chef::Log, provided: Chef::Config[:chef_license])
+        if acceptor.license_required?("chef", version)
+          Chef::Log.debug("License acceptance required for chef version: #{version}")
+          license_id = acceptor.id_from_mixlib("chef")
+          acceptor.check_and_persist(license_id, version)
+          Chef::Config[:chef_license] ||= acceptor.acceptance_value
+        end
       end
 
       # The default bootstrap template to use to bootstrap a server.
@@ -523,6 +536,7 @@ class Chef
       end
 
       def run
+        check_license
         verify_deprecated_flags!
 
         validate_name_args!

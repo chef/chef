@@ -46,21 +46,21 @@ describe Chef::Knife::Core::BootstrapContext do
     expect { described_class.new(config, run_list, chef_config) }.not_to raise_error
   end
 
-  it "runs chef with the first-boot.json with no environment other than chef-license acceptance specified" do
-    expect(bootstrap_context.start_chef).to eq "CHEF_LICENSE=accept chef-client -j /etc/chef/first-boot.json"
+  it "runs chef with the first-boot.json with no environment" do
+    expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json"
   end
 
   describe "when in verbosity mode" do
     let(:config) { { verbosity: 2, color: true } }
     it "adds '-l debug' when verbosity is >= 2" do
-      expect(bootstrap_context.start_chef).to eq "CHEF_LICENSE=accept chef-client -j /etc/chef/first-boot.json -l debug"
+      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -l debug"
     end
   end
 
   describe "when no color value has been set in config" do
     let(:config) { { color: false } }
     it "adds '--no-color' when color is false" do
-      expect(bootstrap_context.start_chef).to eq "CHEF_LICENSE=accept chef-client -j /etc/chef/first-boot.json --no-color"
+      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json --no-color"
     end
   end
 
@@ -79,10 +79,17 @@ describe Chef::Knife::Core::BootstrapContext do
     expect(bootstrap_context.config_content).to eq expected
   end
 
+  describe "when chef_license is set" do
+    let(:chef_config) { { chef_license: "accept-no-persist" } }
+    it "sets chef_license in the generated config file" do
+      expect(bootstrap_context.config_content).to include("chef_license \"accept-no-persist\"")
+    end
+  end
+
   describe "alternate chef-client path" do
     let(:chef_config) { { chef_client_path: "/usr/local/bin/chef-client" } }
     it "runs chef-client from another path when specified" do
-      expect(bootstrap_context.start_chef).to eq "CHEF_LICENSE=accept /usr/local/bin/chef-client -j /etc/chef/first-boot.json"
+      expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json"
     end
   end
 
@@ -105,7 +112,7 @@ describe Chef::Knife::Core::BootstrapContext do
   describe "when bootstrapping into a specific environment" do
     let(:config) { { environment: "prodtastic", color: true } }
     it "starts chef in the configured environment" do
-      expect(bootstrap_context.start_chef).to eq("CHEF_LICENSE=accept chef-client -j /etc/chef/first-boot.json -E prodtastic")
+      expect(bootstrap_context.start_chef).to eq("chef-client -j /etc/chef/first-boot.json -E prodtastic")
     end
   end
 

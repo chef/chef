@@ -92,6 +92,10 @@ class Chef
             validation_client_name "#{@chef_config[:validation_client_name]}"
           CONFIG
 
+          unless @chef_config[:chef_license].nil?
+            client_rb << "chef_license \"#{@chef_config[:chef_license]}\""
+          end
+
           if !(@chef_config[:config_log_level].nil? || @chef_config[:config_log_level].empty?)
             client_rb << %Q{log_level   :#{@chef_config[:config_log_level]}\n}
           end
@@ -171,8 +175,7 @@ class Chef
         def start_chef
           # If the user doesn't have a client path configure, let bash use the PATH for what it was designed for
           client_path = @chef_config[:chef_client_path] || "#{Chef::Dist::CLIENT}"
-          # We know we can hardcode CHEF_LICENSE because the user cannot get here without accepting the license locally
-          s = "CHEF_LICENSE=accept #{client_path} -j /etc/chef/first-boot.json"
+          s = "#{client_path} -j /etc/chef/first-boot.json"
           if @config[:verbosity] && @config[:verbosity] >= 3
             s << " -l trace"
           elsif @config[:verbosity] && @config[:verbosity] >= 2
