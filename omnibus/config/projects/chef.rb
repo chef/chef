@@ -19,7 +19,7 @@ friendly_name "Chef Client"
 maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.chef.io"
 license "Chef EULA"
-license_file "https://www.chef.io/end-user-license-agreement/"
+license_file "CHEF-EULA.md"
 
 build_iteration 1
 # Do not use __FILE__ after this point, use current_file. If you use __FILE__
