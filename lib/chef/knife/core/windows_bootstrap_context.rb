@@ -65,7 +65,7 @@ class Chef
           CONFIG
 
           unless @chef_config[:chef_license].nil?
-            client_rb << "chef_license \"#{@chef_config[:chef_license]}\""
+            client_rb << "chef_license \"#{@chef_config[:chef_license]}\"\n"
           end
 
           if @config[:chef_node_name]
