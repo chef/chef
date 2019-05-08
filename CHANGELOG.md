@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.277 -->
-## [v15.0.277](https://github.com/chef/chef/tree/v15.0.277) (2019-05-08)
+<!-- latest_release 15.0.278 -->
+## [v15.0.278](https://github.com/chef/chef/tree/v15.0.278) (2019-05-08)
 
 #### Merged Pull Requests
-- Update the omnibus build license to the Chef EULA [#8498](https://github.com/chef/chef/pull/8498) ([btm](https://github.com/btm))
+- Clean up omnibus installer error and remove chef-fips [#8499](https://github.com/chef/chef/pull/8499) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Clean up omnibus installer error and remove chef-fips [#8499](https://github.com/chef/chef/pull/8499) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.278 -->
 - Update the omnibus build license to the Chef EULA [#8498](https://github.com/chef/chef/pull/8498) ([btm](https://github.com/btm)) <!-- 15.0.277 -->
 - Chef 15: FATAL: Configuration error SyntaxError in client.rb during bootstrap [#8496](https://github.com/chef/chef/pull/8496) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.276 -->
 - knife bootstrap should only request license when installing Chef 15 [#8471](https://github.com/chef/chef/pull/8471) ([tyler-ball](https://github.com/tyler-ball)) <!-- 15.0.275 -->
