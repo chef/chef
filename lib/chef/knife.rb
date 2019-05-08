@@ -375,7 +375,7 @@ class Chef
     #   - :cli_default - came from a declared CLI `option`'s `default` value.
     #   - nil - if they key does not exist
     def config_source(key)
-      return :cli if @original_config.include? key
+      return :cli if config.include? key
       return :config if config_file_settings.key? key
       return :cli_default if default_config.include? key
       nil
