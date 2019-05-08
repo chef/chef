@@ -1,5 +1,6 @@
 sh -c '
-<%= "export https_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+<%= "https_proxy=\"#{knife_config[:bootstrap_proxy]}\" export https_proxy" if knife_config[:bootstrap_proxy] %>
+<%= "no_proxy=\"#{knife_config[:bootstrap_no_proxy]}\" export no_proxy" if knife_config[:bootstrap_no_proxy] %>
 
 if test "x$TMPDIR" = "x"; then
   tmp="/tmp"
