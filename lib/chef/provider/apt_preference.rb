@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../provider"
 require_relative "../dsl/declare_resource"
 require_relative "noop"
 require_relative "../log"

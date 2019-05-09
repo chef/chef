@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require_relative ".."
+require_relative "../../chef"
 require_relative "../monologger"
-require_relative ""
+require_relative "../application"
 require_relative "../client"
 require_relative "../config"
 require_relative "../handler/error_report"

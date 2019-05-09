@@ -19,7 +19,7 @@
 
 require_relative "../../http/simple"
 require_relative "../../digester"
-require_relative ""
+require_relative "../remote_file"
 require_relative "cache_control_data"
 
 class Chef

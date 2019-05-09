@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../package"
 require_relative "../../resource/dnf_package"
 require_relative "../../mixin/which"
 require_relative "../../mixin/shell_out"

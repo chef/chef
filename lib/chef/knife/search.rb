@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../knife"
 require_relative "core/node_presenter"
 require "addressable/uri"
 

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../resource"
 require_relative "../platform/query_helpers"
 require_relative "../mixin/securable"
 require_relative "file/verification"

@@ -17,7 +17,7 @@
 #
 
 require_relative "python_helper"
-require_relative ".."
+require_relative "../../package"
 require "singleton"
 
 #

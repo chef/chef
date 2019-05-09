@@ -20,7 +20,7 @@ require "pp"
 require "etc"
 require "mixlib/cli"
 
-require_relative ""
+require_relative "../chef"
 require_relative "version"
 require_relative "client"
 require_relative "config"

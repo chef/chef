@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../knife"
 require_relative "../util/path_helper"
 require_relative "data_bag_secret_options"
 

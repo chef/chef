@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../ifconfig"
 require_relative "../../util/file_edit"
 
 class Chef

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../windows"
 require_relative "../../win32/net"
 
 # wrapper around a subset of the NetGroup* APIs.

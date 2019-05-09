@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../resource"
 require_relative "../mixin/powershell_out"
 
 class Chef

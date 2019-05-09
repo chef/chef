@@ -18,7 +18,7 @@
 
 require_relative "../mixin/powershell_out"
 require_relative "../json_compat"
-require_relative ""
+require_relative "../resource"
 require_relative "../platform/query_helpers"
 
 class Chef

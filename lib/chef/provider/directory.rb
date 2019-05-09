@@ -19,7 +19,7 @@
 require_relative "../config"
 require_relative "../log"
 require_relative "../resource/directory"
-require_relative ""
+require_relative "../provider"
 require_relative "file"
 require "fileutils"
 

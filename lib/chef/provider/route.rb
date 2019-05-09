@@ -17,7 +17,7 @@
 #
 
 require_relative "../log"
-require_relative ""
+require_relative "../provider"
 require "ipaddr"
 
 class Chef

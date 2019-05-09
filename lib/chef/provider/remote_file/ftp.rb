@@ -19,7 +19,7 @@
 require "uri"
 require "tempfile"
 require "net/ftp"
-require_relative ""
+require_relative "../remote_file"
 require_relative "../../file_content_management/tempfile"
 
 class Chef

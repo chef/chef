@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../resource"
 require_relative "../resource_resolver"
 require_relative "../node"
 require_relative "../log"

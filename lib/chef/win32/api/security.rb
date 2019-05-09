@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../api"
 
 class Chef
   module ReservedNames::Win32

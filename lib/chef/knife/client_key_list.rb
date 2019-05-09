@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../knife"
 require_relative "key_list"
 require_relative "key_list_base"
 

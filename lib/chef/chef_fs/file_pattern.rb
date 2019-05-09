@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../chef_fs"
 require_relative "path_utils"
 
 class Chef

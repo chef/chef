@@ -19,7 +19,7 @@
 # simple wrapper around Volume APIs. might be possible with WMI, but possibly more complex.
 
 require_relative "../../win32/api/file"
-require_relative ""
+require_relative "../windows"
 
 class Chef::Util::Windows::Volume < Chef::Util::Windows
   attr_reader :mount_point

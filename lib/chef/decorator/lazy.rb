@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../decorator"
 
 class Chef
   class Decorator

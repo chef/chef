@@ -18,7 +18,7 @@
 #
 
 require_relative "../util/path_helper"
-require_relative ""
+require_relative "../resource"
 require "win32-certstore" if Chef::Platform.windows?
 require "openssl"
 require_relative "../dist"

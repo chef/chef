@@ -20,7 +20,7 @@
 # The contents of msu file are extracted, which contains one or more cab files.
 # The extracted cab files are installed using Chef::Resource::Package::CabPackage
 # Reference: https://support.microsoft.com/en-in/kb/934307
-require_relative ""
+require_relative "../package"
 require_relative "../../resource/msu_package"
 require_relative "../../mixin/shell_out"
 require_relative "cab"

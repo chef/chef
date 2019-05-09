@@ -18,7 +18,7 @@
 
 require_relative "../../mixin/uris"
 require_relative "../../resource/windows_package"
-require_relative ""
+require_relative "../package"
 require_relative "../../util/path_helper"
 require_relative "../../mixin/checksum"
 

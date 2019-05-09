@@ -17,7 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require_relative ""
+require_relative "../application"
 require_relative "../client"
 require_relative "../config"
 require_relative "../daemon"

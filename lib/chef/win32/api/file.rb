@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../api"
 require_relative "security"
 require_relative "system"
 require_relative "../unicode"

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../package"
 require_relative "../../resource/powershell_package"
 require_relative "../../mixin/powershell_out"
 

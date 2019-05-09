@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../knife"
 require_relative "supermarket_unshare"
 
 class Chef

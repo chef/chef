@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../package"
 require_relative "../../resource/package"
 require_relative "../../mixin/get_source_from_package"
 

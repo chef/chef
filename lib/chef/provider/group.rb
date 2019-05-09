@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../provider"
 require_relative "../mixin/shell_out"
 require "etc"
 

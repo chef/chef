@@ -17,7 +17,7 @@
 #
 
 require_relative "../mixin/shell_out"
-require_relative ""
+require_relative "../knife"
 
 class Chef
   class Knife

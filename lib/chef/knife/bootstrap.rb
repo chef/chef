@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../knife"
 require_relative "data_bag_secret_options"
 require_relative "../dist"
 require "license_acceptance/cli_flags/mixlib_cli"

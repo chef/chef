@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../package"
 require_relative "../../resource/snap_package"
 require_relative "../../mixin/shell_out"
 require "socket"

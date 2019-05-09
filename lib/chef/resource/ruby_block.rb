@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../resource"
 require_relative "../provider/ruby_block"
 require_relative "../dist"
 

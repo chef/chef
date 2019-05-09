@@ -16,7 +16,7 @@
 # limitations under the License.
 
 require_relative "../knife"
-require_relative ""
+require_relative "../application"
 require "mixlib/log"
 require "ohai/config"
 require "chef/monkey_patches/net_http.rb"

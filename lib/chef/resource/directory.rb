@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../resource"
 require_relative "../mixin/securable"
 
 class Chef

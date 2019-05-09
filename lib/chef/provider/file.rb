@@ -20,7 +20,7 @@
 require_relative "../config"
 require_relative "../log"
 require_relative "../resource/file"
-require_relative ""
+require_relative "../provider"
 require "etc"
 require "fileutils"
 require_relative "../scan_access_control"

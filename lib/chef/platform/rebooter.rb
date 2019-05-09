@@ -18,7 +18,7 @@
 
 require_relative "../dsl/reboot_pending"
 require_relative "../log"
-require_relative ""
+require_relative "../platform"
 require_relative "../application/exit_code"
 require_relative "../mixin/shell_out"
 

@@ -20,7 +20,7 @@
 # see also: WNetAddConnection2 and WNetAddConnection3
 # see also cmd.exe: net use /?
 
-require_relative ""
+require_relative "../windows"
 require_relative "../../win32/net"
 
 class Chef::Util::Windows::NetUse < Chef::Util::Windows

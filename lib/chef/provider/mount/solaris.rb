@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../mount"
 require_relative "../../log"
 require "forwardable"
 

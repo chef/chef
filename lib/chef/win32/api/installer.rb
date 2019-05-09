@@ -17,7 +17,7 @@
 #
 
 require_relative "../../exceptions"
-require_relative ""
+require_relative "../api"
 require_relative "../error"
 require "pathname"
 

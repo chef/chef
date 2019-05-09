@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../knife"
 require_relative "../util/path_helper"
 
 class Chef::Knife::Exec < Chef::Knife

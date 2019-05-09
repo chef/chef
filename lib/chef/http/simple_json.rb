@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../http"
 require_relative "authenticator"
 require_relative "decompressor"
 require_relative "cookie_manager"

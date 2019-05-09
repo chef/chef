@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../resource"
 require "shellwords"
 require_relative "../dist"
 

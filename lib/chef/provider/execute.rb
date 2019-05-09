@@ -17,7 +17,7 @@
 #
 
 require_relative "../log"
-require_relative ""
+require_relative "../provider"
 require "forwardable"
 require_relative "../mixin/train_or_shell"
 

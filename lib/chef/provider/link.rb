@@ -20,7 +20,7 @@ require_relative "../config"
 require_relative "../log"
 require_relative "../mixin/file_class"
 require_relative "../resource/link"
-require_relative ""
+require_relative "../provider"
 require_relative "../scan_access_control"
 require_relative "../util/path_helper"
 

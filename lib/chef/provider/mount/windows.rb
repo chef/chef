@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../mount"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require_relative "../../util/windows/net_use"
   require_relative "../../util/windows/volume"

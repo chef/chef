@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../security"
 require_relative "../api/net"
 require_relative "../api/error"
 

@@ -18,7 +18,7 @@
 
 require_relative "../exceptions"
 require_relative "../log"
-require_relative ""
+require_relative "../provider"
 require "fileutils"
 
 class Chef

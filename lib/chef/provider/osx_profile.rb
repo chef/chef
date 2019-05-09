@@ -17,7 +17,7 @@
 #
 
 require_relative "../log"
-require_relative ""
+require_relative "../provider"
 require_relative "../resource"
 require_relative "../resource/file"
 require "uuidtools"

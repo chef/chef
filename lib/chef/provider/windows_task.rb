@@ -20,7 +20,7 @@ require_relative "../mixin/shell_out"
 require "rexml/document"
 require "iso8601" if Chef::Platform.windows?
 require_relative "../mixin/powershell_out"
-require_relative ""
+require_relative "../provider"
 require_relative "../util/path_helper"
 require "win32/taskscheduler" if Chef::Platform.windows?
 

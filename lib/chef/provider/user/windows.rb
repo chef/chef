@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative ""
+require_relative "../user"
 require_relative "../../exceptions"
 require "chef/util/windows/net_user" if Chef::Platform.windows?
 

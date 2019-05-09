@@ -18,7 +18,7 @@
 
 require "uri"
 require "tempfile"
-require_relative ""
+require_relative "../remote_file"
 require_relative "../../mixin/user_context"
 
 class Chef
