@@ -7,9 +7,9 @@ steps:
 - label: "Integration Specs :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-    - echo "::1 ip6-localhost ip6-loopback" >> /etc/hosts.noip6
-    - cp /etc/hosts.noip6 /etc/hosts
+    # - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
+    # - echo "::1 ip6-localhost ip6-loopback" >> /etc/hosts.noip6
+    # - cp /etc/hosts.noip6 /etc/hosts
     - cd /workdir; bundle install --without docgen integration omnibus_package --frozen --path vendor/bundle
     - bundle exec rake spec:integration
   expeditor:
@@ -136,37 +136,41 @@ steps:
   # Tests Ruby 2.5
 #########################################################################
 
-# - label: "Integration Specs :ruby: 2.5"
-#   commands:
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - asdf local ruby 2.5.5
-#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-#     - cp /etc/hosts.noip6 /etc/hosts
-#     - bundle install --without docgen integration omnibus_package --frozen
-#     - bundle exec rake spec:integration
-#   expeditor:
-#     executor:
-#       docker:
-#         environment:
-#           - FORCE_FFI_YAJL=ext
-#           - CHEF_LICENSE=accept-no-persist
-#           - INTEGRATION_SPECS_25=1
+- label: "Integration Specs :ruby: 2.5"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - asdf local ruby 2.5.5
+    - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
+    - echo "::1 ip6-localhost ip6-loopback" >> /etc/hosts.noip6
+    - cp /etc/hosts.noip6 /etc/hosts
+    - bundle install --without docgen integration omnibus_package --frozen
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - INTEGRATION_SPECS_25=1
 #
-# - label: "Functional Specs :ruby: 2.5"
-#   commands:
-#     - asdf local ruby 2.5.5
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-#     - cp /etc/hosts.noip6 /etc/hosts
-#     - bundle install --without docgen integration omnibus_package --frozen
-#     - bundle exec rake spec:functional
-#   expeditor:
-#     executor:
-#       docker:
-#         environment:
-#           - FORCE_FFI_YAJL=ext
-#           - CHEF_LICENSE=accept-no-persist
-#           - FUNCTIONAL_SPECS_25=1
+- label: "Functional Specs :ruby: 2.5"
+  commands:
+    - asdf local ruby 2.5.5
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
+    - echo "::1 ip6-localhost ip6-loopback" >> /etc/hosts.noip6
+    - cp /etc/hosts.noip6 /etc/hosts
+    - bundle install --without docgen integration omnibus_package --frozen
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - FUNCTIONAL_SPECS_25=1
 
 - label: "Unit Specs :ruby: 2.5"
   commands:
@@ -199,6 +203,7 @@ steps:
 #   expeditor:
 #     executor:
 #       docker:
+#         privileged: true
 #         environment:
 #           - AMAZON=2
 #           - KITCHEN_YAML=/workdir/kitchen-tests/kitchen.bk.yml

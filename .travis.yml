@@ -123,6 +123,7 @@ matrix:
     env:
       - AMAZON=2
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -139,6 +140,7 @@ matrix:
     env:
       - AMAZON=201X
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -155,6 +157,7 @@ matrix:
     env:
       - UBUNTU=16.04
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -171,6 +174,7 @@ matrix:
     env:
       - UBUNTU=18.04
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -187,6 +191,7 @@ matrix:
     env:
       - DEBIAN=8
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -203,6 +208,7 @@ matrix:
     env:
       - DEBIAN=9
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -219,6 +225,7 @@ matrix:
     env:
       - DEBIAN=10
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -235,6 +242,7 @@ matrix:
     env:
       - CENTOS=6
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -251,6 +259,7 @@ matrix:
     env:
       - CENTOS=7
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -267,6 +276,7 @@ matrix:
     env:
       - FEDORA=latest
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     gemfile: kitchen-tests/Gemfile
@@ -283,6 +293,7 @@ matrix:
     env:
      - OPENSUSELEAP=42
      - KITCHEN_YAML=kitchen.yml
+     - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
@@ -320,6 +331,7 @@ matrix:
     env:
       - RSPEC_CENTOS=7
       - KITCHEN_YAML=kitchen.yml
+      - CHEF_LICENSE="accept-silent"
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -337,6 +349,7 @@ matrix:
     env:
      - RSPEC_OPENSUSELEAP=42
      - KITCHEN_YAML=kitchen.yml
+     - CHEF_LICENSE="accept-silent"
   allow_failures:
     - rvm: 2.5.5
       services: docker
@@ -355,6 +368,7 @@ matrix:
       env:
        - RSPEC_OPENSUSELEAP=42
        - KITCHEN_YAML=kitchen.yml
+       - CHEF_LICENSE="accept-silent"
     - rvm: 2.5.5
       services: docker
       gemfile: kitchen-tests/Gemfile
@@ -371,6 +385,7 @@ matrix:
       env:
        - OPENSUSELEAP=42
        - KITCHEN_YAML=kitchen.yml
+       - CHEF_LICENSE="accept-silent"
 
 notifications:
   on_change: true
