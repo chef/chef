@@ -1,3 +1,4 @@
+apt-get update -y && apt-get install -y net-tools iproute2
 gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
 gem --version
 gem uninstall bundler -a -x || true
