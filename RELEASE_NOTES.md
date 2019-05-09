@@ -12,8 +12,8 @@ Chef Infra Client requires a EULA to be accepted by users before it can run. Use
 
 `chef-client --chef-license accept`
 `chef-client --chef-license accept-no-persist`
-`CHEF_LICENSE=accept chef-client`
-`CHEF_LICENSE=accept-no-persist chef-client`
+`CHEF_LICENSE="accept" chef-client`
+`CHEF_LICENSE="accept-no-persist" chef-client`
 
 Finally, if users run `chef-client` without any of these options, they will receive an interactive prompt asking for
 license acceptance. If the license is accepted, a marker file will be written to the filesystem (unless
