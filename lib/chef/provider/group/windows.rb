@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/provider/user"
+require_relative "../user"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require "chef/util/windows/net_group"
+  require_relative "../../util/windows/net_group"
 end
 
 class Chef

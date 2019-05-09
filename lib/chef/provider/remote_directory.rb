@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require "chef/provider/directory"
-require "chef/resource/file"
-require "chef/resource/directory"
-require "chef/resource/cookbook_file"
-require "chef/mixin/file_class"
-require "chef/platform/query_helpers"
-require "chef/util/path_helper"
+require_relative "directory"
+require_relative "../resource/file"
+require_relative "../resource/directory"
+require_relative "../resource/cookbook_file"
+require_relative "../mixin/file_class"
+require_relative "../platform/query_helpers"
+require_relative "../util/path_helper"
 
 require "forwardable"
 

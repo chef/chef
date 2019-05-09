@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/workstation_config_loader"
+require_relative ""
+require_relative "../workstation_config_loader"
 
 class Chef
   class Knife

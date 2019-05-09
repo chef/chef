@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/provider/template_finder"
-require "chef/provider/file"
+require_relative "template_finder"
+require_relative "file"
 
 class Chef
   class Provider

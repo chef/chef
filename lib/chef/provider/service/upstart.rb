@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/resource/service"
-require "chef/provider/service/simple"
-require "chef/util/file_edit"
+require_relative "../../resource/service"
+require_relative "simple"
+require_relative "../../util/file_edit"
 
 class Chef
   class Provider

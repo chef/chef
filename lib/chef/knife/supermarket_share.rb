@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative ""
 
 class Chef
   class Knife
@@ -25,10 +25,10 @@ class Chef
       include Chef::Mixin::ShellOut
 
       deps do
-        require "chef/cookbook_loader"
-        require "chef/cookbook_uploader"
-        require "chef/cookbook_site_streaming_uploader"
-        require "chef/mixin/shell_out"
+        require_relative "../cookbook_loader"
+        require_relative "../cookbook_uploader"
+        require_relative "../cookbook_site_streaming_uploader"
+        require_relative "../mixin/shell_out"
       end
 
       banner "knife supermarket share COOKBOOK [CATEGORY] (options)"

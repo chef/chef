@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/json_compat"
-require "chef/mixin/params_validate"
-require "chef/exceptions"
-require "chef/server_api"
+require_relative "json_compat"
+require_relative "mixin/params_validate"
+require_relative "exceptions"
+require_relative "server_api"
 
 class Chef
   # Class for interacting with a chef key object. Can be used to create new keys,

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/policy"
-require "chef/chef_fs/file_system/repository/directory"
-require "chef/chef_fs/data_handler/policy_data_handler"
+require_relative "policy"
+require_relative "directory"
+require_relative "../../data_handler/policy_data_handler"
 
 class Chef
   module ChefFS

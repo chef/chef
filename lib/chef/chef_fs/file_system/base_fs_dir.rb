@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_object"
-require "chef/chef_fs/file_system/nonexistent_fs_object"
+require_relative "base_fs_object"
+require_relative "nonexistent_fs_object"
 
 class Chef
   module ChefFS

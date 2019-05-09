@@ -15,12 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/mixin/params_validate"
-require "chef/mixin/create_path"
-require "chef/exceptions"
-require "chef/json_compat"
+require_relative "mixin/params_validate"
+require_relative "mixin/create_path"
+require_relative "exceptions"
+require_relative "json_compat"
 require "fileutils"
-require "chef/util/path_helper"
+require_relative "util/path_helper"
 
 class Chef
   class FileCache

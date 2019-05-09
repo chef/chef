@@ -13,11 +13,11 @@
 # limitations under the License.
 #
 
-require "chef/client"
-require "chef/util/threaded_job_queue"
-require "chef/server_api"
+require_relative "../client"
+require_relative "../util/threaded_job_queue"
+require_relative "../server_api"
 require "singleton"
-require "chef/dist"
+require_relative "../dist"
 
 class Chef
 

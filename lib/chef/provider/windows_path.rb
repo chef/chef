@@ -17,8 +17,8 @@
 #
 
 require "chef/mixin/windows_env_helper" if Chef::Platform.windows?
-require "chef/mixin/wide_string"
-require "chef/exceptions"
+require_relative "../mixin/wide_string"
+require_relative "../exceptions"
 
 class Chef
   class Provider

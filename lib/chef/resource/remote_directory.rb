@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require "chef/resource/directory"
-require "chef/provider/remote_directory"
-require "chef/mixin/securable"
+require_relative "directory"
+require_relative "../provider/remote_directory"
+require_relative "../mixin/securable"
 
 class Chef
   class Resource

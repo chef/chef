@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require_relative ""
 require "shellwords"
 
 class Chef

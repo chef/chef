@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/mixin/which"
+require_relative "../../../mixin/which"
 
 class Chef
   class Resource

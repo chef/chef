@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/win32/api/synchronization"
-require "chef/win32/unicode"
+require_relative "api/synchronization"
+require_relative "unicode"
 
 class Chef
   module ReservedNames::Win32

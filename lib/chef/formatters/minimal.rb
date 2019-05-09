@@ -1,5 +1,5 @@
-require "chef/formatters/base"
-require "chef/dist"
+require_relative "base"
+require_relative "../dist"
 
 class Chef
 

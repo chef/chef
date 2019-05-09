@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/key"
-require "chef/json_compat"
-require "chef/exceptions"
+require_relative "../key"
+require_relative "../json_compat"
+require_relative "../exceptions"
 
 class Chef
   class Knife

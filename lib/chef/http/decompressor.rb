@@ -17,7 +17,7 @@
 #
 
 require "zlib"
-require "chef/http/http_request"
+require_relative "http_request"
 
 class Chef
   class HTTP

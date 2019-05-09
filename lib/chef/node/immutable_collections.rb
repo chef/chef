@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-require "chef/node/common_api"
-require "chef/node/mixin/state_tracking"
-require "chef/node/mixin/immutablize_array"
-require "chef/node/mixin/immutablize_hash"
+require_relative "common_api"
+require_relative "mixin/state_tracking"
+require_relative "mixin/immutablize_array"
+require_relative "mixin/immutablize_hash"
 
 class Chef
   class Node

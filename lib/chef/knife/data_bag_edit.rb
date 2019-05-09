@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/data_bag_secret_options"
+require_relative ""
+require_relative "data_bag_secret_options"
 
 class Chef
   class Knife
@@ -26,8 +26,8 @@ class Chef
       include DataBagSecretOptions
 
       deps do
-        require "chef/data_bag_item"
-        require "chef/encrypted_data_bag_item"
+        require_relative "../data_bag_item"
+        require_relative "../encrypted_data_bag_item"
       end
 
       banner "knife data bag edit BAG ITEM (options)"

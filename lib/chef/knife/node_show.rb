@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/core/node_presenter"
+require_relative ""
+require_relative "core/node_presenter"
 
 class Chef
   class Knife
@@ -27,8 +27,8 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require "chef/node"
-        require "chef/json_compat"
+        require_relative "../node"
+        require_relative "../json_compat"
       end
 
       banner "knife node show NODE (options)"

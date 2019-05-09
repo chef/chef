@@ -1,6 +1,6 @@
-require "chef/chef_fs/file_system/chef_server/rest_list_entry"
-require "chef/chef_fs/data_handler/organization_invites_data_handler"
-require "chef/json_compat"
+require_relative "rest_list_entry"
+require_relative "../../data_handler/organization_invites_data_handler"
+require_relative "../../../json_compat"
 
 class Chef
   module ChefFS

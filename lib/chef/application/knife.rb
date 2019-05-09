@@ -15,12 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/knife"
-require "chef/application"
+require_relative "../knife"
+require_relative ""
 require "mixlib/log"
 require "ohai/config"
 require "chef/monkey_patches/net_http.rb"
-require "chef/dist"
+require_relative "../dist"
 
 class Chef::Application::Knife < Chef::Application
 

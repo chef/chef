@@ -18,7 +18,7 @@
 # limitations under the License.
 
 require "chef-config/exceptions"
-require "chef/dist"
+require_relative "dist"
 
 class Chef
   # == Chef::Exceptions

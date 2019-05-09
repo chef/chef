@@ -19,7 +19,7 @@
 #
 
 require "etc"
-require "chef/mixin/homebrew_user"
+require_relative "../../mixin/homebrew_user"
 
 class Chef
   class Provider

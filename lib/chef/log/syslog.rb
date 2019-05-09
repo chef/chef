@@ -18,8 +18,8 @@
 
 require "logger"
 require "syslog-logger"
-require "chef/mixin/unformatter"
-require "chef/dist"
+require_relative "../mixin/unformatter"
+require_relative "../dist"
 
 class Chef
   class Log

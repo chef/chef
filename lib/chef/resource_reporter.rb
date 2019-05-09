@@ -21,7 +21,7 @@
 
 require "uri"
 require "securerandom"
-require "chef/event_dispatch/base"
+require_relative "event_dispatch/base"
 
 class Chef
   class ResourceReporter < EventDispatch::Base

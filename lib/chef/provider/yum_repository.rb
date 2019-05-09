@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/dsl/declare_resource"
-require "chef/mixin/which"
-require "chef/provider/noop"
+require_relative "../resource"
+require_relative "../dsl/declare_resource"
+require_relative "../mixin/which"
+require_relative "noop"
 
 class Chef
   class Provider

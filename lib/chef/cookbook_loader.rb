@@ -18,12 +18,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/config"
-require "chef/exceptions"
-require "chef/cookbook/cookbook_version_loader"
-require "chef/cookbook_version"
-require "chef/cookbook/chefignore"
-require "chef/cookbook/metadata"
+require_relative "config"
+require_relative "exceptions"
+require_relative "cookbook/cookbook_version_loader"
+require_relative "cookbook_version"
+require_relative "cookbook/chefignore"
+require_relative "cookbook/metadata"
 
 class Chef
   # This class is used by knife, cheffs and legacy chef-solo modes.  It is not used by the server mode

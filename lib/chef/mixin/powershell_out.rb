@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/mixin/shell_out"
-require "chef/mixin/windows_architecture_helper"
+require_relative "shell_out"
+require_relative "windows_architecture_helper"
 
 class Chef
   module Mixin

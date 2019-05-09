@@ -1,4 +1,4 @@
-require "chef/chef_fs/parallelizer/flatten_enumerable"
+require_relative "flatten_enumerable"
 
 class Chef
   module ChefFS

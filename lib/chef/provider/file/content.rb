@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/file_content_management/content_base"
-require "chef/file_content_management/tempfile"
+require_relative "../../file_content_management/content_base"
+require_relative "../../file_content_management/tempfile"
 
 class Chef
   class Provider

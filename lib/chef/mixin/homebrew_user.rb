@@ -22,7 +22,7 @@
 # This lives here in Chef::Mixin because Chef's namespacing makes it
 # awkward to use modules elsewhere (e.g., chef/provider/package/homebrew/owner)
 
-require "chef/mixin/shell_out"
+require_relative "shell_out"
 require "etc"
 
 class Chef

@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require "chef/mixin/shell_out"
+require_relative "../mixin/shell_out"
 require "rexml/document"
 require "iso8601" if Chef::Platform.windows?
-require "chef/mixin/powershell_out"
-require "chef/provider"
-require "chef/util/path_helper"
+require_relative "../mixin/powershell_out"
+require_relative ""
+require_relative "../util/path_helper"
 require "win32/taskscheduler" if Chef::Platform.windows?
 
 class Chef

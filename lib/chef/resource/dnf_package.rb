@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/mixin/which"
-require "chef/mixin/shell_out"
-require "chef/dist"
+require_relative "package"
+require_relative "../mixin/which"
+require_relative "../mixin/shell_out"
+require_relative "../dist"
 
 class Chef
   class Resource

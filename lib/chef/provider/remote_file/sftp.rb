@@ -19,8 +19,8 @@
 require "uri"
 require "tempfile"
 require "net/sftp"
-require "chef/provider/remote_file"
-require "chef/file_content_management/tempfile"
+require_relative ""
+require_relative "../../file_content_management/tempfile"
 
 class Chef
   class Provider

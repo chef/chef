@@ -18,11 +18,11 @@
 
 require "forwardable"
 
-require "chef/log"
-require "chef/run_context"
-require "chef/config"
-require "chef/node"
-require "chef/exceptions"
+require_relative "../log"
+require_relative "../run_context"
+require_relative "../config"
+require_relative "../node"
+require_relative "../exceptions"
 
 class Chef
   module PolicyBuilder

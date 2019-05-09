@@ -19,10 +19,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/run_list/run_list_item"
-require "chef/run_list/run_list_expansion"
-require "chef/run_list/versioned_recipe_list"
-require "chef/mixin/params_validate"
+require_relative "run_list/run_list_item"
+require_relative "run_list/run_list_expansion"
+require_relative "run_list/versioned_recipe_list"
+require_relative "mixin/params_validate"
 
 class Chef
   class RunList

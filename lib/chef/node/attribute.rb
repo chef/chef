@@ -17,14 +17,14 @@
 # limitations under the License.
 #
 
-require "chef/node/mixin/deep_merge_cache"
-require "chef/node/mixin/immutablize_hash"
-require "chef/node/mixin/state_tracking"
-require "chef/node/immutable_collections"
-require "chef/node/attribute_collections"
-require "chef/decorator/unchain"
-require "chef/mixin/deep_merge"
-require "chef/log"
+require_relative "mixin/deep_merge_cache"
+require_relative "mixin/immutablize_hash"
+require_relative "mixin/state_tracking"
+require_relative "immutable_collections"
+require_relative "attribute_collections"
+require_relative "../decorator/unchain"
+require_relative "../mixin/deep_merge"
+require_relative "../log"
 
 class Chef
   class Node

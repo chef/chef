@@ -18,10 +18,10 @@
 #
 
 require "uri"
-require "chef/resource/file"
-require "chef/provider/remote_file"
-require "chef/mixin/securable"
-require "chef/mixin/uris"
+require_relative "file"
+require_relative "../provider/remote_file"
+require_relative "../mixin/securable"
+require_relative "../mixin/uris"
 
 class Chef
   class Resource

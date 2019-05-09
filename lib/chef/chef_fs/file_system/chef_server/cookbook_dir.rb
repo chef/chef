@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/command_line"
-require "chef/chef_fs/file_system/chef_server/rest_list_dir"
-require "chef/chef_fs/file_system/chef_server/cookbook_subdir"
-require "chef/chef_fs/file_system/chef_server/cookbook_file"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/cookbook_version"
-require "chef/cookbook_uploader"
+require_relative "../../command_line"
+require_relative "rest_list_dir"
+require_relative "cookbook_subdir"
+require_relative "cookbook_file"
+require_relative "../exceptions"
+require_relative "../../../cookbook_version"
+require_relative "../../../cookbook_uploader"
 
 class Chef
   module ChefFS

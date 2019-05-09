@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/file_system_entry"
-require "chef/chef_fs/file_system/repository/cookbooks_dir"
-require "chef/chef_fs/file_system/exceptions"
+require_relative "file_system_entry"
+require_relative "cookbooks_dir"
+require_relative "../exceptions"
 
 class Chef
   module ChefFS

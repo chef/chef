@@ -15,8 +15,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require "chef/version_class"
-require "chef/version_constraint"
+require_relative "../version_class"
+require_relative "../version_constraint"
 
 # Why does this class exist?
 # Why did we not just modify RunList/RunListItem?

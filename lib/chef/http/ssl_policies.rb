@@ -22,7 +22,7 @@
 #
 
 require "openssl"
-require "chef/util/path_helper"
+require_relative "../util/path_helper"
 
 class Chef
   class HTTP

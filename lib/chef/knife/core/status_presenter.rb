@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife/core/text_formatter"
-require "chef/knife/core/generic_presenter"
+require_relative "text_formatter"
+require_relative "generic_presenter"
 
 class Chef
   class Knife

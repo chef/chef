@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/windows_script"
+require_relative "windows_script"
 
 class Chef
   class Provider

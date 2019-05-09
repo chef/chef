@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/guard_interpreter"
-require "chef/mixin/descendants_tracker"
+require_relative "../../exceptions"
+require_relative "../../guard_interpreter"
+require_relative "../../mixin/descendants_tracker"
 
 class Chef
   class Resource

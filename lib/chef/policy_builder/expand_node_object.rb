@@ -19,12 +19,12 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/server_api"
-require "chef/run_context"
-require "chef/config"
-require "chef/node"
-require "chef/chef_class"
+require_relative "../log"
+require_relative "../server_api"
+require_relative "../run_context"
+require_relative "../config"
+require_relative "../node"
+require_relative "../chef_class"
 
 class Chef
   module PolicyBuilder

@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/exceptions"
-require "chef/mixin/params_validate"
-require "chef/version_constraint/platform"
-require "chef/provider"
+require_relative "../log"
+require_relative "../exceptions"
+require_relative "../mixin/params_validate"
+require_relative "../version_constraint/platform"
+require_relative "../provider"
 
 class Chef
   class Platform

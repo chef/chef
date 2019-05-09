@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/run_list"
-require "chef/util/path_helper"
+require_relative "../../run_list"
+require_relative "../../util/path_helper"
 require "pathname"
-require "chef/dist"
+require_relative "../../dist"
 
 class Chef
   class Knife

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/rest_list_entry"
-require "chef/chef_fs/file_system/exceptions"
+require_relative "rest_list_entry"
+require_relative "../exceptions"
 
 class Chef
   module ChefFS

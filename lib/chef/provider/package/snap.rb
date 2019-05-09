@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
-require "chef/resource/snap_package"
-require "chef/mixin/shell_out"
+require_relative ""
+require_relative "../../resource/snap_package"
+require_relative "../../mixin/shell_out"
 require "socket"
 require "json"
 

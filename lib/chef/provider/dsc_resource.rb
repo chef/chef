@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "chef/util/powershell/cmdlet"
-require "chef/util/dsc/local_configuration_manager"
-require "chef/mixin/powershell_type_coercions"
-require "chef/util/dsc/resource_store"
+require_relative "../util/powershell/cmdlet"
+require_relative "../util/dsc/local_configuration_manager"
+require_relative "../mixin/powershell_type_coercions"
+require_relative "../util/dsc/resource_store"
 
 class Chef
   class Provider

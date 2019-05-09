@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/package/freebsd/base"
+require_relative "base"
 
 class Chef
   class Provider

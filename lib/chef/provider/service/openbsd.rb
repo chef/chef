@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/mixin/shell_out"
-require "chef/provider/service/init"
-require "chef/resource/service"
+require_relative "../../mixin/shell_out"
+require_relative "init"
+require_relative "../../resource/service"
 
 class Chef
   class Provider

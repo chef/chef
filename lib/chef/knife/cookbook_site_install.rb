@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/supermarket_install"
+require_relative ""
+require_relative "supermarket_install"
 
 class Chef
   class Knife

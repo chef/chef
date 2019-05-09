@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require "chef/resource/service"
-require "chef/provider/service/simple"
-require "chef/mixin/which"
+require_relative "../../resource/service"
+require_relative "simple"
+require_relative "../../mixin/which"
 require "shellwords"
 
 class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple

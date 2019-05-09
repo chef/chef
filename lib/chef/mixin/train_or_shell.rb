@@ -17,9 +17,9 @@
 #
 
 require "ostruct"
-require "chef/mixin/shell_out"
-require "chef/mixin/powershell_out"
-require "chef/config"
+require_relative "shell_out"
+require_relative "powershell_out"
+require_relative "../config"
 
 class Chef
   module Mixin

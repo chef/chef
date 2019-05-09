@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative ""
 
 class Chef
   class Knife
@@ -24,9 +24,9 @@ class Chef
     class NodeEdit < Knife
 
       deps do
-        require "chef/node"
-        require "chef/json_compat"
-        require "chef/knife/core/node_editor"
+        require_relative "../node"
+        require_relative "../json_compat"
+        require_relative "core/node_editor"
       end
 
       banner "knife node edit NODE (options)"

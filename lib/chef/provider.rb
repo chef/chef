@@ -17,21 +17,21 @@
 # limitations under the License.
 #
 
-require "chef/mixin/from_file"
-require "chef/mixin/convert_to_class_name"
-require "chef/mixin/enforce_ownership_and_permissions"
-require "chef/mixin/why_run"
-require "chef/mixin/shell_out"
-require "chef/mixin/provides"
-require "chef/dsl/core"
-require "chef/platform/service_helpers"
-require "chef/node_map"
+require_relative "mixin/from_file"
+require_relative "mixin/convert_to_class_name"
+require_relative "mixin/enforce_ownership_and_permissions"
+require_relative "mixin/why_run"
+require_relative "mixin/shell_out"
+require_relative "mixin/provides"
+require_relative "dsl/core"
+require_relative "platform/service_helpers"
+require_relative "node_map"
 require "forwardable"
 
 class Chef
   class Provider
-    require "chef/mixin/why_run"
-    require "chef/mixin/provides"
+    require_relative "mixin/why_run"
+    require_relative "mixin/provides"
 
     attr_accessor :new_resource
     attr_accessor :current_resource
@@ -413,7 +413,7 @@ class Chef
 end
 
 # Requiring things at the bottom breaks cycles
-require "chef/chef_class"
-require "chef/mixin/why_run"
-require "chef/resource_collection"
-require "chef/runner"
+require_relative "chef_class"
+require_relative "mixin/why_run"
+require_relative "resource_collection"
+require_relative "runner"

@@ -16,13 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/mash"
+require_relative "../mash"
 
-require "chef/mixin/deep_merge"
+require_relative "../mixin/deep_merge"
 
-require "chef/role"
-require "chef/server_api"
-require "chef/json_compat"
+require_relative "../role"
+require_relative "../server_api"
+require_relative "../json_compat"
 
 class Chef
   class RunList

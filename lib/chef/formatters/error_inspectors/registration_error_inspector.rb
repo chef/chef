@@ -1,4 +1,4 @@
-require "chef/dist"
+require_relative "../../dist"
 
 class Chef
   module Formatters

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/cron/unix"
+require_relative "unix"
 
 # Just to create an alias so 'Chef::Provider::Cron::Solaris' is exposed and accessible to existing consumers of class.
 Chef::Provider::Cron::Solaris = Chef::Provider::Cron::Unix

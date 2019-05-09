@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/http/json_output"
+require_relative "json_output"
 
 class Chef
   class HTTP

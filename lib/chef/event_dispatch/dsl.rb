@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "chef/event_dispatch/base"
-require "chef/exceptions"
-require "chef/config"
+require_relative "base"
+require_relative "../exceptions"
+require_relative "../config"
 
 class Chef
   module EventDispatch

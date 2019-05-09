@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/core/status_presenter"
-require "chef/knife/core/node_presenter"
+require_relative ""
+require_relative "core/status_presenter"
+require_relative "core/node_presenter"
 
 class Chef
   class Knife
@@ -26,7 +26,7 @@ class Chef
       include Knife::Core::NodeFormattingOptions
 
       deps do
-        require "chef/search/query"
+        require_relative "../search/query"
       end
 
       banner "knife status QUERY (options)"

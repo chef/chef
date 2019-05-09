@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/dsl/declare_resource"
-require "chef/mixin/shell_out"
-require "chef/http/simple"
-require "chef/provider/noop"
+require_relative "../resource"
+require_relative "../dsl/declare_resource"
+require_relative "../mixin/shell_out"
+require_relative "../http/simple"
+require_relative "noop"
 require "tmpdir"
 
 class Chef

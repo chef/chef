@@ -17,8 +17,8 @@
 #
 
 # Order of these headers is important: query helpers is needed by many things
-require "chef/platform/query_helpers"
-require "chef/platform/provider_mapping"
+require_relative "platform/query_helpers"
+require_relative "platform/provider_mapping"
 
 class Chef
   class Platform

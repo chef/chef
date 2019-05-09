@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "chef/decorator/lazy"
+require_relative "lazy"
 
 class Chef
   class Decorator

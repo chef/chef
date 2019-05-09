@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
+require_relative ".."
 
 #
 # BUGGY AND DEPRECATED:  This ruby code is known to not match the python implementation for version comparisons.

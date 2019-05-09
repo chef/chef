@@ -1,5 +1,5 @@
-require "chef/chef_fs/data_handler/data_handler_base"
-require "chef/environment"
+require_relative "data_handler_base"
+require_relative "../../environment"
 
 class Chef
   module ChefFS

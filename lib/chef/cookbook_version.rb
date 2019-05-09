@@ -19,13 +19,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/log"
-require "chef/cookbook/file_vendor"
-require "chef/cookbook/metadata"
-require "chef/version_class"
-require "chef/digester"
-require "chef/cookbook_manifest"
-require "chef/server_api"
+require_relative "log"
+require_relative "cookbook/file_vendor"
+require_relative "cookbook/metadata"
+require_relative "version_class"
+require_relative "digester"
+require_relative "cookbook_manifest"
+require_relative "server_api"
 
 class Chef
 

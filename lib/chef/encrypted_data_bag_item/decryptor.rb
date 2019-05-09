@@ -17,14 +17,14 @@
 #
 
 require "yaml"
-require "chef/json_compat"
+require_relative "../json_compat"
 require "openssl"
 require "base64"
 require "digest/sha2"
-require "chef/encrypted_data_bag_item"
-require "chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format"
-require "chef/encrypted_data_bag_item/decryption_failure"
-require "chef/encrypted_data_bag_item/assertions"
+require_relative ""
+require_relative "unsupported_encrypted_data_bag_item_format"
+require_relative "decryption_failure"
+require_relative "assertions"
 
 class Chef::EncryptedDataBagItem
 

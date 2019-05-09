@@ -13,10 +13,10 @@
 # limitations under the License.
 #
 
-require "chef/cookbook_version"
-require "chef/cookbook/chefignore"
-require "chef/cookbook/metadata"
-require "chef/util/path_helper"
+require_relative "../cookbook_version"
+require_relative "chefignore"
+require_relative "metadata"
+require_relative "../util/path_helper"
 require "find"
 
 class Chef

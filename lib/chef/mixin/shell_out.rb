@@ -16,7 +16,7 @@
 # limitations under the License.
 
 require "mixlib/shellout"
-require "chef/mixin/path_sanity"
+require_relative "path_sanity"
 
 class Chef
   module Mixin
@@ -184,4 +184,4 @@ class Chef
 end
 
 # Break circular dep
-require "chef/config"
+require_relative "../config"

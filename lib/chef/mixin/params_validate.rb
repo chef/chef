@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/constants"
-require "chef/property"
-require "chef/delayed_evaluator"
-require "chef/exceptions"
+require_relative "../constants"
+require_relative "../property"
+require_relative "../delayed_evaluator"
+require_relative "../exceptions"
 
 class Chef
   module Mixin

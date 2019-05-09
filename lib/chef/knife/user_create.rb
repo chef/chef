@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/dist"
+require_relative ""
+require_relative "../dist"
 
 class Chef
   class Knife
@@ -27,7 +27,7 @@ class Chef
       attr_accessor :user_field
 
       deps do
-        require "chef/user_v1"
+        require_relative "../user_v1"
       end
 
       option :file,

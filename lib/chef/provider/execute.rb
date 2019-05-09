@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/provider"
+require_relative "../log"
+require_relative ""
 require "forwardable"
-require "chef/mixin/train_or_shell"
+require_relative "../mixin/train_or_shell"
 
 class Chef
   class Provider

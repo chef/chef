@@ -18,8 +18,8 @@
 
 require "uri"
 require "tempfile"
-require "chef/provider/remote_file"
-require "chef/mixin/user_context"
+require_relative ""
+require_relative "../../mixin/user_context"
 
 class Chef
   class Provider

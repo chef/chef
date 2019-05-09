@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/platform/query_helpers"
-require "chef/mixin/securable"
-require "chef/resource/file/verification"
+require_relative ""
+require_relative "../platform/query_helpers"
+require_relative "../mixin/securable"
+require_relative "file/verification"
 require "pathname"
-require "chef/dist"
+require_relative "../dist"
 
 class Chef
   class Resource

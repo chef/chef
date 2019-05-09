@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/chef_fs/path_utils"
+require_relative "../log"
+require_relative "path_utils"
 
 class Chef
   module ChefFS
@@ -172,7 +172,7 @@ class Chef
       end
 
       def create_chef_fs
-        require "chef/chef_fs/file_system/chef_server/chef_server_root_dir"
+        require_relative "file_system/chef_server/chef_server_root_dir"
         Chef::ChefFS::FileSystem::ChefServer::ChefServerRootDir.new("remote", @chef_config, cookbook_version: @cookbook_version)
       end
 
@@ -181,7 +181,7 @@ class Chef
       end
 
       def create_local_fs
-        require "chef/chef_fs/file_system/repository/chef_repository_file_system_root_dir"
+        require_relative "file_system/repository/chef_repository_file_system_root_dir"
         Chef::ChefFS::FileSystem::Repository::ChefRepositoryFileSystemRootDir.new(object_paths, Array(chef_config[:chef_repo_path]).flatten, @chef_config)
       end
 

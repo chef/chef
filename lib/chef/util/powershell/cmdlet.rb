@@ -17,8 +17,8 @@
 #
 
 require "mixlib/shellout"
-require "chef/mixin/windows_architecture_helper"
-require "chef/util/powershell/cmdlet_result"
+require_relative "../../mixin/windows_architecture_helper"
+require_relative "cmdlet_result"
 
 class Chef
   class Util

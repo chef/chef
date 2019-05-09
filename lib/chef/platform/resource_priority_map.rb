@@ -1,5 +1,5 @@
 require "singleton"
-require "chef/platform/priority_map"
+require_relative "priority_map"
 
 class Chef
   class Platform

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/encrypted_data_bag_item/unacceptable_encrypted_data_bag_item_format"
-require "chef/encrypted_data_bag_item/unsupported_cipher"
+require_relative "unacceptable_encrypted_data_bag_item_format"
+require_relative "unsupported_cipher"
 
 class Chef::EncryptedDataBagItem
 

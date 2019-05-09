@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_object"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/role"
-require "chef/node"
-require "chef/json_compat"
+require_relative "../base_fs_object"
+require_relative "../exceptions"
+require_relative "../../../role"
+require_relative "../../../node"
+require_relative "../../../json_compat"
 
 class Chef
   module ChefFS

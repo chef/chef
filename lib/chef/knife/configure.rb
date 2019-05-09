@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/util/path_helper"
+require_relative ""
+require_relative "../util/path_helper"
 
 class Chef
   class Knife

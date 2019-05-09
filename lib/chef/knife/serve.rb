@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/local_mode"
+require_relative ""
+require_relative "../local_mode"
 
 class Chef
   class Knife

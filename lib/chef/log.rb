@@ -18,11 +18,11 @@
 # limitations under the License.
 
 require "logger"
-require "chef/monologger"
-require "chef/exceptions"
+require_relative "monologger"
+require_relative "exceptions"
 require "mixlib/log"
 require "chef/log/syslog" unless RUBY_PLATFORM =~ /mswin|mingw|windows/
-require "chef/log/winevt"
+require_relative "log/winevt"
 
 class Chef
   class Log

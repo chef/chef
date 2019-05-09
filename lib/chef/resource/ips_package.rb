@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/ips"
+require_relative "package"
+require_relative "../provider/package/ips"
 
 class Chef
   class Resource

@@ -16,7 +16,7 @@
 #
 
 require "singleton"
-require "chef/client"
+require_relative "../client"
 
 class Chef
   module ChefFS

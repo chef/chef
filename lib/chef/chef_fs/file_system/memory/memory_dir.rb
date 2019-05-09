@@ -1,5 +1,5 @@
-require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/memory/memory_file"
+require_relative "../base_fs_dir"
+require_relative "memory_file"
 
 class Chef
   module ChefFS

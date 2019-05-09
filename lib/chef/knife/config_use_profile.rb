@@ -17,7 +17,7 @@
 
 require "fileutils"
 
-require "chef/knife"
+require_relative ""
 
 class Chef
   class Knife

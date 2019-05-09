@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative ""
 
 class Chef
   class Knife
@@ -27,7 +27,7 @@ class Chef
       attr_accessor :cookbook_name
 
       deps do
-        require "chef/cookbook_version"
+        require_relative "../cookbook_version"
       end
 
       banner "knife cookbook download COOKBOOK [VERSION] (options)"

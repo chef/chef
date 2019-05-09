@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/cookbook_uploader"
+require_relative ""
+require_relative "../cookbook_uploader"
 
 class Chef
   class Knife
@@ -29,9 +29,9 @@ class Chef
       MATCH_CHECKSUM = /[0-9a-f]{32,}/.freeze
 
       deps do
-        require "chef/exceptions"
-        require "chef/cookbook_loader"
-        require "chef/cookbook_uploader"
+        require_relative "../exceptions"
+        require_relative "../cookbook_loader"
+        require_relative "../cookbook_uploader"
       end
 
       banner "knife cookbook upload [COOKBOOKS...] (options)"

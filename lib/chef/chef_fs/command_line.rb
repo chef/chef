@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/util/diff"
+require_relative "file_system"
+require_relative "file_system/exceptions"
+require_relative "../util/diff"
 
 class Chef
   module ChefFS

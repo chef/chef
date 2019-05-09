@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/config"
+require_relative "config"
 require "chef/monkey_patches/webrick-utils" if Chef::Platform.windows?
 
 class Chef
@@ -52,8 +52,8 @@ class Chef
         destroy_server_connectivity
 
         require "chef_zero/server"
-        require "chef/chef_fs/chef_fs_data_store"
-        require "chef/chef_fs/config"
+        require_relative "chef_fs/chef_fs_data_store"
+        require_relative "chef_fs/config"
 
         @chef_fs = Chef::ChefFS::Config.new.local_fs
         @chef_fs.write_pretty_json = true

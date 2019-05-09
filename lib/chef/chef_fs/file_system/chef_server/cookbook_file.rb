@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_object"
-require "chef/http/simple"
+require_relative "../base_fs_object"
+require_relative "../../../http/simple"
 require "openssl"
 
 class Chef

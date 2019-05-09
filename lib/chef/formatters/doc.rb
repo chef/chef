@@ -1,6 +1,6 @@
-require "chef/formatters/base"
-require "chef/config"
-require "chef/dist"
+require_relative "base"
+require_relative "../config"
+require_relative "../dist"
 
 class Chef
   module Formatters

@@ -19,7 +19,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/log"
+require_relative "log"
 require "chef-config/logger"
 
 # DI our logger into ChefConfig before we load the config. Some defaults are
@@ -28,7 +28,7 @@ require "chef-config/logger"
 ChefConfig.logger = Chef::Log
 
 require "chef-config/config"
-require "chef/platform/query_helpers"
+require_relative "platform/query_helpers"
 
 # Ohai::Config defines its own log_level and log_location. When loaded, it will
 # override the default ChefConfig::Config values. We save them here before

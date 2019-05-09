@@ -15,15 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "chef/config"
-require "chef/mixin/params_validate"
-require "chef/mixin/from_file"
-require "chef/mash"
-require "chef/json_compat"
-require "chef/search/query"
-require "chef/mixin/api_version_request_handling"
-require "chef/exceptions"
-require "chef/server_api"
+require_relative "config"
+require_relative "mixin/params_validate"
+require_relative "mixin/from_file"
+require_relative "mash"
+require_relative "json_compat"
+require_relative "search/query"
+require_relative "mixin/api_version_request_handling"
+require_relative "exceptions"
+require_relative "server_api"
 
 # OSC 11 BACKWARDS COMPATIBILITY NOTE (remove after OSC 11 support ends)
 #

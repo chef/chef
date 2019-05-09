@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-require "chef/util/path_helper"
-require "chef/resource"
+require_relative "../util/path_helper"
+require_relative ""
 require "win32-certstore" if Chef::Platform.windows?
 require "openssl"
-require "chef/dist"
+require_relative "../dist"
 
 class Chef
   class Resource

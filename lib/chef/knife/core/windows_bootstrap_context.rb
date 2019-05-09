@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/knife/core/bootstrap_context"
-require "chef/util/path_helper"
-require "chef/dist"
+require_relative "bootstrap_context"
+require_relative "../../util/path_helper"
+require_relative "../../dist"
 
 class Chef
   class Knife

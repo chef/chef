@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require "chef/dsl/recipe"
-require "chef/mixin/from_file"
-require "chef/mixin/deprecation"
+require_relative "dsl/recipe"
+require_relative "mixin/from_file"
+require_relative "mixin/deprecation"
 
 class Chef
   # == Chef::Recipe

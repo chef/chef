@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/provider/mount"
-require "chef/log"
+require_relative ""
+require_relative "../../log"
 
 class Chef
   class Provider

@@ -17,15 +17,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/resource_collection"
-require "chef/cookbook_version"
-require "chef/node"
-require "chef/role"
-require "chef/log"
-require "chef/recipe"
-require "chef/run_context/cookbook_compiler"
-require "chef/event_dispatch/events_output_stream"
-require "chef/train_transport"
+require_relative "resource_collection"
+require_relative "cookbook_version"
+require_relative "node"
+require_relative "role"
+require_relative "log"
+require_relative "recipe"
+require_relative "run_context/cookbook_compiler"
+require_relative "event_dispatch/events_output_stream"
+require_relative "train_transport"
 require "forwardable"
 
 class Chef

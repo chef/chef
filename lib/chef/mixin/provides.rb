@@ -1,5 +1,5 @@
 
-require "chef/mixin/descendants_tracker"
+require_relative "descendants_tracker"
 
 class Chef
   module Mixin

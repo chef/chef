@@ -24,11 +24,11 @@
 require "tempfile"
 require "net/https"
 require "uri"
-require "chef/http/basic_client"
-require "chef/monkey_patches/net_http"
-require "chef/config"
-require "chef/platform/query_helpers"
-require "chef/exceptions"
+require_relative "http/basic_client"
+require_relative "monkey_patches/net_http"
+require_relative "config"
+require_relative "platform/query_helpers"
+require_relative "exceptions"
 
 class Chef
 
@@ -297,7 +297,7 @@ class Chef
         # when for most knife/chef-client work we never need/want this loaded.
 
         unless defined?(SocketlessChefZeroClient)
-          require "chef/http/socketless_chef_zero_client"
+          require_relative "http/socketless_chef_zero_client"
         end
 
         SocketlessChefZeroClient.new(base_url)

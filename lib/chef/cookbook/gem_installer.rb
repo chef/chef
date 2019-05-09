@@ -15,7 +15,7 @@
 #
 
 require "tmpdir"
-require "chef/mixin/shell_out"
+require_relative "../mixin/shell_out"
 
 class Chef
   class Cookbook

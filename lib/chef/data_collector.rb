@@ -18,15 +18,15 @@
 # limitations under the License.
 #
 
-require "chef/server_api"
-require "chef/http/simple_json"
-require "chef/event_dispatch/base"
+require_relative "server_api"
+require_relative "http/simple_json"
+require_relative "event_dispatch/base"
 require "set"
-require "chef/data_collector/run_end_message"
-require "chef/data_collector/run_start_message"
-require "chef/data_collector/config_validation"
-require "chef/data_collector/error_handlers"
-require "chef/dist"
+require_relative "data_collector/run_end_message"
+require_relative "data_collector/run_start_message"
+require_relative "data_collector/config_validation"
+require_relative "data_collector/error_handlers"
+require_relative "dist"
 
 class Chef
   class DataCollector

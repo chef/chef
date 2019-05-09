@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/chef_server/rest_list_dir"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/chef_fs/path_utils"
+require_relative "../base_fs_dir"
+require_relative "../chef_server/rest_list_dir"
+require_relative "../exceptions"
+require_relative "../../path_utils"
 require "fileutils"
 
 class Chef

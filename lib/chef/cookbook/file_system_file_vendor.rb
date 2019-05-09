@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/cookbook/file_vendor"
+require_relative "file_vendor"
 
 class Chef
   class Cookbook

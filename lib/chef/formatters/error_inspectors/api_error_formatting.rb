@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/http/authenticator"
-require "chef/dist"
+require_relative "../../http/authenticator"
+require_relative "../../dist"
 
 class Chef
   module Formatters

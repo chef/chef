@@ -17,7 +17,7 @@
 #
 
 require "singleton"
-require "chef/node_map"
+require_relative "../node_map"
 
 class Chef
   class Platform

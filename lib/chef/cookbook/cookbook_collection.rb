@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/mash"
-require "chef/cookbook/gem_installer"
+require_relative "../mash"
+require_relative "gem_installer"
 
 class Chef
   # == Chef::CookbookCollection

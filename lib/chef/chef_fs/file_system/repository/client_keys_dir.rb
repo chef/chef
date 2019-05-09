@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/client_keys_sub_dir"
-require "chef/chef_fs/data_handler/client_key_data_handler"
-require "chef/chef_fs/file_system/repository/directory"
+require_relative "client_keys_sub_dir"
+require_relative "../../data_handler/client_key_data_handler"
+require_relative "directory"
 
 class Chef
   module ChefFS

@@ -17,7 +17,7 @@
 #
 
 require "chef/win32/api/security" if Chef::Platform.windows?
-require "chef/mixin/wide_string"
+require_relative "../../mixin/wide_string"
 
 class Chef
   class Util

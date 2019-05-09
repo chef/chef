@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/json_compat"
-require "chef/log"
+require_relative "../json_compat"
+require_relative "../log"
 
 class Chef
   class HTTP

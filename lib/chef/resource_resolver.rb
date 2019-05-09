@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/platform/resource_priority_map"
-require "chef/mixin/convert_to_class_name"
+require_relative "exceptions"
+require_relative "platform/resource_priority_map"
+require_relative "mixin/convert_to_class_name"
 
 class Chef
   class ResourceResolver

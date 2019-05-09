@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/mixin/from_file"
-require "chef/resource_definition"
+require_relative "mixin/from_file"
+require_relative "resource_definition"
 
 class Chef
   class ResourceDefinitionList

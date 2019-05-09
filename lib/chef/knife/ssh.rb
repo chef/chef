@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/mixin/shell_out"
-require "chef/knife"
+require_relative "../mixin/shell_out"
+require_relative ""
 
 class Chef
   class Knife
@@ -27,9 +27,9 @@ class Chef
         require "net/ssh"
         require "net/ssh/multi"
         require "readline"
-        require "chef/exceptions"
-        require "chef/search/query"
-        require "chef/util/path_helper"
+        require_relative "../exceptions"
+        require_relative "../search/query"
+        require_relative "../util/path_helper"
         require "mixlib/shellout"
       end
 

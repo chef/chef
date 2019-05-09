@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require "chef/resource/file"
-require "chef/provider/cookbook_file"
-require "chef/mixin/securable"
-require "chef/dist"
+require_relative "file"
+require_relative "../provider/cookbook_file"
+require_relative "../mixin/securable"
+require_relative "../dist"
 
 class Chef
   class Resource

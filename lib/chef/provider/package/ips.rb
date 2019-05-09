@@ -18,8 +18,8 @@
 #
 
 require "open3"
-require "chef/provider/package"
-require "chef/resource/package"
+require_relative ""
+require_relative "../../resource/package"
 
 class Chef
   class Provider

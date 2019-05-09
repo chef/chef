@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/version"
-require "chef/util/path_helper"
+require_relative "../../version"
+require_relative "../../util/path_helper"
 class Chef
   class Knife
     class SubcommandLoader

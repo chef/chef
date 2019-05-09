@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 
-require "chef/cookbook_loader"
-require "chef/cookbook/file_vendor"
-require "chef/cookbook/file_system_file_vendor"
-require "chef/resource/lwrp_base"
-require "chef/run_context"
-require "chef/node"
-require "chef/resources"
-require "chef/json_compat"
+require_relative "cookbook_loader"
+require_relative "cookbook/file_vendor"
+require_relative "cookbook/file_system_file_vendor"
+require_relative "resource/lwrp_base"
+require_relative "run_context"
+require_relative "node"
+require_relative "resources"
+require_relative "json_compat"
 
 module ResourceInspector
   def self.get_default(default)

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/directory"
-require "chef/chef_fs/file_system/repository/data_bag"
+require_relative "directory"
+require_relative "data_bag"
 
 class Chef
   module ChefFS

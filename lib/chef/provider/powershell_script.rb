@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/platform/query_helpers"
-require "chef/provider/windows_script"
+require_relative "../platform/query_helpers"
+require_relative "windows_script"
 
 class Chef
   class Provider

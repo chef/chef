@@ -17,7 +17,7 @@
 #
 
 require "digest/sha2"
-require "chef/digester"
+require_relative "../digester"
 
 class Chef
   module Mixin

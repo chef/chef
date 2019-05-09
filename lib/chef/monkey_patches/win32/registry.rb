@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require "chef/win32/api/registry"
-require "chef/win32/unicode"
+require_relative "../../win32/api/registry"
+require_relative "../../win32/unicode"
 require "win32/registry"
 
 module Win32

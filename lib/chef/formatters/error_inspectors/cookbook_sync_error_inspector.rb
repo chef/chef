@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/formatters/error_inspectors/api_error_formatting"
+require_relative "api_error_formatting"
 
 class Chef
   module Formatters

@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-require "chef/dsl/platform_introspection"
-require "chef/dsl/data_query"
-require "chef/dsl/registry_helper"
-require "chef/dsl/powershell"
-require "chef/mixin/powershell_exec"
-require "chef/mixin/powershell_out"
-require "chef/mixin/shell_out"
-require "chef/mixin/lazy_module_include"
-require "chef/mixin/train_or_shell"
+require_relative "platform_introspection"
+require_relative "data_query"
+require_relative "registry_helper"
+require_relative "powershell"
+require_relative "../mixin/powershell_exec"
+require_relative "../mixin/powershell_out"
+require_relative "../mixin/shell_out"
+require_relative "../mixin/lazy_module_include"
+require_relative "../mixin/train_or_shell"
 
 class Chef
   module DSL

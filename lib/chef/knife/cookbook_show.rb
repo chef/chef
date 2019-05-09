@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative ""
 
 class Chef
   class Knife
     class CookbookShow < Knife
 
       deps do
-        require "chef/json_compat"
+        require_relative "../json_compat"
         require "uri"
-        require "chef/cookbook_version"
+        require_relative "../cookbook_version"
       end
 
       banner "knife cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"

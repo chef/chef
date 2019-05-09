@@ -1,5 +1,5 @@
 
-require "chef/exceptions"
+require_relative "exceptions"
 
 class Chef
   class Blacklist

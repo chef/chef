@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/cookbooks_dir"
-require "chef/chef_fs/file_system/chef_server/versioned_cookbook_dir"
+require_relative "cookbooks_dir"
+require_relative "versioned_cookbook_dir"
 
 class Chef
   module ChefFS

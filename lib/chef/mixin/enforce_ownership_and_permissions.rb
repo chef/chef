@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/file_access_control"
+require_relative "../file_access_control"
 
 class Chef
   module Mixin

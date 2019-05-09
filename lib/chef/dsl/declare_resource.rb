@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
+require_relative "../exceptions"
 
 class Chef
   module DSL

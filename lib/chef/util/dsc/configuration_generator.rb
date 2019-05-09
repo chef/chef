@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/util/powershell/cmdlet"
+require_relative "../powershell/cmdlet"
 
 class Chef::Util::DSC
   class ConfigurationGenerator

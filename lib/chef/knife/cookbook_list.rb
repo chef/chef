@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative ""
 
 class Chef
   class Knife

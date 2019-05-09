@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-require "chef/mixin/wide_string"
-require "chef/win32/api/file"
-require "chef/win32/api/security"
-require "chef/win32/error"
-require "chef/win32/unicode"
-require "chef/win32/version"
+require_relative "../mixin/wide_string"
+require_relative "api/file"
+require_relative "api/security"
+require_relative "error"
+require_relative "unicode"
+require_relative "version"
 
 class Chef
   module ReservedNames::Win32
@@ -222,5 +222,5 @@ class Chef
   end
 end
 
-require "chef/win32/file/info"
-require "chef/win32/file/version_info"
+require_relative "file/info"
+require_relative "file/version_info"

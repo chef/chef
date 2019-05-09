@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/dist"
+require_relative ""
+require_relative "../dist"
 
 class Chef
   class Knife
     class ClientCreate < Knife
 
       deps do
-        require "chef/api_client_v1"
+        require_relative "../api_client_v1"
       end
 
       option :file,

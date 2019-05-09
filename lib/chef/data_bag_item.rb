@@ -20,13 +20,13 @@
 
 require "forwardable"
 
-require "chef/config"
-require "chef/mixin/params_validate"
-require "chef/mixin/from_file"
-require "chef/data_bag"
-require "chef/mash"
-require "chef/server_api"
-require "chef/json_compat"
+require_relative "config"
+require_relative "mixin/params_validate"
+require_relative "mixin/from_file"
+require_relative "data_bag"
+require_relative "mash"
+require_relative "server_api"
+require_relative "json_compat"
 
 class Chef
   class DataBagItem

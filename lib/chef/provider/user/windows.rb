@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/provider/user"
-require "chef/exceptions"
+require_relative ""
+require_relative "../../exceptions"
 require "chef/util/windows/net_user" if Chef::Platform.windows?
 
 class Chef

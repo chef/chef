@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/util/powershell/cmdlet"
-require "chef/util/dsc/lcm_output_parser"
+require_relative "../powershell/cmdlet"
+require_relative "lcm_output_parser"
 
 class Chef::Util::DSC
   class LocalConfigurationManager

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/mixin/template"
-require "chef/file_content_management/content_base"
+require_relative "../../mixin/template"
+require_relative "../../file_content_management/content_base"
 
 class Chef
   class Provider

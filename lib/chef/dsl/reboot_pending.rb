@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/dsl/platform_introspection"
-require "chef/dsl/registry_helper"
+require_relative "platform_introspection"
+require_relative "registry_helper"
 
 class Chef
   module DSL

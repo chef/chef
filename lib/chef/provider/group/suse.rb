@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/group/groupadd"
+require_relative "groupadd"
 require "etc"
 
 class Chef

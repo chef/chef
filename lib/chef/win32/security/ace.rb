@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/win32/security"
-require "chef/win32/security/sid"
-require "chef/win32/memory"
+require_relative ""
+require_relative "sid"
+require_relative "../memory"
 
 require "ffi"
 

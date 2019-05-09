@@ -18,9 +18,9 @@
 require "pathname"
 require "stringio"
 require "erubis"
-require "chef/mixin/shell_out"
-require "chef/mixin/checksum"
-require "chef/util/path_helper"
+require_relative "../mixin/shell_out"
+require_relative "../mixin/checksum"
+require_relative "../util/path_helper"
 
 class Chef
   class Cookbook

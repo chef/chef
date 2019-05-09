@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/knife"
+require_relative "../chef_fs/knife"
 
 class Chef
   class Knife
@@ -24,7 +24,7 @@ class Chef
       category "path-based"
 
       deps do
-        require "chef/chef_fs/command_line"
+        require_relative "../chef_fs/command_line"
       end
 
       option :recurse,
