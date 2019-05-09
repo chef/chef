@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.279 -->
-## [v15.0.279](https://github.com/chef/chef/tree/v15.0.279) (2019-05-08)
+<!-- latest_release 15.0.280 -->
+## [v15.0.280](https://github.com/chef/chef/tree/v15.0.280) (2019-05-09)
 
 #### Merged Pull Requests
-- Convert EULA to a local file [#8505](https://github.com/chef/chef/pull/8505) ([btm](https://github.com/btm))
+- Convert require to require_relative [#8508](https://github.com/chef/chef/pull/8508) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Convert require to require_relative [#8508](https://github.com/chef/chef/pull/8508) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.280 -->
 - Convert EULA to a local file [#8505](https://github.com/chef/chef/pull/8505) ([btm](https://github.com/btm)) <!-- 15.0.279 -->
 - Clean up omnibus installer error and remove chef-fips [#8499](https://github.com/chef/chef/pull/8499) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.278 -->
 - Update the omnibus build license to the Chef EULA [#8498](https://github.com/chef/chef/pull/8498) ([btm](https://github.com/btm)) <!-- 15.0.277 -->
