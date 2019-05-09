@@ -226,7 +226,7 @@ class Chef
           # Grab raw feature information from dism command line
           # Windows < 2012 doesn't present a state value so we have to check if the feature is installed or not
           raw_list_of_features = if older_than_win_2012_or_8? # make the older format look like the new format, warts and all
-                                   powershell_out!('Get-WindowsFeature | Select-Object -Property Name, @{Name=\"InstallState\"; Expression = {If ($_.Installed) { 1 } Else { 0 }}} | ConvertTo-Json -Compress', timeout: new_resource.timeout).stdout
+                                   powershell_out!('Get-WindowsFeature | Select-Object -Property Name, @{Name="InstallState"; Expression = {If ($_.Installed) { 1 } Else { 0 }}} | ConvertTo-Json -Compress', timeout: new_resource.timeout).stdout
                                  else
                                    powershell_out!("Get-WindowsFeature | Select-Object -Property Name,InstallState | ConvertTo-Json -Compress", timeout: new_resource.timeout).stdout
                                  end
