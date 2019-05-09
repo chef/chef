@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/rest_list_dir"
-require "chef/chef_fs/file_system/chef_server/cookbook_dir"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_dir"
-require "chef/mixin/file_class"
+require_relative "rest_list_dir"
+require_relative "cookbook_dir"
+require_relative "../exceptions"
+require_relative "../repository/chef_repository_file_system_cookbook_dir"
+require_relative "../../../mixin/file_class"
 
 require "tmpdir"
 

@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require "chef/mixin/shell_out"
-require "chef/provider/user"
-require "chef/resource/user/dscl_user"
+require_relative "../../mixin/shell_out"
+require_relative "../user"
+require_relative "../../resource/user/dscl_user"
 require "openssl"
 require "plist"
-require "chef/util/path_helper"
+require_relative "../../util/path_helper"
 
 class Chef
   class Provider

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/win32/security"
-require "chef/win32/api/net"
-require "chef/win32/api/error"
+require_relative "../security"
+require_relative "../api/net"
+require_relative "../api/error"
 
 require "wmi-lite/wmi"
 

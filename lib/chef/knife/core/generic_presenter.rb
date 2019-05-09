@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife/core/text_formatter"
+require_relative "text_formatter"
 
 class Chef
   class Knife

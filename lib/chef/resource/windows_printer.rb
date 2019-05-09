@@ -17,7 +17,7 @@
 # See here for more info:
 # http://msdn.microsoft.com/en-us/library/windows/desktop/aa394492(v=vs.85).aspx
 
-require "chef/resource"
+require_relative "../resource"
 
 class Chef
   class Resource

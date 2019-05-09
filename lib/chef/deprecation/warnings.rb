@@ -20,7 +20,7 @@ class Chef
   module Deprecation
     module Warnings
 
-      require "chef/version"
+      require_relative "../version"
 
       def add_deprecation_warnings_for(method_names)
         method_names.each do |name|

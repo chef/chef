@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/util/path_helper"
+require_relative "path_helper"
 
 class Chef
   class Util

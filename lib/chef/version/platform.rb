@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/version_class"
+require_relative "../version_class"
 
 # NOTE: this is fairly badly broken for its purpose and should not be used
 #       unless it gets fixed.

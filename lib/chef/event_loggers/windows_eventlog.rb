@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/event_loggers/base"
-require "chef/platform/query_helpers"
-require "chef/win32/eventlog"
+require_relative "base"
+require_relative "../platform/query_helpers"
+require_relative "../win32/eventlog"
 
 class Chef
   module EventLoggers

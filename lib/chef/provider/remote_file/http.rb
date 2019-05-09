@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require "chef/http/simple"
-require "chef/digester"
-require "chef/provider/remote_file"
-require "chef/provider/remote_file/cache_control_data"
+require_relative "../../http/simple"
+require_relative "../../digester"
+require_relative "../remote_file"
+require_relative "cache_control_data"
 
 class Chef
   class Provider

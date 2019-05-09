@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/log"
-require "chef/provider"
+require_relative "../exceptions"
+require_relative "../log"
+require_relative "../provider"
 require "fileutils"
 
 class Chef

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "chef/request_id"
+require_relative "../request_id"
 
 class Chef
   class HTTP

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/exceptions"
-require "chef/dsl/powershell"
+require_relative "../resource"
+require_relative "../exceptions"
+require_relative "../dsl/powershell"
 
 class Chef
   class Resource

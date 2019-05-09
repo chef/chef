@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/chef_server/acl_dir"
-require "chef/chef_fs/file_system/chef_server/cookbooks_acl_dir"
-require "chef/chef_fs/file_system/chef_server/policies_acl_dir"
-require "chef/chef_fs/file_system/chef_server/acl_entry"
-require "chef/chef_fs/data_handler/acl_data_handler"
+require_relative "../base_fs_dir"
+require_relative "acl_dir"
+require_relative "cookbooks_acl_dir"
+require_relative "policies_acl_dir"
+require_relative "acl_entry"
+require_relative "../../data_handler/acl_data_handler"
 
 class Chef
   module ChefFS

@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/dsl/declare_resource"
-require "chef/provider/noop"
-require "chef/mixin/shell_out"
+require_relative "../resource"
+require_relative "../dsl/declare_resource"
+require_relative "noop"
+require_relative "../mixin/shell_out"
 require "shellwords"
 
 class Chef

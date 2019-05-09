@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require "chef/win32/api"
-require "chef/win32/api/security"
-require "chef/win32/api/system"
-require "chef/win32/unicode"
+require_relative "../api"
+require_relative "security"
+require_relative "system"
+require_relative "../unicode"
 
 class Chef
   module ReservedNames::Win32

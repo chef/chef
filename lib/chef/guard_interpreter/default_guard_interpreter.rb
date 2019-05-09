@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/mixin/train_or_shell"
-require "chef/exceptions"
+require_relative "../mixin/train_or_shell"
+require_relative "../exceptions"
 
 class Chef
   class GuardInterpreter

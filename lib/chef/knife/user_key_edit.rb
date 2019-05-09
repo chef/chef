@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/key_edit"
-require "chef/knife/key_edit_base"
+require_relative "../knife"
+require_relative "key_edit"
+require_relative "key_edit_base"
 
 class Chef
   class Knife

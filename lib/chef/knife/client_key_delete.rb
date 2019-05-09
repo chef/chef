@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/key_delete"
+require_relative "../knife"
+require_relative "key_delete"
 
 class Chef
   class Knife

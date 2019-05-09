@@ -18,10 +18,10 @@
 #
 
 require "uri"
-require "chef/provider/package"
-require "chef/resource/package"
-require "chef/mixin/get_source_from_package"
-require "chef/mixin/which"
+require_relative "../package"
+require_relative "../../resource/package"
+require_relative "../../mixin/get_source_from_package"
+require_relative "../../mixin/which"
 
 # Class methods on Gem are defined in rubygems
 require "rubygems"

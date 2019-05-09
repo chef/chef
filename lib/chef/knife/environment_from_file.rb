@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class EnvironmentFromFile < Knife
 
       deps do
-        require "chef/environment"
-        require "chef/knife/core/object_loader"
+        require_relative "../environment"
+        require_relative "core/object_loader"
       end
 
       banner "knife environment from file FILE [FILE..] (options)"

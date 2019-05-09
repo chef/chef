@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require "chef/dsl/declare_resource"
-require "chef/dsl/universal"
-require "chef/mixin/notifying_block"
-require "chef/mixin/lazy_module_include"
+require_relative "declare_resource"
+require_relative "universal"
+require_relative "../mixin/notifying_block"
+require_relative "../mixin/lazy_module_include"
 
 class Chef
   module DSL

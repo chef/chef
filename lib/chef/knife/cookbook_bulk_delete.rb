@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class CookbookBulkDelete < Knife
 
       deps do
-        require "chef/knife/cookbook_delete"
-        require "chef/cookbook_version"
+        require_relative "cookbook_delete"
+        require_relative "../cookbook_version"
       end
 
       option :purge, short: "-p", long: "--purge", boolean: true, description: "Permanently remove files from backing data store."

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/provider/ifconfig"
-require "chef/util/file_edit"
+require_relative "../ifconfig"
+require_relative "../../util/file_edit"
 
 class Chef
   class Provider

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/win32/file"
+require_relative "../file"
 
 class Chef
   module ReservedNames::Win32

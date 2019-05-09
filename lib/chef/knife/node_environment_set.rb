@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class NodeEnvironmentSet < Knife
 
       deps do
-        require "chef/node"
+        require_relative "../node"
       end
 
       banner "knife node environment set NODE ENVIRONMENT"

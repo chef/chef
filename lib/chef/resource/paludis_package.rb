@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/paludis"
+require_relative "package"
+require_relative "../provider/package/paludis"
 
 class Chef
   class Resource

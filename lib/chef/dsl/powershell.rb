@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/util/powershell/ps_credential"
+require_relative "../util/powershell/ps_credential"
 
 class Chef
   module DSL

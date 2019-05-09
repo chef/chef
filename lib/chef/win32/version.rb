@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/win32/api"
-require "chef/win32/api/system"
+require_relative "api"
+require_relative "api/system"
 require "wmi-lite/wmi"
 
 class Chef

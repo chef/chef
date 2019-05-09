@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/util/powershell/cmdlet"
-require "chef/util/dsc/configuration_generator"
-require "chef/util/dsc/local_configuration_manager"
-require "chef/util/path_helper"
+require_relative "../util/powershell/cmdlet"
+require_relative "../util/dsc/configuration_generator"
+require_relative "../util/dsc/local_configuration_manager"
+require_relative "../util/path_helper"
 
 class Chef
   class Provider

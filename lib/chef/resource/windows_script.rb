@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/platform/query_helpers"
-require "chef/resource/script"
-require "chef/mixin/windows_architecture_helper"
+require_relative "../platform/query_helpers"
+require_relative "script"
+require_relative "../mixin/windows_architecture_helper"
 
 class Chef
   class Resource

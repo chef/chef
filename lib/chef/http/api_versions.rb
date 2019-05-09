@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require "chef/server_api_versions"
-require "chef/json_compat"
+require_relative "../server_api_versions"
+require_relative "../json_compat"
 
 class Chef
   class HTTP

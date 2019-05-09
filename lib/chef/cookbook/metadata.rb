@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/mash"
-require "chef/mixin/from_file"
-require "chef/mixin/params_validate"
-require "chef/log"
-require "chef/version_class"
-require "chef/version_constraint"
-require "chef/version_constraint/platform"
-require "chef/json_compat"
+require_relative "../exceptions"
+require_relative "../mash"
+require_relative "../mixin/from_file"
+require_relative "../mixin/params_validate"
+require_relative "../log"
+require_relative "../version_class"
+require_relative "../version_constraint"
+require_relative "../version_constraint/platform"
+require_relative "../json_compat"
 
 class Chef
   class Cookbook

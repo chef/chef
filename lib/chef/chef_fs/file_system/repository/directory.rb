@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system_cache"
+require_relative "../../file_system_cache"
 
 class Chef
   module ChefFS

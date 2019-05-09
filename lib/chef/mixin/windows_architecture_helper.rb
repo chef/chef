@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/platform/query_helpers"
+require_relative "../exceptions"
+require_relative "../platform/query_helpers"
 require "chef/win32/process" if Chef::Platform.windows?
 require "chef/win32/system" if Chef::Platform.windows?
 

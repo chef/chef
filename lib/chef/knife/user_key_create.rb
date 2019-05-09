@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/key_create"
-require "chef/knife/key_create_base"
+require_relative "../knife"
+require_relative "key_create"
+require_relative "key_create_base"
 
 class Chef
   class Knife

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/platform/query_helpers"
+require_relative "../resource"
+require_relative "../platform/query_helpers"
 
 class Chef
   class Resource

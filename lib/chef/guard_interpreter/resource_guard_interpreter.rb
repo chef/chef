@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/guard_interpreter"
+require_relative "../guard_interpreter"
 
 class Chef
   class GuardInterpreter

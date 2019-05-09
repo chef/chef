@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/mixin/shell_out"
-require "chef/provider"
-require "chef/resource/file"
-require "chef/exceptions"
+require_relative "../log"
+require_relative "../mixin/shell_out"
+require_relative "../provider"
+require_relative "../resource/file"
+require_relative "../exceptions"
 require "erb"
 
 class Chef

@@ -17,14 +17,14 @@
 #
 
 require "tempfile"
-require "chef/recipe"
+require_relative "../recipe"
 require "fileutils"
-require "chef/dsl/platform_introspection"
-require "chef/version"
-require "chef/shell/shell_session"
-require "chef/shell/model_wrapper"
-require "chef/server_api"
-require "chef/json_compat"
+require_relative "../dsl/platform_introspection"
+require_relative "../version"
+require_relative "shell_session"
+require_relative "model_wrapper"
+require_relative "../server_api"
+require_relative "../json_compat"
 
 module Shell
   module Extensions

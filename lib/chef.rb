@@ -16,20 +16,20 @@
 # limitations under the License.
 #
 
-require "chef/version"
+require_relative "chef/version"
 
-require "chef/nil_argument"
-require "chef/mash"
-require "chef/exceptions"
-require "chef/log"
-require "chef/config"
-require "chef/providers"
-require "chef/resources"
+require_relative "chef/nil_argument"
+require_relative "chef/mash"
+require_relative "chef/exceptions"
+require_relative "chef/log"
+require_relative "chef/config"
+require_relative "chef/providers"
+require_relative "chef/resources"
 
-require "chef/daemon"
+require_relative "chef/daemon"
 
-require "chef/run_status"
-require "chef/handler"
-require "chef/handler/json_file"
-require "chef/event_dispatch/dsl"
-require "chef/chef_class"
+require_relative "chef/run_status"
+require_relative "chef/handler"
+require_relative "chef/handler/json_file"
+require_relative "chef/event_dispatch/dsl"
+require_relative "chef/chef_class"

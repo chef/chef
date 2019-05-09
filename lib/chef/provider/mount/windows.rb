@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/provider/mount"
+require_relative "../mount"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require "chef/util/windows/net_use"
-  require "chef/util/windows/volume"
+  require_relative "../../util/windows/net_use"
+  require_relative "../../util/windows/volume"
 end
 
 class Chef

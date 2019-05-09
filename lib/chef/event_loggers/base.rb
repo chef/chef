@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/event_dispatch/base"
+require_relative "../event_dispatch/base"
 
 class Chef
   module EventLoggers

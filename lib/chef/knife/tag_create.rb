@@ -18,14 +18,14 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class TagCreate < Knife
 
       deps do
-        require "chef/node"
+        require_relative "../node"
       end
 
       banner "knife tag create NODE TAG ..."

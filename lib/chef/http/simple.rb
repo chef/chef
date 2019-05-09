@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/http"
-require "chef/http/authenticator"
-require "chef/http/decompressor"
-require "chef/http/cookie_manager"
-require "chef/http/validate_content_length"
+require_relative "../http"
+require_relative "authenticator"
+require_relative "decompressor"
+require_relative "cookie_manager"
+require_relative "validate_content_length"
 
 class Chef
   class HTTP

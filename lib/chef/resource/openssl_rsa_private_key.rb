@@ -15,12 +15,12 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require_relative "../resource"
 
 class Chef
   class Resource
     class OpensslRsaPrivateKey < Chef::Resource
-      require "chef/mixin/openssl_helper"
+      require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
       resource_name :openssl_rsa_private_key

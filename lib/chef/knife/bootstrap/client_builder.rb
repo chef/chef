@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/node"
-require "chef/server_api"
-require "chef/api_client/registration"
-require "chef/api_client"
+require_relative "../../node"
+require_relative "../../server_api"
+require_relative "../../api_client/registration"
+require_relative "../../api_client"
 require "tmpdir"
 
 class Chef

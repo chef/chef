@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/server_api"
-require "chef/exceptions"
+require_relative "../config"
+require_relative "../server_api"
+require_relative "../exceptions"
 require "fileutils"
 
 class Chef

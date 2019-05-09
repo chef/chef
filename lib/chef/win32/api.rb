@@ -18,8 +18,8 @@
 #
 
 require "ffi"
-require "chef/reserved_names"
-require "chef/exceptions"
+require_relative "../reserved_names"
+require_relative "../exceptions"
 
 class Chef
   module ReservedNames::Win32

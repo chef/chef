@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/cookbook_manifest"
+require_relative "../cookbook_manifest"
 require "chef_zero/data_store/memory_store"
 require "chef_zero/data_store/data_already_exists_error"
 require "chef_zero/data_store/data_not_found_error"
-require "chef/chef_fs/file_pattern"
-require "chef/chef_fs/file_system"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/chef_fs/file_system/memory/memory_root"
+require_relative "file_pattern"
+require_relative "file_system"
+require_relative "file_system/exceptions"
+require_relative "file_system/memory/memory_root"
 require "fileutils"
 
 class Chef

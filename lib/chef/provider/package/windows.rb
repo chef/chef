@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/mixin/uris"
-require "chef/resource/windows_package"
-require "chef/provider/package"
-require "chef/util/path_helper"
-require "chef/mixin/checksum"
+require_relative "../../mixin/uris"
+require_relative "../../resource/windows_package"
+require_relative "../package"
+require_relative "../../util/path_helper"
+require_relative "../../mixin/checksum"
 
 class Chef
   class Provider
@@ -78,11 +78,11 @@ class Chef
             case installer_type
             when :msi
               logger.trace("#{new_resource} is MSI")
-              require "chef/provider/package/windows/msi"
+              require_relative "windows/msi"
               Chef::Provider::Package::Windows::MSI.new(resource_for_provider, uninstall_registry_entries)
             else
               logger.trace("#{new_resource} is EXE with type '#{installer_type}'")
-              require "chef/provider/package/windows/exe"
+              require_relative "windows/exe"
               Chef::Provider::Package::Windows::Exe.new(resource_for_provider, installer_type, uninstall_registry_entries)
             end
           end

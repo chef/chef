@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/rest_list_dir"
-require "chef/chef_fs/file_system/chef_server/data_bag_dir"
+require_relative "rest_list_dir"
+require_relative "data_bag_dir"
 
 class Chef
   module ChefFS

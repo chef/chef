@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require_relative "../resource"
 require "iniparse"
 
 class Chef

@@ -17,8 +17,8 @@
 
 # I love you Merb (lib/merb-core/server.rb)
 
-require "chef/config"
-require "chef/run_lock"
+require_relative "config"
+require_relative "run_lock"
 require "etc"
 
 class Chef

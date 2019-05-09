@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-require "chef/mixin/which"
-require "chef/mixin/shell_out"
-require "chef/provider/package/yum/version"
+require_relative "../../../mixin/which"
+require_relative "../../../mixin/shell_out"
+require_relative "version"
 require "singleton"
 require "timeout"
 

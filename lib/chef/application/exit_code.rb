@@ -22,7 +22,7 @@ class Chef
     # These are the exit codes defined in Chef RFC 062
     # https://github.com/chef/chef-rfc/blob/master/rfc062-exit-status.md
     class ExitCode
-      require "chef/dist"
+      require_relative "../dist"
 
       # -1 is defined as DEPRECATED_FAILURE in RFC 062, so it is
       # not enumerated in an active constant.

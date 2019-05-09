@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/data_handler/acl_data_handler"
-require "chef/chef_fs/file_system/repository/base_file"
+require_relative "../../data_handler/acl_data_handler"
+require_relative "base_file"
 
 class Chef
   module ChefFS

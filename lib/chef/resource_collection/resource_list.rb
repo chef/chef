@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/resource_collection/stepable_iterator"
-require "chef/resource_collection/resource_collection_serialization"
+require_relative "../resource"
+require_relative "stepable_iterator"
+require_relative "resource_collection_serialization"
 require "forwardable"
 
 # This class keeps the list of all known Resources in the order they are to be executed in.  It also keeps a pointer

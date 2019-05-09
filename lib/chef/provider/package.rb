@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require "chef/mixin/shell_out"
-require "chef/mixin/subclass_directive"
-require "chef/log"
-require "chef/file_cache"
-require "chef/platform"
-require "chef/decorator/lazy_array"
+require_relative "../mixin/shell_out"
+require_relative "../mixin/subclass_directive"
+require_relative "../log"
+require_relative "../file_cache"
+require_relative "../platform"
+require_relative "../decorator/lazy_array"
 require "shellwords"
 
 class Chef

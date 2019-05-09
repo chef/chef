@@ -19,8 +19,8 @@
 
 require "uri"
 require "tempfile"
-require "chef/file_content_management/content_base"
-require "chef/mixin/uris"
+require_relative "../../file_content_management/content_base"
+require_relative "../../mixin/uris"
 
 class Chef
   class Provider

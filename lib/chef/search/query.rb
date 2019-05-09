@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/exceptions"
-require "chef/server_api"
+require_relative "../config"
+require_relative "../exceptions"
+require_relative "../server_api"
 
 require "uri"
 require "addressable/uri"

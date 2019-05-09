@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/mixin/wide_string"
-require "chef/win32/api/unicode"
+require_relative "../mixin/wide_string"
+require_relative "api/unicode"
 
 class Chef
   module ReservedNames::Win32

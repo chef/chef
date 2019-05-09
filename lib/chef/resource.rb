@@ -18,32 +18,32 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/dsl/data_query"
-require "chef/dsl/registry_helper"
-require "chef/dsl/reboot_pending"
-require "chef/dsl/resources"
-require "chef/dsl/declare_resource"
-require "chef/json_compat"
-require "chef/mixin/convert_to_class_name"
-require "chef/guard_interpreter/resource_guard_interpreter"
-require "chef/resource/conditional"
-require "chef/resource/conditional_action_not_nothing"
-require "chef/resource/action_class"
-require "chef/resource_collection"
-require "chef/node_map"
-require "chef/node"
-require "chef/platform"
-require "chef/resource/resource_notification"
-require "chef/provider_resolver"
-require "chef/resource_resolver"
-require "chef/provider"
+require_relative "exceptions"
+require_relative "dsl/data_query"
+require_relative "dsl/registry_helper"
+require_relative "dsl/reboot_pending"
+require_relative "dsl/resources"
+require_relative "dsl/declare_resource"
+require_relative "json_compat"
+require_relative "mixin/convert_to_class_name"
+require_relative "guard_interpreter/resource_guard_interpreter"
+require_relative "resource/conditional"
+require_relative "resource/conditional_action_not_nothing"
+require_relative "resource/action_class"
+require_relative "resource_collection"
+require_relative "node_map"
+require_relative "node"
+require_relative "platform"
+require_relative "resource/resource_notification"
+require_relative "provider_resolver"
+require_relative "resource_resolver"
+require_relative "provider"
 require "set"
 
-require "chef/mixin/deprecation"
-require "chef/mixin/properties"
-require "chef/mixin/provides"
-require "chef/dsl/universal"
+require_relative "mixin/deprecation"
+require_relative "mixin/properties"
+require_relative "mixin/provides"
+require_relative "dsl/universal"
 
 class Chef
   class Resource
@@ -1589,4 +1589,4 @@ class Chef
 end
 
 # Requiring things at the bottom breaks cycles
-require "chef/chef_class"
+require_relative "chef_class"

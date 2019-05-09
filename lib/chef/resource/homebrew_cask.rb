@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/mixin/homebrew_user"
+require_relative "../resource"
+require_relative "../mixin/homebrew_user"
 
 class Chef
   class Resource

@@ -18,20 +18,20 @@
 #
 
 require "forwardable"
-require "chef/version"
+require_relative "version"
 require "mixlib/cli"
-require "chef/workstation_config_loader"
-require "chef/mixin/convert_to_class_name"
-require "chef/mixin/path_sanity"
-require "chef/knife/core/subcommand_loader"
-require "chef/knife/core/ui"
-require "chef/local_mode"
-require "chef/server_api"
-require "chef/http/authenticator"
-require "chef/http/http_request"
-require "chef/http"
+require_relative "workstation_config_loader"
+require_relative "mixin/convert_to_class_name"
+require_relative "mixin/path_sanity"
+require_relative "knife/core/subcommand_loader"
+require_relative "knife/core/ui"
+require_relative "local_mode"
+require_relative "server_api"
+require_relative "http/authenticator"
+require_relative "http/http_request"
+require_relative "http"
 require "pp"
-require "chef/dist"
+require_relative "dist"
 
 class Chef
   class Knife
@@ -615,14 +615,14 @@ class Chef
 
     def rest
       @rest ||= begin
-        require "chef/server_api"
+        require_relative "server_api"
         Chef::ServerAPI.new(Chef::Config[:chef_server_url])
       end
     end
 
     def noauth_rest
       @rest ||= begin
-        require "chef/http/simple_json"
+        require_relative "http/simple_json"
         Chef::HTTP::SimpleJSON.new(Chef::Config[:chef_server_url])
       end
     end

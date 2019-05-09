@@ -1,15 +1,15 @@
 
 require "set"
-require "chef/exceptions"
-require "chef/knife/cookbook_metadata"
-require "chef/digester"
-require "chef/cookbook_manifest"
-require "chef/cookbook_version"
-require "chef/cookbook/syntax_check"
-require "chef/cookbook/file_system_file_vendor"
-require "chef/util/threaded_job_queue"
-require "chef/sandbox"
-require "chef/server_api"
+require_relative "exceptions"
+require_relative "knife/cookbook_metadata"
+require_relative "digester"
+require_relative "cookbook_manifest"
+require_relative "cookbook_version"
+require_relative "cookbook/syntax_check"
+require_relative "cookbook/file_system_file_vendor"
+require_relative "util/threaded_job_queue"
+require_relative "sandbox"
+require_relative "server_api"
 
 class Chef
   class CookbookUploader

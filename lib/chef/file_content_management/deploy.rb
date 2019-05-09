@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/file_content_management/deploy/cp"
-require "chef/file_content_management/deploy/mv_unix"
+require_relative "deploy/cp"
+require_relative "deploy/mv_unix"
 if Chef::Platform.windows?
-  require "chef/file_content_management/deploy/mv_windows"
+  require_relative "deploy/mv_windows"
 end
 
 class Chef

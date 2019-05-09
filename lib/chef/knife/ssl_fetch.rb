@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/config"
+require_relative "../knife"
+require_relative "../config"
 
 class Chef
   class Knife
@@ -28,7 +28,7 @@ class Chef
         require "socket"
         require "uri"
         require "openssl"
-        require "chef/mixin/proxified_socket"
+        require_relative "../mixin/proxified_socket"
         include Chef::Mixin::ProxifiedSocket
       end
 

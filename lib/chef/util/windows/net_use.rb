@@ -20,8 +20,8 @@
 # see also: WNetAddConnection2 and WNetAddConnection3
 # see also cmd.exe: net use /?
 
-require "chef/util/windows"
-require "chef/win32/net"
+require_relative "../windows"
+require_relative "../../win32/net"
 
 class Chef::Util::Windows::NetUse < Chef::Util::Windows
   def initialize(localname)

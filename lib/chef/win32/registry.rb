@@ -16,13 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "chef/reserved_names"
-require "chef/win32/api"
-require "chef/mixin/wide_string"
+require_relative "../reserved_names"
+require_relative "api"
+require_relative "../mixin/wide_string"
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require "chef/monkey_patches/win32/registry"
-  require "chef/win32/api/registry"
+  require_relative "../monkey_patches/win32/registry"
+  require_relative "api/registry"
   require "win32/registry"
   require "win32/api"
 end

@@ -26,13 +26,13 @@
 # injected" into this class by other objects and do not reference the class symbols in those files
 # directly and we do not need to require those files here.
 
-require "chef/platform/provider_priority_map"
-require "chef/platform/resource_priority_map"
-require "chef/platform/provider_handler_map"
-require "chef/platform/resource_handler_map"
-require "chef/deprecated"
-require "chef/event_dispatch/dsl"
-require "chef/deprecated"
+require_relative "platform/provider_priority_map"
+require_relative "platform/resource_priority_map"
+require_relative "platform/provider_handler_map"
+require_relative "platform/resource_handler_map"
+require_relative "deprecated"
+require_relative "event_dispatch/dsl"
+require_relative "deprecated"
 
 class Chef
   class << self

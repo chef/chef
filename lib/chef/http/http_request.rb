@@ -22,7 +22,7 @@
 #
 require "uri"
 require "net/http"
-require "chef/dist"
+require_relative "../dist"
 
 # To load faster, we only want ohai's version string.
 # However, in ohai before 0.6.0, the version is defined
@@ -33,7 +33,7 @@ rescue LoadError
   require "ohai"
 end
 
-require "chef/version"
+require_relative "../version"
 
 class Chef
   class HTTP

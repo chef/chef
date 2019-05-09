@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class EnvironmentCreate < Knife
 
       deps do
-        require "chef/environment"
+        require_relative "../environment"
       end
 
       banner "knife environment create ENVIRONMENT (options)"

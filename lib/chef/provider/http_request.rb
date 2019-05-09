@@ -17,7 +17,7 @@
 #
 
 require "tempfile"
-require "chef/http/simple"
+require_relative "../http/simple"
 
 class Chef
   class Provider

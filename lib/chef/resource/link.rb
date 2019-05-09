@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/mixin/securable"
+require_relative "../resource"
+require_relative "../mixin/securable"
 
 class Chef
   class Resource
@@ -78,7 +78,7 @@ class Chef
       # sure we are not on such a platform.
       def verify_links_supported!
         if Chef::Platform.windows?
-          require "chef/win32/file"
+          require_relative "../win32/file"
           begin
             Chef::ReservedNames::Win32::File.verify_links_supported!
           rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e

@@ -15,11 +15,11 @@
 # limitations under the License.
 
 require "forwardable"
-require "chef/mixin/versioned_api"
-require "chef/util/path_helper"
-require "chef/cookbook/manifest_v0"
-require "chef/cookbook/manifest_v2"
-require "chef/log"
+require_relative "mixin/versioned_api"
+require_relative "util/path_helper"
+require_relative "cookbook/manifest_v0"
+require_relative "cookbook/manifest_v2"
+require_relative "log"
 
 class Chef
 

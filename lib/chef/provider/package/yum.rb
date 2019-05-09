@@ -15,15 +15,15 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
-require "chef/resource/yum_package"
-require "chef/mixin/which"
-require "chef/mixin/shell_out"
-require "chef/mixin/get_source_from_package"
-require "chef/provider/package/yum/python_helper"
-require "chef/provider/package/yum/version"
+require_relative "../package"
+require_relative "../../resource/yum_package"
+require_relative "../../mixin/which"
+require_relative "../../mixin/shell_out"
+require_relative "../../mixin/get_source_from_package"
+require_relative "yum/python_helper"
+require_relative "yum/version"
 # the stubs in the YumCache class are still an external API
-require "chef/provider/package/yum/yum_cache"
+require_relative "yum/yum_cache"
 
 class Chef
   class Provider

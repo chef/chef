@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/provider"
-require "chef/provider/cron"
+require_relative "../../log"
+require_relative "../../provider"
+require_relative "../cron"
 
 class Chef
   class Provider

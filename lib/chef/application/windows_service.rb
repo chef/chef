@@ -16,20 +16,20 @@
 # limitations under the License.
 #
 
-require "chef"
-require "chef/monologger"
-require "chef/application"
-require "chef/client"
-require "chef/config"
-require "chef/handler/error_report"
-require "chef/log"
-require "chef/http"
+require_relative "../../chef"
+require_relative "../monologger"
+require_relative "../application"
+require_relative "../client"
+require_relative "../config"
+require_relative "../handler/error_report"
+require_relative "../log"
+require_relative "../http"
 require "mixlib/cli"
 require "socket"
 require "uri"
 require "win32/daemon"
-require "chef/mixin/shell_out"
-require "chef/dist"
+require_relative "../mixin/shell_out"
+require_relative "../dist"
 
 class Chef
   class Application

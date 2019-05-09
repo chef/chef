@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/core/node_presenter"
+require_relative "../knife"
+require_relative "core/node_presenter"
 require "addressable/uri"
 
 class Chef
@@ -27,10 +27,10 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require "chef/node"
-        require "chef/environment"
-        require "chef/api_client"
-        require "chef/search/query"
+        require_relative "../node"
+        require_relative "../environment"
+        require_relative "../api_client"
+        require_relative "../search/query"
       end
 
       include Knife::Core::NodeFormattingOptions

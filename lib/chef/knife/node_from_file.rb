@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class NodeFromFile < Knife
 
       deps do
-        require "chef/node"
-        require "chef/json_compat"
-        require "chef/knife/core/object_loader"
+        require_relative "../node"
+        require_relative "../json_compat"
+        require_relative "core/object_loader"
       end
 
       banner "knife node from file FILE (options)"

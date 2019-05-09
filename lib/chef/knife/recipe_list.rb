@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 class Chef::Knife::RecipeList < Chef::Knife
 
   banner "knife recipe list [PATTERN]"

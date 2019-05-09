@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/util/path_helper"
+require_relative "../knife"
+require_relative "../util/path_helper"
 
 class Chef::Knife::Exec < Chef::Knife
 
@@ -35,7 +35,7 @@ class Chef::Knife::Exec < Chef::Knife
     proc: lambda { |o| o.split(":") }
 
   deps do
-    require "chef/shell/ext"
+    require_relative "../shell/ext"
   end
 
   def run

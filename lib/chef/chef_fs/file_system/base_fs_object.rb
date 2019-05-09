@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/path_utils"
-require "chef/chef_fs/file_system/exceptions"
+require_relative "../path_utils"
+require_relative "exceptions"
 
 class Chef
   module ChefFS
@@ -184,4 +184,4 @@ class Chef
   end
 end
 
-require "chef/chef_fs/file_system/nonexistent_fs_object"
+require_relative "nonexistent_fs_object"

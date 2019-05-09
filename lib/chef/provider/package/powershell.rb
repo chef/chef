@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
-require "chef/resource/powershell_package"
-require "chef/mixin/powershell_out"
+require_relative "../package"
+require_relative "../../resource/powershell_package"
+require_relative "../../mixin/powershell_out"
 
 class Chef
   class Provider

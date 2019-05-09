@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/json_compat"
-require "chef/mixin/versioned_api"
+require_relative "../json_compat"
+require_relative "../mixin/versioned_api"
 
 class Chef
   class Cookbook

@@ -16,20 +16,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef"
-require "chef/application"
-require "chef/application/client"
-require "chef/client"
-require "chef/config"
-require "chef/daemon"
-require "chef/log"
-require "chef/config_fetcher"
+require_relative "../../chef"
+require_relative "../application"
+require_relative "client"
+require_relative "../client"
+require_relative "../config"
+require_relative "../daemon"
+require_relative "../log"
+require_relative "../config_fetcher"
 require "fileutils"
-require "chef/mixin/shell_out"
+require_relative "../mixin/shell_out"
 require "pathname"
 require "chef-config/mixin/dot_d"
 require "mixlib/archive"
-require "chef/dist"
+require_relative "../dist"
 
 class Chef::Application::Solo < Chef::Application
   include Chef::Mixin::ShellOut

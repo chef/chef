@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require "chef/provider"
-require "chef/dsl/recipe"
-require "chef/dsl/include_recipe"
+require_relative "../provider"
+require_relative "../dsl/recipe"
+require_relative "../dsl/include_recipe"
 
 class Chef
   class Provider

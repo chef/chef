@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/cookbooks_dir"
-require "chef/chef_fs/file_system/chef_server/cookbook_artifact_dir"
+require_relative "cookbooks_dir"
+require_relative "cookbook_artifact_dir"
 
 class Chef
   module ChefFS

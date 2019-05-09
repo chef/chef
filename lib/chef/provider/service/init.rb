@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/provider/service/simple"
-require "chef/platform/service_helpers"
+require_relative "simple"
+require_relative "../../platform/service_helpers"
 
 class Chef
   class Provider

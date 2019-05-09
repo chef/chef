@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/path_utils"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/chef_fs/parallelizer"
+require_relative "path_utils"
+require_relative "file_system/exceptions"
+require_relative "parallelizer"
 
 class Chef
   module ChefFS

@@ -18,8 +18,8 @@
 
 # TODO subversion and git should both extend from a base SCM provider.
 
-require "chef/log"
-require "chef/provider"
+require_relative "../log"
+require_relative "../provider"
 require "chef-config/mixin/fuzzy_hostname_matcher"
 require "fileutils"
 

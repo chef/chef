@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/provider"
-require "chef/resource"
-require "chef/resource/file"
+require_relative "../log"
+require_relative "../provider"
+require_relative "../resource"
+require_relative "../resource/file"
 require "uuidtools"
 
 class Chef

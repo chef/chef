@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/freebsd/port"
-require "chef/provider/package/freebsd/pkgng"
-require "chef/mixin/shell_out"
+require_relative "package"
+require_relative "../provider/package/freebsd/port"
+require_relative "../provider/package/freebsd/pkgng"
+require_relative "../mixin/shell_out"
 
 class Chef
   class Resource

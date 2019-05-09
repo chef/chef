@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/win32/api"
-require "chef/win32/error"
+require_relative "../../exceptions"
+require_relative "../api"
+require_relative "../error"
 require "pathname"
 
 class Chef

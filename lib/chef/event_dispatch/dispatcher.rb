@@ -1,4 +1,4 @@
-require "chef/event_dispatch/base"
+require_relative "base"
 
 class Chef
   module EventDispatch

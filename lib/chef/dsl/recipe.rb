@@ -17,13 +17,13 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/dsl/resources"
-require "chef/dsl/definitions"
-require "chef/dsl/include_recipe"
-require "chef/dsl/reboot_pending"
-require "chef/dsl/core"
-require "chef/mixin/lazy_module_include"
+require_relative "../exceptions"
+require_relative "resources"
+require_relative "definitions"
+require_relative "include_recipe"
+require_relative "reboot_pending"
+require_relative "core"
+require_relative "../mixin/lazy_module_include"
 
 class Chef
   module DSL
@@ -71,4 +71,4 @@ class Chef
 end
 
 # Avoid circular references for things that are only used in instance methods
-require "chef/resource"
+require_relative "../resource"

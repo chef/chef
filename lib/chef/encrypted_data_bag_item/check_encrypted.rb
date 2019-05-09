@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/encrypted_data_bag_item/encryptor"
+require_relative "encryptor"
 
 class Chef::EncryptedDataBagItem
   # Common code for checking if a data bag appears encrypted

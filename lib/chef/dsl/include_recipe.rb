@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/log"
+require_relative "../log"
 
 class Chef
   module DSL

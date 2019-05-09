@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class UserList < Knife
 
       deps do
-        require "chef/user_v1"
+        require_relative "../user_v1"
       end
 
       banner "knife user list (options)"

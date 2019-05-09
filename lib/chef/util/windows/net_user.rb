@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/util/windows"
-require "chef/exceptions"
-require "chef/win32/net"
-require "chef/win32/security"
+require_relative "../windows"
+require_relative "../../exceptions"
+require_relative "../../win32/net"
+require_relative "../../win32/security"
 
 # wrapper around a subset of the NetUser* APIs.
 # nothing Chef specific, but not complete enough to be its own gem, so util for now.

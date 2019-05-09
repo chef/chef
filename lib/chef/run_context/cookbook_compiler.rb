@@ -17,11 +17,11 @@
 #
 
 require "set"
-require "chef/log"
-require "chef/recipe"
-require "chef/resource/lwrp_base"
-require "chef/provider/lwrp_base"
-require "chef/resource_definition_list"
+require_relative "../log"
+require_relative "../recipe"
+require_relative "../resource/lwrp_base"
+require_relative "../provider/lwrp_base"
+require_relative "../resource_definition_list"
 
 class Chef
   class RunContext

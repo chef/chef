@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/exceptions"
+require_relative "../knife"
+require_relative "../exceptions"
 
 class Chef
   class Knife
@@ -26,8 +26,8 @@ class Chef
       deps do
         require "shellwords"
         require "mixlib/archive"
-        require "chef/knife/core/cookbook_scm_repo"
-        require "chef/cookbook/metadata"
+        require_relative "core/cookbook_scm_repo"
+        require_relative "../cookbook/metadata"
       end
 
       banner "knife supermarket install COOKBOOK [VERSION] (options)"

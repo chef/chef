@@ -13,8 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require "chef/version_constraint"
-require "chef/version/platform"
+require_relative "../version_constraint"
+require_relative "../version/platform"
 
 # NOTE: this is fairly badly broken for its purpose and should not be used
 #       unless it gets fixed.  see chef/version/platform.

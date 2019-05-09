@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/mixin/shell_out"
-require "chef/provider"
+require_relative "../log"
+require_relative "../mixin/shell_out"
+require_relative "../provider"
 
 class Chef
   class Provider

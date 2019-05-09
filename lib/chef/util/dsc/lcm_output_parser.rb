@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/util/dsc/resource_info"
-require "chef/exceptions"
+require_relative "../../log"
+require_relative "resource_info"
+require_relative "../../exceptions"
 
 class Chef
   class Util

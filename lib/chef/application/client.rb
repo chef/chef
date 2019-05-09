@@ -17,19 +17,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/application"
-require "chef/client"
-require "chef/config"
-require "chef/daemon"
-require "chef/log"
-require "chef/config_fetcher"
-require "chef/handler/error_report"
-require "chef/workstation_config_loader"
-require "chef/mixin/shell_out"
+require_relative "../application"
+require_relative "../client"
+require_relative "../config"
+require_relative "../daemon"
+require_relative "../log"
+require_relative "../config_fetcher"
+require_relative "../handler/error_report"
+require_relative "../workstation_config_loader"
+require_relative "../mixin/shell_out"
 require "chef-config/mixin/dot_d"
 require "mixlib/archive"
 require "uri"
-require "chef/dist"
+require_relative "../dist"
 require "license_acceptance/cli_flags/mixlib_cli"
 
 class Chef::Application::Client < Chef::Application

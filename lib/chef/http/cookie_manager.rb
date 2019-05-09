@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/http/cookie_jar"
+require_relative "cookie_jar"
 
 class Chef
   class HTTP

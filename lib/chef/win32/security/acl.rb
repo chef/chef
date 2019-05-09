@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/win32/security"
-require "chef/win32/security/ace"
+require_relative "../security"
+require_relative "ace"
 require "ffi"
 
 class Chef

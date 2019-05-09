@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/resource/service"
-require "chef/win32_service_constants"
+require_relative "service"
+require_relative "../win32_service_constants"
 
 class Chef
   class Resource

@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/environment"
-require "chef/chef_fs/data_handler/environment_data_handler"
-require "chef/chef_fs/file_system/repository/directory"
+require_relative "environment"
+require_relative "../../data_handler/environment_data_handler"
+require_relative "directory"
 
 class Chef
   module ChefFS

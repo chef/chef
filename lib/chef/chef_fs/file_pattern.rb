@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs"
-require "chef/chef_fs/path_utils"
+require_relative "../chef_fs"
+require_relative "path_utils"
 
 class Chef
   module ChefFS

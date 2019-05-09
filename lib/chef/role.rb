@@ -18,14 +18,14 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/mixin/params_validate"
-require "chef/mixin/from_file"
-require "chef/run_list"
-require "chef/mash"
-require "chef/json_compat"
-require "chef/server_api"
-require "chef/search/query"
+require_relative "config"
+require_relative "mixin/params_validate"
+require_relative "mixin/from_file"
+require_relative "run_list"
+require_relative "mash"
+require_relative "json_compat"
+require_relative "server_api"
+require_relative "search/query"
 
 class Chef
   class Role

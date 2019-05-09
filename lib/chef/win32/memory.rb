@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/win32/error"
-require "chef/win32/api/memory"
+require_relative "error"
+require_relative "api/memory"
 
 class Chef
   module ReservedNames::Win32

@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
-require "chef/resource/cab_package"
-require "chef/mixin/shell_out"
-require "chef/mixin/uris"
-require "chef/mixin/checksum"
+require_relative "../package"
+require_relative "../../resource/cab_package"
+require_relative "../../mixin/shell_out"
+require_relative "../../mixin/uris"
+require_relative "../../mixin/checksum"
 
 class Chef
   class Provider

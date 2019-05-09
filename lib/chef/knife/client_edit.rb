@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class ClientEdit < Knife
 
       deps do
-        require "chef/api_client_v1"
+        require_relative "../api_client_v1"
       end
 
       banner "knife client edit CLIENT (options)"

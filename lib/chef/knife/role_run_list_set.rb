@@ -17,14 +17,14 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class RoleRunListSet < Knife
 
       deps do
-        require "chef/role"
+        require_relative "../role"
       end
 
       banner "knife role run_list set [ROLE] [ENTRIES] (options)"

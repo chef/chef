@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/version"
-require "chef/util/path_helper"
-require "chef/knife/core/gem_glob_loader"
-require "chef/knife/core/hashed_command_loader"
+require_relative "../../version"
+require_relative "../../util/path_helper"
+require_relative "gem_glob_loader"
+require_relative "hashed_command_loader"
 
 class Chef
   class Knife

@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/powershell"
+require_relative "../powershell"
 
 # The powershell_exec mixin provides in-process access to PowerShell engine via
 # a COM interop (installed by the Chef Client installer).

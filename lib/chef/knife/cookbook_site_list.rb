@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/supermarket_list"
+require_relative "../knife"
+require_relative "supermarket_list"
 
 class Chef
   class Knife

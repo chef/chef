@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs"
+require_relative "../chef_fs"
 require "pathname"
 
 class Chef

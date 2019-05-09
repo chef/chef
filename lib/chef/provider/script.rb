@@ -17,7 +17,7 @@
 #
 
 require "tempfile"
-require "chef/provider/execute"
+require_relative "execute"
 require "chef/win32/security" if Chef::Platform.windows?
 require "forwardable"
 

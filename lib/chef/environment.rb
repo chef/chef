@@ -19,12 +19,12 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/mash"
-require "chef/mixin/params_validate"
-require "chef/mixin/from_file"
-require "chef/version_constraint"
-require "chef/server_api"
+require_relative "config"
+require_relative "mash"
+require_relative "mixin/params_validate"
+require_relative "mixin/from_file"
+require_relative "version_constraint"
+require_relative "server_api"
 
 class Chef
   class Environment

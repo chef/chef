@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/mixin/uris"
+require_relative "package"
+require_relative "../mixin/uris"
 
 class Chef
   class Resource

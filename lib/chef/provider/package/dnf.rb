@@ -15,13 +15,13 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
-require "chef/resource/dnf_package"
-require "chef/mixin/which"
-require "chef/mixin/shell_out"
-require "chef/mixin/get_source_from_package"
-require "chef/provider/package/dnf/python_helper"
-require "chef/provider/package/dnf/version"
+require_relative "../package"
+require_relative "../../resource/dnf_package"
+require_relative "../../mixin/which"
+require_relative "../../mixin/shell_out"
+require_relative "../../mixin/get_source_from_package"
+require_relative "dnf/python_helper"
+require_relative "dnf/version"
 
 class Chef
   class Provider

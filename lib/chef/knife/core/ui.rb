@@ -19,8 +19,8 @@
 #
 
 require "forwardable"
-require "chef/platform/query_helpers"
-require "chef/knife/core/generic_presenter"
+require_relative "../../platform/query_helpers"
+require_relative "generic_presenter"
 require "tempfile"
 
 class Chef

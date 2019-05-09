@@ -18,7 +18,7 @@
 class Chef
   module Mixin
     module Which
-      require "chef/chef_class"
+      require_relative "../chef_class"
 
       def which(*cmds, extra_path: nil, &block)
         where(*cmds, extra_path: extra_path, &block).first || false

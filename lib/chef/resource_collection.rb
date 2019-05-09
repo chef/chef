@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require "chef/resource_collection/resource_set"
-require "chef/resource_collection/resource_list"
-require "chef/resource_collection/resource_collection_serialization"
-require "chef/log"
+require_relative "resource_collection/resource_set"
+require_relative "resource_collection/resource_list"
+require_relative "resource_collection/resource_collection_serialization"
+require_relative "log"
 require "forwardable"
 
 ##

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/event_loggers/base"
-require "chef/platform/query_helpers"
-require "chef/mixin/unformatter"
+require_relative "../event_loggers/base"
+require_relative "../platform/query_helpers"
+require_relative "../mixin/unformatter"
 
 class Chef
   class Log

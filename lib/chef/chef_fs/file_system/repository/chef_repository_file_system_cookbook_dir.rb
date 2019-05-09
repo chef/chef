@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_entry"
-require "chef/chef_fs/file_system/chef_server/cookbook_dir"
-require "chef/chef_fs/file_system/chef_server/versioned_cookbook_dir"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/cookbook/cookbook_version_loader"
+require_relative "chef_repository_file_system_cookbook_entry"
+require_relative "../chef_server/cookbook_dir"
+require_relative "../chef_server/versioned_cookbook_dir"
+require_relative "../exceptions"
+require_relative "../../../cookbook/cookbook_version_loader"
 
 class Chef
   module ChefFS

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
-require "chef/provider/package/deb"
-require "chef/resource/package"
+require_relative "../package"
+require_relative "deb"
+require_relative "../../resource/package"
 
 class Chef
   class Provider

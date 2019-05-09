@@ -20,8 +20,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/mixin/shell_out"
-require "chef/mixin/which"
+require_relative "../mixin/shell_out"
+require_relative "../mixin/which"
 
 class Chef
   class Util

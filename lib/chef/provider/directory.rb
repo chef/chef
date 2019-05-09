@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/log"
-require "chef/resource/directory"
-require "chef/provider"
-require "chef/provider/file"
+require_relative "../config"
+require_relative "../log"
+require_relative "../resource/directory"
+require_relative "../provider"
+require_relative "file"
 require "fileutils"
 
 class Chef

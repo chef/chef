@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
-require "chef/resource/portage_package"
-require "chef/util/path_helper"
+require_relative "../package"
+require_relative "../../resource/portage_package"
+require_relative "../../util/path_helper"
 
 class Chef
   class Provider

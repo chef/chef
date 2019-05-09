@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/handler"
-require "chef/resource/directory"
+require_relative "../handler"
+require_relative "../resource/directory"
 
 class Chef
   class Handler

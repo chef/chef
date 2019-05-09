@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
@@ -25,7 +25,7 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require "chef/role"
+        require_relative "../role"
       end
 
       banner "knife role show ROLE (options)"

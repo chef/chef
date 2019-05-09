@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/util/windows"
-require "chef/win32/net"
+require_relative "../windows"
+require_relative "../../win32/net"
 
 # wrapper around a subset of the NetGroup* APIs.
 class Chef::Util::Windows::NetGroup

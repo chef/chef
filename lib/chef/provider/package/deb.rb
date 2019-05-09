@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
+require_relative "../package"
 
 class Chef
   class Provider

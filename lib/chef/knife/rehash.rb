@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/core/subcommand_loader"
+require_relative "../knife"
+require_relative "core/subcommand_loader"
 
 class Chef
   class Knife

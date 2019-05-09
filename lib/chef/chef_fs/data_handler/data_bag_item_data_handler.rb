@@ -1,5 +1,5 @@
-require "chef/chef_fs/data_handler/data_handler_base"
-require "chef/data_bag_item"
+require_relative "data_handler_base"
+require_relative "../../data_bag_item"
 
 class Chef
   module ChefFS

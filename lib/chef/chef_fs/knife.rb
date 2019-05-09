@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 require "pathname"
 
 class Chef
@@ -25,11 +25,11 @@ class Chef
       # Workaround for CHEF-3932
       def self.deps
         super do
-          require "chef/config"
-          require "chef/chef_fs/parallelizer"
-          require "chef/chef_fs/config"
-          require "chef/chef_fs/file_pattern"
-          require "chef/chef_fs/path_utils"
+          require_relative "../config"
+          require_relative "parallelizer"
+          require_relative "config"
+          require_relative "file_pattern"
+          require_relative "path_utils"
           yield
         end
       end

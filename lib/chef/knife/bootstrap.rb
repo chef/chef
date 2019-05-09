@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/data_bag_secret_options"
-require "chef/dist"
+require_relative "../knife"
+require_relative "data_bag_secret_options"
+require_relative "../dist"
 require "license_acceptance/cli_flags/mixlib_cli"
 require "license_acceptance/acceptor"
 
@@ -403,11 +403,11 @@ class Chef
       deps do
         require "erubis"
 
-        require "chef/json_compat"
-        require "chef/util/path_helper"
-        require "chef/knife/bootstrap/chef_vault_handler"
-        require "chef/knife/bootstrap/client_builder"
-        require "chef/knife/bootstrap/train_connector"
+        require_relative "../json_compat"
+        require_relative "../util/path_helper"
+        require_relative "bootstrap/chef_vault_handler"
+        require_relative "bootstrap/client_builder"
+        require_relative "bootstrap/train_connector"
       end
 
       banner "knife bootstrap [PROTOCOL://][USER@]FQDN (options)"
@@ -516,10 +516,10 @@ class Chef
       def bootstrap_context
         @bootstrap_context ||=
           if connection.windows?
-            require "chef/knife/core/windows_bootstrap_context"
+            require_relative "core/windows_bootstrap_context"
             Knife::Core::WindowsBootstrapContext.new(config, config[:run_list], Chef::Config, secret)
           else
-            require "chef/knife/core/bootstrap_context"
+            require_relative "core/bootstrap_context"
             Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config, secret)
           end
       end

@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class NodePolicySet < Knife
 
       deps do
-        require "chef/node"
-        require "chef/json_compat"
+        require_relative "../node"
+        require_relative "../json_compat"
       end
 
       banner "knife node policy set NODE POLICY_GROUP POLICY_NAME (options)"

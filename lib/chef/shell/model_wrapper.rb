@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/mixin/convert_to_class_name"
-require "chef/dsl/data_query"
+require_relative "../mixin/convert_to_class_name"
+require_relative "../dsl/data_query"
 
 module Shell
   class ModelWrapper

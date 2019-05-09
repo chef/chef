@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/dsl/reboot_pending"
-require "chef/log"
-require "chef/platform"
-require "chef/application/exit_code"
-require "chef/mixin/shell_out"
+require_relative "../dsl/reboot_pending"
+require_relative "../log"
+require_relative "../platform"
+require_relative "../application/exit_code"
+require_relative "../mixin/shell_out"
 
 class Chef
   class Platform

@@ -1,5 +1,5 @@
-require "chef/chef_fs/data_handler/data_handler_base"
-require "chef/cookbook/metadata"
+require_relative "data_handler_base"
+require_relative "../../cookbook/metadata"
 
 class Chef
   module ChefFS

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/provider"
-require "chef/resource/windows_env"
-require "chef/mixin/windows_env_helper"
+require_relative "../provider"
+require_relative "../resource/windows_env"
+require_relative "../mixin/windows_env_helper"
 
 class Chef
   class Provider

@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class SupermarketUnshare < Knife
 
       deps do
-        require "chef/json_compat"
+        require_relative "../json_compat"
       end
 
       banner "knife supermarket unshare COOKBOOK"

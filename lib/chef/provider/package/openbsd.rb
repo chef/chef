@@ -20,10 +20,10 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package"
-require "chef/mixin/get_source_from_package"
-require "chef/exceptions"
+require_relative "../../resource/package"
+require_relative "../package"
+require_relative "../../mixin/get_source_from_package"
+require_relative "../../exceptions"
 
 class Chef
   class Provider

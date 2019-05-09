@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/key_list"
-require "chef/knife/key_list_base"
+require_relative "../knife"
+require_relative "key_list"
+require_relative "key_list_base"
 
 class Chef
   class Knife

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "chef/mixin/convert_to_class_name"
+require_relative "mixin/convert_to_class_name"
 
 # Structured deprecations have a unique URL associated with them, which must exist before the deprecation is merged.
 class Chef

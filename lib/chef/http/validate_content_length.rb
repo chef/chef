@@ -17,7 +17,7 @@
 #
 
 require "pp"
-require "chef/log"
+require_relative "../log"
 
 class Chef
   class HTTP

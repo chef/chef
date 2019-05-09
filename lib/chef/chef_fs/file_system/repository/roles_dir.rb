@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/role"
-require "chef/chef_fs/file_system/repository/directory"
-require "chef/chef_fs/file_system/exceptions"
+require_relative "role"
+require_relative "directory"
+require_relative "../exceptions"
 
 class Chef
   module ChefFS

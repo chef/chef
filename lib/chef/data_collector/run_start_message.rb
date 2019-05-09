@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "chef/data_collector/message_helpers"
+require_relative "message_helpers"
 
 class Chef
   class DataCollector

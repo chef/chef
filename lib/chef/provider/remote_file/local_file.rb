@@ -18,7 +18,7 @@
 
 require "uri"
 require "tempfile"
-require "chef/provider/remote_file"
+require_relative "../remote_file"
 
 class Chef
   class Provider

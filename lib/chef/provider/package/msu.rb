@@ -20,13 +20,13 @@
 # The contents of msu file are extracted, which contains one or more cab files.
 # The extracted cab files are installed using Chef::Resource::Package::CabPackage
 # Reference: https://support.microsoft.com/en-in/kb/934307
-require "chef/provider/package"
-require "chef/resource/msu_package"
-require "chef/mixin/shell_out"
-require "chef/provider/package/cab"
-require "chef/util/path_helper"
-require "chef/mixin/uris"
-require "chef/mixin/checksum"
+require_relative "../package"
+require_relative "../../resource/msu_package"
+require_relative "../../mixin/shell_out"
+require_relative "cab"
+require_relative "../../util/path_helper"
+require_relative "../../mixin/uris"
+require_relative "../../mixin/checksum"
 
 class Chef
   class Provider

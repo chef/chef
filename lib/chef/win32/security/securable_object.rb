@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/win32/security"
-require "chef/win32/security/acl"
-require "chef/win32/security/sid"
+require_relative "../security"
+require_relative "acl"
+require_relative "sid"
 
 class Chef
   module ReservedNames::Win32

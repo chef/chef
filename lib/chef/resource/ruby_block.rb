@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/provider/ruby_block"
-require "chef/dist"
+require_relative "../resource"
+require_relative "../provider/ruby_block"
+require_relative "../dist"
 
 class Chef
   class Resource

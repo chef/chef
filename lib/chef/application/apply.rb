@@ -17,16 +17,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef"
-require "chef/application"
-require "chef/client"
-require "chef/config"
-require "chef/log"
+require_relative "../../chef"
+require_relative "../application"
+require_relative "../client"
+require_relative "../config"
+require_relative "../log"
 require "fileutils"
 require "tempfile"
-require "chef/providers"
-require "chef/resources"
-require "chef/dist"
+require_relative "../providers"
+require_relative "../resources"
+require_relative "../dist"
 
 class Chef::Application::Apply < Chef::Application
 

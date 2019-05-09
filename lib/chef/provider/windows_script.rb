@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/provider/script"
-require "chef/mixin/windows_architecture_helper"
+require_relative "script"
+require_relative "../mixin/windows_architecture_helper"
 
 class Chef
   class Provider

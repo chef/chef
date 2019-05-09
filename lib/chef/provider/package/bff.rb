@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 #
-require "chef/provider/package"
-require "chef/resource/package"
-require "chef/mixin/get_source_from_package"
+require_relative "../package"
+require_relative "../../resource/package"
+require_relative "../../mixin/get_source_from_package"
 
 class Chef
   class Provider

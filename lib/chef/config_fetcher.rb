@@ -1,7 +1,7 @@
-require "chef/application"
-require "chef/chef_fs/path_utils"
-require "chef/http/simple"
-require "chef/json_compat"
+require_relative "application"
+require_relative "chef_fs/path_utils"
+require_relative "http/simple"
+require_relative "json_compat"
 
 class Chef
   class ConfigFetcher

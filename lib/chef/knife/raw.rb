@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/http"
+require_relative "../knife"
+require_relative "../http"
 
 class Chef
   class Knife
@@ -23,13 +23,13 @@ class Chef
       banner "knife raw REQUEST_PATH (options)"
 
       deps do
-        require "chef/json_compat"
-        require "chef/config"
-        require "chef/http"
-        require "chef/http/authenticator"
-        require "chef/http/cookie_manager"
-        require "chef/http/decompressor"
-        require "chef/http/json_output"
+        require_relative "../json_compat"
+        require_relative "../config"
+        require_relative "../http"
+        require_relative "../http/authenticator"
+        require_relative "../http/cookie_manager"
+        require_relative "../http/decompressor"
+        require_relative "../http/json_output"
       end
 
       option :method,

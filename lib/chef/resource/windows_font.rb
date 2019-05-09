@@ -15,12 +15,12 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require_relative "../resource"
 
 class Chef
   class Resource
     class WindowsFont < Chef::Resource
-      require "chef/util/path_helper"
+      require_relative "../util/path_helper"
 
       resource_name :windows_font
       provides(:windows_font) { true }

@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class RoleRunListRemove < Knife
 
       deps do
-        require "chef/role"
+        require_relative "../role"
       end
 
       banner "knife role run_list remove [ROLE] [ENTRY] (options)"

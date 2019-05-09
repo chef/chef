@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
@@ -25,7 +25,7 @@ class Chef
       attr_accessor :cookbook_name, :version
 
       deps do
-        require "chef/cookbook_version"
+        require_relative "../cookbook_version"
       end
 
       option :all, short: "-a", long: "--all", boolean: true, description: "Delete all versions of the cookbook."

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/util/powershell/cmdlet"
-require "chef/util/powershell/cmdlet_result"
-require "chef/exceptions"
+require_relative "../powershell/cmdlet"
+require_relative "../powershell/cmdlet_result"
+require_relative "../../exceptions"
 
 class Chef
   class Util

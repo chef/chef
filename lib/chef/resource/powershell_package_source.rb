@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/json_compat"
+require_relative "../resource"
+require_relative "../json_compat"
 
 class Chef
   class Resource

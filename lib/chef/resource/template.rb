@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require "chef/resource/file"
-require "chef/mixin/securable"
-require "chef/dist"
+require_relative "file"
+require_relative "../mixin/securable"
+require_relative "../dist"
 
 class Chef
   class Resource

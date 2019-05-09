@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/cron/unix"
+require_relative "unix"
 
 class Chef
   class Provider

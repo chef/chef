@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class CookbookMetadata < Knife
 
       deps do
-        require "chef/cookbook_loader"
-        require "chef/cookbook/metadata"
+        require_relative "../cookbook_loader"
+        require_relative "../cookbook/metadata"
       end
 
       banner "knife cookbook metadata COOKBOOK (options)"

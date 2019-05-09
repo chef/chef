@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "chef/provider/package"
-require "chef/resource/package"
-require "chef/mixin/get_source_from_package"
-require "chef/provider/package/yum/rpm_utils"
+require_relative "../package"
+require_relative "../../resource/package"
+require_relative "../../mixin/get_source_from_package"
+require_relative "yum/rpm_utils"
 
 class Chef
   class Provider

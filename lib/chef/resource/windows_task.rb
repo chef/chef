@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require_relative "../resource"
 require "chef/win32/security" if Chef::Platform.windows?
 
 class Chef

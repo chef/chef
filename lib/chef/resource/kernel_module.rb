@@ -6,7 +6,7 @@
 # Copyright 2016-2018, Shopify Inc.
 # Copyright 2018, Chef Software, Inc.
 
-require "chef/resource"
+require_relative "../resource"
 
 class Chef
   class Resource

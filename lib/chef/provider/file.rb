@@ -17,21 +17,21 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/log"
-require "chef/resource/file"
-require "chef/provider"
+require_relative "../config"
+require_relative "../log"
+require_relative "../resource/file"
+require_relative "../provider"
 require "etc"
 require "fileutils"
-require "chef/scan_access_control"
-require "chef/mixin/checksum"
-require "chef/mixin/file_class"
-require "chef/mixin/enforce_ownership_and_permissions"
-require "chef/util/backup"
-require "chef/util/diff"
-require "chef/util/selinux"
-require "chef/file_content_management/deploy"
-require "chef/dist"
+require_relative "../scan_access_control"
+require_relative "../mixin/checksum"
+require_relative "../mixin/file_class"
+require_relative "../mixin/enforce_ownership_and_permissions"
+require_relative "../util/backup"
+require_relative "../util/diff"
+require_relative "../util/selinux"
+require_relative "../file_content_management/deploy"
+require_relative "../dist"
 
 # The Tao of File Providers:
 #  - the content provider must always return a tempfile that we can delete/mv
