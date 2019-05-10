@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.282 -->
-## [v15.0.282](https://github.com/chef/chef/tree/v15.0.282) (2019-05-09)
+<!-- latest_release 15.0.283 -->
+## [v15.0.283](https://github.com/chef/chef/tree/v15.0.283) (2019-05-10)
 
 #### Merged Pull Requests
-- CHEF_LICENSE environment variables should be quoted [#8513](https://github.com/chef/chef/pull/8513) ([tyler-ball](https://github.com/tyler-ball))
+- Fix for Chef::Exceptions::Win32APIError: The operation completed successfully. [#8451](https://github.com/chef/chef/pull/8451) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Fix for Chef::Exceptions::Win32APIError: The operation completed successfully. [#8451](https://github.com/chef/chef/pull/8451) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.283 -->
 - CHEF_LICENSE environment variables should be quoted [#8513](https://github.com/chef/chef/pull/8513) ([tyler-ball](https://github.com/tyler-ball)) <!-- 15.0.282 -->
 - windows_feature: Fix failures on windows 2008r2 [#8492](https://github.com/chef/chef/pull/8492) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.281 -->
 - Convert require to require_relative [#8508](https://github.com/chef/chef/pull/8508) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.280 -->
