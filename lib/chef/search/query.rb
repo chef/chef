@@ -127,9 +127,13 @@ class Chef
         return args.first if args.first.is_a?(Hash)
 
         args_h = Hash.new
-        # If we have 4 arguments, the first is the now-removed sort option, so
+        # If we have 3 arguments, the first is the now-removed sort option, so
         # just ignore it.
-        args.pop(0) if args.length == 4
+        if args.length == 3
+          Chef::Log.warn("Removing deprecated sort arg to search from #{args}\n");
+          args.shift()
+        end
+
         args_h[:start] = args[0] if args[0]
         args_h[:rows] = args[1]
         args_h[:filter_result] = args[2]
