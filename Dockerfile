@@ -1,6 +1,6 @@
 # About this Dockerfile:
-# Run without any arguments passed in this Dockerfile will build the latest "stable" channel release of Chef, which
-# is manually defined in the VERSION arg.
+# When run without any arguments passed, this Docker file will build the latest "stable" release of Chef. The version
+# of that release is specified in the VERSION arg in this file, and is automatically updated as described below.
 #
 # Several processes occur using this file which are kicked off by our Expeditor pipeline tooling:
 #
