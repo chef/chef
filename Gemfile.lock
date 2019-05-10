@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 8d66449940f04237586b2f928231c6b26e2cc19a
+  revision: 62a879800c77cd6c1808e7a247976d7c910f6209
   branch: master
   specs:
-    ohai (15.0.34)
+    ohai (15.0.35)
       chef-config (>= 12.8, < 16)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -229,7 +229,7 @@ GEM
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     multi_json (1.13.1)
-    multipart-post (2.0.0)
+    multipart-post (2.1.0)
     necromancer (0.4.0)
     net-scp (2.0.0)
       net-ssh (>= 2.6.5, < 6.0.0)
