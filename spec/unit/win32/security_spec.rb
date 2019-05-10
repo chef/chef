@@ -106,4 +106,29 @@ describe "Chef::Win32::Security", :windows_only do
       expect { Chef::ReservedNames::Win32::Security.get_token_information_elevation_type(token) }.to raise_error(Chef::Exceptions::Win32APIError)
     end
   end
+
+  describe "self.lookup_account_name" do
+    let(:security_class) { Chef::ReservedNames::Win32::Security }
+
+    context "when FFI::LastError.error result is ERROR_INSUFFICIENT_BUFFER" do
+      it "does not raise the exception" do
+        expect(FFI::LastError).to receive(:error).and_return(122)
+        expect { security_class.lookup_account_name "system" }.to_not raise_error
+      end
+    end
+
+    context "when operation completed successfully and FFI::LastError.error result is NO_ERROR" do
+      it "does not raise the exception" do
+        expect(FFI::LastError).to receive(:error).and_return(0)
+        expect { security_class.lookup_account_name "system" }.to_not raise_error
+      end
+    end
+
+    context "when FFI::LastError.error result is not ERROR_INSUFFICIENT_BUFFER and not NO_ERROR" do
+      it "raises Chef::ReservedNames::Win32::Error.raise! exception" do
+        expect(FFI::LastError).to receive(:error).and_return(123).at_least(:once)
+        expect { security_class.lookup_account_name "system" }.to raise_error
+      end
+    end
+  end
 end
