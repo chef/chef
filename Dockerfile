@@ -11,8 +11,8 @@
 # Expeditor will tag that image as "current" on Docker Hub.
 #
 # When a build is promoted to our "stable" channel .expeditor/update_dockerfile.sh is run to update the version
-# in this file and also tag that image as "latest" and "stable" on Docker Hub. Additionally major and minor tags will be
-# applied so 15.0.260 would be tagged as "latest", "stable", "15" and "15.0", as well as "15.0.260".
+# in this file and also tag that image as "latest" on Docker Hub. Additionally major and minor tags will be
+# applied so 15.0.260 would be tagged as "latest", "15" and "15.0", as well as "15.0.260".
 
 FROM busybox
 MAINTAINER Chef Software, Inc. <docker@chef.io>
