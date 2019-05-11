@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 15.0.285 -->
+## [v15.0.285](https://github.com/chef/chef/tree/v15.0.285) (2019-05-11)
 
 #### Merged Pull Requests
+- Use exports compatibile with /bin/sh in the bootstrap script [#8507](https://github.com/chef/chef/pull/8507) ([MarkGibbons](https://github.com/MarkGibbons))
 - Add comments to the Dockerfile explaining how it all works [#8509](https://github.com/chef/chef/pull/8509) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Use exports compatibile with /bin/sh in the bootstrap script [#8507](https://github.com/chef/chef/pull/8507) ([MarkGibbons](https://github.com/MarkGibbons)) <!-- 15.0.285 -->
 - Add comments to the Dockerfile explaining how it all works [#8509](https://github.com/chef/chef/pull/8509) ([tas50](https://github.com/tas50)) <!-- 15.0.284 -->
 - Chef 15: bootstrap options --max-wait raises NoMethodError: undefined method / [#8489](https://github.com/chef/chef/pull/8489) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.284 -->
 - Fix for Chef::Exceptions::Win32APIError: The operation completed successfully. [#8451](https://github.com/chef/chef/pull/8451) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.283 -->
