@@ -131,6 +131,28 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  context "with --bootstrap-proxy" do
+    let(:bootstrap_cli_options) { [ "--bootstrap-proxy", "1.1.1.1" ] }
+    let(:rendered_template) do
+      knife.merge_configs
+      knife.render_template
+    end
+    it "configures the https_proxy environment variable in the bootstrap template correctly" do
+      expect(rendered_template).to match(%r{https_proxy="1.1.1.1" export https_proxy})
+    end
+  end
+
+  context "with --bootstrap-no-proxy" do
+    let(:bootstrap_cli_options) { [ "--bootstrap-no-proxy", "localserver" ] }
+    let(:rendered_template) do
+      knife.merge_configs
+      knife.render_template
+    end
+    it "configures the https_proxy environment variable in the bootstrap template correctly" do
+      expect(rendered_template).to match(%r{no_proxy="localserver" export no_proxy})
+    end
+  end
+
   context "with :bootstrap_template and :template_file cli options" do
     let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "other-template" ] }
 
