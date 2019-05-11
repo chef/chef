@@ -300,7 +300,7 @@ class Chef
 
         # this needs to be lazy in order to avoid circular dependencies since ResourceBuilder
         # will requires the entire provider+resolver universe
-        require "chef/resource_builder" unless defined?(Chef::ResourceBuilder)
+        require_relative "../resource_builder" unless defined?(Chef::ResourceBuilder)
 
         Chef::ResourceBuilder.new(
           type:                type,

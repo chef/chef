@@ -20,7 +20,7 @@
 require_relative "node"
 require_relative "directory"
 require_relative "../exceptions"
-require "chef/win32/security" if Chef::Platform.windows?
+require_relative "../../../win32/security" if Chef::Platform.windows?
 
 class Chef
   module ChefFS

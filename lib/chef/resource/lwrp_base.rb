@@ -25,7 +25,7 @@ require_relative "../log"
 require_relative "../exceptions"
 require_relative "../mixin/convert_to_class_name"
 require_relative "../mixin/from_file"
-require "chef/mixin/params_validate" # for DelayedEvaluator
+require_relative "../mixin/params_validate" # for DelayedEvaluator
 
 class Chef
   class Resource

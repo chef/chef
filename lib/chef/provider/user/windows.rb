@@ -18,7 +18,7 @@
 
 require_relative "../user"
 require_relative "../../exceptions"
-require "chef/util/windows/net_user" if Chef::Platform.windows?
+require_relative "../../util/windows/net_user" if Chef::Platform.windows?
 
 class Chef
   class Provider

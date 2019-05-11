@@ -16,7 +16,7 @@
 # limitations under the License.
 
 require_relative "config"
-require "chef/monkey_patches/webrick-utils" if Chef::Platform.windows?
+require_relative "monkey_patches/webrick-utils" if Chef::Platform.windows?
 
 class Chef
   module LocalMode

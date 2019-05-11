@@ -18,7 +18,7 @@
 
 # TODO: Allow new_resource.source to be a Product Code as a GUID for uninstall / network install
 
-require "chef/win32/api/installer" if (RUBY_PLATFORM =~ /mswin|mingw32|windows/) && Chef::Platform.supports_msi?
+require_relative "../../../win32/api/installer" if (RUBY_PLATFORM =~ /mswin|mingw32|windows/) && Chef::Platform.supports_msi?
 require_relative "../../../mixin/shell_out"
 
 class Chef
