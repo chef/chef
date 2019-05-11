@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.285 -->
-## [v15.0.285](https://github.com/chef/chef/tree/v15.0.285) (2019-05-11)
+<!-- latest_release 15.0.286 -->
+## [v15.0.286](https://github.com/chef/chef/tree/v15.0.286) (2019-05-11)
 
 #### Merged Pull Requests
-- Use exports compatibile with /bin/sh in the bootstrap script [#8507](https://github.com/chef/chef/pull/8507) ([MarkGibbons](https://github.com/MarkGibbons))
-- Add comments to the Dockerfile explaining how it all works [#8509](https://github.com/chef/chef/pull/8509) ([tas50](https://github.com/tas50))
+- Change some more require to require_relative [#8519](https://github.com/chef/chef/pull/8519) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Change some more require to require_relative [#8519](https://github.com/chef/chef/pull/8519) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.286 -->
 - Use exports compatibile with /bin/sh in the bootstrap script [#8507](https://github.com/chef/chef/pull/8507) ([MarkGibbons](https://github.com/MarkGibbons)) <!-- 15.0.285 -->
 - Add comments to the Dockerfile explaining how it all works [#8509](https://github.com/chef/chef/pull/8509) ([tas50](https://github.com/tas50)) <!-- 15.0.284 -->
 - Chef 15: bootstrap options --max-wait raises NoMethodError: undefined method / [#8489](https://github.com/chef/chef/pull/8489) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.284 -->
