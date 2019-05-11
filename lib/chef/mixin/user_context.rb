@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/util/windows/logon_session" if Chef::Platform.windows?
+require_relative "../util/windows/logon_session" if Chef::Platform.windows?
 
 class Chef
   module Mixin

@@ -19,9 +19,9 @@
 require_relative "../exceptions"
 require_relative "wide_string"
 require_relative "../platform/query_helpers"
-require "chef/win32/error" if Chef::Platform.windows?
-require "chef/win32/api/system" if Chef::Platform.windows?
-require "chef/win32/api/unicode" if Chef::Platform.windows?
+require_relative "../win32/error" if Chef::Platform.windows?
+require_relative "../win32/api/system" if Chef::Platform.windows?
+require_relative "../win32/api/unicode" if Chef::Platform.windows?
 
 class Chef
   module Mixin

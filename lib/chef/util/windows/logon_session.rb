@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/win32/api/security" if Chef::Platform.windows?
+require_relative "../../win32/api/security" if Chef::Platform.windows?
 require_relative "../../mixin/wide_string"
 
 class Chef

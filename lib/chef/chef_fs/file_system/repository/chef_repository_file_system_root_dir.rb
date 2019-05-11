@@ -44,7 +44,7 @@ require_relative "../../data_handler/role_data_handler"
 require_relative "../../data_handler/user_data_handler"
 require_relative "../../data_handler/group_data_handler"
 require_relative "../../data_handler/container_data_handler"
-require "chef/win32/security" if Chef::Platform.windows?
+require_relative "../../../win32/security" if Chef::Platform.windows?
 
 class Chef
   module ChefFS
