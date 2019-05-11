@@ -15,7 +15,7 @@
 #
 
 name "chef"
-friendly_name "Chef Client"
+friendly_name "Chef Infra Client"
 maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.chef.io"
 license "Chef EULA"
