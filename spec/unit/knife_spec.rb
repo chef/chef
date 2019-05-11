@@ -280,6 +280,31 @@ describe Chef::Knife do
       expect(other_deps_loaded).to be_truthy
     end
 
+    describe "working with unmerged configuration in #config_source" do
+      let(:command) { KnifeSpecs::TestYourself.new([]) }
+
+      before do
+        KnifeSpecs::TestYourself.option(:opt_with_default,
+                                        short: "-D VALUE",
+                                        default: "default-value")
+      end
+      # This supports a use case used by plugins, where the pattern
+      # seems to follow:
+      #   cmd = KnifeCommand.new
+      #   cmd.config[:config_key] = value
+      #   cmd.run
+      #
+      # This bypasses Knife::run and the `merge_configs` call it
+      # performs - config_source should break when that happens.
+      context "when config is fed in directly without a merge" do
+        it "retains the value but returns nil as a config source" do
+          command.config[:test1] = "value"
+          expect(command.config[:test1]).to eq "value"
+          expect(command.config_source(:test1)).to eq nil
+        end
+      end
+
+    end
     describe "merging configuration options" do
       before do
         KnifeSpecs::TestYourself.option(:opt_with_default,

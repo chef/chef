@@ -317,6 +317,10 @@ class Chef
         exit 1
       end
 
+      # Grab a copy before config merge occurs, so that we can later identify
+      # whare a given config value is sourced from.
+      @original_config = config.dup
+
       # copy Mixlib::CLI over so that it can be configured in config.rb/knife.rb
       # config file
       Chef::Config[:verbosity] = config[:verbosity] if config[:verbosity]
@@ -356,8 +360,9 @@ class Chef
     #  config_file_settings - Chef::Config[:knife] sub-hash
     #  config               - mixlib-cli settings (accessor from the mixin)
     def merge_configs
-      # This is the config after user CLI options have been evaluated, and it contains only
-      # user-supplied values.
+      # Update our original_config - if someone has created a knife command
+      # instance directly, they are likely ot have set cmd.config values directly
+      # as well, at which point our saved original config is no longer up to date.
       @original_config = config.dup
       # other code may have a handle to the config object, so use Hash#replace to deliberately
       # update-in-place.
@@ -373,7 +378,9 @@ class Chef
     #   - :cli - this was explicitly provided on the CLI
     #   - :config - this came from Chef::Config[:knife]
     #   - :cli_default - came from a declared CLI `option`'s `default` value.
-    #   - nil - if they key does not exist
+    #   - nil - if the key could not be found in any source.
+    #           This can happen when it is invalid, or has been
+    #           set directly into #config without then calling #merge_config
     def config_source(key)
       return :cli if @original_config.include? key
       return :config if config_file_settings.key? key
