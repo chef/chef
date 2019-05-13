@@ -164,13 +164,11 @@ The LC_ALL property in the locale resource has been deprecated as the usage of t
 
 ### Knife Bootstrap
 
-Knife bootstrap has been updated, and Windows bootstrap has been merged into core Chef's `knife bootstrap`. This marks the deprecation of the `knife-windows` plugin's `bootstrap` behavior. This change also addresses [CVE-2015-8559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8559): The `knife bootstrap` command in chef leaks the validator.pem private RSA key to /var/log/messages.
+Knife bootstrap has been entirely rewritten with native support for Windows bootstrapping now part of the main `knife bootstrap` command. This marks the deprecation of the `knife-windows` plugin's `bootstrap` behavior. This change also addresses [CVE-2015-8559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8559): The `knife bootstrap` command in chef leaks the validator.pem private RSA key to /var/log/messages.
 
-*Important*: `knife bootstrap` works with all supported versions of Chef client.  Older versions may continue to work as far back as 12.20
+*Important*: `knife bootstrap` can bootstrap all supported versions of Chef Infra Client. Older versions may continue to work as far back as 12.20.
 
-In order to accomodate a combined bootstrap that supports both SSH and WinRM, CLI flags have been added, removed, or changed.  Using the changed options will result in deprecation warnings, but `knife bootstrap` will accept those options unless otherwise noted.
-
-Using removed options will cause the command to fail.
+In order to accomodate a combined bootstrap that supports both SSH and WinRM, some CLI flags have been added, removed, or changed.  Using the changed options will result in deprecation warnings, but `knife bootstrap` will accept those options unless otherwise noted. Using removed options will cause the command to fail.
 
 #### New Flags
 
