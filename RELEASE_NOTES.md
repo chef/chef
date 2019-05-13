@@ -29,11 +29,11 @@ license acceptance. If the license is accepted, a marker file will be written to
 
 ## New Resources
 
-### archive resource
+### archive_file resource
 
-Use the `archive` resource decompress multiple archive formats without the need for compression tools on the host.
+Use the `archive_file` resource decompress multiple archive formats without the need for compression tools on the host.
 
-See the [archive](https://docs.chef.io/resource_archive.html) documentation for more information.
+See the [archive_file](https://docs.chef.io/resource_archive_file.html) documentation for more information.
 
 ### windows_uac resource
 
