@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.292 -->
-## [v15.0.292](https://github.com/chef/chef/tree/v15.0.292) (2019-05-13)
+<!-- latest_release 15.0.293 -->
+## [v15.0.293](https://github.com/chef/chef/tree/v15.0.293) (2019-05-13)
 
 #### Merged Pull Requests
-- Chef 15: Add --session-timeout bootstrap option for both ssh &amp; winrm [#8521](https://github.com/chef/chef/pull/8521) ([vsingh-msys](https://github.com/vsingh-msys))
+- Rename the windows_dfs :install actions to :create [#8527](https://github.com/chef/chef/pull/8527) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Rename the windows_dfs :install actions to :create [#8527](https://github.com/chef/chef/pull/8527) ([tas50](https://github.com/tas50)) <!-- 15.0.293 -->
 - Chef 15: Add --session-timeout bootstrap option for both ssh &amp; winrm [#8521](https://github.com/chef/chef/pull/8521) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.292 -->
 - Use new Net:SSH host key verify values [#8524](https://github.com/chef/chef/pull/8524) ([btm](https://github.com/btm)) <!-- 15.0.291 -->
 - Update to Chef Infra Client in Add/Remove Programs &amp; Event Log [#8520](https://github.com/chef/chef/pull/8520) ([tas50](https://github.com/tas50)) <!-- 15.0.290 -->
