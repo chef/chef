@@ -1229,7 +1229,7 @@ describe Chef::Knife::Bootstrap do
         expect(knife.host_verify_opts).to eq( { verify_host_key: false } )
       end
       it "provides a correct default when no option given" do
-        expect(knife.host_verify_opts).to eq( { verify_host_key: "always"} )
+        expect(knife.host_verify_opts).to eq( { verify_host_key: "always" } )
       end
     end
   end

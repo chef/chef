@@ -541,27 +541,7 @@ class Chef
 
         $stdout.sync = true
         register_client
-        begin
-          connect!
-        rescue Train::Transports::SSHFailed => e
-          if e.message =~ /fingerprint (\S+) is unknown for "(.+)"/
-            fingerprint = $1
-            hostname,ip = $2.split(',')
-            puts "The authenticity of host '#{hostname} (#{ip})' can't be established."
-            # TODO: convert the SHA256 base64 value to hex with colons
-            # 'ssh' example output:
-            # RSA key fingerprint is e5:cb:c0:e2:21:3b:12:52:f8:ce:cb:00:24:e2:0c:92.
-            # ECDSA key fingerprint is 5d:67:61:08:a9:d7:01:fd:5e:ae:7e:09:40:ef:c0:3c.
-            puts "fingerprint is #{fingerprint}."
-            ui.confirm("Are you sure you want to continue connecting")
-            # FIXME: this should save the key to known_hosts but doesn't appear to be
-            config[:ssh_verify_host_key] = :accept_new
-            connection_opts(reset: true)
-            retry
-          end
-
-          raise e
-        end
+        connect!
 
         unless client_builder.client_path.nil?
           bootstrap_context.client_pem = client_builder.client_path
@@ -612,6 +592,24 @@ class Chef
         ui.info("Connecting to #{ui.color(server_name, :bold)}")
         opts = connection_opts.dup
         do_connect(opts)
+      rescue Train::Transports::SSHFailed => e
+        if e.message =~ /fingerprint (\S+) is unknown for "(.+)"/
+          fingerprint = $1
+          hostname, ip = $2.split(",")
+          # TODO: convert the SHA256 base64 value to hex with colons
+          # 'ssh' example output:
+          # RSA key fingerprint is e5:cb:c0:e2:21:3b:12:52:f8:ce:cb:00:24:e2:0c:92.
+          # ECDSA key fingerprint is 5d:67:61:08:a9:d7:01:fd:5e:ae:7e:09:40:ef:c0:3c.
+          puts "The authenticity of host '#{hostname} (#{ip})' can't be established."
+          puts "fingerprint is #{fingerprint}."
+          ui.confirm("Are you sure you want to continue connecting") # will exit 3 on N
+          # FIXME: this should save the key to known_hosts but doesn't appear to be
+          config[:ssh_verify_host_key] = :accept_new
+          connection_opts(reset: true)
+          retry
+        end
+
+        raise e
       rescue Train::Error => e
         require "net/ssh"
         if e.cause && e.cause.class == Net::SSH::AuthenticationFailed
