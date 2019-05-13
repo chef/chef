@@ -31,13 +31,51 @@ license acceptance. If the license is accepted, a marker file will be written to
 
 ### archive resource
 
+Use the `archive` resource decompress multiple archive formats without the need for compression tools on the host.
+
+See the [archive](https://docs.chef.io/resource_archive.html) documentation for more information.
+
 ### windows_uac resource
 
-### windows_dfs resources
+Use the `windows_uac` resource to configure UAC settings on Windows hosts.
 
-### windows_dns resources
+See the [windows_uac](https://docs.chef.io/resource_windows_uac.html) documentation for more information.
+
+### windows_dfs_folder resource
+
+Use the `windows_dfs_folder` resource to create and delete Windows DFS folders.
+
+See the [windows_dfs_folder](https://docs.chef.io/resource_windows_dfs_folder.html) documentation for more information.
+
+### windows_dfs_namespace resources
+
+Use the `windows_dfs_namespace` resource to create and delete Windows DFS namespaces.
+
+See the [windows_dfs_namespace](https://docs.chef.io/resource_windows_dfs_namespace.html) documentation for more information.
+
+### windows_dfs_server resources
+
+Use the `windows_dfs_server` resource to configure Windows DFS server settings.
+
+See the [windows_dfs_server](https://docs.chef.io/resource_windows_dfs_server.html) documentation for more information.
+
+### windows_dns_record resource
+
+Use the `windows_dns_record` resource to create or delete DNS records.
+
+See the [windows_dns_record](https://docs.chef.io/resource_windows_dns_record.html) documentation for more information.
+
+### windows_dnz_zone resource
+
+Use the `windows_dnz_zone` resource to create or delete DNS zones.
+
+See the [windows_dnz_zone](https://docs.chef.io/resource_windows_dnz_zone.html) documentation for more information.
 
 ### snap_package resource
+
+Use the `snap_package` resource to install snap packages on Ubuntu hosts.
+
+See the [snap_package](https://docs.chef.io/resource_snap_package.html) documentation for more information.
 
 ## Resource Improvements
 
@@ -83,7 +121,7 @@ Chef now ships with Ruby 2.6.3. This new version of Ruby improves performance an
 
 ### knife cookbook site deprecated in favor of knife supermarket
 
-The knife cookbook site command has been deprecated in favor of the knife supermarket command. Under the hood they are both actually the same codebase, but running knife cookbook site will now product a warning message. In Chef 16 we will remove the knife cookbook site command entirely.
+The knife cookbook site command has been deprecated in favor of the knife supermarket command. Knife cookbook site will now product a warning message and in Chef 16 we will remove the knife cookbook site command entirely.
 
 ### locale LC_ALL property
 
@@ -93,15 +131,11 @@ The LC_ALL property in the locale resource has been deprecated as the usage of t
 
 ### Knife Bootstrap
 
-Knife bootstrap has been updated, and Windows bootstrap has been merged into core Chef's `knife bootstrap`. This marks the deprecation of the `knife-windows` plugin's `bootstrap` behavior.
-This change also addresses [CVE-2015-8559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8559): The `knife bootstrap` command in chef leaks the validator.pem private RSA key to /var/log/messages.
+Knife bootstrap has been updated, and Windows bootstrap has been merged into core Chef's `knife bootstrap`. This marks the deprecation of the `knife-windows` plugin's `bootstrap` behavior. This change also addresses [CVE-2015-8559](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8559): The `knife bootstrap` command in chef leaks the validator.pem private RSA key to /var/log/messages.
 
 *Important*: `knife bootstrap` works with all supported versions of Chef client.  Older versions may continue to work as far back as 12.20
 
-In order to accomodate a combined bootstrap that supports both SSH and WinRM,
-CLI flags have been added, removed, or changed.  Using the changed options will
-result in deprecation warnings, but `knife bootstrap` will accept those options
-unless otherwise noted.
+In order to accomodate a combined bootstrap that supports both SSH and WinRM, CLI flags have been added, removed, or changed.  Using the changed options will result in deprecation warnings, but `knife bootstrap` will accept those options unless otherwise noted.
 
 Using removed options will cause the command to fail.
 
@@ -149,8 +183,7 @@ Using removed options will cause the command to fail.
 
 #### Usage Changes
 
-Instead of specifying protocol with `-o`, it's also possible to prefix
-the target hostname with the protocol in URL format. For example:
+Instead of specifying protocol with `-o`, it's also possible to prefix the target hostname with the protocol in URL format. For example:
 
 ```
   knife bootstrap example.com -o ssh
