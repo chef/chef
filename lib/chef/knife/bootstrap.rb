@@ -58,6 +58,12 @@ class Chef
         long: "--max-wait SECONDS",
         description: "The maximum time to wait for the initial connection to be established."
 
+      option :session_timeout,
+        long: "--session-timeout SECONDS",
+        description: "The number of seconds to wait for each connection operation to be acknowledged while running bootstrap.",
+        proc: Proc.new { |protocol| Chef::Config[:knife][:session_timeout] = protocol },
+        default: 60
+
       # WinRM Authentication
       option :winrm_ssl_peer_fingerprint,
         long: "--winrm-ssl-peer-fingerprint FINGERPRINT",
@@ -108,11 +114,6 @@ class Chef
         long: "--kerberos-service KERBEROS_SERVICE",
         description: "The Kerberos service used for authentication.",
         proc: Proc.new { |protocol| Chef::Config[:knife][:kerberos_service] = protocol }
-
-      option :winrm_session_timeout,
-        long: "--winrm-session-timeout SECONDS",
-        description: "The number of seconds to wait for each WinRM operation to be acknowledged while running bootstrap.",
-        proc: Proc.new { |protocol| Chef::Config[:knife][:winrm_session_timeout] = protocol }
 
       ## SSH Authentication
       option :ssh_gateway,
@@ -373,6 +374,8 @@ class Chef
           [:connection_port, "--winrm-port"],
         winrm_authentication_protocol:
           [:winrm_auth_method, "--winrm-authentication-protocol PROTOCOL"],
+        winrm_session_timeout:
+          [:session_timeout, "--winrm-session-timeout MINUTES"],
       }.freeze
 
       DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
@@ -538,6 +541,7 @@ class Chef
         validate_policy_options!
 
         winrm_warn_no_ssl_verification
+        warn_on_short_session_timeout
 
         $stdout.sync = true
         register_client
@@ -760,6 +764,24 @@ class Chef
         true
       end
 
+      # If session_timeout is too short, it is likely
+      # a holdover from "--winrm-session-timeout" which used
+      # minutes as its unit, instead of seconds.
+      # Warn the human so that they are not surprised.
+      #
+      # This will also erroneously warn if a string value is given,
+      # but argument type validation is something that needs addressing
+      # more broadly.
+      def warn_on_short_session_timeout
+        timeout = config_value(:session_timeout).to_i
+        if timeout <= 15
+          ui.warn <<~EOM
+            --session-timeout is set to #{config[:session_timeout]} minutes.
+            Did you mean "--session-timeout #{config[:session_timeout] * 60}" seconds?
+          EOM
+        end
+      end
+
       def winrm_warn_no_ssl_verification
         return unless winrm?
 
@@ -846,6 +868,7 @@ class Chef
         return opts if winrm?
         opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
         opts[:forward_agent] = (config_value(:ssh_forward_agent) === true)
+        opts[:connection_timeout] = config_value(:session_timeout).to_i
         opts
       end
 
@@ -944,7 +967,7 @@ class Chef
           opts[:ca_trust_file] = config_value(:ca_trust_file)
         end
 
-        opts[:operation_timeout] = config_value(:winrm_session_timeout) || 60
+        opts[:operation_timeout] = config_value(:session_timeout).to_i
 
         opts
       end
