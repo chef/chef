@@ -69,7 +69,8 @@ class Chef
       option :session_timeout,
         long: "--session-timeout SECONDS",
         description: "The number of seconds to wait for each connection operation to be acknowledged while running bootstrap.",
-        proc: Proc.new { |protocol| Chef::Config[:knife][:session_timeout] = protocol }
+        proc: Proc.new { |protocol| Chef::Config[:knife][:session_timeout] = protocol },
+        default: 60
 
       # WinRM Authentication
       option :winrm_ssl_peer_fingerprint,
@@ -382,7 +383,7 @@ class Chef
         winrm_authentication_protocol:
           [:winrm_auth_method, "--winrm-authentication-protocol PROTOCOL"],
         winrm_session_timeout:
-          [:session_timeout, "--winrm-session-timeout SECONDS"],
+          [:session_timeout, "--winrm-session-timeout MINUTES"],
       }.freeze
 
       DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
@@ -838,7 +839,7 @@ class Chef
         return opts if connection_protocol == "winrm"
         opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
         opts[:forward_agent] = (config_value(:ssh_forward_agent) === true)
-        opts[:connection_timeout] = config_value(:session_timeout)&.to_i || 60
+        opts[:connection_timeout] = config_value(:session_timeout).to_i
         opts
       end
 
@@ -937,7 +938,7 @@ class Chef
           opts[:ca_trust_file] = config_value(:ca_trust_file)
         end
 
-        opts[:operation_timeout] = config_value(:session_timeout)&.to_i || 60
+        opts[:operation_timeout] = config_value(:session_timeout).to_i
 
         opts
       end
