@@ -41,7 +41,7 @@ class Chef
       property :description, String,
                description: "Description for the share."
 
-      action :install do
+      action :create do
         description "Creates the folder in dfs namespace."
 
         raise "target_path is required for install" unless property_is_set?(:target_path)

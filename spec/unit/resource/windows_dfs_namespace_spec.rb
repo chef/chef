@@ -28,12 +28,12 @@ describe Chef::Resource::WindowsDfsNamespace do
     expect(resource.namespace_name).to eql("fakey_fakerton")
   end
 
-  it "sets the default action as :install" do
-    expect(resource.action).to eql([:install])
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
   end
 
-  it "supports :install and :delete actions" do
-    expect { resource.action :install }.not_to raise_error
+  it "supports :create and :delete actions" do
+    expect { resource.action :create }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
   end
 end
