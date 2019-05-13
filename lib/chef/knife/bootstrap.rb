@@ -31,15 +31,6 @@ class Chef
       SUPPORTED_CONNECTION_PROTOCOLS = %w{ssh winrm}.freeze
       WINRM_AUTH_PROTOCOL_LIST = %w{plaintext kerberos ssl negotiate}.freeze
 
-      # @param opt_arry [Array]
-      #
-      # @return [String] a friendly quoted list of items complete with "and"
-      def self.friendly_opt_list(opt_array)
-        opts = opt_array.map { |x| "'#{x}'" }
-        return opts.join(" and ") if opts.size < 3
-        opts[0..-2].join(", ") + " and " + opts[-1]
-      end
-
       # Common connectivity options
       option :connection_user,
         short: "-U USERNAME",
@@ -59,7 +50,8 @@ class Chef
       option :connection_protocol,
         short: "-o PROTOCOL",
         long: "--connection-protocol PROTOCOL",
-        description: "The protocol to use to connect to the target node. Supports: #{friendly_opt_list(SUPPORTED_CONNECTION_PROTOCOLS)}."
+        description: "The protocol to use to connect to the target node.",
+        in: SUPPORTED_CONNECTION_PROTOCOLS
 
       option :max_wait,
         short: "-W SECONDS",

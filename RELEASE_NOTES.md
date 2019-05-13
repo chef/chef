@@ -149,12 +149,13 @@ Using removed options will cause the command to fail.
 | --connection-user | user to authenticate as, regardless of protocol |
 | --connection-password| Password to authenticate as, regardless of protocol |
 | --connection-port | port to connect to, regardless of protocol |
+| --ssh-verify-host-key VALUE | Verify host key. Default is 'always'. Valid values are 'accept', 'accept\_new', 'accept\_new\_or\_local\_tunnel', and 'never'. |
 
 #### Changed Flags
 
 | Flag | New Option | Notes |
 |-----:|:-----------|:------|
-| --[no-]host-key-verify |--[no-]ssh-verify-host-key| |
+| --[no-]host-key-verify |--ssh-verify-host-key VALUE | See above for valid values. |
 | --forward-agent | --ssh-forward-agent| |
 | --session-timeout MINUTES | --session-timeout SECONDS|New for ssh, existing for winrm. The unit has changed from MINUTES to SECONDS for consistency with other timeouts.|
 | --ssh-password | --connection-password | |
