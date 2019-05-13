@@ -1131,7 +1131,7 @@ describe Chef::Knife::Bootstrap do
               logger: Chef::Log,
               keys_only: false,
               sudo: false,
-              verify_host_key: true,
+              verify_host_key: "always",
               non_interactive: true,
             }
           end
@@ -1229,7 +1229,7 @@ describe Chef::Knife::Bootstrap do
         expect(knife.host_verify_opts).to eq( { verify_host_key: false } )
       end
       it "provides a correct default when no option given" do
-        expect(knife.host_verify_opts).to eq( { verify_host_key: true } )
+        expect(knife.host_verify_opts).to eq( { verify_host_key: "always"} )
       end
     end
   end
