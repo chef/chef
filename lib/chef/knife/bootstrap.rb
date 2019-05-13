@@ -31,15 +31,6 @@ class Chef
       SUPPORTED_CONNECTION_PROTOCOLS = %w{ssh winrm}.freeze
       WINRM_AUTH_PROTOCOL_LIST = %w{plaintext kerberos ssl negotiate}.freeze
 
-      # @param opt_arry [Array]
-      #
-      # @return [String] a friendly quoted list of items complete with "and"
-      def self.friendly_opt_list(opt_array)
-        opts = opt_array.map { |x| "'#{x}'" }
-        return opts.join(" and ") if opts.size < 3
-        opts[0..-2].join(", ") + " and " + opts[-1]
-      end
-
       # Common connectivity options
       option :connection_user,
         short: "-U USERNAME",
@@ -59,7 +50,8 @@ class Chef
       option :connection_protocol,
         short: "-o PROTOCOL",
         long: "--connection-protocol PROTOCOL",
-        description: "The protocol to use to connect to the target node. Supports: #{friendly_opt_list(SUPPORTED_CONNECTION_PROTOCOLS)}."
+        description: "The protocol to use to connect to the target node.",
+        in: SUPPORTED_CONNECTION_PROTOCOLS
 
       option :max_wait,
         short: "-W SECONDS",
@@ -88,7 +80,7 @@ class Chef
       option :winrm_auth_method,
         short: "-w AUTH-METHOD",
         long: "--winrm-auth-method AUTH-METHOD",
-        description: "The WinRM authentication method to use. Valid choices are #{friendly_opt_list(WINRM_AUTH_PROTOCOL_LIST)}.",
+        description: "The WinRM authentication method to use.",
         proc: Proc.new { |protocol| Chef::Config[:knife][:winrm_auth_method] = protocol },
         in: WINRM_AUTH_PROTOCOL_LIST
 
@@ -146,9 +138,9 @@ class Chef
         description: "The SSH identity file used for authentication."
 
       option :ssh_verify_host_key,
-        long: "--[no-]ssh-verify-host-key",
-        description: "Verify host key, enabled by default.",
-        boolean: true
+        long: "--ssh-verify-host-key VALUE",
+        description: "Verify host key. Default is 'always'.",
+        in: %w{always accept_new accept_new_or_local_tunnel never}
 
       #
       # bootstrap options
@@ -162,7 +154,7 @@ class Chef
 
       option :channel,
         long: "--channel CHANNEL",
-        description: "Install from the given channel.  Valid values are 'stable, 'current', and 'unstable'. Default is 'stable'",
+        description: "Install from the given channel. Default is 'stable'.",
         default: "stable",
         in: %w{stable current unstable}
 
@@ -550,6 +542,7 @@ class Chef
         $stdout.sync = true
         register_client
         connect!
+
         unless client_builder.client_path.nil?
           bootstrap_context.client_pem = client_builder.client_path
         end
@@ -599,6 +592,24 @@ class Chef
         ui.info("Connecting to #{ui.color(server_name, :bold)}")
         opts = connection_opts.dup
         do_connect(opts)
+      rescue Train::Transports::SSHFailed => e
+        if e.message =~ /fingerprint (\S+) is unknown for "(.+)"/
+          fingerprint = $1
+          hostname, ip = $2.split(",")
+          # TODO: convert the SHA256 base64 value to hex with colons
+          # 'ssh' example output:
+          # RSA key fingerprint is e5:cb:c0:e2:21:3b:12:52:f8:ce:cb:00:24:e2:0c:92.
+          # ECDSA key fingerprint is 5d:67:61:08:a9:d7:01:fd:5e:ae:7e:09:40:ef:c0:3c.
+          puts "The authenticity of host '#{hostname} (#{ip})' can't be established."
+          puts "fingerprint is #{fingerprint}."
+          ui.confirm("Are you sure you want to continue connecting") # will exit 3 on N
+          # FIXME: this should save the key to known_hosts but doesn't appear to be
+          config[:ssh_verify_host_key] = :accept_new
+          connection_opts(reset: true)
+          retry
+        end
+
+        raise e
       rescue Train::Error => e
         require "net/ssh"
         if e.cause && e.cause.class == Net::SSH::AuthenticationFailed
@@ -781,8 +792,8 @@ class Chef
 
       # @return a configuration hash suitable for connecting to the remote
       # host via train
-      def connection_opts
-        return @connection_opts unless @connection_opts.nil?
+      def connection_opts(reset: false)
+        return @connection_opts unless @connection_opts.nil? || reset == true
         @connection_opts = {}
         @connection_opts.merge! base_opts
         @connection_opts.merge! host_verify_opts
@@ -824,8 +835,7 @@ class Chef
           { self_signed: config_value(:winrm_no_verify_cert) === true }
         elsif ssh?
           # Fall back to the old knife config key name for back compat.
-          { verify_host_key: config_value(:ssh_verify_host_key,
-                                          :host_key_verify, true) === true }
+          { verify_host_key: config_value(:ssh_verify_host_key, :host_key_verify, "always") }
         else
           {}
         end
