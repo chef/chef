@@ -65,11 +65,11 @@ Use the `windows_dns_record` resource to create or delete DNS records.
 
 See the [windows_dns_record](https://docs.chef.io/resource_windows_dns_record.html) documentation for more information.
 
-### windows_dnz_zone resource
+### windows_dns_zone resource
 
-Use the `windows_dnz_zone` resource to create or delete DNS zones.
+Use the `windows_dns_zone` resource to create or delete DNS zones.
 
-See the [windows_dnz_zone](https://docs.chef.io/resource_windows_dnz_zone.html) documentation for more information.
+See the [windows_dns_zone](https://docs.chef.io/resource_windows_dns_zone.html) documentation for more information.
 
 ### snap_package resource
 
