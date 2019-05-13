@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.290 -->
-## [v15.0.290](https://github.com/chef/chef/tree/v15.0.290) (2019-05-13)
+<!-- latest_release 15.0.291 -->
+## [v15.0.291](https://github.com/chef/chef/tree/v15.0.291) (2019-05-13)
 
 #### Merged Pull Requests
-- Update to Chef Infra Client in Add/Remove Programs &amp; Event Log [#8520](https://github.com/chef/chef/pull/8520) ([tas50](https://github.com/tas50))
+- Use new Net:SSH host key verify values [#8524](https://github.com/chef/chef/pull/8524) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup -->
 ### Changes since latest stable release
 
 #### Merged Pull Requests
+- Use new Net:SSH host key verify values [#8524](https://github.com/chef/chef/pull/8524) ([btm](https://github.com/btm)) <!-- 15.0.291 -->
 - Update to Chef Infra Client in Add/Remove Programs &amp; Event Log [#8520](https://github.com/chef/chef/pull/8520) ([tas50](https://github.com/tas50)) <!-- 15.0.290 -->
 - Chef 15: Minor winrm check code refactor [#8522](https://github.com/chef/chef/pull/8522) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.289 -->
 - Pin bundler to 1.17.2 which is included in Ruby 2.6 [#8518](https://github.com/chef/chef/pull/8518) ([tas50](https://github.com/tas50)) <!-- 15.0.288 -->
