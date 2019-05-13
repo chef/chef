@@ -224,14 +224,6 @@ Instead of specifying protocol with `-o`, it's also possible to prefix the targe
   knife bootstrap winrm://example.com
 ```
 
-### Audit Mode
-
-Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superseded by InSpec and has been removed.
-
-### powershell_script now allows overriding the default flags
-
-We now append `powershell_script` user flags to the default flags, rather than the other way around, making user flags override the defaults. This is the correct behavior, but it may cause scripts to execute differently than in previous Chef releases.
-
 ### Chef Infra Client packages remove /opt/chef before installation
 
 Upon upgrading Chef Infra Client packages the /opt/chef directory is removed. This ensures any `chef_gem` installed gem versions and other modifications to /opt/chef will removed to prevent upgrade issues. Due to technical details with rpm script execution order the way this was implemented was that a pre-installation script wipes /opt/chef before every install (done consistently this way on every package manager).
@@ -239,6 +231,10 @@ Upon upgrading Chef Infra Client packages the /opt/chef directory is removed. Th
 Users who are properly managing customizations to /opt/chef through Chef recipes won't be affected, because their customizations will still be installed by the new package.
 
 You'll see a warning that the /opt/chef directory will be removed during the package installation process.
+
+### powershell_script now allows overriding the default flags
+
+We now append `powershell_script` user flags to the default flags, rather than the other way around, making user flags override the defaults. This is the correct behavior, but it may cause scripts to execute differently than in previous Chef releases.
 
 ### Package provider allow_downgrade is now true by default
 
@@ -356,6 +352,10 @@ We removed the system_profile plugin because it incorrectly returned data on mod
 ### Ohai's Ohai::Util::Win32::GroupHelper class has been removed
 
 We removed the Ohai::Util::Win32::GroupHelper helper class from Ohai. This class was intended for use internally in several Windows plugins, but it was never marked private in the codebase. If any of your Ohai plugins rely on this helper class, you will need to update your plugins for Ohai 15.
+
+### Audit Mode
+
+Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superseded by InSpec and has been removed.
 
 # Chef Infra Client Release Notes 14.11:
 
