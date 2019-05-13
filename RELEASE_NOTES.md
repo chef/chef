@@ -4,9 +4,11 @@ This file holds "in progress" release notes for the current release under develo
 
 Chef 15 release notes will be added here as development progresses.
 
-## New Features / Functionality
+## Chef Client is now Chef Infra Client
 
-### Chef EULA
+Chef Client has a new name, but don't worry it's the same Chef Client you've grown used to. You'll notice new branding throughout the application, help, and docs but the command line name of chef-client remains the same.
+
+## Chef EULA
 
 Chef Infra Client requires a EULA to be accepted by users before it can run. Users can accept the EULA in a variety of ways:
 
@@ -19,7 +21,7 @@ Finally, if users run `chef-client` without any of these options, they will rece
 license acceptance. If the license is accepted, a marker file will be written to the filesystem (unless
 `accept-no-persist` is specified). Once this marker file is persisted, users no longer need to set any of these flags.
 
-### Allow Using --delete-entire-chef-repo in Chef Local Mode
+## New Features / Functionality
 
 ### Data Collection Ground-Up Refactor
 
@@ -56,9 +58,11 @@ directory '/etc/myapp' do
 end
 ```
 
-### ed25519 SSH key support
+Our underlying SSH implementation has been updated to support the new ed25519 SSH key format. This means you'll be able to use `knife bootstrap` and `knife ssh` on hosts that only support this new key format.
 
-Chef now supports ed25519 SSH key formats in `knife ssh` as well as `knife bootstrap` commands.
+### Allow Using --delete-entire-chef-repo in Chef Local Mode
+
+Chef Solo's `--delete-entire-chef-repo` option has been extended to work in Local Mode as well. Be warned that this flag does exactly what it states and when used incorrectly can result in loss of work.
 
 ## New Resources
 
