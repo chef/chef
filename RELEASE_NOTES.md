@@ -23,7 +23,15 @@ license acceptance. If the license is accepted, a marker file will be written to
 
 ## New Features / Functionality
 
+### Target Mode Prototype
+
+Chef Infra Client 15 adds a prototype of a new method of executing resources we call Target Mode. Target Mode allows a Chef Infra Client run to manage a remote system over ssh or another protocol supported by the Train library. This includes both platforms we build for today like Ubuntu Linux, but also allows for configuring other architectures and platforms such as switches that don't have native builds of Chef Infra Client. Target Mode maintains a separate node object for each target, allowing you to manage that node using existing patterns that you use today.
+
+As of this release only the execute resource and guards are supported, but modifying existing resources or writing new ones to support target mode is relatively easy. Using target mode is as easy as `chef-client --target hostname`. The authentication credentials should be stored in your local ~/.chef/credentials file with the hostname of the target node as the profile name. Each key/value pair is passed to Train for authentication.
+
 ### Data Collection Ground-Up Refactor
+
+Chef Infra Client's Data Collection subystem is used to report node changes during client runs to Automate or other reporting systems. For Chef 15 we performed a ground up rewrite of this subsystem, which greatly improves the data reported to Automate and ensures data is delivered even in the toughest of failure conditions.
 
 ### copy_properties_from in Custom Resources
 
