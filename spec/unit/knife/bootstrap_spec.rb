@@ -880,7 +880,7 @@ describe Chef::Knife::Bootstrap do
                 logger: Chef::Log, # not configurable
                 ca_trust_file: "no trust",
                 max_wait_until_ready: 9999,
-                operation_timeout: 9999,
+                operation_timeout: 60,
                 ssl_peer_fingerprint: "ABCDEF",
                 winrm_transport: "kerberos",
                 winrm_basic_auth_only: true,
@@ -956,7 +956,9 @@ describe Chef::Knife::Bootstrap do
 
         context "and no values are provided from Chef::Config or CLI" do
           before do
-            knife.config = {}
+            # We will use knife's actual config since these tests
+            # have assumptions based on CLI default values
+	    knife.merge_configs 
           end
           let(:expected_result) do
             {
@@ -1128,7 +1130,9 @@ describe Chef::Knife::Bootstrap do
         end
         context "and no values are provided from Chef::Config or CLI" do
           before do
-            knife.config = {}
+            # We will use knife's actual config since these tests
+            # have assumptions based on CLI default values
+	    knife.merge_configs 
           end
 
           let(:expected_result) do
