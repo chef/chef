@@ -1055,7 +1055,7 @@ describe Chef::Knife::Bootstrap do
               {
                 logger: Chef::Log, # not configurable
                 max_wait_until_ready: 150, # cli
-                connection_timeout: 120, #cli
+                connection_timeout: 120, # cli
                 user: "sshalice", # cli
                 password: "feta cheese", # cli
                 bastion_host: "mygateway.local", # Config
