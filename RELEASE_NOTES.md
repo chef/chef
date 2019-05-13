@@ -232,15 +232,11 @@ Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via
 
 We now append `powershell_script` user flags to the default flags, rather than the other way around, making user flags override the defaults. This is the correct behavior, but it may cause scripts to execute differently than in previous Chef releases.
 
-### Chef packages now remove /opt/chef before installation
+### Chef Infra Client packages remove /opt/chef before installation
 
-The intent of this change is that on upgrading packages the /opt/chef directory is removed of any `chef_gem` installed gem versions and other
-modifications to /opt/chef that might be preserved and cause issues on upgrades. Due to technical details with rpm script execution order
-the way this was implemented was that a pre-installation script wipes /opt/chef before every install (done consistently this way on
-every package manager).
+Upon upgrading Chef Infra Client packages the /opt/chef directory is removed. This ensuress any `chef_gem` installed gem versions and other modifications to /opt/chef will removed to prevent upgrade issues. Due to technical details with rpm script execution order the way this was implemented was that a pre-installation script wipes /opt/chef before every install (done consistently this way on every package manager).
 
-Users who are properly managing customizations to /opt/chef through Chef recipes won't be affected, because their customizations will still be installed by
-the new chef-client package.
+Users who are properly managing customizations to /opt/chef through Chef recipes won't be affected, because their customizations will still be installed by the new package.
 
 You'll see a warning that the /opt/chef directory will be removed during the package installation process.
 
