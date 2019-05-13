@@ -369,6 +369,10 @@ class Chef
       config.replace(default_config.merge(config_file_settings).merge(config))
     end
 
+    def original_config
+      @original_config = config.dup
+    end
+
     #
     # Determine the source of a given configuration key
     #
@@ -382,7 +386,7 @@ class Chef
     #           This can happen when it is invalid, or has been
     #           set directly into #config without then calling #merge_config
     def config_source(key)
-      return :cli if @original_config.include? key
+      return :cli if original_config.include? key
       return :config if config_file_settings.key? key
       return :cli_default if default_config.include? key
       nil
