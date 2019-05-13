@@ -12,10 +12,10 @@ Chef Client has a new name, but don't worry it's the same Chef Client you've gro
 
 Chef Infra Client requires a EULA to be accepted by users before it can run. Users can accept the EULA in a variety of ways:
 
-`chef-client --chef-license accept`
-`chef-client --chef-license accept-no-persist`
-`CHEF_LICENSE="accept" chef-client`
-`CHEF_LICENSE="accept-no-persist" chef-client`
+- `chef-client --chef-license accept`
+- `chef-client --chef-license accept-no-persist`
+- `CHEF_LICENSE="accept" chef-client`
+- `CHEF_LICENSE="accept-no-persist" chef-client`
 
 Finally, if users run `chef-client` without any of these options, they will receive an interactive prompt asking for
 license acceptance. If the license is accepted, a marker file will be written to the filesystem (unless
@@ -57,6 +57,8 @@ directory '/etc/myapp' do
   recursive true
 end
 ```
+
+### ed25519 SSH key support
 
 Our underlying SSH implementation has been updated to support the new ed25519 SSH key format. This means you'll be able to use `knife bootstrap` and `knife ssh` on hosts that only support this new key format.
 
