@@ -25,7 +25,7 @@ license acceptance. If the license is accepted, a marker file will be written to
 
 ### copy_properties_from in Custom Resources
 
-A new `copy_properties_from` method for custom resouces allows you copy properties from your custom resource into other resources you're calling so you can avoid unnecessarily repeating code.
+A new `copy_properties_from` method for custom resources allows you copy properties from your custom resource into other resources you're calling so you can avoid unnecessarily repeating code.
 
 To inherit all the properties of another resource:
 ```ruby
@@ -126,7 +126,7 @@ The directory resource now property supports passing ``deny_rights :write`` on W
 
 ### windows_service
 
-The windows_service resource has been improved to prevent accidently reverting a service back to default settings in a subsequent definition.
+The windows_service resource has been improved to prevent accidentally reverting a service back to default settings in a subsequent definition.
 
 This example will no longer result in the MyApp service reverting to default RunAsUser:
 ```ruby
@@ -168,7 +168,7 @@ Knife bootstrap has been entirely rewritten with native support for Windows boot
 
 *Important*: `knife bootstrap` can bootstrap all supported versions of Chef Infra Client. Older versions may continue to work as far back as 12.20.
 
-In order to accomodate a combined bootstrap that supports both SSH and WinRM, some CLI flags have been added, removed, or changed.  Using the changed options will result in deprecation warnings, but `knife bootstrap` will accept those options unless otherwise noted. Using removed options will cause the command to fail.
+In order to accommodate a combined bootstrap that supports both SSH and WinRM, some CLI flags have been added, removed, or changed.  Using the changed options will result in deprecation warnings, but `knife bootstrap` will accept those options unless otherwise noted. Using removed options will cause the command to fail.
 
 #### New Flags
 
@@ -226,7 +226,7 @@ Instead of specifying protocol with `-o`, it's also possible to prefix the targe
 
 ### Audit Mode
 
-Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superceded by InSpec and has been removed.
+Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superseded by InSpec and has been removed.
 
 ### powershell_script now allows overriding the default flags
 
@@ -234,7 +234,7 @@ We now append `powershell_script` user flags to the default flags, rather than t
 
 ### Chef Infra Client packages remove /opt/chef before installation
 
-Upon upgrading Chef Infra Client packages the /opt/chef directory is removed. This ensuress any `chef_gem` installed gem versions and other modifications to /opt/chef will removed to prevent upgrade issues. Due to technical details with rpm script execution order the way this was implemented was that a pre-installation script wipes /opt/chef before every install (done consistently this way on every package manager).
+Upon upgrading Chef Infra Client packages the /opt/chef directory is removed. This ensures any `chef_gem` installed gem versions and other modifications to /opt/chef will removed to prevent upgrade issues. Due to technical details with rpm script execution order the way this was implemented was that a pre-installation script wipes /opt/chef before every install (done consistently this way on every package manager).
 
 Users who are properly managing customizations to /opt/chef through Chef recipes won't be affected, because their customizations will still be installed by the new package.
 
