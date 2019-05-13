@@ -549,6 +549,7 @@ class Chef
         validate_policy_options!
 
         winrm_warn_no_ssl_verification
+        warn_on_short_session_timeout
 
         $stdout.sync = true
         register_client
@@ -750,6 +751,24 @@ class Chef
           exit 1
         end
         true
+      end
+
+      # If session_timeout is too short, it is likely
+      # a holdover from "--winrm-session-timeout" which used
+      # minutes as its unit, instead of seconds.
+      # Warn the human so that they are not surprised.
+      #
+      # This will also erroneously warn if a string value is given,
+      # but argument type validation is something that needs addressing
+      # more broadly.
+      def warn_on_short_session_timeout
+        timeout = config_value(:session_timeout).to_i
+        if timeout <= 15
+          ui.warn <<~EOM
+            --session-timeout is set to #{config[:session_timeout]} minutes.
+            Did you mean "--session-timeout #{config[:session_timeout] * 60}" seconds?
+          EOM
+        end
       end
 
       def winrm_warn_no_ssl_verification

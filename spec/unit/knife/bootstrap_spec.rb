@@ -958,7 +958,7 @@ describe Chef::Knife::Bootstrap do
           before do
             # We will use knife's actual config since these tests
             # have assumptions based on CLI default values
-	    knife.merge_configs 
+            knife.merge_configs
           end
           let(:expected_result) do
             {
@@ -1132,7 +1132,7 @@ describe Chef::Knife::Bootstrap do
           before do
             # We will use knife's actual config since these tests
             # have assumptions based on CLI default values
-	    knife.merge_configs 
+            knife.merge_configs
           end
 
           let(:expected_result) do
@@ -1659,6 +1659,7 @@ describe Chef::Knife::Bootstrap do
       expect(knife).to receive(:validate_winrm_transport_opts!).ordered
       expect(knife).to receive(:validate_policy_options!).ordered
       expect(knife).to receive(:winrm_warn_no_ssl_verification).ordered
+      expect(knife).to receive(:warn_on_short_session_timeout).ordered
       expect(knife).to receive(:register_client).ordered
       expect(knife).to receive(:connect!).ordered
       expect(knife).to receive(:render_template).and_return "content"
@@ -2130,6 +2131,28 @@ describe Chef::Knife::Bootstrap do
             knife.winrm_warn_no_ssl_verification
           end
         end
+      end
+    end
+  end
+
+  describe "#warn_on_short_session_timeout" do
+    let(:session_timeout) { 0 }
+    before do
+      allow(knife).to receive(:config).and_return(session_timeout: session_timeout)
+    end
+
+    context "timeout is more than 15" do
+      let(:session_timeout) { 16 }
+      it "does not issue a warning" do
+        expect(knife.ui).to_not receive(:warn)
+        knife.warn_on_short_session_timeout
+      end
+    end
+    context "timeout is 15 or less" do
+      let(:session_timeout) { 15 }
+      it "issues a warning" do
+        expect(knife.ui).to receive(:warn)
+        knife.warn_on_short_session_timeout
       end
     end
   end
