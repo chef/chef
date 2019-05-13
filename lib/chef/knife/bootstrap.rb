@@ -833,7 +833,7 @@ class Chef
 
       def ssh_opts
         opts = {}
-        return opts if connection_protocol == "winrm"
+        return opts if winrm?
         opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
         opts[:forward_agent] = (config_value(:ssh_forward_agent) === true)
         opts
@@ -841,7 +841,7 @@ class Chef
 
       def ssh_identity_opts
         opts = {}
-        return opts if connection_protocol == "winrm"
+        return opts if winrm?
         identity_file = config_value(:ssh_identity_file)
         if identity_file
           opts[:key_files] = [identity_file]
@@ -901,7 +901,7 @@ class Chef
       # REVIEW NOTE: knife bootstrap did not pull sudo values from Chef::Config,
       #              should we change that for consistency?
       def sudo_opts
-        return {} if connection_protocol == "winrm"
+        return {} if winrm?
         opts = { sudo: false }
         if config[:use_sudo]
           opts[:sudo] = true
@@ -916,7 +916,7 @@ class Chef
       end
 
       def winrm_opts
-        return {} unless connection_protocol == "winrm"
+        return {} unless winrm?
         auth_method = config_value(:winrm_auth_method, :winrm_auth_method, "negotiate")
         opts = {
           winrm_transport: auth_method, # winrm gem and train calls auth method 'transport'
