@@ -150,16 +150,6 @@ end
 
 Chef now ships with Ruby 2.6.3. This new version of Ruby improves performance and includes many new features to make more advanced Chef usage easier. See https://www.rubyguides.com/2018/11/ruby-2-6-new-features/ for a list of some of the new functionality.
 
-## New Deprecations
-
-### knife cookbook site deprecated in favor of knife supermarket
-
-The knife cookbook site command has been deprecated in favor of the knife supermarket command. Knife cookbook site will now product a warning message and in Chef 16 we will remove the knife cookbook site command entirely.
-
-### locale LC_ALL property
-
-The LC_ALL property in the locale resource has been deprecated as the usage of this environmental variable is not recommended by distribution maintainers.
-
 ## Ohai Improvements
 
 ### Improved Linux Platform / Platform Family Detection
@@ -183,6 +173,16 @@ Ohai now uses less memory due to internal optimizations of how we track plugin i
 ### FIPS Detection Improvements
 
 The FIPS plugin now uses the built-in FIPS detection in Ruby for improved detection.
+
+## New Deprecations
+
+### knife cookbook site deprecated in favor of knife supermarket
+
+The knife cookbook site command has been deprecated in favor of the knife supermarket command. Knife cookbook site will now product a warning message and in Chef 16 we will remove the knife cookbook site command entirely.
+
+### locale LC_ALL property
+
+The LC_ALL property in the locale resource has been deprecated as the usage of this environmental variable is not recommended by distribution maintainers.
 
 ## Breaking Changes
 
