@@ -831,7 +831,7 @@ describe Chef::Knife::Bootstrap do
             Chef::Config[:knife][:winrm_auth_method] = "kerberos" # default is negotiate
             Chef::Config[:knife][:winrm_basic_auth_only] = true
             Chef::Config[:knife][:winrm_no_verify_cert] = true
-            Chef::Config[:knife][:winrm_session_timeout] = 9999
+            Chef::Config[:knife][:session_timeout] = 9999
             Chef::Config[:knife][:winrm_ssl] = true
             Chef::Config[:knife][:winrm_ssl_peer_fingerprint] = "ABCDEF"
           end
@@ -926,7 +926,7 @@ describe Chef::Knife::Bootstrap do
               knife.config[:winrm_auth_method] = "kerberos" # default is negotiate
               knife.config[:winrm_basic_auth_only] = false
               knife.config[:winrm_no_verify_cert] = false
-              knife.config[:winrm_session_timeout] = 1000
+              knife.config[:session_timeout] = 1000
               knife.config[:winrm_ssl] = false
               knife.config[:winrm_ssl_peer_fingerprint] = "FEDCBA"
             end
@@ -984,6 +984,7 @@ describe Chef::Knife::Bootstrap do
             # Set everything to easily identifiable and obviously fake values
             # to verify that Chef::Config is being sourced instead of knife.config
             Chef::Config[:knife][:max_wait] = 9999
+            Chef::Config[:knife][:session_timeout] = 9999
             Chef::Config[:knife][:ssh_user] = "sshbob"
             Chef::Config[:knife][:ssh_port] = 9999
             Chef::Config[:knife][:host_key_verify] = false
@@ -1001,6 +1002,7 @@ describe Chef::Knife::Bootstrap do
               {
                 logger: Chef::Log, # not configurable
                 max_wait_until_ready: 9999,
+                connection_timeout: 9999,
                 user: "sshbob",
                 bastion_host: "mygateway.local",
                 bastion_port: 1234,
@@ -1043,6 +1045,7 @@ describe Chef::Knife::Bootstrap do
               knife.config[:ssh_port] = "13" # canary to indirectly verify we're not looking for the wrong CLI flag
               knife.config[:connection_password] = "feta cheese"
               knife.config[:max_wait] = 150
+              knife.config[:session_timeout] = 120
               knife.config[:use_sudo] = true
               knife.config[:use_sudo_pasword] = true
               knife.config[:ssh_forward_agent] = true
@@ -1052,6 +1055,7 @@ describe Chef::Knife::Bootstrap do
               {
                 logger: Chef::Log, # not configurable
                 max_wait_until_ready: 150, # cli
+                connection_timeout: 120, #cli
                 user: "sshalice", # cli
                 password: "feta cheese", # cli
                 bastion_host: "mygateway.local", # Config
@@ -1075,6 +1079,7 @@ describe Chef::Knife::Bootstrap do
           context "and all CLI options have been given" do
             before do
               knife.config[:max_wait] = 150
+              knife.config[:session_timeout] = 120
               knife.config[:connection_user] = "sshroot"
               knife.config[:connection_port] = 1000
               knife.config[:connection_password] = "blah"
@@ -1099,6 +1104,7 @@ describe Chef::Knife::Bootstrap do
               {
                 logger: Chef::Log, # not configurable
                 max_wait_until_ready: 150,
+                connection_timeout: 120,
                 user: "sshroot",
                 password: "blah",
                 port: 1000,
@@ -1124,6 +1130,7 @@ describe Chef::Knife::Bootstrap do
           before do
             knife.config = {}
           end
+
           let(:expected_result) do
             {
               forward_agent: false,
@@ -1133,6 +1140,7 @@ describe Chef::Knife::Bootstrap do
               sudo: false,
               verify_host_key: true,
               non_interactive: true,
+              connection_timeout: 60,
             }
           end
           it "populates appropriate defaults" do
@@ -1485,12 +1493,26 @@ describe Chef::Knife::Bootstrap do
           knife.config[:ssh_forward_agent] = true
         end
         it "returns a configuration hash with forward_agent set to true. non-interactive is always true" do
-          expect(knife.ssh_opts).to eq({ forward_agent: true, non_interactive: true })
+          expect(knife.ssh_opts).to eq({ forward_agent: true, non_interactive: true, connection_timeout: 60 })
         end
       end
       context "when ssh_forward_agent is not set" do
         it "returns a configuration hash with forward_agent set to false. non-interactive is always true" do
-          expect(knife.ssh_opts).to eq({ forward_agent: false, non_interactive: true })
+          expect(knife.ssh_opts).to eq({ forward_agent: false, non_interactive: true, connection_timeout: 60 })
+        end
+      end
+      context "when session_timeout has a value" do
+        before do
+          knife.config[:session_timeout] = 120
+        end
+        it "returns a configuration hash with connection_timeout value." do
+          expect(knife.ssh_opts).to eq({ forward_agent: false, non_interactive: true, connection_timeout: 120 })
+        end
+      end
+
+      context "when session_timeout is not set" do
+        it "returns a configuration hash with connection_timeout default value." do
+          expect(knife.ssh_opts).to eq({ forward_agent: false, non_interactive: true, connection_timeout: 60 })
         end
       end
     end

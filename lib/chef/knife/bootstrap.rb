@@ -66,6 +66,11 @@ class Chef
         long: "--max-wait SECONDS",
         description: "The maximum time to wait for the initial connection to be established."
 
+      option :session_timeout,
+        long: "--session-timeout SECONDS",
+        description: "The number of seconds to wait for each connection operation to be acknowledged while running bootstrap.",
+        proc: Proc.new { |protocol| Chef::Config[:knife][:session_timeout] = protocol }
+
       # WinRM Authentication
       option :winrm_ssl_peer_fingerprint,
         long: "--winrm-ssl-peer-fingerprint FINGERPRINT",
@@ -116,11 +121,6 @@ class Chef
         long: "--kerberos-service KERBEROS_SERVICE",
         description: "The Kerberos service used for authentication.",
         proc: Proc.new { |protocol| Chef::Config[:knife][:kerberos_service] = protocol }
-
-      option :winrm_session_timeout,
-        long: "--winrm-session-timeout SECONDS",
-        description: "The number of seconds to wait for each WinRM operation to be acknowledged while running bootstrap.",
-        proc: Proc.new { |protocol| Chef::Config[:knife][:winrm_session_timeout] = protocol }
 
       ## SSH Authentication
       option :ssh_gateway,
@@ -381,6 +381,8 @@ class Chef
           [:connection_port, "--winrm-port"],
         winrm_authentication_protocol:
           [:winrm_auth_method, "--winrm-authentication-protocol PROTOCOL"],
+        winrm_session_timeout:
+          [:session_timeout, "--winrm-session-timeout SECONDS"],
       }.freeze
 
       DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
@@ -836,6 +838,7 @@ class Chef
         return opts if connection_protocol == "winrm"
         opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
         opts[:forward_agent] = (config_value(:ssh_forward_agent) === true)
+        opts[:connection_timeout] = config_value(:session_timeout)&.to_i || 60
         opts
       end
 
@@ -934,7 +937,7 @@ class Chef
           opts[:ca_trust_file] = config_value(:ca_trust_file)
         end
 
-        opts[:operation_timeout] = config_value(:winrm_session_timeout) || 60
+        opts[:operation_timeout] = config_value(:session_timeout)&.to_i || 60
 
         opts
       end
