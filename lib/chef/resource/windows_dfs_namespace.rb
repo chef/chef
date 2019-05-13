@@ -51,7 +51,7 @@ class Chef
                description: "The root from which to create the DFS tree. Defaults to C:\\DFSRoots.",
                default: 'C:\\DFSRoots'
 
-      action :install do
+      action :create do
         description "Creates the dfs namespace on the server."
 
         directory file_path do
