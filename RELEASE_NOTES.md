@@ -25,7 +25,40 @@ license acceptance. If the license is accepted, a marker file will be written to
 
 ### copy_properties_from in Custom Resources
 
+A new `copy_properties_from` method for custom resouces allows you copy properties from your custom resource into other resources you're calling so you can avoid unnecessarily repeating code.
+
+To inherit all the properties of another resource:
+```ruby
+resource_name :my_resource
+
+property :mode, String, default: '777'
+property :owner, String, default: 'app_user'
+property :group, String, default: 'admins'
+
+directory '/etc/myapp' do
+  copy_properties_from new_resource
+  recursive true
+end
+```
+
+To selectivly inherit certain properties from a resource:
+```ruby
+resource_name :my_resource
+
+property :mode, String, default: '777'
+property :owner, String, default: 'app_user'
+property :group, String, default: 'admins'
+
+directory '/etc/myapp' do
+  copy_properties_from(new_resource, :owner, :group, :mode)
+  mode '755'
+  recursive true
+end
+```
+
 ### ed25519 SSH key support
+
+Chef now supports ed25519 SSH key formats in `knife ssh` as well as `knife bootstrap` commands.
 
 ## New Resources
 
@@ -168,6 +201,7 @@ Using removed options will cause the command to fail.
 | --winrm-ssl-verify-mode MODE | --winrm-no-verify-cert | [1] Mode is not accepted. When flag is present, SSL cert will not be verified. Same as original mode of 'verify\_none'. |
 | --winrm-transport TRANSPORT | --winrm-ssl | [1] Use this flag if the target host is accepts WinRM connections over SSL.
 | --winrm-user | --connection-user | `knife[:winrm_user]` config setting remains available.|
+| --winrm-session-timeout | --session-timeout | Now available for bootstrapping over SSH as well |
 
 1. These flags do not have an automatic mapping of old flag -> new flag. The
    new flag must be used.
