@@ -160,6 +160,30 @@ The knife cookbook site command has been deprecated in favor of the knife superm
 
 The LC_ALL property in the locale resource has been deprecated as the usage of this environmental variable is not recommended by distribution maintainers.
 
+## Ohai Improvements
+
+### Improved Linux Platform / Platform Family Detection
+
+Platform and plaform_family detection on Linux has been rewritten to utilize the latest config files on modern Linux distributions before falling back to slower and fragile legacy detection methods. Ohai will now begin by parsing the contents of /etc/os-release for OS information if available. This improves the reliability of detection on modern distros and allows detection of new distros as they're released.
+
+With this change we now detect `sles_sap` as a member of the `suse` platform_family. Additionally this change corrects our detection of the platform_version on Cisco Nexus switches where we previously incorrectly appended the build number to the version string.
+
+### Improved Virtualization Detection
+
+Hypervisor detection on multiple platforms has been updated to use DMI data and a single set of hypervisors. This greatly improves the detection of hypervisors on Windows, BSD and Solaris platforms. It also means that as new hypervisors detection is added in the future we will automatically support the majority of platforms.
+
+### Fix Windows 2016 FQDN Detection
+
+Ohai 14 incorrectly detected a Windows 2016 node's `fqdn` as the node's `hostname`. Ohai 15 now correctly reports the FQDN value.
+
+### Improved Memory Usage
+
+Ohai now uses less memory due to internal optimizations of how we track plugin information.
+
+### FIPS Detection Improvements
+
+The FIPS plugin now uses the built-in FIPS detection in Ruby for improved detection.
+
 ## Breaking Changes
 
 ### Knife Bootstrap
@@ -356,6 +380,22 @@ We removed the Ohai::Util::Win32::GroupHelper helper class from Ohai. This class
 ### Audit Mode
 
 Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superseded by InSpec and has been removed.
+
+### Ohai system_profiler plugin removal
+
+The `system_profiler` plugin which ran on macOS systems has been removed. This plugin took longer to run than all other plugins on macOS combined and no longer produced usable information on modern macOS releases. If you're looking for similar information it can now be found in the `hardware` plugin.
+
+### Ohai::Util::Win32::GroupHelper helper removal
+
+The deprecated `Ohai::Util::Win32::GroupHelper` helper has been removed from Ohai. Any custom Ohai plugins using this helper will need to be updated.
+
+### Ohai::System.refresh_plugins method removal
+
+The `refresh_plugins` method in the `Ohai::System` class has been removed as it has been unused for multiple major Ohai releases. If you are programatically using Ohai in your own Ruby application you will need to update your code to use the `load_plugins` method instead.
+
+### Ohai Microsoft VirtualPC / VirtualServer detection removal
+
+The Virtualization plugin will no longer detect systems running on the circa ~2005 VirtualPC or VirtualServer hypervisors. These hypervisors were long ago deprecated by Microsoft and support can no longer be tested.
 
 # Chef Infra Client Release Notes 14.11:
 
