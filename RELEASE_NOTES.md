@@ -410,6 +410,25 @@ The `refresh_plugins` method in the `Ohai::System` class has been removed as it 
 
 The Virtualization plugin will no longer detect systems running on the circa ~2005 VirtualPC or VirtualServer hypervisors. These hypervisors were long ago deprecated by Microsoft and support can no longer be tested.
 
+# Chef Infra Client Release Notes 14.12:
+
+## Updated Resources
+
+### windows_service
+
+The windows_service resource no longer resets credentials on a service when using the :start action without the :configure action. Thanks [@jasonwbarnett](https://github.com/jasonwbarnett) for fixing this.
+
+### windows_certificate
+
+The windows_certificate resource now imports nested certificates while importing P7B certs.
+
+## Updated Components
+
+- nokogiri 1.10.1 -> 1.10.2
+- ruby 2.5.3 -> 2.5.5
+- InSpec 3.7.1 -> 3.9.0
+- The unused windows-api gem is no longer bundled with Chef on Windows hosts
+
 # Chef Infra Client Release Notes 14.11:
 
 ## Updated Resources
@@ -463,6 +482,8 @@ RubyGems has been updated to 2.7.9 in order to resolve the following CVEs:
   - [CVE-2019-8323](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8323): Escape sequence injection vulnerability in API response handling
   - [CVE-2019-8324](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8324): Installing a malicious gem may lead to arbitrary code execution
   - [CVE-2019-8325](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8325): Escape sequence injection vulnerability in errors
+
+
 
 # Chef Client Release Notes 14.10:
 
