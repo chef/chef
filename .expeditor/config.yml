@@ -7,7 +7,7 @@ project:
 # The name of the product keys for this product (from mixlib-install)
 product_key:
   - chef
-  - angrychef
+#  - angrychef # this entirely broke promotions.
 
 # Slack channel in Chef Software slack to send notifications about build failures, etc
 slack:
