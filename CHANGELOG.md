@@ -1,328 +1,299 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.293 -->
-## [v15.0.293](https://github.com/chef/chef/tree/v15.0.293) (2019-05-13)
-
-#### Merged Pull Requests
-- Rename the windows_dfs :install actions to :create [#8527](https://github.com/chef/chef/pull/8527) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
 <!-- release_rollup -->
-### Changes since latest stable release
-
-#### Merged Pull Requests
-- Rename the windows_dfs :install actions to :create [#8527](https://github.com/chef/chef/pull/8527) ([tas50](https://github.com/tas50)) <!-- 15.0.293 -->
-- Chef 15: Add --session-timeout bootstrap option for both ssh &amp; winrm [#8521](https://github.com/chef/chef/pull/8521) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.292 -->
-- Use new Net:SSH host key verify values [#8524](https://github.com/chef/chef/pull/8524) ([btm](https://github.com/btm)) <!-- 15.0.291 -->
-- Update to Chef Infra Client in Add/Remove Programs &amp; Event Log [#8520](https://github.com/chef/chef/pull/8520) ([tas50](https://github.com/tas50)) <!-- 15.0.290 -->
-- Chef 15: Minor winrm check code refactor [#8522](https://github.com/chef/chef/pull/8522) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.289 -->
-- Pin bundler to 1.17.2 which is included in Ruby 2.6 [#8518](https://github.com/chef/chef/pull/8518) ([tas50](https://github.com/tas50)) <!-- 15.0.288 -->
-- [knife-ec2-547] Update config_source to support using knife classes without requiring merge_config [#8506](https://github.com/chef/chef/pull/8506) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.287 -->
-- Change some more require to require_relative [#8519](https://github.com/chef/chef/pull/8519) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.286 -->
-- Use exports compatibile with /bin/sh in the bootstrap script [#8507](https://github.com/chef/chef/pull/8507) ([MarkGibbons](https://github.com/MarkGibbons)) <!-- 15.0.285 -->
-- Add comments to the Dockerfile explaining how it all works [#8509](https://github.com/chef/chef/pull/8509) ([tas50](https://github.com/tas50)) <!-- 15.0.284 -->
-- Chef 15: bootstrap options --max-wait raises NoMethodError: undefined method / [#8489](https://github.com/chef/chef/pull/8489) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.284 -->
-- Fix for Chef::Exceptions::Win32APIError: The operation completed successfully. [#8451](https://github.com/chef/chef/pull/8451) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.283 -->
-- CHEF_LICENSE environment variables should be quoted [#8513](https://github.com/chef/chef/pull/8513) ([tyler-ball](https://github.com/tyler-ball)) <!-- 15.0.282 -->
-- windows_feature: Fix failures on windows 2008r2 [#8492](https://github.com/chef/chef/pull/8492) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.281 -->
-- Convert require to require_relative [#8508](https://github.com/chef/chef/pull/8508) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.280 -->
-- Convert EULA to a local file [#8505](https://github.com/chef/chef/pull/8505) ([btm](https://github.com/btm)) <!-- 15.0.279 -->
-- Clean up omnibus installer error and remove chef-fips [#8499](https://github.com/chef/chef/pull/8499) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.278 -->
-- Update the omnibus build license to the Chef EULA [#8498](https://github.com/chef/chef/pull/8498) ([btm](https://github.com/btm)) <!-- 15.0.277 -->
-- Chef 15: FATAL: Configuration error SyntaxError in client.rb during bootstrap [#8496](https://github.com/chef/chef/pull/8496) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.276 -->
-- knife bootstrap should only request license when installing Chef 15 [#8471](https://github.com/chef/chef/pull/8471) ([tyler-ball](https://github.com/tyler-ball)) <!-- 15.0.275 -->
-- Target mode code tweaks [#8480](https://github.com/chef/chef/pull/8480) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.274 -->
-- Check for directories on Windows before creating [#8487](https://github.com/chef/chef/pull/8487) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.273 -->
-- Remove resource collision deprecations [#8470](https://github.com/chef/chef/pull/8470) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.272 -->
-- Point people to Learn Chef in the post install message [#8483](https://github.com/chef/chef/pull/8483) ([tas50](https://github.com/tas50)) <!-- 15.0.271 -->
-- Update a few more knife.rb references to include config.rb [#8474](https://github.com/chef/chef/pull/8474) ([tas50](https://github.com/tas50)) <!-- 15.0.270 -->
-- package: move response_file and response_file_variables out of base package resource [#8307](https://github.com/chef/chef/pull/8307) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.269 -->
-- Remove the Chef 11 admin flag from knife client create [#8473](https://github.com/chef/chef/pull/8473) ([tas50](https://github.com/tas50)) <!-- 15.0.268 -->
-- Chef 15: Unable to create temp dir on windows system [#8476](https://github.com/chef/chef/pull/8476) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.267 -->
-- Initial target_mode implementation [#7758](https://github.com/chef/chef/pull/7758) ([btm](https://github.com/btm)) <!-- 15.0.266 -->
-- Add logic to require acceptannce of the Chef license to run the client [#8354](https://github.com/chef/chef/pull/8354) ([tyler-ball](https://github.com/tyler-ball)) <!-- 15.0.265 -->
-- [CHEF-8423] Upgrade train-core to 2.1.0 for windows detection over ssh [#8465](https://github.com/chef/chef/pull/8465) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.264 -->
-- Move more DSL helpers into universal so they&#39;re available everywhere [#8457](https://github.com/chef/chef/pull/8457) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.263 -->
-- Restore bootstrap pre-release support [#8442](https://github.com/chef/chef/pull/8442) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.262 -->
-- Fix for cron resource get confused by environment/property mismatch [#8455](https://github.com/chef/chef/pull/8455) ([btm](https://github.com/btm)) <!-- 15.0.261 -->
-- Resolve exceptions when running knife diff [#8459](https://github.com/chef/chef/pull/8459) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.260 -->
-- Chef-15: cookbook compiler should parse only .rb files [#8456](https://github.com/chef/chef/pull/8456) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.259 -->
-- Update more brand names to current [#8454](https://github.com/chef/chef/pull/8454) ([tas50](https://github.com/tas50)) <!-- 15.0.258 -->
-- Add connstant for Chef Server and improve help messaging [#8452](https://github.com/chef/chef/pull/8452) ([tas50](https://github.com/tas50)) <!-- 15.0.257 -->
-- Fixed empty value for knife status long output [#8415](https://github.com/chef/chef/pull/8415) ([vijaymmali1990](https://github.com/vijaymmali1990)) <!-- 15.0.256 -->
-- [CHEF-8432] Ensure default protocol is used properly. Use correct &#39;require&#39; before accessing Net::SSH constants. [#8440](https://github.com/chef/chef/pull/8440) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.255 -->
-- Replace Chef Client by its constant in Chef::Dist [#8448](https://github.com/chef/chef/pull/8448) ([Tensibai](https://github.com/Tensibai)) <!-- 15.0.254 -->
-- Update to Ruby 2.6.3 [#8446](https://github.com/chef/chef/pull/8446) ([tas50](https://github.com/tas50)) <!-- 15.0.251 -->
-- Remove old maintainer gems from the Gemfile [#8445](https://github.com/chef/chef/pull/8445) ([tas50](https://github.com/tas50)) <!-- 15.0.250 -->
-- [CHEF-8422] Fix incorrect deprecation warnings [#8429](https://github.com/chef/chef/pull/8429) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.249 -->
-- Update InSpec to 4.3.2 [#8444](https://github.com/chef/chef/pull/8444) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.0.248 -->
-- file: Tell people what file a link is pointing at in warning messages [#8417](https://github.com/chef/chef/pull/8417) ([jaymzh](https://github.com/jaymzh)) <!-- 15.0.247 -->
-- fix chef-bin bundling in omnibus [#8439](https://github.com/chef/chef/pull/8439) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.245 -->
-- Fixed bootstrap error while using --msi-url option with knife bootstrap winrm [#8435](https://github.com/chef/chef/pull/8435) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.244 -->
-- remove windows executables from windows gemspec [#8430](https://github.com/chef/chef/pull/8430) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.243 -->
-- Update property descriptions for new resources [#8424](https://github.com/chef/chef/pull/8424) ([tas50](https://github.com/tas50)) <!-- 15.0.242 -->
-- Update InSpec preview to 4.2.0 [#8426](https://github.com/chef/chef/pull/8426) ([tas50](https://github.com/tas50)) <!-- 15.0.241 -->
-- Remove chef-* bin files from chef gem [#8413](https://github.com/chef/chef/pull/8413) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.240 -->
-- Enable license acceptance during bootstrap  [#8411](https://github.com/chef/chef/pull/8411) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.239 -->
-- Implement bootstrap directly with train [#8419](https://github.com/chef/chef/pull/8419) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.238 -->
-- &quot;chef-client&quot; =&gt; #{Chef::Dist::CLIENT} [#8418](https://github.com/chef/chef/pull/8418) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.237 -->
-- Add the introduced field to snap_package [#8412](https://github.com/chef/chef/pull/8412) ([tas50](https://github.com/tas50)) <!-- 15.0.236 -->
-- windows_task: Add start_when_available support [#8420](https://github.com/chef/chef/pull/8420) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.235 -->
-- Fix for write permissions were not working properly on windows [#8168](https://github.com/chef/chef/pull/8168) ([vijaymmali1990](https://github.com/vijaymmali1990)) <!-- 15.0.234 -->
-- Refactor bootstrapping to use train as the transport with full Windows bootstrap support [#8253](https://github.com/chef/chef/pull/8253) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.233 -->
--  Move ed25519 gems into omnibus [#8410](https://github.com/chef/chef/pull/8410) ([tas50](https://github.com/tas50)) <!-- 15.0.232 -->
-- Implement new owner/review structure + expand dev docs [#8350](https://github.com/chef/chef/pull/8350) ([tas50](https://github.com/tas50)) <!-- 15.0.231 -->
-- Add Chef::Dist to abstract branding details to a single location [#8368](https://github.com/chef/chef/pull/8368) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.230 -->
-- Switch to inspec/train from gems [#8407](https://github.com/chef/chef/pull/8407) ([tas50](https://github.com/tas50)) <!-- 15.0.229 -->
-- Merge the local and travis kitchen tests into a single config [#8406](https://github.com/chef/chef/pull/8406) ([tas50](https://github.com/tas50)) <!-- 15.0.228 -->
-- Replace kitchen-appbundle-updater in Travis tests with Test Kitchen lifecycle hooks [#8403](https://github.com/chef/chef/pull/8403) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.227 -->
-- Triggering expeditor version bump [#8405](https://github.com/chef/chef/pull/8405) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.226 -->
-- Add ed25519 deps, bump highline and net-ssh pins and pull inspec from git [#8380](https://github.com/chef/chef/pull/8380) ([tas50](https://github.com/tas50)) <!-- 15.0.225 -->
-- fix default/override attribute blacklists and whitelists [#8396](https://github.com/chef/chef/pull/8396) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.224 -->
-- Replace highline with tty-screen in knife list [#8381](https://github.com/chef/chef/pull/8381) ([tas50](https://github.com/tas50)) <!-- 15.0.223 -->
-- Sync the CLI option descriptions between chef-client and chef-solo [#8391](https://github.com/chef/chef/pull/8391) ([tas50](https://github.com/tas50)) <!-- 15.0.222 -->
-- Use color in chef-solo by default on Windows [#8390](https://github.com/chef/chef/pull/8390) ([tas50](https://github.com/tas50)) <!-- 15.0.221 -->
-- Improve the error message when no config can be loaded [#8389](https://github.com/chef/chef/pull/8389) ([tas50](https://github.com/tas50)) <!-- 15.0.220 -->
-- Remove a functional test for the reboot_pending DSL [#8383](https://github.com/chef/chef/pull/8383) ([btm](https://github.com/btm)) <!-- 15.0.219 -->
-- Allow encrypting a previously unencrypted data bag [#8077](https://github.com/chef/chef/pull/8077) ([vijaymmali1990](https://github.com/vijaymmali1990)) <!-- 15.0.218 -->
-- Prevent accidentally configuring windows_service properties [#8351](https://github.com/chef/chef/pull/8351) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.217 -->
-- Limit locale resource to Linux [#8375](https://github.com/chef/chef/pull/8375) ([btm](https://github.com/btm)) <!-- 15.0.216 -->
-- Allow empty strings in -o to result in empty override run list [#8370](https://github.com/chef/chef/pull/8370) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.215 -->
-- Add a new archive_file resource from the libarchive cookbook [#8028](https://github.com/chef/chef/pull/8028) ([tas50](https://github.com/tas50)) <!-- 15.0.214 -->
-- Drop privileges before creating files in solo mode [#8361](https://github.com/chef/chef/pull/8361) ([btm](https://github.com/btm)) <!-- 15.0.213 -->
-- Add Verification tests in Buildkite [#8357](https://github.com/chef/chef/pull/8357) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.0.212 -->
-- Don&#39;t force DSC functional tests to PS4 [#8359](https://github.com/chef/chef/pull/8359) ([btm](https://github.com/btm)) <!-- 15.0.211 -->
-- Avoid occasionally randomly reusing a gid in tests [#8352](https://github.com/chef/chef/pull/8352) ([btm](https://github.com/btm)) <!-- 15.0.210 -->
-- Add Debian 10 testing to Travis [#8348](https://github.com/chef/chef/pull/8348) ([tas50](https://github.com/tas50)) <!-- 15.0.209 -->
-- Implement Chef::Resource#copy_properties_from [#8344](https://github.com/chef/chef/pull/8344) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.208 -->
-- Add Ruby 2.6 testing Appveyor [#8349](https://github.com/chef/chef/pull/8349) ([tas50](https://github.com/tas50)) <!-- 15.0.207 -->
-- Add PROJECT_NAME to omnibus-test scripts [#8346](https://github.com/chef/chef/pull/8346) ([tas50](https://github.com/tas50)) <!-- 15.0.206 -->
-- locale: Add support to set all LC ENV variables and deprecate LC_ALL [#8324](https://github.com/chef/chef/pull/8324) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.205 -->
-- Update nokogiri to 1.10.2 [#8338](https://github.com/chef/chef/pull/8338) ([tas50](https://github.com/tas50)) <!-- 15.0.204 -->
-- Remove windows-api pin and update Gemfile.lock [#8328](https://github.com/chef/chef/pull/8328) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.0.203 -->
-- fix data collector non-utf8 file output [#8337](https://github.com/chef/chef/pull/8337) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.202 -->
-- Update inspec to 3.9.0 [#8336](https://github.com/chef/chef/pull/8336) ([tas50](https://github.com/tas50)) <!-- 15.0.201 -->
-- Update Ruby to 2.6.2 [#8333](https://github.com/chef/chef/pull/8333) ([tas50](https://github.com/tas50)) <!-- 15.0.200 -->
-- Remove Ubuntu 14.04 testing [#8330](https://github.com/chef/chef/pull/8330) ([tas50](https://github.com/tas50)) <!-- 15.0.199 -->
-- Update InSpec to 3.7.11 and mixlib-cli to 2.0.3 [#8329](https://github.com/chef/chef/pull/8329) ([tas50](https://github.com/tas50)) <!-- 15.0.198 -->
-- Update win32-service gem and fix #8195 [#8322](https://github.com/chef/chef/pull/8322) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.197 -->
-- Update chef-zero to 14.0.12 [#8312](https://github.com/chef/chef/pull/8312) ([tas50](https://github.com/tas50)) <!-- 15.0.196 -->
-- Remove the travis gem from our gemfile [#8310](https://github.com/chef/chef/pull/8310) ([tas50](https://github.com/tas50)) <!-- 15.0.195 -->
-- Pin expeditor to ruby 2.5.3 and bump train to 1.7.6 [#8308](https://github.com/chef/chef/pull/8308) ([tas50](https://github.com/tas50)) <!-- 15.0.193 -->
-- Update Ruby to 2.5.5 [#8296](https://github.com/chef/chef/pull/8296) ([tas50](https://github.com/tas50)) <!-- 15.0.192 -->
-- Loosen mixlib deps to allow for the latest versions [#8304](https://github.com/chef/chef/pull/8304) ([tas50](https://github.com/tas50)) <!-- 15.0.191 -->
-- Early allocation of the Chef::RunContext [#8301](https://github.com/chef/chef/pull/8301) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.190 -->
-- Allow the use of `--delete-entire-chef-repo` [#8298](https://github.com/chef/chef/pull/8298) ([ABewsher](https://github.com/ABewsher)) <!-- 15.0.189 -->
-- fix unsolvable Gemfile.lock [#8300](https://github.com/chef/chef/pull/8300) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.188 -->
-- windows_service: Fix action :start to not resets credentials on service [#8278](https://github.com/chef/chef/pull/8278) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.187 -->
-- Add misc YARD comments [#8287](https://github.com/chef/chef/pull/8287) ([tas50](https://github.com/tas50)) <!-- 15.0.186 -->
-- Loosen win32-certstore pin and bump to 0.3.0 [#8286](https://github.com/chef/chef/pull/8286) ([tas50](https://github.com/tas50)) <!-- 15.0.185 -->
-- Remove audit mode from chef-client [#7728](https://github.com/chef/chef/pull/7728) ([tas50](https://github.com/tas50)) <!-- 15.0.184 -->
-- Remove the rake task to generate a pre-announcement [#8288](https://github.com/chef/chef/pull/8288) ([tas50](https://github.com/tas50)) <!-- 15.0.183 -->
-- Allow win32-service 2.x and bump InSpec to 3.7.1 [#8285](https://github.com/chef/chef/pull/8285) ([tas50](https://github.com/tas50)) <!-- 15.0.182 -->
-- Extract ActionCollection out of ResourceReporter, overhaul DataCollector [#8063](https://github.com/chef/chef/pull/8063) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.181 -->
-- Refactor windows_service unit tests [#8279](https://github.com/chef/chef/pull/8279) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.0.180 -->
-- Update rubygems to 3.0.3 [#8276](https://github.com/chef/chef/pull/8276) ([tas50](https://github.com/tas50)) <!-- 15.0.179 -->
-- mount: Add proper new lines when on AIX to prevent failures [#8271](https://github.com/chef/chef/pull/8271) ([gsreynolds](https://github.com/gsreynolds)) <!-- 15.0.178 -->
-- windows_certificate: Import nested certificates while importing P7B certs. [#8242](https://github.com/chef/chef/pull/8242) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.177 -->
-- Update openssl to 1.0.2r [#8258](https://github.com/chef/chef/pull/8258) ([tas50](https://github.com/tas50)) <!-- 15.0.176 -->
-- Remove checks / patches for old versions of Ruby [#8259](https://github.com/chef/chef/pull/8259) ([tas50](https://github.com/tas50)) <!-- 15.0.175 -->
-- Update omnibus gemfile deps to remove pry [#8257](https://github.com/chef/chef/pull/8257) ([tas50](https://github.com/tas50)) <!-- 15.0.174 -->
-- rollback rbnacl [#8255](https://github.com/chef/chef/pull/8255) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.173 -->
-- windows_share: Improve path comparison to prevent convering on each run [#8248](https://github.com/chef/chef/pull/8248) ([Xorima](https://github.com/Xorima)) <!-- 15.0.172 -->
-- Update libxml2 to 2.9.9 [#8240](https://github.com/chef/chef/pull/8240) ([tas50](https://github.com/tas50)) <!-- 15.0.171 -->
-- allow setting mode for openssl_dhparam after creation [#8245](https://github.com/chef/chef/pull/8245) ([btm](https://github.com/btm)) <!-- 15.0.170 -->
-- pin rbnacl to 5.x [#8244](https://github.com/chef/chef/pull/8244) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.169 -->
-- add LazyModuleInclude to Universal DSL [#8243](https://github.com/chef/chef/pull/8243) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.168 -->
-- Update InSpec to 3.6.6 [#8235](https://github.com/chef/chef/pull/8235) ([tas50](https://github.com/tas50)) <!-- 15.0.167 -->
-- Cleanup the user resource and convert it to the resource DSL + delete user_add provider [#8228](https://github.com/chef/chef/pull/8228) ([tas50](https://github.com/tas50)) <!-- 15.0.166 -->
-- chocolatey_package: use provided options when determing available options to allow using private sources [#8230](https://github.com/chef/chef/pull/8230) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.165 -->
-- Update scripts to use new EXPEDITOR_ environment variables [#8232](https://github.com/chef/chef/pull/8232) ([tduffield](https://github.com/tduffield)) <!-- 15.0.164 -->
-- windows_certificate: Add support to import Base 64 encoded CER certificates [#8229](https://github.com/chef/chef/pull/8229) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.163 -->
-- Chef::Config: Uniform config dir path separator [#8219](https://github.com/chef/chef/pull/8219) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.162 -->
-- Alter how we set set group members in solaris / unify group testing [#8226](https://github.com/chef/chef/pull/8226) ([tas50](https://github.com/tas50)) <!-- 15.0.161 -->
-- add ed25519 gemset and update omnibus-software [#8221](https://github.com/chef/chef/pull/8221) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.160 -->
-- More consist descriptions for resource name properties [#8216](https://github.com/chef/chef/pull/8216) ([tas50](https://github.com/tas50)) <!-- 15.0.159 -->
-- Add windows_uac resource [#8212](https://github.com/chef/chef/pull/8212) ([tas50](https://github.com/tas50)) <!-- 15.0.158 -->
-- Add windows_dfs and windows_dns resources [#8198](https://github.com/chef/chef/pull/8198) ([tas50](https://github.com/tas50)) <!-- 15.0.157 -->
-- Bump InSpec to 3.5.0 [#8211](https://github.com/chef/chef/pull/8211) ([tas50](https://github.com/tas50)) <!-- 15.0.156 -->
-- powershell_script: Prefer user provided flags over the defaults [#8167](https://github.com/chef/chef/pull/8167) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.155 -->
-- chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8202](https://github.com/chef/chef/pull/8202) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.154 -->
-- windows_task: Properly set command / argumentts so resource updates behave as expected [#8201](https://github.com/chef/chef/pull/8201) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.153 -->
-- windows_certificate: Import PFX certificates with their private keys [#8193](https://github.com/chef/chef/pull/8193) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.152 -->
-- Convert execute_resource remaining properties to use properties  [#8178](https://github.com/chef/chef/pull/8178) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.151 -->
-- Update knife bootstrap template to use up to date omnitruck URL [#8190](https://github.com/chef/chef/pull/8190) ([mivok](https://github.com/mivok)) <!-- 15.0.150 -->
-- git: Don&#39;t display the repo URL when sensitive property is set [#8179](https://github.com/chef/chef/pull/8179) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.149 -->
-- Update Rubygems to 3.0.2 [#8174](https://github.com/chef/chef/pull/8174) ([tas50](https://github.com/tas50)) <!-- 15.0.148 -->
-- [knife] Remove duplicate code blocks in the knife cookbook upload command [#8135](https://github.com/chef/chef/pull/8135) ([f9n](https://github.com/f9n)) <!-- 15.0.147 -->
-- Cleanup requires / includes in knife supermarket [#8166](https://github.com/chef/chef/pull/8166) ([tas50](https://github.com/tas50)) <!-- 15.0.146 -->
-- Misc YARD updates for knife [#8169](https://github.com/chef/chef/pull/8169) ([tas50](https://github.com/tas50)) <!-- 15.0.145 -->
-- Remove support for unsupported opensuse &lt; 42 from group provider [#8158](https://github.com/chef/chef/pull/8158) ([tas50](https://github.com/tas50)) <!-- 15.0.144 -->
-- apt_repository: Don&#39;t create gpg temporary files owned by root in the running user&#39;s home directory [#8104](https://github.com/chef/chef/pull/8104) ([vijaymmali1990](https://github.com/vijaymmali1990)) <!-- 15.0.143 -->
-- windows_certificate: Ensure all actions are fully idempotent [#8118](https://github.com/chef/chef/pull/8118) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.142 -->
-- Use the latest omnibus-software and nokogiri [#8162](https://github.com/chef/chef/pull/8162) ([tas50](https://github.com/tas50)) <!-- 15.0.141 -->
-- Remove hpux support from group&#39;s usermod provider [#8160](https://github.com/chef/chef/pull/8160) ([tas50](https://github.com/tas50)) <!-- 15.0.140 -->
-- Remove bogus &quot;solaris&quot; platform from specs [#8159](https://github.com/chef/chef/pull/8159) ([tas50](https://github.com/tas50)) <!-- 15.0.139 -->
-- Bump misc deps the latest [#8153](https://github.com/chef/chef/pull/8153) ([tas50](https://github.com/tas50)) <!-- 15.0.138 -->
-- Remove &#39;attributes&#39;  attribute from cookbook metadata [#8151](https://github.com/chef/chef/pull/8151) ([tas50](https://github.com/tas50)) <!-- 15.0.137 -->
-- Add a deprecation warning to knife cookbook site [#8149](https://github.com/chef/chef/pull/8149) ([tas50](https://github.com/tas50)) <!-- 15.0.136 -->
-- Hide knife cookbook site &amp; null by setting them to deprecated category [#8148](https://github.com/chef/chef/pull/8148) ([tas50](https://github.com/tas50)) <!-- 15.0.135 -->
-- Sysctl: Allow slashes in key or block name [#8136](https://github.com/chef/chef/pull/8136) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.134 -->
-- Allow for mixlib-archive 1.x [#8137](https://github.com/chef/chef/pull/8137) ([tas50](https://github.com/tas50)) <!-- 15.0.133 -->
-- Fix cask resource running each chef-client run [#8140](https://github.com/chef/chef/pull/8140) ([jeroenj](https://github.com/jeroenj)) <!-- 15.0.132 -->
-- Updates homebrew_cask tap name [#8139](https://github.com/chef/chef/pull/8139) ([jeroenj](https://github.com/jeroenj)) <!-- 15.0.131 -->
-- windows_printer: prevent failures when deleting printers and using device_id property [#8125](https://github.com/chef/chef/pull/8125) ([tas50](https://github.com/tas50)) <!-- 15.0.130 -->
-- homebrew_cask / homebrew_tap:  Properly use the cask_name and tap_name properties [#8123](https://github.com/chef/chef/pull/8123) ([tas50](https://github.com/tas50)) <!-- 15.0.129 -->
-- openssl_ec_private_key / openssl_x509_request.rb: properly use the path properties when specified [#8122](https://github.com/chef/chef/pull/8122) ([tas50](https://github.com/tas50)) <!-- 15.0.128 -->
-- ssh_known_host_entry: Use the host name_property in debug logging [#8124](https://github.com/chef/chef/pull/8124) ([tas50](https://github.com/tas50)) <!-- 15.0.127 -->
-- Update license_scout to 1.0.22 [#8133](https://github.com/chef/chef/pull/8133) ([tas50](https://github.com/tas50)) <!-- 15.0.126 -->
-- Update license scout 1.0.21 [#8130](https://github.com/chef/chef/pull/8130) ([tas50](https://github.com/tas50)) <!-- 15.0.125 -->
-- Add a bit more yard to chef-config/config [#8119](https://github.com/chef/chef/pull/8119) ([tas50](https://github.com/tas50)) <!-- 15.0.124 -->
-- user resource: Remove support for macOS 10.7 and 10.7 upgraded to 10.8+ [#8110](https://github.com/chef/chef/pull/8110) ([tas50](https://github.com/tas50)) <!-- 15.0.123 -->
-- Don&#39;t system exit on ohai CriticalPluginFailure [#8098](https://github.com/chef/chef/pull/8098) ([joshuamiller01](https://github.com/joshuamiller01)) <!-- 15.0.122 -->
-- windows_task resource: Allow non-system users without password [#7918](https://github.com/chef/chef/pull/7918) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.121 -->
-- Support Ruby 2.6 and add Ruby 2.6 testing [#7922](https://github.com/chef/chef/pull/7922) ([tas50](https://github.com/tas50)) <!-- 15.0.120 -->
-- Update rubygems to 2.7.7 and bundler to 1.17.3 [#8091](https://github.com/chef/chef/pull/8091) ([tas50](https://github.com/tas50)) <!-- 15.0.119 -->
-- Bump multiple deps to the latest [#8085](https://github.com/chef/chef/pull/8085) ([tas50](https://github.com/tas50)) <!-- 15.0.118 -->
-- Bump inspec-core to 3.2.6 [#8076](https://github.com/chef/chef/pull/8076) ([tas50](https://github.com/tas50)) <!-- 15.0.117 -->
-- Update train-core to 1.6.3 for smaller size and new winrm options [#8074](https://github.com/chef/chef/pull/8074) ([tas50](https://github.com/tas50)) <!-- 15.0.116 -->
-- Disable s3 omnibus cache [#8068](https://github.com/chef/chef/pull/8068) ([tas50](https://github.com/tas50)) <!-- 15.0.115 -->
-- windows_certificate: Fix failures in delete action fails if certificate doesn&#39;t exist [#8000](https://github.com/chef/chef/pull/8000) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.114 -->
-- Bump license_scout to 1.0.20 for licensing tests [#8065](https://github.com/chef/chef/pull/8065) ([tas50](https://github.com/tas50)) <!-- 15.0.113 -->
-- Update inspec to 3.1 and bump all the mixlibs [#8062](https://github.com/chef/chef/pull/8062) ([tas50](https://github.com/tas50)) <!-- 15.0.112 -->
-- windows_certificate: Fix invalid byte sequence errors with pfx certicates [#8008](https://github.com/chef/chef/pull/8008) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.111 -->
-- Adding VC Redistributable files required for powershell_exec on Windows [#8059](https://github.com/chef/chef/pull/8059) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.110 -->
-- windows_ad_join: suppress sensitive stderr [#8054](https://github.com/chef/chef/pull/8054) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.109 -->
-- Added property `comment` on Windows group. [#8038](https://github.com/chef/chef/pull/8038) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.108 -->
-- fix EBUSY errors in preinst script [#8046](https://github.com/chef/chef/pull/8046) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.107 -->
-- minimal_ohai: Add init_package plugin as a required plugin [#7980](https://github.com/chef/chef/pull/7980) ([tas50](https://github.com/tas50)) <!-- 15.0.106 -->
-- Remove travis apt proxy before running functional tests [#8040](https://github.com/chef/chef/pull/8040) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.105 -->
-- Chef 15: Windows Server 2019 version detection [#8031](https://github.com/chef/chef/pull/8031) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.104 -->
-- Allow the use of tagged?(tags) method in both only_if and not_if blocks [#7977](https://github.com/chef/chef/pull/7977) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.103 -->
-- Bugfixes to powershell_package_source [#8025](https://github.com/chef/chef/pull/8025) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.102 -->
-- Require Ruby 2.5 or later [#8023](https://github.com/chef/chef/pull/8023) ([tas50](https://github.com/tas50)) <!-- 15.0.101 -->
-- timezone: updated description to include windows [#8018](https://github.com/chef/chef/pull/8018) ([Stromweld](https://github.com/Stromweld)) <!-- 15.0.100 -->
-- Update InSpec to 3.0.61 and Ohai to 15.0.20 [#8010](https://github.com/chef/chef/pull/8010) ([tas50](https://github.com/tas50)) <!-- 15.0.99 -->
-- Fix locking ohai to to the value in the Gemfile.lock [#8014](https://github.com/chef/chef/pull/8014) ([tas50](https://github.com/tas50)) <!-- 15.0.98 -->
-- Pin the ohai definition to use the ohai version from Gemfile.lock [#8012](https://github.com/chef/chef/pull/8012) ([tas50](https://github.com/tas50)) <!-- 15.0.97 -->
-- RHEL8 yum_package fix. [#8005](https://github.com/chef/chef/pull/8005) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.96 -->
-- package resource: Add RHEL 8 support to DNF package installer [#8003](https://github.com/chef/chef/pull/8003) ([pixdrift](https://github.com/pixdrift)) <!-- 15.0.95 -->
-- Initial suppport for snap packages [#7999](https://github.com/chef/chef/pull/7999) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.94 -->
-- better kithen ohai pinning [#7998](https://github.com/chef/chef/pull/7998) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.93 -->
-- Make sure which mixin requires chef_class [#7989](https://github.com/chef/chef/pull/7989) ([tas50](https://github.com/tas50)) <!-- 15.0.92 -->
-- pull the ohai version from the bundle not from master [#7987](https://github.com/chef/chef/pull/7987) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.91 -->
-- gem_package provider supports --no-document and rubygems 3.x [#7986](https://github.com/chef/chef/pull/7986) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.90 -->
-- Added windows support for the timezone resource [#7806](https://github.com/chef/chef/pull/7806) ([username-is-already-taken2](https://github.com/username-is-already-taken2)) <!-- 15.0.89 -->
-- cab_package: Chef should fail when specified package is not applicable to the image [#7951](https://github.com/chef/chef/pull/7951) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.88 -->
-- Support apt-get --allow-downgrades [#7963](https://github.com/chef/chef/pull/7963) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.87 -->
-- Update openssl to 1.0.2q [#7979](https://github.com/chef/chef/pull/7979) ([tas50](https://github.com/tas50)) <!-- 15.0.86 -->
-- Update inspec to 3.0.52 [#7978](https://github.com/chef/chef/pull/7978) ([tas50](https://github.com/tas50)) <!-- 15.0.85 -->
-- windows_share: Avoid ConvertTo-Json errors on Windows 2012r2 with powershell 4  [#7961](https://github.com/chef/chef/pull/7961) ([derekgroh](https://github.com/derekgroh)) <!-- 15.0.84 -->
-- need -rf to remove dirs [#7966](https://github.com/chef/chef/pull/7966) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.83 -->
-- wipe the installer direction before installation [#7964](https://github.com/chef/chef/pull/7964) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.82 -->
-- windows_share: Accounts to be revoked should be provided as an individually quoted string array [#7959](https://github.com/chef/chef/pull/7959) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.81 -->
-- windows_share: Fix idempotency by removing the &quot;everyone&quot; access [#7956](https://github.com/chef/chef/pull/7956) ([tas50](https://github.com/tas50)) <!-- 15.0.80 -->
-- Chef-15: switch default of allow_downgrade to true [#7953](https://github.com/chef/chef/pull/7953) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.79 -->
-- Chef-15:  require instead of load libraries [#7954](https://github.com/chef/chef/pull/7954) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.78 -->
-- Allow Integers for all group / owner properties [#7948](https://github.com/chef/chef/pull/7948) ([tas50](https://github.com/tas50)) <!-- 15.0.77 -->
-- Remove unused yum_timeout and yum_lock_timeout configs [#7909](https://github.com/chef/chef/pull/7909) ([tas50](https://github.com/tas50)) <!-- 15.0.76 -->
-- windows_workgroup: Coerce the provided reboot property and add more tests [#7916](https://github.com/chef/chef/pull/7916) ([tas50](https://github.com/tas50)) <!-- 15.0.75 -->
-- Convert service resource to use properties [#7946](https://github.com/chef/chef/pull/7946) ([tas50](https://github.com/tas50)) <!-- 15.0.74 -->
-- Replace several uses of attribute with property in resources [#7943](https://github.com/chef/chef/pull/7943) ([tas50](https://github.com/tas50)) <!-- 15.0.73 -->
-- Fully convert remote_directory to use properties [#7947](https://github.com/chef/chef/pull/7947) ([tas50](https://github.com/tas50)) <!-- 15.0.72 -->
-- windows_certificate: Add testing of the defaults and allowed properties [#7917](https://github.com/chef/chef/pull/7917) ([tas50](https://github.com/tas50)) <!-- 15.0.71 -->
-- Require chef-zero 14.0.11 or later to resolve Rack gem CVEs [#7940](https://github.com/chef/chef/pull/7940) ([tas50](https://github.com/tas50)) <!-- 15.0.70 -->
-- Add additional resource description fields [#7938](https://github.com/chef/chef/pull/7938) ([tas50](https://github.com/tas50)) <!-- 15.0.69 -->
-- Improve resource descriptions for documentation [#7929](https://github.com/chef/chef/pull/7929) ([tas50](https://github.com/tas50)) <!-- 15.0.68 -->
-- windows_feature_dism: support installed deleted features [#7905](https://github.com/chef/chef/pull/7905) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.67 -->
-- use --no-tty during apt-keys fro gpg - fixes #7913 [#7914](https://github.com/chef/chef/pull/7914) ([EugenMayer](https://github.com/EugenMayer)) <!-- 15.0.66 -->
-- Update Cheffish to 14.0.4 [#7936](https://github.com/chef/chef/pull/7936) ([tas50](https://github.com/tas50)) <!-- 15.0.65 -->
-- Replace usage of win_friendly_path helper in windows_certificate [#7927](https://github.com/chef/chef/pull/7927) ([tas50](https://github.com/tas50)) <!-- 15.0.64 -->
-- Update inspec-core to 3.0.46 [#7924](https://github.com/chef/chef/pull/7924) ([tas50](https://github.com/tas50)) <!-- 15.0.63 -->
-- windows_feature: Move provider logic into the default of the install_method property [#7912](https://github.com/chef/chef/pull/7912) ([tas50](https://github.com/tas50)) <!-- 15.0.61 -->
-- Always run policy_file if a policy_file or policy_group exists [#7910](https://github.com/chef/chef/pull/7910) ([tas50](https://github.com/tas50)) <!-- 15.0.60 -->
-- Update deps to bring in the new ca-certs [#7897](https://github.com/chef/chef/pull/7897) ([tas50](https://github.com/tas50)) <!-- 15.0.59 -->
-- Add nillability to attribute deep merging [#7892](https://github.com/chef/chef/pull/7892) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.58 -->
-- Make sure we define windows_task resource on *nix systems [#7903](https://github.com/chef/chef/pull/7903) ([tas50](https://github.com/tas50)) <!-- 15.0.56 -->
-- windows_ad_join: Switch to UPN format usernames for use with AD cmdlets [#7895](https://github.com/chef/chef/pull/7895) ([stuartpreston](https://github.com/stuartpreston)) <!-- 15.0.55 -->
-- Fix the knife integration spec timeouts [#7896](https://github.com/chef/chef/pull/7896) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.54 -->
-- fix whitespace in node attributes [ci skip] [#7890](https://github.com/chef/chef/pull/7890) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.53 -->
-- add tests for yum version with package_source bug [#7886](https://github.com/chef/chef/pull/7886) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.52 -->
-- Remove Chef provisioning lazy loading [#7866](https://github.com/chef/chef/pull/7866) ([tas50](https://github.com/tas50)) <!-- 15.0.51 -->
-- Update more descriptions and tweak default handling in chef-resource-inspector [#7884](https://github.com/chef/chef/pull/7884) ([tas50](https://github.com/tas50)) <!-- 15.0.50 -->
-- Allow passing multiple ports in windows_firewall [#7879](https://github.com/chef/chef/pull/7879) ([tas50](https://github.com/tas50)) <!-- 15.0.49 -->
-- Add additional descriptions to resource and update others [#7881](https://github.com/chef/chef/pull/7881) ([tas50](https://github.com/tas50)) <!-- 15.0.48 -->
-- resource inspector: don&#39;t convert nil to &quot;nil&quot; in default values [#7880](https://github.com/chef/chef/pull/7880) ([tas50](https://github.com/tas50)) <!-- 15.0.47 -->
-- Defer running initramfs_command until end of run [#7871](https://github.com/chef/chef/pull/7871) ([tomdoherty](https://github.com/tomdoherty)) <!-- 15.0.45 -->
-- Fully remove knife cookbook create command [#7852](https://github.com/chef/chef/pull/7852) ([tas50](https://github.com/tas50)) <!-- 15.0.42 -->
-- Add more validation_messages to properties [#7867](https://github.com/chef/chef/pull/7867) ([tas50](https://github.com/tas50)) <!-- 15.0.41 -->
-- Make knife command banners consistent [#7869](https://github.com/chef/chef/pull/7869) ([tas50](https://github.com/tas50)) <!-- 15.0.40 -->
-- Add windows_firewall_rule [#7842](https://github.com/chef/chef/pull/7842) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.39 -->
-- Improve resource descriptions for resource documentation automation [#7808](https://github.com/chef/chef/pull/7808) ([tas50](https://github.com/tas50)) <!-- 15.0.38 -->
-- Remove the remaining OSC 11 knife user commands [#7868](https://github.com/chef/chef/pull/7868) ([tas50](https://github.com/tas50)) <!-- 15.0.37 -->
-- Remove knife user support for open source Chef Server &lt; 12 [#7841](https://github.com/chef/chef/pull/7841) ([tas50](https://github.com/tas50)) <!-- 15.0.36 -->
-- Add additional github issue templates [#7859](https://github.com/chef/chef/pull/7859) ([tas50](https://github.com/tas50)) <!-- 15.0.35 -->
-- Chef 15 node attribute array fixes [#7840](https://github.com/chef/chef/pull/7840) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.34 -->
-- Remove the check for nil code property in the script provider [#7855](https://github.com/chef/chef/pull/7855) ([tas50](https://github.com/tas50)) <!-- 15.0.33 -->
-- powershell_package doc update [#7857](https://github.com/chef/chef/pull/7857) ([Happycoil](https://github.com/Happycoil)) <!-- 15.0.32 -->
-- Set http_disable_auth_on_redirect to true [#7856](https://github.com/chef/chef/pull/7856) ([tas50](https://github.com/tas50)) <!-- 15.0.31 -->
-- Bump inspec-core to 3.0.25 [#7853](https://github.com/chef/chef/pull/7853) ([chef-ci](https://github.com/chef-ci)) <!-- 15.0.30 -->
-- Remove knife cookbook test feature [#7323](https://github.com/chef/chef/pull/7323) ([tas50](https://github.com/tas50)) <!-- 15.0.29 -->
-- Added property `description` on windows_task resource [#7777](https://github.com/chef/chef/pull/7777) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.0.28 -->
-- Remove the deprecated ohai_name property from the ohai resource [#7787](https://github.com/chef/chef/pull/7787) ([tas50](https://github.com/tas50)) <!-- 15.0.27 -->
-- Remove deprecated knife status --hide-healthy flag [#7791](https://github.com/chef/chef/pull/7791) ([tas50](https://github.com/tas50)) <!-- 15.0.26 -->
-- Update win32-taskscheduler to 2.0.1 [#7843](https://github.com/chef/chef/pull/7843) ([tas50](https://github.com/tas50)) <!-- 15.0.24 -->
-- Handle `interactive_enabled` property in windows_task resource [#7814](https://github.com/chef/chef/pull/7814) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.0.23 -->
-- Fix chef-apply crash for reboot [#7720](https://github.com/chef/chef/pull/7720) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.22 -->
-- Remove preview resource from windows_certificate &amp; windows_share [#7818](https://github.com/chef/chef/pull/7818) ([tas50](https://github.com/tas50)) <!-- 15.0.21 -->
-- Bump win32-certstore to 0.1.11 [#7823](https://github.com/chef/chef/pull/7823) ([tas50](https://github.com/tas50)) <!-- 15.0.20 -->
-- More cookbook loader cleanup and documentation [#7820](https://github.com/chef/chef/pull/7820) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.19 -->
-- Fix testing / installing on SLES 15 [#7819](https://github.com/chef/chef/pull/7819) ([tas50](https://github.com/tas50)) <!-- 15.0.18 -->
-- Update win32-certstore to include a license [#7822](https://github.com/chef/chef/pull/7822) ([tas50](https://github.com/tas50)) <!-- 15.0.17 -->
-- Add windows_certificate and windows_share resources [#7731](https://github.com/chef/chef/pull/7731) ([tas50](https://github.com/tas50)) <!-- 15.0.16 -->
-- Remove unused route resource properties [#7240](https://github.com/chef/chef/pull/7240) ([tas50](https://github.com/tas50)) <!-- 15.0.15 -->
-- Fix inspector to properly handle defaults that are symbols [#7813](https://github.com/chef/chef/pull/7813) ([tas50](https://github.com/tas50)) <!-- 15.0.14 -->
-- Refactor Cookbook loader logic now that we don&#39;t support merging [#7794](https://github.com/chef/chef/pull/7794) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.13 -->
-- Remove deprecated support for FreeBSD pkg provider [#7789](https://github.com/chef/chef/pull/7789) ([tas50](https://github.com/tas50)) <!-- 15.0.12 -->
-- Multiple fixes to dmg_package [#7802](https://github.com/chef/chef/pull/7802) ([tas50](https://github.com/tas50)) <!-- 15.0.11 -->
-- Allow passing array to supports in mount again [#7803](https://github.com/chef/chef/pull/7803) ([tas50](https://github.com/tas50)) <!-- 15.0.10 -->
-- Require mixin::shellout where we use it [#7798](https://github.com/chef/chef/pull/7798) ([tas50](https://github.com/tas50)) <!-- 15.0.9 -->
-- add GEMFILE_MOD to pin ohai to github master [#7796](https://github.com/chef/chef/pull/7796) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.8 -->
-- shell_out auto-timeout still needs to be restricted to only providers [#7793](https://github.com/chef/chef/pull/7793) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.7 -->
-- Remove cookbook merging/shadowing from the cookbooker loader [#7792](https://github.com/chef/chef/pull/7792) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.6 -->
-- Remove legacy require_recipe DSL method [#7790](https://github.com/chef/chef/pull/7790) ([tas50](https://github.com/tas50)) <!-- 15.0.5 -->
-- Do the shell_out deprecations for Chef-15. [#7788](https://github.com/chef/chef/pull/7788) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.4 -->
-- Update description fields from the docs site [#7784](https://github.com/chef/chef/pull/7784) ([tas50](https://github.com/tas50)) <!-- 15.0.3 -->
-- Make all Chef 14 preview resources into full resources [#7786](https://github.com/chef/chef/pull/7786) ([tas50](https://github.com/tas50)) <!-- 15.0.2 -->
-- Remove the deprecated knife bootstrap --identity-file flag [#7489](https://github.com/chef/chef/pull/7489) ([tas50](https://github.com/tas50)) <!-- 15.0.1 -->
-- Start Chef 15 development [#7785](https://github.com/chef/chef/pull/7785) ([tas50](https://github.com/tas50)) <!-- 15.0.0 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
-## [v14.11.21](https://github.com/chef/chef/tree/v14.11.21) (2019-03-07)
+## [v15.0.293](https://github.com/chef/chef/tree/v15.0.293) (2019-05-14)
 
 #### Merged Pull Requests
-- Update rubygems to 2.7.8 and bundler to 1.17.3 [#8194](https://github.com/chef/chef/pull/8194) ([tas50](https://github.com/tas50))
-- windows_certificate: Import PFX certificates with their private keys [#8206](https://github.com/chef/chef/pull/8206) ([tas50](https://github.com/tas50))
-- windows_task: Properly set command / arguments so resource updates behave as expected [#8205](https://github.com/chef/chef/pull/8205) ([tas50](https://github.com/tas50))
-- Update knife bootstrap template to use up to date omnitruck URL [#8207](https://github.com/chef/chef/pull/8207) ([tas50](https://github.com/tas50))
-- chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8209](https://github.com/chef/chef/pull/8209) ([tas50](https://github.com/tas50))
-- Update InSpec to 3.5.0 [#8214](https://github.com/chef/chef/pull/8214) ([tas50](https://github.com/tas50))
-- Chef-14: add ed25519 gemset and update omnibus-software [#8222](https://github.com/chef/chef/pull/8222) ([lamont-granquist](https://github.com/lamont-granquist))
-- Update InSpec to 3.6.6 [#8237](https://github.com/chef/chef/pull/8237) ([tas50](https://github.com/tas50))
-- Chef-14: add lazy module include to universal DSL [#8246](https://github.com/chef/chef/pull/8246) ([lamont-granquist](https://github.com/lamont-granquist))
-- Chef-14: rollback rbnacl [#8254](https://github.com/chef/chef/pull/8254) ([lamont-granquist](https://github.com/lamont-granquist))
-- Update libxml2 to 2.9.9 [#8238](https://github.com/chef/chef/pull/8238) ([tas50](https://github.com/tas50))
-- Use proper paths on Windows in chef-config [#8261](https://github.com/chef/chef/pull/8261) ([tas50](https://github.com/tas50))
-- windows_share: Improve path comparison to prevent convering on each run [#8262](https://github.com/chef/chef/pull/8262) ([tas50](https://github.com/tas50))
-- ﻿﻿chocolatey_package: use provided options when determing available options to allow using private sources [#8263](https://github.com/chef/chef/pull/8263) ([tas50](https://github.com/tas50))
-- openssl_dhparam: allow changing file mode on subsequent runs [#8264](https://github.com/chef/chef/pull/8264) ([tas50](https://github.com/tas50))
-- More consist descriptions for resource name properties [#8265](https://github.com/chef/chef/pull/8265) ([tas50](https://github.com/tas50))
-- Update openssl to 1.0.2r [#8266](https://github.com/chef/chef/pull/8266) ([tas50](https://github.com/tas50))
-- windows_certificate: Add support to import Base 64 encoded CER certificates [#8267](https://github.com/chef/chef/pull/8267) ([tas50](https://github.com/tas50))
-- Update InSpec to 3.7.1 [#8268](https://github.com/chef/chef/pull/8268) ([tas50](https://github.com/tas50))
-- Update cacerts to 2019-01-22 file [#8270](https://github.com/chef/chef/pull/8270) ([tas50](https://github.com/tas50))
-- mount: Add proper new lines when on AIX to prevent failures [#8273](https://github.com/chef/chef/pull/8273) ([tas50](https://github.com/tas50))
-- Update Rubygems to 2.7.9 + Add release notes for Chef 14.11 [#8272](https://github.com/chef/chef/pull/8272) ([tas50](https://github.com/tas50))
+- Start Chef 15 development [#7785](https://github.com/chef/chef/pull/7785) ([tas50](https://github.com/tas50))
+- Remove the deprecated knife bootstrap --identity-file flag [#7489](https://github.com/chef/chef/pull/7489) ([tas50](https://github.com/tas50))
+- Make all Chef 14 preview resources into full resources [#7786](https://github.com/chef/chef/pull/7786) ([tas50](https://github.com/tas50))
+- Update description fields from the docs site [#7784](https://github.com/chef/chef/pull/7784) ([tas50](https://github.com/tas50))
+- Do the shell_out deprecations for Chef-15. [#7788](https://github.com/chef/chef/pull/7788) ([lamont-granquist](https://github.com/lamont-granquist))
+- Remove legacy require_recipe DSL method [#7790](https://github.com/chef/chef/pull/7790) ([tas50](https://github.com/tas50))
+- Remove cookbook merging/shadowing from the cookbooker loader [#7792](https://github.com/chef/chef/pull/7792) ([lamont-granquist](https://github.com/lamont-granquist))
+- shell_out auto-timeout still needs to be restricted to only providers [#7793](https://github.com/chef/chef/pull/7793) ([lamont-granquist](https://github.com/lamont-granquist))
+- add GEMFILE_MOD to pin ohai to github master [#7796](https://github.com/chef/chef/pull/7796) ([lamont-granquist](https://github.com/lamont-granquist))
+- Require mixin::shellout where we use it [#7798](https://github.com/chef/chef/pull/7798) ([tas50](https://github.com/tas50))
+- Allow passing array to supports in mount again [#7803](https://github.com/chef/chef/pull/7803) ([tas50](https://github.com/tas50))
+- Multiple fixes to dmg_package [#7802](https://github.com/chef/chef/pull/7802) ([tas50](https://github.com/tas50))
+- Remove deprecated support for FreeBSD pkg provider [#7789](https://github.com/chef/chef/pull/7789) ([tas50](https://github.com/tas50))
+- Refactor Cookbook loader logic now that we don&#39;t support merging [#7794](https://github.com/chef/chef/pull/7794) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix inspector to properly handle defaults that are symbols [#7813](https://github.com/chef/chef/pull/7813) ([tas50](https://github.com/tas50))
+- Remove unused route resource properties [#7240](https://github.com/chef/chef/pull/7240) ([tas50](https://github.com/tas50))
+- Add windows_certificate and windows_share resources [#7731](https://github.com/chef/chef/pull/7731) ([tas50](https://github.com/tas50))
+- Update win32-certstore to include a license [#7822](https://github.com/chef/chef/pull/7822) ([tas50](https://github.com/tas50))
+- Fix testing / installing on SLES 15 [#7819](https://github.com/chef/chef/pull/7819) ([tas50](https://github.com/tas50))
+- More cookbook loader cleanup and documentation [#7820](https://github.com/chef/chef/pull/7820) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump win32-certstore to 0.1.11 [#7823](https://github.com/chef/chef/pull/7823) ([tas50](https://github.com/tas50))
+- Remove preview resource from windows_certificate &amp; windows_share [#7818](https://github.com/chef/chef/pull/7818) ([tas50](https://github.com/tas50))
+- Fix chef-apply crash for reboot [#7720](https://github.com/chef/chef/pull/7720) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Handle `interactive_enabled` property in windows_task resource [#7814](https://github.com/chef/chef/pull/7814) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Update win32-taskscheduler to 2.0.1 [#7843](https://github.com/chef/chef/pull/7843) ([tas50](https://github.com/tas50))
+- Remove deprecated knife status --hide-healthy flag [#7791](https://github.com/chef/chef/pull/7791) ([tas50](https://github.com/tas50))
+- Remove the deprecated ohai_name property from the ohai resource [#7787](https://github.com/chef/chef/pull/7787) ([tas50](https://github.com/tas50))
+- Added property `description` on windows_task resource [#7777](https://github.com/chef/chef/pull/7777) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Remove knife cookbook test feature [#7323](https://github.com/chef/chef/pull/7323) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 3.0.25 [#7853](https://github.com/chef/chef/pull/7853) ([chef-ci](https://github.com/chef-ci))
+- Set http_disable_auth_on_redirect to true [#7856](https://github.com/chef/chef/pull/7856) ([tas50](https://github.com/tas50))
+- powershell_package doc update [#7857](https://github.com/chef/chef/pull/7857) ([Happycoil](https://github.com/Happycoil))
+- Remove the check for nil code property in the script provider [#7855](https://github.com/chef/chef/pull/7855) ([tas50](https://github.com/tas50))
+- Chef 15 node attribute array fixes [#7840](https://github.com/chef/chef/pull/7840) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add additional github issue templates [#7859](https://github.com/chef/chef/pull/7859) ([tas50](https://github.com/tas50))
+- Remove knife user support for open source Chef Server &lt; 12 [#7841](https://github.com/chef/chef/pull/7841) ([tas50](https://github.com/tas50))
+- Remove the remaining OSC 11 knife user commands [#7868](https://github.com/chef/chef/pull/7868) ([tas50](https://github.com/tas50))
+- Improve resource descriptions for resource documentation automation [#7808](https://github.com/chef/chef/pull/7808) ([tas50](https://github.com/tas50))
+- Add windows_firewall_rule [#7842](https://github.com/chef/chef/pull/7842) ([Happycoil](https://github.com/Happycoil))
+- Make knife command banners consistent [#7869](https://github.com/chef/chef/pull/7869) ([tas50](https://github.com/tas50))
+- Add more validation_messages to properties [#7867](https://github.com/chef/chef/pull/7867) ([tas50](https://github.com/tas50))
+- Fully remove knife cookbook create command [#7852](https://github.com/chef/chef/pull/7852) ([tas50](https://github.com/tas50))
+- Defer running initramfs_command until end of run [#7871](https://github.com/chef/chef/pull/7871) ([tomdoherty](https://github.com/tomdoherty))
+- resource inspector: don&#39;t convert nil to &quot;nil&quot; in default values [#7880](https://github.com/chef/chef/pull/7880) ([tas50](https://github.com/tas50))
+- Add additional descriptions to resource and update others [#7881](https://github.com/chef/chef/pull/7881) ([tas50](https://github.com/tas50))
+- Allow passing multiple ports in windows_firewall [#7879](https://github.com/chef/chef/pull/7879) ([tas50](https://github.com/tas50))
+- Update more descriptions and tweak default handling in chef-resource-inspector [#7884](https://github.com/chef/chef/pull/7884) ([tas50](https://github.com/tas50))
+- Remove Chef provisioning lazy loading [#7866](https://github.com/chef/chef/pull/7866) ([tas50](https://github.com/tas50))
+- add tests for yum version with package_source bug [#7886](https://github.com/chef/chef/pull/7886) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix whitespace in node attributes [ci skip] [#7890](https://github.com/chef/chef/pull/7890) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix the knife integration spec timeouts [#7896](https://github.com/chef/chef/pull/7896) ([lamont-granquist](https://github.com/lamont-granquist))
+- windows_ad_join: Switch to UPN format usernames for use with AD cmdlets [#7895](https://github.com/chef/chef/pull/7895) ([stuartpreston](https://github.com/stuartpreston))
+- Make sure we define windows_task resource on *nix systems [#7903](https://github.com/chef/chef/pull/7903) ([tas50](https://github.com/tas50))
+- Add nillability to attribute deep merging [#7892](https://github.com/chef/chef/pull/7892) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update deps to bring in the new ca-certs [#7897](https://github.com/chef/chef/pull/7897) ([tas50](https://github.com/tas50))
+- Always run policy_file if a policy_file or policy_group exists [#7910](https://github.com/chef/chef/pull/7910) ([tas50](https://github.com/tas50))
+- windows_feature: Move provider logic into the default of the install_method property [#7912](https://github.com/chef/chef/pull/7912) ([tas50](https://github.com/tas50))
+- Update inspec-core to 3.0.46 [#7924](https://github.com/chef/chef/pull/7924) ([tas50](https://github.com/tas50))
+- Replace usage of win_friendly_path helper in windows_certificate [#7927](https://github.com/chef/chef/pull/7927) ([tas50](https://github.com/tas50))
+- Update Cheffish to 14.0.4 [#7936](https://github.com/chef/chef/pull/7936) ([tas50](https://github.com/tas50))
+- use --no-tty during apt-keys fro gpg - fixes #7913 [#7914](https://github.com/chef/chef/pull/7914) ([EugenMayer](https://github.com/EugenMayer))
+- windows_feature_dism: support installed deleted features [#7905](https://github.com/chef/chef/pull/7905) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Improve resource descriptions for documentation [#7929](https://github.com/chef/chef/pull/7929) ([tas50](https://github.com/tas50))
+- Add additional resource description fields [#7938](https://github.com/chef/chef/pull/7938) ([tas50](https://github.com/tas50))
+- Require chef-zero 14.0.11 or later to resolve Rack gem CVEs [#7940](https://github.com/chef/chef/pull/7940) ([tas50](https://github.com/tas50))
+- windows_certificate: Add testing of the defaults and allowed properties [#7917](https://github.com/chef/chef/pull/7917) ([tas50](https://github.com/tas50))
+- Fully convert remote_directory to use properties [#7947](https://github.com/chef/chef/pull/7947) ([tas50](https://github.com/tas50))
+- Replace several uses of attribute with property in resources [#7943](https://github.com/chef/chef/pull/7943) ([tas50](https://github.com/tas50))
+- Convert service resource to use properties [#7946](https://github.com/chef/chef/pull/7946) ([tas50](https://github.com/tas50))
+- windows_workgroup: Coerce the provided reboot property and add more tests [#7916](https://github.com/chef/chef/pull/7916) ([tas50](https://github.com/tas50))
+- Remove unused yum_timeout and yum_lock_timeout configs [#7909](https://github.com/chef/chef/pull/7909) ([tas50](https://github.com/tas50))
+- Allow Integers for all group / owner properties [#7948](https://github.com/chef/chef/pull/7948) ([tas50](https://github.com/tas50))
+- Chef-15:  require instead of load libraries [#7954](https://github.com/chef/chef/pull/7954) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-15: switch default of allow_downgrade to true [#7953](https://github.com/chef/chef/pull/7953) ([lamont-granquist](https://github.com/lamont-granquist))
+- windows_share: Fix idempotency by removing the &quot;everyone&quot; access [#7956](https://github.com/chef/chef/pull/7956) ([tas50](https://github.com/tas50))
+- windows_share: Accounts to be revoked should be provided as an individually quoted string array [#7959](https://github.com/chef/chef/pull/7959) ([stuartpreston](https://github.com/stuartpreston))
+- wipe the installer direction before installation [#7964](https://github.com/chef/chef/pull/7964) ([lamont-granquist](https://github.com/lamont-granquist))
+- need -rf to remove dirs [#7966](https://github.com/chef/chef/pull/7966) ([lamont-granquist](https://github.com/lamont-granquist))
+- windows_share: Avoid ConvertTo-Json errors on Windows 2012r2 with powershell 4  [#7961](https://github.com/chef/chef/pull/7961) ([derekgroh](https://github.com/derekgroh))
+- Update inspec to 3.0.52 [#7978](https://github.com/chef/chef/pull/7978) ([tas50](https://github.com/tas50))
+- Update openssl to 1.0.2q [#7979](https://github.com/chef/chef/pull/7979) ([tas50](https://github.com/tas50))
+- Support apt-get --allow-downgrades [#7963](https://github.com/chef/chef/pull/7963) ([lamont-granquist](https://github.com/lamont-granquist))
+- cab_package: Chef should fail when specified package is not applicable to the image [#7951](https://github.com/chef/chef/pull/7951) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Added windows support for the timezone resource [#7806](https://github.com/chef/chef/pull/7806) ([username-is-already-taken2](https://github.com/username-is-already-taken2))
+- gem_package provider supports --no-document and rubygems 3.x [#7986](https://github.com/chef/chef/pull/7986) ([lamont-granquist](https://github.com/lamont-granquist))
+- pull the ohai version from the bundle not from master [#7987](https://github.com/chef/chef/pull/7987) ([lamont-granquist](https://github.com/lamont-granquist))
+- Make sure which mixin requires chef_class [#7989](https://github.com/chef/chef/pull/7989) ([tas50](https://github.com/tas50))
+- better kithen ohai pinning [#7998](https://github.com/chef/chef/pull/7998) ([lamont-granquist](https://github.com/lamont-granquist))
+- Initial suppport for snap packages [#7999](https://github.com/chef/chef/pull/7999) ([lamont-granquist](https://github.com/lamont-granquist))
+- package resource: Add RHEL 8 support to DNF package installer [#8003](https://github.com/chef/chef/pull/8003) ([pixdrift](https://github.com/pixdrift))
+- RHEL8 yum_package fix. [#8005](https://github.com/chef/chef/pull/8005) ([lamont-granquist](https://github.com/lamont-granquist))
+- Pin the ohai definition to use the ohai version from Gemfile.lock [#8012](https://github.com/chef/chef/pull/8012) ([tas50](https://github.com/tas50))
+- Fix locking ohai to to the value in the Gemfile.lock [#8014](https://github.com/chef/chef/pull/8014) ([tas50](https://github.com/tas50))
+- Update InSpec to 3.0.61 and Ohai to 15.0.20 [#8010](https://github.com/chef/chef/pull/8010) ([tas50](https://github.com/tas50))
+- timezone: updated description to include windows [#8018](https://github.com/chef/chef/pull/8018) ([Stromweld](https://github.com/Stromweld))
+- Require Ruby 2.5 or later [#8023](https://github.com/chef/chef/pull/8023) ([tas50](https://github.com/tas50))
+- Bugfixes to powershell_package_source [#8025](https://github.com/chef/chef/pull/8025) ([Happycoil](https://github.com/Happycoil))
+- Allow the use of tagged?(tags) method in both only_if and not_if blocks [#7977](https://github.com/chef/chef/pull/7977) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Chef 15: Windows Server 2019 version detection [#8031](https://github.com/chef/chef/pull/8031) ([stuartpreston](https://github.com/stuartpreston))
+- Remove travis apt proxy before running functional tests [#8040](https://github.com/chef/chef/pull/8040) ([lamont-granquist](https://github.com/lamont-granquist))
+- minimal_ohai: Add init_package plugin as a required plugin [#7980](https://github.com/chef/chef/pull/7980) ([tas50](https://github.com/tas50))
+- fix EBUSY errors in preinst script [#8046](https://github.com/chef/chef/pull/8046) ([lamont-granquist](https://github.com/lamont-granquist))
+- Added property `comment` on Windows group. [#8038](https://github.com/chef/chef/pull/8038) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- windows_ad_join: suppress sensitive stderr [#8054](https://github.com/chef/chef/pull/8054) ([Happycoil](https://github.com/Happycoil))
+- Adding VC Redistributable files required for powershell_exec on Windows [#8059](https://github.com/chef/chef/pull/8059) ([stuartpreston](https://github.com/stuartpreston))
+- windows_certificate: Fix invalid byte sequence errors with pfx certicates [#8008](https://github.com/chef/chef/pull/8008) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Update inspec to 3.1 and bump all the mixlibs [#8062](https://github.com/chef/chef/pull/8062) ([tas50](https://github.com/tas50))
+- Bump license_scout to 1.0.20 for licensing tests [#8065](https://github.com/chef/chef/pull/8065) ([tas50](https://github.com/tas50))
+- windows_certificate: Fix failures in delete action fails if certificate doesn&#39;t exist [#8000](https://github.com/chef/chef/pull/8000) ([Vasu1105](https://github.com/Vasu1105))
+- Disable s3 omnibus cache [#8068](https://github.com/chef/chef/pull/8068) ([tas50](https://github.com/tas50))
+- Update train-core to 1.6.3 for smaller size and new winrm options [#8074](https://github.com/chef/chef/pull/8074) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 3.2.6 [#8076](https://github.com/chef/chef/pull/8076) ([tas50](https://github.com/tas50))
+- Bump multiple deps to the latest [#8085](https://github.com/chef/chef/pull/8085) ([tas50](https://github.com/tas50))
+- Update rubygems to 2.7.7 and bundler to 1.17.3 [#8091](https://github.com/chef/chef/pull/8091) ([tas50](https://github.com/tas50))
+- Support Ruby 2.6 and add Ruby 2.6 testing [#7922](https://github.com/chef/chef/pull/7922) ([tas50](https://github.com/tas50))
+- windows_task resource: Allow non-system users without password [#7918](https://github.com/chef/chef/pull/7918) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Don&#39;t system exit on ohai CriticalPluginFailure [#8098](https://github.com/chef/chef/pull/8098) ([joshuamiller01](https://github.com/joshuamiller01))
+- user resource: Remove support for macOS 10.7 and 10.7 upgraded to 10.8+ [#8110](https://github.com/chef/chef/pull/8110) ([tas50](https://github.com/tas50))
+- Add a bit more yard to chef-config/config [#8119](https://github.com/chef/chef/pull/8119) ([tas50](https://github.com/tas50))
+- Update license scout 1.0.21 [#8130](https://github.com/chef/chef/pull/8130) ([tas50](https://github.com/tas50))
+- Update license_scout to 1.0.22 [#8133](https://github.com/chef/chef/pull/8133) ([tas50](https://github.com/tas50))
+- ssh_known_host_entry: Use the host name_property in debug logging [#8124](https://github.com/chef/chef/pull/8124) ([tas50](https://github.com/tas50))
+- openssl_ec_private_key / openssl_x509_request.rb: properly use the path properties when specified [#8122](https://github.com/chef/chef/pull/8122) ([tas50](https://github.com/tas50))
+- homebrew_cask / homebrew_tap:  Properly use the cask_name and tap_name properties [#8123](https://github.com/chef/chef/pull/8123) ([tas50](https://github.com/tas50))
+- windows_printer: prevent failures when deleting printers and using device_id property [#8125](https://github.com/chef/chef/pull/8125) ([tas50](https://github.com/tas50))
+- Updates homebrew_cask tap name [#8139](https://github.com/chef/chef/pull/8139) ([jeroenj](https://github.com/jeroenj))
+- Fix cask resource running each chef-client run [#8140](https://github.com/chef/chef/pull/8140) ([jeroenj](https://github.com/jeroenj))
+- Allow for mixlib-archive 1.x [#8137](https://github.com/chef/chef/pull/8137) ([tas50](https://github.com/tas50))
+- Sysctl: Allow slashes in key or block name [#8136](https://github.com/chef/chef/pull/8136) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Hide knife cookbook site &amp; null by setting them to deprecated category [#8148](https://github.com/chef/chef/pull/8148) ([tas50](https://github.com/tas50))
+- Add a deprecation warning to knife cookbook site [#8149](https://github.com/chef/chef/pull/8149) ([tas50](https://github.com/tas50))
+- Remove &#39;attributes&#39;  attribute from cookbook metadata [#8151](https://github.com/chef/chef/pull/8151) ([tas50](https://github.com/tas50))
+- Bump misc deps the latest [#8153](https://github.com/chef/chef/pull/8153) ([tas50](https://github.com/tas50))
+- Remove bogus &quot;solaris&quot; platform from specs [#8159](https://github.com/chef/chef/pull/8159) ([tas50](https://github.com/tas50))
+- Remove hpux support from group&#39;s usermod provider [#8160](https://github.com/chef/chef/pull/8160) ([tas50](https://github.com/tas50))
+- Use the latest omnibus-software and nokogiri [#8162](https://github.com/chef/chef/pull/8162) ([tas50](https://github.com/tas50))
+- windows_certificate: Ensure all actions are fully idempotent [#8118](https://github.com/chef/chef/pull/8118) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- apt_repository: Don&#39;t create gpg temporary files owned by root in the running user&#39;s home directory [#8104](https://github.com/chef/chef/pull/8104) ([vijaymmali1990](https://github.com/vijaymmali1990))
+- Remove support for unsupported opensuse &lt; 42 from group provider [#8158](https://github.com/chef/chef/pull/8158) ([tas50](https://github.com/tas50))
+- Misc YARD updates for knife [#8169](https://github.com/chef/chef/pull/8169) ([tas50](https://github.com/tas50))
+- Cleanup requires / includes in knife supermarket [#8166](https://github.com/chef/chef/pull/8166) ([tas50](https://github.com/tas50))
+- [knife] Remove duplicate code blocks in the knife cookbook upload command [#8135](https://github.com/chef/chef/pull/8135) ([f9n](https://github.com/f9n))
+- Update Rubygems to 3.0.2 [#8174](https://github.com/chef/chef/pull/8174) ([tas50](https://github.com/tas50))
+- git: Don&#39;t display the repo URL when sensitive property is set [#8179](https://github.com/chef/chef/pull/8179) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Update knife bootstrap template to use up to date omnitruck URL [#8190](https://github.com/chef/chef/pull/8190) ([mivok](https://github.com/mivok))
+- Convert execute_resource remaining properties to use properties  [#8178](https://github.com/chef/chef/pull/8178) ([Vasu1105](https://github.com/Vasu1105))
+- windows_certificate: Import PFX certificates with their private keys [#8193](https://github.com/chef/chef/pull/8193) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- windows_task: Properly set command / argumentts so resource updates behave as expected [#8201](https://github.com/chef/chef/pull/8201) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- chef-solo: Fixes for extra cookbook_path with parent dir that doesn&#39;t exist causes crash [#8202](https://github.com/chef/chef/pull/8202) ([vsingh-msys](https://github.com/vsingh-msys))
+- powershell_script: Prefer user provided flags over the defaults [#8167](https://github.com/chef/chef/pull/8167) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Bump InSpec to 3.5.0 [#8211](https://github.com/chef/chef/pull/8211) ([tas50](https://github.com/tas50))
+- Add windows_dfs and windows_dns resources [#8198](https://github.com/chef/chef/pull/8198) ([tas50](https://github.com/tas50))
+- Add windows_uac resource [#8212](https://github.com/chef/chef/pull/8212) ([tas50](https://github.com/tas50))
+- More consist descriptions for resource name properties [#8216](https://github.com/chef/chef/pull/8216) ([tas50](https://github.com/tas50))
+- add ed25519 gemset and update omnibus-software [#8221](https://github.com/chef/chef/pull/8221) ([lamont-granquist](https://github.com/lamont-granquist))
+- Alter how we set set group members in solaris / unify group testing [#8226](https://github.com/chef/chef/pull/8226) ([tas50](https://github.com/tas50))
+- Chef::Config: Uniform config dir path separator [#8219](https://github.com/chef/chef/pull/8219) ([vsingh-msys](https://github.com/vsingh-msys))
+- windows_certificate: Add support to import Base 64 encoded CER certificates [#8229](https://github.com/chef/chef/pull/8229) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Update scripts to use new EXPEDITOR_ environment variables [#8232](https://github.com/chef/chef/pull/8232) ([tduffield](https://github.com/tduffield))
+- chocolatey_package: use provided options when determing available options to allow using private sources [#8230](https://github.com/chef/chef/pull/8230) ([vsingh-msys](https://github.com/vsingh-msys))
+- Cleanup the user resource and convert it to the resource DSL + delete user_add provider [#8228](https://github.com/chef/chef/pull/8228) ([tas50](https://github.com/tas50))
+- Update InSpec to 3.6.6 [#8235](https://github.com/chef/chef/pull/8235) ([tas50](https://github.com/tas50))
+- add LazyModuleInclude to Universal DSL [#8243](https://github.com/chef/chef/pull/8243) ([lamont-granquist](https://github.com/lamont-granquist))
+- pin rbnacl to 5.x [#8244](https://github.com/chef/chef/pull/8244) ([lamont-granquist](https://github.com/lamont-granquist))
+- allow setting mode for openssl_dhparam after creation [#8245](https://github.com/chef/chef/pull/8245) ([btm](https://github.com/btm))
+- Update libxml2 to 2.9.9 [#8240](https://github.com/chef/chef/pull/8240) ([tas50](https://github.com/tas50))
+- windows_share: Improve path comparison to prevent convering on each run [#8248](https://github.com/chef/chef/pull/8248) ([Xorima](https://github.com/Xorima))
+- rollback rbnacl [#8255](https://github.com/chef/chef/pull/8255) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update omnibus gemfile deps to remove pry [#8257](https://github.com/chef/chef/pull/8257) ([tas50](https://github.com/tas50))
+- Remove checks / patches for old versions of Ruby [#8259](https://github.com/chef/chef/pull/8259) ([tas50](https://github.com/tas50))
+- Update openssl to 1.0.2r [#8258](https://github.com/chef/chef/pull/8258) ([tas50](https://github.com/tas50))
+- windows_certificate: Import nested certificates while importing P7B certs. [#8242](https://github.com/chef/chef/pull/8242) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- mount: Add proper new lines when on AIX to prevent failures [#8271](https://github.com/chef/chef/pull/8271) ([gsreynolds](https://github.com/gsreynolds))
+- Update rubygems to 3.0.3 [#8276](https://github.com/chef/chef/pull/8276) ([tas50](https://github.com/tas50))
+- Refactor windows_service unit tests [#8279](https://github.com/chef/chef/pull/8279) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Extract ActionCollection out of ResourceReporter, overhaul DataCollector [#8063](https://github.com/chef/chef/pull/8063) ([lamont-granquist](https://github.com/lamont-granquist))
+- Allow win32-service 2.x and bump InSpec to 3.7.1 [#8285](https://github.com/chef/chef/pull/8285) ([tas50](https://github.com/tas50))
+- Remove the rake task to generate a pre-announcement [#8288](https://github.com/chef/chef/pull/8288) ([tas50](https://github.com/tas50))
+- Remove audit mode from chef-client [#7728](https://github.com/chef/chef/pull/7728) ([tas50](https://github.com/tas50))
+- Loosen win32-certstore pin and bump to 0.3.0 [#8286](https://github.com/chef/chef/pull/8286) ([tas50](https://github.com/tas50))
+- Add misc YARD comments [#8287](https://github.com/chef/chef/pull/8287) ([tas50](https://github.com/tas50))
+- windows_service: Fix action :start to not resets credentials on service [#8278](https://github.com/chef/chef/pull/8278) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- fix unsolvable Gemfile.lock [#8300](https://github.com/chef/chef/pull/8300) ([lamont-granquist](https://github.com/lamont-granquist))
+- Allow the use of `--delete-entire-chef-repo` [#8298](https://github.com/chef/chef/pull/8298) ([ABewsher](https://github.com/ABewsher))
+- Early allocation of the Chef::RunContext [#8301](https://github.com/chef/chef/pull/8301) ([lamont-granquist](https://github.com/lamont-granquist))
+- Loosen mixlib deps to allow for the latest versions [#8304](https://github.com/chef/chef/pull/8304) ([tas50](https://github.com/tas50))
+- Update Ruby to 2.5.5 [#8296](https://github.com/chef/chef/pull/8296) ([tas50](https://github.com/tas50))
+- Pin expeditor to ruby 2.5.3 and bump train to 1.7.6 [#8308](https://github.com/chef/chef/pull/8308) ([tas50](https://github.com/tas50))
+- Remove the travis gem from our gemfile [#8310](https://github.com/chef/chef/pull/8310) ([tas50](https://github.com/tas50))
+- Update chef-zero to 14.0.12 [#8312](https://github.com/chef/chef/pull/8312) ([tas50](https://github.com/tas50))
+- Update win32-service gem and fix #8195 [#8322](https://github.com/chef/chef/pull/8322) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Update InSpec to 3.7.11 and mixlib-cli to 2.0.3 [#8329](https://github.com/chef/chef/pull/8329) ([tas50](https://github.com/tas50))
+- Remove Ubuntu 14.04 testing [#8330](https://github.com/chef/chef/pull/8330) ([tas50](https://github.com/tas50))
+- Update Ruby to 2.6.2 [#8333](https://github.com/chef/chef/pull/8333) ([tas50](https://github.com/tas50))
+- Update inspec to 3.9.0 [#8336](https://github.com/chef/chef/pull/8336) ([tas50](https://github.com/tas50))
+- fix data collector non-utf8 file output [#8337](https://github.com/chef/chef/pull/8337) ([lamont-granquist](https://github.com/lamont-granquist))
+- Remove windows-api pin and update Gemfile.lock [#8328](https://github.com/chef/chef/pull/8328) ([jaymalasinha](https://github.com/jaymalasinha))
+- Update nokogiri to 1.10.2 [#8338](https://github.com/chef/chef/pull/8338) ([tas50](https://github.com/tas50))
+- locale: Add support to set all LC ENV variables and deprecate LC_ALL [#8324](https://github.com/chef/chef/pull/8324) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Add PROJECT_NAME to omnibus-test scripts [#8346](https://github.com/chef/chef/pull/8346) ([tas50](https://github.com/tas50))
+- Add Ruby 2.6 testing Appveyor [#8349](https://github.com/chef/chef/pull/8349) ([tas50](https://github.com/tas50))
+- Implement Chef::Resource#copy_properties_from [#8344](https://github.com/chef/chef/pull/8344) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add Debian 10 testing to Travis [#8348](https://github.com/chef/chef/pull/8348) ([tas50](https://github.com/tas50))
+- Avoid occasionally randomly reusing a gid in tests [#8352](https://github.com/chef/chef/pull/8352) ([btm](https://github.com/btm))
+- Don&#39;t force DSC functional tests to PS4 [#8359](https://github.com/chef/chef/pull/8359) ([btm](https://github.com/btm))
+- Add Verification tests in Buildkite [#8357](https://github.com/chef/chef/pull/8357) ([jaymalasinha](https://github.com/jaymalasinha))
+- Drop privileges before creating files in solo mode [#8361](https://github.com/chef/chef/pull/8361) ([btm](https://github.com/btm))
+- Add a new archive_file resource from the libarchive cookbook [#8028](https://github.com/chef/chef/pull/8028) ([tas50](https://github.com/tas50))
+- Allow empty strings in -o to result in empty override run list [#8370](https://github.com/chef/chef/pull/8370) ([lamont-granquist](https://github.com/lamont-granquist))
+- Limit locale resource to Linux [#8375](https://github.com/chef/chef/pull/8375) ([btm](https://github.com/btm))
+- Prevent accidentally configuring windows_service properties [#8351](https://github.com/chef/chef/pull/8351) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Allow encrypting a previously unencrypted data bag [#8077](https://github.com/chef/chef/pull/8077) ([vijaymmali1990](https://github.com/vijaymmali1990))
+- Remove a functional test for the reboot_pending DSL [#8383](https://github.com/chef/chef/pull/8383) ([btm](https://github.com/btm))
+- Improve the error message when no config can be loaded [#8389](https://github.com/chef/chef/pull/8389) ([tas50](https://github.com/tas50))
+- Use color in chef-solo by default on Windows [#8390](https://github.com/chef/chef/pull/8390) ([tas50](https://github.com/tas50))
+- Sync the CLI option descriptions between chef-client and chef-solo [#8391](https://github.com/chef/chef/pull/8391) ([tas50](https://github.com/tas50))
+- Replace highline with tty-screen in knife list [#8381](https://github.com/chef/chef/pull/8381) ([tas50](https://github.com/tas50))
+- fix default/override attribute blacklists and whitelists [#8396](https://github.com/chef/chef/pull/8396) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add ed25519 deps, bump highline and net-ssh pins and pull inspec from git [#8380](https://github.com/chef/chef/pull/8380) ([tas50](https://github.com/tas50))
+- Triggering expeditor version bump [#8405](https://github.com/chef/chef/pull/8405) ([marcparadise](https://github.com/marcparadise))
+- Replace kitchen-appbundle-updater in Travis tests with Test Kitchen lifecycle hooks [#8403](https://github.com/chef/chef/pull/8403) ([lamont-granquist](https://github.com/lamont-granquist))
+- Merge the local and travis kitchen tests into a single config [#8406](https://github.com/chef/chef/pull/8406) ([tas50](https://github.com/tas50))
+- Switch to inspec/train from gems [#8407](https://github.com/chef/chef/pull/8407) ([tas50](https://github.com/tas50))
+- Add Chef::Dist to abstract branding details to a single location [#8368](https://github.com/chef/chef/pull/8368) ([bobchaos](https://github.com/bobchaos))
+- Implement new owner/review structure + expand dev docs [#8350](https://github.com/chef/chef/pull/8350) ([tas50](https://github.com/tas50))
+-  Move ed25519 gems into omnibus [#8410](https://github.com/chef/chef/pull/8410) ([tas50](https://github.com/tas50))
+- Refactor bootstrapping to use train as the transport with full Windows bootstrap support [#8253](https://github.com/chef/chef/pull/8253) ([marcparadise](https://github.com/marcparadise))
+- Fix for write permissions were not working properly on windows [#8168](https://github.com/chef/chef/pull/8168) ([vijaymmali1990](https://github.com/vijaymmali1990))
+- windows_task: Add start_when_available support [#8420](https://github.com/chef/chef/pull/8420) ([vsingh-msys](https://github.com/vsingh-msys))
+- Add the introduced field to snap_package [#8412](https://github.com/chef/chef/pull/8412) ([tas50](https://github.com/tas50))
+- &quot;chef-client&quot; =&gt; #{Chef::Dist::CLIENT} [#8418](https://github.com/chef/chef/pull/8418) ([bobchaos](https://github.com/bobchaos))
+- Implement bootstrap directly with train [#8419](https://github.com/chef/chef/pull/8419) ([marcparadise](https://github.com/marcparadise))
+- Enable license acceptance during bootstrap  [#8411](https://github.com/chef/chef/pull/8411) ([marcparadise](https://github.com/marcparadise))
+- Remove chef-* bin files from chef gem [#8413](https://github.com/chef/chef/pull/8413) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update InSpec preview to 4.2.0 [#8426](https://github.com/chef/chef/pull/8426) ([tas50](https://github.com/tas50))
+- Update property descriptions for new resources [#8424](https://github.com/chef/chef/pull/8424) ([tas50](https://github.com/tas50))
+- remove windows executables from windows gemspec [#8430](https://github.com/chef/chef/pull/8430) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fixed bootstrap error while using --msi-url option with knife bootstrap winrm [#8435](https://github.com/chef/chef/pull/8435) ([Vasu1105](https://github.com/Vasu1105))
+- fix chef-bin bundling in omnibus [#8439](https://github.com/chef/chef/pull/8439) ([lamont-granquist](https://github.com/lamont-granquist))
+- file: Tell people what file a link is pointing at in warning messages [#8417](https://github.com/chef/chef/pull/8417) ([jaymzh](https://github.com/jaymzh))
+- Update InSpec to 4.3.2 [#8444](https://github.com/chef/chef/pull/8444) ([jaymalasinha](https://github.com/jaymalasinha))
+- [CHEF-8422] Fix incorrect deprecation warnings [#8429](https://github.com/chef/chef/pull/8429) ([marcparadise](https://github.com/marcparadise))
+- Remove old maintainer gems from the Gemfile [#8445](https://github.com/chef/chef/pull/8445) ([tas50](https://github.com/tas50))
+- Update to Ruby 2.6.3 [#8446](https://github.com/chef/chef/pull/8446) ([tas50](https://github.com/tas50))
+- Replace Chef Client by its constant in Chef::Dist [#8448](https://github.com/chef/chef/pull/8448) ([Tensibai](https://github.com/Tensibai))
+- [CHEF-8432] Ensure default protocol is used properly. Use correct &#39;require&#39; before accessing Net::SSH constants. [#8440](https://github.com/chef/chef/pull/8440) ([marcparadise](https://github.com/marcparadise))
+- Fixed empty value for knife status long output [#8415](https://github.com/chef/chef/pull/8415) ([vijaymmali1990](https://github.com/vijaymmali1990))
+- Add connstant for Chef Server and improve help messaging [#8452](https://github.com/chef/chef/pull/8452) ([tas50](https://github.com/tas50))
+- Update more brand names to current [#8454](https://github.com/chef/chef/pull/8454) ([tas50](https://github.com/tas50))
+- Chef-15: cookbook compiler should parse only .rb files [#8456](https://github.com/chef/chef/pull/8456) ([lamont-granquist](https://github.com/lamont-granquist))
+- Resolve exceptions when running knife diff [#8459](https://github.com/chef/chef/pull/8459) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix for cron resource get confused by environment/property mismatch [#8455](https://github.com/chef/chef/pull/8455) ([btm](https://github.com/btm))
+- Restore bootstrap pre-release support [#8442](https://github.com/chef/chef/pull/8442) ([marcparadise](https://github.com/marcparadise))
+- Move more DSL helpers into universal so they&#39;re available everywhere [#8457](https://github.com/chef/chef/pull/8457) ([lamont-granquist](https://github.com/lamont-granquist))
+- [CHEF-8423] Upgrade train-core to 2.1.0 for windows detection over ssh [#8465](https://github.com/chef/chef/pull/8465) ([marcparadise](https://github.com/marcparadise))
+- Add logic to require acceptannce of the Chef license to run the client [#8354](https://github.com/chef/chef/pull/8354) ([tyler-ball](https://github.com/tyler-ball))
+- Initial target_mode implementation [#7758](https://github.com/chef/chef/pull/7758) ([btm](https://github.com/btm))
+- Chef 15: Unable to create temp dir on windows system [#8476](https://github.com/chef/chef/pull/8476) ([vsingh-msys](https://github.com/vsingh-msys))
+- Remove the Chef 11 admin flag from knife client create [#8473](https://github.com/chef/chef/pull/8473) ([tas50](https://github.com/tas50))
+- package: move response_file and response_file_variables out of base package resource [#8307](https://github.com/chef/chef/pull/8307) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Update a few more knife.rb references to include config.rb [#8474](https://github.com/chef/chef/pull/8474) ([tas50](https://github.com/tas50))
+- Point people to Learn Chef in the post install message [#8483](https://github.com/chef/chef/pull/8483) ([tas50](https://github.com/tas50))
+- Remove resource collision deprecations [#8470](https://github.com/chef/chef/pull/8470) ([lamont-granquist](https://github.com/lamont-granquist))
+- Check for directories on Windows before creating [#8487](https://github.com/chef/chef/pull/8487) ([marcparadise](https://github.com/marcparadise))
+- Target mode code tweaks [#8480](https://github.com/chef/chef/pull/8480) ([lamont-granquist](https://github.com/lamont-granquist))
+- knife bootstrap should only request license when installing Chef 15 [#8471](https://github.com/chef/chef/pull/8471) ([tyler-ball](https://github.com/tyler-ball))
+- Chef 15: FATAL: Configuration error SyntaxError in client.rb during bootstrap [#8496](https://github.com/chef/chef/pull/8496) ([vsingh-msys](https://github.com/vsingh-msys))
+- Update the omnibus build license to the Chef EULA [#8498](https://github.com/chef/chef/pull/8498) ([btm](https://github.com/btm))
+- Clean up omnibus installer error and remove chef-fips [#8499](https://github.com/chef/chef/pull/8499) ([lamont-granquist](https://github.com/lamont-granquist))
+- Convert EULA to a local file [#8505](https://github.com/chef/chef/pull/8505) ([btm](https://github.com/btm))
+- Convert require to require_relative [#8508](https://github.com/chef/chef/pull/8508) ([lamont-granquist](https://github.com/lamont-granquist))
+- windows_feature: Fix failures on windows 2008r2 [#8492](https://github.com/chef/chef/pull/8492) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- CHEF_LICENSE environment variables should be quoted [#8513](https://github.com/chef/chef/pull/8513) ([tyler-ball](https://github.com/tyler-ball))
+- Fix for Chef::Exceptions::Win32APIError: The operation completed successfully. [#8451](https://github.com/chef/chef/pull/8451) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Chef 15: bootstrap options --max-wait raises NoMethodError: undefined method / [#8489](https://github.com/chef/chef/pull/8489) ([vsingh-msys](https://github.com/vsingh-msys))
+- Add comments to the Dockerfile explaining how it all works [#8509](https://github.com/chef/chef/pull/8509) ([tas50](https://github.com/tas50))
+- Use exports compatibile with /bin/sh in the bootstrap script [#8507](https://github.com/chef/chef/pull/8507) ([MarkGibbons](https://github.com/MarkGibbons))
+- Change some more require to require_relative [#8519](https://github.com/chef/chef/pull/8519) ([lamont-granquist](https://github.com/lamont-granquist))
+- [knife-ec2-547] Update config_source to support using knife classes without requiring merge_config [#8506](https://github.com/chef/chef/pull/8506) ([marcparadise](https://github.com/marcparadise))
+- Pin bundler to 1.17.2 which is included in Ruby 2.6 [#8518](https://github.com/chef/chef/pull/8518) ([tas50](https://github.com/tas50))
+- Chef 15: Minor winrm check code refactor [#8522](https://github.com/chef/chef/pull/8522) ([vsingh-msys](https://github.com/vsingh-msys))
+- Update to Chef Infra Client in Add/Remove Programs &amp; Event Log [#8520](https://github.com/chef/chef/pull/8520) ([tas50](https://github.com/tas50))
+- Use new Net:SSH host key verify values [#8524](https://github.com/chef/chef/pull/8524) ([btm](https://github.com/btm))
+- Chef 15: Add --session-timeout bootstrap option for both ssh &amp; winrm [#8521](https://github.com/chef/chef/pull/8521) ([vsingh-msys](https://github.com/vsingh-msys))
+- Rename the windows_dfs :install actions to :create [#8527](https://github.com/chef/chef/pull/8527) ([tas50](https://github.com/tas50))
 <!-- latest_stable_release -->
 
 ## [v14.10.9](https://github.com/chef/chef/tree/v14.10.9) (2019-01-30)
@@ -422,7 +393,6 @@
 - Backport: Allow multiple local and remote ports in the windows_firewall_rule resource [#7888](https://github.com/chef/chef/pull/7888) ([tas50](https://github.com/tas50))
 - Backport: Defer running initramfs_command until end of run [#7889](https://github.com/chef/chef/pull/7889) ([tas50](https://github.com/tas50))
 - fix whitespace in node attributes [ci skip] [#7891](https://github.com/chef/chef/pull/7891) ([lamont-granquist](https://github.com/lamont-granquist))
-<!-- latest_stable_release -->
 
 ## [v14.6.47](https://github.com/chef/chef/tree/v14.6.47) (2018-10-26)
 
