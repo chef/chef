@@ -1,8 +1,6 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
-# UNRELEASED (Chef 15)
-
-Chef 15 release notes will be added here as development progresses.
+# Chef Infra Client 15
 
 ## Chef Client is now Chef Infra Client
 
@@ -17,9 +15,9 @@ Chef Infra Client requires a EULA to be accepted by users before it can run. Use
 - `CHEF_LICENSE="accept" chef-client`
 - `CHEF_LICENSE="accept-no-persist" chef-client`
 
-Finally, if users run `chef-client` without any of these options, they will receive an interactive prompt asking for
-license acceptance. If the license is accepted, a marker file will be written to the filesystem (unless
-`accept-no-persist` is specified). Once this marker file is persisted, users no longer need to set any of these flags.
+Finally, if users run `chef-client` without any of these options, they will receive an interactive prompt asking for license acceptance. If the license is accepted, a marker file will be written to the filesystem (unless `accept-no-persist` is specified). Once this marker file is persisted, users no longer need to set any of these flags.
+
+See our [FAQ]("https://www.chef.io/bmc-faq/") for more information on the EULA and license acceptance.
 
 ## New Features / Functionality
 
@@ -348,7 +346,7 @@ The legacy ``require_recipe`` method in recipes has been removed. This method wa
 
 ### Legacy shell_out methods removed
 
-In Chef 14 many of the more obscure ``shell_out`` methods used in LWRPs and custom resources were combined into the standard ``shell_out`` and ``shell_out!`` methods. The legacy methods were infrequently and Chef 14/Foodcritic both contained deprecation warnings for these methods. The following methods will now throw an error: ``shell_out_compact``, ``shell_out_compact!``, ``shell_out_compact_timeout``, ``shell_out_compact_timeout!``, ``shell_out_with_systems_locale``, ``shell_out_with_systems_locale!``,
+In Chef 14 many of the more obscure ``shell_out`` methods used in LWRPs and custom resources were combined into the standard ``shell_out`` and ``shell_out!`` methods. The legacy methods were infrequently used and Chef 14/Foodcritic both contained deprecation warnings for these methods. The following methods will now throw an error: ``shell_out_compact``, ``shell_out_compact!``, ``shell_out_compact_timeout``, ``shell_out_compact_timeout!``, ``shell_out_with_systems_locale``, ``shell_out_with_systems_locale!``,
 
 ### knife bootstrap --identity_file removal
 
