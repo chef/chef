@@ -205,7 +205,7 @@ GEM
     jaro_winkler (1.5.2)
     json (2.2.0)
     libyajl2 (1.2.0)
-    license-acceptance (1.0.5)
+    license-acceptance (1.0.6)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
@@ -220,7 +220,7 @@ GEM
     mixlib-archive (1.0.1-universal-mingw32)
       mixlib-log
     mixlib-authentication (2.1.1)
-    mixlib-cli (2.0.3)
+    mixlib-cli (2.0.6)
     mixlib-config (3.0.1)
       tomlrb
     mixlib-log (3.0.1)
@@ -229,7 +229,7 @@ GEM
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     multi_json (1.13.1)
-    multipart-post (2.1.0)
+    multipart-post (2.1.1)
     necromancer (0.4.0)
     net-scp (2.0.0)
       net-ssh (>= 2.6.5, < 6.0.0)
