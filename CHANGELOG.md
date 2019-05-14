@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.0.294 -->
+## [v15.0.294](https://github.com/chef/chef/tree/v15.0.294) (2019-05-14)
+
+#### Merged Pull Requests
+- Bump license-acceptance to 1.0.8 to resolve failures on Windows 2012R2 [#8538](https://github.com/chef/chef/pull/8538) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.0.293 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Bump license-acceptance to 1.0.8 to resolve failures on Windows 2012R2 [#8538](https://github.com/chef/chef/pull/8538) ([chef-ci](https://github.com/chef-ci)) <!-- 15.0.294 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
