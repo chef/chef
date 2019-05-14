@@ -19,7 +19,6 @@
 require "spec_helper"
 
 Chef::Knife::Bootstrap.load_deps
-require "net/ssh"
 
 describe Chef::Knife::Bootstrap do
   let(:bootstrap_template) { nil }
@@ -853,7 +852,7 @@ describe Chef::Knife::Bootstrap do
             let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
-                ca_trust_file: "trust.me",
+                ca_trust_path: "trust.me",
                 max_wait_until_ready: 9999,
                 operation_timeout: 9999,
                 ssl_peer_fingerprint: "ABCDEF",
@@ -878,7 +877,7 @@ describe Chef::Knife::Bootstrap do
             let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
-                ca_trust_file: "no trust",
+                ca_trust_path: "no trust",
                 max_wait_until_ready: 9999,
                 operation_timeout: 60,
                 ssl_peer_fingerprint: "ABCDEF",
@@ -933,7 +932,7 @@ describe Chef::Knife::Bootstrap do
             let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
-                ca_trust_file: "trust.the.internet",
+                ca_trust_path: "trust.the.internet",
                 max_wait_until_ready: 1000,
                 operation_timeout: 1000,
                 ssl_peer_fingerprint: "FEDCBA",
@@ -1594,7 +1593,7 @@ describe Chef::Knife::Bootstrap do
 
       context "with ca_trust_file" do
         let(:ca_trust_expected) do
-          expected.merge({ ca_trust_file: "/trust.me" })
+          expected.merge({ ca_trust_path: "/trust.me" })
         end
         before do
           knife.config[:ca_trust_file] = "/trust.me"
@@ -1806,6 +1805,14 @@ describe Chef::Knife::Bootstrap do
   end
 
   describe "#connect!" do
+    before do
+      # These are not required at run-time because train will handle its own
+      # protocol loading. In this case, we're simulating train failures and have to load
+      # them ourselves.
+      require "net/ssh"
+      require "train/transports/ssh"
+    end
+
     context "in the normal case" do
       it "connects using the connection_opts and notifies the operator of progress" do
         expect(knife.ui).to receive(:info).with(/Connecting to.*/)
@@ -1815,13 +1822,30 @@ describe Chef::Knife::Bootstrap do
       end
     end
 
-    context "when a non-auth-failure occurs" do
+    context "when a general non-auth-failure occurs" do
       let(:expected_error) { RuntimeError.new }
       before do
         allow(knife).to receive(:do_connect).and_raise(expected_error)
       end
       it "re-raises the exception" do
         expect { knife.connect! }.to raise_error(expected_error)
+      end
+    end
+
+    context "when ssh fingerprint is invalid" do
+      let(:expected_error) { Train::Error.new("fingerprint AA:BB is unknown for \"blah,127.0.0.1\"") }
+      before do
+        allow(knife).to receive(:do_connect).and_raise(expected_error)
+      end
+      it "warns, prompts to accept, then connects with verify_host_key of accept_new" do
+        expect(knife).to receive(:do_connect).and_raise(expected_error)
+        expect(knife.ui).to receive(:confirm)
+          .with(/.*host 'blah \(127.0.0.1\)'.*AA:BB.*Are you sure you want to continue.*/m)
+          .and_return(true)
+        expect(knife).to receive(:do_connect) do |opts|
+          expect(opts[:verify_host_key]).to eq :accept_new
+        end
+        knife.connect!
       end
     end
 
@@ -1833,10 +1857,6 @@ describe Chef::Knife::Bootstrap do
         # ssh/network errors in a TrainError.
         allow(e).to receive(:cause).and_return(actual)
         e
-      end
-
-      before do
-        require "net/ssh"
       end
 
       context "and password auth was used" do
@@ -2136,9 +2156,18 @@ describe Chef::Knife::Bootstrap do
   end
 
   describe "#warn_on_short_session_timeout" do
-    let(:session_timeout) { 0 }
+    let(:session_timeout) { 60 }
+
     before do
-      allow(knife).to receive(:config).and_return(session_timeout: session_timeout)
+      allow(knife).to receive(:session_timeout).and_return(session_timeout)
+    end
+
+    context "timeout is not set at all" do
+      let(:session_timeout) { nil }
+      it "does not issue a warning" do
+        expect(knife.ui).to_not receive(:warn)
+        knife.warn_on_short_session_timeout
+      end
     end
 
     context "timeout is more than 15" do

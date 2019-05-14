@@ -61,7 +61,6 @@ class Chef
       option :session_timeout,
         long: "--session-timeout SECONDS",
         description: "The number of seconds to wait for each connection operation to be acknowledged while running bootstrap.",
-        proc: Proc.new { |protocol| Chef::Config[:knife][:session_timeout] = protocol },
         default: 60
 
       # WinRM Authentication
@@ -572,7 +571,7 @@ class Chef
           chef_vault_handler.run(client_builder.client)
         else
           ui.info <<~EOM
-            Performing legacy client registration with the validation key at #{Chef::Config[:validation_key]}..."
+            Performing legacy client registration with the validation key at #{Chef::Config[:validation_key]}...
             Delete your validation key in order to use your user credentials for client registration instead.
           EOM
 
@@ -596,27 +595,28 @@ class Chef
         ui.info("Connecting to #{ui.color(server_name, :bold)}")
         opts = connection_opts.dup
         do_connect(opts)
-      rescue Train::Transports::SSHFailed => e
-        if e.message =~ /fingerprint (\S+) is unknown for "(.+)"/
+      rescue Train::Error => e
+        # We handle these by message text only because train only loads the
+        # transports and protocols that it needs - so the exceptions may not be defined,
+        # and we don't want to require files internal to train.
+        if e.message =~ /fingerprint (\S+) is unknown for "(.+)"/ # Train::Transports::SSHFailed
           fingerprint = $1
           hostname, ip = $2.split(",")
           # TODO: convert the SHA256 base64 value to hex with colons
           # 'ssh' example output:
           # RSA key fingerprint is e5:cb:c0:e2:21:3b:12:52:f8:ce:cb:00:24:e2:0c:92.
           # ECDSA key fingerprint is 5d:67:61:08:a9:d7:01:fd:5e:ae:7e:09:40:ef:c0:3c.
-          puts "The authenticity of host '#{hostname} (#{ip})' can't be established."
-          puts "fingerprint is #{fingerprint}."
-          ui.confirm("Are you sure you want to continue connecting") # will exit 3 on N
+          # will exit 3 on N
+          ui.confirm <<~EOM
+            The authenticity of host '#{hostname} (#{ip})' can't be established.
+            fingerprint is #{fingerprint}.
+
+            Are you sure you want to continue connecting
+          EOM
           # FIXME: this should save the key to known_hosts but doesn't appear to be
           config[:ssh_verify_host_key] = :accept_new
-          connection_opts(reset: true)
-          retry
-        end
-
-        raise e
-      rescue Train::Error => e
-        require "net/ssh"
-        if e.cause && e.cause.class == Net::SSH::AuthenticationFailed
+          do_connect(connection_opts(reset: true))
+        elsif ssh? && e.cause && e.cause.class == Net::SSH::AuthenticationFailed
           if connection.password_auth?
             raise
           else
@@ -630,6 +630,9 @@ class Chef
         else
           raise
         end
+      end
+
+      def handle_ssh_error(e)
       end
 
       # url values override CLI flags, if you provide both
@@ -769,15 +772,11 @@ class Chef
       # minutes as its unit, instead of seconds.
       # Warn the human so that they are not surprised.
       #
-      # This will also erroneously warn if a string value is given,
-      # but argument type validation is something that needs addressing
-      # more broadly.
       def warn_on_short_session_timeout
-        timeout = config_value(:session_timeout).to_i
-        if timeout <= 15
+        if session_timeout && session_timeout <= 15
           ui.warn <<~EOM
-            --session-timeout is set to #{config[:session_timeout]} minutes.
-            Did you mean "--session-timeout #{config[:session_timeout] * 60}" seconds?
+            You provided '--session-timeout #{session_timeout}' second(s).
+            Did you mean '--session-timeout #{session_timeout * 60}' seconds?
           EOM
         end
       end
@@ -868,7 +867,7 @@ class Chef
         return opts if winrm?
         opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
         opts[:forward_agent] = (config_value(:ssh_forward_agent) === true)
-        opts[:connection_timeout] = config_value(:session_timeout).to_i
+        opts[:connection_timeout] = session_timeout
         opts
       end
 
@@ -964,10 +963,10 @@ class Chef
         end
 
         if config_value(:ca_trust_file)
-          opts[:ca_trust_file] = config_value(:ca_trust_file)
+          opts[:ca_trust_path] = config_value(:ca_trust_file)
         end
 
-        opts[:operation_timeout] = config_value(:session_timeout).to_i
+        opts[:operation_timeout] = session_timeout
 
         opts
       end
@@ -1051,6 +1050,14 @@ class Chef
       # True if one of policy_name or policy_group was given, but not both
       def incomplete_policyfile_options?
         (!!config[:policy_name] ^ config[:policy_group])
+      end
+
+      # session_timeout option has a default that may not arrive, particularly if
+      # we're being invoked from a plugin that doesn't merge_config.
+      def session_timeout
+        timeout = config_value(:session_timeout)
+        return options[:session_timeout][:default] if timeout.nil?
+        timeout.to_i
       end
     end
   end
