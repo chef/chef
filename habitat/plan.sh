@@ -65,7 +65,7 @@ do_build() {
 
 do_install() {
   mkdir -p "${pkg_prefix}/chef"
-  for dir in bin chef-config lib chef.gemspec Gemfile Gemfile.lock; do
+  for dir in bin chef-bin chef-config lib chef.gemspec Gemfile Gemfile.lock; do
     cp -rv "${PLAN_CONTEXT}/../${dir}" "${pkg_prefix}/chef/"
   done
 
