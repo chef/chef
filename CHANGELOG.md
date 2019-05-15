@@ -1,23 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.298 -->
-## [v15.0.298](https://github.com/chef/chef/tree/v15.0.298) (2019-05-15)
-
-#### Merged Pull Requests
-- Bump train-core to 2.1.2 [#8553](https://github.com/chef/chef/pull/8553) ([chef-ci](https://github.com/chef-ci))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.0.293 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Bump train-core to 2.1.2 [#8553](https://github.com/chef/chef/pull/8553) ([chef-ci](https://github.com/chef-ci)) <!-- 15.0.298 -->
-- Multiple Bootstrap bug fixes [#8539](https://github.com/chef/chef/pull/8539) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.297 -->
-- Bump license-acceptance to 1.0.11 to resolve failures on Windows 2016 [#8551](https://github.com/chef/chef/pull/8551) ([aaronwalker](https://github.com/aaronwalker)) <!-- 15.0.296 -->
-- Update habitat/plan.sh to allow building of Chef Infra Client 15 [#8552](https://github.com/chef/chef/pull/8552) ([smacfarlane](https://github.com/smacfarlane)) <!-- 15.0.295 -->
-- Bump license-acceptance to 1.0.8 to resolve failures on Windows 2012R2 [#8538](https://github.com/chef/chef/pull/8538) ([chef-ci](https://github.com/chef-ci)) <!-- 15.0.294 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.0.298](https://github.com/chef/chef/tree/v15.0.298) (2019-05-15)
+
+#### Merged Pull Requests
+- Bump license-acceptance to 1.0.8 to resolve failures on Windows 2012R2 [#8538](https://github.com/chef/chef/pull/8538) ([chef-ci](https://github.com/chef-ci))
+- Update habitat/plan.sh to allow building of Chef Infra Client 15 [#8552](https://github.com/chef/chef/pull/8552) ([smacfarlane](https://github.com/smacfarlane))
+- Bump license-acceptance to 1.0.11 to resolve failures on Windows 2016 [#8551](https://github.com/chef/chef/pull/8551) ([aaronwalker](https://github.com/aaronwalker))
+- Multiple Bootstrap bug fixes [#8539](https://github.com/chef/chef/pull/8539) ([marcparadise](https://github.com/marcparadise))
+- Bump train-core to 2.1.2 [#8553](https://github.com/chef/chef/pull/8553) ([chef-ci](https://github.com/chef-ci))
+<!-- latest_stable_release -->
+
 ## [v15.0.293](https://github.com/chef/chef/tree/v15.0.293) (2019-05-14)
 
 #### Merged Pull Requests
@@ -306,7 +304,6 @@
 - Use new Net:SSH host key verify values [#8524](https://github.com/chef/chef/pull/8524) ([btm](https://github.com/btm))
 - Chef 15: Add --session-timeout bootstrap option for both ssh &amp; winrm [#8521](https://github.com/chef/chef/pull/8521) ([vsingh-msys](https://github.com/vsingh-msys))
 - Rename the windows_dfs :install actions to :create [#8527](https://github.com/chef/chef/pull/8527) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.12.9](https://github.com/chef/chef/tree/v14.12.9) (2019-04-20)
 
