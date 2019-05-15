@@ -23,7 +23,7 @@ See our [Frequently Asked Questions document](https://www.chef.io/bmc-faq/) for 
 
 ### Target Mode Prototype
 
-Chef Infra Client 15 adds a prototype for a new method of executing resources called Target Mode. Target Mode allows a Chef Infra Client run to manage a remote system over ssh or another protocol supported by the Train library. This includes platforms that we currently support like Ubuntu Linux, but also allows for configuring other architectures and platforms, such as switches that do not have native builds of Chef Infra Client. Target Mode maintains a separate node object for each target and allows you to manage that node using existing patterns that you currently use.
+Chef Infra Client 15 adds a prototype for a new method of executing resources called Target Mode. Target Mode allows a Chef Infra Client run to manage a remote system over ssh or another protocol supported by the Train library. This support includes platforms that we currently support like Ubuntu Linux, but also allows for configuring other architectures and platforms, such as switches that do not have native builds of Chef Infra Client. Target Mode maintains a separate node object for each target and allows you to manage that node using existing patterns that you currently use.
 
 As of this release, only the `execute` resource and guards are supported, but modifying existing resources or writing new resources to support Target Mode is relatively easy. Using Target Mode is as easy as running `chef-client --target hostname`. The authentication credentials should be stored in your local `~/.chef/credentials` file with the hostname of the target node as the profile name. Each key/value pair is passed to Train for authentication.
 
@@ -126,7 +126,7 @@ See the [snap_package](https://docs.chef.io/resource_snap_package.html) document
 
 ### windows_task
 
-windows_task now supports the Start When Available option with a new `start_when_available` property.
+The `windows_task` resource now supports the Start When Available option with a new `start_when_available` property.
 
 ### locale
 
@@ -168,7 +168,7 @@ Chef now ships with Ruby 2.6.3. This new version of Ruby improves performance an
 
 Platform and platform_family detection on Linux has been rewritten to utilize the latest config files on modern Linux distributions before falling back to slower and fragile legacy detection methods. Ohai will now begin by parsing the contents of `/etc/os-release` for OS information if available. This feature improves the reliability of detection on modern distros and allows detection of new distros as they are released.
 
-With this change, we now detect `sles_sap` as a member of the `suse` platform_family. Additionally, this change corrects our detection of the platform_version on Cisco Nexus switches where previously we incorrectly appended the build number to the version string.
+With this change, we now detect `sles_sap` as a member of the `suse` platform_family. Additionally, this change corrects our detection of the platform_version on Cisco Nexus switches where previously the build number was incorrectly appended to the version string.
 
 ### Improved Virtualization Detection
 
