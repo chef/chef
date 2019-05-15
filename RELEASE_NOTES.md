@@ -224,13 +224,13 @@ In order to accommodate a combined bootstrap that supports both SSH and WinRM, s
 |-----:|:-----------|:------|
 | --[no-]host-key-verify |--ssh-verify-host-key VALUE | See above for valid values. |
 | --forward-agent | --ssh-forward-agent| |
-| --session-timeout MINUTES | --session-timeout SECONDS|New for ssh, existing for winrm. The unit has changed from MINUTES to SECONDS for consistency with other timeouts.|
+| --session-timeout MINUTES | --session-timeout SECONDS|New for ssh, existing for winrm. The unit has changed from MINUTES to SECONDS for consistency with other timeouts. |
 | --ssh-password | --connection-password | |
 | --ssh-port | --connection-port | `knife[:ssh_port]` config setting remains available.
 | --ssh-user | --connection-user | `knife[:ssh_user]` config setting remains available.
 | --ssl-peer-fingerprint | --winrm-ssl-peer-fingerprint | |
-| --prerelease |--channel CHANNEL | This now allows you to specify the channel that Chef Infra Client gets installed from. Valid values are _stable_, current, and unstable. 'current' has the same effect as using the old --prerelease. |
-| --winrm-authentication-protocol=PROTO | --winrm-auth-method=AUTH-METHOD | Valid values: plaintext, kerberos, ssl, _negotiate_|
+| --prerelease |--channel CHANNEL | This now allows you to specify the channel that Chef Infra Client gets installed from. Valid values are _stable_, _current_, and _unstable_. 'current' has the same effect as using the old --prerelease. |
+| --winrm-authentication-protocol=PROTO | --winrm-auth-method=AUTH-METHOD | Valid values: _plaintext_, _kerberos_, _ssl_, _negotiate_|
 | --winrm-password| --connection-password | |
 | --winrm-port| --connection-port | `knife[:winrm_port]` config setting remains available.|
 | --winrm-ssl-verify-mode MODE | --winrm-no-verify-cert | Mode is not accepted. When flag is present, SSL cert will not be verified. Same as original mode of 'verify\_none'. [1] |
