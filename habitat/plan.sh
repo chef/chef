@@ -7,7 +7,7 @@ pkg_license=('Apache-2.0')
 pkg_filename=${pkg_dirname}.tar.gz
 pkg_bin_dirs=(bin)
 pkg_build_deps=(core/make core/gcc core/git)
-pkg_deps=(core/glibc core/ruby core/libxml2 core/libxslt core/libiconv core/xz core/zlib core/bundler core/openssl core/cacerts core/libffi core/coreutils core/libarchive)
+pkg_deps=(core/glibc core/ruby26 core/libxml2 core/libxslt core/libiconv core/xz core/zlib core/bundler core/openssl core/cacerts core/libffi core/coreutils core/libarchive)
 pkg_svc_user=root
 
 do_before() {
@@ -65,7 +65,7 @@ do_build() {
 
 do_install() {
   mkdir -p "${pkg_prefix}/chef"
-  for dir in bin chef-config lib chef.gemspec Gemfile Gemfile.lock; do
+  for dir in bin chef-bin chef-config lib chef.gemspec Gemfile Gemfile.lock; do
     cp -rv "${PLAN_CONTEXT}/../${dir}" "${pkg_prefix}/chef/"
   done
 
@@ -80,7 +80,7 @@ do_install() {
   popd > /dev/null
 
   fix_interpreter "${pkg_prefix}/bin/*" core/coreutils bin/env
-  fix_interpreter "${pkg_prefix}/bin/*" core/ruby bin/ruby
+  fix_interpreter "${pkg_prefix}/bin/*" core/ruby26 bin/ruby
 }
 
 do_end() {
@@ -104,7 +104,7 @@ _bundle_install() {
     --jobs "$(nproc)" \
     --without development:test \
     --path "$path" \
-    --shebang="$(pkg_path_for "core/ruby")/bin/ruby" \
+    --shebang="$(pkg_path_for "core/ruby26")/bin/ruby" \
     --no-clean \
     --retry 5 \
     --standalone
