@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef-config/path_helper"
+require_relative "../path_helper"
 
 module ChefConfig
   module Mixin

@@ -16,7 +16,7 @@
 #
 
 require "tomlrb"
-require "chef-config/path_helper"
+require_relative "../path_helper"
 
 module ChefConfig
   module Mixin
