@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.296 -->
-## [v15.0.296](https://github.com/chef/chef/tree/v15.0.296) (2019-05-15)
+<!-- latest_release 15.0.297 -->
+## [v15.0.297](https://github.com/chef/chef/tree/v15.0.297) (2019-05-15)
 
 #### Merged Pull Requests
-- Bump license-acceptance to 1.0.11 to resolve failures on Windows 2016 [#8551](https://github.com/chef/chef/pull/8551) ([aaronwalker](https://github.com/aaronwalker))
+- Multiple Bootstrap bug fixes [#8539](https://github.com/chef/chef/pull/8539) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.293 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Multiple Bootstrap bug fixes [#8539](https://github.com/chef/chef/pull/8539) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.297 -->
 - Bump license-acceptance to 1.0.11 to resolve failures on Windows 2016 [#8551](https://github.com/chef/chef/pull/8551) ([aaronwalker](https://github.com/aaronwalker)) <!-- 15.0.296 -->
 - Update habitat/plan.sh to allow building of Chef Infra Client 15 [#8552](https://github.com/chef/chef/pull/8552) ([smacfarlane](https://github.com/smacfarlane)) <!-- 15.0.295 -->
 - Bump license-acceptance to 1.0.8 to resolve failures on Windows 2012R2 [#8538](https://github.com/chef/chef/pull/8538) ([chef-ci](https://github.com/chef-ci)) <!-- 15.0.294 -->
