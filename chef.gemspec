@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "train-core", "~> 2.0", ">= 2.0.12"
 
-  s.add_dependency "license-acceptance", "~> 1.0", ">= 1.0.5"
+  s.add_dependency "license-acceptance", "~> 1.0.10", ">= 1.0.11"
   s.add_dependency "mixlib-cli", ">= 1.7", "< 3.0"
   s.add_dependency "mixlib-log", ">= 2.0.3", "< 4.0"
   s.add_dependency "mixlib-authentication", "~> 2.1"
