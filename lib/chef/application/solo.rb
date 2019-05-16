@@ -30,10 +30,12 @@ require "pathname"
 require "chef-config/mixin/dot_d"
 require "mixlib/archive"
 require_relative "../dist"
+require "license_acceptance/cli_flags/mixlib_cli"
 
 class Chef::Application::Solo < Chef::Application
   include Chef::Mixin::ShellOut
   include ChefConfig::Mixin::DotD
+  include LicenseAcceptance::CLIFlags::MixlibCLI
 
   option :config_file,
     short: "-c CONFIG",
