@@ -33,7 +33,7 @@ See our [FAQ]("https://www.chef.io/bmc-faq/") for more information on the EULA a
 
 ### Target Mode Prototype
 
-Chef Infra Client 15 adds a prototype of a new method of executing resources we call Target Mode. Target Mode allows a Chef Infra Client run to manage a remote system over ssh or another protocol supported by the Train library. This includes both platforms we build for today like Ubuntu Linux, but also allows for configuring other architectures and platforms such as switches that don't have native builds of Chef Infra Client. Target Mode maintains a separate node object for each target, allowing you to manage that node using existing patterns that you use today.
+Chef Infra Client 15 adds a prototype for a new method of executing resources called Target Mode. Target Mode allows a Chef Infra Client run to manage a remote system over SSH or another protocol supported by the Train library. This support includes platforms that we currently support like Ubuntu Linux, but also allows for configuring other architectures and platforms, such as switches that do not have native builds of Chef Infra Client. Target Mode maintains a separate node object for each target and allows you to manage that node using existing patterns that you currently use.
 
 As of this release only the execute resource and guards are supported, but modifying existing resources or writing new ones to support target mode is relatively easy. Using target mode is as easy as `chef-client --target hostname`. The authentication credentials should be stored in your local ~/.chef/credentials file with the hostname of the target node as the profile name. Each key/value pair is passed to Train for authentication.
 
@@ -136,7 +136,7 @@ See the [snap_package](https://docs.chef.io/resource_snap_package.html) document
 
 ### windows_task
 
-windows_task now supports the Start When Available option with a new ``start_when_available`` property.
+The `windows_task` resource now supports the Start When Available option with a new `start_when_available` property.
 
 ### locale
 
@@ -178,7 +178,7 @@ Chef now ships with Ruby 2.6.3. This new version of Ruby improves performance an
 
 Platform and plaform_family detection on Linux has been rewritten to utilize the latest config files on modern Linux distributions before falling back to slower and fragile legacy detection methods. Ohai will now begin by parsing the contents of /etc/os-release for OS information if available. This improves the reliability of detection on modern distros and allows detection of new distros as they're released.
 
-With this change we now detect `sles_sap` as a member of the `suse` platform_family. Additionally this change corrects our detection of the platform_version on Cisco Nexus switches where we previously incorrectly appended the build number to the version string.
+With this change, we now detect `sles_sap` as a member of the `suse` platform_family. Additionally, this change corrects our detection of the platform_version on Cisco Nexus switches where previously the build number was incorrectly appended to the version string.
 
 ### Improved Virtualization Detection
 
@@ -234,13 +234,13 @@ In order to accommodate a combined bootstrap that supports both SSH and WinRM, s
 |-----:|:-----------|:------|
 | --[no-]host-key-verify |--ssh-verify-host-key VALUE | See above for valid values. |
 | --forward-agent | --ssh-forward-agent| |
-| --session-timeout MINUTES | --session-timeout SECONDS|New for ssh, existing for winrm. The unit has changed from MINUTES to SECONDS for consistency with other timeouts.|
+| --session-timeout MINUTES | --session-timeout SECONDS|New for ssh, existing for winrm. The unit has changed from MINUTES to SECONDS for consistency with other timeouts. |
 | --ssh-password | --connection-password | |
 | --ssh-port | --connection-port | `knife[:ssh_port]` config setting remains available.
 | --ssh-user | --connection-user | `knife[:ssh_user]` config setting remains available.
 | --ssl-peer-fingerprint | --winrm-ssl-peer-fingerprint | |
-| --prerelease |--channel CHANNEL | This now allows you to specify the channel that Chef Infra Client gets installed from. Valid values are _stable_, current, and unstable.  'current' has the same effect as using the old --prerelease. |
-| --winrm-authentication-protocol=PROTO | --winrm-auth-method=AUTH-METHOD | Valid values: plaintext, kerberos, ssl, _negotiate_|
+| --prerelease |--channel CHANNEL | This now allows you to specify the channel that Chef Infra Client gets installed from. Valid values are _stable_, _current_, and _unstable_. 'current' has the same effect as using the old --prerelease. |
+| --winrm-authentication-protocol=PROTO | --winrm-auth-method=AUTH-METHOD | Valid values: _plaintext_, _kerberos_, _ssl_, _negotiate_|
 | --winrm-password| --connection-password | |
 | --winrm-port| --connection-port | `knife[:winrm_port]` config setting remains available.|
 | --winrm-ssl-verify-mode MODE | --winrm-no-verify-cert | [1] Mode is not accepted. When flag is present, SSL cert will not be verified. Same as original mode of 'verify\_none'. |
