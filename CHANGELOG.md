@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.0.299 -->
+## [v15.0.299](https://github.com/chef/chef/tree/v15.0.299) (2019-05-16)
+
+#### Merged Pull Requests
+- Add license CLI options to chef-apply command [#8554](https://github.com/chef/chef/pull/8554) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.0.298 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Add license CLI options to chef-apply command [#8554](https://github.com/chef/chef/pull/8554) ([tas50](https://github.com/tas50)) <!-- 15.0.299 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
