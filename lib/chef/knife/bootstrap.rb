@@ -865,6 +865,7 @@ class Chef
       def ssh_opts
         opts = {}
         return opts if winrm?
+        opts[:pty] = true # ensure we can talk to systems with requiretty set true in sshd config
         opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
         opts[:forward_agent] = (config_value(:ssh_forward_agent) === true)
         opts[:connection_timeout] = session_timeout

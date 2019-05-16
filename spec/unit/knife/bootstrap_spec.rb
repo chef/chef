@@ -1015,6 +1015,7 @@ describe Chef::Knife::Bootstrap do
                 verify_host_key: false,
                 port: 9999,
                 non_interactive: true,
+                pty: true,
               }
             end
 
@@ -1069,6 +1070,7 @@ describe Chef::Knife::Bootstrap do
                 verify_host_key: false, # Config
                 port: 12, # cli
                 non_interactive: true,
+                pty: true,
               }
             end
 
@@ -1120,6 +1122,7 @@ describe Chef::Knife::Bootstrap do
                 sudo_password: "blah",
                 verify_host_key: true,
                 non_interactive: true,
+                pty: true,
               }
             end
             it "generates a config hash using the CLI options and pulling nothing from Chef::Config" do
@@ -1143,6 +1146,7 @@ describe Chef::Knife::Bootstrap do
               sudo: false,
               verify_host_key: "always",
               non_interactive: true,
+              pty: true,
               connection_timeout: 60,
             }
           end
@@ -1491,33 +1495,38 @@ describe Chef::Knife::Bootstrap do
 
     context "for ssh" do
       let(:connection_protocol) { "ssh" }
+      let(:default_opts) do
+        {
+          non_interactive: true,
+          pty: true,
+          forward_agent: false,
+          connection_timeout: 60,
+        }
+      end
+
+      context "by default" do
+        it "returns a configuration hash with appropriate defaults" do
+          expect(knife.ssh_opts).to eq default_opts
+        end
+      end
+
       context "when ssh_forward_agent has a value" do
         before do
           knife.config[:ssh_forward_agent] = true
         end
-        it "returns a configuration hash with forward_agent set to true. non-interactive is always true" do
-          expect(knife.ssh_opts).to eq({ forward_agent: true, non_interactive: true, connection_timeout: 60 })
-        end
-      end
-      context "when ssh_forward_agent is not set" do
-        it "returns a configuration hash with forward_agent set to false. non-interactive is always true" do
-          expect(knife.ssh_opts).to eq({ forward_agent: false, non_interactive: true, connection_timeout: 60 })
+        it "returns a default configuration hash with forward_agent set to true" do
+          expect(knife.ssh_opts).to eq(default_opts.merge(forward_agent: true))
         end
       end
       context "when session_timeout has a value" do
         before do
           knife.config[:session_timeout] = 120
         end
-        it "returns a configuration hash with connection_timeout value." do
-          expect(knife.ssh_opts).to eq({ forward_agent: false, non_interactive: true, connection_timeout: 120 })
+        it "returns a default configuration hash with updated timeout value." do
+          expect(knife.ssh_opts).to eq(default_opts.merge(connection_timeout: 120))
         end
       end
 
-      context "when session_timeout is not set" do
-        it "returns a configuration hash with connection_timeout default value." do
-          expect(knife.ssh_opts).to eq({ forward_agent: false, non_interactive: true, connection_timeout: 60 })
-        end
-      end
     end
 
     context "for winrm" do
