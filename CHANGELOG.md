@@ -6,16 +6,21 @@
 - Chef Infra Client 15 Release Notes Additional edits [#8543](https://github.com/chef/chef/pull/8543) ([mjingle](https://github.com/mjingle))
 <!-- latest_release -->
 
-<!-- release_rollup since=15.0.298 -->
+<!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
 - Chef Infra Client 15 Release Notes Additional edits [#8543](https://github.com/chef/chef/pull/8543) ([mjingle](https://github.com/mjingle)) <!-- 15.0.301 -->
-- Enable pty for bootstrap ssh [#8560](https://github.com/chef/chef/pull/8560) ([marcparadise](https://github.com/marcparadise)) <!-- 15.0.300 -->
-- Add license CLI options to chef-apply command [#8554](https://github.com/chef/chef/pull/8554) ([tas50](https://github.com/tas50)) <!-- 15.0.299 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.0.300](https://github.com/chef/chef/tree/v15.0.300) (2019-05-16)
+
+#### Merged Pull Requests
+- Add license CLI options to chef-apply command [#8554](https://github.com/chef/chef/pull/8554) ([tas50](https://github.com/tas50))
+- Enable pty for bootstrap ssh [#8560](https://github.com/chef/chef/pull/8560) ([marcparadise](https://github.com/marcparadise))
+<!-- latest_stable_release -->
+
 ## [v15.0.298](https://github.com/chef/chef/tree/v15.0.298) (2019-05-15)
 
 #### Merged Pull Requests
@@ -24,7 +29,6 @@
 - Bump license-acceptance to 1.0.11 to resolve failures on Windows 2016 [#8551](https://github.com/chef/chef/pull/8551) ([aaronwalker](https://github.com/aaronwalker))
 - Multiple Bootstrap bug fixes [#8539](https://github.com/chef/chef/pull/8539) ([marcparadise](https://github.com/marcparadise))
 - Bump train-core to 2.1.2 [#8553](https://github.com/chef/chef/pull/8553) ([chef-ci](https://github.com/chef-ci))
-<!-- latest_stable_release -->
 
 ## [v15.0.293](https://github.com/chef/chef/tree/v15.0.293) (2019-05-14)
 
