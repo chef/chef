@@ -1,5 +1,11 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Infra Client 15.0.300
+
+This release includes critical bugfixes for the 15.0 release:
+  - Fix knife bootstrap over SSH when requiretty is configured on the host.
+  - Added the --chef-license CLI flag to chef-apply and chef-solo commands
+
 # Chef Infra Client 15.0.298
 
 This release includes critical bugfixes for the 15.0 release:
