@@ -1002,7 +1002,7 @@ describe Chef::Knife::Bootstrap do
             let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
-                max_wait_until_ready: 9999,
+                max_wait_until_ready: 9999.0,
                 connection_timeout: 9999,
                 user: "sshbob",
                 bastion_host: "mygateway.local",
@@ -1012,7 +1012,7 @@ describe Chef::Knife::Bootstrap do
                 keys_only: true,
                 key_files: ["/identity.pem", "/gateway.pem"],
                 sudo: false,
-                verify_host_key: false,
+                verify_host_key: nil,
                 port: 9999,
                 non_interactive: true,
               }
@@ -1055,7 +1055,7 @@ describe Chef::Knife::Bootstrap do
             let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
-                max_wait_until_ready: 150, # cli
+                max_wait_until_ready: 150.0, # cli
                 connection_timeout: 120, # cli
                 user: "sshalice", # cli
                 password: "feta cheese", # cli
@@ -1066,7 +1066,7 @@ describe Chef::Knife::Bootstrap do
                 keys_only: false, # implied false from config password present
                 key_files: ["/identity.pem", "/gateway.pem"], # Config
                 sudo: true, # ccli
-                verify_host_key: false, # Config
+                verify_host_key: nil, # Config
                 port: 12, # cli
                 non_interactive: true,
               }
