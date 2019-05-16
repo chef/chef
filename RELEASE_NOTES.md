@@ -33,7 +33,7 @@ See our [FAQ]("https://www.chef.io/bmc-faq/") for more information on the EULA a
 
 ### Target Mode Prototype
 
-Chef Infra Client 15 adds a prototype for a new method of executing resources called Target Mode. Target Mode allows a Chef Infra Client run to manage a remote system over SSH or another protocol supported by the Train library. This support includes platforms that we currently support like Ubuntu Linux, but also allows for configuring other architectures and platforms, such as switches that do not have native builds of Chef Infra Client. Target Mode maintains a separate node object for each target and allows you to manage that node using existing patterns that you currently use.
+Chef Infra Client 15 adds a prototype for a new method of executing resources called Target Mode. Target Mode allows a Chef Infra Client run to manage a remote system over SSH or another protocol supported by the Train library. Target mode supports platforms currently supported by Chef Infra Client such as Ubuntu Linux, but also allows for configuring other architectures and platforms, such as switches that do not have native builds of Chef Infra Client. Target Mode maintains a separate node object for each target and allows you to manage that node using existing patterns that you currently use.
 
 As of this release only the execute resource and guards are supported, but modifying existing resources or writing new ones to support target mode is relatively easy. Using target mode is as easy as `chef-client --target hostname`. The authentication credentials should be stored in your local ~/.chef/credentials file with the hostname of the target node as the profile name. Each key/value pair is passed to Train for authentication.
 
@@ -176,9 +176,9 @@ Chef now ships with Ruby 2.6.3. This new version of Ruby improves performance an
 
 ### Improved Linux Platform / Platform Family Detection
 
-Platform and plaform_family detection on Linux has been rewritten to utilize the latest config files on modern Linux distributions before falling back to slower and fragile legacy detection methods. Ohai will now begin by parsing the contents of /etc/os-release for OS information if available. This improves the reliability of detection on modern distros and allows detection of new distros as they're released.
+`Platform` and `plaform_family` detection on Linux has been rewritten to utilize the latest config files on modern Linux distributions before falling back to slower and fragile legacy detection methods. Ohai will now begin by parsing the contents of `/etc/os-release` for OS information if available. This improves the reliability of detection on modern distros and allows detection of new distros as they're released.
 
-With this change, we now detect `sles_sap` as a member of the `suse` platform_family. Additionally, this change corrects our detection of the platform_version on Cisco Nexus switches where previously the build number was incorrectly appended to the version string.
+With this change, we now detect `sles_sap` as a member of the `suse` `platform_family`. Additionally, this change corrects our detection of the `platform_version` on Cisco Nexus switches where previously the build number was incorrectly appended to the version string.
 
 ### Improved Virtualization Detection
 
@@ -306,7 +306,7 @@ That code is now what is necessary to specify that `foo` must be version `1.2.3`
 
 ### Node Attributes deep merge nil values
 
-Writing a nil to a precedence level in the node object now acts like any other value and can be used to override values back to nil.
+Writing a `nil` to a precedence level in the node object now acts like any other value and can be used to override values back to `nil`.
 
 For example:
 
@@ -319,8 +319,7 @@ chef (15.0.53)> node["foo"]
  => nil
 ```
 
-In prior versions of chef-client the nil set in the override level would be completely ignored and the value of `node["foo"]` would have
-been "bar".
+In prior versions of chef-client the `nil` set in the override level would be completely ignored and the value of `node["foo"]` would have been "bar".
 
 ### http_disable_auth_on_redirect now enabled
 
@@ -362,9 +361,9 @@ In Chef 14 many of the more obscure ``shell_out`` methods used in LWRPs and cust
 
 The ``knife bootstrap --identity_file`` flag has been removed. This flag was deprecated in Chef 12 and users should now use the ``--ssh-identity-file`` flag instead.
 
-### knife user support for Chef Server < 12 removed
+### knife user support for Chef Infra Server < 12 removed
 
-The `knife user` command no longer supports open source Chef Server version prior to 12.
+The `knife user` command no longer supports open source Chef Infra Server version prior to 12.
 
 ### attributes in metadata.rb
 
@@ -372,7 +371,7 @@ Chef no longer processes attributes in the metadata.rb file. Attributes could be
 
 ### Node attributes array bugfix
 
-Chef 15 includes a bugfix for incorrect node attribute behavior with a rare usage of arrays that may impact users that depended on the incorrect behavior.
+Chef Infra Client 15 includes a bugfix for incorrect node attribute behavior with a rare usage of arrays that may impact users that depended on the incorrect behavior.
 
 Previous setting an attribute like this:
 
@@ -394,7 +393,7 @@ The new behavior uses a Mash so that the attributes will work as expected.
 
 ### Ohai's system_profile plugin for macOS removed
 
-We removed the system_profile plugin because it incorrectly returned data on modern Mac systems. If you relied on this plugin, you'll want to update recipes to use `node['hardware']` instead, which correctly returns the same data, but in a more easily consumed format. Removing this plugin speeds up Ohai (and Chef) by ~3 seconds and dramatically reduces the size of the node object on the Chef server.
+We removed the system_profile plugin because it incorrectly returned data on modern Mac systems. If you relied on this plugin, you'll want to update recipes to use `node['hardware']` instead, which correctly returns the same data, but in a more easily consumed format. Removing this plugin speeds up Ohai (and Chef) by ~3 seconds and dramatically reduces the size of the node object on the Chef Infra Server.
 
 ### Ohai's Ohai::Util::Win32::GroupHelper class has been removed
 
