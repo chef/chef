@@ -21,6 +21,10 @@ habitat_packages:
   - chef-client:
       also_build_for_linux_kernel2: true
 
+pipelines:
+  - verify:
+      public: true
+
 github:
   # The file where the MAJOR.MINOR.PATCH version is kept. The version in this file
   # is bumped automatically via the `built_in:bump_version` merge_action.
