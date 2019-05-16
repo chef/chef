@@ -27,8 +27,10 @@ require "tempfile"
 require_relative "../providers"
 require_relative "../resources"
 require_relative "../dist"
+require "license_acceptance/cli_flags/mixlib_cli"
 
 class Chef::Application::Apply < Chef::Application
+  include LicenseAcceptance::CLIFlags::MixlibCLI
 
   banner "Usage: chef-apply [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
 
