@@ -3,8 +3,8 @@ This file holds "in progress" release notes for the current release under develo
 # Chef Infra Client 15.0.300
 
 This release includes critical bugfixes for the 15.0 release:
-  - Fix knife bootstrap over SSH when requiretty is configured on the host.
-  - Added the --chef-license CLI flag to chef-apply and chef-solo commands
+  - Fix `knife bootstrap` over SSH when `requiretty` is configured on the host.
+  - Added the `--chef-license` CLI flag to `chef-apply` and `chef-solo` commands.
 
 # Chef Infra Client 15.0.298
 
@@ -12,9 +12,9 @@ This release includes critical bugfixes for the 15.0 release:
   - Allow accepting the license on non-interactive Windows sessions
   - Resolve license acceptance failures on Windows 2012 R2
   - Improve some knife and chef-client help text
-  - Properly handle session_timeout default value in knife bootstrap
-  - Avoid failures due to Train::Transports::SSHFailed class not being loaded in knife bootstrap
-  - Resolve failures using the ca_trust_file option with knife bootstrap
+  - Properly handle session_timeout default value in `knife bootstrap`
+  - Avoid failures due to Train::Transports::SSHFailed class not being loaded in `knife bootstrap`
+  - Resolve failures using the ca_trust_file option with `knife bootstrap`
 
 # Chef Infra Client 15.0.293
 
@@ -2097,7 +2097,7 @@ The Packages plugin now supports gathering packages data on Amazon Linux
 
 ### Deprecation updates
 
-In Ohai 13 we replaced the filesystem and cloud plugins with the filesystem2 and cloud_v2 plugins. To maintain compatibility with users of the previous V2 plugins we write data to both locations. We had originally planned to continue writing data to both locations until Chef Infra Client 15\. Instead due to the large amount of duplicate node data this introduces we are updating OHAI-11 and OHAI-12 deprecations to remove node['cloud_v2'] and node['filesystem2'] with the release of Chef 14 in April 2018.
+In Ohai 13 we replaced the filesystem and cloud plugins with the filesystem2 and cloud_v2 plugins. To maintain compatibility with users of the previous V2 plugins we write data to both locations. We had originally planned to continue writing data to both locations until Chef Infra Client 15. Instead due to the large amount of duplicate node data this introduces we are updating OHAI-11 and OHAI-12 deprecations to remove node['cloud_v2'] and node['filesystem2'] with the release of Chef 14 in April 2018.
 
 # Chef Client Release Notes 13.5:
 
