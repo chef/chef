@@ -56,7 +56,7 @@ merge_actions:
       ignore_labels:
         - "Expeditor: Skip Version Bump"
         - "Expeditor: Skip All"
-  - bash:.expeditor/update_version.sh@chef/chef@master:
+  - bash:.expeditor/update_version.sh:
       only_if: built_in:bump_version
   - built_in:update_changelog:
       ignore_labels:
