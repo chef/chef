@@ -125,18 +125,9 @@ matrix:
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
     rvm: 2.5.5
   - env:
-      TEST_GEM: poise/halite
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
-    rvm: 2.5.5
-  - env:
       TEST_GEM: chef/knife-windows
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
     rvm: 2.5.5
-  # disable this pending a Chef 14 compat version of poise
-  # - env:
-  #     TEST_GEM: poise/poise
-  #   script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
-  #   rvm: 2.5.5
   ### START TEST KITCHEN ONLY ###
   - rvm: 2.5.5
     services: docker
@@ -154,7 +145,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - AMAZON=2
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -171,24 +162,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - AMAZON=201X
-      - KITCHEN_YAML=kitchen.travis.yml
-  - rvm: 2.5.5
-    services: docker
-    sudo: required
-    gemfile: kitchen-tests/Gemfile
-    before_install:
-      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
-    before_script:
-      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-      - cd kitchen-tests
-    script:
-      - bundle exec kitchen test end-to-end-ubuntu-1404
-    after_failure:
-      - cat .kitchen/logs/kitchen.log
-    env:
-      - UBUNTU=14.04
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -205,7 +179,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - UBUNTU=16.04
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -222,7 +196,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - UBUNTU=18.04
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -239,7 +213,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - DEBIAN=8
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -256,7 +230,24 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - DEBIAN=9
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
+  - rvm: 2.5.5
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test end-to-end-debian-10
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - DEBIAN=10
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -273,7 +264,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - CENTOS=6
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -290,7 +281,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - CENTOS=7
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -307,7 +298,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - FEDORA=latest
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -324,7 +315,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
      - OPENSUSELEAP=42
-     - KITCHEN_YAML=kitchen.travis.yml
+     - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     sudo: required
     before_install:
@@ -362,7 +353,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - RSPEC_CENTOS=7
-      - KITCHEN_YAML=kitchen.travis.yml
+      - KITCHEN_YAML=kitchen.yml
   - rvm: 2.5.5
     services: docker
     sudo: required
@@ -379,7 +370,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
      - RSPEC_OPENSUSELEAP=42
-     - KITCHEN_YAML=kitchen.travis.yml
+     - KITCHEN_YAML=kitchen.yml
   allow_failures:
     - rvm: 2.5.5
       services: docker
@@ -397,11 +388,7 @@ matrix:
         - cat .kitchen/logs/kitchen.log
       env:
        - RSPEC_OPENSUSELEAP=42
-       - KITCHEN_YAML=kitchen.travis.yml
-    - env:
-        TEST_GEM: poise/halite
-      script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
-      rvm: 2.5.5
+       - KITCHEN_YAML=kitchen.yml
 
 notifications:
   on_change: true
