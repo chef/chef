@@ -110,17 +110,6 @@ steps:
         environment:
           - TEST_GEM=chefspec/chefspec
 
-# - label: "Test poise/halite gem :ruby: 2.6"
-#   commands:
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
-#     - bundle exec tasks/bin/run_external_test poise/halite master rake spec
-#   expeditor:
-#     executor:
-#       docker:
-#         environment:
-#           - TEST_GEM=poise/halite
-
 - label: "Test knife-windows gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
