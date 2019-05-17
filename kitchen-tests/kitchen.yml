@@ -18,6 +18,7 @@ lifecycle:
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: /opt/chef/embedded/bin/chef-client -v
     - remote: /opt/chef/embedded/bin/ohai -v
+    - remote: /opt/chef/embedded/bin/gem uninstall -x chef-bin # appbundle-updater doesn't remove this when downgrading to 14
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater
     - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['TRAVIS_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
