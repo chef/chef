@@ -125,18 +125,9 @@ matrix:
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
     rvm: 2.5.5
   - env:
-      TEST_GEM: poise/halite
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
-    rvm: 2.5.5
-  - env:
       TEST_GEM: chef/knife-windows
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
     rvm: 2.5.5
-  # disable this pending a Chef 14 compat version of poise
-  # - env:
-  #     TEST_GEM: poise/poise
-  #   script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
-  #   rvm: 2.5.5
   ### START TEST KITCHEN ONLY ###
   - rvm: 2.5.5
     services: docker
@@ -183,7 +174,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test end-to-end-ubuntu-1404
+      - bundle exec kitchen test end-to-end-ubuntu-1604
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -200,7 +191,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test end-to-end-ubuntu-1604
+      - bundle exec kitchen test end-to-end-ubuntu-1804
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -217,7 +208,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test end-to-end-ubuntu-1804
+      - bundle exec kitchen test end-to-end-debian-8
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -234,7 +225,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test end-to-end-debian-8
+      - bundle exec kitchen test end-to-end-debian-9
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -251,7 +242,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test end-to-end-debian-9
+      - bundle exec kitchen test end-to-end-debian-10
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -398,10 +389,6 @@ matrix:
       env:
        - RSPEC_OPENSUSELEAP=42
        - KITCHEN_YAML=kitchen.yml
-    - env:
-        TEST_GEM: poise/halite
-      script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
-      rvm: 2.5.5
 
 notifications:
   on_change: true
