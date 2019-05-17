@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.12.10 -->
+## [v14.12.10](https://github.com/chef/chef/tree/v14.12.10) (2019-05-17)
+
+#### Merged Pull Requests
+- Add chef-14 update_version script [#8565](https://github.com/chef/chef/pull/8565) ([jaymalasinha](https://github.com/jaymalasinha))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.12.9 -->
+### Changes since 14.12.9 release
+
+#### Merged Pull Requests
+- Add chef-14 update_version script [#8565](https://github.com/chef/chef/pull/8565) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.12.10 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
