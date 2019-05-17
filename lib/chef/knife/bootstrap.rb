@@ -546,9 +546,6 @@ class Chef
         register_client
         connect!
 
-        unless client_builder.client_path.nil?
-          bootstrap_context.client_pem = client_builder.client_path
-        end
         content = render_template
         bootstrap_path = upload_bootstrap(content)
         perform_bootstrap(bootstrap_path)
@@ -569,6 +566,8 @@ class Chef
           end
           client_builder.run
           chef_vault_handler.run(client_builder.client)
+
+          bootstrap_context.client_pem = client_builder.client_path
         else
           ui.info <<~EOM
             Performing legacy client registration with the validation key at #{Chef::Config[:validation_key]}...
