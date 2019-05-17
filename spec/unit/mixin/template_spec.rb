@@ -182,6 +182,51 @@ describe Chef::Mixin::Template, "render_template" do
       expect(output).to eq("before {partial one We could be diving for pearls! calling home} after")
     end
 
+    describe "when an exception is raised in the template" do
+      let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "failed.erb")) }
+
+      def do_raise
+        @template_context.render_template(template_file)
+      end
+
+      it "should catch and re-raise the exception as a TemplateError" do
+        expect { do_raise }.to raise_error(Chef::Mixin::Template::TemplateError)
+      end
+
+      describe "the raised TemplateError" do
+        subject(:exception) do
+          begin
+            do_raise
+          rescue Chef::Mixin::Template::TemplateError => e
+            e
+          end
+        end
+
+        it "should contain template file and line numbers" do
+          expect(exception.line_number).to eq(5)
+        end
+
+        it "should provide a source listing of the template around the exception" do
+          expect(exception.source_listing).to eq("  3: Which includes some content\n  4: \n  5: And will fail <%= nil[] %>")
+        end
+
+        it "should provide a nice source location" do
+          expect(exception.source_location).to eq("on line #5")
+        end
+
+        it "should create a pretty output for the terminal" do
+          expect(exception.to_s).to match(/Chef::Mixin::Template::TemplateError/)
+          expect(exception.to_s).to match(/undefined method `\[\]' for nil:NilClass/)
+          expect(exception.to_s).to include("  3: Which includes some content\n  4: \n  5: And will fail <%= nil[] %>")
+          expect(exception.to_s).to include(exception.original_exception.backtrace.first)
+        end
+
+        it "should include template file on original_exception backtrace" do
+          expect(exception.original_exception.backtrace).to include(/#{Regexp.escape(template_file)}/)
+        end
+      end
+    end
+
     describe "when customizing the template context" do
 
       it "extends the context to include modules" do

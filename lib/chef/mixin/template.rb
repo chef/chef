@@ -138,11 +138,11 @@ class Chef
           partial_context._extend_modules(@_extension_modules)
 
           template_location = @template_finder.find(partial_name, options)
-          _render_template(IO.binread(template_location), partial_context)
+          _render_template(IO.binread(template_location), partial_context, filename: template_location)
         end
 
         def render_template(template_location)
-          _render_template(IO.binread(template_location), self)
+          _render_template(IO.binread(template_location), self, filename: template_location)
         end
 
         def render_template_from_string(template)
@@ -153,12 +153,13 @@ class Chef
         # INTERNAL PUBLIC API
         ###
 
-        def _render_template(template, context)
+        def _render_template(template, context, options = {})
           begin
-            eruby = Erubis::Eruby.new(template)
+            # eruby = Erubis::Eruby.new(template, options)
+            eruby = Erubis::Eruby.new(template, options)
             output = eruby.evaluate(context)
           rescue Object => e
-            raise TemplateError.new(e, template, context)
+            raise TemplateError.new(e, template, context, options)
           end
 
           # CHEF-4399
@@ -210,11 +211,11 @@ class Chef
       end
 
       class TemplateError < RuntimeError
-        attr_reader :original_exception, :context
+        attr_reader :original_exception, :context, :options
         SOURCE_CONTEXT_WINDOW = 2
 
-        def initialize(original_exception, template, context)
-          @original_exception, @template, @context = original_exception, template, context
+        def initialize(original_exception, template, context, options)
+          @original_exception, @template, @context, @options = original_exception, template, context, options
         end
 
         def message
@@ -222,7 +223,11 @@ class Chef
         end
 
         def line_number
-          @line_number ||= $1.to_i if original_exception.backtrace.find { |line| line =~ /\(erubis\):(\d+)/ }
+          @line_number ||= if options[:filename]
+                             $1.to_i if original_exception.backtrace.find { |line| line =~ /#{Regexp.escape(options[:filename])}:(\d+)/ }
+                           else
+                             $1.to_i if original_exception.backtrace.find { |line| line =~ /\(erubis\):(\d+)/ }
+                           end
         end
 
         def source_location
