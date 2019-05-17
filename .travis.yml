@@ -31,6 +31,7 @@ branches:
 env:
   global:
     - FORCE_FFI_YAJL=ext
+    - CHEF_LICENSE=accept-no-persist
 
 matrix:
   include:
