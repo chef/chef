@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.301 -->
-## [v15.0.301](https://github.com/chef/chef/tree/v15.0.301) (2019-05-16)
+<!-- latest_release 15.0.302 -->
+## [v15.0.302](https://github.com/chef/chef/tree/v15.0.302) (2019-05-20)
 
 #### Merged Pull Requests
-- Chef Infra Client 15 Release Notes Additional edits [#8543](https://github.com/chef/chef/pull/8543) ([mjingle](https://github.com/mjingle))
+- Only set client_pem in bootstrap_context when validatorless [#8567](https://github.com/chef/chef/pull/8567) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Only set client_pem in bootstrap_context when validatorless [#8567](https://github.com/chef/chef/pull/8567) ([btm](https://github.com/btm)) <!-- 15.0.302 -->
 - Chef Infra Client 15 Release Notes Additional edits [#8543](https://github.com/chef/chef/pull/8543) ([mjingle](https://github.com/mjingle)) <!-- 15.0.301 -->
 <!-- release_rollup -->
 
