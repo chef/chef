@@ -60,8 +60,9 @@ class Chef
     end
 
     def delete(key)
-      resource_list.delete(key)
-      resource_set.delete(key)
+      res = resource_set.delete(key)
+      resource_list.delete(res.to_s)
+      res
     end
 
     # @deprecated
