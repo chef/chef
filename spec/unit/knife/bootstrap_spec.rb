@@ -1654,10 +1654,6 @@ describe Chef::Knife::Bootstrap do
     end
   end
   describe "#run" do
-    before do
-      allow(knife.client_builder).to receive(:client_path).and_return("/key.pem")
-    end
-
     it "performs the steps we expect to run a bootstrap" do
       expect(knife).to receive(:check_license)
       expect(knife).to receive(:verify_deprecated_flags!).ordered
@@ -1678,7 +1674,6 @@ describe Chef::Knife::Bootstrap do
       knife.run
 
       # Post-run verify expected state changes (not many directly in #run)
-      expect(knife.bootstrap_context.client_pem).to eq "/key.pem"
       expect($stdout.sync).to eq true
     end
   end
@@ -1731,12 +1726,20 @@ describe Chef::Knife::Bootstrap do
         let(:node_name) { "test" }
         before do
           allow(client_builder_mock).to receive(:client).and_return "client"
+          allow(client_builder_mock).to receive(:client_path).and_return "/key.pem"
         end
 
         it "runs client_builder and vault_handler" do
           expect(client_builder_mock).to receive(:run)
           expect(vault_handler_mock).to receive(:run).with("client")
           knife.register_client
+        end
+
+        it "sets the path to the client key in the bootstrap context" do
+          allow(client_builder_mock).to receive(:run)
+          allow(vault_handler_mock).to receive(:run).with("client")
+          knife.register_client
+          expect(knife.bootstrap_context.client_pem).to eq "/key.pem"
         end
       end
 
