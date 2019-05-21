@@ -353,6 +353,8 @@ class Chef
         #   (--bool-option) to valued flag (--new-option VALUE)
         #   this will be the value that is assigned the new flag when the old flag is used.
         auth_timeout: [:max_wait, "--max-wait SECONDS" ],
+        forward_agent:
+          [:ssh_forward_agent, "--forward-agent"],
         host_key_verify:
           [:ssh_verify_host_key, "--[no-]host-key-verify"],
         prerelease:
@@ -362,7 +364,7 @@ class Chef
         ssh_password:
           [:connection_password, "--ssh-password PASSWORD"],
         ssh_port:
-          [:connection_port, "-ssh-port" ],
+          [:connection_port, "--ssh-port"],
         ssl_peer_fingerprint:
           [:winrm_ssl_peer_fingerprint, "--ssl-peer-fingerprint FINGERPRINT"],
         winrm_user:
@@ -375,6 +377,10 @@ class Chef
           [:winrm_auth_method, "--winrm-authentication-protocol PROTOCOL"],
         winrm_session_timeout:
           [:session_timeout, "--winrm-session-timeout MINUTES"],
+        winrm_ssl_verify_mode:
+          [:winrm_no_verify_cert, "--winrm-ssl-verify-mode MODE"],
+        winrm_transport:
+          [:winrm_ssl, "--winrm-transport TRANSPORT"]
       }.freeze
 
       DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
