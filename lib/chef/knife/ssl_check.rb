@@ -24,11 +24,11 @@ class Chef
     class SslCheck < Chef::Knife
 
       deps do
-        require "pp"
-        require "socket"
-        require "uri"
+        require "pp" unless defined?(PP)
+        require "socket" unless defined?(Socket)
+        require "uri" unless defined?(URI)
         require_relative "../http/ssl_policies"
-        require "openssl"
+        require "openssl" unless defined?(OpenSSL)
         require_relative "../mixin/proxified_socket"
         include Chef::Mixin::ProxifiedSocket
       end

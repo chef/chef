@@ -20,7 +20,7 @@ require_relative "../resource"
 require_relative "../dsl/declare_resource"
 require_relative "noop"
 require_relative "../mixin/shell_out"
-require "shellwords"
+require "shellwords" unless defined?(Shellwords)
 
 class Chef
   class Provider

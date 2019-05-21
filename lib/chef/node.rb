@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require "forwardable"
-require "securerandom"
+require "forwardable" unless defined?(Forwardable)
+require "securerandom" unless defined?(SecureRandom)
 require_relative "config"
 require_relative "nil_argument"
 require_relative "mixin/params_validate"

@@ -18,7 +18,7 @@
 
 require_relative "../knife"
 require_relative "core/node_presenter"
-require "addressable/uri"
+require "addressable/uri" unless defined?(Addressable::URI)
 
 class Chef
   class Knife

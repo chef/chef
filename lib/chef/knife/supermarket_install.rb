@@ -24,8 +24,8 @@ class Chef
     class SupermarketInstall < Knife
 
       deps do
-        require "shellwords"
-        require "mixlib/archive"
+        require "shellwords" unless defined?(Shellwords)
+        require "mixlib/archive" unless defined?(Mixlib::Archive)
         require_relative "core/cookbook_scm_repo"
         require_relative "../cookbook/metadata"
       end

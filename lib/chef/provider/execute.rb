@@ -18,7 +18,7 @@
 
 require_relative "../log"
 require_relative "../provider"
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 require_relative "../mixin/train_or_shell"
 
 class Chef

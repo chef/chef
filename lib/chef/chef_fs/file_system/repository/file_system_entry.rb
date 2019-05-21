@@ -20,7 +20,7 @@ require_relative "../base_fs_dir"
 require_relative "../chef_server/rest_list_dir"
 require_relative "../exceptions"
 require_relative "../../path_utils"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   module ChefFS

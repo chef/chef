@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "uri"
-require "tempfile"
+require "uri" unless defined?(URI)
+require "tempfile" unless defined?(Tempfile)
 require "net/sftp"
 require_relative "../remote_file"
 require_relative "../../file_content_management/tempfile"

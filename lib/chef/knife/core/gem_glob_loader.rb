@@ -39,7 +39,7 @@ class Chef
         # subcommand loader has been modified to load the plugins by using Kernel.load
         # with the absolute path.
         def gem_and_builtin_subcommands
-          require "rubygems"
+          require "rubygems" unless defined?(Gem)
           find_subcommands_via_rubygems
         rescue LoadError
           find_subcommands_via_dirglob

@@ -17,9 +17,9 @@
 #
 
 require "base64"
-require "digest/sha2"
-require "openssl"
-require "ffi_yajl"
+require "digest/sha2" unless defined?(Digest::SHA2)
+require "openssl" unless defined?(OpenSSL)
+require "ffi_yajl" unless defined?(FFI_Yajl)
 require_relative "../encrypted_data_bag_item"
 require_relative "unsupported_encrypted_data_bag_item_format"
 require_relative "encryption_failure"

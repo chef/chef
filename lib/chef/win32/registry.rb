@@ -23,7 +23,7 @@ require_relative "../mixin/wide_string"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require_relative "../monkey_patches/win32/registry"
   require_relative "api/registry"
-  require "win32/registry"
+  require "win32/registry" unless defined?(Win32::Registry)
   require "win32/api"
 end
 

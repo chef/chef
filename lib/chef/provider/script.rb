@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "tempfile"
+require "tempfile" unless defined?(Tempfile)
 require_relative "execute"
 require_relative "../win32/security" if Chef::Platform.windows?
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
   class Provider

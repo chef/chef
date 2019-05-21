@@ -62,7 +62,7 @@ class Chef
       alias_method :extract_options, :options
       alias_method :extract_to, :destination
 
-      require "fileutils"
+      require "fileutils" unless defined?(FileUtils)
 
       action :extract do
         description "Extract and archive file."

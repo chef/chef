@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 require_relative "mixin/versioned_api"
 require_relative "util/path_helper"
 require_relative "cookbook/manifest_v0"

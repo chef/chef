@@ -18,7 +18,7 @@
 
 require_relative "../base_fs_object"
 require_relative "../../../http/simple"
-require "openssl"
+require "openssl" unless defined?(OpenSSL)
 
 class Chef
   module ChefFS

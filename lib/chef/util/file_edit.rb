@@ -16,7 +16,7 @@
 # limitations under the License.
 
 require_relative "editor"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   class Util

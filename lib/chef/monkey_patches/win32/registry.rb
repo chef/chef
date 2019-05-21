@@ -17,7 +17,7 @@
 
 require_relative "../../win32/api/registry"
 require_relative "../../win32/unicode"
-require "win32/registry"
+require "win32/registry" unless defined?(Win32::Registry)
 
 module Win32
   class Registry

@@ -22,7 +22,7 @@ require_relative "../mixin/shell_out"
 require_relative "../resource/file"
 require_relative "../resource/file/verification/systemd_unit"
 require "iniparse"
-require "shellwords"
+require "shellwords" unless defined?(Shellwords)
 
 class Chef
   class Provider

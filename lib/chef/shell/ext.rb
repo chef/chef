@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "tempfile"
+require "tempfile" unless defined?(Tempfile)
 require_relative "../recipe"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 require_relative "../dsl/platform_introspection"
 require_relative "../version"
 require_relative "shell_session"

@@ -19,7 +19,7 @@
 require_relative "../../mixin/shell_out"
 require_relative "../user"
 require_relative "../../resource/user/dscl_user"
-require "openssl"
+require "openssl" unless defined?(OpenSSL)
 require "plist"
 require_relative "../../util/path_helper"
 

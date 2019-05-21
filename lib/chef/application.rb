@@ -16,16 +16,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "pp"
-require "socket"
+require "pp" unless defined?(PP)
+require "socket" unless defined?(Socket)
 require_relative "config"
 require_relative "config_fetcher"
 require_relative "exceptions"
 require_relative "local_mode"
 require_relative "log"
 require_relative "platform"
-require "mixlib/cli"
-require "tmpdir"
+require "mixlib/cli" unless defined?(Mixlib::CLI)
+require "tmpdir" unless defined?(Dir.mktmpdir)
 require "rbconfig"
 require_relative "application/exit_code"
 require_relative "dist"

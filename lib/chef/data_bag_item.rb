@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 require_relative "config"
 require_relative "mixin/params_validate"

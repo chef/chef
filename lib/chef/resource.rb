@@ -38,7 +38,7 @@ require_relative "resource/resource_notification"
 require_relative "provider_resolver"
 require_relative "resource_resolver"
 require_relative "provider"
-require "set"
+require "set" unless defined?(Set)
 
 require_relative "mixin/deprecation"
 require_relative "mixin/properties"

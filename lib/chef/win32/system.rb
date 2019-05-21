@@ -18,7 +18,7 @@
 
 require_relative "api/system"
 require_relative "error"
-require "ffi"
+require "ffi" unless defined?(FFI)
 
 class Chef
   module ReservedNames::Win32

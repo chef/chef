@@ -17,14 +17,14 @@
 # limitations under the License.
 #
 
-require "uri"
+require "uri" unless defined?(URI)
 require_relative "../package"
 require_relative "../../resource/package"
 require_relative "../../mixin/get_source_from_package"
 require_relative "../../mixin/which"
 
 # Class methods on Gem are defined in rubygems
-require "rubygems"
+require "rubygems" unless defined?(Gem)
 # Ruby 1.9's gem_prelude can interact poorly with loading the full rubygems
 # explicitly like this. Make sure rubygems/specification is always last in this
 # list

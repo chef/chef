@@ -1,5 +1,5 @@
 
-require "set"
+require "set" unless defined?(Set)
 require_relative "exceptions"
 require_relative "knife/cookbook_metadata"
 require_relative "digester"

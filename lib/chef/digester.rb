@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require "openssl"
-require "singleton"
+require "openssl" unless defined?(OpenSSL)
+require "singleton" unless defined?(Singleton)
 
 class Chef
   class Digester

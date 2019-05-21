@@ -16,8 +16,8 @@
 #
 
 require "train"
-require "tempfile"
-require "uri"
+require "tempfile" unless defined?(Tempfile)
+require "uri" unless defined?(URI)
 
 class Chef
   class Knife
@@ -305,7 +305,7 @@ class Chef
         # Having this as a method makes it easier to mock
         # SSH Config for testing.
         def ssh_config_for_host(host)
-          require "net/ssh"
+          require "net/ssh" unless defined?(Net::SSH)
           Net::SSH::Config.for(host)
         end
       end

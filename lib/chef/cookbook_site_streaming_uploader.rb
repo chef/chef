@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require "uri"
-require "net/http"
+require "uri" unless defined?(URI)
+require "net/http" unless defined?(Net::HTTP)
 require "mixlib/authentication/signedheaderauth"
-require "openssl"
+require "openssl" unless defined?(OpenSSL)
 
 class Chef
   # == Chef::CookbookSiteStreamingUploader

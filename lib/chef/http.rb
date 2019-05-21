@@ -21,9 +21,9 @@
 # limitations under the License.
 #
 
-require "tempfile"
+require "tempfile" unless defined?(Tempfile)
 require "net/https"
-require "uri"
+require "uri" unless defined?(URI)
 require_relative "http/basic_client"
 require_relative "monkey_patches/net_http"
 require_relative "config"

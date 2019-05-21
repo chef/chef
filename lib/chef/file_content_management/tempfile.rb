@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "tempfile"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class FileContentManagement

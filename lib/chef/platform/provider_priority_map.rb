@@ -1,4 +1,4 @@
-require "singleton"
+require "singleton" unless defined?(Singleton)
 require_relative "priority_map"
 
 class Chef

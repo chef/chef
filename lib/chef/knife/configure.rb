@@ -26,7 +26,7 @@ class Chef
       attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
 
       deps do
-        require "ohai"
+        require "ohai" unless defined?(Ohai::System)
         Chef::Knife::ClientCreate.load_deps
         Chef::Knife::UserCreate.load_deps
       end

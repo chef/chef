@@ -22,8 +22,8 @@ require_relative "../application"
 require_relative "../client"
 require_relative "../config"
 require_relative "../log"
-require "fileutils"
-require "tempfile"
+require "fileutils" unless defined?(FileUtils)
+require "tempfile" unless defined?(Tempfile)
 require_relative "../providers"
 require_relative "../resources"
 require_relative "../dist"

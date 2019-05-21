@@ -22,7 +22,7 @@ require_relative "../log"
 require_relative "../file_cache"
 require_relative "../platform"
 require_relative "../decorator/lazy_array"
-require "shellwords"
+require "shellwords" unless defined?(Shellwords)
 
 class Chef
   class Provider

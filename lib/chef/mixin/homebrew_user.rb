@@ -23,7 +23,7 @@
 # awkward to use modules elsewhere (e.g., chef/provider/package/homebrew/owner)
 
 require_relative "shell_out"
-require "etc"
+require "etc" unless defined?(Etc)
 
 class Chef
   module Mixin

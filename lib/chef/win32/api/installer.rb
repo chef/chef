@@ -19,7 +19,7 @@
 require_relative "../../exceptions"
 require_relative "../api"
 require_relative "../error"
-require "pathname"
+require "pathname" unless defined?(Pathname)
 
 class Chef
   module ReservedNames::Win32

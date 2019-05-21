@@ -20,7 +20,7 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require "win32/service"
 end
 require_relative "../config"
-require "mixlib/cli"
+require "mixlib/cli" unless defined?(Mixlib::CLI)
 require_relative "../dist"
 
 class Chef

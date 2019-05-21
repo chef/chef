@@ -22,7 +22,7 @@ if Chef::Platform.windows?
 end
 require_relative "config"
 require_relative "exceptions"
-require "timeout"
+require "timeout" unless defined?(Timeout)
 require_relative "dist"
 
 class Chef

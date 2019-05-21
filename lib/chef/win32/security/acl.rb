@@ -18,7 +18,7 @@
 
 require_relative "../security"
 require_relative "ace"
-require "ffi"
+require "ffi" unless defined?(FFI)
 
 class Chef
   module ReservedNames::Win32

@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-require "singleton"
-require "pp"
-require "etc"
-require "mixlib/cli"
+require "singleton" unless defined?(Singleton)
+require "pp" unless defined?(PP)
+require "etc" unless defined?(Etc)
+require "mixlib/cli" unless defined?(Mixlib::CLI)
 
 require_relative "../chef"
 require_relative "version"

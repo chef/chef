@@ -20,8 +20,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "uri"
-require "net/http"
+require "uri" unless defined?(URI)
+require "net/http" unless defined?(Net::HTTP)
 require_relative "../dist"
 
 # To load faster, we only want ohai's version string.
@@ -30,7 +30,7 @@ require_relative "../dist"
 begin
   require "ohai/version" # used in user agent string.
 rescue LoadError
-  require "ohai"
+  require "ohai" unless defined?(Ohai::System)
 end
 
 require_relative "../version"

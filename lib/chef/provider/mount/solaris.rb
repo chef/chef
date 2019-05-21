@@ -20,7 +20,7 @@
 
 require_relative "../mount"
 require_relative "../../log"
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
   class Provider

@@ -26,7 +26,7 @@ require_relative "mixin/provides"
 require_relative "dsl/core"
 require_relative "platform/service_helpers"
 require_relative "node_map"
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
   class Provider

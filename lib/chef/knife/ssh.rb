@@ -24,13 +24,13 @@ class Chef
     class Ssh < Knife
 
       deps do
-        require "net/ssh"
+        require "net/ssh" unless defined?(Net::SSH)
         require "net/ssh/multi"
         require "readline"
         require_relative "../exceptions"
         require_relative "../search/query"
         require_relative "../util/path_helper"
-        require "mixlib/shellout"
+        require "mixlib/shellout" unless defined?(Mixlib::ShellOut)
       end
 
       include Chef::Mixin::ShellOut
@@ -498,7 +498,7 @@ class Chef
 
       def macterm
         begin
-          require "appscript"
+          require "appscript" unless defined?(Appscript)
         rescue LoadError
           STDERR.puts "You need the rb-appscript gem to use knife ssh macterm. `(sudo) gem install rb-appscript` to install"
           raise
