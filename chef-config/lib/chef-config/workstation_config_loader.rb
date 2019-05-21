@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require "chef-config/config"
-require "chef-config/exceptions"
-require "chef-config/logger"
-require "chef-config/path_helper"
-require "chef-config/windows"
-require "chef-config/mixin/dot_d"
-require "chef-config/mixin/credentials"
+require_relative "config"
+require_relative "exceptions"
+require_relative "logger"
+require_relative "path_helper"
+require_relative "windows"
+require_relative "mixin/dot_d"
+require_relative "mixin/credentials"
 
 module ChefConfig
   class WorkstationConfigLoader

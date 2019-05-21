@@ -19,19 +19,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "mixlib/config"
-require "pathname"
+require "mixlib/config" unless defined?(Mixlib::Config)
+require "pathname" unless defined?(Pathname)
 
-require "chef-config/fips"
-require "chef-config/logger"
-require "chef-config/windows"
-require "chef-config/path_helper"
-require "chef-config/mixin/fuzzy_hostname_matcher"
+require_relative "fips"
+require_relative "logger"
+require_relative "windows"
+require_relative "path_helper"
+require_relative "mixin/fuzzy_hostname_matcher"
 
-require "mixlib/shellout"
-require "uri"
-require "addressable/uri"
-require "openssl"
+require "mixlib/shellout" unless defined?(Mixlib::ShellOut)
+require "uri" unless defined?(URI)
+require "addressable/uri" unless defined?(Addressable::URI)
+require "openssl" unless defined?(OpenSSL)
 require "yaml"
 
 module ChefConfig

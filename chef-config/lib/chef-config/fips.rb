@@ -21,7 +21,7 @@ module ChefConfig
   def self.fips?
     if ChefConfig.windows?
       begin
-        require "win32/registry"
+        require "win32/registry" unless defined?(Win32::Registry)
       rescue LoadError
         return false
       end

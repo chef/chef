@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef-config/windows"
-require "chef-config/logger"
-require "chef-config/exceptions"
+require_relative "windows"
+require_relative "logger"
+require_relative "exceptions"
 
 module ChefConfig
   class PathHelper
