@@ -20,12 +20,12 @@ require "train"
 
 class Chef
   class TrainTransport
+    extend ChefConfig::Mixin::Credentials
+
     #
     # Returns a RFC099 credentials profile as a hash
     #
     def self.load_credentials(profile)
-      extend ChefConfig::Mixin::Credentials
-
       # Tomlrb.load_file returns a hash with keys as strings
       credentials = parse_credentials_file
       if contains_split_fqdn?(credentials, profile)
@@ -74,22 +74,18 @@ class Chef
       profile = tm_config.host
 
       credentials_file =
-        if tm_config.credentials_file
-          if File.exists?(tm_config.credentials_file)
-            tm_config.credentials_file
-          else
-            raise ArgumentError, "Credentials file specified for target mode does not exist: '#{tm_config.credentials_file}'"
-          end
-        elsif File.exists?(Chef::Config.platform_specific_path("/etc/chef/#{profile}/credentials"))
+        if tm_config.credentials_file && File.exist?(tm_config.credentials_file)
+          tm_config.credentials_file
+        elsif File.exist?(Chef::Config.platform_specific_path("/etc/chef/#{profile}/credentials"))
           Chef::Config.platform_specific_path("/etc/chef/#{profile}/credentials")
         else
           super
         end
-      if credentials_file
-        Chef::Log.debug("Loading credentials file '#{credentials_file}' for target '#{profile}'")
-      else
-        Chef::Log.debug("No credentials file found for target '#{profile}'")
-      end
+
+      raise ArgumentError, "No credentials file found for target '#{profile}'" unless credentials_file
+      raise ArgumentError, "Credentials file specified for target mode does not exist: '#{credentials_file}'" unless File.exist?(credentials_file)
+
+      Chef::Log.debug("Loading credentials file '#{credentials_file}' for target '#{profile}'")
 
       credentials_file
     end

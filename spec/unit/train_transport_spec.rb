@@ -40,6 +40,7 @@ describe Chef::TrainTransport do
     # [foo.example.org]   => {"foo"=>{"example"=>{"org"=>{}}}}
     # ['foo.example.org'] => {"foo.example.org"=>{}}
     it "warns if the host has been split by toml" do
+      allow(Chef::TrainTransport).to receive(:credentials_file_path).and_return("/Users/scotthourglass/.chef/credentials")
       allow(Chef::TrainTransport).to receive(:parse_credentials_file).and_return({ "foo" => { "example" => { "org" => {} } } })
       expect(Chef::Log).to receive(:warn).with(/as a Hash/)
       expect(Chef::Log).to receive(:warn).with(/Hostnames must be surrounded by single quotes/)
@@ -48,32 +49,36 @@ describe Chef::TrainTransport do
   end
 
   describe "credentials_file_path" do
+    let(:config_cred_file_path) { "/somewhere/credentials" }
+    let(:host_cred_file_path) { "/etc/chef/foo.example.org/credentials" }
 
     context "when a file path is specified by a config" do
-      let(:cred_file_path) { "/somewhere/credentials" }
-
       before do
-        tm_config = double("Config Context", host: "foo.example.org", credentials_file: cred_file_path)
+        tm_config = double("Config Context", host: "foo.example.org", credentials_file: config_cred_file_path)
         allow(Chef::Config).to receive(:target_mode).and_return(tm_config)
       end
 
       it "returns the path if it exists" do
-        allow(File).to receive(:exists?).with(cred_file_path).and_return(true)
-        expect(Chef::TrainTransport.credentials_file_path).to eq(cred_file_path)
+        allow(File).to receive(:exist?).with(config_cred_file_path).and_return(true)
+        expect(Chef::TrainTransport.credentials_file_path).to eq(config_cred_file_path)
       end
 
       it "raises an error if it does not exist" do
-        allow(File).to receive(:exists?).with(cred_file_path).and_return(false)
+        allow(File).to receive(:exist?).and_return(false)
         expect { Chef::TrainTransport.credentials_file_path }.to raise_error(ArgumentError, /does not exist/)
       end
     end
 
+    it "raises an error if the default creds files do not exist" do
+      allow(File).to receive(:exist?).and_return(false)
+      expect { Chef::TrainTransport.credentials_file_path }.to raise_error(ArgumentError, /does not exist/)
+    end
+
     it "returns the path to the default config file if it exists" do
-      cred_file_path = Chef::Config.platform_specific_path("/etc/chef/foo.example.org/credentials")
       tm_config = double("Config Context", host: "foo.example.org", credentials_file: nil)
       allow(Chef::Config).to receive(:target_mode).and_return(tm_config)
-      allow(File).to receive(:exists?).with(cred_file_path).and_return(true)
-      expect(Chef::TrainTransport.credentials_file_path).to eq(cred_file_path)
+      allow(File).to receive(:exist?).with(host_cred_file_path).and_return(true)
+      expect(Chef::TrainTransport.credentials_file_path).to eq(host_cred_file_path)
     end
   end
 end
