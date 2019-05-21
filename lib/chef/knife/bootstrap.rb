@@ -380,7 +380,7 @@ class Chef
         winrm_ssl_verify_mode:
           [:winrm_no_verify_cert, "--winrm-ssl-verify-mode MODE"],
         winrm_transport:
-          [:winrm_ssl, "--winrm-transport TRANSPORT"]
+          [:winrm_ssl, "--winrm-transport TRANSPORT"],
       }.freeze
 
       DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
