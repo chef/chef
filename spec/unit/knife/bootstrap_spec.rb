@@ -1664,8 +1664,8 @@ describe Chef::Knife::Bootstrap do
       expect(knife).to receive(:validate_policy_options!).ordered
       expect(knife).to receive(:winrm_warn_no_ssl_verification).ordered
       expect(knife).to receive(:warn_on_short_session_timeout).ordered
-      expect(knife).to receive(:register_client).ordered
       expect(knife).to receive(:connect!).ordered
+      expect(knife).to receive(:register_client).ordered
       expect(knife).to receive(:render_template).and_return "content"
       expect(knife).to receive(:upload_bootstrap).with("content").and_return "/remote/path.sh"
       expect(knife).to receive(:perform_bootstrap).with("/remote/path.sh")
