@@ -50,7 +50,7 @@ describe Chef::TrainTransport do
 
   describe "credentials_file_path" do
     let(:config_cred_file_path) { "/somewhere/credentials" }
-    let(:host_cred_file_path) { "/etc/chef/foo.example.org/credentials" }
+    let(:host_cred_file_path) { Chef::Platform.windows? ? "C:\\chef\\foo.example.org\\credentials" : "/etc/chef/foo.example.org/credentials" }
 
     context "when a file path is specified by a config" do
       before do
