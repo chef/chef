@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.303 -->
-## [v15.0.303](https://github.com/chef/chef/tree/v15.0.303) (2019-05-21)
+<!-- latest_release 15.0.304 -->
+## [v15.0.304](https://github.com/chef/chef/tree/v15.0.304) (2019-05-21)
 
 #### Merged Pull Requests
-- Fix chef-config requires lines [#8545](https://github.com/chef/chef/pull/8545) ([lamont-granquist](https://github.com/lamont-granquist))
+- Better target mode no-creds errors [#8571](https://github.com/chef/chef/pull/8571) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Better target mode no-creds errors [#8571](https://github.com/chef/chef/pull/8571) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.304 -->
 - Fix chef-config requires lines [#8545](https://github.com/chef/chef/pull/8545) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.303 -->
 - Only set client_pem in bootstrap_context when validatorless [#8567](https://github.com/chef/chef/pull/8567) ([btm](https://github.com/btm)) <!-- 15.0.302 -->
 - Chef Infra Client 15 Release Notes Additional edits [#8543](https://github.com/chef/chef/pull/8543) ([mjingle](https://github.com/mjingle)) <!-- 15.0.301 -->
