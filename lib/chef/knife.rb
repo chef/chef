@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 require_relative "version"
-require "mixlib/cli"
+require "mixlib/cli" unless defined?(Mixlib::CLI)
 require_relative "workstation_config_loader"
 require_relative "mixin/convert_to_class_name"
 require_relative "mixin/path_sanity"
@@ -30,7 +30,7 @@ require_relative "server_api"
 require_relative "http/authenticator"
 require_relative "http/http_request"
 require_relative "http"
-require "pp"
+require "pp" unless defined?(PP)
 require_relative "dist"
 
 class Chef

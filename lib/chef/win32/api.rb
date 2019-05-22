@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "ffi"
+require "ffi" unless defined?(FFI)
 require_relative "../reserved_names"
 require_relative "../exceptions"
 

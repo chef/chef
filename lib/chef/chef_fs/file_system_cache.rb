@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "singleton"
+require "singleton" unless defined?(Singleton)
 require_relative "../client"
 
 class Chef

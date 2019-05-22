@@ -17,7 +17,7 @@
 #
 
 require_relative "../mixin/shell_out"
-require "rexml/document"
+require "rexml/document" unless defined?(REXML::Document)
 require "iso8601" if Chef::Platform.windows?
 require_relative "../mixin/powershell_out"
 require_relative "../provider"

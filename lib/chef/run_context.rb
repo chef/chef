@@ -26,7 +26,7 @@ require_relative "recipe"
 require_relative "run_context/cookbook_compiler"
 require_relative "event_dispatch/events_output_stream"
 require_relative "train_transport"
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
 

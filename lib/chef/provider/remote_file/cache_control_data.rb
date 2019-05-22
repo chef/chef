@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-require "stringio"
+require "stringio" unless defined?(StringIO)
 require_relative "../../file_cache"
 require_relative "../../json_compat"
 require_relative "../../digester"

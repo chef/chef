@@ -24,7 +24,7 @@ require_relative "../mixin/file_class"
 require_relative "../platform/query_helpers"
 require_relative "../util/path_helper"
 
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
   class Provider

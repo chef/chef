@@ -1,4 +1,4 @@
 require "mixlib/log/logger"
-require "pp"
+require "pp" unless defined?(PP)
 
 MonoLogger = Mixlib::Log::Logger

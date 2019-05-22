@@ -108,7 +108,7 @@ class Chef
         # @return [String] path to the font
         def source_uri
           begin
-            require "uri"
+            require "uri" unless defined?(URI)
             if remote_file_schema?(URI.parse(new_resource.source).scheme)
               logger.trace("source property starts with ftp/http. Using source property unmodified")
               return new_resource.source

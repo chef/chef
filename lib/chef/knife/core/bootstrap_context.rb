@@ -18,7 +18,7 @@
 
 require_relative "../../run_list"
 require_relative "../../util/path_helper"
-require "pathname"
+require "pathname" unless defined?(Pathname)
 require_relative "../../dist"
 
 class Chef

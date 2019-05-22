@@ -19,7 +19,7 @@
 require_relative "../exceptions"
 require_relative "../log"
 require_relative "../provider"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   class Provider
@@ -314,7 +314,7 @@ class Chef
           # user who is executing `git` not the user running Chef.
           env["HOME"] =
             begin
-              require "etc"
+              require "etc" unless defined?(Etc)
               case new_resource.user
               when Integer
                 Etc.getpwuid(new_resource.user).dir

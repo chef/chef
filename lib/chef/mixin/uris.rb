@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "uri"
-require "addressable/uri"
+require "uri" unless defined?(URI)
+require "addressable/uri" unless defined?(Addressable::URI)
 
 class Chef
   module Mixin

@@ -20,7 +20,7 @@ require_relative "api/process"
 require_relative "api/psapi"
 require_relative "error"
 require_relative "handle"
-require "ffi"
+require "ffi" unless defined?(FFI)
 
 class Chef
   module ReservedNames::Win32

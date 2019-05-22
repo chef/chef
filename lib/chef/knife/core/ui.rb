@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 require_relative "../../platform/query_helpers"
 require_relative "generic_presenter"
-require "tempfile"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Knife

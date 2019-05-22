@@ -18,7 +18,7 @@
 require_relative "../../../mixin/which"
 require_relative "../../../mixin/shell_out"
 require_relative "version"
-require "timeout"
+require "timeout" unless defined?(Timeout)
 
 class Chef
   class Provider

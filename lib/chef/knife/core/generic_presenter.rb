@@ -89,7 +89,7 @@ class Chef
             require "yaml"
             YAML.dump(data)
           when :pp
-            require "stringio"
+            require "stringio" unless defined?(StringIO)
             # If you were looking for some attribute and there is only one match
             # just dump the attribute value
             if config[:attribute] && data.length == 1

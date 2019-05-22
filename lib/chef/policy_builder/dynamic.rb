@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 require_relative "../log"
 require_relative "../run_context"

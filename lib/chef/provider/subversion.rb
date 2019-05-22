@@ -21,7 +21,7 @@
 require_relative "../log"
 require_relative "../provider"
 require "chef-config/mixin/fuzzy_hostname_matcher"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   class Provider

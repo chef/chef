@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "etc"
-require "rexml/document"
+require "etc" unless defined?(Etc)
+require "rexml/document" unless defined?(REXML::Document)
 require_relative "../../resource/service"
 require_relative "../../resource/macosx_service"
 require_relative "simple"

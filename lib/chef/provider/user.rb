@@ -17,7 +17,7 @@
 #
 
 require_relative "../provider"
-require "etc"
+require "etc" unless defined?(Etc)
 
 class Chef
   class Provider

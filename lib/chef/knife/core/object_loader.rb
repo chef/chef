@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "ffi_yajl"
+require "ffi_yajl" unless defined?(FFI_Yajl)
 require_relative "../../util/path_helper"
 require_relative "../../data_bag_item"
 

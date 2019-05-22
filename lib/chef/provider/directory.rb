@@ -21,7 +21,7 @@ require_relative "../log"
 require_relative "../resource/directory"
 require_relative "../provider"
 require_relative "file"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   class Provider

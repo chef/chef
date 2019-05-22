@@ -19,7 +19,7 @@
 
 require_relative "config"
 require_relative "run_lock"
-require "etc"
+require "etc" unless defined?(Etc)
 
 class Chef
   class Daemon

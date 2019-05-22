@@ -21,7 +21,7 @@ require_relative "../resource"
 require_relative "../platform/query_helpers"
 require_relative "../mixin/securable"
 require_relative "file/verification"
-require "pathname"
+require "pathname" unless defined?(Pathname)
 require_relative "../dist"
 
 class Chef

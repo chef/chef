@@ -21,7 +21,7 @@ require_relative "../dsl/declare_resource"
 require_relative "../mixin/shell_out"
 require_relative "../http/simple"
 require_relative "noop"
-require "tmpdir"
+require "tmpdir" unless defined?(Dir.mktmpdir)
 
 class Chef
   class Provider

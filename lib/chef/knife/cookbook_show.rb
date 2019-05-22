@@ -24,7 +24,7 @@ class Chef
 
       deps do
         require_relative "../json_compat"
-        require "uri"
+        require "uri" unless defined?(URI)
         require_relative "../cookbook_version"
       end
 

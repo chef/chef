@@ -22,8 +22,8 @@ require_relative "../log"
 require_relative "../resource/file"
 require_relative "../mixin/checksum"
 require_relative "../provider"
-require "etc"
-require "fileutils"
+require "etc" unless defined?(Etc)
+require "fileutils" unless defined?(FileUtils)
 require_relative "../scan_access_control"
 require_relative "../win32/registry"
 

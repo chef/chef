@@ -27,8 +27,8 @@ require_relative "../handler/error_report"
 require_relative "../workstation_config_loader"
 require_relative "../mixin/shell_out"
 require "chef-config/mixin/dot_d"
-require "mixlib/archive"
-require "uri"
+require "mixlib/archive" unless defined?(Mixlib::Archive)
+require "uri" unless defined?(URI)
 require_relative "../dist"
 require "license_acceptance/cli_flags/mixlib_cli"
 

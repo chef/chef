@@ -20,7 +20,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "singleton"
+require "singleton" unless defined?(Singleton)
 
 class Chef
   class HTTP

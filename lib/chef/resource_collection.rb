@@ -21,7 +21,7 @@ require_relative "resource_collection/resource_set"
 require_relative "resource_collection/resource_list"
 require_relative "resource_collection/resource_collection_serialization"
 require_relative "log"
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 ##
 # ResourceCollection currently handles two tasks:

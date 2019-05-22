@@ -26,7 +26,7 @@ class Chef
       category "supermarket"
 
       deps do
-        require "fileutils"
+        require "fileutils" unless defined?(FileUtils)
       end
 
       option :file,

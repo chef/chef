@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "ohai"
+require "ohai" unless defined?(Ohai::System)
 
 class Chef
   class Provider

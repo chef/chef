@@ -18,7 +18,7 @@
 #
 
 require_relative "../resource"
-require "shellwords"
+require "shellwords" unless defined?(Shellwords)
 require_relative "../dist"
 
 class Chef

@@ -22,7 +22,7 @@ require_relative "../exceptions"
 require_relative "../repository/chef_repository_file_system_cookbook_dir"
 require_relative "../../../mixin/file_class"
 
-require "tmpdir"
+require "tmpdir" unless defined?(Dir.mktmpdir)
 
 class Chef
   module ChefFS

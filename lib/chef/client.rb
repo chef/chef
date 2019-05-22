@@ -52,10 +52,10 @@ require_relative "policy_builder"
 require_relative "request_id"
 require_relative "platform/rebooter"
 require_relative "mixin/deprecation"
-require "ohai"
+require "ohai" unless defined?(Ohai::System)
 require "rbconfig"
 require_relative "dist"
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
   # == Chef::Client

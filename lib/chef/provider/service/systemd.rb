@@ -20,7 +20,7 @@
 require_relative "../../resource/service"
 require_relative "simple"
 require_relative "../../mixin/which"
-require "shellwords"
+require "shellwords" unless defined?(Shellwords)
 
 class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 

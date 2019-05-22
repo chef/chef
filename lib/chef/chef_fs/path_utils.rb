@@ -17,7 +17,7 @@
 #
 
 require_relative "../chef_fs"
-require "pathname"
+require "pathname" unless defined?(Pathname)
 
 class Chef
   module ChefFS

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "uri"
+require "uri" unless defined?(URI)
 
 class Chef
   class DataCollector

@@ -24,9 +24,9 @@ require_relative "../config"
 require_relative "../handler/error_report"
 require_relative "../log"
 require_relative "../http"
-require "mixlib/cli"
-require "socket"
-require "uri"
+require "mixlib/cli" unless defined?(Mixlib::CLI)
+require "socket" unless defined?(Socket)
+require "uri" unless defined?(URI)
 require "win32/daemon"
 require_relative "../mixin/shell_out"
 require_relative "../dist"

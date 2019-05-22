@@ -24,11 +24,11 @@ require_relative "../config"
 require_relative "../daemon"
 require_relative "../log"
 require_relative "../config_fetcher"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 require_relative "../mixin/shell_out"
-require "pathname"
+require "pathname" unless defined?(Pathname)
 require "chef-config/mixin/dot_d"
-require "mixlib/archive"
+require "mixlib/archive" unless defined?(Mixlib::Archive)
 require_relative "../dist"
 require "license_acceptance/cli_flags/mixlib_cli"
 

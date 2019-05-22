@@ -21,7 +21,7 @@ require_relative "../resource/file"
 require_relative "../resource/cookbook_file"
 require_relative "../resource/macosx_service"
 require "plist"
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
   class Provider

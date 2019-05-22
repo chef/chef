@@ -395,7 +395,7 @@ class Chef
       attr_reader :connection
 
       deps do
-        require "erubis"
+        require "erubis" unless defined?(Erubis)
 
         require_relative "../json_compat"
         require_relative "../util/path_helper"

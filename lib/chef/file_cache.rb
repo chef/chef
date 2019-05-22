@@ -19,7 +19,7 @@ require_relative "mixin/params_validate"
 require_relative "mixin/create_path"
 require_relative "exceptions"
 require_relative "json_compat"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 require_relative "util/path_helper"
 
 class Chef

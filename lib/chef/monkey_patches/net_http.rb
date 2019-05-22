@@ -9,7 +9,7 @@ unless defined?(Net::HTTPClientException)
   Net::HTTPClientException = Net::HTTPServerException
 end
 
-require "net/http"
+require "net/http" unless defined?(Net::HTTP)
 module Net
   class HTTPError
     include ChefNetHTTPExceptionExtensions

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "digest/sha2"
+require "digest/sha2" unless defined?(Digest::SHA2)
 require_relative "../digester"
 
 class Chef

@@ -65,7 +65,7 @@ class Chef
         # @return [String]
         def updated_ec2_config_xml
           begin
-            require "rexml/document"
+            require "rexml/document" unless defined?(REXML::Document)
             config_file = 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml'
             config = REXML::Document.new(::File.read(config_file))
             # find an element named State with a sibling element whose value is Ec2SetComputerName

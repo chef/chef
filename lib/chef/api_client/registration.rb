@@ -19,7 +19,7 @@
 require_relative "../config"
 require_relative "../server_api"
 require_relative "../exceptions"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   class ApiClient

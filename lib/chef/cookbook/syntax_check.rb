@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-require "pathname"
-require "stringio"
-require "erubis"
+require "pathname" unless defined?(Pathname)
+require "stringio" unless defined?(StringIO)
+require "erubis" unless defined?(Erubis)
 require_relative "../mixin/shell_out"
 require_relative "../mixin/checksum"
 require_relative "../util/path_helper"

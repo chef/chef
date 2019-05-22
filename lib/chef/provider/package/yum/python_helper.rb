@@ -18,8 +18,8 @@
 require_relative "../../../mixin/which"
 require_relative "../../../mixin/shell_out"
 require_relative "version"
-require "singleton"
-require "timeout"
+require "singleton" unless defined?(Singleton)
+require "timeout" unless defined?(Timeout)
 
 class Chef
   class Provider

@@ -47,7 +47,7 @@ class Chef
       # @param [String] id the source name
       # @return [REXML::Attributes] finds the source element with the
       def fetch_source_element(id)
-        require "rexml/document"
+        require "rexml/document" unless defined?(REXML::Document)
 
         config_file = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\config\\chocolatey.config"
         raise "Could not find the Chocolatey config at #{config_file}!" unless ::File.exist?(config_file)

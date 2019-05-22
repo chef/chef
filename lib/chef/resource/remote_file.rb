@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "uri"
+require "uri" unless defined?(URI)
 require_relative "file"
 require_relative "../provider/remote_file"
 require_relative "../mixin/securable"

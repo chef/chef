@@ -24,7 +24,7 @@ require_relative "file_pattern"
 require_relative "file_system"
 require_relative "file_system/exceptions"
 require_relative "file_system/memory/memory_root"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   module ChefFS

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-require "tmpdir"
+require "tmpdir" unless defined?(Dir.mktmpdir)
 require_relative "../mixin/shell_out"
 
 class Chef

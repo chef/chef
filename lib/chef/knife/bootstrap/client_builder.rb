@@ -20,7 +20,7 @@ require_relative "../../node"
 require_relative "../../server_api"
 require_relative "../../api_client/registration"
 require_relative "../../api_client"
-require "tmpdir"
+require "tmpdir" unless defined?(Dir.mktmpdir)
 
 class Chef
   class Knife

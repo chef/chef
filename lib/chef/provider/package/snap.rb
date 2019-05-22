@@ -19,7 +19,7 @@
 require_relative "../package"
 require_relative "../../resource/snap_package"
 require_relative "../../mixin/shell_out"
-require "socket"
+require "socket" unless defined?(Socket)
 require "json"
 
 class Chef

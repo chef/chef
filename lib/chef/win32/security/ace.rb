@@ -20,7 +20,7 @@ require_relative "../security"
 require_relative "sid"
 require_relative "../memory"
 
-require "ffi"
+require "ffi" unless defined?(FFI)
 
 class Chef
   module ReservedNames::Win32

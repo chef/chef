@@ -18,7 +18,7 @@
 
 require_relative "auth_credentials"
 require_relative "../exceptions"
-require "openssl"
+require "openssl" unless defined?(OpenSSL)
 
 class Chef
   class HTTP

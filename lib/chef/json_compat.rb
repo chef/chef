@@ -17,7 +17,7 @@
 
 # Wrapper class for interacting with JSON.
 
-require "ffi_yajl"
+require "ffi_yajl" unless defined?(FFI_Yajl)
 require_relative "exceptions"
 # We're requiring this to prevent breaking consumers using Hash.to_json
 require "json"

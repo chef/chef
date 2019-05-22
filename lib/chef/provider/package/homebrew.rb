@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require "etc"
+require "etc" unless defined?(Etc)
 require_relative "../../mixin/homebrew_user"
 
 class Chef
