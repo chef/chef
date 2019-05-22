@@ -22,10 +22,9 @@ class Chef
     class Screensaver < Chef::Resource
       resource_name :screensaver
       provides(:screensaver) { true }
-      default_action :manage
 
       description "Use the screensaver resource to configure screensaver settings."
-      introduced "14.0"
+      introduced "15.1"
 
       property :idle_time, Integer,
                description: "The exact name of printer driver installed on the system."
