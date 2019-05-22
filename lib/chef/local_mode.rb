@@ -17,6 +17,7 @@
 
 require_relative "config"
 require_relative "monkey_patches/webrick-utils" if Chef::Platform.windows?
+require_relative "dist"
 
 class Chef
   module LocalMode
@@ -78,7 +79,7 @@ class Chef
 
         local_mode_url = @chef_zero_server.local_mode_url
 
-        Chef::Log.info("Started chef-zero at #{local_mode_url} with #{@chef_fs.fs_description}")
+        Chef::Log.info("Started #{Chef::Dist::ZERO} at #{local_mode_url} with #{@chef_fs.fs_description}")
         Chef::Config.chef_server_url = local_mode_url
       end
     end
