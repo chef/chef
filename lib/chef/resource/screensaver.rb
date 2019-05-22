@@ -27,7 +27,7 @@ class Chef
       introduced "15.1"
 
       property :idle_time, Integer,
-               description: "The exact name of printer driver installed on the system."
+               description: "Number of seconds before screensaver activates."
 
       property :ask_for_password, [TrueClass, FalseClass],
                description: "Ask for password to bypass screensaver."
@@ -47,7 +47,12 @@ class Chef
         description "Manage screensaver settings."
 
         converge_by("Manage #{@new_resource}") do
-          manage_screensaver_osx if node[:platform_family] == "mac_os_x"
+          case node[:platform_family]
+          when "mac_os_x"
+            manage_screensaver_osx
+          when "windows"
+            manage_screensaver_win
+          end
         end
       end
 
@@ -55,7 +60,12 @@ class Chef
         description "Unmanage screensaver settings"
 
         converge_by("Unmanage #{@new_resource}") do
-          unmanage_screensaver_osx if node[:platform_family] == "mac_os_x"
+          case node[:platform_family]
+          when "mac_os_x"
+            unmanage_screensaver_osx
+          when "windows"
+            unmanage_screensaver_win
+          end
         end
       end
 
@@ -98,8 +108,58 @@ class Chef
           )
         end
 
+        def manage_screensaver_win
+          # password_delay
+          registry_key "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" do
+            values [{
+              name: "ScreenSaverGracePeriod",
+              type: :dword,
+              data: new_resource.password_delay,
+            }]
+            action :create
+            not_if { new_resource.password_delay.nil? }
+          end
+          # ask_for_password
+          registry_key "HKCU\\Control Panel\\Desktop" do
+            values [{name: "ScreenSaveActive", type: :string, data: '1'},
+                    {name: "ScreenSaverIsSecure", type: :string, data: '1'},
+            ]
+            action :create
+            only_if { new_resource.ask_for_password }
+          end
+          # idle_time
+          registry_key "HKCU\\Control Panel\\Desktop" do
+            values [{
+              name: "screensavetimeout",
+              type: :string,
+              data: new_resource.idle_time
+            }]
+            action :create
+            not_if { new_resource.idle_time.nil? }
+          end
+        end
+
         def unmanage_screensaver_osx
           osx_profile_resource(profile_identifier, 'remove', nil)
+        end
+
+        def unmanage_screensaver_win
+          # Remove screensaver settings
+          registry_key "HKCU\\Control Panel\\Desktop" do
+            values [{name: "ScreenSaveActive", type: :string, data: ''},
+                    {name: "ScreenSaverIsSecure", type: :string, data: ''},
+                    {name: "screensavetimeout", type: :string, data: ''},
+                   ]
+            action :delete
+          end
+          registry_key "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" do
+            values [{
+              name: "ScreenSaverGracePeriod",
+              type: :dword,
+              data: '',
+            }]
+            action :delete
+          end
         end
 
         def osx_profile_resource(identifier, action, profile)
