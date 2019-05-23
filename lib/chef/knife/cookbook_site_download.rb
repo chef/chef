@@ -25,7 +25,6 @@ class Chef
 
       # Handle the subclassing (knife doesn't do this :()
       dependency_loaders.concat(superclass.dependency_loaders)
-      options.merge!(superclass.options)
 
       banner "knife cookbook site download COOKBOOK [VERSION] (options)"
       category "deprecated"
