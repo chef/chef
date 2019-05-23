@@ -76,23 +76,23 @@ class Chef
 
         def manage_screensaver_osx
           screensaver_profile = {
-            'PayloadIdentifier' => profile_identifier,
-            'PayloadRemovalDisallowed' => true,
-            'PayloadScope' => 'System',
-            'PayloadType' => 'Configuration',
-            'PayloadUUID' => 'CEA1E58D-9D0F-453A-AA52-830986A8366C',
-            'PayloadOrganization' => new_resource.organization,
-            'PayloadVersion' => 1,
-            'PayloadDisplayName' => 'Screensaver',
-            'PayloadContent' => []
+            "PayloadIdentifier" => profile_identifier,
+            "PayloadRemovalDisallowed" => true,
+            "PayloadScope" => "System",
+            "PayloadType" => "Configuration",
+            "PayloadUUID" => "CEA1E58D-9D0F-453A-AA52-830986A8366C",
+            "PayloadOrganization" => new_resource.organization,
+            "PayloadVersion" => 1,
+            "PayloadDisplayName" => "Screensaver",
+            "PayloadContent" => [],
           }
           payload = {
-            'PayloadType' => 'com.apple.screensaver',
-            'PayloadVersion' => 1,
-            'PayloadIdentifier' => profile_identifier,
-            'PayloadUUID' => '3B2AD6A9-F99E-4813-980A-4147617B2E75',
-            'PayloadEnabled' => true,
-            'PayloadDisplayName' => 'Screensaver'
+            "PayloadType" => "com.apple.screensaver",
+            "PayloadVersion" => 1,
+            "PayloadIdentifier" => profile_identifier,
+            "PayloadUUID" => "3B2AD6A9-F99E-4813-980A-4147617B2E75",
+            "PayloadEnabled" => true,
+            "PayloadDisplayName" => "Screensaver",
           }
 
           {
@@ -103,11 +103,11 @@ class Chef
             payload[k] = new_resource.send(v) if new_resource.send(v)
           end
 
-          screensaver_profile['PayloadContent'].push(payload)
+          screensaver_profile["PayloadContent"].push(payload)
 
           osx_profile_resource(
             profile_identifier,
-            'install',
+            "install",
             screensaver_profile
           )
         end
@@ -125,8 +125,8 @@ class Chef
           end
           if property_is_set?(:ask_for_password)
             registry_key "HKCU\\Control Panel\\Desktop" do
-              values [{name: "ScreenSaveActive", type: :string, data: '1'},
-                      {name: "ScreenSaverIsSecure", type: :string, data: '1'},
+              values [{ name: "ScreenSaveActive", type: :string, data: "1" },
+                      { name: "ScreenSaverIsSecure", type: :string, data: "1" },
               ]
               action :create
             end
@@ -136,7 +136,7 @@ class Chef
               values [{
                 name: "screensavetimeout",
                 type: :string,
-                data: new_resource.idle_time
+                data: new_resource.idle_time,
               }]
               action :create
             end
@@ -144,15 +144,15 @@ class Chef
         end
 
         def unmanage_screensaver_osx
-          osx_profile_resource(profile_identifier, 'remove', nil)
+          osx_profile_resource(profile_identifier, "remove", nil)
         end
 
         def unmanage_screensaver_win
           # Remove screensaver settings
           registry_key "HKCU\\Control Panel\\Desktop" do
-            values [{name: "ScreenSaveActive", type: :string, data: ''},
-                    {name: "ScreenSaverIsSecure", type: :string, data: ''},
-                    {name: "screensavetimeout", type: :string, data: ''},
+            values [{ name: "ScreenSaveActive", type: :string, data: "" },
+                    { name: "ScreenSaverIsSecure", type: :string, data: "" },
+                    { name: "screensavetimeout", type: :string, data: "" },
                    ]
             action :delete
           end
@@ -160,7 +160,7 @@ class Chef
             values [{
               name: "ScreenSaverGracePeriod",
               type: :dword,
-              data: '',
+              data: "",
             }]
             action :delete
           end
@@ -168,7 +168,7 @@ class Chef
 
         def osx_profile_resource(identifier, action, profile)
           res = Chef::Resource::OsxProfile.new(identifier, run_context)
-          res.send('profile', profile) unless profile.nil?
+          res.send("profile", profile) unless profile.nil?
           res.action(action)
           res.run_action action
           res
