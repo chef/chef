@@ -183,6 +183,14 @@ describe Chef::ResourceCollection do
       expect(rc).to be_empty
     end
 
+    it "should allow to delete resources with different providers" do
+      pkg = Chef::Resource::YumPackage.new("monkey")
+      rc.insert(pkg, instance_name: "monkey", resource_type: "package")
+      expect(rc).not_to be_empty
+      expect(rc.delete("package[monkey]")).to eql(pkg)
+      expect(rc).to be_empty
+    end
+
     it "should raise an exception if you send something strange to delete" do
       expect { rc.delete(:symbol) }.to raise_error(ArgumentError)
     end
