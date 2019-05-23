@@ -86,7 +86,7 @@ class Chef
             'PayloadDisplayName' => 'Screensaver',
             'PayloadContent' => []
           }
-          screensaver_payload = {
+          payload = {
             'PayloadType' => 'com.apple.screensaver',
             'PayloadVersion' => 1,
             'PayloadIdentifier' => profile_identifier,
@@ -95,11 +95,15 @@ class Chef
             'PayloadDisplayName' => 'Screensaver'
           }
 
-          screensaver_payload['idleTime'] = new_resource.idle_time if new_resource.idle_time
-          screensaver_payload['askForPassword'] = new_resource.idle_time if new_resource.ask_for_password
-          screensaver_payload['askForPasswordDelay'] = new_resource.idle_time if new_resource.password_delay
+          {
+            "idleTime" => "idle_time",
+            "askForPassword" => "ask_for_password",
+            "askForPasswordDelay" => "password_delay",
+          }.each do |k, v|
+            payload[k] = new_resource.send(v) if new_resource.send(v)
+          end
 
-          screensaver_profile['PayloadContent'].push(screensaver_payload)
+          screensaver_profile['PayloadContent'].push(payload)
 
           osx_profile_resource(
             profile_identifier,
@@ -109,33 +113,33 @@ class Chef
         end
 
         def manage_screensaver_win
-          # password_delay
-          registry_key "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" do
-            values [{
-              name: "ScreenSaverGracePeriod",
-              type: :dword,
-              data: new_resource.password_delay,
-            }]
-            action :create
-            not_if { new_resource.password_delay.nil? }
+          if property_is_set?(:password_delay)
+            registry_key "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" do
+              values [{
+                name: "ScreenSaverGracePeriod",
+                type: :dword,
+                data: new_resource.password_delay,
+              }]
+              action :create
+            end
           end
-          # ask_for_password
-          registry_key "HKCU\\Control Panel\\Desktop" do
-            values [{name: "ScreenSaveActive", type: :string, data: '1'},
-                    {name: "ScreenSaverIsSecure", type: :string, data: '1'},
-            ]
-            action :create
-            only_if { new_resource.ask_for_password }
+          if property_is_set?(:ask_for_password)
+            registry_key "HKCU\\Control Panel\\Desktop" do
+              values [{name: "ScreenSaveActive", type: :string, data: '1'},
+                      {name: "ScreenSaverIsSecure", type: :string, data: '1'},
+              ]
+              action :create
+            end
           end
-          # idle_time
-          registry_key "HKCU\\Control Panel\\Desktop" do
-            values [{
-              name: "screensavetimeout",
-              type: :string,
-              data: new_resource.idle_time
-            }]
-            action :create
-            not_if { new_resource.idle_time.nil? }
+          if property_is_set?(:idle_time)
+            registry_key "HKCU\\Control Panel\\Desktop" do
+              values [{
+                name: "screensavetimeout",
+                type: :string,
+                data: new_resource.idle_time
+              }]
+              action :create
+            end
           end
         end
 
