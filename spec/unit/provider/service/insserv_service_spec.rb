@@ -36,7 +36,7 @@ describe Chef::Provider::Service::Insserv do
   describe "load_current_resource" do
     describe "when startup links exist" do
       before do
-        allow(Dir).to receive(:glob).with("/etc/rc**/S*initgrediant").and_return(["/etc/rc5.d/S18initgrediant", "/etc/rc2.d/S18initgrediant", "/etc/rc4.d/S18initgrediant", "/etc/rc3.d/S18initgrediant"])
+        allow(Dir).to receive(:glob).with("/etc/rc*/**/S*initgrediant").and_return(["/etc/rc.d/rc5.d/S18initgrediant", "/etc/rc.d/rc2.d/S18initgrediant", "/etc/rc.d/rc4.d/S18initgrediant", "/etc/rc.d/rc3.d/S18initgrediant"])
       end
 
       it "sets the current enabled status to true" do
@@ -47,7 +47,7 @@ describe Chef::Provider::Service::Insserv do
 
     describe "when startup links do not exist" do
       before do
-        allow(Dir).to receive(:glob).with("/etc/rc**/S*initgrediant").and_return([])
+        allow(Dir).to receive(:glob).with("/etc/rc*/**/S*initgrediant").and_return([])
       end
 
       it "sets the current enabled status to false" do

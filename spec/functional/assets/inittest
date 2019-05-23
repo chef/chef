@@ -1,0 +1,36 @@
+#!/bin/sh
+
+TMPDIR="${TMPDIR:-/tmp}"
+
+function create_chef_txt {
+        touch $TMPDIR/inittest.txt
+}
+
+function delete_chef_txt {
+        rm $TMPDIR/inittest.txt
+}
+
+function rename_chef_txt {
+        mv $TMPDIR/inittest.txt $TMPDIR/$1
+}
+
+case "$1" in
+start )
+        create_chef_txt
+        ;;
+stop )
+        delete_chef_txt
+        ;;
+status )
+        [ -f $TMPDIR/inittest.txt ] || [ -f $TMPDIR/inittest_reload.txt ] || [ -f $TMPDIR/inittest_restart.txt ]
+        ;;
+reload )
+        rename_chef_txt "inittest_reload.txt"
+        ;;
+restart )
+        rename_chef_txt "inittest_restart.txt"
+        ;;
+* )
+        echo "Usage: $0 (start | stop | restart | reload)"
+        exit 1
+esac
