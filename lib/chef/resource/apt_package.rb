@@ -22,7 +22,8 @@ class Chef
   class Resource
     class AptPackage < Chef::Resource::Package
       resource_name :apt_package
-      provides :package, platform_family: "debian"
+      provides :apt_package, target_mode: true
+      provides :package, platform_family: "debian", target_mode: true
 
       description "Use the apt_package resource to manage packages on Debian and Ubuntu platforms."
 

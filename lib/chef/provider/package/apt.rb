@@ -27,8 +27,8 @@ class Chef
         include Chef::Provider::Package::Deb
         use_multipackage_api
 
-        provides :package, platform_family: "debian"
-        provides :apt_package
+        provides :package, platform_family: "debian", target_mode: true
+        provides :apt_package, target_mode: true
 
         def initialize(new_resource, run_context)
           super

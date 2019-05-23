@@ -25,7 +25,6 @@ require_relative "../mixin/powershell_exec"
 require_relative "../mixin/powershell_out"
 require_relative "../mixin/shell_out"
 require_relative "../mixin/lazy_module_include"
-require_relative "../mixin/train_or_shell"
 
 class Chef
   module DSL
@@ -55,7 +54,6 @@ class Chef
       include Chef::Mixin::PowershellExec
       include Chef::Mixin::PowershellOut
       include Chef::Mixin::ShellOut
-      include Chef::Mixin::TrainOrShell
       extend Chef::Mixin::LazyModuleInclude
     end
   end

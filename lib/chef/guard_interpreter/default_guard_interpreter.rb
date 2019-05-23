@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require_relative "../mixin/train_or_shell"
+require_relative "../mixin/shell_out"
 require_relative "../exceptions"
 
 class Chef
   class GuardInterpreter
     class DefaultGuardInterpreter
-      include Chef::Mixin::TrainOrShell
+      include Chef::Mixin::ShellOut
 
       def initialize(command, opts)
         @command = command
@@ -30,7 +30,7 @@ class Chef
       end
 
       def evaluate
-        result = train_or_shell(@command, default_env: false, **@command_opts)
+        result = shell_out(@command, default_env: false, **@command_opts)
         Chef::Log.debug "Command failed: #{result.stderr}" unless result.status.success?
         result.status.success?
       # Timeout fails command rather than chef-client run, see:

@@ -153,15 +153,23 @@ class Chef
         args.flatten.compact.map(&:to_s)
       end
 
+      def self.transport_connection
+        Chef.run_context.transport_connection
+      end
+
       def self.shell_out_command(*args, **options)
-        cmd = if options.empty?
-                Mixlib::ShellOut.new(*args)
-              else
-                Mixlib::ShellOut.new(*args, **options)
-              end
-        cmd.live_stream ||= io_for_live_stream
-        cmd.run_command
-        cmd
+        if Chef::Config.target_mode?
+          FakeShellOut.new(args, options, transport_connection.run_command(args.join(" "))) # FIXME FIXME FIXME: join here is horrible
+        else
+          cmd = if options.empty?
+                  Mixlib::ShellOut.new(*args)
+                else
+                  Mixlib::ShellOut.new(*args, **options)
+                end
+          cmd.live_stream ||= io_for_live_stream
+          cmd.run_command
+          cmd
+        end
       end
 
       def self.io_for_live_stream
@@ -177,6 +185,27 @@ class Chef
           "Path"
         else
           "PATH"
+        end
+      end
+
+      class FakeShellOut
+        attr_reader :stdout, :stderr, :exitstatus, :status
+
+        def initialize(args, options, result)
+          @args = args
+          @options = options
+          @stdout = result.stdout
+          @stderr = result.stderr
+          @exitstatus = result.exit_status
+          @status = OpenStruct.new(success?: ( exitstatus == 0 ))
+        end
+
+        def error?
+          exitstatus != 0
+        end
+
+        def error!
+          raise Mixlib::ShellOut::ShellCommandFailed, "Unexpected exit status of #{exitstatus} running #{@args}" if error?
         end
       end
     end
