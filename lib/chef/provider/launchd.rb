@@ -195,6 +195,7 @@ class Chef
           "inetd_compatibility" => "inetdCompatibility",
           "init_groups" => "InitGroups",
           "keep_alive" => "KeepAlive",
+          "launch_events" => "LaunchEvents",
           "launch_only_once" => "LaunchOnlyOnce",
           "limit_load_from_hosts" => "LimitLoadFromHosts",
           "limit_load_to_hosts" => "LimitLoadToHosts",
