@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 62a879800c77cd6c1808e7a247976d7c910f6209
+  revision: 3734d441498e51dd44cefc21d842232cd0b5a47d
   branch: master
   specs:
-    ohai (15.0.35)
+    ohai (15.0.36)
       chef-config (>= 12.8, < 16)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -155,9 +155,9 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
-    ffi (1.10.0)
-    ffi (1.10.0-x64-mingw32)
-    ffi (1.10.0-x86-mingw32)
+    ffi (1.11.1)
+    ffi (1.11.1-x64-mingw32)
+    ffi (1.11.1-x86-mingw32)
     ffi-libarchive (0.4.6)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
@@ -205,7 +205,7 @@ GEM
     jaro_winkler (1.5.2)
     json (2.2.0)
     libyajl2 (1.2.0)
-    license-acceptance (1.0.11)
+    license-acceptance (1.0.12)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
@@ -300,7 +300,7 @@ GEM
     ruby-progressbar (1.10.0)
     ruby-shadow (2.5.0)
     rubyntlm (0.6.2)
-    rubyzip (1.2.2)
+    rubyzip (1.2.3)
     safe_yaml (1.0.5)
     semverse (3.0.0)
     simplecov (0.16.1)
@@ -324,7 +324,7 @@ GEM
     timers (4.3.0)
     tins (1.20.2)
     tomlrb (1.2.8)
-    train-core (2.1.2)
+    train-core (2.1.7)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 3.0)
