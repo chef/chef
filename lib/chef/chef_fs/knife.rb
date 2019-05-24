@@ -40,8 +40,6 @@ class Chef
         # Ensure we always get to do our includes, whether subclass calls deps or not
         c.deps do
         end
-
-        c.options.merge!(options)
       end
 
       option :repo_mode,
