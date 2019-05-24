@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.308 -->
-## [v15.0.308](https://github.com/chef/chef/tree/v15.0.308) (2019-05-24)
+<!-- latest_release 15.0.309 -->
+## [v15.0.309](https://github.com/chef/chef/tree/v15.0.309) (2019-05-24)
 
 #### Merged Pull Requests
-- Better target mode shell_out [#8584](https://github.com/chef/chef/pull/8584) ([lamont-granquist](https://github.com/lamont-granquist))
+- Preserve train connection in target mode to prevent running duplicate OS detection commands [#8590](https://github.com/chef/chef/pull/8590) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Preserve train connection in target mode to prevent running duplicate OS detection commands [#8590](https://github.com/chef/chef/pull/8590) ([btm](https://github.com/btm)) <!-- 15.0.309 -->
 - Better target mode shell_out [#8584](https://github.com/chef/chef/pull/8584) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.308 -->
 - Fix service enable idempotency in sles11 [#8256](https://github.com/chef/chef/pull/8256) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.307 -->
 - Fix delete_resource for resources [#8570](https://github.com/chef/chef/pull/8570) ([artem-sidorenko](https://github.com/artem-sidorenko)) <!-- 15.0.306 -->
