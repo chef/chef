@@ -543,8 +543,8 @@ class Chef
         warn_on_short_session_timeout
 
         $stdout.sync = true
-        register_client
         connect!
+        register_client
 
         content = render_template
         bootstrap_path = upload_bootstrap(content)
