@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.313 -->
-## [v15.0.313](https://github.com/chef/chef/tree/v15.0.313) (2019-05-24)
+<!-- latest_release 15.0.314 -->
+## [v15.0.314](https://github.com/chef/chef/tree/v15.0.314) (2019-05-24)
 
 #### Merged Pull Requests
-- Chef 15: Fix order of connection before registering node [#8574](https://github.com/chef/chef/pull/8574) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Add introduced field to launch_events in launchd [#8592](https://github.com/chef/chef/pull/8592) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Add introduced field to launch_events in launchd [#8592](https://github.com/chef/chef/pull/8592) ([tas50](https://github.com/tas50)) <!-- 15.0.314 -->
 - Chef 15: Fix order of connection before registering node [#8574](https://github.com/chef/chef/pull/8574) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.313 -->
 - launchd: add launch_events property [#8582](https://github.com/chef/chef/pull/8582) ([chilcote](https://github.com/chilcote)) <!-- 15.0.312 -->
 - make which/where be target-mode aware [#8588](https://github.com/chef/chef/pull/8588) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.311 -->
