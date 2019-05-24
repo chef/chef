@@ -19,7 +19,6 @@
 require_relative "../log"
 require_relative "../provider"
 require "forwardable" unless defined?(Forwardable)
-require_relative "../mixin/train_or_shell"
 
 class Chef
   class Provider
@@ -29,8 +28,6 @@ class Chef
       provides :execute, target_mode: true
 
       def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env
-
-      include Chef::Mixin::TrainOrShell
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
@@ -58,7 +55,7 @@ class Chef
 
         converge_by("execute #{description}") do
           begin
-            train_or_shell!(command, opts)
+            shell_out!(command, opts)
           rescue Mixlib::ShellOut::ShellCommandFailed
             if sensitive?
               ex = Mixlib::ShellOut::ShellCommandFailed.new("Command execution failed. STDOUT/STDERR suppressed for sensitive resource")
