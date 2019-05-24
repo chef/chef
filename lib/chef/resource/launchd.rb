@@ -162,6 +162,7 @@ class Chef
                description: "Keep a job running continuously (true) or allow demand and conditions on the node to determine if the job keeps running (false)."
 
       property :launch_events, [ Hash ],
+               introduced: "15.1",
                description: "Specify higher-level event types to be used as launch-on-demand event sources."
 
       property :launch_only_once, [ TrueClass, FalseClass ],
