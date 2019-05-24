@@ -88,7 +88,7 @@ class Chef
     end
 
     def self.inherited(subclass)
-     super
+      super
       unless subclass.unnamed?
         subcommands[subclass.snake_case_name] = subclass
         subcommand_files[subclass.snake_case_name] +=
