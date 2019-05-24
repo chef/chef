@@ -121,7 +121,7 @@ GEM
   specs:
     addressable (2.6.0)
       public_suffix (>= 2.0.2, < 4.0)
-    appbundler (0.12.6)
+    appbundler (0.12.5)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.0)
