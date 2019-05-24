@@ -40,7 +40,7 @@ class Chef
 
       # for test stubbing
       def env_path
-        if Chef::Config.target_mode
+        if Chef::Config.target_mode?
           Chef.run_context.transport_connection.run_command("echo $PATH").stdout
         else
           ENV["PATH"]
@@ -49,7 +49,7 @@ class Chef
 
       def valid_executable?(filename, &block)
         is_executable =
-          if Chef::Config.target_mode
+          if Chef::Config.target_mode?
             connection = Chef.run_context.transport_connection
             connection.file(filename).stat[:mode] & 1 && !connection.file(filename).directory?
           else
