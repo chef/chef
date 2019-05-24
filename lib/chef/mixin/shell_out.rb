@@ -17,6 +17,7 @@
 
 require "mixlib/shellout" unless defined?(Mixlib::ShellOut)
 require_relative "path_sanity"
+require "shellwords" unless defined?(Shellwords)
 
 class Chef
   module Mixin
@@ -159,7 +160,7 @@ class Chef
 
       def self.shell_out_command(*args, **options)
         if Chef::Config.target_mode?
-          FakeShellOut.new(args, options, transport_connection.run_command(args.join(" "))) # FIXME FIXME FIXME: join here is horrible
+          FakeShellOut.new(args, options, transport_connection.run_command(Shellwords.join(" "))) # FIXME: train should accept run_command(*args)
         else
           cmd = if options.empty?
                   Mixlib::ShellOut.new(*args)
