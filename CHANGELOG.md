@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.311 -->
-## [v15.0.311](https://github.com/chef/chef/tree/v15.0.311) (2019-05-24)
+<!-- latest_release 15.0.312 -->
+## [v15.0.312](https://github.com/chef/chef/tree/v15.0.312) (2019-05-24)
 
 #### Merged Pull Requests
-- make which/where be target-mode aware [#8588](https://github.com/chef/chef/pull/8588) ([lamont-granquist](https://github.com/lamont-granquist))
+- launchd: add launch_events property [#8582](https://github.com/chef/chef/pull/8582) ([chilcote](https://github.com/chilcote))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- launchd: add launch_events property [#8582](https://github.com/chef/chef/pull/8582) ([chilcote](https://github.com/chilcote)) <!-- 15.0.312 -->
 - make which/where be target-mode aware [#8588](https://github.com/chef/chef/pull/8588) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.311 -->
 - Fix for knife bootstrap inheritance issue with knife plugins [#8585](https://github.com/chef/chef/pull/8585) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.310 -->
 - Preserve train connection in target mode to prevent running duplicate OS detection commands [#8590](https://github.com/chef/chef/pull/8590) ([btm](https://github.com/btm)) <!-- 15.0.309 -->
