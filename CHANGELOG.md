@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.316 -->
-## [v15.0.316](https://github.com/chef/chef/tree/v15.0.316) (2019-05-24)
+<!-- latest_release 15.0.317 -->
+## [v15.0.317](https://github.com/chef/chef/tree/v15.0.317) (2019-05-24)
 
 #### Merged Pull Requests
-- Use Shellwords.join in target-mode shell_out [#8594](https://github.com/chef/chef/pull/8594) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix shellout require idempotency and bump gems [#8595](https://github.com/chef/chef/pull/8595) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- fix shellout require idempotency and bump gems [#8595](https://github.com/chef/chef/pull/8595) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.317 -->
 - Use Shellwords.join in target-mode shell_out [#8594](https://github.com/chef/chef/pull/8594) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.316 -->
 - Chef-15: Add missing deprecated options [#8573](https://github.com/chef/chef/pull/8573) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.315 -->
 - Add introduced field to launch_events in launchd [#8592](https://github.com/chef/chef/pull/8592) ([tas50](https://github.com/tas50)) <!-- 15.0.314 -->
