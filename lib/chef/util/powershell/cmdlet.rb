@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "mixlib/shellout" unless defined?(Mixlib::ShellOut)
+require "mixlib/shellout" unless defined?(Mixlib::ShellOut::DEFAULT_READ_TIMEOUT)
 require_relative "../../mixin/windows_architecture_helper"
 require_relative "cmdlet_result"
 

@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "mixlib/shellout" unless defined?(Mixlib::ShellOut)
+require "mixlib/shellout" unless defined?(Mixlib::ShellOut::DEFAULT_READ_TIMEOUT)
 require_relative "path_sanity"
 require "shellwords" unless defined?(Shellwords)
 

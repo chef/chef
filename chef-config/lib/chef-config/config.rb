@@ -28,7 +28,7 @@ require_relative "windows"
 require_relative "path_helper"
 require_relative "mixin/fuzzy_hostname_matcher"
 
-require "mixlib/shellout" unless defined?(Mixlib::ShellOut)
+require "mixlib/shellout" unless defined?(Mixlib::ShellOut::DEFAULT_READ_TIMEOUT)
 require "uri" unless defined?(URI)
 require "addressable/uri" unless defined?(Addressable::URI)
 require "openssl" unless defined?(OpenSSL)
