@@ -24,6 +24,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class RubyBlock < Chef::Resource
+      provides :ruby_block, target_mode: true
+
       description "Use the ruby_block resource to execute Ruby code during a #{Chef::Dist::CLIENT} run."\
                   " Ruby code in the ruby_block resource is evaluated with other resources during"\
                   " convergence, whereas Ruby code outside of a ruby_block resource is evaluated"\

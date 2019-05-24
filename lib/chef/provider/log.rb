@@ -21,7 +21,7 @@ class Chef
     class Log
       # Chef log provider, allows logging to chef's logs
       class ChefLog < Chef::Provider
-        provides :log
+        provides :log, target_mode: true
 
         # No concept of a 'current' resource for logs, this is a no-op
         #
