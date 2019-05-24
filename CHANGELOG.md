@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.12.11 -->
-## [v14.12.11](https://github.com/chef/chef/tree/v14.12.11) (2019-05-24)
+<!-- latest_release 14.12.12 -->
+## [v14.12.12](https://github.com/chef/chef/tree/v14.12.12) (2019-05-24)
 
 #### Merged Pull Requests
-- Remove resource collision deprecations [#8511](https://github.com/chef/chef/pull/8511) ([tas50](https://github.com/tas50))
+- Fix service enable idempotency in sles11 (#8256) [#8587](https://github.com/chef/chef/pull/8587) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.12.9 -->
 ### Changes since 14.12.9 release
 
 #### Merged Pull Requests
+- Fix service enable idempotency in sles11 (#8256) [#8587](https://github.com/chef/chef/pull/8587) ([btm](https://github.com/btm)) <!-- 14.12.12 -->
 - Remove resource collision deprecations [#8511](https://github.com/chef/chef/pull/8511) ([tas50](https://github.com/tas50)) <!-- 14.12.11 -->
 - Add chef-14 update_version script [#8565](https://github.com/chef/chef/pull/8565) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.12.10 -->
 <!-- release_rollup -->
