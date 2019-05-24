@@ -30,7 +30,6 @@ class Chef
         require_relative "../exceptions"
         require_relative "../search/query"
         require_relative "../util/path_helper"
-        require "mixlib/shellout" unless defined?(Mixlib::ShellOut)
       end
 
       include Chef::Mixin::ShellOut
