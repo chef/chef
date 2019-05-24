@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.306 -->
-## [v15.0.306](https://github.com/chef/chef/tree/v15.0.306) (2019-05-23)
+<!-- latest_release 15.0.307 -->
+## [v15.0.307](https://github.com/chef/chef/tree/v15.0.307) (2019-05-24)
 
 #### Merged Pull Requests
-- Fix delete_resource for resources [#8570](https://github.com/chef/chef/pull/8570) ([artem-sidorenko](https://github.com/artem-sidorenko))
+- Fix service enable idempotency in sles11 [#8256](https://github.com/chef/chef/pull/8256) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Fix service enable idempotency in sles11 [#8256](https://github.com/chef/chef/pull/8256) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.307 -->
 - Fix delete_resource for resources [#8570](https://github.com/chef/chef/pull/8570) ([artem-sidorenko](https://github.com/artem-sidorenko)) <!-- 15.0.306 -->
 - Gate requires with idempotency check [#8544](https://github.com/chef/chef/pull/8544) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.305 -->
 - Better target mode no-creds errors [#8571](https://github.com/chef/chef/pull/8571) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.304 -->
