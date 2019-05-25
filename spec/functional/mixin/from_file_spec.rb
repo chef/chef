@@ -21,6 +21,7 @@ describe Chef::Mixin::FromFile do
   REAL_DATA = File.join(CHEF_SPEC_DATA, "mixin", "real_data.rb")
   INVALID_DATA = File.join(CHEF_SPEC_DATA, "mixin", "invalid_data.rb")
   NO_DATA = File.join(CHEF_SPEC_DATA, "mixin", "non_existant_data.rb")
+  DIRECTORY = File.expand_path("")
 
   class TestData
     include Chef::Mixin::FromFile
@@ -77,6 +78,16 @@ describe Chef::Mixin::FromFile do
     it "should fail on nonexistant data" do
       datum = TestData.new
       expect { datum.from_file(NO_DATA) }.to raise_error(IOError)
+    end
+
+    it "should fail if it's a directory not a file" do
+      datum = TestData.new
+      expect { datum.from_file(DIRECTORY) }.to raise_error(IOError)
+    end
+
+    it "should fail class if it's a directory not a file" do
+      datum = ClassTestData
+      expect { datum.from_file(DIRECTORY) }.to raise_error(IOError)
     end
   end
 end

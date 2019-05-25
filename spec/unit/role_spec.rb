@@ -268,8 +268,9 @@ describe Chef::Role do
     it "should return a Chef::Role object from a Ruby DSL" do
       expect(Dir).to receive(:glob).and_return(["#{Chef::Config[:role_path]}/memes", "#{Chef::Config[:role_path]}/memes/lolcat.rb"])
       rb_path = File.join(Chef::Config[:role_path], "memes/lolcat.rb")
-      expect(File).to receive(:exists?).with(rb_path).exactly(2).times.and_return(true)
+      expect(File).to receive(:exists?).with(rb_path).exactly(1).times.and_return(true)
       expect(File).to receive(:readable?).with(rb_path).exactly(1).times.and_return(true)
+      expect(File).to receive(:file?).with(rb_path).exactly(1).times.and_return(true)
       expect(IO).to receive(:read).with(rb_path).and_return(ROLE_DSL)
       expect(@role).to be_a_kind_of(Chef::Role)
       @role.class.from_disk("lolcat")
@@ -331,8 +332,9 @@ describe Chef::Role do
 
     it "should return a Chef::Role object from a Ruby DSL" do
       expect(Dir).to receive(:glob).with(File.join("/path1", "**", "**")).exactly(1).times.and_return(["/path1/lolcat.rb"])
-      expect(File).to receive(:exists?).with("/path1/lolcat.rb").exactly(2).times.and_return(true)
+      expect(File).to receive(:exists?).with("/path1/lolcat.rb").exactly(1).times.and_return(true)
       expect(File).to receive(:readable?).with("/path1/lolcat.rb").and_return(true)
+      expect(File).to receive(:file?).with("/path1/lolcat.rb").and_return(true)
       expect(IO).to receive(:read).with("/path1/lolcat.rb").exactly(1).times.and_return(ROLE_DSL)
       expect(@role).to be_a_kind_of(Chef::Role)
       @role.class.from_disk("lolcat")
@@ -341,8 +343,9 @@ describe Chef::Role do
     it "should return a Chef::Role object from a Ruby DSL when role is in the second path" do
       expect(Dir).to receive(:glob).with(File.join("/path1", "**", "**")).exactly(1).times.and_return([])
       expect(Dir).to receive(:glob).with(File.join("/path/path2", "**", "**")).exactly(1).times.and_return(["/path/path2/lolcat.rb"])
-      expect(File).to receive(:exists?).with("/path/path2/lolcat.rb").exactly(2).times.and_return(true)
+      expect(File).to receive(:exists?).with("/path/path2/lolcat.rb").exactly(1).times.and_return(true)
       expect(File).to receive(:readable?).with("/path/path2/lolcat.rb").and_return(true)
+      expect(File).to receive(:file?).with("/path/path2/lolcat.rb").and_return(true)
       expect(IO).to receive(:read).with("/path/path2/lolcat.rb").exactly(1).times.and_return(ROLE_DSL)
       expect(@role).to be_a_kind_of(Chef::Role)
       @role.class.from_disk("lolcat")

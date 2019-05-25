@@ -403,8 +403,9 @@ describe Chef::Environment do
       it "should get the environment from the environment_path" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
         expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(false)
-        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).exactly(2).times.and_return(true)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).exactly(1).times.and_return(true)
         expect(File).to receive(:readable?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(true)
+        expect(File).to receive(:file?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(true)
         role_dsl = "name \"foo\"\ndescription \"desc\"\n"
         expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(role_dsl)
         Chef::Environment.load("foo")
@@ -436,8 +437,9 @@ describe Chef::Environment do
       it "should return a Chef::Environment object from Ruby DSL" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
         expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(false)
-        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).exactly(2).times.and_return(true)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).exactly(1).times.and_return(true)
         expect(File).to receive(:readable?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(true)
+        expect(File).to receive(:file?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(true)
         role_dsl = "name \"foo\"\ndescription \"desc\"\n"
         expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(role_dsl)
         environment = Chef::Environment.load("foo")

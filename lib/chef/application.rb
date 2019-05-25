@@ -155,10 +155,16 @@ class Chef
       Chef::Application.fatal!(e.message)
     end
 
+    # Set the specific recipes to Chef::Config if the recipes are valid
+    # otherwise log a fatal error message and exit the application.
     def set_specific_recipes
-      if cli_arguments.respond_to?(:map)
+      if cli_arguments.is_a?(Array) &&
+          (cli_arguments.empty? || cli_arguments.all? { |file| File.file?(file) } )
         chef_config[:specific_recipes] =
           cli_arguments.map { |file| File.expand_path(file) }
+      else
+        Chef::Application.fatal!("Invalid arguments are not supported by the chef-client: \"" +
+          cli_arguments.select { |file| !File.file?(file) }.join('", "') + '"')
       end
     end
 
