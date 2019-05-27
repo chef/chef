@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.318 -->
-## [v15.0.318](https://github.com/chef/chef/tree/v15.0.318) (2019-05-25)
+<!-- latest_release 15.0.319 -->
+## [v15.0.319](https://github.com/chef/chef/tree/v15.0.319) (2019-05-27)
 
 #### Merged Pull Requests
-- Fixed issue for chef-client run was throwing error when provided empty string with it [#8200](https://github.com/chef/chef/pull/8200) ([vinay033](https://github.com/vinay033))
+- Enable target mode on ruby_block, log and breakpoint [#8593](https://github.com/chef/chef/pull/8593) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Enable target mode on ruby_block, log and breakpoint [#8593](https://github.com/chef/chef/pull/8593) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.319 -->
 - Fixed issue for chef-client run was throwing error when provided empty string with it [#8200](https://github.com/chef/chef/pull/8200) ([vinay033](https://github.com/vinay033)) <!-- 15.0.318 -->
 - fix shellout require idempotency and bump gems [#8595](https://github.com/chef/chef/pull/8595) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.317 -->
 - Use Shellwords.join in target-mode shell_out [#8594](https://github.com/chef/chef/pull/8594) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.316 -->
