@@ -20,7 +20,7 @@
 class Chef
   class Provider
     class RubyBlock < Chef::Provider
-      provides :ruby_block
+      provides :ruby_block, target_mode: true
 
       def load_current_resource
         true

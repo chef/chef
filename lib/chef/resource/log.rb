@@ -30,6 +30,7 @@ class Chef
     #   end
     class Log < Chef::Resource
       resource_name :log
+      provides :log, target_mode: true
 
       description "Use the log resource to create log entries. The log resource behaves"\
                   " like any other resource: built into the resource collection during the"\
