@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.322 -->
-## [v15.0.322](https://github.com/chef/chef/tree/v15.0.322) (2019-05-28)
+<!-- latest_release 15.0.323 -->
+## [v15.0.323](https://github.com/chef/chef/tree/v15.0.323) (2019-05-28)
 
 #### Merged Pull Requests
-- Improving error handling for template render [#8562](https://github.com/chef/chef/pull/8562) ([brodock](https://github.com/brodock))
+- Add new chocolatey_feature resource for managing features in Chocolatey [#8581](https://github.com/chef/chef/pull/8581) ([gep13](https://github.com/gep13))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Add new chocolatey_feature resource for managing features in Chocolatey [#8581](https://github.com/chef/chef/pull/8581) ([gep13](https://github.com/gep13)) <!-- 15.0.323 -->
 - Improving error handling for template render [#8562](https://github.com/chef/chef/pull/8562) ([brodock](https://github.com/brodock)) <!-- 15.0.322 -->
 - Chef 15: Fix ssh user set from cli [#8558](https://github.com/chef/chef/pull/8558) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.321 -->
 - Add distro constants for solo, zero and automate [#8460](https://github.com/chef/chef/pull/8460) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.320 -->
