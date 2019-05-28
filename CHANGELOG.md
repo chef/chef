@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.319 -->
-## [v15.0.319](https://github.com/chef/chef/tree/v15.0.319) (2019-05-27)
+<!-- latest_release 15.0.320 -->
+## [v15.0.320](https://github.com/chef/chef/tree/v15.0.320) (2019-05-28)
 
 #### Merged Pull Requests
-- Enable target mode on ruby_block, log and breakpoint [#8593](https://github.com/chef/chef/pull/8593) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add distro constants for solo, zero and automate [#8460](https://github.com/chef/chef/pull/8460) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Add distro constants for solo, zero and automate [#8460](https://github.com/chef/chef/pull/8460) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.320 -->
 - Enable target mode on ruby_block, log and breakpoint [#8593](https://github.com/chef/chef/pull/8593) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.319 -->
 - Fixed issue for chef-client run was throwing error when provided empty string with it [#8200](https://github.com/chef/chef/pull/8200) ([vinay033](https://github.com/vinay033)) <!-- 15.0.318 -->
 - fix shellout require idempotency and bump gems [#8595](https://github.com/chef/chef/pull/8595) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.317 -->
