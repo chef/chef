@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2019, Chef Software, Inc.
+# Copyright:: Copyright 2019-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,13 +57,12 @@ describe Chef::Resource::ChocolateyFeature do
     expect(resource.feature_name).to eql("fakey_fakerton")
   end
 
-  it "sets the default action as :enable" do
-    expect(resource.action).to eql([:enable])
+  it "sets the default action as :set" do
+    expect(resource.action).to eql([:set])
   end
 
-  it "supports :enable and :disable actions" do
-    expect { resource.action :enable }.not_to raise_error
-    expect { resource.action :disable }.not_to raise_error
+  it "supports :set action" do
+    expect { resource.action :set }.not_to raise_error
   end
 
   describe "#fetch_feature_element" do

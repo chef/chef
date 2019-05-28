@@ -1,5 +1,5 @@
 #
-# Copyright:: 2019, Chef Software, Inc.
+# Copyright:: 2019-2019, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,44 +25,40 @@ class Chef
       property :feature_name, String, name_property: true,
                description: "The name of the Chocolatey feature to enable or disable."
 
-      property :feature_state, [TrueClass, FalseClass], default: false
+      property :state, [:enabled, :disabled], required: true
 
       load_current_value do
         current_state = fetch_feature_element(feature_name)
         current_value_does_not_exist! if current_state.nil?
 
         feature_name feature_name
-        feature_state current_state == "true"
+        state current_state == "true" ? :enabled : :disabled
       end
 
       # @param [String] id the feature name
       # @return [String] the element's value field
       def fetch_feature_element(name)
-        require "rexml/document" unless defined?(REXML::Document)
+        require "rexml/document" unless defined?(::REXML::Document)
         config_file = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\config\\chocolatey.config"
         raise "Could not find the Chocolatey config at #{config_file}!" unless ::File.exist?(config_file)
 
-        contents = REXML::Document.new(::File.read(config_file))
-        data = REXML::XPath.first(contents, "//features/feature[@name=\"#{name}\"]")
+        contents = ::REXML::Document.new(::File.read(config_file))
+        data = ::REXML::XPath.first(contents, "//features/feature[@name=\"#{name}\"]")
         data ? data.attribute("enabled").to_s : nil # REXML just returns nil if it can't find anything so avoid an undefined method error
       end
 
-      action :enable do
-        description "Enables a named Chocolatey feature."
+      action :set do
+        description "Sets a feature to the required state."
 
-        if current_resource.feature_state != true
-          converge_by("enable Chocolatey feature '#{new_resource.feature_name}'") do
-            shell_out!(choco_cmd("enable"))
-          end
-        end
-      end
-
-      action :disable do
-        description "Disables a named Chocolatey feature."
-
-        if current_resource.feature_state == true
-          converge_by("disable Chocolatey feature '#{new_resource.feature_name}'") do
-            shell_out!(choco_cmd("disable"))
+        if current_resource.state != new_resource.state
+          if new_resource.state == :enabled
+            converge_by("enable Chocolatey feature '#{new_resource.feature_name}'") do
+              shell_out!(choco_cmd("enable"))
+            end
+          else
+            converge_by("disable Chocolatey feature '#{new_resource.feature_name}'") do
+              shell_out!(choco_cmd("disable"))
+            end
           end
         end
       end
