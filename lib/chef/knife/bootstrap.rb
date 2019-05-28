@@ -1001,8 +1001,8 @@ class Chef
           config[key]
         else
           lookup_key = knife_config_key || key
-          if Chef::Config[:knife].key?(lookup_key)
-            Chef::Config[:knife][lookup_key]
+          if Chef::Config[:knife].key?(lookup_key) || config.key?(lookup_key)
+            Chef::Config[:knife][lookup_key] || config[lookup_key]
           else
             default
           end
