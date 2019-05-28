@@ -1,6 +1,7 @@
 require "spec_helper"
 require "chef/cookbook/synchronizer"
 require "chef/cookbook_version"
+require "chef/dist"
 
 describe Chef::CookbookCacheCleaner do
   describe "when cleaning up unused cookbook components" do
@@ -49,7 +50,7 @@ describe Chef::CookbookCacheCleaner do
       cleaner.cleanup_file_cache
     end
 
-    it "does not remove anything on chef-solo" do
+    it "does not remove anything on #{Chef::Dist::SOLOEXEC}" do
       Chef::Config[:solo_legacy_mode] = true
       allow(cleaner.cache).to receive(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
       expect(cleaner.cache).not_to receive(:delete)

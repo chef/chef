@@ -19,12 +19,13 @@ require File.expand_path("../../spec_helper", __FILE__)
 require "chef/mixin/shell_out"
 require "chef/version"
 require "ohai/version"
+require "chef/dist"
 
 describe "Chef Versions" do
   include Chef::Mixin::ShellOut
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..") }
 
-  binaries = [ "chef-client", "chef-shell", "chef-apply", "knife", "chef-solo" ]
+  binaries = [ Chef::Dist::CLIENT, "chef-shell", "chef-apply", "knife", Chef::Dist::SOLOEXEC ]
 
   binaries.each do |binary|
     it "#{binary} version should be sane" do

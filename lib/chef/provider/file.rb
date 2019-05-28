@@ -230,7 +230,7 @@ class Chef
         elsif file_class.symlink?(new_resource.path) && new_resource.manage_symlink_source.nil?
           logger.warn("File #{path} managed by #{new_resource} is really a symlink (to #{file_class.realpath(new_resource.path)}). Managing the source file instead.")
           logger.warn("Disable this warning by setting `manage_symlink_source true` on the resource")
-          logger.warn("In a future Chef release, 'manage_symlink_source' will not be enabled by default")
+          logger.warn("In a future release, 'manage_symlink_source' will not be enabled by default")
           verify_symlink_sanity(path)
         elsif new_resource.force_unlink
           [nil, nil, nil]

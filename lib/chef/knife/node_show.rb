@@ -18,6 +18,7 @@
 
 require_relative "../knife"
 require_relative "core/node_presenter"
+require_relative "../dist"
 
 class Chef
   class Knife
@@ -41,7 +42,7 @@ class Chef
       option :environment,
         short: "-E",
         long: "--environment",
-        description: "Show only the Chef environment."
+        description: "Show only the #{Chef::Dist::PRODUCT} environment."
 
       def run
         ui.use_presenter Knife::Core::NodePresenter

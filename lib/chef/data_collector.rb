@@ -192,7 +192,7 @@ class Chef
           raise
         else
           # Make the message non-scary for folks who don't have automate:
-          msg << " (This is normal if you do not have Chef Automate)"
+          msg << " (This is normal if you do not have #{Chef::Dist::AUTOMATE})"
           Chef::Log.info(msg)
         end
       end
@@ -312,7 +312,7 @@ class Chef
           return true
         when running_mode == :solo && !Chef::Config[:data_collector][:token]
           # we are in solo mode and are not logging to a file, so must have a token
-          Chef::Log.trace("Data collector token must be configured to use Chef Automate data collector with #{Chef::Dist::PRODUCT} Solo")
+          Chef::Log.trace("Data collector token must be configured to use #{Chef::Dist::AUTOMATE} data collector with #{Chef::Dist::SOLO}")
           return false
         else
           return true

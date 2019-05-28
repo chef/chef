@@ -22,6 +22,7 @@ require_relative "../package"
 require_relative "../../resource/package"
 require_relative "../../mixin/get_source_from_package"
 require_relative "../../mixin/which"
+require_relative "../../dist"
 
 # Class methods on Gem are defined in rubygems
 require "rubygems" unless defined?(Gem)
@@ -400,8 +401,8 @@ class Chef
             if new_resource.options && new_resource.options.is_a?(Hash)
               msg = [
                 "Gem options must be passed to gem_package as a string instead of a hash when",
-                "using this installation of Chef because it runs with its own packaged Ruby. A hash",
-                "may only be used when installing a gem to the same Ruby installation that Chef is",
+                "using this installation of #{Chef::Dist::PRODUCT} because it runs with its own packaged Ruby. A hash",
+                "may only be used when installing a gem to the same Ruby installation that #{Chef::Dist::PRODUCT} is",
                 "running under.  See https://docs.chef.io/resource_gem_package.html for more information.",
                 "Error raised at #{new_resource} from #{new_resource.source_line}",
               ].join("\n")

@@ -124,7 +124,7 @@ class Chef::Application::Solo < Chef::Application
 
   option :lockfile,
     long: "--lockfile LOCKFILE",
-    description: "Set the lockfile location. Prevents multiple solo processes from converging at the same time.",
+    description: "Set the lockfile location. Prevents multiple #{Chef::Dist::SOLO} processes from converging at the same time.",
     proc: nil
 
   option :interval,
@@ -213,7 +213,7 @@ class Chef::Application::Solo < Chef::Application
 
   option :solo_legacy_mode,
     long: "--legacy-mode",
-    description: "Run chef-solo in legacy mode.",
+    description: "Run #{Chef::Dist::SOLO} in legacy mode.",
     boolean: true
 
   attr_reader :chef_client_json

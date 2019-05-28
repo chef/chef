@@ -301,7 +301,7 @@ class Chef
 
       def client_run_failure(exception)
         set_backtrace(exception.backtrace)
-        @all_failures << [ "chef run", exception ]
+        @all_failures << [ "#{Chef::Dist::PRODUCT} run", exception ]
       end
 
       def notification_failure(exception)

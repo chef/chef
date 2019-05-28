@@ -16,6 +16,7 @@
 #
 
 require_relative "../resource"
+require_relative "../dist"
 
 class Chef
   class Resource
@@ -23,7 +24,7 @@ class Chef
       resource_name :chef_handler
       provides(:chef_handler) { true }
 
-      description "Use the chef_handler resource to install or uninstall Chef reporting/exception handlers."
+      description "Use the chef_handler resource to install or uninstall reporting/exception handlers."
       introduced "14.0"
 
       property :class_name, String,
@@ -38,7 +39,7 @@ class Chef
                default: lazy { [] }
 
       property :type, Hash,
-               description: "The type of Chef Handler to register as, i.e. :report, :exception or both.",
+               description: "The type of handler to register as, i.e. :report, :exception or both.",
                default: { report: true, exception: true }
 
       # supports means a different thing in chef-land so we renamed it but
@@ -48,7 +49,7 @@ class Chef
       # This action needs to find an rb file that presumably contains the indicated class in it and the
       # load that file. It then instantiates that class by name and registers it as a handler.
       action :enable do
-        description "Enables the Chef handler for the current Chef run on the current node"
+        description "Enables the handler for the current #{Chef::Dist::PRODUCT} run on the current node"
 
         class_name = new_resource.class_name
         new_resource.type.each do |type, enable|
@@ -71,7 +72,7 @@ class Chef
       end
 
       action :disable do
-        description "Disables the Chef handler for the current Chef run on the current node"
+        description "Disables the handler for the current #{Chef::Dist::PRODUCT} run on the current node"
 
         new_resource.type.each_key do |type|
           unregister_handler(type, new_resource.class_name)

@@ -248,7 +248,7 @@ module Shell
     option :solo_shell,
       short: "-s",
       long: "--solo",
-      description: "chef-solo session",
+      description: "#{Chef::Dist::SOLO} session",
       boolean: true,
       proc: proc { Chef::Config[:solo] = true }
 
@@ -260,7 +260,7 @@ module Shell
 
     option :solo_legacy_shell,
       long: "--solo-legacy-mode",
-      description: "chef-solo legacy session",
+      description: "#{Chef::Dist::SOLO} legacy session",
       boolean: true,
       proc: proc { Chef::Config[:solo_legacy_mode] = true }
 

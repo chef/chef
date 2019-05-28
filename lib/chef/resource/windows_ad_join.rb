@@ -17,6 +17,7 @@
 
 require_relative "../resource"
 require_relative "../mixin/powershell_out"
+require_relative "../dist"
 
 class Chef
   class Resource
@@ -48,8 +49,8 @@ class Chef
 
       property :reboot, Symbol,
                equal_to: [:immediate, :delayed, :never, :request_reboot, :reboot_now],
-               validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the Chef run completes), and :never (Don't reboot)",
-               description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the Chef run completes, or never. Note that a reboot is necessary for changes to take effect.",
+               validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the #{Chef::Dist::PRODUCT} run completes), and :never (Don't reboot)",
+               description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the #{Chef::Dist::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
                default: :immediate
 
       property :new_hostname, String,

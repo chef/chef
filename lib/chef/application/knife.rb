@@ -124,11 +124,11 @@ class Chef::Application::Knife < Chef::Application
 
   option :chef_zero_host,
     long: "--chef-zero-host HOST",
-    description: "Host to start chef-zero on."
+    description: "Host to start #{Chef::Dist::ZERO} on."
 
   option :chef_zero_port,
     long: "--chef-zero-port PORT",
-    description: "Port (or port range) to start chef-zero on. Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
+    description: "Port (or port range) to start #{Chef::Dist::ZERO} on. Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
 
   option :listen,
     long: "--[no-]listen",
