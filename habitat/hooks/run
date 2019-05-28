@@ -3,4 +3,10 @@ exec 2>&1
 
 export SSL_CERT_FILE="{{pkgPathFor "core/cacerts"}}/ssl/cert.pem"
 
-exec chef-solo --fork -c {{pkg.svc_config_path}}/client.rb
+if [[ -z "{{cfg.config_path}}" ]]; then
+  CLIENT_CONFIG="{{pkg.svc_config_path}}/client.rb"
+else
+  CLIENT_CONFIG="{{cfg.config_path}}/client.rb"
+fi
+
+exec chef-client --fork -c ${CLIENT_CONFIG}/client.rb --chef-license {{cfg.chef_license}}
