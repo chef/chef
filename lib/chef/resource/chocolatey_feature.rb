@@ -25,7 +25,7 @@ class Chef
       property :feature_name, String, name_property: true,
                description: "The name of the Chocolatey feature to enable or disable."
 
-      property :feature_state, [TrueClass, FalseClass], default: false
+      property :feature_state, [TrueClass, FalseClass], default: false, desired_state: false, skip_docs: true
 
       load_current_value do
         current_state = fetch_feature_element(feature_name)
