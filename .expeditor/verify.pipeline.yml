@@ -7,9 +7,6 @@ steps:
 - label: "Integration Specs :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    # - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-    # - echo "::1 ip6-localhost ip6-loopback" >> /etc/hosts.noip6
-    # - cp /etc/hosts.noip6 /etc/hosts
     - cd /workdir; bundle install --without docgen integration omnibus_package --frozen --path vendor/bundle
     - bundle exec rake spec:integration
   expeditor:
@@ -25,9 +22,6 @@ steps:
 - label: "Functional Specs :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-    - echo "::1 ip6-localhost ip6-loopback" >> /etc/hosts.noip6
-    - cp /etc/hosts.noip6 /etc/hosts
     - cd /workdir; bundle install --without docgen integration omnibus_package --frozen --path vendor/bundle
     - bundle exec rake spec:functional
   expeditor:
@@ -129,9 +123,6 @@ steps:
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
     - asdf local ruby 2.5.5
-    - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-    - echo "::1 ip6-localhost ip6-loopback" >> /etc/hosts.noip6
-    - cp /etc/hosts.noip6 /etc/hosts
     - bundle install --without docgen integration omnibus_package --frozen
     - bundle exec rake spec:integration
   expeditor:
@@ -147,9 +138,6 @@ steps:
   commands:
     - asdf local ruby 2.5.5
     - /workdir/scripts/bk_tests/bk_install.sh
-    - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-    - echo "::1 ip6-localhost ip6-loopback" >> /etc/hosts.noip6
-    - cp /etc/hosts.noip6 /etc/hosts
     - bundle install --without docgen integration omnibus_package --frozen
     - bundle exec rake spec:functional
   expeditor:
