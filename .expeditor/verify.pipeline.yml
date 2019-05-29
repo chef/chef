@@ -9,7 +9,7 @@ steps:
 #     - /workdir/scripts/bk_tests/bk_install.sh
 #     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
 #     - cp /etc/hosts.noip6 /etc/hosts
-#     - cd /workdir; bundle install --without docgen integration omnibus_package --frozen
+#     - cd /workdir; bundle install --without ci docgen guard integration omnibus_package --frozen
 #     - bundle exec rake spec:integration
 #   expeditor:
 #     executor:
@@ -25,7 +25,7 @@ steps:
 #     - /workdir/scripts/bk_tests/bk_install.sh
 #     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
 #     - cp /etc/hosts.noip6 /etc/hosts
-#     - cd /workdir; bundle install --without docgen integration omnibus_package --frozen
+#     - cd /workdir; bundle install --without ci docgen guard integration omnibus_package --frozen
 #     - bundle exec rake spec:functional
 #   expeditor:
 #     executor:
@@ -38,7 +38,7 @@ steps:
 - label: "Unit Specs :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --without docgen integration omnibus_package --frozen
+    - bundle install --without ci docgen guard integration omnibus_package --frozen
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -127,7 +127,7 @@ steps:
 #     - asdf local ruby 2.5.5
 #     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
 #     - cp /etc/hosts.noip6 /etc/hosts
-#     - bundle install --without docgen integration omnibus_package --frozen
+#     - bundle install --without ci docgen guard integration omnibus_package --frozen
 #     - bundle exec rake spec:integration
 #   expeditor:
 #     executor:
@@ -143,7 +143,7 @@ steps:
 #     - /workdir/scripts/bk_tests/bk_install.sh
 #     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
 #     - cp /etc/hosts.noip6 /etc/hosts
-#     - bundle install --without docgen integration omnibus_package --frozen
+#     - bundle install --without ci docgen guard integration omnibus_package --frozen
 #     - bundle exec rake spec:functional
 #   expeditor:
 #     executor:
@@ -157,7 +157,7 @@ steps:
   commands:
     - asdf local ruby 2.5.5
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --without docgen integration omnibus_package --frozen
+    - bundle install --without ci docgen guard integration omnibus_package --frozen
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:

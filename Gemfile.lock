@@ -190,9 +190,6 @@ GEM
       net-ssh (>= 2.6.5)
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.1.1)
-    netrc (0.11.0)
-    octokit (4.14.0)
-      sawyer (~> 0.8.0, >= 0.5.3)
     ohai (14.8.12)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
@@ -264,9 +261,6 @@ GEM
     ruby-shadow (2.5.0)
     rubyzip (1.2.3)
     safe_yaml (1.0.5)
-    sawyer (0.8.2)
-      addressable (>= 2.3.5)
-      faraday (> 0.8, < 2.0)
     semverse (3.0.0)
     serverspec (2.41.4)
       multi_json
@@ -370,8 +364,6 @@ DEPENDENCIES
   cheffish (~> 14)
   chefstyle (= 0.11.2)
   inspec-core (~> 3)
-  netrc
-  octokit
   pry
   pry-byebug
   pry-remote
@@ -381,7 +373,6 @@ DEPENDENCIES
   ruby-prof
   ruby-shadow
   simplecov
-  tomlrb
   webmock
   yard
 
