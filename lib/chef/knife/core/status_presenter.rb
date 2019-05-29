@@ -100,7 +100,14 @@ class Chef
             fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
             name = node["name"] || node.name
 
-            run_list = (node["run_list"]).to_s if config[:run_list]
+            if config[:run_list]
+              if config[:long_output]
+                run_list = node.run_list.map { |rl| "#{rl.type}[#{rl.name}]" }
+              else
+                run_list = node["run_list"]
+              end
+            end
+
             line_parts = Array.new
 
             if node["ohai_time"]
@@ -128,7 +135,7 @@ class Chef
 
             line_parts << fqdn if fqdn
             line_parts << ip if ip
-            line_parts << run_list if run_list
+            line_parts << run_list.to_s if run_list
 
             if node["platform"]
               platform = node["platform"].dup
