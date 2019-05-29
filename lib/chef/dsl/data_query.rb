@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,9 @@ require "chef/encrypted_data_bag_item/check_encrypted"
 class Chef
   module DSL
 
-    # ==Chef::DSL::DataQuery
-    # Provides DSL for querying data from the chef-server via search or data
-    # bag.
+    # Provides DSL helper methods for querying the search interface, data bag
+    # interface or node interface.
+    #
     module DataQuery
       include Chef::EncryptedDataBagItem::CheckEncrypted
 
@@ -78,6 +78,24 @@ class Chef
       rescue Exception
         Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
         raise
+      end
+
+      #
+      # Note that this is mixed into the Universal DSL so access to the node needs to be done
+      # through the run_context and not accessing the node method directly, since the node method
+      # is not as universal as the run_context.
+      #
+
+      # True if all the tags are set on the node.
+      #
+      # @param [Array<String>] tags to check against
+      # @return boolean
+      #
+      def tagged?(*tags)
+        tags.each do |tag|
+          return false unless run_context.node.tags.include?(tag)
+        end
+        true
       end
 
     end
