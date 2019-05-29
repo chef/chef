@@ -17,11 +17,14 @@
 #
 
 require_relative "../chef_class"
+require_relative "../mixin/train_helpers"
 
 class Chef
   class Platform
     class ServiceHelpers
       class << self
+        include Chef::Mixin::TrainHelpers
+
         # This helper is mostly used to sort out the mess of different
         # linux mechanisms that can be used to start services.  It does
         # not necessarily need to linux-specific, but currently all our
@@ -38,19 +41,19 @@ class Chef
         def service_resource_providers
           providers = []
 
-          if ::File.exist?(Chef.path_to("/usr/sbin/update-rc.d"))
+          if file_exist?(Chef.path_to("/usr/sbin/update-rc.d"))
             providers << :debian
           end
 
-          if ::File.exist?(Chef.path_to("/usr/sbin/invoke-rc.d"))
+          if file_exist?(Chef.path_to("/usr/sbin/invoke-rc.d"))
             providers << :invokercd
           end
 
-          if ::File.exist?(Chef.path_to("/sbin/initctl"))
+          if file_exist?(Chef.path_to("/sbin/initctl"))
             providers << :upstart
           end
 
-          if ::File.exist?(Chef.path_to("/sbin/insserv"))
+          if file_exist?(Chef.path_to("/sbin/insserv"))
             providers << :insserv
           end
 
@@ -58,7 +61,7 @@ class Chef
             providers << :systemd
           end
 
-          if ::File.exist?(Chef.path_to("/sbin/chkconfig"))
+          if file_exist?(Chef.path_to("/sbin/chkconfig"))
             providers << :redhat
           end
 
@@ -68,23 +71,23 @@ class Chef
         def config_for_service(service_name)
           configs = []
 
-          if ::File.exist?(Chef.path_to("/etc/init.d/#{service_name}"))
+          if file_exist?(Chef.path_to("/etc/init.d/#{service_name}"))
             configs += [ :initd, :systemd ]
           end
 
-          if ::File.exist?(Chef.path_to("/etc/init/#{service_name}.conf"))
+          if file_exist?(Chef.path_to("/etc/init/#{service_name}.conf"))
             configs << :upstart
           end
 
-          if ::File.exist?(Chef.path_to("/etc/xinetd.d/#{service_name}"))
+          if file_exist?(Chef.path_to("/etc/xinetd.d/#{service_name}"))
             configs << :xinetd
           end
 
-          if ::File.exist?(Chef.path_to("/etc/rc.d/#{service_name}"))
+          if file_exist?(Chef.path_to("/etc/rc.d/#{service_name}"))
             configs << :etc_rcd
           end
 
-          if ::File.exist?(Chef.path_to("/usr/local/etc/rc.d/#{service_name}"))
+          if file_exist?(Chef.path_to("/usr/local/etc/rc.d/#{service_name}"))
             configs << :usr_local_etc_rcd
           end
 
@@ -98,13 +101,13 @@ class Chef
         private
 
         def systemd_is_init?
-          ::File.exist?(Chef.path_to("/proc/1/comm")) &&
-            ::File.open(Chef.path_to("/proc/1/comm")).gets.chomp == "systemd"
+          file_exist?(Chef.path_to("/proc/1/comm")) &&
+            file_open(Chef.path_to("/proc/1/comm")).gets.chomp == "systemd"
         end
 
         def has_systemd_service_unit?(svc_name)
           %w{ /etc /usr/lib /lib /run }.any? do |load_path|
-            ::File.exist?(
+            file_exist?(
               Chef.path_to("#{load_path}/systemd/system/#{svc_name.gsub(/@.*$/, '@')}.service")
             )
           end
@@ -113,7 +116,7 @@ class Chef
         def has_systemd_unit?(svc_name)
           # TODO: stop supporting non-service units with service resource
           %w{ /etc /usr/lib /lib /run }.any? do |load_path|
-            ::File.exist?(Chef.path_to("#{load_path}/systemd/system/#{svc_name}"))
+            file_exist?(Chef.path_to("#{load_path}/systemd/system/#{svc_name}"))
           end
         end
       end

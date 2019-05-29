@@ -24,6 +24,7 @@ require_relative "../dist"
 class Chef
   class Resource
     class Service < Chef::Resource
+      provides :service, target_mode: true
       identity_attr :service_name
 
       description "Use the service resource to manage a service."
