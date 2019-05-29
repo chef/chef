@@ -89,6 +89,14 @@ class Chef
         is_symlink
       end
 
+      def self.realpath(file_name)
+        if symlink?(file_name)
+          readlink(file_name)
+        else
+          file_name
+        end
+      end
+
       # Returns the path of the of the symbolic link referred to by +file+.
       #
       # Requires Windows Vista or later. On older versions of Windows it
