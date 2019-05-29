@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.13.1 -->
-## [v14.13.1](https://github.com/chef/chef/tree/v14.13.1) (2019-05-29)
+<!-- latest_release 14.13.2 -->
+## [v14.13.2](https://github.com/chef/chef/tree/v14.13.2) (2019-05-29)
 
 #### Merged Pull Requests
-- Improving error handling for template render [#8603](https://github.com/chef/chef/pull/8603) ([tas50](https://github.com/tas50))
+- Point people to Learn Chef in the post install message [#8607](https://github.com/chef/chef/pull/8607) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.12.9 -->
 ### Changes since 14.12.9 release
 
 #### Merged Pull Requests
+- Point people to Learn Chef in the post install message [#8607](https://github.com/chef/chef/pull/8607) ([tas50](https://github.com/tas50)) <!-- 14.13.2 -->
 - Improving error handling for template render [#8603](https://github.com/chef/chef/pull/8603) ([tas50](https://github.com/tas50)) <!-- 14.13.1 -->
 - Tell people what file a link is pointing at. [#8604](https://github.com/chef/chef/pull/8604) ([tas50](https://github.com/tas50)) <!-- 14.13.0 -->
 - Fix delete_resource for resources [#8602](https://github.com/chef/chef/pull/8602) ([tas50](https://github.com/tas50)) <!-- 14.12.14 -->
