@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.13.4 -->
-## [v14.13.4](https://github.com/chef/chef/tree/v14.13.4) (2019-05-29)
+<!-- latest_release 14.13.5 -->
+## [v14.13.5](https://github.com/chef/chef/tree/v14.13.5) (2019-05-29)
 
 #### Merged Pull Requests
-- Update a few more knife.rb references to include config.rb [#8608](https://github.com/chef/chef/pull/8608) ([tas50](https://github.com/tas50))
+- Fixed empty value for knife status long output [#8606](https://github.com/chef/chef/pull/8606) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.12.9 -->
 ### Changes since 14.12.9 release
 
 #### Merged Pull Requests
+- Fixed empty value for knife status long output [#8606](https://github.com/chef/chef/pull/8606) ([tas50](https://github.com/tas50)) <!-- 14.13.5 -->
 - Update a few more knife.rb references to include config.rb [#8608](https://github.com/chef/chef/pull/8608) ([tas50](https://github.com/tas50)) <!-- 14.13.4 -->
 -  Remove old maintainer gems from the Gemfile [#8605](https://github.com/chef/chef/pull/8605) ([tas50](https://github.com/tas50)) <!-- 14.13.3 -->
 - Point people to Learn Chef in the post install message [#8607](https://github.com/chef/chef/pull/8607) ([tas50](https://github.com/tas50)) <!-- 14.13.2 -->
