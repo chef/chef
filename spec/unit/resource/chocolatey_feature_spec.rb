@@ -19,7 +19,13 @@ require "spec_helper"
 
 describe Chef::Resource::ChocolateyFeature do
 
-  let(:resource) { Chef::Resource::ChocolateyFeature.new("fakey_fakerton") }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::ChocolateyFeature.new("fakey_fakerton", run_context) }
+  let(:provider) { resource.provider_for_action(:set) }
+  let(:current_resource) { Chef::Resource::ChocolateyFeature.new("fakey_fakerton") }
+
   let(:config) do
     <<-CONFIG
   <?xml version="1.0" encoding="utf-8"?>
@@ -40,6 +46,9 @@ describe Chef::Resource::ChocolateyFeature do
 
   # we save off the ENV and set ALLUSERSPROFILE so these specs will work on *nix and non-C drive Windows installs
   before(:each) do
+    provider # vivify before mocking
+    allow(resource).to receive(:provider_for_action).and_return(provider)
+    allow(resource).to receive(:dup).and_return(current_resource)
     @original_env = ENV.to_hash
     ENV["ALLUSERSPROFILE"] = 'C:\ProgramData'
   end
@@ -83,6 +92,60 @@ describe Chef::Resource::ChocolateyFeature do
       allow(::File).to receive(:read).with('C:\ProgramData\chocolatey\config\chocolatey.config').and_return(config)
       expect(resource.fetch_feature_element("foo")).to be_nil
       expect { resource.fetch_feature_element("foo") }.not_to raise_error
+    end
+  end
+
+  describe "#load_current_resource" do
+    it "sets the state to :enabled when the XML enabled property is true" do
+      allow(current_resource).to receive(:fetch_feature_element).with("fakey_fakerton").and_return("true")
+      provider.load_current_resource
+      expect(current_resource.state).to be :enabled
+    end
+
+    it "sets the state to :disabled when the XML enabled property is false" do
+      allow(current_resource).to receive(:fetch_feature_element).with("fakey_fakerton").and_return("false")
+      provider.load_current_resource
+      expect(current_resource.state).to be :disabled
+    end
+
+    it "sets the current_resource to nil when the property is not present" do
+      allow(current_resource).to receive(:fetch_feature_element).with("fakey_fakerton").and_return(nil)
+      provider.load_current_resource
+      expect(provider.current_resource).to be nil
+    end
+  end
+
+  describe "run_action(:set)" do
+    it "when it is disabled, it enables it correctly" do
+      resource.state :enabled
+      allow(current_resource).to receive(:fetch_feature_element).with("fakey_fakerton").and_return("false")
+      expect(provider).to receive(:shell_out!).with("C:\\ProgramData\\chocolatey\\bin\\choco feature enable --name fakey_fakerton")
+      resource.run_action(:set)
+      expect(resource.updated_by_last_action?).to be true
+    end
+
+    it "when it is enabled, it is idempotent when trying to enable" do
+      resource.state :enabled
+      allow(current_resource).to receive(:fetch_feature_element).with("fakey_fakerton").and_return("true")
+      expect(provider).not_to receive(:shell_out!)
+      resource.run_action(:set)
+      expect(resource.updated_by_last_action?).to be false
+    end
+
+    it "when it is disabled, it is idempotent when trying to disable" do
+      resource.state :disabled
+      allow(current_resource).to receive(:fetch_feature_element).with("fakey_fakerton").and_return("false")
+      expect(provider).not_to receive(:shell_out!)
+      resource.run_action(:set)
+      expect(resource.updated_by_last_action?).to be false
+    end
+
+    it "when it is enabled, it is idempotent when trying to enable" do
+      resource.state :disabled
+      allow(current_resource).to receive(:fetch_feature_element).with("fakey_fakerton").and_return("true")
+      expect(provider).to receive(:shell_out!).with("C:\\ProgramData\\chocolatey\\bin\\choco feature disable --name fakey_fakerton")
+      resource.run_action(:set)
+      expect(resource.updated_by_last_action?).to be true
     end
   end
 end
