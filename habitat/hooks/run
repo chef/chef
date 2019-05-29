@@ -9,4 +9,8 @@ else
   CLIENT_CONFIG="{{cfg.config_path}}"
 fi
 
-exec chef-client --fork -c ${CLIENT_CONFIG}/client.rb --chef-license {{cfg.chef_license}}
+if [[ "${CLIENT_CONFIG##*.}" != "rb" ]]; then
+  CLIENT_CONFIG=${CLIENT_CONFIG}/client.rb
+fi
+
+exec chef-client --fork -c ${CLIENT_CONFIG} --chef-license {{cfg.chef_license}}
