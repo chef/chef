@@ -1,5 +1,46 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.13:
+
+## Updated Resources
+
+### directory
+
+The `directory` has been updated to properly set the `deny_rights` permission on Windows.
+
+### service
+
+The `service` resource is now idempotent on SLES 11 systems.
+
+### cron
+
+The `cron` resource has been updated to advise users to use the specify properties rather than passsing values in as part of the `environment` property. This avoids a situation where a user could pass the differing values in both locations and receive unexpected results.
+
+### link
+
+The `link` resource includes improved logging upon failure to help you debug what has failed.
+
+### template
+
+The `template` resource now includes additional information when templating failures, which is particularly useful in ChefSpec.
+
+## delete_resource Fix
+
+The `delete_resource` helper now works properly when the resource you are attempting to delete has multiple providers.
+
+## Helpers Help Everywhere
+
+Various helpers have been moved into Chef Infra Client's `universal` class, which makes them available anywhere in your cookbook, not just recipes. If you've ever been confused why something like `search`, `powershell_out`, or `data_bag_item` didn't work somewhere in your code, that should be resolved now.
+
+## Deprecations
+
+The `CHEF-25` deprecation for resource collisions between cookbooks and resources in Chef Infra Client has been removed. Instead you will see a log warning that a collision has occurred, which advises you to update your run_list or cookbooks.
+
+## Updated Components
+
+- openssl 1.0.2r -> 1.0.2s (bugfix only release)
+- cacerts 2019-01-23 -> 2019-05-15
+
 # Chef Client Release Notes 14.12:
 
 ## Updated Resources
