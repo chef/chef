@@ -26,7 +26,7 @@ The `template` resource now includes additional information when templating fail
 
 ## delete_resource Fix
 
-The `delete_resource` helper now works properly when the resource you're attempting to delete has multiple providers.
+The `delete_resource` helper now works properly when the resource you are attempting to delete has multiple providers.
 
 ## Helpers Help Everywhere
 
