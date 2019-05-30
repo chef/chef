@@ -475,7 +475,7 @@ class Chef
         run
       end
     rescue Exception => e
-      raise if raise_exception || Chef::Config[:verbosity] == 2
+      raise if raise_exception || ( Chef::Config[:verbosity] && Chef::Config[:verbosity] >= 2 )
       humanize_exception(e)
       exit 100
     end

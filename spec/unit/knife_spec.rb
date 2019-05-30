@@ -372,11 +372,14 @@ describe Chef::Knife do
         end
       end
 
-      it "does not humanize the exception if Chef::Config[:verbosity] is two" do
-        Chef::Config[:verbosity] = 2
-        allow(knife).to receive(:run).and_raise(Exception)
-        expect(knife).not_to receive(:humanize_exception)
-        expect { knife.run_with_pretty_exceptions }.to raise_error(Exception)
+      # -VV (2) is debug, -VVV (3) is trace
+      [ 2, 3 ].each do |verbosity|
+        it "does not humanize the exception if Chef::Config[:verbosity] is #{verbosity}" do
+          Chef::Config[:verbosity] = verbosity
+          allow(knife).to receive(:run).and_raise(Exception)
+          expect(knife).not_to receive(:humanize_exception)
+          expect { knife.run_with_pretty_exceptions }.to raise_error(Exception)
+        end
       end
     end
 
