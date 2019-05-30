@@ -30,7 +30,7 @@ The `delete_resource` helper now works properly when the resource you're attempt
 
 ## Helpers Help Everywhere
 
-Various helper have been moved into Chef Infra Client's `universal` class, which makes them available anywhere in your cookbook not, not just recipes. If you've ever been confused why something like `search`, `powershell_out`, or `data_bag_item` didn't work somewhere in your code, that should be resolved now.
+Various helpers have been moved into Chef Infra Client's `universal` class, which makes them available anywhere in your cookbook, not just recipes. If you've ever been confused why something like `search`, `powershell_out`, or `data_bag_item` didn't work somewhere in your code, that should be resolved now.
 
 ## Deprecations
 
