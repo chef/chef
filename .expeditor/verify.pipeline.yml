@@ -74,6 +74,7 @@ steps:
     - /workdir/scripts/bk_tests/bk_install.sh
     - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
     - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
+  timeout_in_minutes: 30
   expeditor:
     executor:
       docker:
@@ -168,20 +169,212 @@ steps:
   # START TEST KITCHEN ONLY
 #########################################################################
 
-# - label: "Kitchen Tests :ruby: 2.5"
-#   commands:
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - asdf local ruby 2.5.5
-#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-#     - cp /etc/hosts.noip6 /etc/hosts
-#     - cd /workdir/kitchen-tests
-#     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
-#     - bundle exec kitchen test end-to-end-amazonlinux-2
-#   expeditor:
-#     executor:
-#       docker:
-#         privileged: true
-#         environment:
-#           - AMAZON=2
-#           - KITCHEN_YAML=/workdir/kitchen-tests/kitchen.bk.yml
-#           - BUNDLE_GEMFILE=/workdir/kitchen-tests/Gemfile
+- label: "Kitchen Tests :amazon: 2 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      AMAZON: "2"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests :amazon: 201X :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      AMAZON: 201X
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Ubuntu: 16.04 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1604
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      UBUNTU: "16.04"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Ubuntu: 18.04 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1804
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      UBUNTU: "18.04"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Debian: 8 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-8
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      DEBIAN: "8"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Debian: 9 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-9
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      DEBIAN: "9"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Debian: 10 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-10
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      DEBIAN: "10"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Centos: 6 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-6
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      CENTOS: "6"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Centos: 7 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-7
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      CENTOS: "7"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Fedora: latest :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-fedora-latest
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      FEDORA: "latest"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests OPENSUSELEAP: 42 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      OPENSUSELEAP: "42"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Rspec Centos: 7 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test rspec-centos-7
+  timeout_in_minutes: 30
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      RSPEC_CENTOS: "7"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Rspec OPENSUSELEAP: 42 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test rspec-opensuse-leap
+  timeout_in_minutes: 30
+  artifact_paths:
+  - $PWD/.kitchen/logs/kitchen.log
+  env:
+      RSPEC_OPENSUSELEAP: "42"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
