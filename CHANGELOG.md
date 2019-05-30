@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.13.7 -->
-## [v14.13.7](https://github.com/chef/chef/tree/v14.13.7) (2019-05-30)
+<!-- latest_release 14.13.8 -->
+## [v14.13.8](https://github.com/chef/chef/tree/v14.13.8) (2019-05-30)
 
 #### Merged Pull Requests
-- Use exports compatibile with /bin/sh in the bootstrap script [#8611](https://github.com/chef/chef/pull/8611) ([tas50](https://github.com/tas50))
+- fix knife diff exceptions [#8612](https://github.com/chef/chef/pull/8612) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.12.9 -->
 ### Changes since 14.12.9 release
 
 #### Merged Pull Requests
+- fix knife diff exceptions [#8612](https://github.com/chef/chef/pull/8612) ([tas50](https://github.com/tas50)) <!-- 14.13.8 -->
 - Use exports compatibile with /bin/sh in the bootstrap script [#8611](https://github.com/chef/chef/pull/8611) ([tas50](https://github.com/tas50)) <!-- 14.13.7 -->
 - Move the data_query, powershell and registry_helper DSLs up to universal [#8609](https://github.com/chef/chef/pull/8609) ([tas50](https://github.com/tas50)) <!-- 14.13.6 -->
 - Fixed empty value for knife status long output [#8606](https://github.com/chef/chef/pull/8606) ([tas50](https://github.com/tas50)) <!-- 14.13.5 -->
