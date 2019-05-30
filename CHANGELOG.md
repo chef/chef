@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.13.6 -->
-## [v14.13.6](https://github.com/chef/chef/tree/v14.13.6) (2019-05-29)
+<!-- latest_release 14.13.7 -->
+## [v14.13.7](https://github.com/chef/chef/tree/v14.13.7) (2019-05-30)
 
 #### Merged Pull Requests
-- Move the data_query, powershell and registry_helper DSLs up to universal [#8609](https://github.com/chef/chef/pull/8609) ([tas50](https://github.com/tas50))
+- Use exports compatibile with /bin/sh in the bootstrap script [#8611](https://github.com/chef/chef/pull/8611) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.12.9 -->
 ### Changes since 14.12.9 release
 
 #### Merged Pull Requests
+- Use exports compatibile with /bin/sh in the bootstrap script [#8611](https://github.com/chef/chef/pull/8611) ([tas50](https://github.com/tas50)) <!-- 14.13.7 -->
 - Move the data_query, powershell and registry_helper DSLs up to universal [#8609](https://github.com/chef/chef/pull/8609) ([tas50](https://github.com/tas50)) <!-- 14.13.6 -->
 - Fixed empty value for knife status long output [#8606](https://github.com/chef/chef/pull/8606) ([tas50](https://github.com/tas50)) <!-- 14.13.5 -->
 - Update a few more knife.rb references to include config.rb [#8608](https://github.com/chef/chef/pull/8608) ([tas50](https://github.com/tas50)) <!-- 14.13.4 -->
