@@ -1,35 +1,33 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.13.11 -->
-## [v14.13.11](https://github.com/chef/chef/tree/v14.13.11) (2019-05-30)
-
-#### Merged Pull Requests
-- 14: backport knife fixes [#8621](https://github.com/chef/chef/pull/8621) ([btm](https://github.com/btm))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.12.9 -->
-### Changes since 14.12.9 release
-
-#### Merged Pull Requests
-- 14: backport knife fixes [#8621](https://github.com/chef/chef/pull/8621) ([btm](https://github.com/btm)) <!-- 14.13.11 -->
-- Fix for cron resource get confused by environment/property mismatch [#8610](https://github.com/chef/chef/pull/8610) ([tas50](https://github.com/tas50)) <!-- 14.13.10 -->
-- Fix for write permissions were not working properly on windows [#8613](https://github.com/chef/chef/pull/8613) ([tas50](https://github.com/tas50)) <!-- 14.13.9 -->
-- fix knife diff exceptions [#8612](https://github.com/chef/chef/pull/8612) ([tas50](https://github.com/tas50)) <!-- 14.13.8 -->
-- Use exports compatibile with /bin/sh in the bootstrap script [#8611](https://github.com/chef/chef/pull/8611) ([tas50](https://github.com/tas50)) <!-- 14.13.7 -->
-- Move the data_query, powershell and registry_helper DSLs up to universal [#8609](https://github.com/chef/chef/pull/8609) ([tas50](https://github.com/tas50)) <!-- 14.13.6 -->
-- Fixed empty value for knife status long output [#8606](https://github.com/chef/chef/pull/8606) ([tas50](https://github.com/tas50)) <!-- 14.13.5 -->
-- Update a few more knife.rb references to include config.rb [#8608](https://github.com/chef/chef/pull/8608) ([tas50](https://github.com/tas50)) <!-- 14.13.4 -->
--  Remove old maintainer gems from the Gemfile [#8605](https://github.com/chef/chef/pull/8605) ([tas50](https://github.com/tas50)) <!-- 14.13.3 -->
-- Point people to Learn Chef in the post install message [#8607](https://github.com/chef/chef/pull/8607) ([tas50](https://github.com/tas50)) <!-- 14.13.2 -->
-- Improving error handling for template render [#8603](https://github.com/chef/chef/pull/8603) ([tas50](https://github.com/tas50)) <!-- 14.13.1 -->
-- Tell people what file a link is pointing at. [#8604](https://github.com/chef/chef/pull/8604) ([tas50](https://github.com/tas50)) <!-- 14.13.0 -->
-- Fix delete_resource for resources [#8602](https://github.com/chef/chef/pull/8602) ([tas50](https://github.com/tas50)) <!-- 14.12.14 -->
-- Update openssl to 1.0.2s [#8601](https://github.com/chef/chef/pull/8601) ([tas50](https://github.com/tas50)) <!-- 14.12.13 -->
-- Fix service enable idempotency in sles11 (#8256) [#8587](https://github.com/chef/chef/pull/8587) ([btm](https://github.com/btm)) <!-- 14.12.12 -->
-- Remove resource collision deprecations [#8511](https://github.com/chef/chef/pull/8511) ([tas50](https://github.com/tas50)) <!-- 14.12.11 -->
-- Add chef-14 update_version script [#8565](https://github.com/chef/chef/pull/8565) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.12.10 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.13.11](https://github.com/chef/chef/tree/v14.13.11) (2019-05-30)
+
+#### Merged Pull Requests
+- Add chef-14 update_version script [#8565](https://github.com/chef/chef/pull/8565) ([jaymalasinha](https://github.com/jaymalasinha))
+- Remove resource collision deprecations [#8511](https://github.com/chef/chef/pull/8511) ([tas50](https://github.com/tas50))
+- Fix service enable idempotency in sles11 (#8256) [#8587](https://github.com/chef/chef/pull/8587) ([btm](https://github.com/btm))
+- Update openssl to 1.0.2s [#8601](https://github.com/chef/chef/pull/8601) ([tas50](https://github.com/tas50))
+- Fix delete_resource for resources [#8602](https://github.com/chef/chef/pull/8602) ([tas50](https://github.com/tas50))
+- Tell people what file a link is pointing at. [#8604](https://github.com/chef/chef/pull/8604) ([tas50](https://github.com/tas50))
+- Improving error handling for template render [#8603](https://github.com/chef/chef/pull/8603) ([tas50](https://github.com/tas50))
+- Point people to Learn Chef in the post install message [#8607](https://github.com/chef/chef/pull/8607) ([tas50](https://github.com/tas50))
+-  Remove old maintainer gems from the Gemfile [#8605](https://github.com/chef/chef/pull/8605) ([tas50](https://github.com/tas50))
+- Update a few more knife.rb references to include config.rb [#8608](https://github.com/chef/chef/pull/8608) ([tas50](https://github.com/tas50))
+- Fixed empty value for knife status long output [#8606](https://github.com/chef/chef/pull/8606) ([tas50](https://github.com/tas50))
+- Move the data_query, powershell and registry_helper DSLs up to universal [#8609](https://github.com/chef/chef/pull/8609) ([tas50](https://github.com/tas50))
+- Use exports compatibile with /bin/sh in the bootstrap script [#8611](https://github.com/chef/chef/pull/8611) ([tas50](https://github.com/tas50))
+- fix knife diff exceptions [#8612](https://github.com/chef/chef/pull/8612) ([tas50](https://github.com/tas50))
+- Fix for write permissions were not working properly on windows [#8613](https://github.com/chef/chef/pull/8613) ([tas50](https://github.com/tas50))
+- Fix for cron resource get confused by environment/property mismatch [#8610](https://github.com/chef/chef/pull/8610) ([tas50](https://github.com/tas50))
+- 14: backport knife fixes [#8621](https://github.com/chef/chef/pull/8621) ([btm](https://github.com/btm))
+<!-- latest_stable_release -->
+
 ## [v14.12.9](https://github.com/chef/chef/tree/v14.12.9) (2019-04-20)
 
 #### Merged Pull Requests
@@ -39,7 +37,6 @@
 - Fix default/override attribute blacklists and whitelists [#8400](https://github.com/chef/chef/pull/8400) ([tas50](https://github.com/tas50))
 - Improve the error message when no config can be loaded  [#8401](https://github.com/chef/chef/pull/8401) ([tas50](https://github.com/tas50))
 - Sync the CLI option descriptions between chef-client and chef-solo [#8402](https://github.com/chef/chef/pull/8402) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.12.3](https://github.com/chef/chef/tree/v14.12.3) (2019-04-16)
 
