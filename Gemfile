@@ -30,7 +30,7 @@ end
 
 # Everything except AIX
 group(:ruby_prof) do
-  gem "ruby-prof"
+  gem "ruby-prof", "< 0.18.0" # 0.18 breaks appveyor tests
 end
 
 # Everything except AIX and Windows
