@@ -330,7 +330,7 @@ class Chef
           raise Errno::ENOENT
         end
 
-        Chef::Log.trace("Found bootstrap template in #{File.dirname(template_file)}")
+        Chef::Log.trace("Found bootstrap template: #{template_file}")
 
         template_file
       end
