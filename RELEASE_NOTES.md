@@ -6,7 +6,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ### directory
 
-The `directory` has been updated to property set the `deny_rights` permsission on Windows.
+The `directory` has been updated to properly set the `deny_rights` permission on Windows.
 
 ### service
 
