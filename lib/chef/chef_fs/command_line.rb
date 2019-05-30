@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -271,19 +271,18 @@ class Chef
           new_tempfile.write(new_value)
           new_tempfile.close
 
-          begin
-            old_tempfile = Tempfile.new("old")
-            old_tempfile.write(old_value)
-            old_tempfile.close
+          old_tempfile = Tempfile.new("old")
+          old_tempfile.write(old_value)
+          old_tempfile.close
 
-            result = Chef::Util::Diff.new.udiff(old_tempfile.path, new_tempfile.path)
-            result = result.gsub(/^--- #{old_tempfile.path}/, "--- #{old_path}")
-            result = result.gsub(/^\+\+\+ #{new_tempfile.path}/, "+++ #{new_path}")
-            result
-          ensure
-            old_tempfile.close!
-          end
+          result = Chef::Util::Diff.new.udiff(old_tempfile.path, new_tempfile.path)
+          result = result.gsub(/^--- #{old_tempfile.path}/, "--- #{old_path}")
+          result = result.gsub(/^\+\+\+ #{new_tempfile.path}/, "+++ #{new_path}")
+          result
+        rescue => e
+          "!!! Unable to diff #{old_path} and #{new_path} due to #{e}"
         ensure
+          old_tempfile.close!
           new_tempfile.close!
         end
       end
