@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.323 -->
-## [v15.0.323](https://github.com/chef/chef/tree/v15.0.323) (2019-05-28)
+<!-- latest_release 15.0.324 -->
+## [v15.0.324](https://github.com/chef/chef/tree/v15.0.324) (2019-05-30)
 
 #### Merged Pull Requests
-- Add new chocolatey_feature resource for managing features in Chocolatey [#8581](https://github.com/chef/chef/pull/8581) ([gep13](https://github.com/gep13))
+- Trace output the actual bootstrap template filename [#8619](https://github.com/chef/chef/pull/8619) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Trace output the actual bootstrap template filename [#8619](https://github.com/chef/chef/pull/8619) ([btm](https://github.com/btm)) <!-- 15.0.324 -->
 - Add new chocolatey_feature resource for managing features in Chocolatey [#8581](https://github.com/chef/chef/pull/8581) ([gep13](https://github.com/gep13)) <!-- 15.0.323 -->
 - Improving error handling for template render [#8562](https://github.com/chef/chef/pull/8562) ([brodock](https://github.com/brodock)) <!-- 15.0.322 -->
 - Chef 15: Fix ssh user set from cli [#8558](https://github.com/chef/chef/pull/8558) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.321 -->
