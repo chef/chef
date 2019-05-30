@@ -18,7 +18,7 @@ The `cron` resource has been updated to advise users to use the specify properti
 
 ### link
 
-The `link` resource includes improved logging on failure to help you debug what has failed.
+The `link` resource includes improved logging upon failure to help you debug what has failed.
 
 ### template
 
