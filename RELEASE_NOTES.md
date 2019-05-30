@@ -6,11 +6,11 @@ This file holds "in progress" release notes for the current release under develo
 
 ### directory
 
-The `directory` has been updated to properly set the `deny_rights` permission on Windows.
+The `directory` has been updated to properly set the `deny_rights` permission on Windows. Thanks [@merlinjim](https://github.com/merlinjim) for reporting this issue.
 
 ### service
 
-The `service` resource is now idempotent on SLES 11 systems.
+The `service` resource is now idempotent on SLES 11 systems. Thanks [@gsingla294](https://github.com/gsingla294) for reporting this issue.
 
 ### cron
 
@@ -18,15 +18,15 @@ The `cron` resource has been updated to advise users to use the specify properti
 
 ### link
 
-The `link` resource includes improved logging upon failure to help you debug what has failed.
+The `link` resource includes improved logging upon failure to help you debug what has failed. Thanks [@jaymzh](https://github.com/jaymzh) for this improvement.
 
 ### template
 
-The `template` resource now includes additional information when templating failures, which is particularly useful in ChefSpec.
+The `template` resource now includes additional information when templating failures, which is particularly useful in ChefSpec. Thanks [@brodock](https://github.com/brodock) for this improvement.
 
 ## delete_resource Fix
 
-The `delete_resource` helper now works properly when the resource you are attempting to delete has multiple providers.
+The `delete_resource` helper now works properly when the resource you are attempting to delete has multiple providers. Thanks [@artem-sidorenko](https://github.com/artem-sidorenko) for this fix.
 
 ## Helpers Help Everywhere
 
