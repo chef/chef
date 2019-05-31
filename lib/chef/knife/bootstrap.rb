@@ -621,6 +621,9 @@ class Chef
           # FIXME: this should save the key to known_hosts but doesn't appear to be
           config[:ssh_verify_host_key] = :accept_new
           do_connect(connection_opts(reset: true))
+        elsif e.message == "Sorry, we are unable to detect your platform" # Train::PlatformDetectionFailed
+          ui.warn("Could not connect with 'root'. Please provide valid user_name")
+          exit
         elsif ssh? && e.cause && e.cause.class == Net::SSH::AuthenticationFailed
           if connection.password_auth?
             raise
