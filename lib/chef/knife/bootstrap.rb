@@ -348,10 +348,11 @@ class Chef
         }
 
       DEPRECATED_FLAGS = {
-        # deprecated_key: [new_key, deprecated_long]
+        # deprecated_key: [new_key, deprecated_long, replacement_value, deprecated_short]
         # optional third element: replacement_value - if converting from bool
         #   (--bool-option) to valued flag (--new-option VALUE)
         #   this will be the value that is assigned the new flag when the old flag is used.
+        # optional fourth element: deprecated_short - if the short form of flag has also been deprecated.
         auth_timeout: [:max_wait, "--max-wait SECONDS" ],
         forward_agent:
           [:ssh_forward_agent, "--forward-agent"],
@@ -360,7 +361,7 @@ class Chef
         prerelease:
           [:channel, "--prerelease", "current"],
         ssh_user:
-          [:connection_user, "--ssh-user USER"],
+          [:connection_user, "--ssh-user USERNAME"],
         ssh_password:
           [:connection_password, "--ssh-password PASSWORD"],
         ssh_port:
@@ -368,9 +369,9 @@ class Chef
         ssl_peer_fingerprint:
           [:winrm_ssl_peer_fingerprint, "--ssl-peer-fingerprint FINGERPRINT"],
         winrm_user:
-          [:connection_user, "--winrm-user USER"],
+          [:connection_user, "--winrm-user USERNAME", nil, "-x USERNAME"],
         winrm_password:
-          [:connection_password, "--winrm-password"],
+          [:connection_password, "--winrm-password PASSWORD"],
         winrm_port:
           [:connection_port, "--winrm-port"],
         winrm_authentication_protocol:
@@ -384,18 +385,28 @@ class Chef
       }.freeze
 
       DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
-        new_key, deprecated_long, replacement_value = deprecation_entry
+        new_key, deprecated_long, replacement_value, deprecated_short = deprecation_entry
         new_long = options[new_key][:long]
+        new_long_key = new_long.split(" ").first
+        if new_short = options[new_key][:short]
+          new_long += "(or #{new_short})"
+          new_long_key += "(or #{new_short.split(" ").first})"
+        end
         new_long_desc = if replacement_value.nil?
                           new_long
                         else
-                          "#{new_long.split(" ").first} #{replacement_value}"
+                          "#{new_long_key} #{replacement_value}"
                         end
-        option(deprecated_key, long: deprecated_long,
-                               description: "This flag is deprecated. Please use '#{new_long_desc}' instead.",
-                               boolean: options[new_key][:boolean] || !replacement_value.nil?,
-                               # Put deprecated options at the end of the options list
-                               on: :tail)
+
+        opt = { long: deprecated_long,
+                description: "This flag is deprecated. Please use '#{new_long_desc}' instead.",
+                boolean: options[new_key][:boolean] || !replacement_value.nil?,
+               # Put deprecated options at the end of the options list
+                on: :tail }
+
+        opt[:short] = deprecated_short if deprecated_short
+
+        option(deprecated_key, opt)
       end
 
       attr_reader :connection
@@ -699,13 +710,23 @@ class Chef
       # are both used, exit
       def verify_deprecated_flags!
         DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
-          new_key, deprecated_long, replacement_value = deprecation_entry
+          new_key, deprecated_long, replacement_value, deprecated_short = deprecation_entry
+
+          dep_long_key = deprecated_long.split(" ").first
+          if deprecated_short
+            dep_long_key += "(or #{deprecated_short.split(" ").first})"
+          end
+
           if config.key?(deprecated_key) && config_source(deprecated_key) == :cli
             if config.key?(new_key) && config_source(new_key) == :cli
-              new_long = options[new_key][:long].split(" ").first
-              deprecated_long = deprecated_long.split(" ").first
+              new_long = options[new_key][:long]
+              new_long_key = new_long.split(" ").first
+              if new_short = options[new_key][:short]
+                new_long += "(or #{new_short})"
+                new_long_key += "(or #{new_short.split(" ").first})"
+              end
               ui.error <<~EOM
-                You provided both #{new_long} and #{deprecated_long}.
+                You provided both #{new_long_key} and #{dep_long_key}.
 
                 Please use one or the other, but note that
                 #{deprecated_long} is deprecated.
@@ -714,7 +735,7 @@ class Chef
             else
               config[new_key] = replacement_value || config[deprecated_key]
               unless Chef::Config[:silence_deprecation_warnings] == true
-                ui.warn "You provided #{deprecated_long.split(" ").first}. #{options[deprecated_key][:description]}"
+                ui.warn "You provided #{dep_long_key}. #{options[deprecated_key][:description]}"
               end
             end
           end

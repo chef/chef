@@ -1,6 +1,7 @@
 #
 # Author:: Ian Meyer (<ianmmeyer@gmail.com>)
 # Copyright:: Copyright 2010-2016, Ian Meyer
+# Copyright:: Copyright 2010-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -1684,20 +1685,87 @@ describe Chef::Knife::Bootstrap do
     end
 
     context "when a deprecated CLI flag is given on the CLI" do
-      let(:bootstrap_cli_options) { %w{--ssh-user sshuser} }
-      it "maps the key value to the new key and points the human to the new flag" do
-        expect(knife.ui).to receive(:warn).with(/You provided --ssh-user. This flag is deprecated. Please use '--connection-user USERNAME' instead./)
-        knife.verify_deprecated_flags!
-        expect(knife.config[:connection_user]).to eq "sshuser"
+      context "with flag containing only long argument" do
+        context "when given with no other options" do
+          let(:bootstrap_cli_options) { %w{--winrm-transport XXX} }
+          it "maps the key value to the new key and points the human to the new flag" do
+            expect(knife.ui).to receive(:warn).with("You provided --winrm-transport. This flag is deprecated. Please use '--winrm-ssl' instead.")
+            knife.verify_deprecated_flags!
+            expect(knife.config[:winrm_ssl]).to eq "XXX"
+          end
+        end
+        context "when given along with valid flag" do
+          let(:bootstrap_cli_options) { %w{--winrm-transport XXX --connection-user user-a} }
+          it "maps the key value to the new key and points the human to the new flag" do
+            expect(knife.ui).to receive(:warn).with("You provided --winrm-transport. This flag is deprecated. Please use '--winrm-ssl' instead.")
+            knife.verify_deprecated_flags!
+            expect(knife.config[:winrm_ssl]).to eq "XXX"
+            expect(knife.config[:connection_user]).to eq "user-a"
+          end
+        end
+        context "when given along with its replacement" do
+          let(:bootstrap_cli_options) { %w{--winrm-transport XXX --winrm-ssl YYY} }
+          it "informs the human that both are provided and exits" do
+            expect(knife.ui).to receive(:error).with(/You provided both --winrm-ssl and --winrm-transport.*Please use.*/m)
+            expect { knife.verify_deprecated_flags! }.to raise_error SystemExit
+          end
+        end
       end
-    end
 
-    context "when a deprecated CLI flag is given on the CLI, along with its replacement" do
-      let(:bootstrap_cli_options) { %w{--connection-user a --ssh-user b} }
+      context "with flag also contains short argument" do
+        context "when given as short arg" do
+          context "with no other options" do
+            let(:bootstrap_cli_options) { %w{-x user-a} }
+            it "maps the key value to the new key and display information with both long and short arguments" do
+              expect(knife.ui).to receive(:warn).with("You provided --winrm-user(or -x). This flag is deprecated. Please use '--connection-user USERNAME(or -U USERNAME)' instead.")
+              knife.verify_deprecated_flags!
+              expect(knife.config[:connection_user]).to eq "user-a"
+            end
+          end
+          context "along with valid flag" do
+            let(:bootstrap_cli_options) { %w{-x user-a --connection-password XXX} }
+            it "maps the key value to the new key and display information with both long and short arguments" do
+              expect(knife.ui).to receive(:warn).with("You provided --winrm-user(or -x). This flag is deprecated. Please use '--connection-user USERNAME(or -U USERNAME)' instead.")
+              knife.verify_deprecated_flags!
+              expect(knife.config[:connection_user]).to eq "user-a"
+              expect(knife.config[:connection_password]).to eq "XXX"
+            end
+          end
+          context "along with its replacement" do
+            let(:bootstrap_cli_options) { %w{-x user-a --connection-user user-b} }
+            it "informs the human that both are provided and exits" do
+              expect(knife.ui).to receive(:error).with("You provided both --connection-user(or -U) and --winrm-user(or -x).\n\nPlease use one or the other, but note that\n--winrm-user USERNAME is deprecated.\n")
+              expect { knife.verify_deprecated_flags! }.to raise_error SystemExit
+            end
+          end
+        end
 
-      it "informs the human that both are provided and exits" do
-        expect(knife.ui).to receive(:error).with(/You provided both --connection-user and --ssh-user.*Please use.*/m)
-        expect { knife.verify_deprecated_flags! }.to raise_error SystemExit
+        context "when given as long arg" do
+          context "with no other options" do
+            let(:bootstrap_cli_options) { %w{--winrm-user user-a} }
+            it "maps the key value to the new key and display information with both long and short arguments" do
+              expect(knife.ui).to receive(:warn).with("You provided --winrm-user(or -x). This flag is deprecated. Please use '--connection-user USERNAME(or -U USERNAME)' instead.")
+              knife.verify_deprecated_flags!
+              expect(knife.config[:connection_user]).to eq "user-a"
+            end
+          end
+          context "along with valid flag" do
+            let(:bootstrap_cli_options) { %w{--winrm-user user-a --connection-password XXX} }
+            it "maps the key value to the new key and display information with both long and short arguments" do
+              expect(knife.ui).to receive(:warn).with("You provided --winrm-user(or -x). This flag is deprecated. Please use '--connection-user USERNAME(or -U USERNAME)' instead.")
+              knife.verify_deprecated_flags!
+              expect(knife.config[:connection_user]).to eq "user-a"
+              expect(knife.config[:connection_password]).to eq "XXX"
+            end
+          end
+          context "along with its replacement" do
+            let(:bootstrap_cli_options) { %w{--winrm-user user-a --connection-user user-b} }
+            it "informs the human that both are provided and exits" do
+              expect(knife.ui).to receive(:error).with("You provided both --connection-user(or -U) and --winrm-user(or -x).\n\nPlease use one or the other, but note that\n--winrm-user USERNAME is deprecated.\n")
+              expect { knife.verify_deprecated_flags! }.to raise_error SystemExit
+            end
+          end
+        end
       end
     end
 
