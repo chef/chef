@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.0.325 -->
-## [v15.0.325](https://github.com/chef/chef/tree/v15.0.325) (2019-05-30)
+<!-- latest_release 15.1.0 -->
+## [v15.1.0](https://github.com/chef/chef/tree/v15.1.0) (2019-06-03)
 
 #### Merged Pull Requests
-- Raise knife exceptions when verbosity is 3 (-VVV) [#8618](https://github.com/chef/chef/pull/8618) ([btm](https://github.com/btm))
+- Add hooks for plugins in knife bootstrap [#8628](https://github.com/chef/chef/pull/8628) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Add hooks for plugins in knife bootstrap [#8628](https://github.com/chef/chef/pull/8628) ([btm](https://github.com/btm)) <!-- 15.1.0 -->
 - Raise knife exceptions when verbosity is 3 (-VVV) [#8618](https://github.com/chef/chef/pull/8618) ([btm](https://github.com/btm)) <!-- 15.0.325 -->
 - Trace output the actual bootstrap template filename [#8619](https://github.com/chef/chef/pull/8619) ([btm](https://github.com/btm)) <!-- 15.0.324 -->
 - Add new chocolatey_feature resource for managing features in Chocolatey [#8581](https://github.com/chef/chef/pull/8581) ([gep13](https://github.com/gep13)) <!-- 15.0.323 -->
