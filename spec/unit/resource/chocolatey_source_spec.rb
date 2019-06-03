@@ -19,7 +19,14 @@ require "spec_helper"
 
 describe Chef::Resource::ChocolateySource do
 
-  let(:resource) { Chef::Resource::ChocolateySource.new("fakey_fakerton") }
+  let(:node) { Chef::Node.new }
+
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::ChocolateySource.new("fakey_fakerton", run_context) }
+  let(:disable_provider) { resource.provider_for_action(:disable) }
+  let(:enable_provider) { resource.provider_for_action(:enable) }
+  let(:current_resource) { Chef::Resource::ChocolateySource.new("fakey_fakerton") }
   let(:config) do
     <<-CONFIG
   <?xml version="1.0" encoding="utf-8"?>
@@ -40,6 +47,11 @@ describe Chef::Resource::ChocolateySource do
 
   # we save off the ENV and set ALLUSERSPROFILE so these specs will work on *nix and non-C drive Windows installs
   before(:each) do
+    disable_provider # vivify before mocking
+    enable_provider
+    allow(resource).to receive(:provider_for_action).and_return(disable_provider)
+    allow(resource).to receive(:provider_for_action).and_return(enable_provider)
+    allow(resource).to receive(:dup).and_return(current_resource)
     @original_env = ENV.to_hash
     ENV["ALLUSERSPROFILE"] = 'C:\ProgramData'
   end
@@ -64,6 +76,8 @@ describe Chef::Resource::ChocolateySource do
   it "supports :add and :remove actions" do
     expect { resource.action :add }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :disable }.not_to raise_error
+    expect { resource.action :enable }.not_to raise_error
   end
 
   it "bypass_proxy property defaults to false" do
@@ -72,6 +86,45 @@ describe Chef::Resource::ChocolateySource do
 
   it "priority property defaults to 0" do
     expect { resource.priority.to eq(0) }
+  end
+
+  it "admin_only property defaults to false" do
+    expect { resource.admin_only.to be_false }
+  end
+
+  it "allow_self_service property defaults to false" do
+    expect { resource.allow_self_service.to be_false }
+  end
+
+  describe "#load_current_resource" do
+    it "sets the source_state to true when the XML disabled property is true" do
+      allow(current_resource).to receive(:fetch_source_element).with("fakey_fakerton").and_return(OpenStruct.new(disabled: "true"))
+      disable_provider.load_current_resource
+      expect(current_resource.source_state).to be true
+    end
+
+    it "sets the source_state to false when the XML disabled property is false" do
+      allow(current_resource).to receive(:fetch_source_element).with("fakey_fakerton").and_return(OpenStruct.new(disabled: "false"))
+      enable_provider.load_current_resource
+      expect(current_resource.source_state).to be false
+    end
+  end
+
+  describe "run_action(:enable)" do
+    it "when source is disabled, it enables it correctly" do
+      resource.source_state true
+      allow(current_resource).to receive(:fetch_source_element).with("fakey_fakerton").and_return(OpenStruct.new(disabled: "true"))
+      expect(enable_provider).to receive(:shell_out!).with("C:\\ProgramData\\chocolatey\\bin\\choco source enable -n \"fakey_fakerton\"")
+      resource.run_action(:enable)
+      expect(resource.updated_by_last_action?).to be true
+    end
+
+    it "when source is enabled, it is idempotent when trying to enable" do
+      resource.source_state false
+      allow(current_resource).to receive(:fetch_source_element).with("fakey_fakerton").and_return(OpenStruct.new(disabled: "false"))
+      resource.run_action(:enable)
+      expect(resource.updated_by_last_action?).to be false
+    end
   end
 
   describe "#fetch_source_element" do
