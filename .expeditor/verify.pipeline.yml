@@ -1,39 +1,43 @@
+---
+expeditor:
+  defaults:
+    buildkite:
+      timeout_in_minutes: 40
+
 steps:
 
 #########################################################################
   # Tests Ruby 2.6
 #########################################################################
 
-# - label: "Integration Specs :ruby: 2.6"
-#   commands:
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-#     - cp /etc/hosts.noip6 /etc/hosts
-#     - cd /workdir; bundle install --without docgen integration omnibus_package --frozen
-#     - bundle exec rake spec:integration
-#   expeditor:
-#     executor:
-#       docker:
-#         environment:
-#           - FORCE_FFI_YAJL=ext
-#           - CHEF_LICENSE=accept-no-persist
-#           - INTEGRATION_SPECS_26=1
-#           - BUNDLE_GEMFILE=/workdir/Gemfile
-#
-# - label: "Functional Specs :ruby: 2.6"
-#   commands:
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-#     - cp /etc/hosts.noip6 /etc/hosts
-#     - cd /workdir; bundle install --without docgen integration omnibus_package --frozen
-#     - bundle exec rake spec:functional
-#   expeditor:
-#     executor:
-#       docker:
-#         environment:
-#           - FORCE_FFI_YAJL=ext
-#           - CHEF_LICENSE=accept-no-persist
-#           - FUNCTIONAL_SPECS_26=1
+- label: "Integration Specs :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - cd /workdir; bundle install --without docgen integration omnibus_package --frozen --path vendor/bundle
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - INTEGRATION_SPECS_26=1
+          - BUNDLE_GEMFILE=/workdir/Gemfile
+
+- label: "Functional Specs :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - cd /workdir; bundle install --without docgen integration omnibus_package --frozen --path vendor/bundle
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - FUNCTIONAL_SPECS_26=1
 
 - label: "Unit Specs :ruby: 2.6"
   commands:
@@ -106,17 +110,6 @@ steps:
         environment:
           - TEST_GEM=chefspec/chefspec
 
-# - label: "Test poise/halite gem :ruby: 2.6"
-#   commands:
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
-#     - bundle exec tasks/bin/run_external_test poise/halite master rake spec
-#   expeditor:
-#     executor:
-#       docker:
-#         environment:
-#           - TEST_GEM=poise/halite
-
 - label: "Test knife-windows gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
@@ -132,37 +125,35 @@ steps:
   # Tests Ruby 2.5
 #########################################################################
 
-# - label: "Integration Specs :ruby: 2.5"
-#   commands:
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - asdf local ruby 2.5.5
-#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-#     - cp /etc/hosts.noip6 /etc/hosts
-#     - bundle install --without docgen integration omnibus_package --frozen
-#     - bundle exec rake spec:integration
-#   expeditor:
-#     executor:
-#       docker:
-#         environment:
-#           - FORCE_FFI_YAJL=ext
-#           - CHEF_LICENSE=accept-no-persist
-#           - INTEGRATION_SPECS_25=1
+- label: "Integration Specs :ruby: 2.5"
+  commands:
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - asdf local ruby 2.5.5
+    - bundle install --without docgen integration omnibus_package --frozen
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - INTEGRATION_SPECS_25=1
 #
-# - label: "Functional Specs :ruby: 2.5"
-#   commands:
-#     - asdf local ruby 2.5.5
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-#     - cp /etc/hosts.noip6 /etc/hosts
-#     - bundle install --without docgen integration omnibus_package --frozen
-#     - bundle exec rake spec:functional
-#   expeditor:
-#     executor:
-#       docker:
-#         environment:
-#           - FORCE_FFI_YAJL=ext
-#           - CHEF_LICENSE=accept-no-persist
-#           - FUNCTIONAL_SPECS_25=1
+- label: "Functional Specs :ruby: 2.5"
+  commands:
+    - asdf local ruby 2.5.5
+    - /workdir/scripts/bk_tests/bk_install.sh
+    - bundle install --without docgen integration omnibus_package --frozen
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - FUNCTIONAL_SPECS_25=1
 
 - label: "Unit Specs :ruby: 2.5"
   commands:
@@ -183,19 +174,214 @@ steps:
   # START TEST KITCHEN ONLY
 #########################################################################
 
-# - label: "Kitchen Tests :ruby: 2.5"
+- label: "Kitchen Tests :amazon: 2 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      AMAZON: "2"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests :amazon: 201X :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      AMAZON: 201X
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests :ubuntu: 16.04 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1604
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      UBUNTU: "16.04"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests :ubuntu: 18.04 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1804
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      UBUNTU: "18.04"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests :debian: 8 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-8
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      DEBIAN: "8"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests :debian: 9 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-9
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      DEBIAN: "9"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests :debian: 10 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-10
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      DEBIAN: "10"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests :centos: 6 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-6
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      CENTOS: "6"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests :centos: 7 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-7
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      CENTOS: "7"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests :fedora: latest :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-fedora-latest
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      FEDORA: "latest"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests OPENSUSELEAP: 42 :ruby: 2.5"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      OPENSUSELEAP: "42"
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+#########################################################################
+  # RSpec Tests
+#########################################################################
+# - label: "Kitchen Tests :rspec: :centos: 7 :ruby: 2.5"
 #   commands:
-#     - /workdir/scripts/bk_tests/bk_install.sh
-#     - asdf local ruby 2.5.5
-#     - sed '/ip6/d' /etc/hosts > /etc/hosts.noip6
-#     - cp /etc/hosts.noip6 /etc/hosts
-#     - cd /workdir/kitchen-tests
-#     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
-#     - bundle exec kitchen test end-to-end-amazonlinux-2
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test rspec-centos-7
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       RSPEC_CENTOS: "7"
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+
+# - label: "Kitchen Tests :rspec: OPENSUSELEAP: 42 :ruby: 2.5"
+#   commands:
+#     - /workdir/scripts/bk_tests/bk_dokken_install.sh
+#     - bundle install --without docgen integration omnibus_package --frozen --path vendor/bundle
+#     - bundle exec rspec
+#   artifact_paths:
+#   - $PWD/.kitchen/logs/kitchen.log
 #   expeditor:
 #     executor:
 #       docker:
+#         image: "dokken/opensuse-leap"
 #         environment:
-#           - AMAZON=2
-#           - KITCHEN_YAML=/workdir/kitchen-tests/kitchen.bk.yml
-#           - BUNDLE_GEMFILE=/workdir/kitchen-tests/Gemfile
+#           - RSPEC_OPENSUSELEAP="42"
+#           - FORCE_FFI_YAJL=ext
+#           - CHEF_LICENSE="accept-silent"
+#           - PATH=~/.asdf/shims:/opt/asdf/bin:/opt/asdf/shims:/opt/omnibus-toolchain/embedded/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
