@@ -28,8 +28,8 @@ class Chef
       include DataBagSecretOptions
       include LicenseAcceptance::CLIFlags::MixlibCLI
 
-      SUPPORTED_CONNECTION_PROTOCOLS = %w{ssh winrm}.freeze
-      WINRM_AUTH_PROTOCOL_LIST = %w{plaintext kerberos ssl negotiate}.freeze
+      SUPPORTED_CONNECTION_PROTOCOLS ||= %w{ssh winrm}.freeze
+      WINRM_AUTH_PROTOCOL_LIST ||= %w{plaintext kerberos ssl negotiate}.freeze
 
       # Common connectivity options
       option :connection_user,
