@@ -539,15 +539,18 @@ class Chef
         check_license
         verify_deprecated_flags!
 
+        plugin_setup!
         validate_name_args!
         validate_protocol!
         validate_first_boot_attributes!
         validate_winrm_transport_opts!
         validate_policy_options!
+        plugin_validate_options!
 
         winrm_warn_no_ssl_verification
         warn_on_short_session_timeout
 
+        plugin_create_instance!
         $stdout.sync = true
         connect!
         register_client
@@ -555,6 +558,7 @@ class Chef
         content = render_template
         bootstrap_path = upload_bootstrap(content)
         perform_bootstrap(bootstrap_path)
+        plugin_finalize
       ensure
         connection.del_file!(bootstrap_path) if connection && bootstrap_path
       end
@@ -770,6 +774,40 @@ class Chef
           exit 1
         end
         true
+      end
+
+      # Validate any additional options
+      #
+      # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to validate any additonal options before any other actions are executed
+      #
+      # @return [TrueClass] If options are valid or exits
+      def plugin_validate_options!
+        true
+      end
+
+      # Create the server that we will bootstrap, if necessary
+      #
+      # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to call out to an API to build an instance of the server we wish to bootstrap
+      #
+      # @return [TrueClass] If instance successfully created, or exits
+      def plugin_create_instance!
+        true
+      end
+
+      # Perform any setup necessary by the plugin
+      #
+      # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to create connection objects
+      #
+      # @return [TrueClass] If instance successfully created, or exits
+      def plugin_setup!
+      end
+
+      # Perform any teardown or cleanup necessary by the plugin
+      #
+      # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to display a message or perform any cleanup
+      #
+      # @return [void]
+      def plugin_finalize
       end
 
       # If session_timeout is too short, it is likely
