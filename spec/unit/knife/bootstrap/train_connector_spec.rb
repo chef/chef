@@ -171,6 +171,7 @@ describe Chef::Knife::Bootstrap::TrainConnector do
         expect(File.read(local_path)).to eq "test data"
         expect(remote_path).to eq "/target/path"
       end
+      expect_any_instance_of(Tempfile).to receive(:binmode)
       subject.upload_file_content!("test data", "/target/path")
     end
   end
