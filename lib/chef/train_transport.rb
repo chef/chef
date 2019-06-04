@@ -17,6 +17,7 @@
 
 require "chef-config/mixin/credentials"
 require "train"
+require_relative "dist"
 
 class Chef
   class TrainTransport
@@ -76,8 +77,8 @@ class Chef
       credentials_file =
         if tm_config.credentials_file && File.exist?(tm_config.credentials_file)
           tm_config.credentials_file
-        elsif File.exist?(Chef::Config.platform_specific_path("/etc/chef/#{profile}/credentials"))
-          Chef::Config.platform_specific_path("/etc/chef/#{profile}/credentials")
+        elsif File.exist?(Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/#{profile}/credentials"))
+          Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/#{profile}/credentials")
         else
           super
         end

@@ -30,5 +30,21 @@ class Chef
 
     # The chef-solo executable (legacy local mode)
     SOLOEXEC = "chef-solo".freeze
+
+    # The chef-shell executable
+    SHELL = "chef-shell".freeze
+
+    # Configuration related constants
+    # The chef-shell configuration file
+    SHELL_CONF = "chef_shell.rb".freeze
+
+    # The configuration directory
+    CONF_DIR = "/etc/#{Chef::Dist::EXEC}".freeze
+
+    # The user's configuration directory
+    USER_CONF_DIR = ".chef".freeze
+
+    # The server's configuration directory
+    SERVER_CONF_DIR = "/etc/chef-server".freeze
   end
 end

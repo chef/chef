@@ -186,55 +186,55 @@ if test "x$tmp_dir" != "x"; then
   rm -r "$tmp_dir"
 fi
 
-mkdir -p /etc/chef
+mkdir -p <%= Chef::Dist::CONF_DIR %>
 
 <% if client_pem -%>
-cat > /etc/chef/client.pem <<'EOP'
+cat > <%= Chef::Dist::CONF_DIR %>/client.pem <<'EOP'
 <%= ::File.read(::File.expand_path(client_pem)) %>
 EOP
-chmod 0600 /etc/chef/client.pem
+chmod 0600 <%= Chef::Dist::CONF_DIR %>/client.pem
 <% end -%>
 
 <% if validation_key -%>
-cat > /etc/chef/validation.pem <<'EOP'
+cat > <%= Chef::Dist::CONF_DIR %>/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
-chmod 0600 /etc/chef/validation.pem
+chmod 0600 <%= Chef::Dist::CONF_DIR %>/validation.pem
 <% end -%>
 
 <% if encrypted_data_bag_secret -%>
-cat > /etc/chef/encrypted_data_bag_secret <<'EOP'
+cat > <%= Chef::Dist::CONF_DIR %>/encrypted_data_bag_secret <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP
-chmod 0600 /etc/chef/encrypted_data_bag_secret
+chmod 0600 <%= Chef::Dist::CONF_DIR %>/encrypted_data_bag_secret
 <% end -%>
 
 <% unless trusted_certs.empty? -%>
-mkdir -p /etc/chef/trusted_certs
+mkdir -p <%= Chef::Dist::CONF_DIR %>/trusted_certs
 <%= trusted_certs %>
 <% end -%>
 
 <%# Generate Ohai Hints -%>
 <% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
-mkdir -p /etc/chef/ohai/hints
+mkdir -p <%= Chef::Dist::CONF_DIR %>/ohai/hints
 
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
-cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
+cat > <%= Chef::Dist::CONF_DIR %>/ohai/hints/<%= name %>.json <<'EOP'
 <%= Chef::JSONCompat.to_json(hash) %>
 EOP
 <% end -%>
 <% end -%>
 
-cat > /etc/chef/client.rb <<'EOP'
+cat > <%= Chef::Dist::CONF_DIR %>/client.rb <<'EOP'
 <%= config_content %>
 EOP
 
-cat > /etc/chef/first-boot.json <<'EOP'
+cat > <%= Chef::Dist::CONF_DIR %>/first-boot.json <<'EOP'
 <%= Chef::JSONCompat.to_json(first_boot) %>
 EOP
 
 <% unless client_d.empty? -%>
-mkdir -p /etc/chef/client.d
+mkdir -p <%= Chef::Dist::CONF_DIR %>/client.d
 <%= client_d %>
 <% end -%>
 

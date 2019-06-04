@@ -28,6 +28,7 @@ require_relative "../run_list/run_list_expansion"
 require_relative "../formatters/base"
 require_relative "../formatters/doc"
 require_relative "../formatters/minimal"
+require_relative "../dist"
 
 module Shell
   class ShellSession
@@ -87,7 +88,7 @@ module Shell
     end
 
     def save_node
-      raise "Not Supported! #{self.class.name} doesn't support #save_node, maybe you need to run chef-shell in client mode?"
+      raise "Not Supported! #{self.class.name} doesn't support #save_node, maybe you need to run #{Chef::Dist::SHELL} in client mode?"
     end
 
     def rebuild_context
