@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.1 -->
-## [v15.1.1](https://github.com/chef/chef/tree/v15.1.1) (2019-06-04)
+<!-- latest_release 15.1.2 -->
+## [v15.1.2](https://github.com/chef/chef/tree/v15.1.2) (2019-06-04)
 
 #### Merged Pull Requests
-- Create bootstrap template in binmode to fix line endings [#8631](https://github.com/chef/chef/pull/8631) ([btm](https://github.com/btm))
+- more distro constants [#8630](https://github.com/chef/chef/pull/8630) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- more distro constants [#8630](https://github.com/chef/chef/pull/8630) ([bobchaos](https://github.com/bobchaos)) <!-- 15.1.2 -->
 - Create bootstrap template in binmode to fix line endings [#8631](https://github.com/chef/chef/pull/8631) ([btm](https://github.com/btm)) <!-- 15.1.1 -->
 - Add hooks for plugins in knife bootstrap [#8628](https://github.com/chef/chef/pull/8628) ([btm](https://github.com/btm)) <!-- 15.1.0 -->
 - Raise knife exceptions when verbosity is 3 (-VVV) [#8618](https://github.com/chef/chef/pull/8618) ([btm](https://github.com/btm)) <!-- 15.0.325 -->
