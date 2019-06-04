@@ -148,6 +148,7 @@ class Chef
         # @return NilClass
         def upload_file_content!(content, remote_path)
           t = Tempfile.new("chef-content")
+          t.binmode
           t << content
           t.close
           upload_file!(t.path, remote_path)
