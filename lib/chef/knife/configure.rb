@@ -18,6 +18,7 @@
 
 require_relative "../knife"
 require_relative "../util/path_helper"
+require_relative "../dist"
 
 class Chef
   class Knife
@@ -116,7 +117,7 @@ class Chef
         if config[:initial]
           @new_client_name        = config[:node_name] || ask_question("Please enter a name for the new user: ", default: Etc.getlogin)
           @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin name: ", default: "admin")
-          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin's private key: ", default: "/etc/chef-server/admin.pem")
+          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin's private key: ", default: "#{Chef::Dist::SERVER_CONF_DIR}/admin.pem")
           @admin_client_key       = File.expand_path(@admin_client_key)
         else
           @new_client_name        = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", default: Etc.getlogin)

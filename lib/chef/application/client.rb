@@ -352,7 +352,7 @@ class Chef::Application::Client < Chef::Application
         tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
         fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
         Mixlib::Archive.new(tarball_path).extract(Chef::Config.chef_repo_path, perms: false, ignore: /^\.$/)
-        config_path = File.join(Chef::Config.chef_repo_path, ".chef/config.rb")
+        config_path = File.join(Chef::Config.chef_repo_path, "#{Chef::Dist::USER_CONF_DIR}/config.rb")
         Chef::Config.from_string(IO.read(config_path), config_path) if File.file?(config_path)
       end
     end
@@ -395,7 +395,7 @@ class Chef::Application::Client < Chef::Application
       if config[:local_mode]
         config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
-        config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
+        config[:config_file] = Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/client.rb")
       end
     end
 

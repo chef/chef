@@ -69,7 +69,7 @@ module Shell
       def help_banner
         banner = []
         banner << ""
-        banner << "chef-shell Help"
+        banner << "#{Chef::Dist::SHELL} Help"
         banner << "".ljust(80, "=")
         banner << "| " + "Command".ljust(25) + "| " + "Description"
         banner << "".ljust(80, "=")
@@ -194,7 +194,7 @@ module Shell
       explain(<<~E)
         ## SUMMARY ##
           When called with no argument, +help+ prints a table of all
-          chef-shell commands. When called with an argument COMMAND, +help+
+          #{Chef::Dist::SHELL} commands. When called with an argument COMMAND, +help+
           prints a detailed explanation of the command if available, or the
           description if no explanation is available.
       E
@@ -210,7 +210,7 @@ module Shell
 
       desc "prints information about chef"
       def version
-        puts "This is the chef-shell.\n" +
+        puts "This is the #{Chef::Dist::SHELL}.\n" +
           " Chef Version: #{::Chef::VERSION}\n" +
           " https://www.chef.io/\n" +
           " https://docs.chef.io/"
@@ -311,9 +311,9 @@ module Shell
               new_node = edit(existing_node)
 
         ## EDITOR SELECTION ##
-          chef-shell looks for an editor using the following logic
+          #{Chef::Dist::SHELL} looks for an editor using the following logic
           1. Looks for an EDITOR set by Shell.editor = "EDITOR"
-          2. Looks for an EDITOR configured in your chef-shell config file
+          2. Looks for an EDITOR configured in your #{Chef::Dist::SHELL} config file
           3. Uses the value of the EDITOR environment variable
       E
       def edit(object)
@@ -322,7 +322,7 @@ module Shell
           return :failburger
         end
 
-        filename = "chef-shell-edit-#{object.class.name}-"
+        filename = "#{Chef::Dist::SHELL}-edit-#{object.class.name}-"
         if object.respond_to?(:name)
           filename += object.name
         elsif object.respond_to?(:id)
