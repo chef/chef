@@ -17,7 +17,6 @@
 class Chef
   class Resource
     class ChocolateySource < Chef::Resource
-      preview_resource true
       resource_name :chocolatey_source
 
       description "Use the chocolatey_source resource to add or remove Chocolatey sources."
@@ -41,7 +40,7 @@ class Chef
       property :priority, Integer, default: 0,
                description: "The priority level of the source."
 
-      property :source_state, [TrueClass, FalseClass], default: false, desired_state: false, skip_docs: true
+      property :disabled, [TrueClass, FalseClass], default: false, desired_state: false, skip_docs: true
 
       load_current_value do
         element = fetch_source_element(source_name)
@@ -53,13 +52,13 @@ class Chef
         admin_only element["adminOnly"] == "true"
         allow_self_service element["selfService"] == "true"
         priority element["priority"].to_i
-        source_state element["disabled"] == "true"
+        disabled element["disabled"] == "true"
       end
 
       # @param [String] id the source name
       # @return [REXML::Attributes] finds the source element with the
       def fetch_source_element(id)
-        require "rexml/document"
+        require "rexml/document" unless defined?(REXML::Document)
 
         config_file = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\config\\chocolatey.config"
         raise "Could not find the Chocolatey config at #{config_file}!" unless ::File.exist?(config_file)
@@ -92,7 +91,7 @@ class Chef
       action :disable do
         description "Disables a Chocolatey source."
 
-        if current_resource.source_state != true
+        if current_resource.disabled != true
           converge_by("disable Chocolatey source '#{new_resource.source_name}'") do
             shell_out!(choco_cmd("disable"))
           end
@@ -102,7 +101,7 @@ class Chef
       action :enable do
         description "Enables a Chocolatey source."
 
-        if current_resource.source_state == true
+        if current_resource.disabled == true
           converge_by("enable Chocolatey source '#{new_resource.source_name}'") do
             shell_out!(choco_cmd("enable"))
           end

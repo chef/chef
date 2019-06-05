@@ -97,22 +97,22 @@ describe Chef::Resource::ChocolateySource do
   end
 
   describe "#load_current_resource" do
-    it "sets the source_state to true when the XML disabled property is true" do
+    it "sets disabled to true when the XML disabled property is true" do
       allow(current_resource).to receive(:fetch_source_element).with("fakey_fakerton").and_return(OpenStruct.new(disabled: "true"))
       disable_provider.load_current_resource
-      expect(current_resource.source_state).to be true
+      expect(current_resource.disabled).to be true
     end
 
-    it "sets the source_state to false when the XML disabled property is false" do
+    it "sets disabled to false when the XML disabled property is false" do
       allow(current_resource).to receive(:fetch_source_element).with("fakey_fakerton").and_return(OpenStruct.new(disabled: "false"))
       enable_provider.load_current_resource
-      expect(current_resource.source_state).to be false
+      expect(current_resource.disabled).to be false
     end
   end
 
   describe "run_action(:enable)" do
     it "when source is disabled, it enables it correctly" do
-      resource.source_state true
+      resource.disabled true
       allow(current_resource).to receive(:fetch_source_element).with("fakey_fakerton").and_return(OpenStruct.new(disabled: "true"))
       expect(enable_provider).to receive(:shell_out!).with("C:\\ProgramData\\chocolatey\\bin\\choco source enable -n \"fakey_fakerton\"")
       resource.run_action(:enable)
@@ -120,7 +120,7 @@ describe Chef::Resource::ChocolateySource do
     end
 
     it "when source is enabled, it is idempotent when trying to enable" do
-      resource.source_state false
+      resource.disabled false
       allow(current_resource).to receive(:fetch_source_element).with("fakey_fakerton").and_return(OpenStruct.new(disabled: "false"))
       resource.run_action(:enable)
       expect(resource.updated_by_last_action?).to be false
