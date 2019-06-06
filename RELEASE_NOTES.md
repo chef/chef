@@ -437,7 +437,7 @@ The `service` resource is now idempotent on SLES 11 systems. Thanks [@gsingla294
 
 ### cron
 
-The `cron` resource has been updated to advise users to use the specify properties rather than passsing values in as part of the `environment` property. This avoids a situation where a user could pass the differing values in both locations and receive unexpected results.
+The `cron` resource has been updated to advise users to use the specify properties rather than passing values in as part of the `environment` property. This avoids a situation where a user could pass the differing values in both locations and receive unexpected results.
 
 ### link
 
