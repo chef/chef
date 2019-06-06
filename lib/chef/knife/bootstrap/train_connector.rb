@@ -23,16 +23,16 @@ class Chef
   class Knife
     class Bootstrap < Knife
       class TrainConnector
-        SSH_CONFIG_OVERRIDE_KEYS = [:user, :port, :proxy].freeze
+        SSH_CONFIG_OVERRIDE_KEYS ||= [:user, :port, :proxy].freeze
 
-        MKTEMP_WIN_COMMAND = <<~EOM.freeze
+        MKTEMP_WIN_COMMAND ||= <<~EOM.freeze
           $parent = [System.IO.Path]::GetTempPath();
           [string] $name = [System.Guid]::NewGuid();
           $tmp = New-Item -ItemType Directory -Path (Join-Path $parent $name);
           $tmp.FullName
         EOM
 
-        MKTEMP_NIX_COMMAND = "bash -c 'd=$(mktemp -d ${TMPDIR:-/tmp}/chef_XXXXXX); echo $d'".freeze
+        MKTEMP_NIX_COMMAND ||= "bash -c 'd=$(mktemp -d ${TMPDIR:-/tmp}/chef_XXXXXX); echo $d'".freeze
 
         def initialize(host_url, default_protocol, opts)
           @host_url = host_url
