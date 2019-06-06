@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.3 -->
-## [v15.1.3](https://github.com/chef/chef/tree/v15.1.3) (2019-06-05)
+<!-- latest_release 15.1.4 -->
+## [v15.1.4](https://github.com/chef/chef/tree/v15.1.4) (2019-06-06)
 
 #### Merged Pull Requests
-- Chef-15: Added deprecation check for short arguments [#8626](https://github.com/chef/chef/pull/8626) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Avoid constant warnings [#8633](https://github.com/chef/chef/pull/8633) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Avoid constant warnings [#8633](https://github.com/chef/chef/pull/8633) ([tas50](https://github.com/tas50)) <!-- 15.1.4 -->
 - Chef-15: Added deprecation check for short arguments [#8626](https://github.com/chef/chef/pull/8626) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.1.3 -->
 - more distro constants [#8630](https://github.com/chef/chef/pull/8630) ([bobchaos](https://github.com/bobchaos)) <!-- 15.1.2 -->
 - Create bootstrap template in binmode to fix line endings [#8631](https://github.com/chef/chef/pull/8631) ([btm](https://github.com/btm)) <!-- 15.1.1 -->
