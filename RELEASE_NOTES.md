@@ -423,6 +423,47 @@ The `refresh_plugins` method in the `Ohai::System` class has been removed as it 
 
 The `Virtualization` plugin will no longer detect systems running on the circa ~2005 VirtualPC or VirtualServer hypervisors. These hypervisors were long ago deprecated by Microsoft and support can no longer be tested.
 
+# Chef Infra Client Release Notes 14.13:
+
+## Updated Resources
+
+### directory
+
+The `directory` has been updated to properly set the `deny_rights` permission on Windows. Thanks [@merlinjim](https://github.com/merlinjim) for reporting this issue.
+
+### service
+
+The `service` resource is now idempotent on SLES 11 systems. Thanks [@gsingla294](https://github.com/gsingla294) for reporting this issue.
+
+### cron
+
+The `cron` resource has been updated to advise users to use the specify properties rather than passsing values in as part of the `environment` property. This avoids a situation where a user could pass the differing values in both locations and receive unexpected results.
+
+### link
+
+The `link` resource includes improved logging upon failure to help you debug what has failed. Thanks [@jaymzh](https://github.com/jaymzh) for this improvement.
+
+### template
+
+The `template` resource now includes additional information when templating failures, which is particularly useful in ChefSpec. Thanks [@brodock](https://github.com/brodock) for this improvement.
+
+## delete_resource Fix
+
+The `delete_resource` helper now works properly when the resource you are attempting to delete has multiple providers. Thanks [@artem-sidorenko](https://github.com/artem-sidorenko) for this fix.
+
+## Helpers Help Everywhere
+
+Various helpers have been moved into Chef Infra Client's `universal` class, which makes them available anywhere in your cookbook, not just recipes. If you've ever been confused why something like `search`, `powershell_out`, or `data_bag_item` didn't work somewhere in your code, that should be resolved now.
+
+## Deprecations
+
+The `CHEF-25` deprecation for resource collisions between cookbooks and resources in Chef Infra Client has been removed. Instead you will see a log warning that a collision has occurred, which advises you to update your run_list or cookbooks.
+
+## Updated Components
+
+- openssl 1.0.2r -> 1.0.2s (bugfix only release)
+- cacerts 2019-01-23 -> 2019-05-15
+
 # Chef Infra Client Release Notes 14.12:
 
 ## Updated Resources
@@ -441,7 +482,6 @@ The windows_certificate resource now imports nested certificates while importing
 - ruby 2.5.3 -> 2.5.5
 - InSpec 3.7.1 -> 3.9.0
 - The unused windows-api gem is no longer bundled with Chef on Windows hosts
-
 # Chef Infra Client Release Notes 14.11:
 
 ## Updated Resources
