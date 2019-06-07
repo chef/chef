@@ -121,8 +121,6 @@ steps:
   expeditor:
     executor:
       docker:
-        environment:
-          - TEST_GEM=sethvargo/chef-sugar
 
 - label: "Test chef-zero gem :ruby: 2.6"
   commands:
@@ -133,7 +131,6 @@ steps:
     executor:
       docker:
         environment:
-          - TEST_GEM=chef/chef-zero
           - PEDANT_OPTS=--skip-oc_id
           - CHEF_FS=true
 
@@ -145,8 +142,6 @@ steps:
   expeditor:
     executor:
       docker:
-        environment:
-          - TEST_GEM=chef/cheffish
 
 - label: "Test chefspec gem :ruby: 2.6"
   commands:
@@ -156,8 +151,6 @@ steps:
   expeditor:
     executor:
       docker:
-        environment:
-          - TEST_GEM=chefspec/chefspec
 
 - label: "Test knife-windows gem :ruby: 2.6"
   commands:
@@ -167,8 +160,6 @@ steps:
   expeditor:
     executor:
       docker:
-        environment:
-          - TEST_GEM=chef/knife-windows
 
 #########################################################################
   # START TEST KITCHEN ONLY
