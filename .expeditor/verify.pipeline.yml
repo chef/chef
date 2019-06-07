@@ -122,7 +122,7 @@ steps:
 - label: "Test chef-sugar gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle install --jobs=3 --retry=3
     - bundle exec tasks/bin/run_external_test sethvargo/chef-sugar master rake
   expeditor:
     executor:
@@ -132,7 +132,7 @@ steps:
 - label: "Test chef-zero gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle install --jobs=3 --retry=3
     - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
   expeditor:
     executor:
@@ -145,7 +145,7 @@ steps:
 - label: "Test cheffish gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle install --jobs=3 --retry=3
     - bundle exec tasks/bin/run_external_test chef/cheffish master rake spec
   expeditor:
     executor:
@@ -155,7 +155,7 @@ steps:
 - label: "Test chefspec gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle install --jobs=3 --retry=3
     - bundle exec tasks/bin/run_external_test chefspec/chefspec master rake
   expeditor:
     executor:
@@ -165,7 +165,7 @@ steps:
 - label: "Test knife-windows gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle install --jobs=3 --retry=3
     - bundle exec tasks/bin/run_external_test chef/knife-windows master rake unit_spec
   expeditor:
     executor:
