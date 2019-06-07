@@ -1657,7 +1657,6 @@ describe Chef::Knife::Bootstrap do
   describe "#run" do
     it "performs the steps we expect to run a bootstrap" do
       expect(knife).to receive(:check_license)
-      expect(knife).to receive(:verify_deprecated_flags!).ordered
       expect(knife).to receive(:validate_name_args!).ordered
       expect(knife).to receive(:validate_protocol!).ordered
       expect(knife).to receive(:validate_first_boot_attributes!).ordered
@@ -1676,106 +1675,6 @@ describe Chef::Knife::Bootstrap do
 
       # Post-run verify expected state changes (not many directly in #run)
       expect($stdout.sync).to eq true
-    end
-  end
-
-  describe "#verify_deprecated_flags!" do
-    before do
-      Chef::Config[:silence_deprecation_warnings] = false
-    end
-
-    context "when a deprecated CLI flag is given on the CLI" do
-      context "with flag containing only long argument" do
-        context "when given with no other options" do
-          let(:bootstrap_cli_options) { %w{--winrm-transport XXX} }
-          it "maps the key value to the new key and points the human to the new flag" do
-            expect(knife.ui).to receive(:warn).with("You provided --winrm-transport. This flag is deprecated. Please use '--winrm-ssl' instead.")
-            knife.verify_deprecated_flags!
-            expect(knife.config[:winrm_ssl]).to eq "XXX"
-          end
-        end
-        context "when given along with valid flag" do
-          let(:bootstrap_cli_options) { %w{--winrm-transport XXX --connection-user user-a} }
-          it "maps the key value to the new key and points the human to the new flag" do
-            expect(knife.ui).to receive(:warn).with("You provided --winrm-transport. This flag is deprecated. Please use '--winrm-ssl' instead.")
-            knife.verify_deprecated_flags!
-            expect(knife.config[:winrm_ssl]).to eq "XXX"
-            expect(knife.config[:connection_user]).to eq "user-a"
-          end
-        end
-        context "when given along with its replacement" do
-          let(:bootstrap_cli_options) { %w{--winrm-transport XXX --winrm-ssl YYY} }
-          it "informs the human that both are provided and exits" do
-            expect(knife.ui).to receive(:error).with(/You provided both --winrm-ssl and --winrm-transport.*Please use.*/m)
-            expect { knife.verify_deprecated_flags! }.to raise_error SystemExit
-          end
-        end
-      end
-
-      context "with flag also contains short argument" do
-        context "when given as short arg" do
-          context "with no other options" do
-            let(:bootstrap_cli_options) { %w{-x user-a} }
-            it "maps the key value to the new key and display information with both long and short arguments" do
-              expect(knife.ui).to receive(:warn).with("You provided --winrm-user(or -x). This flag is deprecated. Please use '--connection-user USERNAME(or -U USERNAME)' instead.")
-              knife.verify_deprecated_flags!
-              expect(knife.config[:connection_user]).to eq "user-a"
-            end
-          end
-          context "along with valid flag" do
-            let(:bootstrap_cli_options) { %w{-x user-a --connection-password XXX} }
-            it "maps the key value to the new key and display information with both long and short arguments" do
-              expect(knife.ui).to receive(:warn).with("You provided --winrm-user(or -x). This flag is deprecated. Please use '--connection-user USERNAME(or -U USERNAME)' instead.")
-              knife.verify_deprecated_flags!
-              expect(knife.config[:connection_user]).to eq "user-a"
-              expect(knife.config[:connection_password]).to eq "XXX"
-            end
-          end
-          context "along with its replacement" do
-            let(:bootstrap_cli_options) { %w{-x user-a --connection-user user-b} }
-            it "informs the human that both are provided and exits" do
-              expect(knife.ui).to receive(:error).with("You provided both --connection-user(or -U) and --winrm-user(or -x).\n\nPlease use one or the other, but note that\n--winrm-user USERNAME is deprecated.\n")
-              expect { knife.verify_deprecated_flags! }.to raise_error SystemExit
-            end
-          end
-        end
-
-        context "when given as long arg" do
-          context "with no other options" do
-            let(:bootstrap_cli_options) { %w{--winrm-user user-a} }
-            it "maps the key value to the new key and display information with both long and short arguments" do
-              expect(knife.ui).to receive(:warn).with("You provided --winrm-user(or -x). This flag is deprecated. Please use '--connection-user USERNAME(or -U USERNAME)' instead.")
-              knife.verify_deprecated_flags!
-              expect(knife.config[:connection_user]).to eq "user-a"
-            end
-          end
-          context "along with valid flag" do
-            let(:bootstrap_cli_options) { %w{--winrm-user user-a --connection-password XXX} }
-            it "maps the key value to the new key and display information with both long and short arguments" do
-              expect(knife.ui).to receive(:warn).with("You provided --winrm-user(or -x). This flag is deprecated. Please use '--connection-user USERNAME(or -U USERNAME)' instead.")
-              knife.verify_deprecated_flags!
-              expect(knife.config[:connection_user]).to eq "user-a"
-              expect(knife.config[:connection_password]).to eq "XXX"
-            end
-          end
-          context "along with its replacement" do
-            let(:bootstrap_cli_options) { %w{--winrm-user user-a --connection-user user-b} }
-            it "informs the human that both are provided and exits" do
-              expect(knife.ui).to receive(:error).with("You provided both --connection-user(or -U) and --winrm-user(or -x).\n\nPlease use one or the other, but note that\n--winrm-user USERNAME is deprecated.\n")
-              expect { knife.verify_deprecated_flags! }.to raise_error SystemExit
-            end
-          end
-        end
-      end
-    end
-
-    context "when a deprecated boolean CLI flag is given on the CLI, and its non-boolean replacement is used" do
-      let(:bootstrap_cli_options) { %w{--prerelease} }
-      it "correctly maps the old boolean value to the new value" do
-        expect(knife.ui).to receive(:warn)
-        knife.verify_deprecated_flags!
-        expect(knife.config[:channel]).to eq "current"
-      end
     end
   end
 

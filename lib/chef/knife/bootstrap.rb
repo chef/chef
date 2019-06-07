@@ -347,67 +347,70 @@ class Chef
           Chef::Config[:knife][:bootstrap_vault_item]
         }
 
-      DEPRECATED_FLAGS = {
-        # deprecated_key: [new_key, deprecated_long, replacement_value, deprecated_short]
-        # optional third element: replacement_value - if converting from bool
-        #   (--bool-option) to valued flag (--new-option VALUE)
-        #   this will be the value that is assigned the new flag when the old flag is used.
-        # optional fourth element: deprecated_short - if the short form of flag has also been deprecated.
-        auth_timeout: [:max_wait, "--max-wait SECONDS" ],
-        forward_agent:
-          [:ssh_forward_agent, "--forward-agent"],
-        host_key_verify:
-          [:ssh_verify_host_key, "--[no-]host-key-verify"],
-        prerelease:
-          [:channel, "--prerelease", "current"],
-        ssh_user:
-          [:connection_user, "--ssh-user USERNAME"],
-        ssh_password:
-          [:connection_password, "--ssh-password PASSWORD"],
-        ssh_port:
-          [:connection_port, "--ssh-port"],
-        ssl_peer_fingerprint:
-          [:winrm_ssl_peer_fingerprint, "--ssl-peer-fingerprint FINGERPRINT"],
-        winrm_user:
-          [:connection_user, "--winrm-user USERNAME", nil, "-x USERNAME"],
-        winrm_password:
-          [:connection_password, "--winrm-password PASSWORD"],
-        winrm_port:
-          [:connection_port, "--winrm-port"],
-        winrm_authentication_protocol:
-          [:winrm_auth_method, "--winrm-authentication-protocol PROTOCOL"],
-        winrm_session_timeout:
-          [:session_timeout, "--winrm-session-timeout MINUTES"],
-        winrm_ssl_verify_mode:
-          [:winrm_no_verify_cert, "--winrm-ssl-verify-mode MODE"],
-        winrm_transport:
-          [:winrm_ssl, "--winrm-transport TRANSPORT"],
-      }.freeze
+      # Deprecated options. These must be declared after
+      # regular options because they refer to the replacement
+      # option definitions implicitly.
+      deprecated_option :auth_timeout,
+        replacement: :max_wait,
+        long: "--max-wait SECONDS"
 
-      DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
-        new_key, deprecated_long, replacement_value, deprecated_short = deprecation_entry
-        new_long = options[new_key][:long]
-        new_long_key = new_long.split(" ").first
-        if new_short = options[new_key][:short]
-          new_long += "(or #{new_short})"
-          new_long_key += "(or #{new_short.split(" ").first})"
-        end
-        new_long_desc = if replacement_value.nil?
-                          new_long
-                        else
-                          "#{new_long_key} #{replacement_value}"
-                        end
+      deprecated_option :forward_agent,
+        replacement: :ssh_forward_agent,
+        boolean: true, long: "--forward-agent"
 
-        opt = { long: deprecated_long,
-                description: "This flag is deprecated. Please use '#{new_long_desc}' instead.",
-                boolean: options[new_key][:boolean] || !replacement_value.nil?,
-               # Put deprecated options at the end of the options list
-                on: :tail }
+      deprecated_option :host_key_verify,
+        replacement: :ssh_verify_host_key,
+        boolean: true, long: "--[no-]host-key-verify",
+        value_mapper: Proc.new { |verify| verify ? "always" : "never" }
 
-        opt[:short] = deprecated_short if deprecated_short
+      deprecated_option :prerelease,
+        replacement: :channel,
+        long: "--prerelease",
+        boolean: true, value_mapper: Proc.new { "current" }
 
-        option(deprecated_key, opt)
-      end
+      deprecated_option :ssh_user,
+        replacement: :connection_user,
+        long: "--ssh-user USERNAME"
+
+      deprecated_option :ssh_password,
+        replacement: :connection_password,
+        long: "--ssh-password PASSWORD"
+
+      deprecated_option :ssh_port,
+        replacement: :connection_port,
+        long: "--ssh-port PASSWORD"
+
+      deprecated_option :ssl_peer_fingerprint,
+        replacement: :winrm_ssl_peer_fingerprint,
+        long: "--ssl-peer-fingerprint FINGERPRINT"
+
+      deprecated_option :winrm_user,
+        replacement: :connection_user,
+        long: "--winrm-user USERNAME", short: "-x USERNAME"
+
+      deprecated_option :winrm_password,
+        replacement: :connection_password,
+        long: "--winrm-password PASSWORD"
+
+      deprecated_option :winrm_port,
+        replacement: :connection_port,
+        long: "--winrm-port PORT"
+
+      deprecated_option :winrm_authentication_protocol,
+        replacement: :winrm_auth_method,
+        long: "--winrm-authentication-protocol PROTOCOL"
+
+      deprecated_option :winrm_session_timeout,
+        replacement: :session_timeout,
+        long: "--winrm-session-timeout MINUTES"
+
+      deprecated_option :winrm_ssl_verify_mode,
+        replacement: :winrm_no_verify_cert,
+        long: "--winrm-ssl-verify-mode MODE"
+
+      deprecated_option :winrm_transport, replacement: :winrm_ssl,
+        long: "--winrm-transport TRANSPORT",
+        value_mapper: Proc.new { |value| value == "ssl" }
 
       attr_reader :connection
 
@@ -548,7 +551,6 @@ class Chef
 
       def run
         check_license
-        verify_deprecated_flags!
 
         plugin_setup!
         validate_name_args!
@@ -693,7 +695,7 @@ class Chef
               Validatorless bootstrap over unsecure winrm channels could expose your
               key to network sniffing.
                Please use a 'winrm_auth_method' other than 'plaintext',
-              or enable ssl on #{server_name} then use the --ssl flag
+              or enable ssl on #{server_name} then use the ---winrm-ssl flag
               to connect.
             EOM
 
@@ -701,45 +703,6 @@ class Chef
           end
         end
         true
-      end
-
-      # If any deprecated flags are used, let the user know and
-      # update config[new-key] to the value given to the deprecated flag,
-      # or to the mapped value in case of changing flag type.
-      # If a deprecated flag and its corresponding replacement
-      # are both used, exit
-      def verify_deprecated_flags!
-        DEPRECATED_FLAGS.each do |deprecated_key, deprecation_entry|
-          new_key, deprecated_long, replacement_value, deprecated_short = deprecation_entry
-
-          dep_long_key = deprecated_long.split(" ").first
-          if deprecated_short
-            dep_long_key += "(or #{deprecated_short.split(" ").first})"
-          end
-
-          if config.key?(deprecated_key) && config_source(deprecated_key) == :cli
-            if config.key?(new_key) && config_source(new_key) == :cli
-              new_long = options[new_key][:long]
-              new_long_key = new_long.split(" ").first
-              if new_short = options[new_key][:short]
-                new_long += "(or #{new_short})"
-                new_long_key += "(or #{new_short.split(" ").first})"
-              end
-              ui.error <<~EOM
-                You provided both #{new_long_key} and #{dep_long_key}.
-
-                Please use one or the other, but note that
-                #{deprecated_long} is deprecated.
-              EOM
-              exit 1
-            else
-              config[new_key] = replacement_value || config[deprecated_key]
-              unless Chef::Config[:silence_deprecation_warnings] == true
-                ui.warn "You provided #{dep_long_key}. #{options[deprecated_key][:description]}"
-              end
-            end
-          end
-        end
       end
 
       # fail if the server_name is nil
