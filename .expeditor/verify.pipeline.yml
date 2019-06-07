@@ -176,7 +176,7 @@ steps:
   # START TEST KITCHEN ONLY
 #########################################################################
 
-- label: "Kitchen Tests :amazon: 2 :ruby: 2.5"
+- label: "Kitchen Tests :amazon: 2"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -184,7 +184,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      AMAZON: "2"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -192,7 +191,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests :amazon: 201X :ruby: 2.5"
+- label: "Kitchen Tests :amazon: 201X"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -200,7 +199,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      AMAZON: 201X
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -208,7 +206,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Ubuntu: 16.04 :ruby: 2.5"
+- label: "Kitchen Tests Ubuntu: 16.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -224,7 +222,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Ubuntu: 18.04 :ruby: 2.5"
+- label: "Kitchen Tests Ubuntu: 18.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -232,7 +230,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      UBUNTU: "18.04"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -240,7 +237,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Debian: 8 :ruby: 2.5"
+- label: "Kitchen Tests Debian: 8"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -248,7 +245,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      DEBIAN: "8"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -256,7 +252,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Debian: 9 :ruby: 2.5"
+- label: "Kitchen Tests Debian: 9"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -264,7 +260,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      DEBIAN: "9"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -272,7 +267,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Debian: 10 :ruby: 2.5"
+- label: "Kitchen Tests Debian: 10"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -280,7 +275,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      DEBIAN: "10"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -288,7 +282,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Centos: 6 :ruby: 2.5"
+- label: "Kitchen Tests CentOS: 6"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -296,7 +290,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      CENTOS: "6"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -304,7 +297,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Centos: 7 :ruby: 2.5"
+- label: "Kitchen Tests CentOS: 7"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -312,7 +305,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      CENTOS: "7"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -320,7 +312,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Fedora: latest :ruby: 2.5"
+- label: "Kitchen Tests Fedora: latest"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -328,7 +320,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      FEDORA: "latest"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -336,7 +327,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests OPENSUSELEAP: 42 :ruby: 2.5"
+- label: "Kitchen Tests openSUSE Leap: 42"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -344,7 +335,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      OPENSUSELEAP: "42"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -360,7 +350,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      RSPEC_CENTOS: "7"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -377,7 +366,6 @@ steps:
   artifact_paths:
   - $PWD/.kitchen/logs/kitchen.log
   env:
-      RSPEC_OPENSUSELEAP: "42"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
