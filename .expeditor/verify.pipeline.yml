@@ -18,6 +18,7 @@ steps:
   expeditor:
     executor:
       docker:
+        image: ruby:2.6-stretch
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
@@ -27,11 +28,13 @@ steps:
 - label: "Functional Specs :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
+    - apt-get install -y cron locales # needed for functional tests to pass
     - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
   expeditor:
     executor:
       docker:
+        image: ruby:2.6-stretch
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
@@ -46,6 +49,7 @@ steps:
   expeditor:
     executor:
       docker:
+        image: ruby:2.6-stretch
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
@@ -67,12 +71,12 @@ steps:
 - label: "Integration Specs :ruby: 2.5"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - asdf local ruby 2.5.5
-    - bundle install --without docgen integration omnibus_package --frozen
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
     executor:
       docker:
+        image: ruby:2.5-stretch
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
@@ -81,13 +85,14 @@ steps:
 #
 - label: "Functional Specs :ruby: 2.5"
   commands:
-    - asdf local ruby 2.5.5
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --without docgen integration omnibus_package --frozen
+    - apt-get install -y cron locales # needed for functional tests to pass
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec rake spec:functional
   expeditor:
     executor:
       docker:
+        image: ruby:2.5-stretch
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
@@ -96,14 +101,14 @@ steps:
 
 - label: "Unit Specs :ruby: 2.5"
   commands:
-    - asdf local ruby 2.5.5
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --without docgen integration omnibus_package --frozen
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
     executor:
       docker:
+        image: ruby:2.5-stretch
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
@@ -116,65 +121,61 @@ steps:
 - label: "Test chef-sugar gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test sethvargo/chef-sugar master rake
   expeditor:
     executor:
       docker:
-        environment:
-          - TEST_GEM=sethvargo/chef-sugar
+        image: ruby:2.6-stretch
 
 - label: "Test chef-zero gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
   expeditor:
     executor:
       docker:
+        image: ruby:2.6-stretch
         environment:
-          - TEST_GEM=chef/chef-zero
           - PEDANT_OPTS=--skip-oc_id
           - CHEF_FS=true
 
 - label: "Test cheffish gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/cheffish master rake spec
   expeditor:
     executor:
       docker:
-        environment:
-          - TEST_GEM=chef/cheffish
+        image: ruby:2.6-stretch
 
 - label: "Test chefspec gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chefspec/chefspec master rake
   expeditor:
     executor:
       docker:
-        environment:
-          - TEST_GEM=chefspec/chefspec
+        image: ruby:2.6-stretch
 
 - label: "Test knife-windows gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - bundle install --jobs=3 --retry=3 --deployment --path=vendor/bundle
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/knife-windows master rake unit_spec
   expeditor:
     executor:
       docker:
-        environment:
-          - TEST_GEM=chef/knife-windows
+        image: ruby:2.6-stretch
 
 #########################################################################
   # START TEST KITCHEN ONLY
 #########################################################################
 
-- label: "Kitchen Tests :amazon: 2 :ruby: 2.5"
+- label: "Kitchen Tests :amazon: 2"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -182,7 +183,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      AMAZON: "2"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -190,7 +190,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests :amazon: 201X :ruby: 2.5"
+- label: "Kitchen Tests :amazon: 201X"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -198,7 +198,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      AMAZON: 201X
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -206,7 +205,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Ubuntu: 16.04 :ruby: 2.5"
+- label: "Kitchen Tests Ubuntu: 16.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -222,7 +221,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Ubuntu: 18.04 :ruby: 2.5"
+- label: "Kitchen Tests Ubuntu: 18.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -230,7 +229,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      UBUNTU: "18.04"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -238,7 +236,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Debian: 8 :ruby: 2.5"
+- label: "Kitchen Tests Debian: 8"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -246,7 +244,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      DEBIAN: "8"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -254,7 +251,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Debian: 9 :ruby: 2.5"
+- label: "Kitchen Tests Debian: 9"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -262,7 +259,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      DEBIAN: "9"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -270,7 +266,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Debian: 10 :ruby: 2.5"
+- label: "Kitchen Tests Debian: 10"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -278,7 +274,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      DEBIAN: "10"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -286,7 +281,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Centos: 6 :ruby: 2.5"
+- label: "Kitchen Tests CentOS: 6"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -294,7 +289,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      CENTOS: "6"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -302,7 +296,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Centos: 7 :ruby: 2.5"
+- label: "Kitchen Tests CentOS: 7"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -310,7 +304,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      CENTOS: "7"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -318,7 +311,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Fedora: latest :ruby: 2.5"
+- label: "Kitchen Tests Fedora: latest"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -326,7 +319,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      FEDORA: "latest"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -334,7 +326,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests OPENSUSELEAP: 42 :ruby: 2.5"
+- label: "Kitchen Tests openSUSE Leap: 42"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -342,7 +334,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      OPENSUSELEAP: "42"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -358,7 +349,6 @@ steps:
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
-      RSPEC_CENTOS: "7"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
@@ -375,7 +365,6 @@ steps:
   artifact_paths:
   - $PWD/.kitchen/logs/kitchen.log
   env:
-      RSPEC_OPENSUSELEAP: "42"
       KITCHEN_YAML: kitchen.yml
   expeditor:
     executor:
