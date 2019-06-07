@@ -34,31 +34,7 @@ class Chef
       #
       def load_current_resource
         if new_resource.respond_to?(:load_current_value!)
-          # dup the resource and then reset desired-state properties.
-          current_resource = new_resource.dup
-
-          # We clear desired state in the copy, because it is supposed to be actual state.
-          # We keep identity properties and non-desired-state, which are assumed to be
-          # "control" values like `recurse: true`
-          current_resource.class.properties.each_value do |property|
-            if property.desired_state? && !property.identity? && !property.name_property?
-              property.reset(current_resource)
-            end
-          end
-
-          # Call the actual load_current_value! method. If it raises
-          # CurrentValueDoesNotExist, set current_resource to `nil`.
-          begin
-            # If the user specifies load_current_value do |desired_resource|, we
-            # pass in the desired resource as well as the current one.
-            if current_resource.method(:load_current_value!).arity > 0
-              current_resource.load_current_value!(new_resource)
-            else
-              current_resource.load_current_value!
-            end
-          rescue Chef::Exceptions::CurrentValueDoesNotExist
-            current_resource = nil
-          end
+          current_resource = construct_current_resource
         end
 
         @current_resource = current_resource
@@ -85,6 +61,38 @@ class Chef
       def self.inspect
         to_s
       end
+
+      private
+
+      def construct_current_resource
+        # create a new resource.
+        current_resource = new_resource.class.new
+
+        # We clear desired state in the copy, because it is supposed to be actual state.
+        # We keep identity properties and non-desired-state, which are assumed to be
+        # "control" values like `recurse: true`
+        current_resource.class.properties.each_value do |property|
+          if property.identity? || property.name_property?
+            property.set(new_resource.property.get(property.name))
+          end
+        end
+
+        # Call the actual load_current_value! method. If it raises
+        # CurrentValueDoesNotExist, set current_resource to `nil`.
+        begin
+          # If the user specifies load_current_value do |desired_resource|, we
+          # pass in the desired resource as well as the current one.
+          if current_resource.method(:load_current_value!).arity > 0
+            current_resource.load_current_value!(new_resource)
+          else
+            current_resource.load_current_value!
+          end
+        rescue Chef::Exceptions::CurrentValueDoesNotExist
+          current_resource = nil
+        end
+        current_resource
+      end
+
     end
   end
 end
