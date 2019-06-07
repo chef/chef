@@ -70,7 +70,6 @@ steps:
 - label: "Integration Specs :ruby: 2.5"
   commands:
     - /workdir/scripts/bk_tests/bk_install.sh
-    - asdf local ruby 2.5.5
     - bundle install --without docgen integration omnibus_package --frozen
     - bundle exec rake spec:integration
   expeditor:
@@ -85,7 +84,6 @@ steps:
 #
 - label: "Functional Specs :ruby: 2.5"
   commands:
-    - asdf local ruby 2.5.5
     - /workdir/scripts/bk_tests/bk_install.sh
     - bundle install --without docgen integration omnibus_package --frozen
     - bundle exec rake spec:functional
@@ -101,7 +99,6 @@ steps:
 
 - label: "Unit Specs :ruby: 2.5"
   commands:
-    - asdf local ruby 2.5.5
     - /workdir/scripts/bk_tests/bk_install.sh
     - bundle install --without docgen integration omnibus_package --frozen
     - bundle exec rake spec:unit
