@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.4 -->
-## [v15.1.4](https://github.com/chef/chef/tree/v15.1.4) (2019-06-06)
+<!-- latest_release 15.1.5 -->
+## [v15.1.5](https://github.com/chef/chef/tree/v15.1.5) (2019-06-07)
 
 #### Merged Pull Requests
-- Avoid constant warnings [#8633](https://github.com/chef/chef/pull/8633) ([tas50](https://github.com/tas50))
+- Speed up buildkite tests [#8636](https://github.com/chef/chef/pull/8636) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Speed up buildkite tests [#8636](https://github.com/chef/chef/pull/8636) ([tas50](https://github.com/tas50)) <!-- 15.1.5 -->
 - Avoid constant warnings [#8633](https://github.com/chef/chef/pull/8633) ([tas50](https://github.com/tas50)) <!-- 15.1.4 -->
 - Chef-15: Added deprecation check for short arguments [#8626](https://github.com/chef/chef/pull/8626) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.1.3 -->
 - more distro constants [#8630](https://github.com/chef/chef/pull/8630) ([bobchaos](https://github.com/bobchaos)) <!-- 15.1.2 -->
