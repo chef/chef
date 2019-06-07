@@ -1,5 +1,11 @@
 #!/usr/bin/env ruby
 
+# This script helps to test external gems in the content of the current
+# Chef install. We want to make sure that the external gems will still function
+# once we release Chef so we run *their* specs against the current contents
+# of the chef / ohai repos. It let's us know if we need to update downstream
+# gems or fix regressions in chef *before* we release.
+
 $:.unshift(File.expand_path("../../lib", File.dirname(__FILE__)))
 
 require "tmpdir"
