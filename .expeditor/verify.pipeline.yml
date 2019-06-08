@@ -10,59 +10,147 @@ steps:
   # Tests Ruby 2.6
 #########################################################################
 
-- label: "Integration Specs :ruby: 2.6"
+- label: "Integration Specs Ubuntu :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
     executor:
       docker:
-        image: ruby:2.6-stretch
+        image: rubydistros/ubuntu-18.04
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
           - BUNDLE_GEMFILE=/workdir/Gemfile
 
-- label: "Functional Specs :ruby: 2.6"
+- label: "Functional Specs Ubuntu :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get install -y cron locales # needed for functional tests to pass
     - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
   expeditor:
     executor:
       docker:
-        image: ruby:2.6-stretch
+        image: rubydistros/ubuntu-18.04
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
-- label: "Unit Specs :ruby: 2.6"
+- label: "Unit Specs Ubuntu :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
     executor:
       docker:
-        image: ruby:2.6-stretch
+        image: rubydistros/ubuntu-18.04
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+
+- label: "Integration Specs CentOS :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/centos-7
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - BUNDLE_GEMFILE=/workdir/Gemfile
+
+- label: "Functional Specs CentOS :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - yum install -y cron mk2fs util-linux
+    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/centos-7
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+
+- label: "Unit Specs CentOS :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle exec rake spec:unit
+    - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/centos-7
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+
+- label: "Integration Specs openSUSE :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/opensuse-15
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - BUNDLE_GEMFILE=/workdir/Gemfile
+
+- label: "Functional Specs openSUSE :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - yum install -y cron mk2fs util-linux
+    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/opensuse-15
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+
+- label: "Unit Specs openSUSE :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle exec rake spec:unit
+    - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/opensuse-15
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
 - label: "Chefstyle :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
     - bundle exec rake style
   expeditor:
     executor:
       docker:
-        image: ruby:2.6-stretch
+        image: rubydistros/ubuntu-18.04
 
 #########################################################################
   # Tests Ruby 2.5
@@ -70,7 +158,7 @@ steps:
 
 - label: "Integration Specs :ruby: 2.5"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
@@ -85,7 +173,7 @@ steps:
 #
 - label: "Functional Specs :ruby: 2.5"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get install -y cron locales # needed for functional tests to pass
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec rake spec:functional
@@ -101,7 +189,7 @@ steps:
 
 - label: "Unit Specs :ruby: 2.5"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
@@ -120,56 +208,56 @@ steps:
 
 - label: "Test chef-sugar gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test sethvargo/chef-sugar master rake
   expeditor:
     executor:
       docker:
-        image: ruby:2.6-stretch
+        image: rubydistros/ubuntu-18.04
 
 - label: "Test chef-zero gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
   expeditor:
     executor:
       docker:
-        image: ruby:2.6-stretch
+        image: rubydistros/ubuntu-18.04
         environment:
           - PEDANT_OPTS=--skip-oc_id
           - CHEF_FS=true
 
 - label: "Test cheffish gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/cheffish master rake spec
   expeditor:
     executor:
       docker:
-        image: ruby:2.6-stretch
+        image: rubydistros/ubuntu-18.04
 
 - label: "Test chefspec gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chefspec/chefspec master rake
   expeditor:
     executor:
       docker:
-        image: ruby:2.6-stretch
+        image: rubydistros/ubuntu-18.04
 
 - label: "Test knife-windows gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_install.sh
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/knife-windows master rake unit_spec
   expeditor:
     executor:
       docker:
-        image: ruby:2.6-stretch
+        image: rubydistros/ubuntu-18.04
 
 #########################################################################
   # START TEST KITCHEN ONLY
@@ -333,37 +421,6 @@ steps:
     - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "rspec on CentOS 7 :ruby: 2.5"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test rspec-centos-7
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        image: centos/ruby-25-centos7
-        privileged: true
-        single-use: true
-
-- label: "rspec on openSUSE Leap 42 :ruby: 2.5"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test rspec-opensuse-leap\
-  artifact_paths:
-  - $PWD/.kitchen/logs/kitchen.log
   env:
       KITCHEN_YAML: kitchen.yml
   expeditor:
