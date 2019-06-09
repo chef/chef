@@ -3,7 +3,6 @@
 # make sure we have the network tools in place for various network specs
 if [ -f /etc/debian_version ]; then
   apt-get update -y && apt-get install -y net-tools iproute2
-  mkdir -p /etc/network/interfaces.d
   touch /etc/network/interfaces
 elif [ -f /etc/redhat-release ]; then
   yum install -y net-tools
