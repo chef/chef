@@ -8,11 +8,6 @@ else
 	yum install -y net-tools
 fi
 
-# git and build tools
-if [ -f /etc/redhat-release ]; then
-  yum install -y git make gcc gcc-c++ openssl-devel readline-devel zlib-devel which
-fi
-
 # make sure we have the omnibus_overrides specified version of rubygems / bundler
 gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
 gem --version
