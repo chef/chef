@@ -2,10 +2,11 @@
 
 # make sure we have the network tools in place for various network specs
 if [ -f /etc/debian_version ]; then
-	apt-get update -y && apt-get install -y net-tools iproute2
-	touch /etc/network/interfaces
+  apt-get update -y && apt-get install -y net-tools iproute2
+  mkdir -p /etc/network/interfaces.d
+  touch /etc/network/interfaces
 else
-	yum install -y net-tools
+  yum install -y net-tools
 fi
 
 # make sure we have the omnibus_overrides specified version of rubygems / bundler
