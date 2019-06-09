@@ -263,168 +263,168 @@ steps:
   # START TEST KITCHEN ONLY
 #########################################################################
 
-- label: "Kitchen Tests :amazon: 2"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests :amazon: 201X"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests Ubuntu: 16.04"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1604
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      UBUNTU: "16.04"
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests Ubuntu: 18.04"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1804
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests Debian: 8"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-8
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests Debian: 9"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-9
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests Debian: 10"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-10
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests CentOS: 6"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-6
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests CentOS: 7"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-7
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests Fedora: latest"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-fedora-latest
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests openSUSE Leap: 42"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
+# - label: "Kitchen Tests :amazon: 2"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+#
+# - label: "Kitchen Tests :amazon: 201X"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+#
+# - label: "Kitchen Tests Ubuntu: 16.04"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1604
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       UBUNTU: "16.04"
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+#
+# - label: "Kitchen Tests Ubuntu: 18.04"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1804
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+#
+# - label: "Kitchen Tests Debian: 8"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-8
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+#
+# - label: "Kitchen Tests Debian: 9"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-9
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+#
+# - label: "Kitchen Tests Debian: 10"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-10
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+#
+# - label: "Kitchen Tests CentOS: 6"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-6
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+#
+# - label: "Kitchen Tests CentOS: 7"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-7
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+#
+# - label: "Kitchen Tests Fedora: latest"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-fedora-latest
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
+# 
+# - label: "Kitchen Tests openSUSE Leap: 42"
+#   commands:
+#     - scripts/bk_tests/bk_linux_exec.sh
+#     - cd kitchen-tests
+#     - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap
+#   artifact_paths:
+#     - $PWD/.kitchen/logs/kitchen.log
+#   env:
+#       KITCHEN_YAML: kitchen.yml
+#   expeditor:
+#     executor:
+#       linux:
+#         privileged: true
+#         single-use: true
