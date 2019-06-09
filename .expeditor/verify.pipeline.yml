@@ -116,6 +116,7 @@ steps:
 - label: "Functional Specs openSUSE :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - zypper install -y cronie
     - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
   expeditor:
