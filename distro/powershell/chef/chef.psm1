@@ -1,6 +1,6 @@
 ﻿
-function Load-Win32Bindings {
-  Add-Type -TypeDefinition @"
+function Initialize-Win32Bindings {
+    $source = @"
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -134,11 +134,11 @@ public static class Kernel32
   [DllImport("kernel32.dll", SetLastError=true)]
   public static extern IntPtr GetStdHandle(
     StandardHandle nStdHandle);
-    
+
   [DllImport("kernel32.dll")]
   public static extern bool SetHandleInformation(
-    IntPtr hObject, 
-    int dwMask, 
+    IntPtr hObject,
+    int dwMask,
     uint dwFlags);
 
   [DllImport("kernel32", SetLastError=true)]
@@ -151,293 +151,324 @@ public static class Kernel32
   public static extern bool GetExitCodeProcess(
     IntPtr hProcess,
     out int lpExitCode);
-    
+
   [DllImport("kernel32.dll", SetLastError = true)]
   public static extern bool CreatePipe(
-    out IntPtr phReadPipe, 
-    out IntPtr phWritePipe, 
-    IntPtr lpPipeAttributes, 
+    out IntPtr phReadPipe,
+    out IntPtr phWritePipe,
+    IntPtr lpPipeAttributes,
     uint nSize);
-        
+
   [DllImport("kernel32.dll", SetLastError = true)]
   public static extern bool ReadFile(
-    IntPtr hFile, 
-    [Out] byte[] lpBuffer, 
-    uint nNumberOfBytesToRead, 
-    ref int lpNumberOfBytesRead, 
+    IntPtr hFile,
+    [Out] byte[] lpBuffer,
+    uint nNumberOfBytesToRead,
+    ref int lpNumberOfBytesRead,
     IntPtr lpOverlapped);
 
   [DllImport("kernel32.dll", SetLastError = true)]
   public static extern bool PeekNamedPipe(
     IntPtr handle,
-    byte[] buffer, 
-    uint nBufferSize, 
+    byte[] buffer,
+    uint nBufferSize,
     ref uint bytesRead,
-    ref uint bytesAvail, 
+    ref uint bytesAvail,
     ref uint BytesLeftThisMessage);
 
   public const int STILL_ACTIVE = 259;
 }
 }
 "@
+
+    Add-Type -TypeDefinition $source
+
 }
 
-function Run-ExecutableAndWait($AppPath, $ArgumentString) {
-  # Use the Win32 API to create a new process and wait for it to terminate.
-  $null = Load-Win32Bindings
+function Invoke-ExecutableAndWait($AppPath, $ArgumentString) {
+    # Use the Win32 API to create a new process and wait for it to terminate.
+    $null = Initialize-Win32Bindings
 
-  $si = New-Object Chef.STARTUPINFO
-  $pi = New-Object Chef.PROCESS_INFORMATION
+    $si = New-Object Chef.STARTUPINFO
+    $pi = New-Object Chef.PROCESS_INFORMATION
 
-  $pSec = New-Object Chef.SECURITY_ATTRIBUTES
-  $pSec.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($pSec)
-  $pSec.bInheritHandle = $true
-  $tSec = New-Object Chef.SECURITY_ATTRIBUTES
-  $tSec.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($tSec)
-  $tSec.bInheritHandle = $true
+    $pSec = New-Object Chef.SECURITY_ATTRIBUTES
+    $pSec.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($pSec)
+    $pSec.bInheritHandle = $true
+    $tSec = New-Object Chef.SECURITY_ATTRIBUTES
+    $tSec.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($tSec)
+    $tSec.bInheritHandle = $true
 
-  # Create pipe for process stdout
-  $ptr = [System.Runtime.InteropServices.Marshal]::AllocHGlobal([System.Runtime.InteropServices.Marshal]::SizeOf($si))
-  [System.Runtime.InteropServices.Marshal]::StructureToPtr($pSec, $ptr, $true)
-  $hReadOut = [IntPtr]::Zero
-  $hWriteOut = [IntPtr]::Zero
-  $success = [Chef.Kernel32]::CreatePipe([ref] $hReadOut, [ref] $hWriteOut, $ptr, 0)
-  if (-Not $success) {
-    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-    throw "Unable to create output pipe.  Error code $reason."
-  }
-  $success = [Chef.Kernel32]::SetHandleInformation($hReadOut, [Chef.HandleFlags]::HANDLE_FLAG_INHERIT, 0)
-  if (-Not $success) {
-    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-    throw "Unable to set output pipe handle information.  Error code $reason."
-  }
-
-  $si.cb = [System.Runtime.InteropServices.Marshal]::SizeOf($si)
-  $si.wShowWindow = [Chef.ShowWindow]::SW_SHOW
-  $si.dwFlags = [Chef.STARTF]::STARTF_USESTDHANDLES
-  $si.hStdOutput = $hWriteOut
-  $si.hStdError = $hWriteOut
-  $si.hStdInput = [Chef.Kernel32]::GetStdHandle([Chef.StandardHandle]::Input)
-  
-  $success = [Chef.Kernel32]::CreateProcess(
-      $AppPath, 
-      $ArgumentString, 
-      [ref] $pSec, 
-      [ref] $tSec, 
-      $true, 
-      [Chef.CreationFlags]::NONE, 
-      [IntPtr]::Zero, 
-      $pwd, 
-      [ref] $si, 
-      [ref] $pi
-  )
-  if (-Not $success) {
-    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-    throw "Unable to create process [$ArgumentString].  Error code $reason."
-  }
-
-  $buffer = New-Object byte[] 1024
-
-  # Initialize reference variables
-  $bytesRead = 0
-  $bytesAvailable = 0
-  $bytesLeftThisMsg = 0
-  $global:LASTEXITCODE = [Chef.Kernel32]::STILL_ACTIVE
-
-  $isActive = $true
-  while ($isActive) {
-    $success = [Chef.Kernel32]::GetExitCodeProcess($pi.hProcess, [ref] $global:LASTEXITCODE)
+    # Create pipe for process stdout
+    $ptr = [System.Runtime.InteropServices.Marshal]::AllocHGlobal([System.Runtime.InteropServices.Marshal]::SizeOf($si))
+    [System.Runtime.InteropServices.Marshal]::StructureToPtr($pSec, $ptr, $true)
+    $hReadOut = [IntPtr]::Zero
+    $hWriteOut = [IntPtr]::Zero
+    $success = [Chef.Kernel32]::CreatePipe([ref] $hReadOut, [ref] $hWriteOut, $ptr, 0)
     if (-Not $success) {
-      $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-      throw "Process exit code unavailable.  Error code $reason."
+        $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        throw "Unable to create output pipe.  Error code $reason."
+    }
+    $success = [Chef.Kernel32]::SetHandleInformation($hReadOut, [Chef.HandleFlags]::HANDLE_FLAG_INHERIT, 0)
+    if (-Not $success) {
+        $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        throw "Unable to set output pipe handle information.  Error code $reason."
     }
 
-    $success = [Chef.Kernel32]::PeekNamedPipe(
-        $hReadOut, 
-        $null, 
-        $buffer.Length, 
-        [ref] $bytesRead, 
-        [ref] $bytesAvailable, 
-        [ref] $bytesLeftThisMsg
+    $si.cb = [System.Runtime.InteropServices.Marshal]::SizeOf($si)
+    $si.wShowWindow = [Chef.ShowWindow]::SW_SHOW
+    $si.dwFlags = [Chef.STARTF]::STARTF_USESTDHANDLES
+    $si.hStdOutput = $hWriteOut
+    $si.hStdError = $hWriteOut
+    $si.hStdInput = [Chef.Kernel32]::GetStdHandle([Chef.StandardHandle]::Input)
+
+    $success = [Chef.Kernel32]::CreateProcess(
+        $AppPath,
+        $ArgumentString,
+        [ref] $pSec,
+        [ref] $tSec,
+        $true,
+        [Chef.CreationFlags]::NONE,
+        [IntPtr]::Zero,
+        $pwd,
+        [ref] $si,
+        [ref] $pi
     )
     if (-Not $success) {
-      $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-      throw "Output pipe unavailable for peeking.  Error code $reason."
+        $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        throw "Unable to create process [$ArgumentString].  Error code $reason."
     }
 
-    if ($bytesRead -gt 0) {
-      while ([Chef.Kernel32]::ReadFile($hReadOut, $buffer, $buffer.Length, [ref] $bytesRead, 0)) {
-        $output = [Text.Encoding]::UTF8.GetString($buffer, 0, $bytesRead)
-        if ($output) {
-          $output
-        }
-        if ($bytesRead -lt $buffer.Length) {
-          # Partial buffer indicating the end of stream, break out of ReadFile loop
-          # ReadFile will block until:
-          #    The number of bytes requested is read.
-          #    A write operation completes on the write end of the pipe.
-          #    An asynchronous handle is being used and the read is occurring asynchronously.
-          #    An error occurs.
-          break
-        }
-      }
-    } else {
-      # For some reason, you can't read from the read-end of the read-pipe before the write end has started
-      # to write.  Otherwise the process just blocks forever and never returns from the read.  So we peek
-      # at the pipe until there is something.  But don't peek too eagerly.  This is stupid stupid stupid.
-      # There must be a way to do this without having to peek at a pipe first but I have not found it.
-      #
-      # Note to the future intrepid soul who wants to fix this:
-      # 0) This is related to unreasonable CPU usage by the wrapper PS script on a 1 VCPU VM (either Hyper-V
-      #    or VirtualBox) running a consumer Windows SKU (Windows 10 for example...).  Test it there.
-      # 1) Maybe this entire script is unnecessary and the bugs mentioned below have been fixed or don't need
-      #    to be supported.
-      # 2) The server and consumer windows schedulers have different defaults. I had a hard time reproducing
-      #    any issue on a win 2008 on win 2012 server default setup.  See the "foreground application scheduler
-      #    priority" setting to see if it's relevant.
-      # 3) This entire endeavor is silly anyway - why are we reimplementing process forking all over? Maybe try
-      #    to get the folks above to accept patches instead of extending this crazy script.
-      Start-Sleep -s 1
-      # Start-Sleep -m 100
-    }
-    
-    if ($global:LASTEXITCODE -ne [Chef.Kernel32]::STILL_ACTIVE) {
-      $isActive = $false
-    }
-  }
+    $buffer = New-Object byte[] 1024
 
-  # Cleanup handles
-  $success = [Chef.Kernel32]::CloseHandle($pi.hProcess)
-  if (-Not $success) {
-    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-    throw "Unable to release process handle.  Error code $reason."
-  }
-  $success = [Chef.Kernel32]::CloseHandle($pi.hThread)
-  if (-Not $success) {
-    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-    throw "Unable to release thread handle.  Error code $reason."
-  }
-  $success = [Chef.Kernel32]::CloseHandle($hWriteOut)
-  if (-Not $success) {
-    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-    throw "Unable to release output write handle.  Error code $reason."
-  }
-  $success = [Chef.Kernel32]::CloseHandle($hReadOut)
-  if (-Not $success) {
-    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-    throw "Unable to release output read handle.  Error code $reason."
-  }
-  [System.Runtime.InteropServices.Marshal]::FreeHGlobal($ptr)
+    # Initialize reference variables
+    $bytesRead = 0
+    $bytesAvailable = 0
+    $bytesLeftThisMsg = 0
+    $global:LASTEXITCODE = [Chef.Kernel32]::STILL_ACTIVE
+
+    $isActive = $true
+    while ($isActive) {
+        $success = [Chef.Kernel32]::GetExitCodeProcess($pi.hProcess, [ref] $global:LASTEXITCODE)
+        if (-Not $success) {
+            $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+            throw "Process exit code unavailable.  Error code $reason."
+        }
+
+        $success = [Chef.Kernel32]::PeekNamedPipe(
+            $hReadOut,
+            $null,
+            $buffer.Length,
+            [ref] $bytesRead,
+            [ref] $bytesAvailable,
+            [ref] $bytesLeftThisMsg
+        )
+        if (-Not $success) {
+            $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+            throw "Output pipe unavailable for peeking.  Error code $reason."
+        }
+
+        if ($bytesRead -gt 0) {
+            while ([Chef.Kernel32]::ReadFile($hReadOut, $buffer, $buffer.Length, [ref] $bytesRead, 0)) {
+                $output = [Text.Encoding]::UTF8.GetString($buffer, 0, $bytesRead)
+                if ($output) {
+                    $output
+                }
+                if ($bytesRead -lt $buffer.Length) {
+                    # Partial buffer indicating the end of stream, break out of ReadFile loop
+                    # ReadFile will block until:
+                    #    The number of bytes requested is read.
+                    #    A write operation completes on the write end of the pipe.
+                    #    An asynchronous handle is being used and the read is occurring asynchronously.
+                    #    An error occurs.
+                    break
+                }
+            }
+        }
+        else {
+            # For some reason, you can't read from the read-end of the read-pipe before the write end has started
+            # to write.  Otherwise the process just blocks forever and never returns from the read.  So we peek
+            # at the pipe until there is something.  But don't peek too eagerly.  This is stupid stupid stupid.
+            # There must be a way to do this without having to peek at a pipe first but I have not found it.
+            #
+            # Note to the future intrepid soul who wants to fix this:
+            # 0) This is related to unreasonable CPU usage by the wrapper PS script on a 1 VCPU VM (either Hyper-V
+            #    or VirtualBox) running a consumer Windows SKU (Windows 10 for example...).  Test it there.
+            # 1) Maybe this entire script is unnecessary and the bugs mentioned below have been fixed or don't need
+            #    to be supported.
+            # 2) The server and consumer windows schedulers have different defaults. I had a hard time reproducing
+            #    any issue on a win 2008 on win 2012 server default setup.  See the "foreground application scheduler
+            #    priority" setting to see if it's relevant.
+            # 3) This entire endeavor is silly anyway - why are we reimplementing process forking all over? Maybe try
+            #    to get the folks above to accept patches instead of extending this crazy script.
+            Start-Sleep -s 1
+            # Start-Sleep -m 100
+        }
+
+        if ($global:LASTEXITCODE -ne [Chef.Kernel32]::STILL_ACTIVE) {
+            $isActive = $false
+        }
+    }
+
+    # Cleanup handles
+    $success = [Chef.Kernel32]::CloseHandle($pi.hProcess)
+    if (-Not $success) {
+        $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        throw "Unable to release process handle.  Error code $reason."
+    }
+    $success = [Chef.Kernel32]::CloseHandle($pi.hThread)
+    if (-Not $success) {
+        $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        throw "Unable to release thread handle.  Error code $reason."
+    }
+    $success = [Chef.Kernel32]::CloseHandle($hWriteOut)
+    if (-Not $success) {
+        $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        throw "Unable to release output write handle.  Error code $reason."
+    }
+    $success = [Chef.Kernel32]::CloseHandle($hReadOut)
+    if (-Not $success) {
+        $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        throw "Unable to release output read handle.  Error code $reason."
+    }
+    [System.Runtime.InteropServices.Marshal]::FreeHGlobal($ptr)
 }
 
 function Get-ScriptDirectory {
-  if (!$PSScriptRoot) {
-    $Invocation = (Get-Variable MyInvocation -Scope 1).Value
-    $PSScriptRoot = Split-Path $Invocation.MyCommand.Path
-  }
-  $PSScriptRoot
+    if (!$PSScriptRoot) {
+        $Invocation = (Get-Variable MyInvocation -Scope 1).Value
+        $PSScriptRoot = Split-Path $Invocation.MyCommand.Path
+    }
+    $PSScriptRoot
 }
 
-function Run-RubyCommand($command, $argList) {
-  # This method exists to take the given list of arguments and get it past ruby's command-line
-  # interpreter unscathed and untampered.  See https://github.com/ruby/ruby/blob/trunk/win32/win32.c#L1582
-  # for a list of transformations that ruby attempts to perform with your command-line arguments
-  # before passing it onto a script.  The most important task is to defeat the globbing
-  # and wild-card expansion that ruby performs.  Note that ruby does not use MSVCRT's argc/argv
-  # and deliberately reparses the raw command-line instead.
-  #
-  # To stop ruby from interpreting command-line arguments as globs, they need to be enclosed in '
-  # Ruby doesn't allow any escape characters inside '.  This unfortunately prevents us from sending
-  # any strings which themselves contain '.  Ruby does allow multi-fragment arguments though.
-  # "foo bar"'baz qux'123"foo" is interpreted as 1 argument because there are no un-escaped
-  # whitespace there.  The argument would be interpreted as the string "foo barbaz qux123foo".
-  # This lets us escape ' characters by exiting the ' quoted string, injecting a "'" fragment and
-  # then resuming the ' quoted string again.
-  #
-  # In the process of defeating ruby, one must also defeat the helpfulness of powershell.
-  # When arguments come into this method, the standard PS rules for interpreting cmdlet arguments
-  # apply.  When using & (call operator) and providing an array of arguments, powershell (verified
-  # on PS 4.0 on Windows Server 2012R2) will not evaluate them but (contrary to documentation),
-  # it will still marginally interpret them.  The behaviour of PS 5.0 seems to be different but
-  # ignore that for now.  If any of the provided arguments has a space in it, powershell checks
-  # the first and last character to ensure that they are " characters (and that's all it checks).
-  # If they are not, it will blindly surround that argument with " characters.  It won't do this
-  # operation if no space is present, even if other special characters are present. If it notices
-  # leading and trailing " characters, it won't actually check to see if there are other "
-  # characters in the string.  Since PS 5.0 changes this behavior, we could consider using the --%
-  # "stop screwing up my arguments" operator, which is available since PS 3.0.  When encountered
-  # --% indicates that the rest of line is to be sent literally...  except if the parser encounters
-  # %FOO% cmd style environment variables.  Because reasons.  And there is no way to escape the
-  # % character in *any* waym shape or form.
-  # https://connect.microsoft.com/PowerShell/feedback/details/376207/executing-commands-which-require-quotes-and-variables-is-practically-impossible
-  #
-  # In case you think that you're either reading this incorrectly or that I'm full of shit, here
-  # are some examples.  These use EchoArgs.exe from the PowerShell Community Extensions package.
-  # I have not included the argument parsing output from EchoArgs.exe to prevent confusing you with
-  # more details about MSVCRT's parsing algorithm.
-  #
-  # $x = "foo '' bar `"baz`""
-  # & EchoArgs @($x, $x)
-  # Command line:
-  # "C:\Program Files (x86)\PowerShell Community Extensions\Pscx3\Pscx\Apps\EchoArgs.exe"  "foo '' bar "baz"" "foo '' bar "baz""
-  #
-  # $x = "abc'123'nospace`"lulz`"!!!"
-  # & EchoArgs @($x, $x)
-  # Command line:
-  # "C:\Program Files (x86)\PowerShell Community Extensions\Pscx3\Pscx\Apps\EchoArgs.exe"  abc'123'nospace"lulz"!!! abc'123'nospace"lulz"!!!
-  #
-  # $x = "`"`"Look ma! Tonnes of spaces! 'foo' 'bar'`"`""
-  # & EchoArgs @($x, $x)
-  # Command line:
-  # "C:\Program Files (x86)\PowerShell Community Extensions\Pscx3\Pscx\Apps\EchoArgs.exe"  ""Look ma! Tonnes of spaces! 'foo' 'bar'"" ""Look ma! Tonnes of spaces! 'foo' 'bar'""
-  #
-  # Given all this, we can now device a strategy to work around all these immensely helpful, well
-  # documented and useful tools by looking at each incoming argument, escaping any ' characters
-  # with a '"'"' sequence, surrounding each argument with ' & joining them with a space separating
-  # them.
-  # There is another bug (https://bugs.ruby-lang.org/issues/11142) that causes ruby to mangle any
-  # "" two-character double quote sequence but since we always emit our strings inside ' except for
-  # ' characters, this should be ok.  Just remember that an argument '' should get translated to
-  # ''"'"''"'"'' on the command line.  If those intervening empty ''s are not present, the presence
-  # of "" will cause ruby to mangle that argument.
-  $transformedList = $argList | foreach { "'" + ( $_ -replace "'","'`"'`"'" ) + "'" }
-  $fortifiedArgString = $transformedList -join ' '
+function Invoke-RubyCommand($command, $argList) {
+    # This method exists to take the given list of arguments and get it past ruby's command-line
+    # interpreter unscathed and untampered.  See https://github.com/ruby/ruby/blob/trunk/win32/win32.c#L1582
+    # for a list of transformations that ruby attempts to perform with your command-line arguments
+    # before passing it onto a script.  The most important task is to defeat the globbing
+    # and wild-card expansion that ruby performs.  Note that ruby does not use MSVCRT's argc/argv
+    # and deliberately reparses the raw command-line instead.
+    #
+    # To stop ruby from interpreting command-line arguments as globs, they need to be enclosed in '
+    # Ruby doesn't allow any escape characters inside '.  This unfortunately prevents us from sending
+    # any strings which themselves contain '.  Ruby does allow multi-fragment arguments though.
+    # "foo bar"'baz qux'123"foo" is interpreted as 1 argument because there are no un-escaped
+    # whitespace there.  The argument would be interpreted as the string "foo barbaz qux123foo".
+    # This lets us escape ' characters by exiting the ' quoted string, injecting a "'" fragment and
+    # then resuming the ' quoted string again.
+    #
+    # In the process of defeating ruby, one must also defeat the helpfulness of powershell.
+    # When arguments come into this method, the standard PS rules for interpreting cmdlet arguments
+    # apply.  When using & (call operator) and providing an array of arguments, powershell (verified
+    # on PS 4.0 on Windows Server 2012R2) will not evaluate them but (contrary to documentation),
+    # it will still marginally interpret them.  The behaviour of PS 5.0 seems to be different but
+    # ignore that for now.  If any of the provided arguments has a space in it, powershell checks
+    # the first and last character to ensure that they are " characters (and that's all it checks).
+    # If they are not, it will blindly surround that argument with " characters.  It won't do this
+    # operation if no space is present, even if other special characters are present. If it notices
+    # leading and trailing " characters, it won't actually check to see if there are other "
+    # characters in the string.  Since PS 5.0 changes this behavior, we could consider using the --%
+    # "stop screwing up my arguments" operator, which is available since PS 3.0.  When encountered
+    # --% indicates that the rest of line is to be sent literally...  except if the parser encounters
+    # %FOO% cmd style environment variables.  Because reasons.  And there is no way to escape the
+    # % character in *any* waym shape or form.
+    # https://connect.microsoft.com/PowerShell/feedback/details/376207/executing-commands-which-require-quotes-and-variables-is-practically-impossible
+    #
+    # In case you think that you're either reading this incorrectly or that I'm full of shit, here
+    # are some examples.  These use EchoArgs.exe from the PowerShell Community Extensions package.
+    # I have not included the argument parsing output from EchoArgs.exe to prevent confusing you with
+    # more details about MSVCRT's parsing algorithm.
+    #
+    # $x = "foo '' bar `"baz`""
+    # & EchoArgs @($x, $x)
+    # Command line:
+    # "C:\Program Files (x86)\PowerShell Community Extensions\Pscx3\Pscx\Apps\EchoArgs.exe"  "foo '' bar "baz"" "foo '' bar "baz""
+    #
+    # $x = "abc'123'nospace`"lulz`"!!!"
+    # & EchoArgs @($x, $x)
+    # Command line:
+    # "C:\Program Files (x86)\PowerShell Community Extensions\Pscx3\Pscx\Apps\EchoArgs.exe"  abc'123'nospace"lulz"!!! abc'123'nospace"lulz"!!!
+    #
+    # $x = "`"`"Look ma! Tonnes of spaces! 'foo' 'bar'`"`""
+    # & EchoArgs @($x, $x)
+    # Command line:
+    # "C:\Program Files (x86)\PowerShell Community Extensions\Pscx3\Pscx\Apps\EchoArgs.exe"  ""Look ma! Tonnes of spaces! 'foo' 'bar'"" ""Look ma! Tonnes of spaces! 'foo' 'bar'""
+    #
+    # Given all this, we can now device a strategy to work around all these immensely helpful, well
+    # documented and useful tools by looking at each incoming argument, escaping any ' characters
+    # with a '"'"' sequence, surrounding each argument with ' & joining them with a space separating
+    # them.
+    # There is another bug (https://bugs.ruby-lang.org/issues/11142) that causes ruby to mangle any
+    # "" two-character double quote sequence but since we always emit our strings inside ' except for
+    # ' characters, this should be ok.  Just remember that an argument '' should get translated to
+    # ''"'"''"'"'' on the command line.  If those intervening empty ''s are not present, the presence
+    # of "" will cause ruby to mangle that argument.
+    $transformedList = $argList | ForEach-Object { "'" + ( $_ -replace "'", "'`"'`"'" ) + "'" }
+    $fortifiedArgString = $transformedList -join ' '
 
-  # Use the correct embedded ruby path.  We'll be deployed at a path that looks like
-  # [C:\opscode or some other prefix]\chef\modules\chef
-  $ruby = Join-Path (Get-ScriptDirectory)  "..\..\embedded\bin\ruby.exe"
-  $commandPath = Join-Path (Get-ScriptDirectory) "..\..\bin\$command"
+    # Use the correct embedded ruby path.  We'll be deployed at a path that looks like
+    # [C:\opscode or some other prefix]\chef\modules\chef
+    $ruby = Join-Path (Get-ScriptDirectory)  "..\..\embedded\bin\ruby.exe"
+    $commandPath = Join-Path (Get-ScriptDirectory) "..\..\bin\$command"
 
-  Run-ExecutableAndWait $ruby """$ruby"" '$commandPath' $fortifiedArgString"
+    Invoke-ExecutableAndWait $ruby """$ruby"" '$commandPath' $fortifiedArgString"
 }
 
-
+<#
+  .SYNOPSIS
+  chef-apply is an executable program that runs a single recipe from the command line
+#>
 function chef-apply {
-  Run-RubyCommand 'chef-apply' $args
+    Invoke-RubyCommand 'chef-apply' $args
 }
 
+<#
+  .SYNOPSIS
+  chef-client is the basic chef executable to run local commands with. It interacts with the Chef Server (now Chef Infra) to run cookbooks
+#>
 function chef-client {
-  Run-RubyCommand 'chef-client' $args
+    Invoke-RubyCommand 'chef-client' $args
 }
 
+<#
+  .SYNOPSIS
+  Used to run Chef on regular, configurable intervals
+#>
 function chef-service-manager {
-  Run-RubyCommand 'chef-service-manager' $args
+    Invoke-RubyCommand 'chef-service-manager' $args
 }
 
+<#
+  .SYNOPSIS
+  chef-shell is a recipe debugging tool that allows the use of breakpoints within recipes.
+#>
 function chef-shell {
-  Run-RubyCommand 'chef-shell' $args
+    Invoke-RubyCommand 'chef-shell' $args
 }
 
+<#
+  .SYNOPSIS
+  chef-solo is a command that executes chef-client in a way that does not require the Chef server in order to converge cookbooks
+#>
 function chef-solo {
-  Run-RubyCommand 'chef-solo' $args
+    Invoke-RubyCommand 'chef-solo' $args
 }
 
+<#
+  .SYNOPSIS
+  Manages the actual Windows service used to get chef running on regular, configurable cycles.
+#>
 function chef-windows-service {
-  Run-RubyCommand 'chef-windows-service' $args
+    Invoke-RubyCommand 'chef-windows-service' $args
 }
 
+<#
+  .SYNOPSIS
+  Performs monthly data updates.
+#>
 function knife {
-  Run-RubyCommand 'knife' $args
+    Invoke-RubyCommand 'knife' $args
 }
 
 Export-ModuleMember -function chef-apply
