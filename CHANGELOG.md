@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.6 -->
-## [v15.1.6](https://github.com/chef/chef/tree/v15.1.6) (2019-06-07)
+<!-- latest_release 15.1.7 -->
+## [v15.1.7](https://github.com/chef/chef/tree/v15.1.7) (2019-06-10)
 
 #### Merged Pull Requests
-- More speedups to the Buildkite PR verification tests [#8639](https://github.com/chef/chef/pull/8639) ([tas50](https://github.com/tas50))
+- Update Buildkite config with Ubuntu/CentOS/openSUSE containers [#8641](https://github.com/chef/chef/pull/8641) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Update Buildkite config with Ubuntu/CentOS/openSUSE containers [#8641](https://github.com/chef/chef/pull/8641) ([tas50](https://github.com/tas50)) <!-- 15.1.7 -->
 - More speedups to the Buildkite PR verification tests [#8639](https://github.com/chef/chef/pull/8639) ([tas50](https://github.com/tas50)) <!-- 15.1.6 -->
 - Speed up buildkite tests [#8636](https://github.com/chef/chef/pull/8636) ([tas50](https://github.com/tas50)) <!-- 15.1.5 -->
 - Avoid constant warnings [#8633](https://github.com/chef/chef/pull/8633) ([tas50](https://github.com/tas50)) <!-- 15.1.4 -->
