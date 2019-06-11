@@ -50,7 +50,7 @@ or for a previous release branch:
 
 We want to make sure to announce the build on Discourse. It is helpful that these announcements come from real people because people like people and not machines. You can copy a previous release announcement, and change the version numbers and release notes content.
 
-Also make sure to announce the build in any social media platforms you present on if you feel comfortable doing so. It's great to announce it in `#sous-chefs` and `#general` in Community Slack as well as on Twitter where we tend to get a good response.
+Also, make sure to announce the build on any social media platforms that you occupy if you feel comfortable doing so. It's great to make an announcement in `#sous-chefs` and `#general` in Community Slack, as well as on Twitter, where we tend to get a good response.
 
 ### Update homebrew Content
 
