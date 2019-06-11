@@ -1,4 +1,4 @@
-# How Chef is Tested and Built
+# How Chef Infra Client is Tested and Built
 
 This document describes the process that a change flows through from opened PR to omnibus build in our current channel.
 
@@ -37,6 +37,4 @@ Once the builds complete, Jenkins will move to the test phase where each of thes
 
 ## Releasing Chef
 
-Once a build has been blessed by our Jenkins gauntlet and everyone has agreed that we are ready to release, an artifact can be promoted from current to stable channels via Expeditor in Slack:
-
-``/expeditor promote chef/chef:master 14.6.47``
+Once a build has been blessed by our Jenkins gauntlet and everyone has agreed that we are ready to release, an artifact can be promoted from current to stable channels. For the complete release process see [Releasing Chef Infra Client](../how_to/releasing_chef_infra.md)
