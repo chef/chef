@@ -60,7 +60,7 @@ Many of our users consume Chef via Homebrew using our casks. Make sure to update
 
 Many Windows users consume our packages via Chocolatey. Make sure to update the various version strings and sha checksums here: https://github.com/chef/chocolatey-packages
 
-Once this is updated you'll need to build / push the artifact to the Chocolatey site from a Windows host:
+Once this is updated, you'll need to build / push the artifact to the Chocolatey site from a Windows host:
   1. `choco pack .\chef-client\chef-client.nuspec`
   2. `choco push .\chef-client.15.1.9.nupkg --key API_KEY_HERE`
 
