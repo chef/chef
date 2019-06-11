@@ -24,7 +24,7 @@ The importance of our release notes cannot be understated. As developers, we und
 
 ### Update the Docs Site
 
-If there are any new or updated resources the docs site will need to be updated. This is a `partially` automated process. If you are making a single resource update or changing wording it may just be easier to do it by hand.
+If there are any new or updated resources, the docs site will need to be updated. This is a `partially` automated process. If you are making a single resource update or changing wording, it may just be easier to do it by hand.
 
 #### Resource Documentation Automation
 
