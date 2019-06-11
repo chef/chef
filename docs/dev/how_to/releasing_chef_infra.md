@@ -1,6 +1,6 @@
 # Releasing Chef Infra
 
-## Validate we're ready to ship
+## Steps to validate that we are ready to ship
 
   1. Has the version number been bumped for releasing? This can be done by merging in a PR that has the "Expeditor: Bump Version Minor" label applied.
   2. Are there any outstanding community PRs that should be merged? Ideally we don't make a community member wait multiple months for a code contribution to ship. Merge anything that's been reviewed.
