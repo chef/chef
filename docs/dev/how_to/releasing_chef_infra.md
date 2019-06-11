@@ -20,7 +20,7 @@ The importance of our release notes cannot be understated. As developers we unde
 2. `Updated Resources`: It's important to let users know about new functionality in resources they may already be using. Cover any important bug fixes or new properties/actions here.
 3. `Major new features`: Document new features with a high level bullet. This is a great opportunity to show off our work and sell users on new workflows.
 4. `Updated InSpec Releases`: We should always call out the updated InSpec release with a description of new functionality included.
-5. `Security Updates`: Call out any updated components we're shipping with links to the CVEs if available.
+5. `Security Updates`: Call out any updated components we are shipping and include links to the CVEs if available.
 
 ### Update the Docs Site
 
