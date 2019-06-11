@@ -9,14 +9,15 @@ Here's where all the magic begins. You have a great idea, so you decide to contr
 ## Tests Validate the Pull request
 
 We can't just merge any old change, so we run various checks against your submitted PR to make sure it's ready to review. We use GitHub's protected branches feature in the chef repo, so each of these checks must pass before a change can be approved:
-  - **DCO sign-off**: Our Expeditor tool will check to make sure that every commit in your pull request has been signed off for the Developer Certificate of Origin (DCO). This gives us added legal protection above the Apache-2.0 license that we need to accept your contribution. Without this sign-off, we are unable to merge a PR.
   - **Expeditor Config**: At Chef, we use an internal tool named Expeditor to manage our overall release process, including bumping chef versions, adding changelog entries, kicking off CI/CD jobs, and promoting artifacts. It's important that we don't break this critical component of our release process, so each PR will be checked by Expeditor to make sure the config is valid. If anything doesn't pass, Expeditor will link you to remediation steps in the Expeditor docs.
-  - **Travis**: Travis is where we run the majority of our publicly available test. We run approximately two dozen tests against each PR. This includes the following tests:
-    -  Unit, functional, and integration tests on all supported Ruby releases
-    -  Chefstyle Ruby linting
-    -  Unit tests from chef-sugar, chef-zero, cheffish, chefspec, and knife-windows against the chef code in your PR
-    -  Full Test Kitchen integration tests that covers common Chef usage on various different Linux Distros. Those integration tests run using the kitchen-dokken plugin and the dokken-images Docker containers, which do their best to replicate a real Linux system. You can see the exactly what we test here: https://github.com/chef/chef/blob/master/kitchen-tests/cookbooks/end_to_end/recipes/default.rb
-  - **Appveyor**: Travis does a great job of testing PRs against a Linux host, but many rspec tests require a Windows system to run, and for this, we test in Appveyor. In Appveyor, we run our unit, integration, and functional specs against our supported Ruby releases, but this time, we do it on Windows.
+  - **DCO sign-off**: Our Expeditor tool will check to make sure that every commit in your pull request has been signed off for the Developer Certificate of Origin (DCO). This gives us added legal protection above the Apache-2.0 license that we need to accept your contribution. Without this sign-off, we are unable to merge a PR.
+  - **Buildkite**: Buildkite is where we run the majority of our publicly available tests.  Buildkite allows us to run tests in our own infrastructure while exposing the results to community members. We run 18 separate tests against each submitted PR. This includes the following tests:
+    - Unit, functional, and integration tests on all supported Ruby releases. These run on Ubuntu, CentOS and openSUSE so we can make sure our functional / integration tests run on the platforms where user's consume Chef Infra.
+    - Chefstyle Ruby linting
+    - Unit tests from chef-sugar, chef-zero, cheffish, chefspec, and knife-windows against the chef code in your PR
+  - **Travis**:
+  We run full Test Kitchen integration tests that covers common Chef usage on various different Linux Distros in Travis-CI. Those integration tests run using the kitchen-dokken plugin and the dokken-images Docker containers, which do their best to replicate a real Linux system. You can see the exactly what we test here: https://github.com/chef/chef/blob/master/kitchen-tests/cookbooks/end_to_end/recipes/default.rb
+  - **Appveyor**: Buildkite & Travis do a great job of testing PRs against Linux hosts, but many rspec tests require a Windows system to run, and for this, we test in Appveyor. In Appveyor, we run our unit, integration, and functional specs against our supported Ruby releases, but this time, we do it on Windows.
 
 ## PR is Reviewed and Merged
 
