@@ -64,4 +64,4 @@ Once this is updated, you'll need to build / push the artifact to the Chocolatey
   1. `choco pack .\chef-client\chef-client.nuspec`
   2. `choco push .\chef-client.15.1.9.nupkg --key API_KEY_HERE`
 
-Note: In order to push the artifact you'll need to be added as a maintainer on Chocolatey.org.
+Note: In order to push the artifact, you will need to be added as a maintainer on [Chocolatey.org](https://chocolatey.org/).
