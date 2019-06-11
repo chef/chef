@@ -6,7 +6,7 @@
   2. Are there any outstanding community PRs that should be merged? Ideally we don't make a community member wait multiple months for a code contribution to ship. Merge anything that's been reviewed.
   3. Are new resource "introduced" fields using the correct version? From time to time we incorrectly merge a PR that has the wrong "introduced" version in a new resource or new resource property. If we added new resources or properties make sure these fields match the version we're about to ship.
   4. Have any changes in Ohai been shipped to rubygems?
-  5. Do we have a build in the `current` channel? If not you might wanna fix that.
+  5. Do we have a build in the `current` channel? If not, you might wanna fix that.
 
 ## Prepare the Release
 
