@@ -19,7 +19,7 @@ The importance of our release notes cannot be understated. As developers, we und
 1. `New Resources`: If we ship new resources, we want to make sure to brag about those resources. Use this section to give the elevator pitch for the new resource, including an example of how it might be used if available.
 2. `Updated Resources`: It's important to let users know about new functionality in resources they may already be using. Cover any important bug fixes or new properties/actions here.
 3. `Major new features`: Document new features with a high level bullet. This is a great opportunity to show off our work and sell users on new workflows.
-4. `Updated InSpec Releases`: We should always call out the updated InSpec release with a description of new functionality included.
+4. `Updated InSpec Releases`: We should always call out the updated Chef InSpec release and include a description of new functionality.
 5. `Security Updates`: Call out any updated components we are shipping and include links to the CVEs if available.
 
 ### Update the Docs Site
