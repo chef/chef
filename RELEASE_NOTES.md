@@ -482,6 +482,7 @@ The windows_certificate resource now imports nested certificates while importing
 - ruby 2.5.3 -> 2.5.5
 - InSpec 3.7.1 -> 3.9.0
 - The unused windows-api gem is no longer bundled with Chef on Windows hosts
+
 # Chef Infra Client Release Notes 14.11:
 
 ## Updated Resources
