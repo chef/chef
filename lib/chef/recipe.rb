@@ -85,6 +85,22 @@ class Chef
       end
     end
 
+    def from_array(array)
+      array.each { |e| from_hash(e) }
+    end
+
+    def from_hash(hash)
+      hash["resources"].each do |rhash|
+        type = rhash.delete("type").to_sym
+        name = rhash.delete("name")
+        res = declare_resource(type, name)
+        rhash.each do |key, value|
+          # FIXME?: we probably need a way to instance_exec a string that contains block code against the property?
+          res.send(key, value)
+        end
+      end
+    end
+
     def to_s
       "cookbook: #{cookbook_name ? cookbook_name : "(none)"}, recipe: #{recipe_name ? recipe_name : "(none)"} "
     end

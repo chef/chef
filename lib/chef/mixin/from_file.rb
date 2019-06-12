@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+require "erb"
+
 class Chef
   module Mixin
     module FromFile
@@ -32,6 +34,25 @@ class Chef
         self.source_file = filename
         if File.file?(filename) && File.readable?(filename)
           instance_eval(IO.read(filename), filename, 1)
+        else
+          raise IOError, "Cannot open or read #{filename}!"
+        end
+      end
+
+      # This will return an array of hashes or something that then needs to get inflated.
+      def from_yaml_file(filename)
+        self.source_file = filename
+        if File.file?(filename) && File.readable?(filename)
+          tpl = ERB.new(IO.read(filename))
+          tpl.filename = filename
+          res = ::YAML.safe_load(tpl.result)
+          if res.is_a?(Hash)
+            from_hash(res)
+          elsif res.is_a?(Array)
+            from_array(res)
+          else
+            raise "boom"
+          end
         else
           raise IOError, "Cannot open or read #{filename}!"
         end
