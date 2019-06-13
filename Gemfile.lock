@@ -200,6 +200,8 @@ GEM
       train-core (~> 2.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
+    inspec-core-bin (4.3.2)
+      inspec-core (= 4.3.2)
     ipaddress (0.8.3)
     iso8601 (0.12.1)
     jaro_winkler (1.5.2)
@@ -420,6 +422,7 @@ DEPENDENCIES
   chefstyle!
   ed25519
   inspec-core (~> 4.3)
+  inspec-core-bin (~> 4.3)
   ohai!
   pry
   pry-byebug
