@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-require "erb"
-
 class Chef
   module Mixin
     module FromFile
@@ -43,9 +41,7 @@ class Chef
       def from_yaml_file(filename)
         self.source_file = filename
         if File.file?(filename) && File.readable?(filename)
-          tpl = ERB.new(IO.read(filename))
-          tpl.filename = filename
-          res = ::YAML.safe_load(tpl.result)
+          res = ::YAML.safe_load(IO.read(filename))
           if res.is_a?(Hash)
             from_hash(res)
           elsif res.is_a?(Array)
