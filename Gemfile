@@ -26,6 +26,7 @@ group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
   gem "inspec-core", "~> 4.3"
+  gem "inspec-core-bin", "~> 4.3" # need to provide the binaries for inspec
   gem "chef-vault"
   gem "ed25519" # ed25519 ssh key support done here as it's a native gem we can't put in train
   gem "bcrypt_pbkdf" # ed25519 ssh key support done here as it's a native gem we can't put in train
