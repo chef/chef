@@ -37,23 +37,6 @@ class Chef
         end
       end
 
-      # This will return an array of hashes or something that then needs to get inflated.
-      def from_yaml_file(filename)
-        self.source_file = filename
-        if File.file?(filename) && File.readable?(filename)
-          res = ::YAML.safe_load(IO.read(filename))
-          if res.is_a?(Hash)
-            from_hash(res)
-          elsif res.is_a?(Array)
-            from_array(res)
-          else
-            raise "boom"
-          end
-        else
-          raise IOError, "Cannot open or read #{filename}!"
-        end
-      end
-
       # Loads a given ruby file, and runs class_eval against it in the context of the current
       # object.
       #

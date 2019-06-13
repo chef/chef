@@ -85,7 +85,28 @@ class Chef
       end
     end
 
+    def from_yaml_file(filename)
+      self.source_file = filename
+      if File.file?(filename) && File.readable?(filename)
+        from_yaml(IO.read(filename))
+      else
+        raise IOError, "Cannot open or read #{filename}!"
+      end
+    end
+
+    def from_yaml(string)
+      res = ::YAML.safe_load(string)
+      if res.is_a?(Hash)
+        from_hash(res)
+      elsif res.is_a?(Array)
+        from_array(res)
+      else
+        raise "boom"
+      end
+    end
+
     def from_array(array)
+      Chef::Log.warn "array yaml files are super duper experimental behavior"
       array.each { |e| from_hash(e) }
     end
 
