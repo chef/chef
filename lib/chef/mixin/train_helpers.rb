@@ -1,6 +1,6 @@
 #--
 # Author:: Lamont Granquist <lamont@chef.io>
-# Copyright:: Copyright 2010-2018, Chef Software Inc.
+# Copyright:: Copyright 2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,15 +20,31 @@ require "stringio" unless defined?(StringIO)
 class Chef
   module Mixin
     module TrainHelpers
-      def file_exist?(*args)
+
+      #
+      # FIXME: generally these helpers all use the pattern of checking for target_mode?
+      # and then if it is we use train.  That approach should likely be flipped so that
+      # even when we're running without target mode we still use inspec in its local
+      # mode.
+      #
+
+      # Train wrapper around File.exist? to make it local mode aware.
+      #
+      # @param filename filename to check
+      # @return [Boolean] if it exists
+      #
+      def file_exist?(filename)
         if Chef::Config.target_mode?
-          Chef.run_context.transport_connection.file(args[0]).exist?
+          Chef.run_context.transport_connection.file(filename).exist?
         else
-          File.exist?(*args)
+          File.exist?(filename)
         end
       end
 
       # XXX: modifications to the StringIO won't get written back
+      # FIXME: this is very experimental and may be a bad idea and may break at any time
+      # @api private
+      #
       def file_open(*args, &block)
         if Chef::Config.target_mode?
           content = Chef.run_context.transport_connection.file(args[0]).content
