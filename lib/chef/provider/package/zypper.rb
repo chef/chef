@@ -49,7 +49,7 @@ class Chef
               logger.trace("#{new_resource} out of date version #{current_version}")
             end
           end
-          current_version = candidate_version if is_installed
+          current_version ||= candidate_version if is_installed
           { current_version: current_version, candidate_version: candidate_version }
         end
 

@@ -112,6 +112,15 @@ describe Chef::Provider::Package::Zypper do
       expect(provider.candidate_version).to eql(["1.0"])
     end
 
+    it "should have differing current and candidate versions if zypper detects an upgrade" do
+      status = double(stdout: "Version        : 1.0                             \nInstalled      : Yes                              \nStatus         : out-of-date (version 0.9 installed)", exitstatus: 0)
+
+      allow(provider).to receive(:shell_out_compacted!).and_return(status)
+      provider.load_current_resource
+      expect(provider.get_current_versions).to eq(["0.9"])
+      expect(provider.get_candidate_versions).to eq(["1.0"])
+    end
+
     it "should return the current resouce" do
       expect(provider.load_current_resource).to eql(current_resource)
     end
