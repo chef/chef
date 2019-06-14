@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.8 -->
-## [v15.1.8](https://github.com/chef/chef/tree/v15.1.8) (2019-06-10)
+<!-- latest_release 15.1.9 -->
+## [v15.1.9](https://github.com/chef/chef/tree/v15.1.9) (2019-06-14)
 
 #### Merged Pull Requests
-- use mixlib-cli&#39;s deprecation mechanism [#8637](https://github.com/chef/chef/pull/8637) ([marcparadise](https://github.com/marcparadise))
+- Make sure to ship the inspec binary [#8660](https://github.com/chef/chef/pull/8660) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Make sure to ship the inspec binary [#8660](https://github.com/chef/chef/pull/8660) ([tas50](https://github.com/tas50)) <!-- 15.1.9 -->
 - use mixlib-cli&#39;s deprecation mechanism [#8637](https://github.com/chef/chef/pull/8637) ([marcparadise](https://github.com/marcparadise)) <!-- 15.1.8 -->
 - Update Buildkite config with Ubuntu/CentOS/openSUSE containers [#8641](https://github.com/chef/chef/pull/8641) ([tas50](https://github.com/tas50)) <!-- 15.1.7 -->
 - More speedups to the Buildkite PR verification tests [#8639](https://github.com/chef/chef/pull/8639) ([tas50](https://github.com/tas50)) <!-- 15.1.6 -->
