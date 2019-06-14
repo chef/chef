@@ -6,6 +6,7 @@ data_collector.token "{{cfg.data_collector.token}}"
 data_collector.mode "{{cfg.data_collector.mode}}".to_sym
 data_collector.raise_on_failure {{cfg.data_collector.raise_on_failure}}
 minimal_ohai {{cfg.minimal_ohai}}
+local_mode {{cfg.local_mode}}
 {{#if cfg.chef-client.node_name ~}}
 node_name "{{cfg.node_name}}"
 {{/if ~}}
