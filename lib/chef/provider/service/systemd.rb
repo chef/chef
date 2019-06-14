@@ -26,7 +26,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   include Chef::Mixin::Which
 
-  provides :service, os: "linux" do |node|
+  provides :service, os: "linux", target_mode: true do |node|
     Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
   end
 
@@ -77,6 +77,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def get_systemctl_options_args
     if new_resource.user
+      raise NotImplementedError, "#{new_resource} does not support the user property on a target_mode host (yet)" if Chef::Config.target_mode?
       uid = Etc.getpwnam(new_resource.user).uid
       options = {
         environment: {

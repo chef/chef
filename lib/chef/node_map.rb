@@ -287,8 +287,6 @@ class Chef
     # "provides" lines with identical filters sort by class name (ascending).
     #
     def compare_matchers(key, new_matcher, matcher)
-      cmp = compare_matcher_properties(new_matcher[:target_mode], matcher[:target_mode])
-      return cmp if cmp != 0
       cmp = compare_matcher_properties(new_matcher[:block], matcher[:block])
       return cmp if cmp != 0
       cmp = compare_matcher_properties(new_matcher[:platform_version], matcher[:platform_version])
