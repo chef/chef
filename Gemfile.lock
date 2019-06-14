@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: d1a25fa525a4760609642d244cc729a46aa194ce
+  revision: 570fb2f076a420cab1e793e6849f80d2ba32722b
   branch: master
   specs:
     ohai (15.1.3)
