@@ -2,6 +2,17 @@
 title: Upgrading From Chef 12
 ---
 
+# Purpose
+
+This is not a general guide on how to upgrade from Chef Infra 12.  There already exists documentation on:
+
+* [How to upgrade from the command line](https://docs.chef.io/upgrade_client.html)
+* [How to use the `chef_client_updater` cookbook](https://supermarket.chef.io/cookbooks/chef_client_updater)
+* [All of the possible Deprecations and remediation steps](https://docs.chef.io/chef_deprecations_client.html)
+
+This is strictly expert-level documentation on what the large scale focus should be and what kind of otherwise
+undocumented gotchas can occur.
+
 # Deprecations
 
 In order to see all deprecation warnings, users must upgrade through every major version and must run the
@@ -61,6 +72,113 @@ provisioner:
       silence_deprecation_warnings:
         - chef-3694
 ```
+
+# Converting to Custom Resource Style is Unnecessary
+
+Chef Infra 15 largely supports the same resource styles as Chef Infra 11 did.  It is not necessary to convert all providers files
+or all library-resources to the fused style with the actions declared directly in the resources file.  That style is
+*preferable* to older ways of writing resources, but it should never be a blocker to getting off of unsupported Chef Infra 12.
+Upgrading should always take priority over code cleanup.
+
+There are a few necessary changes to resources which need to occur, but minimal changes should be required.
+
+# All Providers or Custom Resources should declare `use_inline_resources` before upgrading.
+
+Introduced in Chef Infra 11.0 this became the way to write providers in Chef Infra 13.0.  Existing Chef Infra 12 code should always declare
+`use_inline_resources` and should be run through test-kitchen and deployed in preparation for upgrading.
+
+The only problem with introducing this change would be resources which expect to be able to modify the resources declared
+in outer scopes.  Another name for this is the `accumulator` pattern of writing chef resources.  Those kinds of resources
+will break once they are placed in the sub-`run_context` that `use_inline_resources` creates.
+
+Those kinds of resources should use the `with_run_context :root` helper in order to access those resources in the outer
+`run_context`.  The use of the `resource_collection` editing utilities `find_resource` and `edit_resource` will also
+be useful for addressing those problems.
+
+Since the vast majority of chef resources do not do this kind of editing of the resource collection, the vast majority
+of chef resources will run successfully with `use_inline_resources` declared.
+
+Once the entire infrastructure is off of Chef Infra 12 then the `use_inline_resources` lines may be deleted.
+
+# Creating a Current Resource
+
+The automatic naming of classes after the DSL name of the resource was removed in Chef Infra 13.0, as a result in order to
+implement a `load_current_resource` function the construction of the `current_resource` must change.
+
+Old code:
+
+```ruby
+def load_current_resource
+  @current_resource = Chef::Resource::MyResource.new(@new_resource.name)
+  [ ... rest of implementation ... ]
+end
+```
+
+New code:
+
+```ruby
+def load_current_resource
+  @current_resource = new_resource.class.new(@new_resource.name)
+  [ ... rest of implementation ... ]
+end
+```
+
+Resources may be rewritten instead to use `load_current_value`, but that is not required to upgrade.
+
+# Constructing Providers or Looking Up Classes
+
+The way to look up the class of a Resource:
+
+```ruby
+  @klass = Chef::Resource.resource_for_node(:package, node)
+```
+
+The way to get an instance of a Provider:
+
+```ruby
+  @klass = Chef::Resource.resource_for_node(:package, node)
+  @provider = klass.provider_for_action(:install)
+```
+
+Do not inject provider classes via the `provider` method on a resource.  It should not be necessary to get the class of
+the provider for injecting in a `provider` method on a resource.
+
+This code is brittle as of Chef Infra 12 and becomes worse in Chef Infra 13 and beyond:
+
+```ruby
+  package_class = if should_do_local?
+      Chef::Provider::Package::Rpm
+    else
+      Chef::Provider::Package::Yum
+    end
+
+  package "lsof" do
+    provider package_class
+    action :upgrade
+  end
+```
+
+This actually constructs a `Chef::Resource::YumPackage` resource wrapping a `Chef::Provider::Package::Rpm` object if
+`should_do_local?` is true, which is not a consistent set of objects and will ultimately cause bugs and problems.
+
+The correct way to accomplish this is by dynamically constructing the correct kind of resource (ultimately via the
+`Chef::ResourceResolver`) rather than manually trying to construct a hybrid object:
+
+```ruby
+  package_resource = if should_do_local?
+      :rpm_package
+    else
+      :yum_package
+    end
+
+  declare_resource(package_resource, "lsof") do
+    action :upgrade
+  end
+```
+
+This section is an uncommon need. Very few cookbooks should be dynamically declaring providers.  The requirement to look up
+resource classes and provider instances would likely also only occur for sites which do roll-your-own `rspec` testing of
+resources (similar to the way resources are tested in core chef) instead of `chefspec` or `test-kitchen` testing.
 
 # Notifications From Custom Resources
 
