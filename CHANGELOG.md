@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.14 -->
-## [v15.1.14](https://github.com/chef/chef/tree/v15.1.14) (2019-06-17)
+<!-- latest_release 15.1.15 -->
+## [v15.1.15](https://github.com/chef/chef/tree/v15.1.15) (2019-06-18)
 
 #### Merged Pull Requests
-- Add Chef 12 updating docs [#8664](https://github.com/chef/chef/pull/8664) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump inspec to 4.6.3 [#8666](https://github.com/chef/chef/pull/8666) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Bump inspec to 4.6.3 [#8666](https://github.com/chef/chef/pull/8666) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.15 -->
 - Add Chef 12 updating docs [#8664](https://github.com/chef/chef/pull/8664) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.14 -->
 - Update omnibus-software to unbreak chef builds [#8665](https://github.com/chef/chef/pull/8665) ([tas50](https://github.com/tas50)) <!-- 15.1.13 -->
 - Target mode for systemd service helper [#8614](https://github.com/chef/chef/pull/8614) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.12 -->
