@@ -875,6 +875,7 @@ module ChefConfig
     #
     # NOTE: CHANGING THIS SETTING MAY CAUSE CORRUPTION, DATA LOSS AND
     # INSTABILITY.
+    #
     default :file_atomic_update, true
 
     # There are 3 possible values for this configuration setting.
@@ -882,18 +883,27 @@ module ChefConfig
     # false => file staging is done via tempfiles under ENV['TMP']
     # :auto => file staging will try using destination directory if possible and
     #   will fall back to ENV['TMP'] if destination directory is not usable.
+    #
     default :file_staging_uses_destdir, :auto
 
     # Exit if another run is in progress and the chef-client is unable to
     # get the lock before time expires. If nil, no timeout is enforced. (Exits
     # immediately if 0.)
+    #
     default :run_lock_timeout, nil
 
     # Number of worker threads for syncing cookbooks in parallel. Increasing
     # this number can result in gateway errors from the server (namely 503 and 504).
     # If you are seeing this behavior while using the default setting, reducing
     # the number of threads will help.
+    #
     default :cookbook_sync_threads, 10
+
+    # True if all resources by default default to unified mode, with all resources
+    # applying in "compile" mode, with no "converge" mode. False is backwards compatible
+    # setting for Chef 11-15 behavior.  This will break forward notifications.
+    #
+    default :resource_unified_mode_default, false
 
     # At the beginning of the Chef Client run, the cookbook manifests are downloaded which
     # contain URLs for every file in every relevant cookbook.  Most of the files
@@ -920,9 +930,9 @@ module ChefConfig
     default :no_lazy_load, true
 
     # A whitelisted array of attributes you want sent over the wire when node
-    # data is saved.
-    # The default setting is nil, which collects all data. Setting to [] will not
-    # collect any data for save.
+    # data is saved. The default setting is nil, which collects all data. Setting
+    # to [] will not collect any data for save.
+    #
     default :automatic_attribute_whitelist, nil
     default :default_attribute_whitelist, nil
     default :normal_attribute_whitelist, nil

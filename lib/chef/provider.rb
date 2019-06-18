@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, 2009-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2016, 2009-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -238,8 +238,10 @@ class Chef
     def compile_and_converge_action(&block)
       old_run_context = run_context
       @run_context = run_context.create_child
+      @run_context.resource_collection.unified_mode = new_resource.class.unified_mode
+      runner = Chef::Runner.new(@run_context)
       return_value = instance_eval(&block)
-      Chef::Runner.new(run_context).converge
+      runner.converge
       return_value
     ensure
       if run_context.resource_collection.any?(&:updated?)

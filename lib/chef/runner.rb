@@ -34,7 +34,7 @@ class Chef
 
     def initialize(run_context)
       @run_context = run_context
-      run_context.runner = self
+      @run_context.runner = self
     end
 
     def delayed_actions
@@ -43,6 +43,10 @@ class Chef
 
     def events
       @run_context.events
+    end
+
+    def updated_resources
+      @run_context.updated_resources
     end
 
     # Determine the appropriate provider for the given resource, then
@@ -73,31 +77,65 @@ class Chef
       # associated with the resource, but only if it was updated *this time*
       # we ran an action on it.
       if resource.updated_by_last_action?
+        updated_resources.add(resource.declared_key) # track updated resources for unified_mode
         run_context.immediate_notifications(resource).each do |notification|
-          Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (immediate)")
-          run_action(notification.resource, notification.action, :immediate, resource)
+          if notification.resource.is_a?(String) && run_context.unified_mode
+            Chef::Log.debug("immediate notification from #{resource} to #{notification.resource} is delayed until declaration due to unified_mode")
+          else
+            Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (immediate)")
+            run_action(notification.resource, notification.action, :immediate, resource)
+          end
         end
 
         run_context.delayed_notifications(resource).each do |notification|
-          # send the notification to the run_context of the receiving resource
-          notification.resource.run_context.add_delayed_action(notification)
+          if notification.resource.is_a?(String)
+            # for string resources that have not be declared yet in unified mode we only support notifying the current run_context
+            run_context.add_delayed_action(notification)
+          else
+            # send the notification to the run_context of the receiving resource
+            notification.resource.run_context.add_delayed_action(notification)
+          end
         end
       end
     end
 
-    # Iterates over the +resource_collection+ in the +run_context+ calling
-    # +run_action+ for each resource in turn.
+    # Runs all of the actions on a given resource.  This fires notifications and marks
+    # the resource as having been executed by the runner.
+    #
+    # @param resource [Chef::Resource] the resource to run
+    #
+    def run_all_actions(resource)
+      Array(resource.action).each { |action| run_action(resource, action) }
+      if run_context.unified_mode
+        run_context.reverse_immediate_notifications(resource).each do |n|
+          if updated_resources.include?(n.notifying_resource.declared_key)
+            n.resolve_resource_reference(run_context.resource_collection)
+            Chef::Log.info("#{resource} sent #{n.action} action to #{n.resource} (immediate at declaration time)")
+            run_action(n.resource, n.action, :immediate, n.notifying_resource)
+          end
+        end
+      end
+    ensure
+      resource.executed_by_runner = true
+    end
+
+    # Iterates over the resource_collection in the run_context calling
+    # run_action for each resource in turn.
+    #
     def converge
       # Resolve all lazy/forward references in notifications
       run_context.resource_collection.each(&:resolve_notification_references)
 
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
-        begin
-          Array(resource.action).each { |action| run_action(resource, action) }
-        ensure
-          resource.executed_by_runner = true
+        unless run_context.resource_collection.unified_mode
+          run_all_actions(resource)
         end
+      end
+
+      if run_context.resource_collection.unified_mode
+        puts "HERE WE ARE!"
+        run_context.resource_collection.each { |r| r.resolve_notification_references(true) }
       end
 
     rescue Exception => e
@@ -126,7 +164,8 @@ class Chef
     def run_delayed_notification(notification)
       Chef::Log.info( "#{notification.notifying_resource} sending #{notification.action}"\
                       " action to #{notification.resource} (delayed)")
-      # Struct of resource/action to call
+      # notifications may have lazy strings in them to resolve
+      notification.resolve_resource_reference(run_context.resource_collection)
       run_action(notification.resource, notification.action, :delayed)
       true
     rescue Exception => e
