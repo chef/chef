@@ -527,5 +527,17 @@ class Chef
         super "Conflicting requirements for gem '#{gem_name}': Both #{value1.inspect} and #{value2.inspect} given for option #{option.inspect}"
       end
     end
+
+    class UnifiedModeImmediateSubscriptionEarlierResource < RuntimeError
+      def initialize(notification)
+        super "immediate subscription from #{notification.resource} resource cannot be setup to #{notification.notifying_resource} resource, which has already fired while in unified mode"
+      end
+    end
+
+    class UnifiedModeBeforeSubscriptionEarlierResource < RuntimeError
+      def initialize(notification)
+        super "before subscription from #{notification.resource} resource cannot be setup to #{notification.notifying_resource} resource, which has already fired while in unified mode"
+      end
+    end
   end
 end
