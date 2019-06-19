@@ -1,4 +1,4 @@
-# rubocop:disable Lint/Syntax
+# rubocop:disable all
 chef_repo_path "{{pkg.svc_data_path}}/chef"
 file_backup_path "{{pkg.svc_data_path}}/{{cfg.file_backup_path}}"
 pid_file "{{pkg.svc_data_path}}/{{cfg.pid_file}}"
@@ -18,3 +18,4 @@ log_level "{{cfg.log_level}}".to_sym
 {{#if cfg.use_member_id_as_uuid ~}}
 chef_guid "{{svc.me.member_id}}"
 {{/if ~}}
+# rubocop:enable all
