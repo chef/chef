@@ -1,3 +1,4 @@
+# rubocop:disable Lint/Syntax
 chef_repo_path "{{pkg.svc_data_path}}/chef"
 file_backup_path "{{pkg.svc_data_path}}/{{cfg.file_backup_path}}"
 pid_file "{{pkg.svc_data_path}}/{{cfg.pid_file}}"
