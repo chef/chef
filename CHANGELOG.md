@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.15 -->
-## [v15.1.15](https://github.com/chef/chef/tree/v15.1.15) (2019-06-18)
+<!-- latest_release 15.1.16 -->
+## [v15.1.16](https://github.com/chef/chef/tree/v15.1.16) (2019-06-19)
 
 #### Merged Pull Requests
-- Bump inspec to 4.6.3 [#8666](https://github.com/chef/chef/pull/8666) ([chef-ci](https://github.com/chef-ci))
+- Move the data collector should_be_enabled? check [#8670](https://github.com/chef/chef/pull/8670) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Move the data collector should_be_enabled? check [#8670](https://github.com/chef/chef/pull/8670) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.16 -->
 - Bump inspec to 4.6.3 [#8666](https://github.com/chef/chef/pull/8666) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.15 -->
 - Add Chef 12 updating docs [#8664](https://github.com/chef/chef/pull/8664) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.14 -->
 - Update omnibus-software to unbreak chef builds [#8665](https://github.com/chef/chef/pull/8665) ([tas50](https://github.com/tas50)) <!-- 15.1.13 -->
