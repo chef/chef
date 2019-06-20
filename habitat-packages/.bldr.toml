@@ -1,0 +1,4 @@
+[chef-client]
+plan_path = "chef-client/*"
+[scaffolding-chef]
+plan_path = "scaffolding-chef/*"
