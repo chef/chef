@@ -41,7 +41,19 @@ The `CHEF-25` deprecation for resource collisions between cookbooks and resource
 - openssl 1.0.2r -> 1.0.2s (bugfix only release)
 - cacerts 2019-01-23 -> 2019-05-15
 
-# Chef Client Release Notes 14.12:
+# Chef Client Release Notes 14.12.9:
+
+## License Acceptance Placeholder Flag
+
+In preparation for Chef Infra Client 15.0 we've added a placeholder `--chef-license` flag to the chef-client command. This allows you to use the new `--chef-license` flag on both Chef Infra Client 14.12.9+ and 15+ notes without producing errors on Chef Infra Client 14.
+
+## Important Bug Fixes
+
+- Blacklisting and whiteliting default and override level attributes is once again possible.
+- You may now encrypt a previously unencrypted data bag.
+- Resolved a regression introduced in Chef Infra Client 14.12.3 that resulted in errors when managing Windows services
+
+# Chef Client Release Notes 14.12.3:
 
 ## Updated Resources
 
