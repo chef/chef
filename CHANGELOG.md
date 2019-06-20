@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.17 -->
-## [v15.1.17](https://github.com/chef/chef/tree/v15.1.17) (2019-06-20)
+<!-- latest_release 15.1.18 -->
+## [v15.1.18](https://github.com/chef/chef/tree/v15.1.18) (2019-06-20)
 
 #### Merged Pull Requests
-- Bump inspec-core-bin to 4.6.4 [#8672](https://github.com/chef/chef/pull/8672) ([chef-ci](https://github.com/chef-ci))
+- added scaffolding-chef plan [#8659](https://github.com/chef/chef/pull/8659) ([echohack](https://github.com/echohack))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- added scaffolding-chef plan [#8659](https://github.com/chef/chef/pull/8659) ([echohack](https://github.com/echohack)) <!-- 15.1.18 -->
 - Bump inspec-core-bin to 4.6.4 [#8672](https://github.com/chef/chef/pull/8672) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.17 -->
 - Move the data collector should_be_enabled? check [#8670](https://github.com/chef/chef/pull/8670) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.16 -->
 - Bump inspec to 4.6.3 [#8666](https://github.com/chef/chef/pull/8666) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.15 -->
