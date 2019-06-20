@@ -3,14 +3,32 @@ pkg_origin=chef
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
 pkg_description="The Chef Client"
 pkg_license=('Apache-2.0')
-pkg_filename=${pkg_dirname}.tar.gz
+pkg_filename="${pkg_name}-${pkg_version}.tar.gz"
 pkg_bin_dirs=(bin)
-pkg_build_deps=(core/make core/gcc core/git)
-pkg_deps=(core/glibc core/ruby26 core/libxml2 core/libxslt core/libiconv core/xz core/zlib core/bundler core/openssl core/cacerts core/libffi core/coreutils core/libarchive)
+pkg_build_deps=(
+  core/make
+  core/gcc
+  core/git
+)
+pkg_deps=(
+  core/glibc
+  core/ruby26
+  core/libxml2
+  core/libxslt
+  core/libiconv
+  core/xz
+  core/zlib
+  core/bundler
+  core/openssl
+  core/cacerts
+  core/libffi
+  core/coreutils
+  core/libarchive
+)
 pkg_svc_user=root
 
 pkg_version() {
-  cat "$SRC_PATH/VERSION"
+  cat "${SRC_PATH}/../../VERSION"
 }
 
 do_before() {
@@ -19,12 +37,12 @@ do_before() {
 }
 
 do_download() {
-  build_line "Fake download! Creating archive of latest repository commit."
+  build_line "Locally creating archive of latest repository commit."
   # source is in this repo, so we're going to create an archive from the
   # appropriate path within the repo and place the generated tarball in the
   # location expected by do_unpack
-  cd $PLAN_CONTEXT/../
-  git archive --prefix=${pkg_name}-${pkg_version}/ --output=$HAB_CACHE_SRC_PATH/${pkg_filename} HEAD
+  cd ${PLAN_CONTEXT}/../../
+  git archive --prefix=${pkg_name}-${pkg_version}/ --output=${HAB_CACHE_SRC_PATH}/${pkg_filename} HEAD
 }
 
 do_verify() {
@@ -59,7 +77,7 @@ do_build() {
 
   bundle config --local silence_root_warning 1
 
-  pushd chef-config > /dev/null
+  pushd ${HAB_CACHE_SRC_PATH}/${pkg_name}-${pkg_version}/chef-config > /dev/null
   _bundle_install "${pkg_prefix}/bundle"
   popd > /dev/null
 
@@ -69,7 +87,7 @@ do_build() {
 do_install() {
   mkdir -p "${pkg_prefix}/chef"
   for dir in bin chef-bin chef-config lib chef.gemspec Gemfile Gemfile.lock; do
-    cp -rv "${PLAN_CONTEXT}/../${dir}" "${pkg_prefix}/chef/"
+    cp -rv "${PLAN_CONTEXT}/../../${dir}" "${pkg_prefix}/chef/"
   done
 
   # This is just generating binstubs with the correct path.
