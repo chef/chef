@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.19 -->
-## [v15.1.19](https://github.com/chef/chef/tree/v15.1.19) (2019-06-20)
+<!-- latest_release 15.1.20 -->
+## [v15.1.20](https://github.com/chef/chef/tree/v15.1.20) (2019-06-20)
 
 #### Merged Pull Requests
-- [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8677](https://github.com/chef/chef/pull/8677) ([echohack](https://github.com/echohack))
+- [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8678](https://github.com/chef/chef/pull/8678) ([echohack](https://github.com/echohack))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8678](https://github.com/chef/chef/pull/8678) ([echohack](https://github.com/echohack)) <!-- 15.1.20 -->
 - [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8677](https://github.com/chef/chef/pull/8677) ([echohack](https://github.com/echohack)) <!-- 15.1.19 -->
 - added scaffolding-chef plan [#8659](https://github.com/chef/chef/pull/8659) ([echohack](https://github.com/echohack)) <!-- 15.1.18 -->
 - Bump inspec-core-bin to 4.6.4 [#8672](https://github.com/chef/chef/pull/8672) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.17 -->
