@@ -2,13 +2,16 @@ pkg_name=chef-client
 pkg_origin=chef
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
 pkg_description="The Chef Client"
-pkg_version=$(cat ../VERSION)
 pkg_license=('Apache-2.0')
 pkg_filename=${pkg_dirname}.tar.gz
 pkg_bin_dirs=(bin)
 pkg_build_deps=(core/make core/gcc core/git)
 pkg_deps=(core/glibc core/ruby26 core/libxml2 core/libxslt core/libiconv core/xz core/zlib core/bundler core/openssl core/cacerts core/libffi core/coreutils core/libarchive)
 pkg_svc_user=root
+
+pkg_version() {
+  cat "$SRC_PATH/VERSION"
+}
 
 do_before() {
   do_default_before
