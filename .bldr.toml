@@ -4,10 +4,35 @@ build_targets = [
   "x86_64-linux",
   "x86_64-linux-kernel2"
 ]
+paths = [
+  "bin",
+  "chef-bin",
+  "chef-config",
+  "ci",
+  "distro",
+  "ext",
+  "habitat-packages",
+  "lib",
+  "omnibus", # TODO: Evaluate if we really need this in the future
+  "tasks",
+]
+
 [scaffolding-chef]
 plan_path = "habitat-packages/scaffolding-chef"
 build_targets = [
   "x86_64-linux",
   "x86_64-linux-kernel2"
   # "x86_64-windows" --- TODO: Expeditor does not currently support Windows, but will in the coming weeks. Uncomment me soon!
+]
+paths = [
+  "bin",
+  "chef-bin",
+  "chef-config",
+  "ci",
+  "distro",
+  "ext",
+  "habitat-packages",
+  "lib",
+  "omnibus", # TODO: Evaluate if we really need this in the future
+  "tasks",
 ]
