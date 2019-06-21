@@ -8,10 +8,10 @@ version="${VERSION:-latest}"
 export INSTALL_DIR="/opt/$product"
 
 echo "--- Installing $channel $product $version"
-package_file="$(/opt/omnibus-toolchain/bin/install-omnibus-product -c "$channel" -P "$product" -v "$version" | tail -n 1)"
+package_file="$("/opt/$TOOLCHAIN/bin/install-omnibus-product" -c "$channel" -P "$product" -v "$version" | tail -1)"
 
 echo "--- Verifying omnibus package is signed"
-/opt/omnibus-toolchain/bin/check-omnibus-package-signed "$package_file"
+"/opt/$TOOLCHAIN/bin/check-omnibus-package-signed" "$package_file"
 
 sudo rm -f "$package_file"
 
@@ -110,7 +110,7 @@ export FORCE_FFI_YAJL
 # most platforms provide "infocmp" by default via an "ncurses" package but SLES 11 and 12 provide it via "ncurses-devel" which
 # isn't typically installed. omnibus-toolchain has "infocmp" built-in so we add omnibus-toolchain to the PATH to ensure
 # tests will function properly.
-PATH="/opt/omnibus-toolchain/bin:/usr/local/bin:/opt/omnibus-toolchain/embedded/bin:$PATH"
+PATH="/opt/$TOOLCHAIN/bin:/usr/local/bin:/opt/$TOOLCHAIN/embedded/bin:$PATH"
 
 # add chef's bin paths to PATH to ensure tests function properly
 PATH="/opt/$product/bin:/opt/$product/embedded/bin:$PATH"
@@ -122,8 +122,10 @@ chef_gem="$(dirname "$lib_dir")"
 # ensure that PATH doesn't get reset by sudoers
 if [[ -d /etc/sudoers.d ]]; then
   echo "Defaults:$(id -un) !secure_path, exempt_group += $(id -gn)" | sudo tee "/etc/sudoers.d/$(id -un)-preserve_path"
+  sudo chmod 440 "/etc/sudoers.d/$(id -un)-preserve_path"
 elif [[ -d /usr/local/etc/sudoers.d ]]; then
   echo "Defaults:$(id -un) !secure_path, exempt_group += $(id -gn)" | sudo tee "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
+  sudo chmod 440 "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
 fi
 
 cd "$chef_gem"
