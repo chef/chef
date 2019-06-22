@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.20 -->
-## [v15.1.20](https://github.com/chef/chef/tree/v15.1.20) (2019-06-20)
+<!-- latest_release 15.1.21 -->
+## [v15.1.21](https://github.com/chef/chef/tree/v15.1.21) (2019-06-22)
 
 #### Merged Pull Requests
-- [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8678](https://github.com/chef/chef/pull/8678) ([echohack](https://github.com/echohack))
+- Bump ohai to 15.1.5 [#8681](https://github.com/chef/chef/pull/8681) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Bump ohai to 15.1.5 [#8681](https://github.com/chef/chef/pull/8681) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.21 -->
 - [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8678](https://github.com/chef/chef/pull/8678) ([echohack](https://github.com/echohack)) <!-- 15.1.20 -->
 - [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8677](https://github.com/chef/chef/pull/8677) ([echohack](https://github.com/echohack)) <!-- 15.1.19 -->
 - added scaffolding-chef plan [#8659](https://github.com/chef/chef/pull/8659) ([echohack](https://github.com/echohack)) <!-- 15.1.18 -->
