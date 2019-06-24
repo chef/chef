@@ -24,6 +24,11 @@ habitat_packages:
 pipelines:
   - verify:
       public: true
+  - omnibus/release
+  - omnibus/adhoc:
+      definition: .expeditor/release.omnibus.yml
+      env:
+        - ADHOC: true
 
 github:
   # The file where the MAJOR.MINOR.PATCH version is kept. The version in this file
