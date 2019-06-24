@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 065279661e0a99ade524de7549fa3e1eaf00b453
+  revision: 7e0dc7e7dec232d3b4f74f7e9bde422f4334aaa8
   branch: master
   specs:
     ohai (15.1.5)
@@ -158,7 +158,7 @@ GEM
     ffi (1.11.1)
     ffi (1.11.1-x64-mingw32)
     ffi (1.11.1-x86-mingw32)
-    ffi-libarchive (0.4.6)
+    ffi-libarchive (0.4.10)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
       ffi
