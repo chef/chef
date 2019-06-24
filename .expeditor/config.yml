@@ -72,7 +72,7 @@ merge_actions:
         - "Expeditor: Skip Habitat"
         - "Expeditor: Skip All"
       only_if: built_in:bump_version
-  - built_in:trigger_omnibus_release_build:
+  - trigger_pipeline:omnibus/release:
       ignore_labels:
         - "Expeditor: Skip Omnibus"
         - "Expeditor: Skip All"
