@@ -1,6 +1,6 @@
 # Chef Infra
 [![Code Climate](https://codeclimate.com/github/chef/chef.svg)](https://codeclimate.com/github/chef/chef)
-[![Build Status](https://badge.buildkite.com/c82093430ceec7d27af05febb9dcafe3aa331fff9d74c0ab9d.svg)](https://buildkite.com/chef-oss/chef-chef-master-verify)
+[![Build Status](https://badge.buildkite.com/c82093430ceec7d27af05febb9dcafe3aa331fff9d74c0ab9d.svg?branch=master)](https://buildkite.com/chef-oss/chef-chef-master-verify)
 [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
 [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
 [![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef-rfc/blob/master/rfc086-chef-oss-project-policies.md#cadence-release)
