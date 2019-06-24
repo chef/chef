@@ -93,6 +93,25 @@ if [[ ! -L $USR_BIN_DIR/ohai ]] || [[ $(ls -l $USR_BIN_DIR/ohai | awk '{print$NF
   exit 1
 fi
 
+# Ensure the calling environment (disapproval look Bundler) does not
+# infect our Ruby environment created by the `chef-client` cli.
+for ruby_env_var in _ORIGINAL_GEM_PATH \
+                    BUNDLE_BIN_PATH \
+                    BUNDLE_GEMFILE \
+                    GEM_HOME \
+                    GEM_PATH \
+                    GEM_ROOT \
+                    RUBYLIB \
+                    RUBYOPT \
+                    RUBY_ENGINE \
+                    RUBY_ROOT \
+                    RUBY_VERSION \
+                    BUNDLER_VERSION
+
+do
+  unset $ruby_env_var
+done
+
 chef-client --version
 
 # Exercise various packaged tools to validate binstub shebangs
