@@ -28,6 +28,20 @@ $Env:TMP = "C:\cheftest"
 Remove-Item -Recurse -Force $Env:TEMP -ErrorAction SilentlyContinue
 New-Item -ItemType directory -Path $Env:TEMP
 
+# FIXME: we should really use Bundler.with_clean_env in the caller instead of re-inventing it here
+Remove-Item Env:_ORIGINAL_GEM_PATH -ErrorAction SilentlyContinue
+Remove-Item Env:BUNDLE_BIN_PATH -ErrorAction SilentlyContinue
+Remove-Item Env:BUNDLE_GEMFILE -ErrorAction SilentlyContinue
+Remove-Item Env:GEM_HOME -ErrorAction SilentlyContinue
+Remove-Item Env:GEM_PATH -ErrorAction SilentlyContinue
+Remove-Item Env:GEM_ROOT -ErrorAction SilentlyContinue
+Remove-Item Env:RUBYLIB -ErrorAction SilentlyContinue
+Remove-Item Env:RUBYOPT -ErrorAction SilentlyContinue
+Remove-Item Env:RUBY_ENGINE -ErrorAction SilentlyContinue
+Remove-Item Env:RUBY_ROOT -ErrorAction SilentlyContinue
+Remove-Item Env:RUBY_VERSION -ErrorAction SilentlyContinue
+Remove-Item Env:BUNDLER_VERSION -ErrorAction SilentlyContinue
+
 ForEach ($b in
   "chef-client",
   "knife",

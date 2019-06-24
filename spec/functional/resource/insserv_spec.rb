@@ -75,6 +75,7 @@ describe Chef::Resource::Service, :requires_root, :sles11 do
   before(:all) do
     File.delete("/etc/init.d/inittest") if File.exists?("/etc/init.d/inittest")
     FileUtils.cp((File.join(File.dirname(__FILE__), "/../assets/inittest")).to_s, "/etc/init.d/inittest")
+    FileUtils.chmod(0755, "/etc/init.d/inittest")
   end
 
   after(:all) do
