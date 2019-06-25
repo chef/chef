@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.24 -->
-## [v15.1.24](https://github.com/chef/chef/tree/v15.1.24) (2019-06-25)
+<!-- latest_release 15.1.25 -->
+## [v15.1.25](https://github.com/chef/chef/tree/v15.1.25) (2019-06-25)
 
 #### Merged Pull Requests
-- Update Rubygems to 3.0.4 [#8689](https://github.com/chef/chef/pull/8689) ([tas50](https://github.com/tas50))
+- Pin to ruby-prof 0.17 [#8690](https://github.com/chef/chef/pull/8690) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Pin to ruby-prof 0.17 [#8690](https://github.com/chef/chef/pull/8690) ([tas50](https://github.com/tas50)) <!-- 15.1.25 -->
 - Update Rubygems to 3.0.4 [#8689](https://github.com/chef/chef/pull/8689) ([tas50](https://github.com/tas50)) <!-- 15.1.24 -->
 - [scaffolding-chef] Rolling out the scaffolding-chef package [#8679](https://github.com/chef/chef/pull/8679) ([echohack](https://github.com/echohack)) <!-- 15.1.23 -->
 - Update ffi-libarchive to 0.4.10 [#8688](https://github.com/chef/chef/pull/8688) ([tas50](https://github.com/tas50)) <!-- 15.1.22 -->
