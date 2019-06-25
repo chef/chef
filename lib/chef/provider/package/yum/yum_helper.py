@@ -185,27 +185,30 @@ else:
   inpipe = os.fdopen(int(sys.argv[1]), "r")
   outpipe = os.fdopen(int(sys.argv[2]), "w")
 
-while 1:
-    # kill self if we get orphaned (tragic)
-    ppid = os.getppid()
-    if ppid == 1:
-        sys.exit(0)
-    setup_exit_handler()
-    line = inpipe.readline()
+try:
+    while 1:
+        # kill self if we get orphaned (tragic)
+        ppid = os.getppid()
+        if ppid == 1:
+            raise RuntimeError("orphaned")
 
-    try:
-        command = json.loads(line)
-    except ValueError, e:
-        base.closeRpmDB()
-        sys.exit(0)
+        setup_exit_handler()
+        line = inpipe.readline()
 
-    if command['action'] == "whatinstalled":
-        query(command)
-    elif command['action'] == "whatavailable":
-        query(command)
-    elif command['action'] == "versioncompare":
-        versioncompare(command['versions'])
-    elif command['action'] == "installonlypkgs":
-         install_only_packages(command['package'])
-    else:
-        raise RuntimeError("bad command")
+        try:
+            command = json.loads(line)
+        except ValueError, e:
+            raise RuntimeError("bad json parse")
+
+        if command['action'] == "whatinstalled":
+            query(command)
+        elif command['action'] == "whatavailable":
+            query(command)
+        elif command['action'] == "versioncompare":
+            versioncompare(command['versions'])
+        elif command['action'] == "installonlypkgs":
+             install_only_packages(command['package'])
+        else:
+            raise RuntimeError("bad command")
+finally:
+    base.closeRpmDB()
