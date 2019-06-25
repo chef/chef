@@ -117,7 +117,10 @@ class Chef
           cmd = windows? ? MKTEMP_WIN_COMMAND : MKTEMP_NIX_COMMAND
           @tmpdir ||= begin
                         res = run_command!(cmd)
-                        dir = res.stdout.chomp.strip
+                        # Since pty is enabled in the connection, stderr to be merged into stdout.
+                        # So, there are cases where unnecessary multi-line output
+                        # is included before the result of mktemp.
+                        dir = res.stdout.split.last
                         unless windows?
                           # Ensure that dir has the correct owner.  We are possibly
                           # running with sudo right now - so this directory would be owned by root.
