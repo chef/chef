@@ -169,7 +169,8 @@ def query(command):
 # to keep process tables clean.  additional error handling should probably be added to the retry loop
 # on the ruby side.
 def exit_handler(signal, frame):
-    base.closeRpmDB()
+    if base is not None:
+        base.closeRpmDB()
     sys.exit(0)
 
 def setup_exit_handler():
