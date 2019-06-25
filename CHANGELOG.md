@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.28 -->
-## [v15.1.28](https://github.com/chef/chef/tree/v15.1.28) (2019-06-25)
+<!-- latest_release 15.1.29 -->
+## [v15.1.29](https://github.com/chef/chef/tree/v15.1.29) (2019-06-25)
 
 #### Merged Pull Requests
-- chocolatey_source: Add additional actions and propereties for configuring sources [#8635](https://github.com/chef/chef/pull/8635) ([gep13](https://github.com/gep13))
+- yum_package: Better handle yum exceptions in our helper so we always close the rpmdb [#8692](https://github.com/chef/chef/pull/8692) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- yum_package: Better handle yum exceptions in our helper so we always close the rpmdb [#8692](https://github.com/chef/chef/pull/8692) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.29 -->
 - chocolatey_source: Add additional actions and propereties for configuring sources [#8635](https://github.com/chef/chef/pull/8635) ([gep13](https://github.com/gep13)) <!-- 15.1.28 -->
 - Ignore noisy outputs at create temp_dir during bootstrap [#8682](https://github.com/chef/chef/pull/8682) ([sawanoboly](https://github.com/sawanoboly)) <!-- 15.1.27 -->
 - Improve how we bundler install in appveyor [#8663](https://github.com/chef/chef/pull/8663) ([tas50](https://github.com/tas50)) <!-- 15.1.26 -->
