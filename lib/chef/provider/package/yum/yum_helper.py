@@ -211,4 +211,5 @@ try:
         else:
             raise RuntimeError("bad command")
 finally:
-    base.closeRpmDB()
+    if base is not None:
+        base.closeRpmDB()
