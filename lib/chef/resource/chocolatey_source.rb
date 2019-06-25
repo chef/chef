@@ -19,7 +19,7 @@ class Chef
     class ChocolateySource < Chef::Resource
       resource_name :chocolatey_source
 
-      description "Use the chocolatey_source resource to add or remove Chocolatey sources."
+      description "Use the chocolatey_source resource to add, remove, enable, or disable Chocolatey sources."
       introduced "14.3"
 
       property :source_name, String, name_property: true,
@@ -32,10 +32,12 @@ class Chef
                description: "Whether or not to bypass the system's proxy settings to access the source."
 
       property :admin_only, [TrueClass, FalseClass], default: false,
-               description: "Whether or not to set the source to be accessible to only admins."
+               description: "Whether or not to set the source to be accessible to only admins.",
+               introduced: "15.1"
 
       property :allow_self_service, [TrueClass, FalseClass], default: false,
-               description: "Whether or not to set the source to be used for self service."
+               description: "Whether or not to set the source to be used for self service.",
+               introduced: "15.1"
 
       property :priority, Integer, default: 0,
                description: "The priority level of the source."
