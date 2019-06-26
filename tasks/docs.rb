@@ -9,7 +9,7 @@ namespace :docs_site do
 
     require "chef/resource_inspector"
     require "erb"
-    require 'fileutils'
+    require "fileutils"
 
     # @return [String, nil] a pretty defaul value string or nil if we want to skip it
     def pretty_default(default)
@@ -103,7 +103,7 @@ namespace :docs_site do
       .. note::
 
       #{note}
-    HEREDOC
+        HEREDOC
       end
     end
 
@@ -312,7 +312,7 @@ namespace :docs_site do
     ==========================================
     }
 
-    FileUtils.mkdir_p 'docs_site'
+    FileUtils.mkdir_p "docs_site"
     resources = Chef::JSONCompat.parse(ResourceInspector.inspect)
     resources.each do |resource, data|
       next if ["scm", "whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", ""].include?(resource)
