@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.30 -->
-## [v15.1.30](https://github.com/chef/chef/tree/v15.1.30) (2019-06-25)
+<!-- latest_release 15.1.31 -->
+## [v15.1.31](https://github.com/chef/chef/tree/v15.1.31) (2019-06-26)
 
 #### Merged Pull Requests
-- Add introduced fields for chocolatey_source [#8691](https://github.com/chef/chef/pull/8691) ([tas50](https://github.com/tas50))
+- Enable Habitat build promotion in Expeditor again [#8693](https://github.com/chef/chef/pull/8693) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Enable Habitat build promotion in Expeditor again [#8693](https://github.com/chef/chef/pull/8693) ([tas50](https://github.com/tas50)) <!-- 15.1.31 -->
 - Add introduced fields for chocolatey_source [#8691](https://github.com/chef/chef/pull/8691) ([tas50](https://github.com/tas50)) <!-- 15.1.30 -->
 - yum_package: Better handle yum exceptions in our helper so we always close the rpmdb [#8692](https://github.com/chef/chef/pull/8692) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.29 -->
 - chocolatey_source: Add additional actions and propereties for configuring sources [#8635](https://github.com/chef/chef/pull/8635) ([gep13](https://github.com/gep13)) <!-- 15.1.28 -->
