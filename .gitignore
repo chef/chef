@@ -68,3 +68,6 @@ chef-config/pkg
 chef-bin/.bundle
 chef-bin/Gemfile.lock
 chef-bin/pkg
+
+# auto generated docs from the docs.rb rake task
+docs_site
