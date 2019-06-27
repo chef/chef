@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.32 -->
-## [v15.1.32](https://github.com/chef/chef/tree/v15.1.32) (2019-06-27)
+<!-- latest_release 15.1.33 -->
+## [v15.1.33](https://github.com/chef/chef/tree/v15.1.33) (2019-06-27)
 
 #### Merged Pull Requests
-- Fix a typo in the hostname resource property descriptions [#8695](https://github.com/chef/chef/pull/8695) ([tas50](https://github.com/tas50))
+- Add rake task for generating the docs site content [#8694](https://github.com/chef/chef/pull/8694) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Add rake task for generating the docs site content [#8694](https://github.com/chef/chef/pull/8694) ([tas50](https://github.com/tas50)) <!-- 15.1.33 -->
 - Fix a typo in the hostname resource property descriptions [#8695](https://github.com/chef/chef/pull/8695) ([tas50](https://github.com/tas50)) <!-- 15.1.32 -->
 - Enable Habitat build promotion in Expeditor again [#8693](https://github.com/chef/chef/pull/8693) ([tas50](https://github.com/tas50)) <!-- 15.1.31 -->
 - Add introduced fields for chocolatey_source [#8691](https://github.com/chef/chef/pull/8691) ([tas50](https://github.com/tas50)) <!-- 15.1.30 -->
