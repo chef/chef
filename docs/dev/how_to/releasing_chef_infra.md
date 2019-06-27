@@ -28,11 +28,8 @@ If there are any new or updated resources, the docs site will need to be updated
 
 #### Resource Documentation Automation
 
-1. Checkout the `doc_generator` branch in `chef/chef`
-2. Rebase the branch against master
-3. Run `bundle install`
-4. Run `bundle exec ./docs.rb`, which generates resource_FOO.rst files in the root of the git repo.
-5. Compare the relevant generated files with the docs site content in the `chef_master/source` directory. The generated files are missing some content, such as action descriptions, and don't have perfect formatting, so this is a bit of an art form.
+1. Run `rake docs_site:resources` to generate content to a `docs_site` directory
+2. Compare the relevant generated files with the docs site content in the `chef_master/source` directory. The generated files are missing some content, such as action descriptions, and don't have perfect formatting, so this is a bit of an art form.
 
 ## Release Chef Infra Client
 
