@@ -31,7 +31,7 @@ class Chef
                name_property: true
 
       property :compile_time, [ TrueClass, FalseClass ],
-               description: "Determines whether or not the resource shoul be run at compile time.",
+               description: "Determines whether or not the resource should be run at compile time.",
                default: true, desired_state: false
 
       property :ipaddress, String,
