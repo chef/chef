@@ -1,5 +1,57 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Infra Client 15.1
+
+## New Resources
+
+### chocolatey_feature
+
+The `chocolatey_feature` resource allows you to enable and disable Chocolatey features. See the [chocolatey_feature documentation](https://docs.chef.io/resource_chocolatey_feauture.html) for full usage information. Thanks [@gep13](https://github.com/gep13) for this new resource.
+
+## Updated Resources
+
+### chocolatey_source
+
+The `chocolatey_source` resource has been updated with new `enable` and `disable` actions as well as `admin_only` and `allow_self_service` properties. Thanks [@gep13](https://github.com/gep13) for this enhancement.
+
+### launchd
+
+The `launchd` resource has been updated with a new `launch_events` property, which allows you to specify higher-level event types to be used as launch-on-demand event sources. Thanks [@chilcote](https://github.com/chilcote) for this enhancement.
+
+### yum_package
+
+The `yum_package` resource's helper for interacting with the yum subsystem has been updated to always close out the rpmdb lock even during failures. This may prevent the rpmdb becoming locked in some rare conditions. Thanks for reporting this issue [@lytao](https://github.com/lytao).
+
+### template
+
+The `template` resource now provides additional information on failures, which is especially useful in ChefSpec tests. Thanks [@ brodock](https://github.com/brodock) for this enhancement.
+
+## Performance Improvements
+
+We've dug deep into Ruby internals and managed to speed up how Ruby loads Chef libraries. This should result in a noticeable performance increase running chef-client and knife commands, especially on non-SSD Windows hosts.
+
+## Target Mode Improvements
+
+Our experimental Target Mode received a large number of updates in Chef Infra Client 15.1. Target Mode now reuses the connection to the remote system, greatly speeding up the remote Chef Infra run. There is also now support for Target Mode in the `systemd_unit`, `log`, `ruby_block`, and `breakpoint` resources. Keep in mind that when using `ruby_block` with Target Mode that the Ruby code in the block will execute locally as there is not necessarily a Ruby runtime on the remote host.
+
+## Ohai 15.1
+
+Ohai has been updated to 15.1 with the following changes:
+
+  - The `Shard` plugin to properly use the machine's `machinename`, `serial`, and `uuid` attributes to generate the shard value. The plugin also no longer throws and exception on macOS hosts. Thanks [@michel-slm](https://github.com/michel-slm) for these fixes.
+  - The `Virtualbox` plugin has been enhanced to gather information on running guests, storage, and networks when VirtualBox is installed on a node. Thanks [@freakinhippie](https://github.com/freakinhippie) for this new capability.
+  - Ohai no longer fails to gather interface information on Solaris in some rare conditions. Thanks [@devoptimist](https://github.com/devoptimist) for this fix.
+
+## Chef InSpec 4.6.4
+
+Chef InSpec has been updated from 4.3.2 to 4.6.4 with the following changes:
+
+  - InSpec`Attributes` have now been renamed to `Inputs` to avoid confusion with Chef Infra attributes.
+  - A new InSpec plugin type of `Input` has been added for defining new input types. See the [InSpec Plugins documentation](https://github.com/inspec/inspec/blob/master/docs/dev/plugins.md#implementing-input-plugins) for more information on writing these plugins.
+  - InSpec no longer prints errors to the stdout when passing `--format json`.
+  - When fetching profiles from GitHub the URL can now include periods.
+  - The performance of InSpec startup has been improved
+
 # Chef Infra Client 15.0.300
 
 This release includes critical bugfixes for the 15.0 release:
