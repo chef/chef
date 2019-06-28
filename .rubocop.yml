@@ -4,7 +4,6 @@ AllCops:
     - "vendor/**/*"
     - "pkg/**/*"
     - "chef-config/pkg/**/*"
-    - "habitat-packages/**/*"
 Security/Eval:
   Enabled: false
 Lint/UselessAssignment:

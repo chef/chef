@@ -1,5 +1,5 @@
 [chef-client]
-plan_path = "habitat-packages/chef-client"
+plan_path = "habitat/chef-infra-client"
 build_targets = [
   "x86_64-linux",
   "x86_64-linux-kernel2"
