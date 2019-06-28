@@ -1,7 +1,7 @@
 pkg_name=chef-infra-client
 pkg_origin=chef
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
-pkg_description="The Chef Client"
+pkg_description="The Chef Infra Client"
 pkg_license=('Apache-2.0')
 pkg_filename="${pkg_name}-${pkg_version}.tar.gz"
 pkg_bin_dirs=(bin)
