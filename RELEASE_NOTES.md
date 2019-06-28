@@ -26,10 +26,6 @@ The `yum_package` resource's helper for interacting with the yum subsystem has b
 
 The `template` resource now provides additional information on failures, which is especially useful in ChefSpec tests. Thanks [@ brodock](https://github.com/brodock) for this enhancement.
 
-## Performance Improvements
-
-We've dug deep into Ruby internals and managed to speed up how Ruby loads Chef libraries. This should result in a noticeable performance increase running chef-client and knife commands, especially on non-SSD Windows hosts.
-
 ## Target Mode Improvements
 
 Our experimental Target Mode received a large number of updates in Chef Infra Client 15.1. Target Mode now reuses the connection to the remote system, greatly speeding up the remote Chef Infra run. There is also now support for Target Mode in the `systemd_unit`, `log`, `ruby_block`, and `breakpoint` resources. Keep in mind that when using `ruby_block` with Target Mode that the Ruby code in the block will execute locally as there is not necessarily a Ruby runtime on the remote host.
@@ -225,6 +221,10 @@ windows_service 'MyApp' do
   action [:configure, :start]
 end
 ```
+
+## Performance Improvements
+
+We've dug deep into Ruby internals and managed to speed up how Ruby loads Chef libraries. This should result in a noticeable performance increase running chef-client and knife commands, especially on non-SSD Windows hosts.
 
 ### Ruby 2.6.3
 
