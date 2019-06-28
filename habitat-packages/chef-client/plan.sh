@@ -1,4 +1,4 @@
-pkg_name=chef-client
+pkg_name=chef-infra-client
 pkg_origin=chef
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
 pkg_description="The Chef Client"
