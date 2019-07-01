@@ -12,7 +12,7 @@ The `chocolatey_feature` resource allows you to enable and disable Chocolatey fe
 
 ### chocolatey_source
 
-The `chocolatey_source` resource has been updated with new `enable` and `disable` actions as well as `admin_only` and `allow_self_service` properties. Thanks [@gep13](https://github.com/gep13) for this enhancement.
+The `chocolatey_source` resource has been updated with new `enable` and `disable` actions, as well as `admin_only` and `allow_self_service` properties. Thanks [@gep13](https://github.com/gep13) for this enhancement.
 
 ### launchd
 
