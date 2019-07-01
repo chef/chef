@@ -20,7 +20,7 @@ The `launchd` resource has been updated with a new `launch_events` property, whi
 
 ### yum_package
 
-The `yum_package` resource's helper for interacting with the yum subsystem has been updated to always close out the rpmdb lock even during failures. This may prevent the rpmdb becoming locked in some rare conditions. Thanks for reporting this issue [@lytao](https://github.com/lytao).
+The `yum_package` resource's helper for interacting with the yum subsystem has been updated to always close out the rpmdb lock, even during failures. This may prevent the rpmdb becoming locked in some rare conditions. Thanks for reporting this issue, [@lytao](https://github.com/lytao).
 
 ### template
 
