@@ -34,7 +34,7 @@ Our experimental Target Mode received a large number of updates in Chef Infra Cl
 
 Ohai has been updated to 15.1 with the following changes:
 
-  - The `Shard` plugin to properly use the machine's `machinename`, `serial`, and `uuid` attributes to generate the shard value. The plugin also no longer throws and exception on macOS hosts. Thanks [@michel-slm](https://github.com/michel-slm) for these fixes.
+  - The `Shard` plugin properly uses the machine's `machinename`, `serial`, and `uuid` attributes to generate the shard value. The plugin also no longer throws an exception on macOS hosts. Thanks [@michel-slm](https://github.com/michel-slm) for these fixes.
   - The `Virtualbox` plugin has been enhanced to gather information on running guests, storage, and networks when VirtualBox is installed on a node. Thanks [@freakinhippie](https://github.com/freakinhippie) for this new capability.
   - Ohai no longer fails to gather interface information on Solaris in some rare conditions. Thanks [@devoptimist](https://github.com/devoptimist) for this fix.
 
