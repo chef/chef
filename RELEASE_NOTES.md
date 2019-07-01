@@ -222,10 +222,6 @@ windows_service 'MyApp' do
 end
 ```
 
-## Performance Improvements
-
-We've dug deep into Ruby internals and managed to speed up how Ruby loads Chef libraries. This should result in a noticeable performance increase running chef-client and knife commands, especially on non-SSD Windows hosts.
-
 ### Ruby 2.6.3
 
 Chef now ships with Ruby 2.6.3. This new version of Ruby improves performance and includes many new features to make more advanced Chef usage easier. See <https://www.rubyguides.com/2018/11/ruby-2-6-new-features/> for a list of some of the new functionality.
