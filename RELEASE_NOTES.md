@@ -42,7 +42,7 @@ Ohai has been updated to 15.1 with the following changes:
 
 Chef InSpec has been updated from 4.3.2 to 4.6.4 with the following changes:
 
-  - InSpec`Attributes` have now been renamed to `Inputs` to avoid confusion with Chef Infra attributes.
+  - InSpec `Attributes` have now been renamed to `Inputs` to avoid confusion with Chef Infra attributes.
   - A new InSpec plugin type of `Input` has been added for defining new input types. See the [InSpec Plugins documentation](https://github.com/inspec/inspec/blob/master/docs/dev/plugins.md#implementing-input-plugins) for more information on writing these plugins.
   - InSpec no longer prints errors to the stdout when passing `--format json`.
   - When fetching profiles from GitHub, the URL can now include periods.
