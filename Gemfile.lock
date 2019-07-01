@@ -268,7 +268,7 @@ GEM
     pry-stack_explorer (0.4.9.3)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (3.1.0)
+    public_suffix (3.1.1)
     rack (2.0.7)
     rainbow (3.0.0)
     rake (12.3.2)
@@ -277,7 +277,7 @@ GEM
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
       rspec-mocks (~> 3.8.0)
-    rspec-core (3.8.1)
+    rspec-core (3.8.2)
       rspec-support (~> 3.8.0)
     rspec-expectations (3.8.4)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -328,7 +328,7 @@ GEM
     timers (4.3.0)
     tins (1.20.3)
     tomlrb (1.2.8)
-    train-core (2.1.7)
+    train-core (2.1.13)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 3.0)
@@ -405,7 +405,7 @@ GEM
       winrm (~> 2.0)
     wisper (2.0.0)
     wmi-lite (1.0.2)
-    yard (0.9.19)
+    yard (0.9.20)
 
 PLATFORMS
   ruby
