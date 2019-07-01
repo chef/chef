@@ -24,7 +24,7 @@ The `yum_package` resource's helper for interacting with the yum subsystem has b
 
 ### template
 
-The `template` resource now provides additional information on failures, which is especially useful in ChefSpec tests. Thanks [@ brodock](https://github.com/brodock) for this enhancement.
+The `template` resource now provides additional information on failures, which is especially useful in ChefSpec tests. Thanks [@brodock](https://github.com/brodock) for this enhancement.
 
 ## Target Mode Improvements
 
