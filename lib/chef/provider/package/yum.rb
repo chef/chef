@@ -93,10 +93,8 @@ class Chef
             next if n.nil?
 
             av = available_version(i)
-
             name = av.name # resolve the name via the available/candidate version
-
-            iv = python_helper.package_query(:whatinstalled, av.name_with_arch)
+            iv = python_helper.package_query(:whatinstalled, av.name_with_arch, options: options)
 
             method = "install"
 
@@ -237,9 +235,9 @@ class Chef
         def installed_version(index)
           @installed_version ||= []
           @installed_version[index] ||= if new_resource.source
-                                          python_helper.package_query(:whatinstalled, available_version(index).name, arch: safe_arch_array[index])
+                                          python_helper.package_query(:whatinstalled, available_version(index).name, arch: safe_arch_array[index], options: options)
                                         else
-                                          python_helper.package_query(:whatinstalled, package_name_array[index], arch: safe_arch_array[index])
+                                          python_helper.package_query(:whatinstalled, package_name_array[index], arch: safe_arch_array[index], options: options)
                                         end
           @installed_version[index]
         end
