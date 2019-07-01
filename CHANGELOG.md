@@ -1,86 +1,83 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.36 -->
-## [v15.1.36](https://github.com/chef/chef/tree/v15.1.36) (2019-07-01)
-
-#### Merged Pull Requests
-- Pass yum_package options to underlying python helper [#8687](https://github.com/chef/chef/pull/8687) ([Annih](https://github.com/Annih))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.0.300 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Pass yum_package options to underlying python helper [#8687](https://github.com/chef/chef/pull/8687) ([Annih](https://github.com/Annih)) <!-- 15.1.36 -->
-- Bump train-core to 2.1.13 [#8699](https://github.com/chef/chef/pull/8699) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.35 -->
-- Rename the habitat package to chef-infra-client [#8698](https://github.com/chef/chef/pull/8698) ([tas50](https://github.com/tas50)) <!-- 15.1.34 -->
-- Add rake task for generating the docs site content [#8694](https://github.com/chef/chef/pull/8694) ([tas50](https://github.com/tas50)) <!-- 15.1.33 -->
-- Fix a typo in the hostname resource property descriptions [#8695](https://github.com/chef/chef/pull/8695) ([tas50](https://github.com/tas50)) <!-- 15.1.32 -->
-- Enable Habitat build promotion in Expeditor again [#8693](https://github.com/chef/chef/pull/8693) ([tas50](https://github.com/tas50)) <!-- 15.1.31 -->
-- Add introduced fields for chocolatey_source [#8691](https://github.com/chef/chef/pull/8691) ([tas50](https://github.com/tas50)) <!-- 15.1.30 -->
-- yum_package: Better handle yum exceptions in our helper so we always close the rpmdb [#8692](https://github.com/chef/chef/pull/8692) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.29 -->
-- chocolatey_source: Add additional actions and propereties for configuring sources [#8635](https://github.com/chef/chef/pull/8635) ([gep13](https://github.com/gep13)) <!-- 15.1.28 -->
-- Ignore noisy outputs at create temp_dir during bootstrap [#8682](https://github.com/chef/chef/pull/8682) ([sawanoboly](https://github.com/sawanoboly)) <!-- 15.1.27 -->
-- Improve how we bundler install in appveyor [#8663](https://github.com/chef/chef/pull/8663) ([tas50](https://github.com/tas50)) <!-- 15.1.26 -->
-- Pin to ruby-prof 0.17 [#8690](https://github.com/chef/chef/pull/8690) ([tas50](https://github.com/tas50)) <!-- 15.1.25 -->
-- Update Rubygems to 3.0.4 [#8689](https://github.com/chef/chef/pull/8689) ([tas50](https://github.com/tas50)) <!-- 15.1.24 -->
-- [scaffolding-chef] Rolling out the scaffolding-chef package [#8679](https://github.com/chef/chef/pull/8679) ([echohack](https://github.com/echohack)) <!-- 15.1.23 -->
-- Update ffi-libarchive to 0.4.10 [#8688](https://github.com/chef/chef/pull/8688) ([tas50](https://github.com/tas50)) <!-- 15.1.22 -->
-- Bump ohai to 15.1.5 [#8681](https://github.com/chef/chef/pull/8681) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.21 -->
-- [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8678](https://github.com/chef/chef/pull/8678) ([echohack](https://github.com/echohack)) <!-- 15.1.20 -->
-- [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8677](https://github.com/chef/chef/pull/8677) ([echohack](https://github.com/echohack)) <!-- 15.1.19 -->
-- added scaffolding-chef plan [#8659](https://github.com/chef/chef/pull/8659) ([echohack](https://github.com/echohack)) <!-- 15.1.18 -->
-- Bump inspec-core-bin to 4.6.4 [#8672](https://github.com/chef/chef/pull/8672) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.17 -->
-- Move the data collector should_be_enabled? check [#8670](https://github.com/chef/chef/pull/8670) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.16 -->
-- Bump inspec to 4.6.3 [#8666](https://github.com/chef/chef/pull/8666) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.15 -->
-- Add Chef 12 updating docs [#8664](https://github.com/chef/chef/pull/8664) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.14 -->
-- Update omnibus-software to unbreak chef builds [#8665](https://github.com/chef/chef/pull/8665) ([tas50](https://github.com/tas50)) <!-- 15.1.13 -->
-- Target mode for systemd service helper [#8614](https://github.com/chef/chef/pull/8614) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.12 -->
-- Update Ohai to 15.1.3 and license-acceptance to 1.0.13 [#8661](https://github.com/chef/chef/pull/8661) ([tas50](https://github.com/tas50)) <!-- 15.1.11 -->
-- Update Habitat Build [#8598](https://github.com/chef/chef/pull/8598) ([ncerny](https://github.com/ncerny)) <!-- 15.1.10 -->
-- Make sure to ship the inspec binary [#8660](https://github.com/chef/chef/pull/8660) ([tas50](https://github.com/tas50)) <!-- 15.1.9 -->
-- use mixlib-cli&#39;s deprecation mechanism [#8637](https://github.com/chef/chef/pull/8637) ([marcparadise](https://github.com/marcparadise)) <!-- 15.1.8 -->
-- Update Buildkite config with Ubuntu/CentOS/openSUSE containers [#8641](https://github.com/chef/chef/pull/8641) ([tas50](https://github.com/tas50)) <!-- 15.1.7 -->
-- More speedups to the Buildkite PR verification tests [#8639](https://github.com/chef/chef/pull/8639) ([tas50](https://github.com/tas50)) <!-- 15.1.6 -->
-- Speed up buildkite tests [#8636](https://github.com/chef/chef/pull/8636) ([tas50](https://github.com/tas50)) <!-- 15.1.5 -->
-- Avoid constant warnings [#8633](https://github.com/chef/chef/pull/8633) ([tas50](https://github.com/tas50)) <!-- 15.1.4 -->
-- Chef-15: Added deprecation check for short arguments [#8626](https://github.com/chef/chef/pull/8626) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.1.3 -->
-- more distro constants [#8630](https://github.com/chef/chef/pull/8630) ([bobchaos](https://github.com/bobchaos)) <!-- 15.1.2 -->
-- Create bootstrap template in binmode to fix line endings [#8631](https://github.com/chef/chef/pull/8631) ([btm](https://github.com/btm)) <!-- 15.1.1 -->
-- Add hooks for plugins in knife bootstrap [#8628](https://github.com/chef/chef/pull/8628) ([btm](https://github.com/btm)) <!-- 15.1.0 -->
-- Raise knife exceptions when verbosity is 3 (-VVV) [#8618](https://github.com/chef/chef/pull/8618) ([btm](https://github.com/btm)) <!-- 15.0.325 -->
-- Trace output the actual bootstrap template filename [#8619](https://github.com/chef/chef/pull/8619) ([btm](https://github.com/btm)) <!-- 15.0.324 -->
-- Add new chocolatey_feature resource for managing features in Chocolatey [#8581](https://github.com/chef/chef/pull/8581) ([gep13](https://github.com/gep13)) <!-- 15.0.323 -->
-- Improving error handling for template render [#8562](https://github.com/chef/chef/pull/8562) ([brodock](https://github.com/brodock)) <!-- 15.0.322 -->
-- Chef 15: Fix ssh user set from cli [#8558](https://github.com/chef/chef/pull/8558) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.321 -->
-- Add distro constants for solo, zero and automate [#8460](https://github.com/chef/chef/pull/8460) ([bobchaos](https://github.com/bobchaos)) <!-- 15.0.320 -->
-- Enable target mode on ruby_block, log and breakpoint [#8593](https://github.com/chef/chef/pull/8593) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.319 -->
-- Fixed issue for chef-client run was throwing error when provided empty string with it [#8200](https://github.com/chef/chef/pull/8200) ([vinay033](https://github.com/vinay033)) <!-- 15.0.318 -->
-- fix shellout require idempotency and bump gems [#8595](https://github.com/chef/chef/pull/8595) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.317 -->
-- Use Shellwords.join in target-mode shell_out [#8594](https://github.com/chef/chef/pull/8594) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.316 -->
-- Chef-15: Add missing deprecated options [#8573](https://github.com/chef/chef/pull/8573) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.0.315 -->
-- Add introduced field to launch_events in launchd [#8592](https://github.com/chef/chef/pull/8592) ([tas50](https://github.com/tas50)) <!-- 15.0.314 -->
-- Chef 15: Fix order of connection before registering node [#8574](https://github.com/chef/chef/pull/8574) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.313 -->
-- launchd: add launch_events property [#8582](https://github.com/chef/chef/pull/8582) ([chilcote](https://github.com/chilcote)) <!-- 15.0.312 -->
-- make which/where be target-mode aware [#8588](https://github.com/chef/chef/pull/8588) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.311 -->
-- Fix for knife bootstrap inheritance issue with knife plugins [#8585](https://github.com/chef/chef/pull/8585) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.0.310 -->
-- Preserve train connection in target mode to prevent running duplicate OS detection commands [#8590](https://github.com/chef/chef/pull/8590) ([btm](https://github.com/btm)) <!-- 15.0.309 -->
-- Better target mode shell_out [#8584](https://github.com/chef/chef/pull/8584) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.308 -->
-- Fix service enable idempotency in sles11 [#8256](https://github.com/chef/chef/pull/8256) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.0.307 -->
-- Fix delete_resource for resources [#8570](https://github.com/chef/chef/pull/8570) ([artem-sidorenko](https://github.com/artem-sidorenko)) <!-- 15.0.306 -->
-- Gate requires with idempotency check [#8544](https://github.com/chef/chef/pull/8544) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.305 -->
-- Better target mode no-creds errors [#8571](https://github.com/chef/chef/pull/8571) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.304 -->
-- Fix chef-config requires lines [#8545](https://github.com/chef/chef/pull/8545) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.0.303 -->
-- Only set client_pem in bootstrap_context when validatorless [#8567](https://github.com/chef/chef/pull/8567) ([btm](https://github.com/btm)) <!-- 15.0.302 -->
-- Chef Infra Client 15 Release Notes Additional edits [#8543](https://github.com/chef/chef/pull/8543) ([mjingle](https://github.com/mjingle)) <!-- 15.0.301 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.1.36](https://github.com/chef/chef/tree/v15.1.36) (2019-07-01)
+
+#### Merged Pull Requests
+- Chef Infra Client 15 Release Notes Additional edits [#8543](https://github.com/chef/chef/pull/8543) ([mjingle](https://github.com/mjingle))
+- Only set client_pem in bootstrap_context when validatorless [#8567](https://github.com/chef/chef/pull/8567) ([btm](https://github.com/btm))
+- Fix chef-config requires lines [#8545](https://github.com/chef/chef/pull/8545) ([lamont-granquist](https://github.com/lamont-granquist))
+- Better target mode no-creds errors [#8571](https://github.com/chef/chef/pull/8571) ([lamont-granquist](https://github.com/lamont-granquist))
+- Gate requires with idempotency check [#8544](https://github.com/chef/chef/pull/8544) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix delete_resource for resources [#8570](https://github.com/chef/chef/pull/8570) ([artem-sidorenko](https://github.com/artem-sidorenko))
+- Fix service enable idempotency in sles11 [#8256](https://github.com/chef/chef/pull/8256) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Better target mode shell_out [#8584](https://github.com/chef/chef/pull/8584) ([lamont-granquist](https://github.com/lamont-granquist))
+- Preserve train connection in target mode to prevent running duplicate OS detection commands [#8590](https://github.com/chef/chef/pull/8590) ([btm](https://github.com/btm))
+- Fix for knife bootstrap inheritance issue with knife plugins [#8585](https://github.com/chef/chef/pull/8585) ([Vasu1105](https://github.com/Vasu1105))
+- make which/where be target-mode aware [#8588](https://github.com/chef/chef/pull/8588) ([lamont-granquist](https://github.com/lamont-granquist))
+- launchd: add launch_events property [#8582](https://github.com/chef/chef/pull/8582) ([chilcote](https://github.com/chilcote))
+- Chef 15: Fix order of connection before registering node [#8574](https://github.com/chef/chef/pull/8574) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Add introduced field to launch_events in launchd [#8592](https://github.com/chef/chef/pull/8592) ([tas50](https://github.com/tas50))
+- Chef-15: Add missing deprecated options [#8573](https://github.com/chef/chef/pull/8573) ([vsingh-msys](https://github.com/vsingh-msys))
+- Use Shellwords.join in target-mode shell_out [#8594](https://github.com/chef/chef/pull/8594) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix shellout require idempotency and bump gems [#8595](https://github.com/chef/chef/pull/8595) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fixed issue for chef-client run was throwing error when provided empty string with it [#8200](https://github.com/chef/chef/pull/8200) ([vinay033](https://github.com/vinay033))
+- Enable target mode on ruby_block, log and breakpoint [#8593](https://github.com/chef/chef/pull/8593) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add distro constants for solo, zero and automate [#8460](https://github.com/chef/chef/pull/8460) ([bobchaos](https://github.com/bobchaos))
+- Chef 15: Fix ssh user set from cli [#8558](https://github.com/chef/chef/pull/8558) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Improving error handling for template render [#8562](https://github.com/chef/chef/pull/8562) ([brodock](https://github.com/brodock))
+- Add new chocolatey_feature resource for managing features in Chocolatey [#8581](https://github.com/chef/chef/pull/8581) ([gep13](https://github.com/gep13))
+- Trace output the actual bootstrap template filename [#8619](https://github.com/chef/chef/pull/8619) ([btm](https://github.com/btm))
+- Raise knife exceptions when verbosity is 3 (-VVV) [#8618](https://github.com/chef/chef/pull/8618) ([btm](https://github.com/btm))
+- Add hooks for plugins in knife bootstrap [#8628](https://github.com/chef/chef/pull/8628) ([btm](https://github.com/btm))
+- Create bootstrap template in binmode to fix line endings [#8631](https://github.com/chef/chef/pull/8631) ([btm](https://github.com/btm))
+- more distro constants [#8630](https://github.com/chef/chef/pull/8630) ([bobchaos](https://github.com/bobchaos))
+- Chef-15: Added deprecation check for short arguments [#8626](https://github.com/chef/chef/pull/8626) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Avoid constant warnings [#8633](https://github.com/chef/chef/pull/8633) ([tas50](https://github.com/tas50))
+- Speed up buildkite tests [#8636](https://github.com/chef/chef/pull/8636) ([tas50](https://github.com/tas50))
+- More speedups to the Buildkite PR verification tests [#8639](https://github.com/chef/chef/pull/8639) ([tas50](https://github.com/tas50))
+- Update Buildkite config with Ubuntu/CentOS/openSUSE containers [#8641](https://github.com/chef/chef/pull/8641) ([tas50](https://github.com/tas50))
+- use mixlib-cli&#39;s deprecation mechanism [#8637](https://github.com/chef/chef/pull/8637) ([marcparadise](https://github.com/marcparadise))
+- Make sure to ship the inspec binary [#8660](https://github.com/chef/chef/pull/8660) ([tas50](https://github.com/tas50))
+- Update Habitat Build [#8598](https://github.com/chef/chef/pull/8598) ([ncerny](https://github.com/ncerny))
+- Update Ohai to 15.1.3 and license-acceptance to 1.0.13 [#8661](https://github.com/chef/chef/pull/8661) ([tas50](https://github.com/tas50))
+- Target mode for systemd service helper [#8614](https://github.com/chef/chef/pull/8614) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update omnibus-software to unbreak chef builds [#8665](https://github.com/chef/chef/pull/8665) ([tas50](https://github.com/tas50))
+- Add Chef 12 updating docs [#8664](https://github.com/chef/chef/pull/8664) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump inspec to 4.6.3 [#8666](https://github.com/chef/chef/pull/8666) ([chef-ci](https://github.com/chef-ci))
+- Move the data collector should_be_enabled? check [#8670](https://github.com/chef/chef/pull/8670) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump inspec-core-bin to 4.6.4 [#8672](https://github.com/chef/chef/pull/8672) ([chef-ci](https://github.com/chef-ci))
+- added scaffolding-chef plan [#8659](https://github.com/chef/chef/pull/8659) ([echohack](https://github.com/echohack))
+- [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8677](https://github.com/chef/chef/pull/8677) ([echohack](https://github.com/echohack))
+- [chef-client] [scaffolding-chef] add new build configuration for scaffolding-chef [#8678](https://github.com/chef/chef/pull/8678) ([echohack](https://github.com/echohack))
+- Bump ohai to 15.1.5 [#8681](https://github.com/chef/chef/pull/8681) ([chef-ci](https://github.com/chef-ci))
+- Update ffi-libarchive to 0.4.10 [#8688](https://github.com/chef/chef/pull/8688) ([tas50](https://github.com/tas50))
+- [scaffolding-chef] Rolling out the scaffolding-chef package [#8679](https://github.com/chef/chef/pull/8679) ([echohack](https://github.com/echohack))
+- Update Rubygems to 3.0.4 [#8689](https://github.com/chef/chef/pull/8689) ([tas50](https://github.com/tas50))
+- Pin to ruby-prof 0.17 [#8690](https://github.com/chef/chef/pull/8690) ([tas50](https://github.com/tas50))
+- Improve how we bundler install in appveyor [#8663](https://github.com/chef/chef/pull/8663) ([tas50](https://github.com/tas50))
+- Ignore noisy outputs at create temp_dir during bootstrap [#8682](https://github.com/chef/chef/pull/8682) ([sawanoboly](https://github.com/sawanoboly))
+- chocolatey_source: Add additional actions and propereties for configuring sources [#8635](https://github.com/chef/chef/pull/8635) ([gep13](https://github.com/gep13))
+- yum_package: Better handle yum exceptions in our helper so we always close the rpmdb [#8692](https://github.com/chef/chef/pull/8692) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add introduced fields for chocolatey_source [#8691](https://github.com/chef/chef/pull/8691) ([tas50](https://github.com/tas50))
+- Enable Habitat build promotion in Expeditor again [#8693](https://github.com/chef/chef/pull/8693) ([tas50](https://github.com/tas50))
+- Fix a typo in the hostname resource property descriptions [#8695](https://github.com/chef/chef/pull/8695) ([tas50](https://github.com/tas50))
+- Add rake task for generating the docs site content [#8694](https://github.com/chef/chef/pull/8694) ([tas50](https://github.com/tas50))
+- Rename the habitat package to chef-infra-client [#8698](https://github.com/chef/chef/pull/8698) ([tas50](https://github.com/tas50))
+- Bump train-core to 2.1.13 [#8699](https://github.com/chef/chef/pull/8699) ([chef-ci](https://github.com/chef-ci))
+- Pass yum_package options to underlying python helper [#8687](https://github.com/chef/chef/pull/8687) ([Annih](https://github.com/Annih))
+<!-- latest_stable_release -->
+
 ## [v15.0.300](https://github.com/chef/chef/tree/v15.0.300) (2019-05-16)
 
 #### Merged Pull Requests
 - Add license CLI options to chef-apply command [#8554](https://github.com/chef/chef/pull/8554) ([tas50](https://github.com/tas50))
 - Enable pty for bootstrap ssh [#8560](https://github.com/chef/chef/pull/8560) ([marcparadise](https://github.com/marcparadise))
-<!-- latest_stable_release -->
 
 ## [v15.0.298](https://github.com/chef/chef/tree/v15.0.298) (2019-05-15)
 
