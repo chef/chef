@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.35 -->
-## [v15.1.35](https://github.com/chef/chef/tree/v15.1.35) (2019-07-01)
+<!-- latest_release 15.1.36 -->
+## [v15.1.36](https://github.com/chef/chef/tree/v15.1.36) (2019-07-01)
 
 #### Merged Pull Requests
-- Bump train-core to 2.1.13 [#8699](https://github.com/chef/chef/pull/8699) ([chef-ci](https://github.com/chef-ci))
+- Pass yum_package options to underlying python helper [#8687](https://github.com/chef/chef/pull/8687) ([Annih](https://github.com/Annih))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.0.300 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Pass yum_package options to underlying python helper [#8687](https://github.com/chef/chef/pull/8687) ([Annih](https://github.com/Annih)) <!-- 15.1.36 -->
 - Bump train-core to 2.1.13 [#8699](https://github.com/chef/chef/pull/8699) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.35 -->
 - Rename the habitat package to chef-infra-client [#8698](https://github.com/chef/chef/pull/8698) ([tas50](https://github.com/tas50)) <!-- 15.1.34 -->
 - Add rake task for generating the docs site content [#8694](https://github.com/chef/chef/pull/8694) ([tas50](https://github.com/tas50)) <!-- 15.1.33 -->
