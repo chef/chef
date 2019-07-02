@@ -371,7 +371,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum-host-1", "csum-host-2"])
+      expect(checksums.sort).to eq(%w{csum-host-1 csum-host-2})
     end
 
     it "should return a directory of manifest records based on priority preference: platform & full version" do
@@ -385,7 +385,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum-platver-full-1", "csum-platver-full-2"])
+      expect(checksums.sort).to eq(%w{csum-platver-full-1 csum-platver-full-2})
     end
 
     it "should return a directory of manifest records based on priority preference: platform & partial version" do
@@ -399,7 +399,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum-platver-partial-1", "csum-platver-partial-2"])
+      expect(checksums.sort).to eq(%w{csum-platver-partial-1 csum-platver-partial-2})
     end
 
     it "should return a directory of manifest records based on priority preference: platform only" do
@@ -413,7 +413,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum-plat-1", "csum-plat-2"])
+      expect(checksums.sort).to eq(%w{csum-plat-1 csum-plat-2})
     end
 
     it "should return a directory of manifest records based on priority preference: default" do
@@ -427,7 +427,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum-default-1", "csum-default-2"])
+      expect(checksums.sort).to eq(%w{csum-default-1 csum-default-2})
     end
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 1" do
@@ -441,7 +441,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum2-platver-full-1", "csum2-platver-full-2"])
+      expect(checksums.sort).to eq(%w{csum2-platver-full-1 csum2-platver-full-2})
     end
 
     it "should return a manifest record based on priority preference: platform & partial version - platform_version variant 1" do
@@ -455,7 +455,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum2-platver-partial-1", "csum2-platver-partial-2"])
+      expect(checksums.sort).to eq(%w{csum2-platver-partial-1 csum2-platver-partial-2})
     end
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 2" do
@@ -469,7 +469,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum3-platver-full-1", "csum3-platver-full-2"])
+      expect(checksums.sort).to eq(%w{csum3-platver-full-1 csum3-platver-full-2})
     end
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 3" do
@@ -483,7 +483,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum4-platver-full-1", "csum4-platver-full-2"])
+      expect(checksums.sort).to eq(%w{csum4-platver-full-1 csum4-platver-full-2})
     end
   end
 

@@ -63,7 +63,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     end
 
     context "installing multiple packages" do
-      let(:package_name) { [ "test-A", "test-B" ] }
+      let(:package_name) { %w{test-A test-B} }
 
       it "installs both packages" do
         subject.run_action(:install)

@@ -586,7 +586,7 @@ describe Chef::Provider::Package::Apt do
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout
         )
-        @provider.install_package(["libmysqlclient15-dev", "irssi"], ["not_a_real_version", "0.8.12-7"])
+        @provider.install_package(%w{libmysqlclient15-dev irssi}, ["not_a_real_version", "0.8.12-7"])
       end
     end
 

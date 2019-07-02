@@ -273,7 +273,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
 
     it "should remove both packages when called with two" do
       shell_out!("dpkg -i #{test1_0} #{test2_0}")
-      set_dpkg_package_name [ "chef-integration-test", "chef-integration-test2" ]
+      set_dpkg_package_name %w{chef-integration-test chef-integration-test2}
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
       should_be_purged_or_removed("chef-integration-test")
@@ -282,7 +282,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
 
     it "should remove a package when only the first one is installed" do
       shell_out!("dpkg -i #{test1_0}")
-      set_dpkg_package_name [ "chef-integration-test", "chef-integration-test2" ]
+      set_dpkg_package_name %w{chef-integration-test chef-integration-test2}
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
       should_be_purged_or_removed("chef-integration-test")
@@ -291,7 +291,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
 
     it "should remove a package when only the second one is installed" do
       shell_out!("dpkg -i #{test2_0}")
-      set_dpkg_package_name [ "chef-integration-test", "chef-integration-test2" ]
+      set_dpkg_package_name %w{chef-integration-test chef-integration-test2}
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
       should_be_purged_or_removed("chef-integration-test")
@@ -299,7 +299,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
     end
 
     it "should do nothing when both packages are not installed" do
-      set_dpkg_package_name [ "chef-integration-test", "chef-integration-test2" ]
+      set_dpkg_package_name %w{chef-integration-test chef-integration-test2}
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
       should_be_purged_or_removed("chef-integration-test")
