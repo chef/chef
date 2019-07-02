@@ -198,7 +198,7 @@ describe Chef::Provider::Package::Powershell do
     end
 
     it "can build a valid command from an array" do
-      expect(provider.build_powershell_package_command(["Get-Package", "posh-git"])).to eql(generated_command)
+      expect(provider.build_powershell_package_command(%w{Get-Package posh-git})).to eql(generated_command)
     end
 
     context "when source is nil" do

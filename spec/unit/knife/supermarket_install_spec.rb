@@ -81,7 +81,7 @@ describe Chef::Knife::SupermarketInstall do
     end
 
     it "raises an error if the second argument is not a version" do
-      knife.name_args = ["getting-started", "1pass"]
+      knife.name_args = %w{getting-started 1pass}
       expect(knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
       expect { knife.run }.to raise_error(SystemExit)
     end
@@ -93,7 +93,7 @@ describe Chef::Knife::SupermarketInstall do
     end
 
     it "raises an error if the second argument is a one-digit version" do
-      knife.name_args = ["getting-started", "1"]
+      knife.name_args = %w{getting-started 1}
       expect(knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
       expect { knife.run }.to raise_error(SystemExit)
     end

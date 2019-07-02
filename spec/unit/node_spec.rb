@@ -1188,7 +1188,7 @@ describe Chef::Node do
       expect(node.name).to eql("test.example.com-short")
       expect(node["sunshine"]).to eql("in")
       expect(node["something"]).to eql("else")
-      expect(node.run_list).to eq(["operations-master", "operations-monitoring"])
+      expect(node.run_list).to eq(%w{operations-master operations-monitoring})
     end
 
     it "should raise an exception if the file cannot be found or read" do
