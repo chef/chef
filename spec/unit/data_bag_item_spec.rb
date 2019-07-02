@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -148,7 +148,7 @@ describe Chef::DataBagItem do
     end
 
     it "implements all the methods of Hash" do
-      methods = %i{rehash to_hash \[\] fetch \[\]= store default
+      methods = %i{rehash to_hash [] fetch []= store default
       default= default_proc index size length
       empty? each_value each_key each_pair each keys values
       values_at delete delete_if reject! clear

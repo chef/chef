@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2018, Chef Software Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -146,7 +146,7 @@ describe Chef::Node::ImmutableMash do
   end
 
   %i{
-    \[\]=
+    []=
     clear
     default=
     default_proc=
@@ -192,7 +192,7 @@ describe Chef::Node::ImmutableArray do
 
   %i{
     <<
-    \[\]=
+    []=
     clear
     collect!
     compact!
