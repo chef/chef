@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.37 -->
-## [v15.1.37](https://github.com/chef/chef/tree/v15.1.37) (2019-07-02)
+<!-- latest_release 15.1.38 -->
+## [v15.1.38](https://github.com/chef/chef/tree/v15.1.38) (2019-07-02)
 
 #### Merged Pull Requests
-- Bump inspec-core to 4.6.9 [#8701](https://github.com/chef/chef/pull/8701) ([chef-ci](https://github.com/chef-ci))
+- windows_task: Fix for :day option is not accepting integer value [#8705](https://github.com/chef/chef/pull/8705) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- windows_task: Fix for :day option is not accepting integer value [#8705](https://github.com/chef/chef/pull/8705) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.1.38 -->
 - Bump inspec-core to 4.6.9 [#8701](https://github.com/chef/chef/pull/8701) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.37 -->
 <!-- release_rollup -->
 
