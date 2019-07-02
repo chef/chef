@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,7 +87,7 @@ class Chef
     # Read-only methods are simple to delegate - doing that below
 
     resource_list_methods = Enumerable.instance_methods +
-      %i{iterator all_resources \[\] each execute_each_resource each_index empty?} -
+      %i{iterator all_resources [] each execute_each_resource each_index empty?} -
       [:find] # find overridden below
     resource_set_methods = %i{resources keys validate_lookup_spec!}
 
