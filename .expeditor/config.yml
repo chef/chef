@@ -79,21 +79,29 @@ merge_actions:
       only_if: built_in:bump_version
 
 subscriptions:
+  # the omnibus chain
   - workload: artifact_published:unstable:chef:{{version_constraint}}
     actions:
       - built_in:build_docker_image
   - workload: artifact_published:current:chef:{{version_constraint}}
     actions:
       - built_in:tag_docker_image
-      - built_in:promote_habitat_packages
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
       - bash:.expeditor/update_dockerfile.sh
       - built_in:tag_docker_image
-      - built_in:promote_habitat_packages
       - built_in:publish_rubygems
       - built_in:notify_chefio_slack_channels
+  # the habitat chain
+  - workload: hab_package_published:unstable:chef/chef-infra-client/*
+    actions:
+      - bash:.expeditor/something-that-runs-habitat/tests/test.sh
+      - built_in:promote_habitat_packages
+  - workload: something-that-detects-promote-to-stable-command?
+    actions:
+      - built_in:promote_habitat_packages
+  # subscribe to Ruby gem releases and open PRs for updates
   - workload: ruby_gem_published:mixlib-archive-*
     actions:
       - bash:.expeditor/update_dep.sh
