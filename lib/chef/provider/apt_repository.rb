@@ -32,8 +32,7 @@ class Chef
 
       LIST_APT_KEY_FINGERPRINTS = %w{apt-key adv --list-public-keys --with-fingerprint --with-colons}.freeze
 
-      def load_current_resource
-      end
+      def load_current_resource; end
 
       action :add do
         if new_resource.key.nil?

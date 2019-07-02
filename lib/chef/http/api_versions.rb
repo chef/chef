@@ -24,8 +24,7 @@ class Chef
     # and maximum supported API versions.
     class APIVersions
 
-      def initialize(options = {})
-      end
+      def initialize(options = {}); end
 
       def handle_request(method, url, headers = {}, data = false)
         [method, url, headers, data]

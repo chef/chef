@@ -39,17 +39,13 @@ class SpecService < ::Win32::Daemon
   # Control Signal Callback Methods
   ################################################################################
 
-  def service_stop
-  end
+  def service_stop; end
 
-  def service_pause
-  end
+  def service_pause; end
 
-  def service_resume
-  end
+  def service_resume; end
 
-  def service_shutdown
-  end
+  def service_shutdown; end
 end
 
 # To run this file as a service, it must be called as a script from within

@@ -28,8 +28,7 @@ class Chef
     class ZypperRepository < Chef::Provider
       provides :zypper_repository, platform_family: "suse"
 
-      def load_current_resource
-      end
+      def load_current_resource; end
 
       action :create do
         if new_resource.gpgautoimportkeys

@@ -62,8 +62,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   end
 
   # systemd supports user services just fine
-  def user_services_requirements
-  end
+  def user_services_requirements; end
 
   def define_resource_requirements
     shared_resource_requirements

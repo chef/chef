@@ -28,8 +28,7 @@ describe "Recipe DSL methods" do
           Provider
         end
         class Provider < Chef::Provider
-          def load_current_resource
-          end
+          def load_current_resource; end
 
           def action_create
             BaseThingy.created_name = new_resource.name

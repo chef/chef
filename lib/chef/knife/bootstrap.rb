@@ -656,8 +656,7 @@ class Chef
         end
       end
 
-      def handle_ssh_error(e)
-      end
+      def handle_ssh_error(e); end
 
       # url values override CLI flags, if you provide both
       # we'll use the one that you gave in the URL.
@@ -787,16 +786,14 @@ class Chef
       # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to create connection objects
       #
       # @return [TrueClass] If instance successfully created, or exits
-      def plugin_setup!
-      end
+      def plugin_setup!; end
 
       # Perform any teardown or cleanup necessary by the plugin
       #
       # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to display a message or perform any cleanup
       #
       # @return [void]
-      def plugin_finalize
-      end
+      def plugin_finalize; end
 
       # If session_timeout is too short, it is likely
       # a holdover from "--winrm-session-timeout" which used

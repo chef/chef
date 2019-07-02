@@ -146,8 +146,7 @@ class Chef
       # Formatters::Base can implement #file_loaded to do the same thing for
       # every kind of file that Chef loads from a recipe instead of
       # implementing all the per-filetype callbacks.
-      def file_loaded(path)
-      end
+      def file_loaded(path); end
 
       # Generic callback for any attribute/library/lwrp/recipe file throwing an
       # exception when loaded. Default behavior is to use CompileErrorInspector

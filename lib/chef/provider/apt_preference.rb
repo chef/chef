@@ -28,8 +28,7 @@ class Chef
 
       APT_PREFERENCE_DIR = "/etc/apt/preferences.d".freeze
 
-      def load_current_resource
-      end
+      def load_current_resource; end
 
       action :add do
         preference = build_pref(

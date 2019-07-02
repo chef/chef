@@ -41,8 +41,7 @@ class Chef
         end
       end
 
-      def initialize(opts = {})
-      end
+      def initialize(opts = {}); end
 
       def handle_request(method, url, headers = {}, data = false)
         [method, url, headers, data]

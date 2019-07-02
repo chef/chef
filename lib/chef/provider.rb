@@ -135,8 +135,7 @@ class Chef
       new_resource.cookbook_name
     end
 
-    def check_resource_semantics!
-    end
+    def check_resource_semantics!; end
 
     # a simple placeholder method that will be called / raise if a resource tries to
     # use current_resource without defining a load_current_resource method.
@@ -144,11 +143,9 @@ class Chef
       raise Chef::Exceptions::Override, "You must override load_current_resource in #{self}"
     end
 
-    def define_resource_requirements
-    end
+    def define_resource_requirements; end
 
-    def cleanup_after_converge
-    end
+    def cleanup_after_converge; end
 
     # the :nothing action which is available on all resources by default
     def action_nothing

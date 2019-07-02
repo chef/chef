@@ -42,8 +42,7 @@ class Chef
       # no-op `load_current_resource`. Allows simple LWRP providers to work
       # without defining this method explicitly (silences
       # Chef::Exceptions::Override exception)
-      def load_current_resource
-      end
+      def load_current_resource; end
 
       # class methods
       class <<self

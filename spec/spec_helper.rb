@@ -311,14 +311,11 @@ require "thread"
 module WEBrick
   module Utils
     class TimeoutHandler
-      def initialize
-      end
+      def initialize; end
 
-      def register(*args)
-      end
+      def register(*args); end
 
-      def cancel(*args)
-      end
+      def cancel(*args); end
     end
   end
 end

@@ -233,8 +233,7 @@ class Chef
       end
 
       # Subclasses will override this to a method and provide a preseed file path
-      def prepare_for_installation
-      end
+      def prepare_for_installation; end
 
       # @todo use composition rather than inheritance
 

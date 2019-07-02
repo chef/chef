@@ -40,8 +40,7 @@ class Chef
         ::Logger::Syslog.const_set :SYSLOG, SYSLOG
       end
 
-      def close
-      end
+      def close; end
     end
   end
 end

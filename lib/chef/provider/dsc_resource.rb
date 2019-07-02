@@ -42,8 +42,7 @@ class Chef
         end
       end
 
-      def load_current_resource
-      end
+      def load_current_resource; end
 
       def define_resource_requirements
         requirements.assert(:run) do |a|
