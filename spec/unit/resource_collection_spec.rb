@@ -20,7 +20,7 @@
 require "spec_helper"
 
 describe Chef::ResourceCollection do
-  let(:rc) { Chef::ResourceCollection.new() }
+  let(:rc) { Chef::ResourceCollection.new }
   let(:resource) { Chef::Resource::ZenMaster.new("makoto") }
 
   it "should throw an error when calling a non-delegated method" do

@@ -66,7 +66,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def device
-    get_info()[:remote]
+    get_info[:remote]
   end
 
   def delete

@@ -445,7 +445,7 @@ class Chef
       end
 
       def self.from_hash(o)
-        cm = new()
+        cm = new
         cm.from_hash(o)
         cm
       end
@@ -478,7 +478,7 @@ class Chef
 
       def self.validate_json(json_str)
         o = Chef::JSONCompat.from_json(json_str)
-        metadata = new()
+        metadata = new
         VERSION_CONSTRAINTS.each do |dependency_type, hash_key|
           if dependency_group = o[hash_key]
             dependency_group.each do |cb_name, constraints|

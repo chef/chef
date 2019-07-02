@@ -30,7 +30,7 @@ end
 
 describe Chef::Mixin::ParamsValidate do
   before(:each) do
-    @vo = TinyClass.new()
+    @vo = TinyClass.new
   end
 
   it "should allow a hash and a hash as arguments to validate" do

@@ -19,7 +19,7 @@
 require "spec_helper"
 
 describe Chef::ResourceDefinition do
-  let(:defn) { Chef::ResourceDefinition.new() }
+  let(:defn) { Chef::ResourceDefinition.new }
 
   describe "initialize" do
     it "should be a Chef::ResourceDefinition" do

@@ -168,7 +168,7 @@ class Chef
         end
 
         def subject
-          subject = OpenSSL::X509::Name.new()
+          subject = OpenSSL::X509::Name.new
           subject.add_entry("C", new_resource.country) unless new_resource.country.nil?
           subject.add_entry("ST", new_resource.state) unless new_resource.state.nil?
           subject.add_entry("L", new_resource.city) unless new_resource.city.nil?

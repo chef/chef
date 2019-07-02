@@ -45,7 +45,7 @@ class Chef
 
       module ClassMethods
         def from_hash(o)
-          collection = new()
+          collection = new
           o["instance_vars"].each do |k, v|
             collection.instance_variable_set(k.to_sym, v)
           end

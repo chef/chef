@@ -264,7 +264,7 @@ class Chef
         cert = ::OpenSSL::X509::Certificate.new
         ef = ::OpenSSL::X509::ExtensionFactory.new
 
-        cert.serial = gen_serial()
+        cert.serial = gen_serial
         cert.version = 2
         cert.subject = request.subject
         cert.public_key = request.public_key

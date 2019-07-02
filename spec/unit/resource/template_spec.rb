@@ -186,7 +186,7 @@ describe Chef::Resource::Template do
     end
 
     it "raises an error when no block or module name is given for helpers definition" do
-      expect { resource.helpers() }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { resource.helpers }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "raises an error when a non-module is given for helpers definition" do

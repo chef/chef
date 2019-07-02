@@ -445,12 +445,12 @@ describe Chef::Provider::Service::Freebsd do
       it "should call the start command if one is specified" do
         new_resource.start_command("/etc/rc.d/chef startyousillysally")
         expect(provider).to receive(:shell_out!).with("/etc/rc.d/chef startyousillysally", default_env: false)
-        provider.start_service()
+        provider.start_service
       end
 
       it "should call '/usr/local/etc/rc.d/service_name faststart' if no start command is specified" do
         expect(provider).to receive(:shell_out!).with("/usr/local/etc/rc.d/#{new_resource.service_name} faststart", default_env: false)
-        provider.start_service()
+        provider.start_service
       end
     end
 
@@ -458,12 +458,12 @@ describe Chef::Provider::Service::Freebsd do
       it "should call the stop command if one is specified" do
         new_resource.stop_command("/etc/init.d/chef itoldyoutostop")
         expect(provider).to receive(:shell_out!).with("/etc/init.d/chef itoldyoutostop", default_env: false)
-        provider.stop_service()
+        provider.stop_service
       end
 
       it "should call '/usr/local/etc/rc.d/service_name faststop' if no stop command is specified" do
         expect(provider).to receive(:shell_out!).with("/usr/local/etc/rc.d/#{new_resource.service_name} faststop", default_env: false)
-        provider.stop_service()
+        provider.stop_service
       end
     end
 
@@ -471,19 +471,19 @@ describe Chef::Provider::Service::Freebsd do
       it "should call 'restart' on the service_name if the resource supports it" do
         new_resource.supports({ restart: true })
         expect(provider).to receive(:shell_out!).with("/usr/local/etc/rc.d/#{new_resource.service_name} fastrestart", default_env: false)
-        provider.restart_service()
+        provider.restart_service
       end
 
       it "should call the restart_command if one has been specified" do
         new_resource.restart_command("/etc/init.d/chef restartinafire")
         expect(provider).to receive(:shell_out!).with("/etc/init.d/chef restartinafire", default_env: false)
-        provider.restart_service()
+        provider.restart_service
       end
 
       it "otherwise it should call stop and start" do
         expect(provider).to receive(:stop_service)
         expect(provider).to receive(:start_service)
-        provider.restart_service()
+        provider.restart_service
       end
     end
   end
@@ -550,21 +550,21 @@ describe Chef::Provider::Service::Freebsd do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "#{new_resource.service_name}_enable=\"NO\"", "bar" ])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"YES\""])
-      provider.enable_service()
+      provider.enable_service
     end
 
     it "should not partial match an already enabled service" do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "thing_#{new_resource.service_name}_enable=\"NO\"", "bar" ])
       expect(provider).to receive(:write_rc_conf).with(["foo", "thing_#{new_resource.service_name}_enable=\"NO\"", "bar", "#{new_resource.service_name}_enable=\"YES\""])
-      provider.enable_service()
+      provider.enable_service
     end
 
     it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).to receive(:read_rc_conf).and_return(%w{foo bar})
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"YES\""])
-      provider.enable_service()
+      provider.enable_service
     end
 
     it "should not enable the service if it is already enabled" do
@@ -577,7 +577,7 @@ describe Chef::Provider::Service::Freebsd do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar", "\# #{new_resource.service_name}_enable=\"YES\"", "\# #{new_resource.service_name}_enable=\"NO\""])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"YES\""])
-      provider.enable_service()
+      provider.enable_service
     end
   end
 
@@ -591,27 +591,27 @@ describe Chef::Provider::Service::Freebsd do
       allow(current_resource).to receive(:enabled).and_return(true)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "#{new_resource.service_name}_enable=\"YES\"", "bar" ])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"NO\""])
-      provider.disable_service()
+      provider.disable_service
     end
 
     it "should not disable an enabled service that partially matches" do
       allow(current_resource).to receive(:enabled).and_return(true)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "thing_#{new_resource.service_name}_enable=\"YES\"", "bar" ])
       expect(provider).to receive(:write_rc_conf).with(["foo", "thing_#{new_resource.service_name}_enable=\"YES\"", "bar", "#{new_resource.service_name}_enable=\"NO\""])
-      provider.disable_service()
+      provider.disable_service
     end
 
     it "should not disable the service if it is already disabled" do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).not_to receive(:write_rc_conf)
-      provider.disable_service()
+      provider.disable_service
     end
 
     it "should remove commented out versions of it being disabled or enabled" do
       allow(current_resource).to receive(:enabled).and_return(true)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar", "\# #{new_resource.service_name}_enable=\"YES\"", "\# #{new_resource.service_name}_enable=\"NO\""])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"NO\""])
-      provider.disable_service()
+      provider.disable_service
     end
   end
 end

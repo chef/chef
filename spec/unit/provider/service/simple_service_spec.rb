@@ -108,7 +108,7 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     it "should call the start command if one is specified" do
       @new_resource.start_command((@new_resource.start_command).to_s)
       expect(@provider).to receive(:shell_out!).with((@new_resource.start_command).to_s, default_env: false)
-      @provider.start_service()
+      @provider.start_service
     end
 
     it "should raise an exception if no start command is specified" do
@@ -122,7 +122,7 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/etc/init.d/themadness stop")
       expect(@provider).to receive(:shell_out!).with("/etc/init.d/themadness stop", default_env: false)
-      @provider.stop_service()
+      @provider.stop_service
     end
 
     it "should raise an exception if no stop command is specified" do
@@ -136,7 +136,7 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     it "should call the restart command if one has been specified" do
       @new_resource.restart_command("/etc/init.d/foo restart")
       expect(@provider).to receive(:shell_out!).with("/etc/init.d/foo restart", default_env: false)
-      @provider.restart_service()
+      @provider.restart_service
     end
 
     it "should raise an exception if the resource doesn't support restart, no restart command is provided, and no stop command is provided" do
@@ -149,7 +149,7 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
       expect(@provider).to receive(:stop_service)
       expect(@provider).to receive(:sleep).with(1)
       expect(@provider).to receive(:start_service)
-      @provider.restart_service()
+      @provider.restart_service
     end
   end
 
@@ -163,7 +163,7 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     it "should should run the user specified reload command if one is specified" do
       @new_resource.reload_command("kill -9 1")
       expect(@provider).to receive(:shell_out!).with("kill -9 1", default_env: false)
-      @provider.reload_service()
+      @provider.reload_service
     end
   end
 end

@@ -98,7 +98,7 @@ class Chef
       end
 
       def self.from_hash(o)
-        collection = new()
+        collection = new
         resources = o["instance_vars"]["@resources"].map { |r| Chef::Resource.from_hash(r) }
         collection.instance_variable_set(:@resources, resources)
         collection

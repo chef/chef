@@ -51,7 +51,7 @@ describe Chef::Knife::NodeBulkDelete do
   describe "run" do
     before do
       @inflatedish_list = @nodes.keys.inject({}) do |nodes_by_name, name|
-        node = Chef::Node.new()
+        node = Chef::Node.new
         node.name(name)
         allow(node).to receive(:destroy).and_return(true)
         nodes_by_name[name] = node

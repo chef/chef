@@ -79,7 +79,7 @@ describe Chef::Application::ExitCode do
     end
 
     it "returns GENERIC_FAILURE when no exit code is specified" do
-      expect(exit_codes.normalize_exit_code()).to eq(1)
+      expect(exit_codes.normalize_exit_code).to eq(1)
     end
 
     it "returns SIGINT_RECEIVED when a SIGINT is received" do

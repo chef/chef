@@ -21,7 +21,7 @@ require "ostruct"
 
 describe Chef::Node do
 
-  let(:node) { Chef::Node.new() }
+  let(:node) { Chef::Node.new }
   let(:platform_introspector) { node }
 
   it_behaves_like "a platform introspector"
@@ -1207,7 +1207,7 @@ describe Chef::Node do
       node.run_list << "role[leninist]"
       node.run_list << "recipe[stalinist]"
 
-      @example = Chef::Node.new()
+      @example = Chef::Node.new
       @example.name("newname")
       @example.chef_environment("prod")
       @example.default_attrs = { "alpha" => { "bravo" => "charlie", "delta" => "echo" } }

@@ -152,7 +152,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
         let(:excluded_members) { [] }
 
         it "should raise an error" do
-          expect { group_resource.run_action(tested_action) }.to raise_error()
+          expect { group_resource.run_action(tested_action) }.to raise_error
         end
       end
 
@@ -162,7 +162,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
         end
 
         it "should raise an error" do
-          expect { group_resource.run_action(tested_action) }.to raise_error()
+          expect { group_resource.run_action(tested_action) }.to raise_error
         end
       end
     end

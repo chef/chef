@@ -168,6 +168,6 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   end
 
   def check_enabled
-    (get_info()[:flags] & NetUser::UF_ACCOUNTDISABLE) != 0
+    (get_info[:flags] & NetUser::UF_ACCOUNTDISABLE) != 0
   end
 end

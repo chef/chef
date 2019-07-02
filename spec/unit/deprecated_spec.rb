@@ -44,7 +44,7 @@ describe Chef::Deprecated do
     let(:location) { "the location" }
 
     it "displays the full URL" do
-      expect(TestDeprecation.new().url).to eql("https://docs.chef.io/deprecations_test.html")
+      expect(TestDeprecation.new.url).to eql("https://docs.chef.io/deprecations_test.html")
     end
 
     it "formats a complete deprecation message" do
