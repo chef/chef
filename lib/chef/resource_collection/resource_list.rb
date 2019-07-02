@@ -36,7 +36,7 @@ class Chef
       private :resources
       # Delegate direct access methods to the @resources array
       # 4 extra methods here are not included in the Enumerable's instance methods
-      direct_access_methods = Enumerable.instance_methods + [ :[], :each, :each_index, :empty? ]
+      direct_access_methods = Enumerable.instance_methods + %i{\[\] each each_index empty?}
       def_delegators :resources, *(direct_access_methods)
 
       def initialize

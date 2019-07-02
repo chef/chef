@@ -109,7 +109,7 @@ class Chef
       def compare_user
         return true if !new_resource.home.nil? && Pathname.new(new_resource.home).cleanpath != Pathname.new(current_resource.home).cleanpath
 
-        [ :comment, :shell, :password, :uid, :gid ].each do |user_attrib|
+        %i{comment shell password uid gid}.each do |user_attrib|
           return true if !new_resource.send(user_attrib).nil? && new_resource.send(user_attrib).to_s != current_resource.send(user_attrib).to_s
         end
 

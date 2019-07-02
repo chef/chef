@@ -169,9 +169,9 @@ class Chef
         # _In_  LPBYTE  buf,
         # _Out_ LPDWORD parm_err
         # );
-        safe_attach_function :NetLocalGroupAdd, [
-          :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD
-        ], :DWORD
+        safe_attach_function :NetLocalGroupAdd, %i{
+          LPCWSTR DWORD LPBYTE LPDWORD
+        }, :DWORD
 
         # NET_API_STATUS NetLocalGroupSetInfo(
         #   _In_ LPCWSTR servername,
@@ -180,15 +180,15 @@ class Chef
         #   _In_ LPBYTE  buf,
         #   _Out_ LPDWORD parm_err
         # );
-        safe_attach_function :NetLocalGroupSetInfo, [
-          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD
-        ], :DWORD
+        safe_attach_function :NetLocalGroupSetInfo, %i{
+          LPCWSTR LPCWSTR DWORD LPBYTE LPDWORD
+        }, :DWORD
 
         # NET_API_STATUS NetLocalGroupDel(
         # _In_ LPCWSTR servername,
         # _In_ LPCWSTR groupname
         # );
-        safe_attach_function :NetLocalGroupDel, [:LPCWSTR, :LPCWSTR], :DWORD
+        safe_attach_function :NetLocalGroupDel, %i{LPCWSTR LPCWSTR}, :DWORD
 
         # NET_API_STATUS NetLocalGroupGetMembers(
         # _In_    LPCWSTR    servername,
@@ -200,10 +200,10 @@ class Chef
         # _Out_   LPDWORD    totalentries,
         # _Inout_ PDWORD_PTR resumehandle
         # );
-        safe_attach_function :NetLocalGroupGetMembers, [
-          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD,
-          :LPDWORD, :LPDWORD, :PDWORD_PTR
-        ], :DWORD
+        safe_attach_function :NetLocalGroupGetMembers, %i{
+          LPCWSTR LPCWSTR DWORD LPBYTE DWORD
+          LPDWORD LPDWORD PDWORD_PTR
+        }, :DWORD
 
         # NET_API_STATUS NetUserEnum(
         #   _In_     LPCWSTR servername,
@@ -215,10 +215,10 @@ class Chef
         #   _Out_    LPDWORD totalentries,
         #   _Inout_  LPDWORD resume_handle
         # );
-        safe_attach_function :NetUserEnum, [
-          :LPCWSTR, :DWORD, :DWORD, :LPBYTE,
-          :DWORD, :LPDWORD, :LPDWORD, :LPDWORD
-        ], :DWORD
+        safe_attach_function :NetUserEnum, %i{
+          LPCWSTR DWORD DWORD LPBYTE
+          DWORD LPDWORD LPDWORD LPDWORD
+        }, :DWORD
 
         # NET_API_STATUS NetApiBufferFree(
         #   _In_  LPVOID Buffer
@@ -231,9 +231,9 @@ class Chef
         # _In_  LPBYTE  buf,
         # _Out_ LPDWORD parm_err
         # );
-        safe_attach_function :NetUserAdd, [
-          :LMSTR, :DWORD, :LPBYTE, :LPDWORD
-        ], :DWORD
+        safe_attach_function :NetUserAdd, %i{
+          LMSTR DWORD LPBYTE LPDWORD
+        }, :DWORD
 
         # NET_API_STATUS NetLocalGroupAddMembers(
         #  _In_ LPCWSTR servername,
@@ -242,9 +242,9 @@ class Chef
         #  _In_ LPBYTE  buf,
         #  _In_ DWORD   totalentries
         # );
-        safe_attach_function :NetLocalGroupAddMembers, [
-          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD
-        ], :DWORD
+        safe_attach_function :NetLocalGroupAddMembers, %i{
+          LPCWSTR LPCWSTR DWORD LPBYTE DWORD
+        }, :DWORD
 
         # NET_API_STATUS NetLocalGroupSetMembers(
         #  _In_ LPCWSTR servername,
@@ -253,9 +253,9 @@ class Chef
         #  _In_ LPBYTE  buf,
         #  _In_ DWORD   totalentries
         # );
-        safe_attach_function :NetLocalGroupSetMembers, [
-          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD
-        ], :DWORD
+        safe_attach_function :NetLocalGroupSetMembers, %i{
+          LPCWSTR LPCWSTR DWORD LPBYTE DWORD
+        }, :DWORD
 
         # NET_API_STATUS NetLocalGroupDelMembers(
         #  _In_ LPCWSTR servername,
@@ -264,9 +264,9 @@ class Chef
         #  _In_ LPBYTE  buf,
         #  _In_ DWORD   totalentries
         # );
-        safe_attach_function :NetLocalGroupDelMembers, [
-          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD
-        ], :DWORD
+        safe_attach_function :NetLocalGroupDelMembers, %i{
+          LPCWSTR LPCWSTR DWORD LPBYTE DWORD
+        }, :DWORD
 
         # NET_API_STATUS NetUserGetInfo(
         #  _In_  LPCWSTR servername,
@@ -274,9 +274,9 @@ class Chef
         #  _In_  DWORD   level,
         #  _Out_ LPBYTE  *bufptr
         # );
-        safe_attach_function :NetUserGetInfo, [
-          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE
-        ], :DWORD
+        safe_attach_function :NetUserGetInfo, %i{
+          LPCWSTR LPCWSTR DWORD LPBYTE
+        }, :DWORD
 
         # NET_API_STATUS NetApiBufferFree(
         #  _In_ LPVOID Buffer
@@ -290,22 +290,22 @@ class Chef
         #  _In_  LPBYTE  buf,
         #  _Out_ LPDWORD parm_err
         # );
-        safe_attach_function :NetUserSetInfo, [
-          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD
-        ], :DWORD
+        safe_attach_function :NetUserSetInfo, %i{
+          LPCWSTR LPCWSTR DWORD LPBYTE LPDWORD
+        }, :DWORD
 
         # NET_API_STATUS NetUserDel(
         #  _In_ LPCWSTR servername,
         #  _In_ LPCWSTR username
         # );
-        safe_attach_function :NetUserDel, [:LPCWSTR, :LPCWSTR], :DWORD
+        safe_attach_function :NetUserDel, %i{LPCWSTR LPCWSTR}, :DWORD
 
         # NET_API_STATUS NetUseDel(
         # _In_ LMSTR UncServerName,
         # _In_ LMSTR UseName,
         # _In_ DWORD ForceCond
         # );
-        safe_attach_function :NetUseDel, [:LMSTR, :LMSTR, :DWORD], :DWORD
+        safe_attach_function :NetUseDel, %i{LMSTR LMSTR DWORD}, :DWORD
 
         # NET_API_STATUS NetUseGetInfo(
         # _In_  LMSTR  UncServerName,
@@ -313,7 +313,7 @@ class Chef
         # _In_  DWORD  Level,
         # _Out_ LPBYTE *BufPtr
         # );
-        safe_attach_function :NetUseGetInfo, [:LMSTR, :LMSTR, :DWORD, :pointer], :DWORD
+        safe_attach_function :NetUseGetInfo, %i{LMSTR LMSTR DWORD pointer}, :DWORD
 
         # NET_API_STATUS NetUseAdd(
         # _In_  LMSTR   UncServerName,
@@ -321,7 +321,7 @@ class Chef
         # _In_  LPBYTE  Buf,
         # _Out_ LPDWORD ParmError
         # );
-        safe_attach_function :NetUseAdd, [:LMSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
+        safe_attach_function :NetUseAdd, %i{LMSTR DWORD LPBYTE LPDWORD}, :DWORD
       end
     end
   end

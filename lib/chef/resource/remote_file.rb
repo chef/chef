@@ -98,7 +98,7 @@ class Chef
 
       property :remote_password, String, sensitive: true
 
-      property :authentication, equal_to: [:remote, :local], default: :remote
+      property :authentication, equal_to: %i{remote local}, default: :remote
 
       def after_created
         validate_identity_platform(remote_user, remote_password, remote_domain)

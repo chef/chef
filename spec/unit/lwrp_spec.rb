@@ -264,12 +264,12 @@ describe "LWRP" do
       let(:lwrp) do
         Class.new(Chef::Resource::LWRPBase) do
           actions :eat, :sleep
-          default_action [:eat, :sleep]
+          default_action %i{eat sleep}
         end
       end
 
       it "returns the array of default actions" do
-        expect(lwrp.default_action).to eq([:eat, :sleep])
+        expect(lwrp.default_action).to eq(%i{eat sleep})
       end
     end
 
@@ -287,7 +287,7 @@ describe "LWRP" do
         end
 
         it "delegates #actions to the parent" do
-          expect(child.actions).to eq([:nothing, :eat, :sleep])
+          expect(child.actions).to eq(%i{nothing eat sleep})
         end
 
         it "delegates #default_action to the parent" do
@@ -304,7 +304,7 @@ describe "LWRP" do
         end
 
         it "does not delegate #actions to the parent" do
-          expect(child.actions).to eq([:nothing, :dont_eat, :dont_sleep])
+          expect(child.actions).to eq(%i{nothing dont_eat dont_sleep})
         end
 
         it "does not delegate #default_action to the parent" do
@@ -322,7 +322,7 @@ describe "LWRP" do
         end
 
         it "amends actions when they are already defined" do
-          expect(child.actions).to eq([:nothing, :eat, :sleep, :drink])
+          expect(child.actions).to eq(%i{nothing eat sleep drink})
         end
       end
     end
@@ -330,40 +330,40 @@ describe "LWRP" do
     describe "when actions is set to an array" do
       let(:resource_class) do
         Class.new(Chef::Resource::LWRPBase) do
-          actions [ :eat, :sleep ]
+          actions %i{eat sleep}
         end
       end
       let(:resource) do
         resource_class.new("blah")
       end
       it "actions includes those actions" do
-        expect(resource_class.actions).to eq [ :nothing, :eat, :sleep ]
+        expect(resource_class.actions).to eq %i{nothing eat sleep}
       end
       it "allowed_actions includes those actions" do
-        expect(resource_class.allowed_actions).to eq [ :nothing, :eat, :sleep ]
+        expect(resource_class.allowed_actions).to eq %i{nothing eat sleep}
       end
       it "resource.allowed_actions includes those actions" do
-        expect(resource.allowed_actions).to eq [ :nothing, :eat, :sleep ]
+        expect(resource.allowed_actions).to eq %i{nothing eat sleep}
       end
     end
 
     describe "when allowed_actions is set to an array" do
       let(:resource_class) do
         Class.new(Chef::Resource::LWRPBase) do
-          allowed_actions [ :eat, :sleep ]
+          allowed_actions %i{eat sleep}
         end
       end
       let(:resource) do
         resource_class.new("blah")
       end
       it "actions includes those actions" do
-        expect(resource_class.actions).to eq [ :nothing, :eat, :sleep ]
+        expect(resource_class.actions).to eq %i{nothing eat sleep}
       end
       it "allowed_actions includes those actions" do
-        expect(resource_class.allowed_actions).to eq [ :nothing, :eat, :sleep ]
+        expect(resource_class.allowed_actions).to eq %i{nothing eat sleep}
       end
       it "resource.allowed_actions includes those actions" do
-        expect(resource.allowed_actions).to eq [ :nothing, :eat, :sleep ]
+        expect(resource.allowed_actions).to eq %i{nothing eat sleep}
       end
     end
   end

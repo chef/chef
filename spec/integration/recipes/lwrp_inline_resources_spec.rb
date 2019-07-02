@@ -53,7 +53,7 @@ describe "LWRPs with inline resources" do
       action :fiddle do
         file PATH do
           content new_resource.content
-          action [:create, :delete]
+          action %i{create delete}
         end
       end
     end

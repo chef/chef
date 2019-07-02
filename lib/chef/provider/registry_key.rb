@@ -122,7 +122,7 @@ class Chef
         new_resource.unscrubbed_values.each do |value|
           if @name_hash.key?(value[:name].downcase)
             current_value = @name_hash[value[:name].downcase]
-            if [:dword, :dword_big_endian, :qword].include? value[:type]
+            if %i{dword dword_big_endian qword}.include? value[:type]
               value[:data] = value[:data].to_i
             end
             unless current_value[:type] == value[:type] && current_value[:data] == value[:data]

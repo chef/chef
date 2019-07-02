@@ -23,7 +23,7 @@ class Chef
   class Knife
     class Bootstrap < Knife
       class TrainConnector
-        SSH_CONFIG_OVERRIDE_KEYS ||= [:user, :port, :proxy].freeze
+        SSH_CONFIG_OVERRIDE_KEYS ||= %i{user port proxy}.freeze
 
         MKTEMP_WIN_COMMAND ||= <<~EOM.freeze
           $parent = [System.IO.Path]::GetTempPath();

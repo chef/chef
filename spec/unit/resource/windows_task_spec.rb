@@ -356,7 +356,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
   context "#validate_idle_time" do
     it "raises error if frequency is not :on_idle" do
-      [:minute, :hourly, :daily, :weekly, :monthly, :once, :on_logon, :onstart, :none].each do |frequency|
+      %i{minute hourly daily weekly monthly once on_logon onstart none}.each do |frequency|
         expect { resource.send(:validate_idle_time, 5, frequency) }.to raise_error(ArgumentError, "idle_time property is only valid for tasks that run on_idle")
       end
     end
@@ -374,7 +374,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
     end
 
     it "does not raises error if idle_time is not set for other frequencies" do
-      [:minute, :hourly, :daily, :weekly, :monthly, :once, :on_logon, :onstart, :none].each do |frequency|
+      %i{minute hourly daily weekly monthly once on_logon onstart none}.each do |frequency|
         expect { resource.send(:validate_idle_time, nil, frequency) }.not_to raise_error
       end
     end

@@ -43,7 +43,7 @@ class Chef
         description: "The message to be added to a log file. If not specified we'll use the resource's name instead."
 
       property :level, Symbol,
-        equal_to: [ :debug, :info, :warn, :error, :fatal ], default: :info,
+        equal_to: %i{debug info warn error fatal}, default: :info,
         description: "The logging level to display this message at."
 
       allowed_actions :write

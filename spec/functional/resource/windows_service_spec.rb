@@ -59,7 +59,7 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
 
   let(:service_resource) do
     r = Chef::Resource::WindowsService.new(service_params[:service_name], run_context)
-    [:run_as_user, :run_as_password].each { |prop| r.send(prop, service_params[prop]) }
+    %i{run_as_user run_as_password}.each { |prop| r.send(prop, service_params[prop]) }
     r
   end
 

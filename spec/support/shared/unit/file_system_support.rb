@@ -56,7 +56,7 @@ module FileSystemSupport
 
   def no_blocking_calls_allowed
     [ Chef::ChefFS::FileSystem::Memory::MemoryFile, Chef::ChefFS::FileSystem::Memory::MemoryDir ].each do |c|
-      [ :children, :exists?, :read ].each do |m|
+      %i{children exists? read}.each do |m|
         allow_any_instance_of(c).to receive(m).and_raise("#{m} should not be called")
       end
     end

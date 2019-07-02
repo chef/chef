@@ -128,7 +128,7 @@ class Chef
                   if permission < 0 || permission > 1 << 32
                     raise ArgumentError, "permissions flags must be positive and <= 32 bits (#{permission})"
                   end
-                elsif !([:full_control, :modify, :read_execute, :read, :write].include?(permission.to_sym))
+                elsif !(%i{full_control modify read_execute read write}.include?(permission.to_sym))
                   raise ArgumentError, "permissions parameter must be :full_control, :modify, :read_execute, :read, :write or an integer representing Windows permission flags"
                 end
               end

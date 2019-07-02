@@ -26,7 +26,7 @@ describe Chef::Mixin::UserContext, windows_only: true do
 
   let(:get_user_name_a) do
     FFI.ffi_lib "advapi32.dll"
-    FFI.attach_function :GetUserNameA, [ :pointer, :pointer ], :bool
+    FFI.attach_function :GetUserNameA, %i{pointer pointer}, :bool
   end
 
   let(:process_username) do

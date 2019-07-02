@@ -103,7 +103,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
   describe "#define_resource_requirements" do
     before do
       # we're not testing the actual actions so stub them all out
-      [:mount_fs, :umount_fs, :remount_fs, :enable_fs, :disable_fs].each { |m| allow(provider).to receive(m) }
+      %i{mount_fs umount_fs remount_fs enable_fs disable_fs}.each { |m| allow(provider).to receive(m) }
     end
 
     it "run_action(:mount) should raise an error if the device does not exist" do

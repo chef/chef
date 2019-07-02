@@ -53,10 +53,10 @@ class Chef
       OHAI_VERSIONS          = "ohai_versions".freeze
       GEMS                   = "gems".freeze
 
-      COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
-                            :maintainer_email, :license, :platforms, :dependencies,
-                            :providing, :recipes, :version, :source_url, :issues_url,
-                            :privacy, :chef_versions, :ohai_versions, :gems ].freeze
+      COMPARISON_FIELDS = %i{name description long_description maintainer
+                            maintainer_email license platforms dependencies
+                            providing recipes version source_url issues_url
+                            privacy chef_versions ohai_versions gems}.freeze
 
       VERSION_CONSTRAINTS = { depends: DEPENDENCIES,
                               provides: PROVIDING,

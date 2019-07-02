@@ -43,7 +43,7 @@ class Chef
 
         ffi_lib "psapi"
 
-        safe_attach_function :GetProcessMemoryInfo, [ :HANDLE, :pointer, :DWORD ], :BOOL
+        safe_attach_function :GetProcessMemoryInfo, %i{HANDLE pointer DWORD}, :BOOL
 
       end
     end

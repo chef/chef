@@ -382,7 +382,7 @@ class Chef
         elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
           [response, request, false]
         elsif redirect_location = redirected_to(response)
-          if [:GET, :HEAD].include?(method)
+          if %i{GET HEAD}.include?(method)
             follow_redirect do
               redirected_url = url + redirect_location
               if http_disable_auth_on_redirect

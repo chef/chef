@@ -1015,7 +1015,7 @@ class Chef
           non_interactive: false,
           keys_only: false,
           key_files: [],
-          auth_methods: [:password, :keyboard_interactive],
+          auth_methods: %i{password keyboard_interactive},
         }
       end
 

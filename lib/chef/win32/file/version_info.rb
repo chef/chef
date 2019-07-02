@@ -34,20 +34,20 @@ class Chef
 
         # defining method for each predefined version resource string
         # see https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464(v=vs.85).aspx
-        [
-          :Comments,
-          :CompanyName,
-          :FileDescription,
-          :FileVersion,
-          :InternalName,
-          :LegalCopyright,
-          :LegalTrademarks,
-          :OriginalFilename,
-          :ProductName,
-          :ProductVersion,
-          :PrivateBuild,
-          :SpecialBuild,
-        ].each do |method|
+        %i{
+          Comments
+          CompanyName
+          FileDescription
+          FileVersion
+          InternalName
+          LegalCopyright
+          LegalTrademarks
+          OriginalFilename
+          ProductName
+          ProductVersion
+          PrivateBuild
+          SpecialBuild
+        }.each do |method|
           define_method method do
             begin
               get_version_info_string(method.to_s)

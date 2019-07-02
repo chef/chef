@@ -131,7 +131,7 @@ describe "Chef::Win32::Security", :windows_only do
     end
 
     context "when the token is valid" do
-      let(:token_elevation_type) { [:TokenElevationTypeDefault, :TokenElevationTypeFull, :TokenElevationTypeLimited] }
+      let(:token_elevation_type) { %i{TokenElevationTypeDefault TokenElevationTypeFull TokenElevationTypeLimited} }
 
       it "returns the token elevation type" do
         elevation_type = Chef::ReservedNames::Win32::Security.get_token_information_elevation_type(token)

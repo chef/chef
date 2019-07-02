@@ -99,7 +99,7 @@ class Chef
       # If the set method of the DSC resource indicate that a reboot
       # is necessary, reboot_action provides the mechanism for a reboot to
       # be requested.
-      property :reboot_action, Symbol, default: :nothing, equal_to: [:nothing, :reboot_now, :request_reboot],
+      property :reboot_action, Symbol, default: :nothing, equal_to: %i{nothing reboot_now request_reboot},
                 introduced: "12.6",
                 description: "Use to request an immediate reboot or to queue a reboot using the :reboot_now (immediate reboot) or :request_reboot (queued reboot) actions built into the reboot resource."
 

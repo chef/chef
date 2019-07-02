@@ -72,7 +72,7 @@ class Chef
           configs = []
 
           if file_exist?(Chef.path_to("/etc/init.d/#{service_name}"))
-            configs += [ :initd, :systemd ]
+            configs += %i{initd systemd}
           end
 
           if file_exist?(Chef.path_to("/etc/init/#{service_name}.conf"))

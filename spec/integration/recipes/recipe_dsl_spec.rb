@@ -1340,10 +1340,10 @@ describe "Recipe DSL methods" do
       resource_class.new("blah", run_context)
     end
     it "The actions are part of actions along with :nothing" do
-      expect(resource_class.actions).to eq [ :nothing, :create ]
+      expect(resource_class.actions).to eq %i{nothing create}
     end
     it "The actions are part of allowed_actions along with :nothing" do
-      expect(resource.allowed_actions).to eq [ :nothing, :create ]
+      expect(resource.allowed_actions).to eq %i{nothing create}
     end
 
     context "and a subclass that declares more actions" do
@@ -1358,14 +1358,14 @@ describe "Recipe DSL methods" do
       end
 
       it "The parent class actions are not part of actions" do
-        expect(subresource_class.actions).to eq [ :nothing, :delete ]
+        expect(subresource_class.actions).to eq %i{nothing delete}
       end
       it "The parent class actions are not part of allowed_actions" do
-        expect(subresource.allowed_actions).to eq [ :nothing, :delete ]
+        expect(subresource.allowed_actions).to eq %i{nothing delete}
       end
       it "The parent class actions do not change" do
-        expect(resource_class.actions).to eq [ :nothing, :create ]
-        expect(resource.allowed_actions).to eq [ :nothing, :create ]
+        expect(resource_class.actions).to eq %i{nothing create}
+        expect(resource.allowed_actions).to eq %i{nothing create}
       end
     end
   end

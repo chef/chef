@@ -39,7 +39,7 @@ describe ResourceInspector do
 
     it "returns a hash with required data" do
       expect(subject[:description]).to eq "A dummy resource"
-      expect(subject[:actions]).to match_array [:nothing, :dummy]
+      expect(subject[:actions]).to match_array %i{nothing dummy}
     end
 
     context "excluding built in properties" do

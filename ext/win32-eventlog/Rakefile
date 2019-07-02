@@ -23,7 +23,7 @@ CC = "gcc".freeze
 ensure_present [MC, RC, CC]
 
 task build: [EVT_RESOURCE_OBJECT, EVT_SHARED_OBJECT]
-task default: [:build, :register]
+task default: %i{build register}
 
 file EVT_RC_FILE => EVT_MC_FILE do
   sh "#{MC} #{EVT_MC_FILE}"

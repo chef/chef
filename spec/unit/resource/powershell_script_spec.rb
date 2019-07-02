@@ -61,7 +61,7 @@ describe Chef::Resource::PowershellScript do
 
     it "inherits exactly the :cwd, :environment, :group, :path, :user, :umask, :architecture, :elevated properties from a parent resource class" do
       inherited_difference = Chef::Resource::PowershellScript.guard_inherited_attributes -
-        [:cwd, :environment, :group, :path, :user, :umask, :architecture, :elevated ]
+        %i{cwd environment group path user umask architecture elevated}
 
       expect(inherited_difference).to eq([])
     end

@@ -78,7 +78,7 @@ class Chef
 
         raise ArgumentError, "Service definition is not provided" if service_options.nil?
 
-        required_options = [:service_name, :service_display_name, :service_description, :service_file_path]
+        required_options = %i{service_name service_display_name service_description service_file_path}
 
         required_options.each do |req_option|
           if !service_options.key?(req_option)

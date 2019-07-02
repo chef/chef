@@ -1086,13 +1086,13 @@ describe "Chef::Resource.property" do
       expect do
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
-          property_type(is: [:a, :b], default: :c)
+          property_type(is: %i{a b}, default: :c)
         end
       end.to raise_error(Chef::Exceptions::ValidationFailed)
       expect do
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
-          property_type(is: [:a, :b], default: :b)
+          property_type(is: %i{a b}, default: :b)
         end
       end.not_to raise_error
     end
@@ -1101,8 +1101,8 @@ describe "Chef::Resource.property" do
       before :all do
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
-          ABType = property_type(is: [:a, :b])
-          CDType = property_type(is: [:c, :d])
+          ABType = property_type(is: %i{a b})
+          CDType = property_type(is: %i{c d})
         end
       end
 
@@ -1305,7 +1305,7 @@ describe "Chef::Resource.property" do
     it "copies only foo when bar and name are excluded" do
       thing_one_resource.foo "foo"
       thing_one_resource.bar "bar"
-      thing_two_resource.copy_properties_from(thing_one_resource, exclude: [ :name, :bar ])
+      thing_two_resource.copy_properties_from(thing_one_resource, exclude: %i{name bar})
       expect(thing_two_resource.name).to eql("name_two")
       expect(thing_two_resource.foo).to eql("foo")
       expect(thing_two_resource.bar).to eql(nil)

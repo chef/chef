@@ -58,7 +58,7 @@ class Chef
       #   - :manual
       #   - :disabled
       # Reference: https://github.com/chef/win32-service/blob/ffi/lib/win32/windows/constants.rb#L49-L54
-      property :startup_type, [Symbol], equal_to: [:automatic, :manual, :disabled], default: :automatic, coerce: proc { |x|
+      property :startup_type, [Symbol], equal_to: %i{automatic manual disabled}, default: :automatic, coerce: proc { |x|
         if x.is_a?(Integer)
           ALLOWED_START_TYPES.invert.fetch(x) do
             Chef::Log.warn("Unsupported startup_type #{x}, falling back to :automatic")

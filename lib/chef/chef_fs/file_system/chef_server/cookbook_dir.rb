@@ -139,7 +139,7 @@ class Chef
 
             are_same = true
             Chef::ChefFS::CommandLine.diff_entries(self, other, nil, :name_only).each do |type, old_entry, new_entry|
-              if [ :directory_to_file, :file_to_directory, :deleted, :added, :modified ].include?(type)
+              if %i{directory_to_file file_to_directory deleted added modified}.include?(type)
                 are_same = false
               end
             end

@@ -54,7 +54,7 @@ class Chef
         description: "The remote port the firewall rule applies to."
 
       property :direction, [Symbol, String],
-        default: :inbound, equal_to: [:inbound, :outbound],
+        default: :inbound, equal_to: %i{inbound outbound},
         description: "The direction of the firewall rule. Direction means either inbound or outbound traffic.",
         coerce: proc { |d| d.is_a?(String) ? d.downcase.to_sym : d }
 
@@ -63,12 +63,12 @@ class Chef
         description: "The protocol the firewall rule applies to."
 
       property :firewall_action, [Symbol, String],
-        default: :allow, equal_to: [:allow, :block, :notconfigured],
+        default: :allow, equal_to: %i{allow block notconfigured},
         description: "The action of the firewall rule.",
         coerce: proc { |f| f.is_a?(String) ? f.downcase.to_sym : f }
 
       property :profile, [Symbol, String],
-        default: :any, equal_to: [:public, :private, :domain, :any, :notapplicable],
+        default: :any, equal_to: %i{public private domain any notapplicable},
         description: "The profile the firewall rule applies to.",
         coerce: proc { |p| p.is_a?(String) ? p.downcase.to_sym : p }
 
@@ -79,7 +79,7 @@ class Chef
         description: "The service the firewall rule applies to."
 
       property :interface_type, [Symbol, String],
-        default: :any, equal_to: [:any, :wireless, :wired, :remoteaccess],
+        default: :any, equal_to: %i{any wireless wired remoteaccess},
         description: "The interface type the firewall rule applies to.",
         coerce: proc { |i| i.is_a?(String) ? i.downcase.to_sym : i }
 

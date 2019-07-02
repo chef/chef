@@ -115,14 +115,14 @@ describe Chef::Resource do
     it "sets a list of state attributes" do
       resource_class = Class.new(Chef::Resource)
       resource_class.state_attrs(:checksum, :owner, :group, :mode)
-      expect(resource_class.state_attrs).to match_array([:checksum, :owner, :group, :mode])
+      expect(resource_class.state_attrs).to match_array(%i{checksum owner group mode})
     end
 
     it "inherits state attributes from the superclass" do
       resource_class = Class.new(Chef::Resource)
       resource_subclass = Class.new(resource_class)
       resource_class.state_attrs(:checksum, :owner, :group, :mode)
-      expect(resource_subclass.state_attrs).to match_array([:checksum, :owner, :group, :mode])
+      expect(resource_subclass.state_attrs).to match_array(%i{checksum owner group mode})
     end
 
     it "combines inherited state attributes with non-inherited state attributes" do
@@ -130,7 +130,7 @@ describe Chef::Resource do
       resource_subclass = Class.new(resource_class)
       resource_class.state_attrs(:checksum, :owner)
       resource_subclass.state_attrs(:group, :mode)
-      expect(resource_subclass.state_attrs).to match_array([:checksum, :owner, :group, :mode])
+      expect(resource_subclass.state_attrs).to match_array(%i{checksum owner group mode})
     end
 
   end
@@ -157,7 +157,7 @@ describe Chef::Resource do
 
     it "describes its state" do
       resource_state = file_resource.state_for_resource_reporter
-      expect(resource_state.keys).to match_array([:checksum, :owner, :group, :mode])
+      expect(resource_state.keys).to match_array(%i{checksum owner group mode})
       expect(resource_state[:checksum]).to eq("abc123")
       expect(resource_state[:owner]).to eq("root")
       expect(resource_state[:group]).to eq("wheel")
@@ -510,11 +510,11 @@ describe Chef::Resource do
     context "when the resource has a property with a default" do
       let(:resource_class) { Class.new(Chef::Resource) { property :a, default: 1 } }
       it "should include the default in the hash" do
-        expect(resource.to_hash.keys.sort).to eq([:a, :allowed_actions, :params, :provider, :updated,
-          :updated_by_last_action, :before,
-          :name, :source_line,
-          :action, :elapsed_time,
-          :default_guard_interpreter, :guard_interpreter].sort)
+        expect(resource.to_hash.keys.sort).to eq(%i{a allowed_actions params provider updated
+          updated_by_last_action before
+          name source_line
+          action elapsed_time
+          default_guard_interpreter guard_interpreter}.sort)
         expect(resource.to_hash[:name]).to eq "funk"
         expect(resource.to_hash[:a]).to eq 1
       end
@@ -522,11 +522,11 @@ describe Chef::Resource do
 
     it "should convert to a hash" do
       hash = resource.to_hash
-      expected_keys = [ :allowed_actions, :params, :provider, :updated,
-        :updated_by_last_action, :before,
-        :name, :source_line,
-        :action, :elapsed_time,
-        :default_guard_interpreter, :guard_interpreter ]
+      expected_keys = %i{allowed_actions params provider updated
+        updated_by_last_action before
+        name source_line
+        action elapsed_time
+        default_guard_interpreter guard_interpreter}
       expect(hash.keys - expected_keys).to eq([])
       expect(expected_keys - hash.keys).to eq([])
       expect(hash[:name]).to eql("funk")
@@ -1118,8 +1118,8 @@ describe Chef::Resource do
     end
 
     context "with an array action" do
-      before { resource.action([:two, :one]) }
-      it { is_expected.to eq [:two, :one] }
+      before { resource.action(%i{two one}) }
+      it { is_expected.to eq %i{two one} }
     end
 
     context "with an assignment" do
@@ -1128,8 +1128,8 @@ describe Chef::Resource do
     end
 
     context "with an array assignment" do
-      before { resource.action = [:two, :one] }
-      it { is_expected.to eq [:two, :one] }
+      before { resource.action = %i{two one} }
+      it { is_expected.to eq %i{two one} }
     end
 
     context "with an invalid action" do
@@ -1166,8 +1166,8 @@ describe Chef::Resource do
     end
 
     context "with an array default action" do
-      let(:default_action) { [:two, :one] }
-      it { is_expected.to eq [:two, :one] }
+      let(:default_action) { %i{two one} }
+      it { is_expected.to eq %i{two one} }
     end
   end
 

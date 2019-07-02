@@ -184,7 +184,7 @@ class Chef
 
         def _extend_modules(module_names)
           module_names.each do |mod|
-            context_methods = [:node, :render, :render_template, :render_template_from_string]
+            context_methods = %i{node render render_template render_template_from_string}
             context_methods.each do |core_method|
               if mod.method_defined?(core_method) || mod.private_method_defined?(core_method)
                 Chef::Log.warn("Core template method `#{core_method}' overridden by extension module #{mod}")

@@ -51,109 +51,109 @@ class Chef
 
       # List of the component attribute hashes, in order of precedence, low to
       # high.
-      COMPONENTS = [
-        :@default,
-        :@env_default,
-        :@role_default,
-        :@force_default,
-        :@normal,
-        :@override,
-        :@role_override,
-        :@env_override,
-        :@force_override,
-        :@automatic,
-      ].freeze
+      COMPONENTS = %i{
+        @default
+        @env_default
+        @role_default
+        @force_default
+        @normal
+        @override
+        @role_override
+        @env_override
+        @force_override
+        @automatic
+      }.freeze
 
-      DEFAULT_COMPONENTS = [
-        :@default,
-        :@env_default,
-        :@role_default,
-        :@force_default,
-      ].freeze
+      DEFAULT_COMPONENTS = %i{
+        @default
+        @env_default
+        @role_default
+        @force_default
+      }.freeze
 
-      OVERRIDE_COMPONENTS = [
-        :@override,
-        :@role_override,
-        :@env_override,
-        :@force_override,
-      ].freeze
+      OVERRIDE_COMPONENTS = %i{
+        @override
+        @role_override
+        @env_override
+        @force_override
+      }.freeze
 
-      ENUM_METHODS = [
-        :all?,
-        :any?,
-        :assoc,
-        :chunk,
-        :collect,
-        :collect_concat,
-        :compare_by_identity,
-        :compare_by_identity?,
-        :count,
-        :cycle,
-        :detect,
-        :drop,
-        :drop_while,
-        :each,
-        :each_cons,
-        :each_entry,
-        :each_key,
-        :each_pair,
-        :each_slice,
-        :each_value,
-        :each_with_index,
-        :each_with_object,
-        :empty?,
-        :entries,
-        :except,
-        :fetch,
-        :find,
-        :find_all,
-        :find_index,
-        :first,
-        :flat_map,
-        :flatten,
-        :grep,
-        :group_by,
-        :has_value?,
-        :include?,
-        :index,
-        :inject,
-        :invert,
-        :key,
-        :keys,
-        :length,
-        :map,
-        :max,
-        :max_by,
-        :merge,
-        :min,
-        :min_by,
-        :minmax,
-        :minmax_by,
-        :none?,
-        :one?,
-        :partition,
-        :rassoc,
-        :reduce,
-        :reject,
-        :reverse_each,
-        :select,
-        :size,
-        :slice_before,
-        :sort,
-        :sort_by,
-        :store,
-        :symbolize_keys,
-        :take,
-        :take_while,
-        :to_a,
-        :to_h,
-        :to_hash,
-        :to_set,
-        :value?,
-        :values,
-        :values_at,
-        :zip,
-      ].freeze
+      ENUM_METHODS = %i{
+        all?
+        any?
+        assoc
+        chunk
+        collect
+        collect_concat
+        compare_by_identity
+        compare_by_identity?
+        count
+        cycle
+        detect
+        drop
+        drop_while
+        each
+        each_cons
+        each_entry
+        each_key
+        each_pair
+        each_slice
+        each_value
+        each_with_index
+        each_with_object
+        empty?
+        entries
+        except
+        fetch
+        find
+        find_all
+        find_index
+        first
+        flat_map
+        flatten
+        grep
+        group_by
+        has_value?
+        include?
+        index
+        inject
+        invert
+        key
+        keys
+        length
+        map
+        max
+        max_by
+        merge
+        min
+        min_by
+        minmax
+        minmax_by
+        none?
+        one?
+        partition
+        rassoc
+        reduce
+        reject
+        reverse_each
+        select
+        size
+        slice_before
+        sort
+        sort_by
+        store
+        symbolize_keys
+        take
+        take_while
+        to_a
+        to_h
+        to_hash
+        to_set
+        value?
+        values
+        values_at
+        zip
+      }.freeze
 
       ENUM_METHODS.each do |delegated_method|
         define_method(delegated_method) do |*args, &block|
@@ -487,7 +487,7 @@ class Chef
       end
 
       def inspect
-        "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map do |iv|
+        "#<#{self.class} " << (COMPONENTS + %i{@merged_attributes @properties}).map do |iv|
           "#{iv}=#{instance_variable_get(iv).inspect}"
         end.join(", ") << ">"
       end

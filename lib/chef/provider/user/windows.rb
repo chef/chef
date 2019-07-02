@@ -65,7 +65,7 @@ class Chef
             logger.trace("#{new_resource} password has changed")
             return true
           end
-          [ :uid, :comment, :home, :shell, :full_name ].any? do |user_attrib|
+          %i{uid comment home shell full_name}.any? do |user_attrib|
             !new_resource.send(user_attrib).nil? && new_resource.send(user_attrib) != current_resource.send(user_attrib)
           end
         end

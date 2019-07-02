@@ -55,7 +55,7 @@ describe Chef::Knife do
     allow(knife.ui).to receive(:print)
     allow(Chef::Log).to receive(:init)
     allow(Chef::Log).to receive(:level)
-    [:debug, :info, :warn, :error, :crit].each do |level_sym|
+    %i{debug info warn error crit}.each do |level_sym|
       allow(Chef::Log).to receive(level_sym)
     end
     allow(Chef::Knife).to receive(:puts)

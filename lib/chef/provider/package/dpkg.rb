@@ -218,7 +218,7 @@ class Chef
         #
         # @return [Boolean] true if we're doing :install or :upgrade
         def installing?
-          [:install, :upgrade].include?(action)
+          %i{install upgrade}.include?(action)
         end
 
       end

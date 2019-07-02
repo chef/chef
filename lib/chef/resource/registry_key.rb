@@ -88,7 +88,7 @@ class Chef
             raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.key?(:name)
 
             v.each_key do |key|
-              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name, :type, :data].include?(key)
+              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless %i{name type data}.include?(key)
             end
             raise ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
 
@@ -103,7 +103,7 @@ class Chef
       end
 
       property :recursive, [TrueClass, FalseClass], default: false
-      property :architecture, Symbol, default: :machine, equal_to: [:machine, :x86_64, :i386]
+      property :architecture, Symbol, default: :machine, equal_to: %i{machine x86_64 i386}
 
       private
 
@@ -123,7 +123,7 @@ class Chef
       # Some data types may raise errors when sent as json. Returns true if this
       # value's data may need to be converted to a checksum.
       def needs_checksum?(value)
-        unsafe_types = [:binary, :dword, :dword_big_endian, :qword]
+        unsafe_types = %i{binary dword dword_big_endian qword}
         unsafe_types.include?(value[:type])
       end
 

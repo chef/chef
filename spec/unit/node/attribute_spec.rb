@@ -182,7 +182,7 @@ describe Chef::Node::Attribute do
       expect { Chef::Node::Attribute.new({}, {}, {}, {}) }.not_to raise_error
     end
 
-    [ :normal, :default, :override, :automatic ].each do |accessor|
+    %i{normal default override automatic}.each do |accessor|
       it "should set #{accessor}" do
         na = Chef::Node::Attribute.new({ normal: true }, { default: true }, { override: true }, { automatic: true })
         expect(na.send(accessor)).to eq({ accessor.to_s => true })
@@ -546,7 +546,7 @@ describe Chef::Node::Attribute do
       expect(@attributes["music"]["this"]).not_to have_key("must")
     end
 
-    [:include?, :key?, :member?].each do |method|
+    %i{include? key? member?}.each do |method|
       it "should alias the method #{method} to itself" do
         expect(@attributes).to respond_to(method)
       end

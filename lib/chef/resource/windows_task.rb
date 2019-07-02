@@ -49,7 +49,7 @@ class Chef
       property :password, String,
         description: "The user’s password. The user property must be set if using this property."
 
-      property :run_level, Symbol, equal_to: [:highest, :limited],
+      property :run_level, Symbol, equal_to: %i{highest limited},
                description: "Run with ':limited' or ':highest' privileges.",
                default: :limited
 
@@ -64,16 +64,16 @@ class Chef
       property :frequency_modifier, [Integer, String],
         default: 1
 
-      property :frequency, Symbol, equal_to: [:minute,
-                                              :hourly,
-                                              :daily,
-                                              :weekly,
-                                              :monthly,
-                                              :once,
-                                              :on_logon,
-                                              :onstart,
-                                              :on_idle,
-                                              :none],
+      property :frequency, Symbol, equal_to: %i{minute
+                                              hourly
+                                              daily
+                                              weekly
+                                              monthly
+                                              once
+                                              on_logon
+                                              onstart
+                                              on_idle
+                                              none},
                description: "The frequency with which to run the task."
 
       property :start_day, String,
@@ -175,7 +175,7 @@ class Chef
       end
 
       def validate_frequency(frequency)
-        if frequency.nil? || !([:minute, :hourly, :daily, :weekly, :monthly, :once, :on_logon, :onstart, :on_idle, :none].include?(frequency))
+        if frequency.nil? || !(%i{minute hourly daily weekly monthly once on_logon onstart on_idle none}.include?(frequency))
           raise ArgumentError, "Frequency needs to be provided. Valid frequencies are :minute, :hourly, :daily, :weekly, :monthly, :once, :on_logon, :onstart, :on_idle, :none."
         end
       end
@@ -201,7 +201,7 @@ class Chef
       end
 
       def validate_random_delay(random_delay, frequency)
-        if [:on_logon, :onstart, :on_idle, :none].include? frequency
+        if %i{on_logon onstart on_idle none}.include? frequency
           raise ArgumentError, "`random_delay` property is supported only for frequency :once, :minute, :hourly, :daily, :weekly and :monthly"
         end
 
@@ -256,7 +256,7 @@ class Chef
       alias non_system_user? password_required?
 
       def validate_create_frequency_modifier(frequency, frequency_modifier)
-        if ([:on_logon, :onstart, :on_idle, :none].include?(frequency)) && ( frequency_modifier != 1)
+        if (%i{on_logon onstart on_idle none}.include?(frequency)) && ( frequency_modifier != 1)
           raise ArgumentError, "frequency_modifier property not supported with frequency :#{frequency}"
         end
 
@@ -288,7 +288,7 @@ class Chef
       end
 
       def validate_create_day(day, frequency, frequency_modifier)
-        raise ArgumentError, "day property is only valid for tasks that run monthly or weekly" unless [:weekly, :monthly].include?(frequency)
+        raise ArgumentError, "day property is only valid for tasks that run monthly or weekly" unless %i{weekly monthly}.include?(frequency)
 
         # This has been verified with schtask.exe https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/schtasks#d-dayday--
         # verified with earlier code if day "*" is given with frequency it raised exception Invalid value for /D option

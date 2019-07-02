@@ -23,7 +23,7 @@ describe Chef::Mixin::WindowsArchitectureHelper do
   include Chef::Mixin::WindowsArchitectureHelper
 
   before do
-    @valid_architectures = [ :i386, :x86_64 ]
+    @valid_architectures = %i{i386 x86_64}
     @invalid_architectures = [ "i386", "x86_64", :x64, :x86, :arm ]
 
     @node_i386 = Chef::Node.new

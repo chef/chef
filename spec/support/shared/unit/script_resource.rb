@@ -66,7 +66,7 @@ shared_examples_for "a script resource" do
 
     it "inherits exactly the :cwd, :environment, :group, :path, :user, and :umask attributes from a parent resource class" do
       inherited_difference = Chef::Resource::Script.guard_inherited_attributes -
-        [:cwd, :environment, :group, :path, :user, :umask ]
+        %i{cwd environment group path user umask}
 
       expect(inherited_difference).to eq([])
     end

@@ -155,7 +155,7 @@ describe Chef::Provider::Group::Groupadd do
     end
   end
 
-  [:add_member, :remove_member, :set_members].each do |m|
+  %i{add_member remove_member set_members}.each do |m|
     it "should raise an error when calling #{m}" do
       expect { provider.send(m, [ ]) }.to raise_error(Chef::Exceptions::Group, "you must override #{m} in #{provider}")
     end
