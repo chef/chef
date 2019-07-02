@@ -72,9 +72,9 @@ class Chef
             uninstall_version = new_resource.version || current_installed_version
             uninstall_entries.select { |entry| [uninstall_version].flatten.include?(entry.display_version) }
               .map(&:uninstall_string).uniq.each do |uninstall_string|
-              logger.trace("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
-              shell_out!(uninstall_command(uninstall_string), timeout: new_resource.timeout, returns: new_resource.returns)
-            end
+                logger.trace("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
+                shell_out!(uninstall_command(uninstall_string), timeout: new_resource.timeout, returns: new_resource.returns)
+              end
           end
 
           private

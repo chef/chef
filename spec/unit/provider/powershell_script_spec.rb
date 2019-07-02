@@ -107,19 +107,19 @@ describe Chef::Provider::PowershellScript, "action_run" do
         "3.6" => "Bypass",
         "4.0" => "Bypass",
         "5.0" => "Bypass" }.each do |version_policy|
-        let(:powershell_version) { version_policy[0].to_f }
-        context "when running PowerShell version #{version_policy[0]}" do
           let(:powershell_version) { version_policy[0].to_f }
+          context "when running PowerShell version #{version_policy[0]}" do
+            let(:powershell_version) { version_policy[0].to_f }
 
-          it "sets default -ExecutionPolicy flag to '#{version_policy[1]}'" do
-            expect(execution_policy_flag.downcase).to eq(version_policy[1].downcase)
-          end
-          it "sets user defined -ExecutionPolicy flag to 'RemoteSigned'" do
-            set_user_defined_flag
-            expect(execution_policy_flag.downcase).to eq("RemoteSigned".downcase)
+            it "sets default -ExecutionPolicy flag to '#{version_policy[1]}'" do
+              expect(execution_policy_flag.downcase).to eq(version_policy[1].downcase)
+            end
+            it "sets user defined -ExecutionPolicy flag to 'RemoteSigned'" do
+              set_user_defined_flag
+              expect(execution_policy_flag.downcase).to eq("RemoteSigned".downcase)
+            end
           end
         end
-      end
     end
   end
 end

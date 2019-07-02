@@ -121,9 +121,9 @@ class Chef
         if current_resource
           converge_if_changed :rule_name, :local_address, :local_port, :remote_address, :remote_port, :direction,
             :protocol, :firewall_action, :profile, :program, :service, :interface_type, :enabled do
-            cmd = firewall_command("Set")
-            powershell_out!(cmd)
-          end
+              cmd = firewall_command("Set")
+              powershell_out!(cmd)
+            end
         else
           converge_by("create firewall rule #{new_resource.rule_name}") do
             cmd = firewall_command("New")

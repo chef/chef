@@ -357,14 +357,14 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       # properties that are Strings
       %i{binary_path_name load_order_group dependencies run_as_user
          display_name description}.each do |attr|
-        it "configures service if #{attr} has changed" do
-          provider.current_resource.send("#{attr}=", "old value")
-          provider.new_resource.send("#{attr}=", "new value")
+           it "configures service if #{attr} has changed" do
+             provider.current_resource.send("#{attr}=", "old value")
+             provider.new_resource.send("#{attr}=", "new value")
 
-          expect(Win32::Service).to receive(:configure)
-          provider.action_configure
-        end
-      end
+             expect(Win32::Service).to receive(:configure)
+             provider.action_configure
+           end
+         end
 
       # properties that are Integers
       %i{service_type error_control}.each do |attr|

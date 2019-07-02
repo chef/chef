@@ -67,18 +67,18 @@ describe Chef::Provider::Mount::Mount do
     describe "when dealing with network mounts" do
       { "nfs" => "nfsserver:/vol/path",
         "cifs" => "//cifsserver/share" }.each do |type, fs_spec|
-        it "should detect network fs_spec (#{type})" do
-          @new_resource.device fs_spec
-          expect(@provider.network_device?).to be_truthy
-        end
+          it "should detect network fs_spec (#{type})" do
+            @new_resource.device fs_spec
+            expect(@provider.network_device?).to be_truthy
+          end
 
-        it "should ignore trailing slash and set mounted to true for network mount (#{type})" do
-          @new_resource.device fs_spec
-          allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "#{fs_spec}/ on /tmp/foo type #{type} (rw)\n"))
-          @provider.load_current_resource
-          expect(@provider.current_resource.mounted).to be_truthy
+          it "should ignore trailing slash and set mounted to true for network mount (#{type})" do
+            @new_resource.device fs_spec
+            allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "#{fs_spec}/ on /tmp/foo type #{type} (rw)\n"))
+            @provider.load_current_resource
+            expect(@provider.current_resource.mounted).to be_truthy
+          end
         end
-      end
     end
 
     it "should raise an error if the mount device does not exist" do

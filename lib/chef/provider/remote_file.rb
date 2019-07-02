@@ -32,18 +32,18 @@ class Chef
       def define_resource_requirements
         [ new_resource.remote_user, new_resource.remote_domain,
           new_resource.remote_password ].each do |prop|
-          requirements.assert(:all_actions) do |a|
-            a.assertion do
-              if prop
-                node[:platform_family] == "windows"
-              else
-                true
+            requirements.assert(:all_actions) do |a|
+              a.assertion do
+                if prop
+                  node[:platform_family] == "windows"
+                else
+                  true
+                end
               end
+              a.failure_message Chef::Exceptions::UnsupportedPlatform, "'remote_user', 'remote_domain' and 'remote_password' properties are supported only for Windows platform"
+              a.whyrun("Assuming that the platform is Windows while passing 'remote_user', 'remote_domain' and 'remote_password' properties")
             end
-            a.failure_message Chef::Exceptions::UnsupportedPlatform, "'remote_user', 'remote_domain' and 'remote_password' properties are supported only for Windows platform"
-            a.whyrun("Assuming that the platform is Windows while passing 'remote_user', 'remote_domain' and 'remote_password' properties")
           end
-        end
 
         super
       end

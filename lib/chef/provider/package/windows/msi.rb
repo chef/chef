@@ -82,12 +82,12 @@ class Chef
               uninstall_version = new_resource.version || installed_version
               uninstall_entries.select { |entry| [uninstall_version].flatten.include?(entry.display_version) }
                 .map(&:uninstall_string).uniq.each do |uninstall_string|
-                uninstall_string = "msiexec /x #{uninstall_string.match(/{.*}/)}"
-                uninstall_string += expand_options(new_resource.options)
-                uninstall_string += " /q" unless uninstall_string.downcase =~ / \/q/
-                logger.trace("#{new_resource} removing MSI package version using '#{uninstall_string}'")
-                shell_out!(uninstall_string, timeout: new_resource.timeout, returns: new_resource.returns)
-              end
+                  uninstall_string = "msiexec /x #{uninstall_string.match(/{.*}/)}"
+                  uninstall_string += expand_options(new_resource.options)
+                  uninstall_string += " /q" unless uninstall_string.downcase =~ / \/q/
+                  logger.trace("#{new_resource} removing MSI package version using '#{uninstall_string}'")
+                  shell_out!(uninstall_string, timeout: new_resource.timeout, returns: new_resource.returns)
+                end
             end
           end
         end

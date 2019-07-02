@@ -77,54 +77,54 @@ class Chef
         description: "A Hash (similar to crontab) that defines the calendar frequency at which a job is started or an Array.",
         coerce: proc { |type|
                   # Coerce into an array of hashes to make validation easier
-                  array = if type.is_a?(Array)
-                            type
-                          else
-                            [type]
-                          end
+          array = if type.is_a?(Array)
+                    type
+                  else
+                    [type]
+                  end
 
                   # Check to make sure that our array only has hashes
-                  unless array.all? { |obj| obj.is_a?(Hash) }
-                    error_msg = "start_calendar_interval must be a single hash or an array of hashes!"
-                    raise Chef::Exceptions::ValidationFailed, error_msg
-                  end
+          unless array.all? { |obj| obj.is_a?(Hash) }
+            error_msg = "start_calendar_interval must be a single hash or an array of hashes!"
+            raise Chef::Exceptions::ValidationFailed, error_msg
+          end
 
                   # Make sure the hashes don't have any incorrect keys/values
-                  array.each do |entry|
-                    allowed_keys = %w{Minute Hour Day Weekday Month}
-                    unless entry.keys.all? { |key| allowed_keys.include?(key) }
-                      failed_keys = entry.keys.reject { |k| allowed_keys.include?(k) }.join(", ")
-                      error_msg = "The following key(s): #{failed_keys} are invalid for start_calendar_interval, must be one of: #{allowed_keys.join(", ")}"
-                      raise Chef::Exceptions::ValidationFailed, error_msg
-                    end
+          array.each do |entry|
+            allowed_keys = %w{Minute Hour Day Weekday Month}
+            unless entry.keys.all? { |key| allowed_keys.include?(key) }
+              failed_keys = entry.keys.reject { |k| allowed_keys.include?(k) }.join(", ")
+              error_msg = "The following key(s): #{failed_keys} are invalid for start_calendar_interval, must be one of: #{allowed_keys.join(", ")}"
+              raise Chef::Exceptions::ValidationFailed, error_msg
+            end
 
-                    unless entry.values.all? { |val| val.is_a?(Integer) }
-                      failed_values = entry.values.reject { |val| val.is_a?(Integer) }.join(", ")
-                      error_msg = "Invalid value(s) (#{failed_values}) for start_calendar_interval item.  Values must be integers!"
-                      raise Chef::Exceptions::ValidationFailed, error_msg
-                    end
-                  end
+            unless entry.values.all? { |val| val.is_a?(Integer) }
+              failed_values = entry.values.reject { |val| val.is_a?(Integer) }.join(", ")
+              error_msg = "Invalid value(s) (#{failed_values}) for start_calendar_interval item.  Values must be integers!"
+              raise Chef::Exceptions::ValidationFailed, error_msg
+            end
+          end
 
                   # Don't return array if we only have one entry
-                  if array.size == 1
-                    array.first
-                  else
-                    array
-                  end
-                }
+          if array.size == 1
+            array.first
+          else
+            array
+          end
+        }
 
       property :type, String,
         description: "The type of resource. Possible values: daemon (default), agent.",
         default: "daemon", coerce: proc { |type|
-                                     type = type ? type.downcase : "daemon"
-                                     types = %w{daemon agent}
+          type = type ? type.downcase : "daemon"
+          types = %w{daemon agent}
 
-                                     unless types.include?(type)
-                                       error_msg = "type must be daemon or agent"
-                                       raise Chef::Exceptions::ValidationFailed, error_msg
-                                     end
-                                     type
-                                   }
+          unless types.include?(type)
+            error_msg = "type must be daemon or agent"
+            raise Chef::Exceptions::ValidationFailed, error_msg
+          end
+          type
+        }
 
       # Apple LaunchD Keys
       property :abandon_process_group, [ TrueClass, FalseClass ],
