@@ -403,9 +403,9 @@ describe Chef::PolicyBuilder::Policyfile do
 
           before do
             allow(policy_builder).to receive(:run_list)
-                                      .and_return(run_list)
+              .and_return(run_list)
             allow(policy_builder).to receive(:cookbook_lock_for)
-                                      .and_return(version_hash)
+              .and_return(version_hash)
           end
 
           it "sends the run_list_expanded event" do

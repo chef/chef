@@ -81,7 +81,7 @@ class Chef
             else
               uninstall_version = new_resource.version || installed_version
               uninstall_entries.select { |entry| [uninstall_version].flatten.include?(entry.display_version) }
-                               .map(&:uninstall_string).uniq.each do |uninstall_string|
+                .map(&:uninstall_string).uniq.each do |uninstall_string|
                 uninstall_string = "msiexec /x #{uninstall_string.match(/{.*}/)}"
                 uninstall_string += expand_options(new_resource.options)
                 uninstall_string += " /q" unless uninstall_string.downcase =~ / \/q/

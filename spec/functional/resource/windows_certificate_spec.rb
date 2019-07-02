@@ -81,9 +81,9 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
 
     # Byepassing the validation so that we may create a custom store
     allow_any_instance_of(Chef::Mixin::ParamsValidate)
-          .to receive(:_pv_equal_to)
-          .with(opts, key, to_be)
-          .and_return(true)
+      .to receive(:_pv_equal_to)
+      .with(opts, key, to_be)
+      .and_return(true)
 
     # Creating a custom store for the testing
     create_store(store)

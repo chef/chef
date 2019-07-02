@@ -53,8 +53,8 @@ class Chef
 
           def children
             entries = Dir.entries(file_path).sort
-                      .map { |child_name| make_child_entry(child_name) }
-                      .select { |child| child && can_have_child?(child.name, child.dir?) }
+              .map { |child_name| make_child_entry(child_name) }
+              .select { |child| child && can_have_child?(child.name, child.dir?) }
             entries.select { |entry| !(entry.dir? && entry.children.size == 0 ) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
