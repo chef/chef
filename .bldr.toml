@@ -1,4 +1,4 @@
-[chef-client]
+[chef-infra-client]
 plan_path = "habitat/chef-infra-client"
 build_targets = [
   "x86_64-linux",
