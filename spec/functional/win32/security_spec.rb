@@ -94,7 +94,7 @@ describe "Chef::Win32::Security", :windows_only do
 
     it "should check if the provided token has the desired access" do
       expect(Chef::ReservedNames::Win32::Security.access_check(security_descriptor,
-                     token, desired_access, mapping)).to be true
+        token, desired_access, mapping)).to be true
     end
   end
 

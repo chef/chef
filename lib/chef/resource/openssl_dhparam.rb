@@ -30,30 +30,30 @@ class Chef
       introduced "14.0"
 
       property :path, String,
-               description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
+        name_property: true
 
       property :key_length, Integer,
-               equal_to: [1024, 2048, 4096, 8192],
-               validation_message: "key_length must be 1024, 2048, 4096, or 8192.",
-               description: "The desired bit length of the generated key.",
-               default: 2048
+        equal_to: [1024, 2048, 4096, 8192],
+        validation_message: "key_length must be 1024, 2048, 4096, or 8192.",
+        description: "The desired bit length of the generated key.",
+        default: 2048
 
       property :generator, Integer,
-               equal_to: [2, 5],
-               validation_message: "generator must be either 2 or 5.",
-               description: "The desired Diffie-Hellmann generator.",
-               default: 2
+        equal_to: [2, 5],
+        validation_message: "generator must be either 2 or 5.",
+        description: "The desired Diffie-Hellmann generator.",
+        default: 2
 
       property :owner, [String, Integer],
-               description: "The owner applied to all files created by the resource."
+        description: "The owner applied to all files created by the resource."
 
       property :group, [String, Integer],
-               description: "The group ownership applied to all files created by the resource."
+        description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],
-               description: "The permission mode applied to all files created by the resource.",
-               default: "0640"
+        description: "The permission mode applied to all files created by the resource.",
+        default: "0640"
 
       action :create do
         description "Create the dhparam file."

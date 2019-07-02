@@ -33,35 +33,35 @@ class Chef
       allowed_actions :create, :assemble, :stop
 
       property :chunk, Integer,
-               default: 16,
-               description: "The chunk size. This property should not be used for a RAID 1 mirrored pair (i.e. when the level property is set to 1)."
+        default: 16,
+        description: "The chunk size. This property should not be used for a RAID 1 mirrored pair (i.e. when the level property is set to 1)."
 
       property :devices, Array,
-               default: lazy { [] },
-               description: "The devices to be part of a RAID array."
+        default: lazy { [] },
+        description: "The devices to be part of a RAID array."
 
       # @todo this should get refactored away
       property :exists, [ TrueClass, FalseClass ],
-               default: false,
-               skip_docs: true
+        default: false,
+        skip_docs: true
 
       property :level, Integer,
-               default: 1,
-               description: "The RAID level."
+        default: 1,
+        description: "The RAID level."
 
       property :metadata, String,
-               default: "0.90",
-               description: "The superblock type for RAID metadata."
+        default: "0.90",
+        description: "The superblock type for RAID metadata."
 
       property :bitmap, String,
-                description: "The path to a file in which a write-intent bitmap is stored."
+        description: "The path to a file in which a write-intent bitmap is stored."
 
       property :raid_device, String,
-               identity: true, name_property: true,
-               description: "An optional property to specify the name of the RAID device if it differs from the resource block's name."
+        identity: true, name_property: true,
+        description: "An optional property to specify the name of the RAID device if it differs from the resource block's name."
 
       property :layout, String,
-               description: "The RAID5 parity algorithm. Possible values: left-asymmetric (or la), left-symmetric (or ls), right-asymmetric (or ra), or right-symmetric (or rs)."
+        description: "The RAID5 parity algorithm. Possible values: left-asymmetric (or la), left-symmetric (or ls), right-asymmetric (or ra), or right-symmetric (or rs)."
     end
   end
 end

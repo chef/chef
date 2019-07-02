@@ -29,8 +29,8 @@ class Chef
       property :name, String, default: ""
 
       property :compile_time, [TrueClass, FalseClass],
-               description: "Install the build essential packages at compile time.",
-               default: false, desired_state: false
+        description: "Install the build essential packages at compile time.",
+        default: false, desired_state: false
 
       action :install do
 

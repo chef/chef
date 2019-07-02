@@ -38,22 +38,22 @@ class Chef
       # FIXME? the array form of installing paths most likely does not work?
       #
       property :source, [ String, Array ],
-               description: "Optional. The URL, or list of URLs, at which the gem package is located. This list is added to the source configured in Chef::Config[:rubygems_url] (see also include_default_source) to construct the complete list of rubygems sources. Users in an 'airgapped' environment should set Chef::Config[:rubygems_url] to their local RubyGems mirror."
+        description: "Optional. The URL, or list of URLs, at which the gem package is located. This list is added to the source configured in Chef::Config[:rubygems_url] (see also include_default_source) to construct the complete list of rubygems sources. Users in an 'airgapped' environment should set Chef::Config[:rubygems_url] to their local RubyGems mirror."
 
       property :clear_sources, [ TrueClass, FalseClass ],
-               description: "Set to 'true' to download a gem from the path specified by the source property (and not from RubyGems).",
-               default: lazy { Chef::Config[:clear_gem_sources] }, desired_state: false
+        description: "Set to 'true' to download a gem from the path specified by the source property (and not from RubyGems).",
+        default: lazy { Chef::Config[:clear_gem_sources] }, desired_state: false
 
       property :gem_binary, String, desired_state: false,
                description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by the #{Chef::Dist::CLIENT} will be installed."
 
       property :include_default_source, [ TrueClass, FalseClass ],
-               description: "Set to 'false' to not include 'Chef::Config[:rubygems_url]'' in the sources.",
-               default: true, introduced: "13.0"
+        description: "Set to 'false' to not include 'Chef::Config[:rubygems_url]'' in the sources.",
+        default: true, introduced: "13.0"
 
       property :options, [ String, Hash, Array, nil ],
-               description: "Options for the gem install, either a Hash or a String. When a hash is given, the options are passed to Gem::DependencyInstaller.new, and the gem will be installed via the gems API. When a String is given, the gem will be installed by shelling out to the gem command. Using a Hash of options with an explicit gem_binary will result in undefined behavior.",
-               desired_state: false
+        description: "Options for the gem install, either a Hash or a String. When a hash is given, the options are passed to Gem::DependencyInstaller.new, and the gem will be installed via the gems API. When a String is given, the gem will be installed by shelling out to the gem command. Using a Hash of options with an explicit gem_binary will result in undefined behavior.",
+        desired_state: false
     end
   end
 end

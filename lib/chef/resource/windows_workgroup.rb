@@ -31,25 +31,25 @@ class Chef
       introduced "14.5"
 
       property :workgroup_name, String,
-               description: "An optional property to set the workgroup name if it differs from the resource block's name.",
-               validation_message: "The 'workgroup_name' property must not contain spaces.",
-               regex: /^\S*$/, # no spaces
-               name_property: true
+        description: "An optional property to set the workgroup name if it differs from the resource block's name.",
+        validation_message: "The 'workgroup_name' property must not contain spaces.",
+        regex: /^\S*$/, # no spaces
+        name_property: true
 
       property :user, String,
-               description: "The local administrator user to use to change the workgroup. Required if using the password property.",
-               desired_state: false
+        description: "The local administrator user to use to change the workgroup. Required if using the password property.",
+        desired_state: false
 
       property :password, String,
-               description: "The password for the local administrator user. Required if using the user property.",
-               desired_state: false
+        description: "The password for the local administrator user. Required if using the user property.",
+        desired_state: false
 
       property :reboot, Symbol,
-               equal_to: [:never, :request_reboot, :reboot_now],
-               validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the #{Chef::Dist::PRODUCT} run completes), and :never (Don't reboot)",
-               description: "Controls the system reboot behavior post workgroup joining. Reboot immediately, after the #{Chef::Dist::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
-               coerce: proc { |x| clarify_reboot(x) },
-               default: :immediate, desired_state: false
+        equal_to: [:never, :request_reboot, :reboot_now],
+        validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the #{Chef::Dist::PRODUCT} run completes), and :never (Don't reboot)",
+        description: "Controls the system reboot behavior post workgroup joining. Reboot immediately, after the #{Chef::Dist::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
+        coerce: proc { |x| clarify_reboot(x) },
+        default: :immediate, desired_state: false
 
       # This resource historically took `:immediate` and `:delayed` as arguments to the reboot property but then
       # tried to shove that straight to the `reboot` resource which objected strenuously. We need to convert these
@@ -69,7 +69,7 @@ class Chef
 
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
-               default: true, desired_state: false
+        default: true, desired_state: false
 
       action :join do
         description "Update the workgroup."

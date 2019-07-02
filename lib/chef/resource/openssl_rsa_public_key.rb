@@ -30,27 +30,27 @@ class Chef
       introduced "14.0"
 
       property :path, String,
-               description: "An optional property for specifying the path to the public key if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property for specifying the path to the public key if it differs from the resource block's name.",
+        name_property: true
 
       property :private_key_path, String,
-               description: "The path to the private key file."
+        description: "The path to the private key file."
 
       property :private_key_content, String,
-               description: "The content of the private key, including new lines. This property is used in place of private_key_path in instances where you want to avoid having to first write the private key to disk."
+        description: "The content of the private key, including new lines. This property is used in place of private_key_path in instances where you want to avoid having to first write the private key to disk."
 
       property :private_key_pass, String,
-               description: "The passphrase of the provided private key."
+        description: "The passphrase of the provided private key."
 
       property :owner, [String, Integer],
-               description: "The owner applied to all files created by the resource."
+        description: "The owner applied to all files created by the resource."
 
       property :group, [String, Integer],
-               description: "The group ownership applied to all files created by the resource."
+        description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],
-               description: "The permission mode applied to all files created by the resource.",
-               default: "0640"
+        description: "The permission mode applied to all files created by the resource.",
+        default: "0640"
 
       action :create do
         description "Create the RSA public key."

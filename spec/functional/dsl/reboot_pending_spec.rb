@@ -47,7 +47,7 @@ describe Chef::DSL::RebootPending, :windows_only do
       it "returns true if the registry value exists" do
         skip "found existing registry key" if original_set
         registry.set_value(reg_key,
-            { name: "PendingFileRenameOperations", type: :multi_string, data: ['\??\C:\foo.txt|\??\C:\bar.txt'] })
+          { name: "PendingFileRenameOperations", type: :multi_string, data: ['\??\C:\foo.txt|\??\C:\bar.txt'] })
 
         expect(recipe.reboot_pending?).to be_truthy
       end

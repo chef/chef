@@ -43,8 +43,8 @@ class Chef
                  "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { |v| v == "#{RbConfig::CONFIG['bindir']}/gem" },
                }
       property :compile_time, [TrueClass, FalseClass],
-               description: "Controls the phase during which a gem is installed on a node. Set to 'true' to install a gem while the resource collection is being built (the 'compile phase'). Set to 'false' to install a gem while the #{Chef::Dist::CLIENT} is configuring the node (the 'converge phase').",
-               default: false, desired_state: false
+        description: "Controls the phase during which a gem is installed on a node. Set to 'true' to install a gem while the resource collection is being built (the 'compile phase'). Set to 'false' to install a gem while the #{Chef::Dist::CLIENT} is configuring the node (the 'converge phase').",
+        default: false, desired_state: false
 
       # force the resource to compile time if the compile time property has been set
       #

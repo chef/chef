@@ -31,24 +31,24 @@ class Chef
       introduced "14.0"
 
       property :feature_name, [Array, String],
-               description: "The name of the feature(s) or role(s) to install if they differ from the resource block's name.",
-               coerce: proc { |x| to_formatted_array(x) },
-               name_property: true
+        description: "The name of the feature(s) or role(s) to install if they differ from the resource block's name.",
+        coerce: proc { |x| to_formatted_array(x) },
+        name_property: true
 
       property :source, String,
-               description: "Specify a local repository for the feature install."
+        description: "Specify a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
-               description: "Install all subfeatures. When set to 'true', this is the equivalent of specifying the '-InstallAllSubFeatures' switch with 'Add-WindowsFeature'.",
-               default: false
+        description: "Install all subfeatures. When set to 'true', this is the equivalent of specifying the '-InstallAllSubFeatures' switch with 'Add-WindowsFeature'.",
+        default: false
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for the feature installation.",
-               default: 600
+        description: "Specifies a timeout (in seconds) for the feature installation.",
+        default: 600
 
       property :management_tools, [TrueClass, FalseClass],
-               description: "Install all applicable management tools for the roles, role services, or features.",
-               default: false
+        description: "Install all applicable management tools for the roles, role services, or features.",
+        default: false
 
       # Converts strings of features into an Array. Array objects are lowercased unless we're on < 8/2k12+.
       # @return [Array] array of features

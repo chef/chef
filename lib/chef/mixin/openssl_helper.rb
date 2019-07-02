@@ -284,7 +284,7 @@ class Chef
         cert.extensions = extension
         cert.add_extension ef.create_extension("subjectKeyIdentifier", "hash")
         cert.add_extension ef.create_extension("authorityKeyIdentifier",
-                                               "keyid:always,issuer:always")
+          "keyid:always,issuer:always")
 
         cert.sign(key, ::OpenSSL::Digest::SHA256.new)
         cert
@@ -315,7 +315,7 @@ class Chef
 
         crl.add_extension ::OpenSSL::X509::Extension.new("crlNumber", ::OpenSSL::ASN1::Integer(1))
         crl.add_extension ef.create_extension("authorityKeyIdentifier",
-                                              "keyid:always,issuer:always")
+          "keyid:always,issuer:always")
         crl.sign(ca_private_key, ::OpenSSL::Digest::SHA256.new)
         crl
       end
@@ -361,7 +361,7 @@ class Chef
         revoked.time = Time.now
 
         ext = ::OpenSSL::X509::Extension.new("CRLReason",
-               ::OpenSSL::ASN1::Enumerated(revoke_info["reason"]))
+          ::OpenSSL::ASN1::Enumerated(revoke_info["reason"]))
         revoked.add_extension(ext)
         crl.add_revoked(revoked)
 
@@ -391,9 +391,9 @@ class Chef
         ef.issuer_certificate = info["issuer"]
 
         crl.extensions = [ ::OpenSSL::X509::Extension.new("crlNumber",
-                   ::OpenSSL::ASN1::Integer(get_next_crl_number(crl)))]
+          ::OpenSSL::ASN1::Integer(get_next_crl_number(crl)))]
         crl.add_extension ef.create_extension("authorityKeyIdentifier",
-                                              "keyid:always,issuer:always")
+          "keyid:always,issuer:always")
         crl.sign(ca_private_key, ::OpenSSL::Digest::SHA256.new)
         crl
       end

@@ -35,9 +35,9 @@ describe Chef::Knife do
 
   let(:config_loader) do
     instance_double("WorkstationConfigLoader",
-                    load: nil, no_config_found?: false,
-                    config_location: config_location,
-                    chef_config_dir: "/etc/chef")
+      load: nil, no_config_found?: false,
+      config_location: config_location,
+      chef_config_dir: "/etc/chef")
   end
 
   before(:each) do
@@ -285,8 +285,8 @@ describe Chef::Knife do
 
       before do
         KnifeSpecs::TestYourself.option(:opt_with_default,
-                                        short: "-D VALUE",
-                                        default: "default-value")
+          short: "-D VALUE",
+          default: "default-value")
       end
       # This supports a use case used by plugins, where the pattern
       # seems to follow:
@@ -308,8 +308,8 @@ describe Chef::Knife do
     describe "merging configuration options" do
       before do
         KnifeSpecs::TestYourself.option(:opt_with_default,
-                                        short: "-D VALUE",
-                                        default: "default-value")
+          short: "-D VALUE",
+          default: "default-value")
       end
 
       it "sets the default log_location to STDERR for Chef::Log warnings" do

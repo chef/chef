@@ -146,7 +146,7 @@ class Chef
 
         class LOCALGROUP_INFO_1 < FFI::Struct
           layout :lgrpi1_name, :LPWSTR,
-                 :lgrpi1_comment, :LPWSTR
+            :lgrpi1_comment, :LPWSTR
         end
 
         class USE_INFO_2 < FFI::Struct

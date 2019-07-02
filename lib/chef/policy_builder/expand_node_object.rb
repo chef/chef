@@ -184,7 +184,7 @@ class Chef
         begin
           events.cookbook_resolution_start(@expanded_run_list_with_versions)
           cookbook_hash = api_service.post("environments/#{node.chef_environment}/cookbook_versions",
-                                           { run_list: @expanded_run_list_with_versions })
+            { run_list: @expanded_run_list_with_versions })
 
           cookbook_hash = cookbook_hash.inject({}) do |memo, (key, value)|
             memo[key] = Chef::CookbookVersion.from_hash(value)
@@ -249,7 +249,7 @@ class Chef
 
       def api_service
         @api_service ||= Chef::ServerAPI.new(config[:chef_server_url],
-                                             { version_class: Chef::CookbookManifestVersions })
+          { version_class: Chef::CookbookManifestVersions })
       end
 
       def config

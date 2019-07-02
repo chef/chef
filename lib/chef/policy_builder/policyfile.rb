@@ -500,7 +500,7 @@ class Chef
       # @api private
       def api_service
         @api_service ||= Chef::ServerAPI.new(config[:chef_server_url],
-                                             { version_class: Chef::CookbookManifestVersions })
+          { version_class: Chef::CookbookManifestVersions })
       end
 
       # @api private

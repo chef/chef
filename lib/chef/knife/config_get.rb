@@ -25,16 +25,16 @@ class Chef
       banner "knife config get [OPTION...] (options)\nDisplays the value of Chef::Config[OPTION] (or all config values)"
 
       option :all,
-             short: "-a",
-             long: "--all",
-             description: "Include options that are not set in the configuration.",
-             default: false
+        short: "-a",
+        long: "--all",
+        description: "Include options that are not set in the configuration.",
+        default: false
 
       option :raw,
-              short: "-r",
-              long: "--raw",
-              description: "Display a each value with no formatting.",
-              default: false
+        short: "-r",
+        long: "--raw",
+        description: "Display a each value with no formatting.",
+        default: false
 
       def run
         if config[:format] == "summary" && !config[:raw]

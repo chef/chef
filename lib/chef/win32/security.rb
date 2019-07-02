@@ -56,8 +56,8 @@ class Chef
         granted_access_ptr = FFI::MemoryPointer.new(:ulong)
 
         unless AccessCheck(security_descriptor_ptr, token_handle, rights_ptr.read_ulong,
-                           generic_mapping, privileges, privileges_length_ptr, granted_access_ptr,
-                           result_ptr)
+          generic_mapping, privileges, privileges_length_ptr, granted_access_ptr,
+          result_ptr)
           Chef::ReservedNames::Win32::Error.raise!
         end
         result_ptr.read_ulong == 1

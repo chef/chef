@@ -33,9 +33,9 @@ describe Chef::Knife::Bootstrap do
 
   let(:connection) do
     double("TrainConnector",
-                            windows?: windows_test,
-                            linux?: linux_test,
-                            unix?: unix_test) end
+      windows?: windows_test,
+      linux?: linux_test,
+      unix?: unix_test) end
 
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)

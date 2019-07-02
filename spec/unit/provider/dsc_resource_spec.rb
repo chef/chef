@@ -36,7 +36,7 @@ describe Chef::Provider::DscResource do
     it "raises a ProviderNotFound exception" do
       expect(provider).not_to receive(:meta_configuration)
       expect { provider.run_action(:run) }.to raise_error(
-              Chef::Exceptions::ProviderNotFound, /5\.0\.10018\.0/)
+        Chef::Exceptions::ProviderNotFound, /5\.0\.10018\.0/)
     end
   end
 

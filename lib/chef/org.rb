@@ -40,22 +40,22 @@ class Chef
 
     def name(arg = nil)
       set_or_return(:name, arg,
-                    regex: /^[a-z0-9\-_]+$/)
+        regex: /^[a-z0-9\-_]+$/)
     end
 
     def full_name(arg = nil)
       set_or_return(:full_name,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def private_key(arg = nil)
       set_or_return(:private_key,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def guid(arg = nil)
       set_or_return(:guid,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def to_h

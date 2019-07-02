@@ -135,7 +135,7 @@ class Chef
         else
           Chef::Log.trace("Using #{proxy_uri.host}:#{proxy_uri.port} for proxy")
           Net::HTTP.Proxy(proxy_uri.host, proxy_uri.port, http_proxy_user(proxy_uri),
-                          http_proxy_pass(proxy_uri))
+            http_proxy_pass(proxy_uri))
         end
       end
 

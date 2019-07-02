@@ -30,8 +30,8 @@ class Chef
       description "Use the cron_access resource to manage the /etc/cron.allow and /etc/cron.deny files."
 
       property :user, String,
-               description: "An optional property to set the user name if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the user name if it differs from the resource block's name.",
+        name_property: true
 
       action :allow do
         description "Add the user to the cron.allow file."

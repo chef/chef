@@ -17,16 +17,16 @@ class Chef
       introduced "14.3"
 
       property :modname, String,
-               description: "An optional property to set the kernel module name if it differs from the resource block's name.",
-               name_property: true, identity: true
+        description: "An optional property to set the kernel module name if it differs from the resource block's name.",
+        name_property: true, identity: true
 
       property :load_dir, String,
-               description: "The directory to load modules from.",
-               default: "/etc/modules-load.d"
+        description: "The directory to load modules from.",
+        default: "/etc/modules-load.d"
 
       property :unload_dir, String,
-               description: "The modprobe.d directory.",
-               default: "/etc/modprobe.d"
+        description: "The modprobe.d directory.",
+        default: "/etc/modprobe.d"
 
       action :install do
         description "Load kernel module, and ensure it loads on reboot."

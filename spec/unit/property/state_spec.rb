@@ -254,8 +254,8 @@ describe "Chef::Resource#identity and #state" do
     end
 
     with_property ":x, identity: true, default: 'xxx'",
-                  ":y, identity: true, default: 'yyy'",
-                  ":z, identity: true, default: 'zzz'" do
+      ":y, identity: true, default: 'yyy'",
+      ":z, identity: true, default: 'zzz'" do
       it "identity_property raises an error if multiple identity values are defined" do
         expect { resource_class.identity_property }.to raise_error Chef::Exceptions::MultipleIdentityError
       end

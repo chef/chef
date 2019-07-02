@@ -28,20 +28,20 @@ class Chef
       introduced "14.0"
 
       property :program_name, String,
-               description: "The name of the program to run at login if it differs from the resource block's name.",
-               name_property: true
+        description: "The name of the program to run at login if it differs from the resource block's name.",
+        name_property: true
 
       property :path, String,
-               coerce: proc { |x| x.tr("/", "\\") }, # make sure we have windows paths for the registry
-               description: "The path to the program that will run at login. "
+        coerce: proc { |x| x.tr("/", "\\") }, # make sure we have windows paths for the registry
+        description: "The path to the program that will run at login. "
 
       property :args, String,
-               description: "Any arguments to be used with the program."
+        description: "Any arguments to be used with the program."
 
       property :root, Symbol,
-               description: "The registry root key to put the entry under.",
-               equal_to: %i{machine user},
-               default: :machine
+        description: "The registry root key to put the entry under.",
+        equal_to: %i{machine user},
+        default: :machine
 
       alias_method :program, :path
 

@@ -864,9 +864,9 @@ class Chef
       # Common configuration for all protocols
       def base_opts
         port = config_value(:connection_port,
-                            knife_key_for_protocol(connection_protocol, :port))
+          knife_key_for_protocol(connection_protocol, :port))
         user = config_value(:connection_user,
-                            knife_key_for_protocol(connection_protocol, :user))
+          knife_key_for_protocol(connection_protocol, :user))
         {}.tap do |opts|
           opts[:logger] = Chef::Log
           # We do not store password in Chef::Config, so only use CLI `config` here

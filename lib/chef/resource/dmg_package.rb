@@ -27,57 +27,57 @@ class Chef
       introduced "14.0"
 
       property :app, String,
-               description: "The name of the application as it appears in the /Volumes directory if it differs from the resource block's name.",
-               name_property: true
+        description: "The name of the application as it appears in the /Volumes directory if it differs from the resource block's name.",
+        name_property: true
 
       property :source, String,
-               description: "The remote URL that is used to download the .dmg file, if specified."
+        description: "The remote URL that is used to download the .dmg file, if specified."
 
       property :file, String,
-               description: "The full path to the .dmg file on the local system."
+        description: "The full path to the .dmg file on the local system."
 
       property :owner, [String, Integer],
-               description: "The user that should own the package installation."
+        description: "The user that should own the package installation."
 
       property :destination, String,
-               description: "The directory to copy the .app into.",
-               default: "/Applications"
+        description: "The directory to copy the .app into.",
+        default: "/Applications"
 
       property :checksum, String,
-               description: "The sha256 checksum of the .dmg file to download."
+        description: "The sha256 checksum of the .dmg file to download."
 
       property :volumes_dir, String,
-               description: "The directory under /Volumes where the dmg is mounted if it differs from the name of the .dmg file.",
-               default: lazy { |r| r.app }, default_description: "The value passed for the application name."
+        description: "The directory under /Volumes where the dmg is mounted if it differs from the name of the .dmg file.",
+        default: lazy { |r| r.app }, default_description: "The value passed for the application name."
 
       property :dmg_name, String,
-               description: "The name of the .dmg file if it differs from that of the app, or if the name has spaces.",
-               desired_state: false,
-               default: lazy { |r| r.app }, default_description: "The value passed for the application name."
+        description: "The name of the .dmg file if it differs from that of the app, or if the name has spaces.",
+        desired_state: false,
+        default: lazy { |r| r.app }, default_description: "The value passed for the application name."
 
       property :type, String,
-               description: "The type of package.",
-               equal_to: %w{app pkg mpkg},
-               default: "app", desired_state: false
+        description: "The type of package.",
+        equal_to: %w{app pkg mpkg},
+        default: "app", desired_state: false
 
       property :package_id, String,
-               description: "The package ID that is registered with pkgutil when a pkg or mpkg is installed."
+        description: "The package ID that is registered with pkgutil when a pkg or mpkg is installed."
 
       property :dmg_passphrase, String,
-               description: "Specify a passphrase to be used to decrypt the .dmg file during the mount process.",
-               desired_state: false
+        description: "Specify a passphrase to be used to decrypt the .dmg file during the mount process.",
+        desired_state: false
 
       property :accept_eula, [TrueClass, FalseClass],
-               description: "Specify whether to accept the EULA. Certain dmgs require acceptance of EULA before mounting.",
-               default: false, desired_state: false
+        description: "Specify whether to accept the EULA. Certain dmgs require acceptance of EULA before mounting.",
+        default: false, desired_state: false
 
       property :headers, Hash,
-               description: "Allows custom HTTP headers (like cookies) to be set on the remote_file resource.",
-               desired_state: false
+        description: "Allows custom HTTP headers (like cookies) to be set on the remote_file resource.",
+        desired_state: false
 
       property :allow_untrusted, [TrueClass, FalseClass],
-               description: "Allow installation of packages that do not have trusted certificates.",
-               default: false, desired_state: false
+        description: "Allow installation of packages that do not have trusted certificates.",
+        default: false, desired_state: false
 
       load_current_value do |new_resource|
         if ::File.directory?("#{new_resource.destination}/#{new_resource.app}.app")

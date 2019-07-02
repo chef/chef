@@ -326,24 +326,24 @@ class Chef
         # http://msdn.microsoft.com/en-us/library/windows/desktop/aa374931(v=VS.85).aspx
         class ACLStruct < FFI::Struct
           layout :AclRevision, :uchar,
-                 :Sbzl, :uchar,
-                 :AclSize, :ushort,
-                 :AceCount, :ushort,
-                 :Sbz2, :ushort
+            :Sbzl, :uchar,
+            :AclSize, :ushort,
+            :AceCount, :ushort,
+            :Sbz2, :ushort
         end
 
         class ACE_HEADER < FFI::Struct
           layout :AceType, :uchar,
-                 :AceFlags, :uchar,
-                 :AceSize, :ushort
+            :AceFlags, :uchar,
+            :AceSize, :ushort
         end
 
         class ACE_WITH_MASK_AND_SID < FFI::Struct
           layout :AceType, :uchar,
-                 :AceFlags, :uchar,
-                 :AceSize, :ushort,
-                 :Mask, :uint32,
-                 :SidStart, :uint32
+            :AceFlags, :uchar,
+            :AceSize, :ushort,
+            :Mask, :uint32,
+            :SidStart, :uint32
 
           # The AceTypes this structure supports
           def self.supports?(ace_type)
@@ -358,12 +358,12 @@ class Chef
 
         class LUID < FFI::Struct
           layout :LowPart, :DWORD,
-                 :HighPart, :LONG
+            :HighPart, :LONG
         end
 
         class LUID_AND_ATTRIBUTES < FFI::Struct
           layout :Luid, LUID,
-                 :Attributes, :DWORD
+            :Attributes, :DWORD
         end
 
         class GENERIC_MAPPING < FFI::Struct
@@ -375,13 +375,13 @@ class Chef
 
         class PRIVILEGE_SET < FFI::Struct
           layout :PrivilegeCount, :DWORD,
-                 :Control, :DWORD,
-                 :Privilege, [LUID_AND_ATTRIBUTES, 1]
+            :Control, :DWORD,
+            :Privilege, [LUID_AND_ATTRIBUTES, 1]
         end
 
         class TOKEN_PRIVILEGES < FFI::Struct
           layout :PrivilegeCount, :DWORD,
-                 :Privileges, LUID_AND_ATTRIBUTES
+            :Privileges, LUID_AND_ATTRIBUTES
 
           def self.size_with_privileges(num_privileges)
             offset_of(:Privileges) + LUID_AND_ATTRIBUTES.size * num_privileges
@@ -399,18 +399,18 @@ class Chef
         # https://msdn.microsoft.com/en-us/library/windows/desktop/ms721829(v=vs.85).aspx
         class LSA_OBJECT_ATTRIBUTES < FFI::Struct
           layout :Length, :ULONG,
-                 :RootDirectory, :HANDLE,
-                 :ObjectName, :pointer,
-                 :Attributes, :ULONG,
-                 :SecurityDescriptor, :PVOID,
-                 :SecurityQualityOfService, :PVOID
+            :RootDirectory, :HANDLE,
+            :ObjectName, :pointer,
+            :Attributes, :ULONG,
+            :SecurityDescriptor, :PVOID,
+            :SecurityQualityOfService, :PVOID
         end
 
         # https://msdn.microsoft.com/en-us/library/windows/desktop/ms721841(v=vs.85).aspx
         class LSA_UNICODE_STRING < FFI::Struct
           layout :Length, :USHORT,
-                 :MaximumLength, :USHORT,
-                 :Buffer, :PWSTR
+            :MaximumLength, :USHORT,
+            :Buffer, :PWSTR
         end
 
         ffi_lib "advapi32"

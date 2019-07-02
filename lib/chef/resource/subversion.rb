@@ -28,24 +28,24 @@ class Chef
       allowed_actions :force_export
 
       property :svn_arguments, [String, nil, FalseClass],
-               description: "The extra arguments that are passed to the Subversion command.",
-               coerce: proc { |v| v == false ? nil : v }, # coerce false to nil
-               default: "--no-auth-cache"
+        description: "The extra arguments that are passed to the Subversion command.",
+        coerce: proc { |v| v == false ? nil : v }, # coerce false to nil
+        default: "--no-auth-cache"
 
       property :svn_info_args, [String, nil, FalseClass],
-               description: "Use when the svn info command is used by the #{Chef::Dist::CLIENT} and arguments need to be passed. The svn_arguments command does not work when the svn info command is used.",
-               coerce: proc { |v| v == false ? nil : v }, # coerce false to nil
-               default: "--no-auth-cache"
+        description: "Use when the svn info command is used by the #{Chef::Dist::CLIENT} and arguments need to be passed. The svn_arguments command does not work when the svn info command is used.",
+        coerce: proc { |v| v == false ? nil : v }, # coerce false to nil
+        default: "--no-auth-cache"
 
       property :svn_binary, String,
-               description: "The location of the svn binary."
+        description: "The location of the svn binary."
 
       property :svn_username, String,
-               description: "The username to use for interacting with subversion."
+        description: "The username to use for interacting with subversion."
 
       property :svn_password, String,
-               description: "The password to use for interacting with subversion.",
-               sensitive: true, desired_state: false
+        description: "The password to use for interacting with subversion.",
+        sensitive: true, desired_state: false
 
       # Override exception to strip password if any, so it won't appear in logs and different Chef notifications
       def custom_exception_message(e)

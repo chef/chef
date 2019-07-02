@@ -36,70 +36,70 @@ class Chef
       allowed_actions :add, :delete, :enable, :disable
 
       property :target, String,
-               name_property: true,
-               description: "The IP address that is to be assigned to the network interface. If not specified we'll use the resource's name."
+        name_property: true,
+        description: "The IP address that is to be assigned to the network interface. If not specified we'll use the resource's name."
 
       property :hwaddr, String,
-               description: "The hardware address for the network interface."
+        description: "The hardware address for the network interface."
 
       property :mask, String,
-               description: "The decimal representation of the network mask. For example: 255.255.255.0."
+        description: "The decimal representation of the network mask. For example: 255.255.255.0."
 
       property :family, String, default: "inet",
                introduced: "14.0",
                description: "Networking family option for Debian-based systems. For example: inet or inet6."
 
       property :inet_addr, String,
-               description: "The Internet host address for the network interface."
+        description: "The Internet host address for the network interface."
 
       property :bcast, String,
-               description: "The broadcast address for a network interface. On some platforms this property is not set using ifconfig, but instead is added to the startup configuration file for the network interface."
+        description: "The broadcast address for a network interface. On some platforms this property is not set using ifconfig, but instead is added to the startup configuration file for the network interface."
 
       property :mtu, String,
-               description: "The maximum transmission unit (MTU) for the network interface."
+        description: "The maximum transmission unit (MTU) for the network interface."
 
       property :metric, String,
-               description: "The routing metric for the interface."
+        description: "The routing metric for the interface."
 
       property :device, String,
-               identity: true,
-               description: "The network interface to be configured."
+        identity: true,
+        description: "The network interface to be configured."
 
       property :onboot, String,
-               description: "Bring up the network interface on boot."
+        description: "Bring up the network interface on boot."
 
       property :network, String,
-               description: "The address for the network interface."
+        description: "The address for the network interface."
 
       property :bootproto, String,
-               description: "The boot protocol used by a network interface."
+        description: "The boot protocol used by a network interface."
 
       property :onparent, String,
-               description: "Bring up the network interface when its parent interface is brought up."
+        description: "Bring up the network interface when its parent interface is brought up."
 
       property :ethtool_opts, String,
-               introduced: "13.4",
-               description: "Options to be passed to ethtool(8). For example: -A eth0 autoneg off rx off tx off."
+        introduced: "13.4",
+        description: "Options to be passed to ethtool(8). For example: -A eth0 autoneg off rx off tx off."
 
       property :bonding_opts, String,
-               introduced: "13.4",
-               description: "Bonding options to pass via BONDING_OPTS on RHEL and CentOS. For example: mode=active-backup miimon=100."
+        introduced: "13.4",
+        description: "Bonding options to pass via BONDING_OPTS on RHEL and CentOS. For example: mode=active-backup miimon=100."
 
       property :master, String,
-               introduced: "13.4",
-               description: "Specifies the channel bonding interface to which the Ethernet interface is linked."
+        introduced: "13.4",
+        description: "Specifies the channel bonding interface to which the Ethernet interface is linked."
 
       property :slave, String,
-               introduced: "13.4",
-               description: "When set to yes, this device is controlled by the channel bonding interface that is specified via the master property."
+        introduced: "13.4",
+        description: "When set to yes, this device is controlled by the channel bonding interface that is specified via the master property."
 
       property :vlan, String,
-               introduced: "14.4",
-               description: "The VLAN to assign the interface to."
+        introduced: "14.4",
+        description: "The VLAN to assign the interface to."
 
       property :gateway, String,
-               introduced: "14.4",
-               description: "The gateway to use for the interface."
+        introduced: "14.4",
+        description: "The gateway to use for the interface."
     end
   end
 end
