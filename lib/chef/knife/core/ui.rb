@@ -69,6 +69,7 @@ class Chef
         stdout.puts message
       rescue Errno::EPIPE => e
         raise e if @config[:verbosity] >= 2
+
         exit 0
       end
 
@@ -85,6 +86,7 @@ class Chef
         unless lines.empty?
           prefix, = first_line.split(":", 2)
           return if prefix.nil?
+
           prefix_len = prefix.length
           prefix_len -= 9 if color? # prefix includes 9 bytes of color escape sequences
           prefix_len += 2 # include room to align to the ": " following PREFIX
@@ -95,6 +97,7 @@ class Chef
         end
       rescue Errno::EPIPE => e
         raise e if @config[:verbosity] >= 2
+
         exit 0
       end
 
@@ -186,6 +189,7 @@ class Chef
         stdout.puts data
       rescue Errno::EPIPE => e
         raise e if @config[:verbosity] >= 2
+
         exit 0
       end
 

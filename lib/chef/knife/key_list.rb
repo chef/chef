@@ -70,6 +70,7 @@ class Chef
           keys.each do |key|
             next if !key["expired"] && @config[:only_expired]
             next if key["expired"] && @config[:only_non_expired]
+
             display = "#{colorize(key['name'].ljust(max_length))} #{key['uri']}"
             display = "#{display} (expired)" if key["expired"]
             display_info(display)
@@ -78,6 +79,7 @@ class Chef
           keys.each do |key|
             next if !key["expired"] && @config[:only_expired]
             next if key["expired"] && @config[:only_non_expired]
+
             display_info(key["name"])
           end
         end

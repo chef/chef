@@ -32,6 +32,7 @@ class Chef
           response = Mash.new(hash)
           response[:all_files] = COOKBOOK_SEGMENTS.inject([]) do |memo, segment|
             next memo if hash[segment].nil? || hash[segment].empty?
+
             hash[segment].each do |file|
               file["name"] = "#{segment}/#{file["name"]}"
               memo << file

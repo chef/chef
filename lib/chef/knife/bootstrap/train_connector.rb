@@ -213,6 +213,7 @@ class Chef
           if result.exit_status != 0
             raise RemoteExecutionFailed.new(hostname, command, result)
           end
+
           result
         end
 
@@ -247,6 +248,7 @@ class Chef
         # Return a hash of winrm options based on configuration already built.
         def opts_inferred_from_winrm(config, opts_in)
           return {} unless config[:backend] == "winrm"
+
           opts_out = {}
 
           if opts_in[:ssl]
@@ -296,6 +298,7 @@ class Chef
         # itself - causing SSH config data to be ignored
         def missing_opts_from_ssh_config(config, opts_in)
           return {} unless config[:backend] == "ssh"
+
           host_cfg = ssh_config_for_host(config[:host])
           opts_out = {}
           opts_in.each do |key, _value|

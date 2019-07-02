@@ -172,6 +172,7 @@ class Chef
 
     def files_for(part)
       return root_files if part.to_s == "root_files"
+
       manifest[:all_files].select do |file|
         seg = file[:name].split("/")[0]
         part.to_s == seg
@@ -184,6 +185,7 @@ class Chef
       manifest[:all_files].each do |file|
         seg = file[:name].split("/")[0]
         next if excluded_parts.include?(seg)
+
         yield file if block_given?
       end
     end

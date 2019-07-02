@@ -125,12 +125,14 @@ class Chef
             so = Chef::ReservedNames::Win32::Security::SecurableObject.new(file.dup)
           end
           raise ArgumentError, "'file' must be a valid path or object of type 'Chef::ReservedNames::Win32::Security::SecurableObject'" unless so.kind_of? Chef::ReservedNames::Win32::Security::SecurableObject
+
           so
         end
       end
 
       def should_update_dacl?
         return true unless ::File.exists?(file) || ::File.symlink?(file)
+
         dacl = target_dacl
         existing_dacl = existing_descriptor.dacl
         inherits = target_inherits
@@ -164,6 +166,7 @@ class Chef
 
       def should_update_group?
         return true unless ::File.exists?(file) || ::File.symlink?(file)
+
         (group = target_group) && (group != existing_descriptor.group)
       end
 
@@ -183,6 +186,7 @@ class Chef
 
       def should_update_owner?
         return true unless ::File.exists?(file) || ::File.symlink?(file)
+
         (owner = target_owner) && (owner != existing_descriptor.owner)
       end
 
@@ -206,6 +210,7 @@ class Chef
         mask |= (GENERIC_WRITE | DELETE) if mode & 2 != 0
         mask |= GENERIC_EXECUTE if mode & 1 != 0
         return [] if mask == 0
+
         [ ACE.access_allowed(sid, mask) ]
       end
 
@@ -266,6 +271,7 @@ class Chef
 
       def target_dacl
         return nil if resource.rights.nil? && resource.deny_rights.nil? && resource.mode.nil?
+
         acls = nil
 
         if !resource.deny_rights.nil?
@@ -321,6 +327,7 @@ class Chef
 
       def target_group
         return nil if resource.group.nil?
+
         get_sid(resource.group)
       end
 
@@ -330,6 +337,7 @@ class Chef
 
       def target_owner
         return nil if resource.owner.nil?
+
         get_sid(resource.owner)
       end
     end

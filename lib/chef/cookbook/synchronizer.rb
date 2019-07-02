@@ -223,6 +223,7 @@ class Chef
       cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_file|
         md = cache_file.match(/^cookbooks\/([^\/]+)\/([^\/]+)\/(.*)/)
         next unless md
+
         ( cookbook_name, segment, file ) = md[1..3]
         if have_cookbook?(cookbook_name)
           manifest_segment = cookbook_segment(cookbook_name, segment)
@@ -297,6 +298,7 @@ class Chef
 
     def cached_copy_up_to_date?(local_path, expected_checksum)
       return true if Chef::Config[:skip_cookbook_sync]
+
       if cache.key?(local_path)
         current_checksum = CookbookVersion.checksum_cookbook_file(cache.load(local_path, false))
         expected_checksum == current_checksum

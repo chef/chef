@@ -147,6 +147,7 @@ class Chef
           if @each_running
             raise "each() called on parallel enumerable twice simultaneously!  Bad mojo"
           end
+
           @each_running = true
           begin
             # Grab all the inputs, yielding any responses during enumeration

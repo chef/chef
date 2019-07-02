@@ -130,6 +130,7 @@ class Chef
         if options.key?(:name_property)
           raise ArgumentError, "name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property #{self}"
         end
+
         # replace name_property with name_attribute in place
         options = Hash[options.map { |k, v| k == :name_attribute ? [ :name_property, v ] : [ k, v ] }]
         @options = options
@@ -230,6 +231,7 @@ class Chef
     def default
       return options[:default] if options.key?(:default)
       return Chef::DelayedEvaluator.new { name } if name_property?
+
       nil
     end
 
@@ -260,6 +262,7 @@ class Chef
     #
     def desired_state?
       return true if !options.key?(:desired_state)
+
       options[:desired_state]
     end
 

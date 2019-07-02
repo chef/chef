@@ -154,6 +154,7 @@ class Chef
         payload[:create_key] = @create_key unless @create_key.nil?
         payload[:middle_name] = @middle_name unless @middle_name.nil?
         raise Chef::Exceptions::InvalidUserAttribute, "You cannot set both public_key and create_key for create." if !@create_key.nil? && !@public_key.nil?
+
         new_user = chef_root_rest_v1.post("users", payload)
 
         # get the private_key out of the chef_key hash if it exists
@@ -168,6 +169,7 @@ class Chef
         # rescue API V0 if 406 and the server supports V0
         supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
         raise e unless supported_versions && supported_versions.include?(0)
+
         payload = {
           username: @username,
           display_name: @display_name,

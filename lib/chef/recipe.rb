@@ -47,6 +47,7 @@ class Chef
         [ $1.to_sym, $2 ]
       when /^::(.+)/
         raise "current_cookbook is nil, cannot resolve #{recipe_name}" if current_cookbook.nil?
+
         [ current_cookbook.to_sym, $1 ]
       else
         [ recipe_name.to_sym, "default" ]

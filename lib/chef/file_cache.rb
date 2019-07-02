@@ -113,6 +113,7 @@ class Chef
         )
         cache_path = create_cache_path(path, false)
         raise Chef::Exceptions::FileNotFound, "Cannot find #{cache_path} for #{path}!" unless File.exists?(cache_path)
+
         if read
           File.read(cache_path)
         else

@@ -32,6 +32,7 @@ class Chef
             if name != ""
               raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
             end
+
             @path = "/"
           end
         end
@@ -108,12 +109,14 @@ class Chef
         # Override children to report your *actual* list of children as an array.
         def children
           raise NotFoundError.new(self) if !exists?
+
           []
         end
 
         # Expand this entry into a chef object (Chef::Role, ::Node, etc.)
         def chef_object
           raise NotFoundError.new(self) if !exists?
+
           nil
         end
 
@@ -125,6 +128,7 @@ class Chef
         # file_contents.  This is used for knife upload /cookbooks/cookbookname.
         def create_child(name, file_contents)
           raise NotFoundError.new(self) if !exists?
+
           raise OperationNotAllowedError.new(:create_child, self)
         end
 
@@ -132,6 +136,7 @@ class Chef
         # directory unless recurse is true.
         def delete(recurse)
           raise NotFoundError.new(self) if !exists?
+
           raise OperationNotAllowedError.new(:delete, self)
         end
 
@@ -167,12 +172,14 @@ class Chef
         # Read the contents of this file entry.
         def read
           raise NotFoundError.new(self) if !exists?
+
           raise OperationNotAllowedError.new(:read, self)
         end
 
         # Write the contents of this file entry.
         def write(file_contents)
           raise NotFoundError.new(self) if !exists?
+
           raise OperationNotAllowedError.new(:write, self)
         end
 

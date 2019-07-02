@@ -145,6 +145,7 @@ class Chef
     #
     def converge_failed(exception)
       return if consumers.empty?
+
       detect_unprocessed_resources
     end
 
@@ -156,6 +157,7 @@ class Chef
     #
     def resource_action_start(new_resource, action, notification_type = nil, notifier = nil)
       return if consumers.empty?
+
       pending_updates << ActionRecord.new(new_resource, action, pending_updates.length)
     end
 
@@ -166,6 +168,7 @@ class Chef
     #
     def resource_current_state_loaded(new_resource, action, current_resource)
       return if consumers.empty?
+
       current_record.current_resource = current_resource
     end
 
@@ -175,6 +178,7 @@ class Chef
     #
     def resource_up_to_date(new_resource, action)
       return if consumers.empty?
+
       current_record.status = :up_to_date
     end
 
@@ -184,6 +188,7 @@ class Chef
     #
     def resource_skipped(resource, action, conditional)
       return if consumers.empty?
+
       current_record.status = :skipped
       current_record.conditional = conditional
     end
@@ -194,6 +199,7 @@ class Chef
     #
     def resource_updated(new_resource, action)
       return if consumers.empty?
+
       current_record.status = :updated
     end
 
@@ -203,6 +209,7 @@ class Chef
     #
     def resource_failed(new_resource, action, exception)
       return if consumers.empty?
+
       current_record.status = :failed
       current_record.exception = exception
     end
@@ -213,6 +220,7 @@ class Chef
     #
     def resource_completed(new_resource)
       return if consumers.empty?
+
       current_record.elapsed_time = new_resource.elapsed_time
 
       # Verify if the resource has sensitive data and create a new blank resource with only

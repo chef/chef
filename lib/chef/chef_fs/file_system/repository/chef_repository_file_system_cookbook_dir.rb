@@ -34,6 +34,7 @@ class Chef
 
           def fs_entry_valid?
             return false unless File.directory?(file_path) && name_valid?
+
             if can_upload?
               true
             else
@@ -54,6 +55,7 @@ class Chef
             if exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
             end
+
             begin
               Dir.mkdir(file_path)
             rescue Errno::EEXIST
@@ -103,6 +105,7 @@ class Chef
             elsif name == Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE
               return false
             end
+
             super(name, is_dir)
           end
 
@@ -110,6 +113,7 @@ class Chef
           def self.canonical_cookbook_name(entry_name)
             name_match = Chef::ChefFS::FileSystem::ChefServer::VersionedCookbookDir::VALID_VERSIONED_COOKBOOK_NAME.match(entry_name)
             return nil if name_match.nil?
+
             name_match[1]
           end
 

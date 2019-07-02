@@ -40,6 +40,7 @@ class Chef
 
         all_nodes.each do |name, node|
           next unless name =~ matcher
+
           nodes_to_delete[name] = node
         end
 

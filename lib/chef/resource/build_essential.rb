@@ -134,6 +134,7 @@ class Chef
       # @return [void]
       def after_created
         return unless compile_time
+
         Array(action).each do |action|
           run_action(action)
         end

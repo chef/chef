@@ -207,6 +207,7 @@ class Chef
 
         list_of_attr_files.each do |filename|
           next unless File.extname(filename) == ".rb"
+
           load_attribute_file(cookbook_name.to_s, filename)
         end
       end
@@ -223,6 +224,7 @@ class Chef
       def load_libraries_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :libraries).each do |filename|
           next unless File.extname(filename) == ".rb"
+
           begin
             logger.trace("Loading cookbook #{cookbook_name}'s library file: #{filename}")
             Kernel.require(filename)
@@ -237,10 +239,12 @@ class Chef
       def load_lwrps_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :providers).each do |filename|
           next unless File.extname(filename) == ".rb"
+
           load_lwrp_provider(cookbook_name, filename)
         end
         files_in_cookbook_by_segment(cookbook_name, :resources).each do |filename|
           next unless File.extname(filename) == ".rb"
+
           load_lwrp_resource(cookbook_name, filename)
         end
       end

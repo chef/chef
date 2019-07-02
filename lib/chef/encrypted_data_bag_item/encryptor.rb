@@ -193,6 +193,7 @@ class Chef::EncryptedDataBagItem
         if @auth_tag.nil?
           raise EncryptionFailure, "Internal Error: GCM authentication tag read before encryption"
         end
+
         @auth_tag
       end
 

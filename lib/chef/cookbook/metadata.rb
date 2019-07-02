@@ -286,6 +286,7 @@ class Chef
           constraint = validate_version_constraint(:depends, cookbook, version)
           @dependencies[cookbook] = constraint.to_s
         end
+
         @dependencies[cookbook]
       end
 
@@ -583,6 +584,7 @@ class Chef
       def gem_dep_matches?(what, version, *deps)
         # always match if we have no chef_version at all
         return true unless deps.length > 0
+
         # match if we match any of the chef_version lines
         deps.any? { |dep| dep.match?(what, version) }
       end

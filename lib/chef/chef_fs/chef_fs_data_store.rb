@@ -279,6 +279,7 @@ class Chef
           if !policy_group["policies"] || !policy_group["policies"][path[3]]
             raise ChefZero::DataStore::DataNotFoundError.new(path, entry)
           end
+
           # The policy group looks like:
           # {
           #   "policies": {
@@ -401,6 +402,7 @@ class Chef
             unless group["policies"] && group["policies"].key?(path[3])
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
+
             group["policies"].delete(path[3])
             group
           end
@@ -413,6 +415,7 @@ class Chef
             if result.size == members.size
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
+
             result
           end
 
@@ -424,6 +427,7 @@ class Chef
             if result.size == invitations.size
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
+
             result
           end
 
@@ -457,6 +461,7 @@ class Chef
             policies.children.each do |policy|
               # We want to delete just the ones that == POLICY
               next unless policy.name.rpartition("-")[0] == path[1]
+
               policy.delete(false)
               FileSystemCache.instance.delete!(policy.file_path)
               found_policy = true
@@ -502,6 +507,7 @@ class Chef
               revisions << revision if name == path[1]
             end
             raise ChefZero::DataStore::DataNotFoundError.new(path) if revisions.empty?
+
             revisions
           end
 
@@ -544,6 +550,7 @@ class Chef
             if result.empty?
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
+
             result
           else
             # list /cookbooks/name = <single version>
@@ -846,6 +853,7 @@ class Chef
 
       def ensure_dir(entry)
         return entry if entry.exists?
+
         parent = entry.parent
         if parent
           ensure_dir(parent)

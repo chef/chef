@@ -186,16 +186,19 @@ class Chef
 
         def version_gt?(v1, v2)
           return false if v1.nil? || v2.nil?
+
           python_helper.compare_versions(v1, v2) == 1
         end
 
         def version_equals?(v1, v2)
           return false if v1.nil? || v2.nil?
+
           python_helper.compare_versions(v1, v2) == 0
         end
 
         def version_compare(v1, v2)
           return false if v1.nil? || v2.nil?
+
           python_helper.compare_versions(v1, v2)
         end
 

@@ -51,6 +51,7 @@ class Chef
               unless path = whereis.stdout[/^#{Regexp.escape(port)}:\s+(.+)$/, 1]
                 raise Chef::Exceptions::Package, "Could not find port with the name #{port}"
               end
+
               path
             end
           end

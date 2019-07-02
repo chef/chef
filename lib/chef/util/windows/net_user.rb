@@ -103,6 +103,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     if e.to_s =~ /System Error Code: 1326/
       return false
     end
+
     # all other exceptions will assume we cannot logon for a different reason
     Chef::Log.trace("Unable to login with the specified credentials. Assuming the credentials are valid.")
     true

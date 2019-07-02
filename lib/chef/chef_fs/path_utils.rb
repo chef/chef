@@ -42,6 +42,7 @@ class Chef
 
       def self.join(*parts)
         return "" if parts.length == 0
+
         # Determine if it started with a slash
         absolute = parts[0].length == 0 || parts[0].length > 0 && parts[0] =~ /^#{regexp_path_separator}/
         # Remove leading and trailing slashes from each part so that the join will work (and the slash at the end will go away)
@@ -87,6 +88,7 @@ class Chef
           # This can occur if a path such as "C:" is given.  Ruby gives the parent as "C:."
           # for reasons only it knows.
           raise ArgumentError "Invalid path segment #{path}" if parent_path.length > path.length
+
           begin
             path = File.realpath(path)
             break
@@ -113,6 +115,7 @@ class Chef
       def self.descendant_path(path, ancestor)
         candidate_fragment = path[0, ancestor.length]
         return nil unless PathUtils.os_path_eq?(candidate_fragment, ancestor)
+
         if ancestor.length == path.length
           ""
         elsif path[ancestor.length, 1] =~ /#{PathUtils.regexp_path_separator}/

@@ -133,6 +133,7 @@ class Chef::EncryptedDataBagItem
     if !path
       raise ArgumentError, "No secret specified and no secret found at #{Chef::Config.platform_specific_path(Chef::Dist::CONF_DIR + '/encrypted_data_bag_secret')}"
     end
+
     secret = case path
              when /^\w+:\/\//
                # We have a remote key
@@ -147,11 +148,13 @@ class Chef::EncryptedDataBagItem
                if !File.exist?(path)
                  raise Errno::ENOENT, "file not found '#{path}'"
                end
+
                IO.read(path).strip
              end
     if secret.size < 1
       raise ArgumentError, "invalid zero length secret in '#{path}'"
     end
+
     secret
   end
 

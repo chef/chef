@@ -133,6 +133,7 @@ class Chef
       def get_sysctl_value(key)
         val = shell_out!("sysctl -n -e #{key}").stdout.tr("\t", " ").strip
         raise unless val == get_sysctld_value(key)
+
         val
       end
 
@@ -141,9 +142,11 @@ class Chef
       # or updated
       def get_sysctld_value(key)
         raise unless ::File.exist?("/etc/sysctl.d/99-chef-#{key.tr('/', '.')}.conf")
+
         k, v = ::File.read("/etc/sysctl.d/99-chef-#{key.tr('/', '.')}.conf").match(/(.*) = (.*)/).captures
         raise "Unknown sysctl key!" if k.nil?
         raise "Unknown sysctl value!" if v.nil?
+
         v
       end
     end

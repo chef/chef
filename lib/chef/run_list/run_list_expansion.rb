@@ -102,6 +102,7 @@ class Chef
       # nil         if the role does not exist
       def inflate_role(role_name, included_by)
         return false if applied_role?(role_name) # Prevent infinite loops
+
         applied_role(role_name)
         fetch_role(role_name, included_by)
       end

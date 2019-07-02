@@ -51,6 +51,7 @@ class Chef
         def initialize(new_resource, run_context)
           # TODO: re-evaluate if this is needed after integrating cookbook fix
           raise ArgumentError, "run_context cannot be nil" unless run_context
+
           super
 
           run_context.node

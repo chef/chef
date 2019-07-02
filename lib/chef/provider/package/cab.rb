@@ -78,6 +78,7 @@ class Chef
             result = shell_out("dism.exe /Online /English #{command} /NoRestart", { timeout: new_resource.timeout })
             if result.exitstatus == -2146498530
               raise Chef::Exceptions::Package, "The specified package is not applicable to this image." if result.stdout.include?("0x800f081e")
+
               result.error!
             end
             result
@@ -127,6 +128,7 @@ class Chef
           text.each_line do |line|
             key, value = line.split(":") if line.start_with?("Package Identity")
             next if key.nil? || value.nil?
+
             package = {}
             package[key.downcase.strip.tr(" ", "_")] = value.strip.chomp
             packages << package

@@ -84,6 +84,7 @@ class Chef
 
         def candidate_version
           return @candidate_version if @candidate_version
+
           if package_source_found?
             ret = shell_out("installp", "-L", "-d", new_resource.source)
             ret.stdout.each_line do |line|

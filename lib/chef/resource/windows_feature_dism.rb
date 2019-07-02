@@ -69,6 +69,7 @@ class Chef
               shell_out!(install_command, returns: [0, 42, 127, 3010], timeout: new_resource.timeout)
             rescue Mixlib::ShellOut::ShellCommandFailed => e
               raise "Error 50 returned by DISM related to parent features, try setting the 'all' property to 'true' on the 'windows_feature_dism' resource." if required_parent_feature?(e.inspect)
+
               raise e.message
             end
 

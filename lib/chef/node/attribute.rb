@@ -341,6 +341,7 @@ class Chef
       def with_deep_merged_return_value(obj, *path, last)
         hash = obj.read(*path)
         return nil unless hash.is_a?(Hash)
+
         ret = hash[last]
         yield
         ret
@@ -357,6 +358,7 @@ class Chef
       # - this API autovivifies (and cannot trainwreck)
       def default!(*args)
         return Decorator::Unchain.new(self, :default!) unless args.length > 0
+
         write(:default, *args)
       end
 
@@ -365,6 +367,7 @@ class Chef
       # - this API autovivifies (and cannot trainwreck)
       def normal!(*args)
         return Decorator::Unchain.new(self, :normal!) unless args.length > 0
+
         write(:normal, *args)
       end
 
@@ -373,6 +376,7 @@ class Chef
       # - this API autovivifies (and cannot trainwreck)
       def override!(*args)
         return Decorator::Unchain.new(self, :override!) unless args.length > 0
+
         write(:override, *args)
       end
 
@@ -381,6 +385,7 @@ class Chef
       # - this API autovivifies (and cannot trainwreck)
       def force_default!(*args)
         return Decorator::Unchain.new(self, :force_default!) unless args.length > 0
+
         value = args.pop
         rm_default(*args)
         write(:force_default, *args, value)
@@ -389,6 +394,7 @@ class Chef
       # clears from all override precedence levels and then sets force_override
       def force_override!(*args)
         return Decorator::Unchain.new(self, :force_override!) unless args.length > 0
+
         value = args.pop
         rm_override(*args)
         write(:force_override, *args, value)
@@ -417,16 +423,19 @@ class Chef
 
       def normal_unless(*args)
         return Decorator::Unchain.new(self, :normal_unless) unless args.length > 0
+
         write(:normal, *args) if normal.read(*args[0...-1]).nil?
       end
 
       def default_unless(*args)
         return Decorator::Unchain.new(self, :default_unless) unless args.length > 0
+
         write(:default, *args) if default.read(*args[0...-1]).nil?
       end
 
       def override_unless(*args)
         return Decorator::Unchain.new(self, :override_unless) unless args.length > 0
+
         write(:override, *args) if override.read(*args[0...-1]).nil?
       end
 

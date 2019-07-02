@@ -70,6 +70,7 @@ class Chef
         if empty?
           raise Exceptions::CookbookNotFoundInRepo, "The directory #{cookbook_path} does not contain a cookbook"
         end
+
         file_paths_map
       end
 
@@ -152,6 +153,7 @@ class Chef
 
       def metadata_filenames
         return @metadata_filenames unless @metadata_filenames.empty?
+
         if File.exists?(File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
           @uploaded_cookbook_version_file = File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
         end
@@ -171,6 +173,7 @@ class Chef
 
       def raise_metadata_error!
         raise metadata_error unless metadata_error.nil?
+
         # Metadata won't be valid if the cookbook is empty. If the cookbook is
         # actually empty, a metadata error here would be misleading, so don't
         # raise it (if called by #load!, a different error is raised).

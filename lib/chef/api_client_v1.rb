@@ -270,6 +270,7 @@ class Chef
         # rescue API V0 if 406 and the server supports V0
         supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
         raise e unless supported_versions && supported_versions.include?(0)
+
         new_client = chef_rest_v0.put("clients/#{name}", payload)
       end
 

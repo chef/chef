@@ -105,6 +105,7 @@ class Chef
         def workgroup_member?
           node_workgroup = powershell_out!("(Get-WmiObject -Class Win32_ComputerSystem).Workgroup")
           raise "Failed to determine if system already a member of workgroup #{new_resource.workgroup_name}" if node_workgroup.error?
+
           node_workgroup.stdout.downcase.strip == new_resource.workgroup_name.downcase
         end
       end

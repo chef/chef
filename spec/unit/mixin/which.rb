@@ -88,11 +88,13 @@ describe Chef::Mixin::Which do
 
       test_which("passes in the filename as the arg", "foo1", finds: "/dir1/foo1") do |f|
         raise "bad arg to block" unless f == "/dir1/foo1"
+
         true
       end
 
       test_which("arrays with blocks", "foo1", "foo2", finds: "/dir2/foo1", others: [ "/dir1/foo2" ]) do |f|
         raise "bad arg to block" unless f == "/dir2/foo1" || f == "/dir1/foo2"
+
         true
       end
     end

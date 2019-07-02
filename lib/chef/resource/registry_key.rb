@@ -86,10 +86,12 @@ class Chef
 
           @values.each do |v|
             raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.key?(:name)
+
             v.each_key do |key|
               raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name, :type, :data].include?(key)
             end
             raise ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
+
             if v[:type]
               raise ArgumentError, "Type of type => #{v[:type]} should be symbol" unless v[:type].is_a?(Symbol)
             end

@@ -278,6 +278,7 @@ class Chef
         chef_server_rest.put("environments/#{@name}", self)
       rescue Net::HTTPClientException => e
         raise e unless e.response.code == "404"
+
         chef_server_rest.post("environments", self)
       end
       self
@@ -298,6 +299,7 @@ class Chef
 
     def self.validate_cookbook_versions(cv)
       return false unless cv.kind_of?(Hash)
+
       cv.each_value do |version|
         return false unless Chef::Environment.validate_cookbook_version(version)
       end

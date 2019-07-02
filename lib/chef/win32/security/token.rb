@@ -64,6 +64,7 @@ class Chef
           unless Chef::ReservedNames::Win32::API::Security.DuplicateToken(handle.handle, security_impersonation_level, duplicate_token_handle)
             raise Chef::ReservedNames::Win32::Error.raise!
           end
+
           Token.new(Handle.new(duplicate_token_handle.read_ulong))
         end
       end

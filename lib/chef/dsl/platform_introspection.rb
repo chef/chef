@@ -70,6 +70,7 @@ class Chef
         def match_versions(node)
           platform, version = node[:platform].to_s, node[:platform_version].to_s
           return nil unless @values.key?(platform)
+
           node_version = Chef::Version::Platform.new(version)
           key_matches = []
           keys = @values[platform].keys
@@ -84,6 +85,7 @@ class Chef
             end
           end
           return @values[platform][version] if key_matches.include?(version)
+
           case key_matches.length
           when 0
             return nil

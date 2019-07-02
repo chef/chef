@@ -33,6 +33,7 @@ module Shell
 
     def search(query)
       return all if query.to_s == "all"
+
       results = []
       Chef::Search::Query.new.search(@model_symbol, format_query(query)) do |obj|
         if block_given?

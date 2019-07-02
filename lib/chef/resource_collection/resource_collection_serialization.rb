@@ -61,6 +61,7 @@ class Chef
         unless arg.kind_of?(Chef::Resource)
           raise ArgumentError, "Cannot insert a #{arg.class} into a resource collection: must be a subclass of Chef::Resource"
         end
+
         true
       end
     end

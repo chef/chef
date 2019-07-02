@@ -151,6 +151,7 @@ class Chef
           if error_description.kind_of?(Hash)
             return error_description
           end
+
           attempt_json_parse(error_description)
         end
 

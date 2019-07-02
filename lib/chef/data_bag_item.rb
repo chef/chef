@@ -73,6 +73,7 @@ class Chef
       unless new_data.respond_to?(:[]) && new_data.respond_to?(:keys)
         raise Exceptions::ValidationFailed, "Data Bag Items must contain a Hash or Mash!"
       end
+
       validate_id!(new_data["id"])
       @raw_data = new_data
     end
@@ -141,6 +142,7 @@ class Chef
       if Chef::Config[:solo_legacy_mode]
         bag = Chef::DataBag.load(data_bag)
         raise Exceptions::InvalidDataBagItemID, "Item #{name} not found in data bag #{data_bag}. Other items found: #{bag.keys.join(", ")}" unless bag.include?(name)
+
         item = bag[name]
       else
         item = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data/#{data_bag}/#{name}")
@@ -170,6 +172,7 @@ class Chef
         end
       rescue Net::HTTPClientException => e
         raise e unless e.response.code == "404"
+
         r.post("data/#{data_bag}", self)
       end
       self

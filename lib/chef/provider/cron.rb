@@ -203,6 +203,7 @@ class Chef
       def read_crontab
         so = shell_out!("crontab -l -u #{new_resource.user}", returns: [0, 1])
         return nil if so.exitstatus == 1
+
         so.stdout
       rescue => e
         raise Chef::Exceptions::Cron, "Error determining state of #{new_resource.name}, error: #{e}"

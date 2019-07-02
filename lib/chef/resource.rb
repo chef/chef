@@ -516,6 +516,7 @@ class Chef
         result[property.name] = send(property.name)
       end
       return result.values.first if identity_properties.size == 1
+
       result
     end
 
@@ -581,6 +582,7 @@ class Chef
 
       begin
         return if should_skip?(action)
+
         provider_for_action(action).run_action
       rescue StandardError => e
         if ignore_failure
@@ -629,6 +631,7 @@ class Chef
 
     def to_text
       return "suppressed sensitive resource output" if sensitive
+
       text = "# Declared in #{@source_line}\n\n"
       text << "#{resource_name}(\"#{name}\") do\n"
 
@@ -699,6 +702,7 @@ class Chef
       safe_ivars.each do |iv|
         key = iv.to_s.sub(/^@/, "").to_sym
         next if result.key?(key)
+
         result[key] = instance_variable_get(iv)
       end
       result
@@ -811,6 +815,7 @@ class Chef
       if result.size > 1
         raise Chef::Exceptions::MultipleIdentityError, "identity_property cannot be called on an object with more than one identity property (#{result.map { |r| r.name }.join(", ")})."
       end
+
       result.first
     end
 
@@ -831,6 +836,7 @@ class Chef
     def self.identity_attr(name = nil)
       property = identity_property(name)
       return nil if !property
+
       property.name
     end
 
@@ -1104,6 +1110,7 @@ class Chef
       if provider.whyrun_mode? && !provider.whyrun_supported?
         raise "Cannot retrieve #{self.class.current_resource} in why-run mode: #{provider} does not support why-run"
       end
+
       provider.load_current_resource
       provider.current_resource
     end
@@ -1376,6 +1383,7 @@ class Chef
     # the declared key we want to fall back on the old to_s key.
     def declared_key
       return to_s if declared_type.nil?
+
       "#{declared_type}[#{@name}]"
     end
 
@@ -1542,6 +1550,7 @@ class Chef
     def self.resource_for_node(short_name, node)
       klass = Chef::ResourceResolver.resolve(short_name, node: node)
       raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
+
       klass
     end
 

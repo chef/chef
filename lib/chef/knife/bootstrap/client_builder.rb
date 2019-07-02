@@ -188,6 +188,7 @@ class Chef
           true
         rescue Net::HTTPClientException => e
           raise unless e.response.code == "404"
+
           false
         end
 

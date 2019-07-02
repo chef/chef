@@ -160,6 +160,7 @@ class Chef
 
         json_results.each do |perm|
           next unless perm["AccessControlType"] == 0 # allow
+
           case perm["AccessRight"]
           when 0 then f_users << stripped_account(perm["AccountName"]) # 0 full control
           when 1 then c_users << stripped_account(perm["AccountName"]) # 1 == change
@@ -218,6 +219,7 @@ class Chef
         def different_path?
           return false if current_resource.nil? # going from nil to something isn't different for our concerns
           return false if current_resource.path == Chef::Util::PathHelper.cleanpath(new_resource.path)
+
           true
         end
 
@@ -274,6 +276,7 @@ class Chef
             # set permissions for a brand new share OR
             # update permissions if the current state and desired state differ
             next unless permissions_need_update?(perm_type)
+
             grant_command = "Grant-SmbShareAccess -Name '#{new_resource.share_name}' -AccountName \"#{new_resource.send("#{perm_type}_users").join('","')}\" -Force -AccessRight #{perm_type}"
 
             Chef::Log.debug("Running '#{grant_command}' to update the share permissions")

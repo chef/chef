@@ -46,6 +46,7 @@ class Chef
 
         raise "target_path is required for install" unless property_is_set?(:target_path)
         raise "description is required for install" unless property_is_set?(:description)
+
         powershell_script "Create or Update DFS Folder" do
           code <<-EOH
 

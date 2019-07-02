@@ -180,6 +180,7 @@ class Chef
           def make_child_entry(name)
             if CHILDREN.include?(name)
               return nil if !root_dir
+
               return root_dir.child(name)
             end
 
@@ -187,6 +188,7 @@ class Chef
             if paths.size == 0
               return NonexistentFSObject.new(name, self)
             end
+
             case name
             when "acls"
               dirs = paths.map { |path| AclsDir.new(name, self, path) }

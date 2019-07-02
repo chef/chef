@@ -140,6 +140,7 @@ class Chef
         if execution_time_limit
           execution_time_limit(259200) if execution_time_limit == "PT72H"
           raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(execution_time_limit)
+
           execution_time_limit(sec_to_min(execution_time_limit))
         end
 
@@ -309,6 +310,7 @@ class Chef
 
       def validate_create_months(months, frequency)
         raise ArgumentError, "months property is only valid for tasks that run monthly" if frequency != :monthly
+
         if months.is_a?(String)
           months = months.split(",")
           months.map! { |month| month.strip.upcase }

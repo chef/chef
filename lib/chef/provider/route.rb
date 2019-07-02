@@ -111,6 +111,7 @@ class Chef
 
           # Skip formatting lines (header, etc)
           next unless destination && gateway && mask
+
           logger.trace("#{new_resource} system has route: dest=#{destination} mask=#{mask} gw=#{gateway}")
 
           # check if what were trying to configure is already there
@@ -164,6 +165,7 @@ class Chef
           # walk the collection
           run_context.resource_collection.each do |resource|
             next unless resource.is_a? Chef::Resource::Route
+
             # default to eth0
             dev = if resource.device
                     resource.device

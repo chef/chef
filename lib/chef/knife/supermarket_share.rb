@@ -114,6 +114,7 @@ class Chef
         data["category"]
       rescue => e
         return "Other" if e.kind_of?(Net::HTTPClientException) && e.response.code == "404"
+
         ui.fatal("Unable to reach Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
         Chef::Log.trace("\n#{e.backtrace.join("\n")}")
         exit(1)

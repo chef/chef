@@ -63,9 +63,11 @@ class Chef
 
         def recipe_snippet
           return nil if dynamic_resource?
+
           @snippet ||= begin
             if (file = parse_source) && (line = parse_line(file))
               return nil unless ::File.exists?(file)
+
               lines = IO.readlines(file)
 
               relevant_lines = ["# In #{file}\n\n"]

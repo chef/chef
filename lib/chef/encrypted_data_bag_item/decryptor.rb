@@ -188,6 +188,7 @@ class Chef::EncryptedDataBagItem
 
       def candidate_hmac_matches?(expected_hmac)
         return false unless @encrypted_data["hmac"]
+
         expected_bytes = expected_hmac.bytes.to_a
         candidate_hmac_bytes = Base64.decode64(@encrypted_data["hmac"]).bytes.to_a
         valid = expected_bytes.size ^ candidate_hmac_bytes.size
@@ -213,6 +214,7 @@ class Chef::EncryptedDataBagItem
         if auth_tag_b64.nil?
           raise DecryptionFailure, "Error decrypting data bag value: invalid authentication tag. Most likely the data is corrupted"
         end
+
         Base64.decode64(auth_tag_b64)
       end
 

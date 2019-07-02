@@ -90,6 +90,7 @@ class Chef
     # and setup the node[:cookbooks] attribute so that it is published in the node object
     def set_cookbook_attribute
       return unless run_context.cookbook_collection
+
       run_context.cookbook_collection.each do |cookbook_name, cookbook|
         automatic_attrs[:cookbooks][cookbook_name][:version] = cookbook.version
       end
@@ -152,6 +153,7 @@ class Chef
     # @return [String] the current policy_name, or the one you just set
     def policy_name(arg = NULL_ARG)
       return @policy_name if arg.equal?(NULL_ARG)
+
       validate({ policy_name: arg }, { policy_name: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_name = arg
     end
@@ -174,6 +176,7 @@ class Chef
     # @return [String] the current policy_group, or the one you just set
     def policy_group(arg = NULL_ARG)
       return @policy_group if arg.equal?(NULL_ARG)
+
       validate({ policy_group: arg }, { policy_group: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_group = arg
     end
@@ -316,6 +319,7 @@ class Chef
     # @return [Chef::RunList] the override run list
     def override_runlist(*args)
       return @override_runlist if args.length == 0
+
       @override_runlist_set = true
       @override_runlist.reset!(args)
     end
@@ -403,6 +407,7 @@ class Chef
         if attrs.key?("recipes") || attrs.key?("run_list")
           raise Chef::Exceptions::AmbiguousRunlistSpecification, "please set the node's run list using the 'run_list' attribute only."
         end
+
         logger.info("Setting the run_list to #{new_run_list} from CLI options")
         run_list(new_run_list)
       end
@@ -543,6 +548,7 @@ class Chef
 
     def self.from_hash(o)
       return o if o.kind_of? Chef::Node
+
       node = new
       node.name(o["name"])
 
@@ -599,6 +605,7 @@ class Chef
       load(node_name)
     rescue Net::HTTPClientException => e
       raise unless e.response.code == "404"
+
       node = build(node_name)
       node.create
     end
@@ -679,6 +686,7 @@ class Chef
       chef_server_rest.put("nodes/#{name}", trimmed_data)
     rescue Net::HTTPClientException => e
       raise e unless e.response.code == "404"
+
       chef_server_rest.post("nodes", trimmed_data)
     end
 

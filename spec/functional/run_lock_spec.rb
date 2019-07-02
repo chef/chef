@@ -334,6 +334,7 @@ describe Chef::RunLock do
       loop do
         line = readline_nonblock(read_from_process)
         break if line.nil?
+
         event, time = line.split("@")
         example.log_event("#{name}.last_event got #{event}")
         example.log_event("[#{name}] #{event}", time.strip)

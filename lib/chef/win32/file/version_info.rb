@@ -28,6 +28,7 @@ class Chef
 
         def initialize(file_name)
           raise Errno::ENOENT, file_name unless ::File.exist?(file_name)
+
           @file_version_info = retrieve_file_version_info(file_name)
         end
 

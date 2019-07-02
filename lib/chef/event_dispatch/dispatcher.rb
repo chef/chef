@@ -61,6 +61,7 @@ class Chef
         subscribers.each do |s|
           # Skip new/unsupported event names
           next if !s.respond_to?(method_name)
+
           mth = s.method(method_name)
           # Trim arguments to match what the subscriber expects to allow
           # adding new arguments without breaking compat.

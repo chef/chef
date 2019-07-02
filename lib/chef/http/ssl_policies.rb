@@ -62,11 +62,13 @@ class Chef
           unless ::File.exist?(config[:ssl_ca_path])
             raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_path #{config[:ssl_ca_path]} does not exist"
           end
+
           http_client.ca_path = config[:ssl_ca_path]
         elsif config[:ssl_ca_file]
           unless ::File.exist?(config[:ssl_ca_file])
             raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_file #{config[:ssl_ca_file]} does not exist"
           end
+
           http_client.ca_file = config[:ssl_ca_file]
         end
       end
@@ -96,6 +98,7 @@ class Chef
           unless ::File.exists?(config[:ssl_client_key])
             raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
           end
+
           http_client.cert = OpenSSL::X509::Certificate.new(::File.read(config[:ssl_client_cert]))
           http_client.key = OpenSSL::PKey::RSA.new(::File.read(config[:ssl_client_key]))
         end

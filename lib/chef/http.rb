@@ -186,6 +186,7 @@ class Chef
         apply_stream_complete_middleware(http_response, rest_request, return_value)
       end
       return nil if response.kind_of?(Net::HTTPRedirection)
+
       unless response.kind_of?(Net::HTTPSuccess)
         response.error!
       end
@@ -233,6 +234,7 @@ class Chef
       end
 
       return nil if response.kind_of?(Net::HTTPRedirection)
+
       unless response.kind_of?(Net::HTTPSuccess)
         response.error!
       end
@@ -309,6 +311,7 @@ class Chef
     # @api private
     def create_url(path)
       return path if path.is_a?(URI)
+
       if path =~ /^(http|https|chefzero):\/\//i
         URI.parse(path)
       elsif path.nil? || path.empty?
@@ -479,6 +482,7 @@ class Chef
     # @api private
     def follow_redirect
       raise Chef::Exceptions::RedirectLimitExceeded if @redirects_followed >= redirect_limit
+
       @redirects_followed += 1
       Chef::Log.trace("Following redirect #{@redirects_followed}/#{redirect_limit}")
 
@@ -498,6 +502,7 @@ class Chef
       return nil  unless response.kind_of?(Net::HTTPRedirection)
       # Net::HTTPNotModified is undesired subclass of Net::HTTPRedirection so test for this
       return nil  if response.kind_of?(Net::HTTPNotModified)
+
       response["location"]
     end
 

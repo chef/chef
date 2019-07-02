@@ -230,6 +230,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         #
         def uid_used?(uid)
           return false unless uid
+
           users_uids = run_dscl("list", "/Users", "uid").split("\n")
           uid_map = users_uids.each_with_object({}) do |tuid, tmap|
             x = tuid.split
@@ -562,6 +563,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         #
         def dscl_set(user_hash, key, value)
           raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
+
           user_hash[DSCL_PROPERTY_MAP[key]] = [ value ]
           user_hash
         end
@@ -571,6 +573,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         #
         def dscl_get(user_hash, key)
           raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
+
           # DSCL values are set as arrays
           value = user_hash[DSCL_PROPERTY_MAP[key]]
           value.nil? ? value : value.first
@@ -585,12 +588,14 @@ in 'password', with the associated 'salt' and 'iterations'.")
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if result.stdout =~ /No such key: /
+
           result.stdout
         end
 
         def run_plutil(*args)
           result = shell_out("plutil", "-#{args[0]}", args[1..-1])
           raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
+
           if result.stdout.encoding == Encoding::ASCII_8BIT
             result.stdout.encode("utf-8", "binary", undef: :replace, invalid: :replace, replace: "?")
           else

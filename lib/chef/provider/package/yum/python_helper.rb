@@ -212,6 +212,7 @@ class Chef
               retry
             else
               raise e if output.empty?
+
               raise "yum-helper.py had stderr/stdout output:\n\n#{output}"
             end
           end

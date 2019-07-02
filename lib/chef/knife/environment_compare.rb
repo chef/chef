@@ -109,6 +109,7 @@ class Chef
           environments.each { |n| total << constraints[n][c] }
           if total.uniq.count == 1
             next if config[:mismatch]
+
             color = :white
           else
             color = :yellow

@@ -330,6 +330,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     loop do
       break if current_state == desired_state
       raise Timeout::Error if ( retries += 1 ) > resource_timeout
+
       sleep 1
     end
   end

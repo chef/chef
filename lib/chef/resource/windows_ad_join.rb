@@ -96,6 +96,7 @@ class Chef
         def on_domain?
           node_domain = powershell_out!("(Get-WmiObject Win32_ComputerSystem).Domain")
           raise "Failed to check if the system is joined to the domain #{new_resource.domain_name}: #{node_domain.stderr}}" if node_domain.error?
+
           node_domain.stdout.downcase.strip == new_resource.domain_name.downcase
         end
 

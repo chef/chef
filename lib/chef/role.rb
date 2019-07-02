@@ -226,6 +226,7 @@ class Chef
         chef_server_rest.put("roles/#{@name}", self)
       rescue Net::HTTPClientException => e
         raise e unless e.response.code == "404"
+
         chef_server_rest.post("roles", self)
       end
       self
@@ -253,6 +254,7 @@ class Chef
         if js_files.count > 1 || rb_files.count > 1
           raise Chef::Exceptions::DuplicateRole, "Multiple roles of same type found named #{name}"
         end
+
         js_path, rb_path = js_files.first, rb_files.first
 
         if js_path && File.exists?(js_path)

@@ -36,12 +36,14 @@ describe Chef::Mixin::UserContext, windows_only: true do
     if succeeded || last_error != Chef::ReservedNames::Win32::API::Error::ERROR_INSUFFICIENT_BUFFER
       raise Chef::Exceptions::Win32APIError, "Expected ERROR_INSUFFICIENT_BUFFER from GetUserNameA but it returned the following error: #{last_error}"
     end
+
     user_name = FFI::MemoryPointer.new :char, (name_size.read_long)
     succeeded = get_user_name_a.call(user_name, name_size)
     last_error = FFI::LastError.error
     if succeeded == 0 || last_error != 0
       raise Chef::Exceptions::Win32APIError, "GetUserNameA failed with #{lasterror}"
     end
+
     user_name.read_string
   end
 

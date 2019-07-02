@@ -54,6 +54,7 @@ class Chef
           else
             current_resource.version(get_current_versions)
           end
+
           current_resource
         end
 
@@ -148,6 +149,7 @@ class Chef
 
             cab_files
           end
+
           cab_files
         end
 

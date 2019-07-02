@@ -87,6 +87,7 @@ class Chef
         # is set then this validation is not necessary / doesn't make sense at all
         def validate_name
           return if /^.:.*.sys/ =~ new_resource.path
+
           raise "#{new_resource.path} does not match the format DRIVE:\\path\\file.sys for pagefiles. Example: C:\\pagefile.sys"
         end
 

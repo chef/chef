@@ -444,6 +444,7 @@ class Chef
         def source_is_remote?
           return true if new_resource.source.nil?
           return true if new_resource.source.is_a?(Array)
+
           scheme = URI.parse(new_resource.source).scheme
           # URI.parse gets confused by MS Windows paths with forward slashes.
           scheme = nil if scheme =~ /^[a-z]$/
@@ -516,6 +517,7 @@ class Chef
 
         def version_requirement_satisfied?(current_version, new_version)
           return false unless current_version && new_version
+
           Gem::Requirement.new(new_version).satisfied_by?(Gem::Version.new(current_version))
         end
 

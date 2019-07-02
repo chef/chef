@@ -289,6 +289,7 @@ class Chef
       def property_is_set?(name)
         property = self.class.properties[name.to_sym]
         raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+
         property.is_set?(self)
       end
 
@@ -302,6 +303,7 @@ class Chef
       def reset_property(name)
         property = self.class.properties[name.to_sym]
         raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+
         property.reset(self)
       end
 
@@ -313,6 +315,7 @@ class Chef
       def property_description(name)
         property = self.class.properties[name.to_sym]
         raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+
         property.description
       end
 

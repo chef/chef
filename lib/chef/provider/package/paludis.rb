@@ -38,6 +38,7 @@ class Chef
           shell_out!("cave", "-L", "warning", "print-ids", "-M", "none", "-m", new_resource.package_name, "-f", "%c/%p %v %r\n").stdout.each_line do |line|
             res = re.match(line)
             next if res.nil?
+
             case res[3]
             when "accounts", "installed-accounts"
               next

@@ -44,6 +44,7 @@ class Chef
         end
 
         raise "No such segment #{segment} in cookbook #{@cookbook_name}" unless @manifest.files_for(segment)
+
         found_manifest_record = @manifest.files_for(segment).find { |manifest_record| manifest_record[:path] == filename }
         raise "No such file #{filename} in #{@cookbook_name}" unless found_manifest_record
 

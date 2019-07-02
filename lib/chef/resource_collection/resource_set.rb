@@ -53,22 +53,26 @@ class Chef
 
       def lookup(key)
         raise ArgumentError, "Must pass a Chef::Resource or String to lookup" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+
         key = key.to_s
         res = @resources_by_key[key]
         unless res
           raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
         end
+
         res
       end
 
       def delete(key)
         raise ArgumentError, "Must pass a Chef::Resource or String to delete" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+
         key = key.to_s
         res = @resources_by_key.delete(key)
 
         if res == @resources_by_key.default
           raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
         end
+
         res
       end
 

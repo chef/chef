@@ -51,6 +51,7 @@ describe "Chef::Resource.property" do
   def self.english_join(values)
     return "<nothing>" if values.size == 0
     return values[0].inspect if values.size == 1
+
     "#{values[0..-2].map { |v| v.inspect }.join(", ")} and #{values[-1].inspect}"
   end
 

@@ -338,6 +338,7 @@ class Chef
             end
 
             raise "Can not determine the administrator account name." if admin_account_name.nil?
+
             admin_account_name
           end
         end

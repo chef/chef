@@ -245,10 +245,12 @@ class Chef
           # we should skip the loop to next iteration if the item
           # returned by the search is nil
           next if item.nil?
+
           # next if we couldn't find the specified attribute in the
           # returned node object
           host = get_ssh_attribute(item)
           next if host.nil?
+
           prefix = get_prefix_attribute(item)
           ssh_port = item.dig("cloud", "public_ssh_port")
           srv = [host, ssh_port, prefix]
@@ -363,6 +365,7 @@ class Chef
             chan.request_pty
             chan.exec command do |ch, success|
               raise ArgumentError, "Cannot execute #{command}" unless success
+
               ch.on_data do |ichannel, data|
                 print_data(ichannel.connection[:prefix], data)
                 if data =~ /^knife sudo password: /
@@ -545,6 +548,7 @@ class Chef
 
       def get_stripped_unfrozen_value(value)
         return nil if value.nil?
+
         value.strip
       end
 

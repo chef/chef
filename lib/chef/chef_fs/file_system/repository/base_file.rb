@@ -132,6 +132,7 @@ class Chef
             if is_ruby_file?
               raise Chef::ChefFS::FileSystem::RubyFileError.new(:write, self)
             end
+
             if content && write_pretty_json && is_json_file?
               content = minimize(content, self)
             end

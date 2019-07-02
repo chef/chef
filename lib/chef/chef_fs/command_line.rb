@@ -44,6 +44,7 @@ class Chef
 
           when :directory_to_file
             next if diff_filter && diff_filter !~ /T/
+
             if output_mode == :name_only
               yield "#{new_path}\n"
             elsif output_mode == :name_status
@@ -54,6 +55,7 @@ class Chef
 
           when :file_to_directory
             next if diff_filter && diff_filter !~ /T/
+
             if output_mode == :name_only
               yield "#{new_path}\n"
             elsif output_mode == :name_status
@@ -71,6 +73,7 @@ class Chef
               new_path += File.extname(old_path)
             end
             next if diff_filter && diff_filter !~ /D/
+
             if output_mode == :name_only
               yield "#{new_path}\n"
             elsif output_mode == :name_status
@@ -86,6 +89,7 @@ class Chef
 
           when :added
             next if diff_filter && diff_filter !~ /A/
+
             if output_mode == :name_only
               yield "#{new_path}\n"
             elsif output_mode == :name_status
@@ -101,6 +105,7 @@ class Chef
 
           when :modified
             next if diff_filter && diff_filter !~ /M/
+
             if output_mode == :name_only
               yield "#{new_path}\n"
             elsif output_mode == :name_status

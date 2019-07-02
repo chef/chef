@@ -45,6 +45,7 @@ class Chef
         validators_to_delete = {}
         all_clients.each do |name, client|
           next unless name =~ matcher
+
           if client.validator
             validators_to_delete[client.name] = client
           else

@@ -244,6 +244,7 @@ class Chef
         msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
         subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
           next if category =~ /deprecated/i
+
           msg "** #{category.upcase} COMMANDS **"
           commands.sort.each do |command|
             subcommand_loader.load_command(command)
@@ -386,6 +387,7 @@ class Chef
       return :cli if @original_config.include? key
       return :config if config_file_settings.key? key
       return :cli_default if default_config.include? key
+
       nil
     end
 
@@ -476,6 +478,7 @@ class Chef
       end
     rescue Exception => e
       raise if raise_exception || ( Chef::Config[:verbosity] && Chef::Config[:verbosity] >= 2 )
+
       humanize_exception(e)
       exit 100
     end

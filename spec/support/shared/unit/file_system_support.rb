@@ -26,6 +26,7 @@ module FileSystemSupport
     if !value.is_a?(Hash)
       raise "memory_fs() must take a Hash"
     end
+
     dir = Chef::ChefFS::FileSystem::Memory::MemoryRoot.new(pretty_name, cannot_be_in_regex)
     value.each do |key, child|
       dir.add_child(memory_fs_value(child, key.to_s, dir))

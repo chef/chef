@@ -132,6 +132,7 @@ class Chef
         def powershell_version
           cmd = powershell_out("$PSVersionTable.psversion.major")
           return 1 if cmd.stdout.empty? # PowerShell 1.0 doesn't have a $PSVersionTable
+
           Regexp.last_match(1).to_i if cmd.stdout =~ /^(\d+)/
         rescue Errno::ENOENT
           0 # zero as in nothing is installed
@@ -245,6 +246,7 @@ class Chef
         # @return [void]
         def fail_if_removed
           return if new_resource.source # if someone provides a source then all is well
+
           if node["platform_version"].to_f > 6.2 # 2012R2 or later
             return if registry_key_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing') && registry_value_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing', name: "LocalSourcePath") # if source is defined in the registry, still fine
           end

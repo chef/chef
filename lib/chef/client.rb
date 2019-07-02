@@ -881,12 +881,14 @@ class Chef
 
     def start_profiling
       return unless Chef::Config[:profile_ruby]
+
       profiling_prereqs!
       RubyProf.start
     end
 
     def end_profiling
       return unless Chef::Config[:profile_ruby]
+
       profiling_prereqs!
       path = Chef::FileCache.create_cache_path("graph_profile.out", false)
       File.open(path, "w+") do |file|

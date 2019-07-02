@@ -41,11 +41,13 @@ class Chef
 
             def delete(recurse)
               raise NotFoundError.new(self) if !exists?
+
               raise DefaultEnvironmentCannotBeModifiedError.new(:delete, self)
             end
 
             def write(file_contents)
               raise NotFoundError.new(self) if !exists?
+
               raise DefaultEnvironmentCannotBeModifiedError.new(:write, self)
             end
           end

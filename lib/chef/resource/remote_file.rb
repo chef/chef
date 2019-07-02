@@ -161,6 +161,7 @@ class Chef
       def validate_source(source)
         source = Array(source).flatten
         raise ArgumentError, "#{resource_name} has an empty source" if source.empty?
+
         source.each do |src|
           unless absolute_uri?(src)
             raise Exceptions::InvalidRemoteFileURI,

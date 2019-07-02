@@ -74,6 +74,7 @@ class Chef::Util::DSC
           if merged_configuration_flags.key?(switch.to_s.downcase.to_sym)
             raise ArgumentError, "The `flags` attribute for the dsc_script resource contained a command line switch :#{switch} that is disallowed."
           end
+
           merged_configuration_flags[switch.to_s.downcase.to_sym] = value
         end
       end

@@ -94,6 +94,7 @@ class Chef
       def self.resolve_path(entry, path)
         return entry if path.length == 0
         return resolve_path(entry.root, path) if path[0, 1] == "/" && entry.root != entry
+
         if path[0, 1] == "/"
           path = path[1, path.length - 1]
         end

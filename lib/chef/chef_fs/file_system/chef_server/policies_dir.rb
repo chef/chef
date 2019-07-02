@@ -95,6 +95,7 @@ class Chef
                 if e.response.code == "404"
                   raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
                 end
+
                 raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "HTTP error retrieving children: #{e}")
               end
             # Anything else is unexpected (OperationFailedError)

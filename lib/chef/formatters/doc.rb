@@ -306,6 +306,7 @@ class Chef
         prefix = Chef::Config[:why_run] ? "Would " : ""
         Array(update).each do |line|
           next if line.nil?
+
           output_record line
           if line.kind_of? String
             start_line "- #{prefix}#{line}", :green
@@ -358,6 +359,7 @@ class Chef
       # in whyrun mode, in order to allow execution to continue
       def whyrun_assumption(action, resource, message)
         return unless message
+
         [ message ].flatten.each do |line|
           start_line("* #{line}", :yellow)
         end
@@ -366,6 +368,7 @@ class Chef
       # Called when an assertion declared by a provider fails
       def provider_requirement_failed(action, resource, exception, message)
         return unless message
+
         color = Chef::Config[:why_run] ? :yellow : :red
         [ message ].flatten.each do |line|
           start_line("* #{line}", color)

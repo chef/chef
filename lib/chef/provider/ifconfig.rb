@@ -87,6 +87,7 @@ class Chef
             end
 
             next unless @interfaces.key?(new_resource.device)
+
             @interface = @interfaces.fetch(new_resource.device)
 
             current_resource.target(new_resource.target)
@@ -132,6 +133,7 @@ class Chef
             end
 
             next unless @interfaces.key?(new_resource.device)
+
             @interface = @interfaces.fetch(new_resource.device)
 
             current_resource.target(new_resource.target)
@@ -144,6 +146,7 @@ class Chef
             current_resource.metric(@interface["metric"])
           end
         end
+
         current_resource
       end
 
@@ -177,6 +180,7 @@ class Chef
         # enables, but does not manage config files
         return if current_resource.inet_addr
         return if new_resource.device == loopback_device
+
         command = enable_command
         converge_by("run #{command.join(' ')} to enable #{new_resource}") do
           shell_out!(command)
@@ -222,6 +226,7 @@ class Chef
 
       def generate_config
         return unless can_generate_config?
+
         b = binding
         template = ::ERB.new(@config_template)
         config = resource_for_config(@config_path)
@@ -232,6 +237,7 @@ class Chef
 
       def delete_config
         return unless can_generate_config?
+
         config = resource_for_config(@config_path)
         config.run_action(:delete)
         new_resource.updated_by_last_action(true) if config.updated?

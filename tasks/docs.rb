@@ -14,6 +14,7 @@ namespace :docs_site do
     # @return [String, nil] a pretty defaul value string or nil if we want to skip it
     def pretty_default(default)
       return nil if default.nil? || default == "" || default == "lazy default"
+
       if default.is_a?(String)
         return default.inspect unless default[0] == ":"
       end
@@ -91,11 +92,13 @@ namespace :docs_site do
     # @return String
     def bolded_description(name, description)
       return nil if description.nil? # handle resources missing descriptions
+
       description.gsub( "#{name} ", "**#{name}** ").split("Note: ").first.strip
     end
 
     def note_text(description)
       return nil if description.nil?
+
       note = description.split("Note: ")[1]
       if note
         <<-HEREDOC
@@ -316,6 +319,7 @@ namespace :docs_site do
     resources = Chef::JSONCompat.parse(ResourceInspector.inspect)
     resources.each do |resource, data|
       next if ["scm", "whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", ""].include?(resource)
+
       puts "Writing out #{resource}."
       @name = resource
       @description = data["description"]

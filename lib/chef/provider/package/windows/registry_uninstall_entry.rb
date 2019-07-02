@@ -58,6 +58,7 @@ class Chef
 
           def self.quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry)
             return RegistryUninstallEntry.new(hkey, key, entry) if quiet_uninstall_string.nil?
+
             RegistryUninstallEntry.new(hkey, key, entry, "QuietUninstallString")
           end
 

@@ -69,6 +69,7 @@ class Chef
 
           def can_have_child?(name, is_dir)
             return name != "root_files" if is_dir
+
             true
           end
 
@@ -117,6 +118,7 @@ class Chef
               end
             else
               raise NotFoundError.new(self) if !exists?
+
               raise MustDeleteRecursivelyError.new(self, "#{path_for_printing} must be deleted recursively")
             end
           end
@@ -134,6 +136,7 @@ class Chef
             if !other.dir?
               return [ !exists?, nil, nil ]
             end
+
             are_same = true
             Chef::ChefFS::CommandLine.diff_entries(self, other, nil, :name_only).each do |type, old_entry, new_entry|
               if [ :directory_to_file, :file_to_directory, :deleted, :added, :modified ].include?(type)

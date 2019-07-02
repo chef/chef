@@ -74,6 +74,7 @@ class Chef
 
         argument_is_absolute = Chef::ChefFS::PathUtils.is_absolute?(path)
         return false if is_absolute != argument_is_absolute
+
         path = path[1, path.length - 1] if argument_is_absolute
 
         path_parts = Chef::ChefFS::PathUtils.split(path)
@@ -81,6 +82,7 @@ class Chef
         return false if regexp_parts.length <= path_parts.length && !has_double_star
         # If the path doesn't match up to this point, children won't match either.
         return false if path_parts.zip(regexp_parts).any? { |part, regexp| !regexp.nil? && !regexp.match(part) }
+
         # Otherwise, it's possible we could match: the path matches to this point, and the pattern is longer than the path.
         # TODO There is one edge case where the double star comes after some characters like abc**def--we could check whether the next
         # bit of path starts with abc in that case.
@@ -114,6 +116,7 @@ class Chef
         path = path[1, path.length - 1] if Chef::ChefFS::PathUtils.is_absolute?(path)
         dirs_in_path = Chef::ChefFS::PathUtils.split(path).length
         return nil if exact_parts.length <= dirs_in_path
+
         exact_parts[dirs_in_path]
       end
 
@@ -124,6 +127,7 @@ class Chef
       #   abc/x\\yz.exact_path == 'abc/xyz'
       def exact_path
         return nil if has_double_star || exact_parts.any? { |part| part.nil? }
+
         result = Chef::ChefFS::PathUtils.join(*exact_parts)
         is_absolute ? Chef::ChefFS::PathUtils.join("", result) : result
       end
@@ -151,6 +155,7 @@ class Chef
       def match?(path)
         argument_is_absolute = Chef::ChefFS::PathUtils.is_absolute?(path)
         return false if is_absolute != argument_is_absolute
+
         path = path[1, path.length - 1] if argument_is_absolute
         !!regexp.match(path)
       end
@@ -213,6 +218,7 @@ class Chef
                 if has_double_star_prev
                   raise ArgumentError, ".. overlapping a ** is unsupported"
                 end
+
                 full_regexp_parts.pop
                 normalized_parts.pop
                 if !@has_double_star

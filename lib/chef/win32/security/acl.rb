@@ -45,6 +45,7 @@ class Chef
 
         def ==(other)
           return false if length != other.length
+
           0.upto(length - 1) do |i|
             return false if self[i] != other[i]
           end

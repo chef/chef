@@ -88,6 +88,7 @@ class Chef
           missing_members = []
           new_resource.members.each do |member|
             next if has_current_group_member?(member)
+
             validate_member!(member)
             missing_members << member
           end
@@ -140,6 +141,7 @@ class Chef
 
       def action_remove
         return unless @group_exists
+
         converge_by("remove group #{new_resource.group_name}") do
           remove_group
           logger.info("#{new_resource} removed")
@@ -148,6 +150,7 @@ class Chef
 
       def action_manage
         return unless @group_exists && compare_group
+
         converge_by(["manage group #{new_resource.group_name}"] + change_desc) do
           manage_group
           logger.info("#{new_resource} managed")
@@ -156,6 +159,7 @@ class Chef
 
       def action_modify
         return unless compare_group
+
         converge_by(["modify group #{new_resource.group_name}"] + change_desc) do
           manage_group
           logger.info("#{new_resource} modified")

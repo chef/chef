@@ -40,6 +40,7 @@ class Chef
           return "" if ( args.first =~ /^delete/ ) && ( result[1].exitstatus != 0 )
           raise(Chef::Exceptions::Group, "dscl error: #{result.inspect}") unless result[1].exitstatus == 0
           raise(Chef::Exceptions::Group, "dscl error: #{result.inspect}") if result[2] =~ /No such key: /
+
           result[2]
         end
 
@@ -88,6 +89,7 @@ class Chef
 
         def gid_used?(gid)
           return false unless gid
+
           search_gids = safe_dscl("search", "/Groups", "PrimaryGroupID", gid.to_s)
 
           # dscl -search should not return anything if the gid doesn't exist,
@@ -99,6 +101,7 @@ class Chef
         def set_gid
           new_resource.gid(get_free_gid) if [nil, ""].include? new_resource.gid
           raise(Chef::Exceptions::Group, "gid is already in use") if gid_used?(new_resource.gid)
+
           safe_dscl("create", "/Groups/#{new_resource.group_name}", "PrimaryGroupID", new_resource.gid)
         end
 

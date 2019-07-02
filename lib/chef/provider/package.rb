@@ -102,6 +102,7 @@ class Chef
         description = []
         target_version_array.each_with_index do |target_version, i|
           next if target_version.nil?
+
           package_name = package_name_array[i]
           description << "install version #{target_version} of package #{package_name}"
         end
@@ -130,6 +131,7 @@ class Chef
         description = []
         target_version_array.each_with_index do |target_version, i|
           next if target_version.nil?
+
           package_name = package_name_array[i]
           candidate_version = candidate_version_array[i]
           current_version = current_version_array[i] || "uninstalled"
@@ -322,6 +324,7 @@ class Chef
       #
       def version_equals?(v1, v2)
         return false unless v1 && v2
+
         v1 == v2
       end
 
@@ -507,6 +510,7 @@ class Chef
             missing = []
             each_package do |package_name, new_version, current_version, candidate_version|
               next if new_version.nil? || current_version.nil?
+
               if !version_requirement_satisfied?(current_version, new_version) && candidate_version.nil?
                 missing.push(package_name)
               end

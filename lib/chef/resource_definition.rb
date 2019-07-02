@@ -38,11 +38,13 @@ class Chef
       unless resource_name.kind_of?(Symbol)
         raise ArgumentError, "You must use a symbol when defining a new resource!"
       end
+
       @name = resource_name
       if prototype_params
         unless prototype_params.kind_of?(Hash)
           raise ArgumentError, "You must pass a hash as the prototype parameters for a definition."
         end
+
         @params = prototype_params
       end
       if Kernel.block_given?

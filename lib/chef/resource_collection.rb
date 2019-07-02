@@ -134,6 +134,7 @@ class Chef
       rc.resource_collection.resource_set.lookup(key)
     rescue Chef::Exceptions::ResourceNotFound
       raise if rc.parent_run_context.nil?
+
       lookup_recursive(rc.parent_run_context, key)
     end
 
@@ -141,6 +142,7 @@ class Chef
       rc.resource_collection.resource_set.find(*args)
     rescue Chef::Exceptions::ResourceNotFound
       raise if rc.parent_run_context.nil?
+
       find_recursive(rc.parent_run_context, *args)
     end
   end

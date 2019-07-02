@@ -60,6 +60,7 @@ class Chef
 
           def package_version
             return new_resource.version if new_resource.version
+
             if !new_resource.source.nil? && ::File.exist?(new_resource.source)
               logger.trace("#{new_resource} getting product version for package at #{new_resource.source}")
               get_product_property(new_resource.source, "ProductVersion")

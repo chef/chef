@@ -60,6 +60,7 @@ class Chef
         rescue Net::HTTPFatalError => e
           # HTTPFatalError implies 5xx.
           raise if retries <= 0
+
           retries -= 1
           Chef::Log.warn("Failed to register new client, #{retries} tries remaining")
           Chef::Log.warn("Response: HTTP #{e.response.code} - #{e}")
@@ -97,6 +98,7 @@ class Chef
         # If create fails because the client exists, attempt to update. This
         # requires admin privileges.
         raise unless e.response.code == "409"
+
         update
       end
 

@@ -103,6 +103,7 @@ module ChefConfig
           if option.empty? || !option.include?("=")
             raise UnparsableConfigOption, "Unparsable config option #{option.inspect}"
           end
+
           # Split including whitespace if someone does truly odd like
           # --config-option "foo = bar"
           key, value = option.split(/\s*=\s*/, 2)
@@ -144,6 +145,7 @@ module ChefConfig
       unless is_valid_url? uri
         raise ConfigurationError, "#{uri} is an invalid chef_server_url. The URL must start with http://, https://, or chefzero://."
       end
+
       uri.to_s.strip
     end
 

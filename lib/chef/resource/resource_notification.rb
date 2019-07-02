@@ -131,6 +131,7 @@ class Chef
 
       def ==(other)
         return false unless other.is_a?(self.class)
+
         other.resource == resource && other.action == action && other.notifying_resource == notifying_resource
       end
 

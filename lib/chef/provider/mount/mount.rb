@@ -47,6 +47,7 @@ class Chef
           elsif @new_resource.mount_point != "none" && !::File.exists?(@new_resource.mount_point)
             raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
           end
+
           true
         end
 

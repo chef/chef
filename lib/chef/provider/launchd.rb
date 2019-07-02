@@ -90,6 +90,7 @@ class Chef
 
       def manage_plist(action)
         return unless manage_agent?(action)
+
         if source
           res = cookbook_file_resource
         else
@@ -102,6 +103,7 @@ class Chef
 
       def manage_service(action)
         return unless manage_agent?(action)
+
         res = service_resource
         res.run_action(action)
         new_resource.updated_by_last_action(true) if res.updated?
@@ -179,6 +181,7 @@ class Chef
 
       def gen_hash
         return nil unless new_resource.program || new_resource.program_arguments
+
         {
           "label" => "Label",
           "program" => "Program",

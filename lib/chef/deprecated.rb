@@ -84,6 +84,7 @@ class Chef
           relevant_line = location_file.readline
           relevant_line.match?(/#.*chef:silence_deprecation($|[^:]|:#{self.class.deprecation_key})/)
         end
+
         false
       end
 

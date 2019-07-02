@@ -73,6 +73,7 @@ class Chef
         # returns a list of levels that the service should be stopped or started on
         def parse_init_file(path)
           return [] unless ::File.exist?(path)
+
           in_info = false
           ::File.readlines(path).each_with_object([]) do |line, acc|
             if line =~ /^### BEGIN INIT INFO/
