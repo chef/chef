@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.40 -->
-## [v15.1.40](https://github.com/chef/chef/tree/v15.1.40) (2019-07-02)
+<!-- latest_release 15.1.42 -->
+## [v15.1.42](https://github.com/chef/chef/tree/v15.1.42) (2019-07-03)
 
 #### Merged Pull Requests
-- fixes for chefstyle bump [#8707](https://github.com/chef/chef/pull/8707) ([lamont-granquist](https://github.com/lamont-granquist))
+- Deprecate Ubuntu-14 [#8712](https://github.com/chef/chef/pull/8712) ([jaymalasinha](https://github.com/jaymalasinha))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Deprecate Ubuntu-14 [#8712](https://github.com/chef/chef/pull/8712) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.1.42 -->
 - fixes for chefstyle bump [#8707](https://github.com/chef/chef/pull/8707) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.40 -->
 - update bldr config with new hab package name [#8706](https://github.com/chef/chef/pull/8706) ([robbkidd](https://github.com/robbkidd)) <!-- 15.1.39 -->
 - windows_task: Fix for :day option is not accepting integer value [#8705](https://github.com/chef/chef/pull/8705) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.1.38 -->
