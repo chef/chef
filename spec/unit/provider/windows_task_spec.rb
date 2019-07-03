@@ -265,8 +265,13 @@ describe Chef::Provider::WindowsTask, :windows_only do
 
   # REF: https://msdn.microsoft.com/en-us/library/windows/desktop/aa382063(v=vs.85).aspx
   describe "#days_of_month" do
-    it "returns the binary value 1 if day is set as 1" do
+    it "returns the binary value 1 if day is set as string 1" do
       new_resource.day "1"
+      expect(provider.send(:days_of_month)).to eq(1)
+    end
+
+    it "returns the binary value 1 if day is set as integer 1" do
+      new_resource.day 1
       expect(provider.send(:days_of_month)).to eq(1)
     end
 
