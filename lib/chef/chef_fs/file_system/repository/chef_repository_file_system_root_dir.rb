@@ -179,7 +179,7 @@ class Chef
           #
           def make_child_entry(name)
             if CHILDREN.include?(name)
-              return nil if !root_dir
+              return nil unless root_dir
 
               return root_dir.child(name)
             end

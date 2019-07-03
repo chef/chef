@@ -150,7 +150,7 @@ module KnifeSupport
           expected[:stderr] = arg
         end
       end
-      expected[:exit_code] = 1 if !expected[:exit_code]
+      expected[:exit_code] = 1 unless expected[:exit_code]
       should_result_in(expected)
     end
 
@@ -169,9 +169,9 @@ module KnifeSupport
     private
 
     def should_result_in(expected)
-      expected[:stdout] = "" if !expected[:stdout]
-      expected[:stderr] = "" if !expected[:stderr]
-      expected[:exit_code] = 0 if !expected[:exit_code]
+      expected[:stdout] = "" unless expected[:stdout]
+      expected[:stderr] = "" unless expected[:stderr]
+      expected[:exit_code] = 0 unless expected[:exit_code]
       # TODO make this go away
       stderr_actual = @stderr.sub(/^WARNING: No knife configuration file found\n/, "")
 

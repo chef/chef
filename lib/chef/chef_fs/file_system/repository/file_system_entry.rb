@@ -109,7 +109,7 @@ class Chef
 
           def delete(recurse)
             if dir?
-              if !recurse
+              unless recurse
                 raise MustDeleteRecursivelyError.new(self, $!)
               end
 

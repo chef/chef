@@ -23,7 +23,7 @@ require "chef/chef_fs/file_system/memory/memory_file"
 
 module FileSystemSupport
   def memory_fs(pretty_name, value, cannot_be_in_regex = nil)
-    if !value.is_a?(Hash)
+    unless value.is_a?(Hash)
       raise "memory_fs() must take a Hash"
     end
 

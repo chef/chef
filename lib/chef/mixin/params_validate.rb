@@ -237,7 +237,7 @@ class Chef
       #
       def _pv_cannot_be(opts, key, predicate_method_base_name)
         value = _pv_opts_lookup(opts, key)
-        if !value.nil?
+        unless value.nil?
           Array(predicate_method_base_name).each do |method_name|
             predicate_method = :"#{method_name}?"
 
@@ -279,7 +279,7 @@ class Chef
       def _pv_default(opts, key, default_value)
         value = _pv_opts_lookup(opts, key)
         if value.nil?
-          default_value = default_value.freeze if !default_value.is_a?(DelayedEvaluator)
+          default_value = default_value.freeze unless default_value.is_a?(DelayedEvaluator)
           opts[key] = default_value
         end
       end
@@ -299,7 +299,7 @@ class Chef
       #
       def _pv_regex(opts, key, regex)
         value = _pv_opts_lookup(opts, key)
-        if !value.nil?
+        unless value.nil?
           Array(regex).flatten.each do |r|
             return true if r.match(value.to_s)
           end
@@ -323,7 +323,7 @@ class Chef
         raise ArgumentError, "Callback list must be a hash!" unless callbacks.kind_of?(Hash)
 
         value = _pv_opts_lookup(opts, key)
-        if !value.nil?
+        unless value.nil?
           callbacks.each do |message, zeproc|
             unless zeproc.call(value)
               raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key}'s value #{value} #{message}!")
@@ -486,7 +486,7 @@ class Chef
         def get(resource, nil_set: false)
           value = super
           # All values are sticky, frozen or not
-          if !is_set?(resource)
+          unless is_set?(resource)
             set_value(resource, value)
           end
           value

@@ -261,7 +261,7 @@ class Chef
     # @return [Boolean]
     #
     def desired_state?
-      return true if !options.key?(:desired_state)
+      return true unless options.key?(:desired_state)
 
       options[:desired_state]
     end
@@ -554,7 +554,7 @@ class Chef
     def emit_dsl
       # We don't create the getter/setter if it's a custom property; we will
       # be using the existing getter/setter to manipulate it instead.
-      return if !instance_variable_name
+      return unless instance_variable_name
 
       # Properties may override existing properties up the inheritance heirarchy, but
       # properties must not override inherited methods like Object#hash.  When the Resource is

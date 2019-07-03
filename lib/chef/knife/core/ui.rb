@@ -203,7 +203,7 @@ class Chef
 
       def edit_data(data, parse_output = true, object_class: nil)
         output = Chef::JSONCompat.to_json_pretty(data)
-        if !config[:disable_editing]
+        unless config[:disable_editing]
           Tempfile.open([ "knife-edit-", ".json" ]) do |tf|
             tf.sync = true
             tf.puts output

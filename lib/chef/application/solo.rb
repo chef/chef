@@ -342,7 +342,7 @@ class Chef::Application::Solo < Chef::Application
         end
 
         run_chef_client
-        if !Chef::Config[:interval]
+        unless Chef::Config[:interval]
           Chef::Application.exit! "Exiting", 0
         end
       rescue SystemExit => e

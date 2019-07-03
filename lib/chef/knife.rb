@@ -643,7 +643,7 @@ class Chef
     end
 
     def maybe_setup_fips
-      if !config[:fips].nil?
+      unless config[:fips].nil?
         Chef::Config[:fips] = config[:fips]
       end
       Chef::Config.init_openssl

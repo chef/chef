@@ -34,7 +34,7 @@ class Chef
       end
 
       def action_run
-        if ! test_resource
+        unless test_resource
           converge_by(generate_description) do
             result = set_resource
             reboot_if_required

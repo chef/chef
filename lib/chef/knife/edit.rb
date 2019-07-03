@@ -66,14 +66,14 @@ class Chef
       end
 
       def edit_text(text, extension)
-        if !config[:disable_editing]
+        unless config[:disable_editing]
           Tempfile.open([ "knife-edit-", extension ]) do |file|
             # Write the text to a temporary file
             file.write(text)
             file.close
 
             # Let the user edit the temporary file
-            if !system("#{config[:editor]} #{file.path}")
+            unless system("#{config[:editor]} #{file.path}")
               raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup.html for details."
             end
 

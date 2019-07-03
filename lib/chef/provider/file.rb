@@ -90,7 +90,7 @@ class Chef
         @current_resource ||= Chef::Resource::File.new(new_resource.name)
         current_resource.path(new_resource.path)
 
-        if !needs_creating?
+        unless needs_creating?
           # we are updating an existing file
           if managing_content?
             logger.trace("#{new_resource} checksumming file at #{new_resource.path}.")
@@ -340,7 +340,7 @@ class Chef
 
         if tempfile
           new_resource.verify.each do |v|
-            if ! v.verify(tempfile.path)
+            unless v.verify(tempfile.path)
               raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{new_resource.sensitive ? '[sensitive]' : v}"
             end
           end

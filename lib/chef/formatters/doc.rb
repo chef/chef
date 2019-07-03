@@ -53,7 +53,7 @@ class Chef
       def run_completed(node)
         @end_time = Time.now
         # Print out deprecations.
-        if !deprecations.empty?
+        unless deprecations.empty?
           puts_line ""
           puts_line "Deprecated features used!"
           deprecations.each do |message, details|

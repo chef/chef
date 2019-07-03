@@ -123,7 +123,7 @@ class Chef
             mountable?
             command = [ "mount", "-v", @new_resource.fstype ]
 
-            if !(@new_resource.options.nil? || @new_resource.options.empty?)
+            unless @new_resource.options.nil? || @new_resource.options.empty?
               command << "-o"
               command << @new_resource.options.join(",")
             end
@@ -203,7 +203,7 @@ class Chef
                   found_device = false
                 end
               end
-              if !found_device
+              unless found_device
                 contents << line
               end
             end

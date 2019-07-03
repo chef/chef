@@ -290,7 +290,7 @@ class Chef
           port ||= ssh_config[:port]
           opts[:port] = port unless port.nil?
           opts[:logger] = Chef::Log.with_child(subsystem: "net/ssh") if Chef::Log.level == :trace
-          if !config[:host_key_verify]
+          unless config[:host_key_verify]
             opts[:verify_host_key] = false
             opts[:user_known_hosts_file] = "/dev/null"
           end
@@ -598,7 +598,7 @@ class Chef
         @password = config[:ssh_password] if config[:ssh_password]
 
         # If a password was not given, check for SSH identity file.
-        if !@password
+        unless @password
           configure_ssh_identity_file
           configure_ssh_gateway_identity
         end

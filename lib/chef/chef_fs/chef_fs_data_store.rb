@@ -246,7 +246,7 @@ class Chef
           end
 
         else
-          if !data.is_a?(String)
+          unless data.is_a?(String)
             raise "set only works with strings"
           end
 
@@ -362,7 +362,7 @@ class Chef
         if use_memory_store?(path)
           @memory_store.set(path, data, *options)
         else
-          if !data.is_a?(String)
+          unless data.is_a?(String)
             raise "set only works with strings: #{path} = #{data.inspect}"
           end
 
@@ -466,7 +466,7 @@ class Chef
               FileSystemCache.instance.delete!(policy.file_path)
               found_policy = true
             end
-            raise ChefZero::DataStore::DataNotFoundError.new(path) if !found_policy
+            raise ChefZero::DataStore::DataNotFoundError.new(path) unless found_policy
           end
 
         else
@@ -645,7 +645,7 @@ class Chef
 
         # Create the .uploaded-cookbook-version.json
         cookbooks = chef_fs.child(cookbook_type)
-        if !cookbooks.exists?
+        unless cookbooks.exists?
           cookbooks = chef_fs.create_child(cookbook_type)
         end
         # We are calling a cookbooks-specific API, so get multiplexed_dirs out of the way if it is there

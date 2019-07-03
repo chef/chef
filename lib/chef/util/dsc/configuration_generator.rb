@@ -47,7 +47,7 @@ class Chef::Util::DSC
       document_generation_cmdlet.run!(merged_configuration_flags, shellout_flags)
       configuration_document_location = find_configuration_document(configuration_name)
 
-      if ! configuration_document_location
+      unless configuration_document_location
         raise "No DSC configuration for '#{configuration_name}' was generated from supplied DSC script"
       end
 

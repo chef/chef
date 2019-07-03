@@ -139,7 +139,7 @@ class Chef
 
           def delete(recurse)
             if exists?
-              if !recurse
+              unless recurse
                 raise MustDeleteRecursivelyError.new(self, $!)
               end
 

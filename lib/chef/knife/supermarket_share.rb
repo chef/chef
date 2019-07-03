@@ -150,7 +150,7 @@ class Chef
       end
 
       def tar_cmd
-        if !@tar_cmd
+        unless @tar_cmd
           @tar_cmd = "tar"
           begin
             # Unix and Mac only - prefer gnutar

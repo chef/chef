@@ -132,7 +132,7 @@ class Chef
             end
           end
         end
-        if !found_match
+        unless found_match
           ui.error "#{pattern}: No such file or directory on remote or local" if ui
           error = true
         end

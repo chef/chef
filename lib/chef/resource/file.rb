@@ -78,7 +78,7 @@ class Chef
       property :verifications, Array, default: lazy { [] }
 
       def verify(command = nil, opts = {}, &block)
-        if ! (command.nil? || [String, Symbol].include?(command.class))
+        unless command.nil? || [String, Symbol].include?(command.class)
           raise ArgumentError, "verify requires either a string, symbol, or a block"
         end
 

@@ -102,7 +102,7 @@ class Chef
 
           options = options.inject({}) { |memo, (key, value)| memo[key.to_sym] = value; memo }
 
-          options[:instance_variable_name] = :"@#{name}" if !options.key?(:instance_variable_name)
+          options[:instance_variable_name] = :"@#{name}" unless options.key?(:instance_variable_name)
           options[:name] = name
           options[:declared_in] = self
 
@@ -191,7 +191,7 @@ class Chef
         # @return [Array<Property>] All properties in desired state.
         #
         def state_properties(*names)
-          if !names.empty?
+          unless names.empty?
             names = names.map { |name| name.to_sym }.uniq
 
             local_properties = properties(false)
@@ -240,7 +240,7 @@ class Chef
         # @return [Array<Property>] All identity properties.
         #
         def identity_properties(*names)
-          if !names.empty?
+          unless names.empty?
             names = names.map { |name| name.to_sym }
 
             # Add or change properties that are not part of the identity.
@@ -288,7 +288,7 @@ class Chef
       #
       def property_is_set?(name)
         property = self.class.properties[name.to_sym]
-        raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+        raise ArgumentError, "Property #{name} is not defined in class #{self}" unless property
 
         property.is_set?(self)
       end
@@ -302,7 +302,7 @@ class Chef
       #
       def reset_property(name)
         property = self.class.properties[name.to_sym]
-        raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+        raise ArgumentError, "Property #{name} is not defined in class #{self}" unless property
 
         property.reset(self)
       end
@@ -314,7 +314,7 @@ class Chef
       # @return [String] The description of the property.
       def property_description(name)
         property = self.class.properties[name.to_sym]
-        raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+        raise ArgumentError, "Property #{name} is not defined in class #{self}" unless property
 
         property.description
       end

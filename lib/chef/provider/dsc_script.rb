@@ -41,7 +41,7 @@ class Chef
       end
 
       def action_run
-        if ! @resource_converged
+        unless @resource_converged
           converge_by(generate_description) do
             run_configuration(:set)
             logger.info("DSC resource configuration completed successfully")

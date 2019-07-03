@@ -274,7 +274,7 @@ class Chef
 
         acls = nil
 
-        if !resource.deny_rights.nil?
+        unless resource.deny_rights.nil?
           acls = [] if acls.nil?
 
           resource.deny_rights.each do |rights|
@@ -287,7 +287,7 @@ class Chef
           end
         end
 
-        if !resource.rights.nil?
+        unless resource.rights.nil?
           acls = [] if acls.nil?
 
           resource.rights.each do |rights|
@@ -300,7 +300,7 @@ class Chef
           end
         end
 
-        if !resource.mode.nil?
+        unless resource.mode.nil?
           acls = [] if acls.nil?
 
           mode = (resource.mode.respond_to?(:oct) ? resource.mode.oct : resource.mode.to_i) & 0777

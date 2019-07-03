@@ -60,7 +60,7 @@ class Chef
         @in_call = true
         subscribers.each do |s|
           # Skip new/unsupported event names
-          next if !s.respond_to?(method_name)
+          next unless s.respond_to?(method_name)
 
           mth = s.method(method_name)
           # Trim arguments to match what the subscriber expects to allow

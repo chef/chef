@@ -361,7 +361,7 @@ class Chef
         hive, key = get_hive_and_key(key_path)
         missing_key_arr.each do |intermediate_key|
           existing_key_path = existing_key_path << "\\" << intermediate_key
-          if !key_exists?(existing_key_path)
+          unless key_exists?(existing_key_path)
             Chef::Log.trace("Recursively creating registry key #{existing_key_path}")
             hive.create(get_key(existing_key_path), ::Win32::Registry::KEY_ALL_ACCESS | registry_system_architecture)
           end

@@ -154,7 +154,7 @@ class Chef
             upload_set = {}
             @name_args.each do |cookbook_name|
               begin
-                if ! upload_set.key?(cookbook_name)
+                unless upload_set.key?(cookbook_name)
                   upload_set[cookbook_name] = cookbook_repo[cookbook_name]
                   if config[:depends]
                     upload_set[cookbook_name].metadata.dependencies.each_key { |dep| @name_args << dep }

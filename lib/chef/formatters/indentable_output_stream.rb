@@ -154,7 +154,7 @@ class Chef
       end
 
       def indent_line(options)
-        if !@line_started
+        unless @line_started
 
           # Print indents.  If there is a stream name, either print it (if we're
           # switching streams) or print enough blanks to match

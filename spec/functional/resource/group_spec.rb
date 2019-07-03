@@ -96,7 +96,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def create_user(username, uid = nil)
-    if ! windows_domain_user?(username)
+    unless windows_domain_user?(username)
       user_to_create = user(username)
       user_to_create.uid(uid) if uid
       user_to_create.run_action(:create)
@@ -105,7 +105,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def remove_user(username)
-    if ! windows_domain_user?(username)
+    unless windows_domain_user?(username)
       u = user(username)
       u.manage_home false # jekins hosts throw mail spool file not owned by user if we use manage_home true
       u.run_action(:remove)

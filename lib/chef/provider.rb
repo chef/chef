@@ -266,7 +266,7 @@ class Chef
     # @return [Boolean] whether the block was executed.
     #
     def converge_if_changed(*properties, &converge_block)
-      if !converge_block
+      unless converge_block
         raise ArgumentError, "converge_if_changed must be passed a block!"
       end
 

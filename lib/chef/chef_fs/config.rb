@@ -150,7 +150,7 @@ class Chef
               hosted_everything or allow repo_mode to default}
         end
         # Default to getting *everything* from the server.
-        if !@chef_config[:repo_mode]
+        unless @chef_config[:repo_mode]
           if is_hosted?
             @chef_config[:repo_mode] = "hosted_everything"
           else

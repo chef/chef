@@ -227,7 +227,7 @@ class Chef
     def matches_black_white_list?(node, filters, attribute)
       # It's super common for the filter to be nil.  Catch that so we don't
       # spend any time here.
-      return true if !filters[attribute]
+      return true unless filters[attribute]
 
       filter_values = Array(filters[attribute])
       value = node[attribute]
@@ -245,7 +245,7 @@ class Chef
     def matches_version_list?(node, filters, attribute)
       # It's super common for the filter to be nil.  Catch that so we don't
       # spend any time here.
-      return true if !filters[attribute]
+      return true unless filters[attribute]
 
       filter_values = Array(filters[attribute])
       value = node[attribute]
@@ -281,7 +281,7 @@ class Chef
     end
 
     def node_matches?(node, matcher)
-      return true if !node
+      return true unless node
 
       filters_match?(node, matcher) && block_matches?(node, matcher[:block])
     end

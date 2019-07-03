@@ -58,7 +58,7 @@ class Chef
         rescue
           raise
         ensure
-          if ! wow64_redirection_state.nil?
+          unless wow64_redirection_state.nil?
             restore_wow64_file_redirection(@run_context.node, wow64_redirection_state)
           end
         end

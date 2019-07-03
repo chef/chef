@@ -55,11 +55,11 @@ class Chef
       def resolve_resource_reference(resource_collection)
         return resource if resource.kind_of?(Chef::Resource) && notifying_resource.kind_of?(Chef::Resource)
 
-        if not(resource.kind_of?(Chef::Resource))
+        unless resource.kind_of?(Chef::Resource)
           fix_resource_reference(resource_collection)
         end
 
-        if not(notifying_resource.kind_of?(Chef::Resource))
+        unless notifying_resource.kind_of?(Chef::Resource)
           fix_notifier_reference(resource_collection)
         end
       end

@@ -835,7 +835,7 @@ class Chef
     #
     def self.identity_attr(name = nil)
       property = identity_property(name)
-      return nil if !property
+      return nil unless property
 
       property.name
     end
@@ -957,7 +957,7 @@ class Chef
         if name
           name = name.to_sym
           # If our class is not already providing this name, provide it.
-          if !Chef::ResourceResolver.includes_handler?(name, self)
+          unless Chef::ResourceResolver.includes_handler?(name, self)
             provides name, canonical: true
           end
           @resource_name = name
@@ -1589,7 +1589,7 @@ class Chef
     def self.remove_canonical_dsl
       if @resource_name
         remaining = Chef.resource_handler_map.delete_canonical(@resource_name, self)
-        if !remaining
+        unless remaining
           Chef::DSL::Resources.remove_resource_dsl(@resource_name)
         end
       end

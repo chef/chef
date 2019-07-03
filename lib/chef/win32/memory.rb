@@ -67,7 +67,7 @@ class Chef
       # Free memory allocated using local_alloc
       def self.local_free(pointer)
         result = LocalFree(pointer)
-        if !result.null?
+        unless result.null?
           Chef::ReservedNames::Win32::Error.raise!
         end
       end

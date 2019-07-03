@@ -55,7 +55,7 @@ class Chef
           if Chef::Platform.windows?
             require_relative "../../win32/security"
 
-            if !Chef::ReservedNames::Win32::Security.has_admin_privileges?
+            unless Chef::ReservedNames::Win32::Security.has_admin_privileges?
               error_description.section("Missing Windows Admin Privileges", "#{Chef::Dist::CLIENT} doesn't have administrator privileges. This can be a possible reason for the resource failure.")
             end
           end

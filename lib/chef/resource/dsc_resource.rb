@@ -77,7 +77,7 @@ class Chef
         description: "The version number of the module to use. PowerShell 5.0.10018.0 (or higher) supports having multiple versions of a module installed. This should be specified along with the module_name."
 
       def property(property_name, value = nil)
-        if not property_name.is_a?(Symbol)
+        unless property_name.is_a?(Symbol)
           raise TypeError, "A property name of type Symbol must be specified, '#{property_name}' of type #{property_name.class} was given"
         end
 

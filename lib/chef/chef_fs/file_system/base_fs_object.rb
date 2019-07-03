@@ -108,14 +108,14 @@ class Chef
 
         # Override children to report your *actual* list of children as an array.
         def children
-          raise NotFoundError.new(self) if !exists?
+          raise NotFoundError.new(self) unless exists?
 
           []
         end
 
         # Expand this entry into a chef object (Chef::Role, ::Node, etc.)
         def chef_object
-          raise NotFoundError.new(self) if !exists?
+          raise NotFoundError.new(self) unless exists?
 
           nil
         end
@@ -127,7 +127,7 @@ class Chef
         # your entry class, and will be called without actually reading the
         # file_contents.  This is used for knife upload /cookbooks/cookbookname.
         def create_child(name, file_contents)
-          raise NotFoundError.new(self) if !exists?
+          raise NotFoundError.new(self) unless exists?
 
           raise OperationNotAllowedError.new(:create_child, self)
         end
@@ -135,7 +135,7 @@ class Chef
         # Delete this item, possibly recursively.  Entries MUST NOT delete a
         # directory unless recurse is true.
         def delete(recurse)
-          raise NotFoundError.new(self) if !exists?
+          raise NotFoundError.new(self) unless exists?
 
           raise OperationNotAllowedError.new(:delete, self)
         end
@@ -171,14 +171,14 @@ class Chef
 
         # Read the contents of this file entry.
         def read
-          raise NotFoundError.new(self) if !exists?
+          raise NotFoundError.new(self) unless exists?
 
           raise OperationNotAllowedError.new(:read, self)
         end
 
         # Write the contents of this file entry.
         def write(file_contents)
-          raise NotFoundError.new(self) if !exists?
+          raise NotFoundError.new(self) unless exists?
 
           raise OperationNotAllowedError.new(:write, self)
         end

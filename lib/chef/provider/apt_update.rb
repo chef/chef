@@ -31,7 +31,7 @@ class Chef
       def load_current_resource; end
 
       action :periodic do
-        if !apt_up_to_date?
+        unless apt_up_to_date?
           converge_by "update new lists of packages" do
             do_update
           end

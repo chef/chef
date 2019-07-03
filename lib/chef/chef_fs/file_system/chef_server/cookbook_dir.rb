@@ -85,7 +85,7 @@ class Chef
                   parts[0, parts.length - 1].each do |part|
                     old_container = container
                     container = old_container.children.find { |child| part == child.name }
-                    if !container
+                    unless container
                       container = CookbookSubdir.new(part, old_container, false, true)
                       old_container.add_child(container)
                     end
@@ -117,7 +117,7 @@ class Chef
                 end
               end
             else
-              raise NotFoundError.new(self) if !exists?
+              raise NotFoundError.new(self) unless exists?
 
               raise MustDeleteRecursivelyError.new(self, "#{path_for_printing} must be deleted recursively")
             end
@@ -133,7 +133,7 @@ class Chef
           end
 
           def compare_to(other)
-            if !other.dir?
+            unless other.dir?
               return [ !exists?, nil, nil ]
             end
 

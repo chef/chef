@@ -70,7 +70,7 @@ class Chef
 
             # Write out .uploaded-cookbook-version.json
             # cookbook_file_path = File.join(file_path, cookbook_name) <- this should be the same as self.file_path
-            if !File.exists?(file_path)
+            unless File.exists?(file_path)
               FileUtils.mkdir_p(file_path)
             end
             uploaded_cookbook_version_path = File.join(file_path, Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE)
@@ -83,7 +83,7 @@ class Chef
 
           def chef_object
             cb = cookbook_version
-            if !cb
+            unless cb
               Chef::Log.error("Cookbook #{file_path} empty.")
               raise "Cookbook #{file_path} empty."
             end

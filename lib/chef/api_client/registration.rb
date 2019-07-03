@@ -72,7 +72,7 @@ class Chef
 
       def assert_destination_writable!
         abs_path = File.expand_path(destination)
-        if !File.exists?(File.dirname(abs_path))
+        unless File.exists?(File.dirname(abs_path))
           begin
             FileUtils.mkdir_p(File.dirname(abs_path))
           rescue Errno::EACCES

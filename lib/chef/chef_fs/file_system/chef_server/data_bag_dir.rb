@@ -48,8 +48,8 @@ class Chef
           end
 
           def delete(recurse)
-            if !recurse
-              raise NotFoundError.new(self) if !exists?
+            unless recurse
+              raise NotFoundError.new(self) unless exists?
 
               raise MustDeleteRecursivelyError.new(self, "#{path_for_printing} must be deleted recursively")
             end

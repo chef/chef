@@ -1073,7 +1073,7 @@ module ChefConfig
       # Check if the proxy string contains a scheme. If not, add the url's scheme to the
       # proxy before parsing. The regex /^.*:\/\// matches, for example, http://. Reusing proxy
       # here since we are really just trying to get the string built correctly.
-      proxy = if !proxy_env_var.empty?
+      proxy = unless proxy_env_var.empty?
                 if proxy_env_var =~ /^.*:\/\//
                   URI.parse(proxy_env_var)
                 else

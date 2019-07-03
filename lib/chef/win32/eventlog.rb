@@ -17,7 +17,7 @@
 #
 
 if Chef::Platform.windows?
-  if !defined? Chef::Win32EventLogLoaded
+  unless defined? Chef::Win32EventLogLoaded
     if defined? Windows::Constants
       %i{INFINITE WAIT_FAILED FORMAT_MESSAGE_IGNORE_INSERTS ERROR_INSUFFICIENT_BUFFER}.each do |c|
         # These are redefined in 'win32/eventlog'

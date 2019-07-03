@@ -83,7 +83,7 @@ class Chef
           # Do not call super, only call shared requirements
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
-            if !@command_success
+            unless @command_success
               whyrun_msg = if @new_resource.status_command
                              "Provided status command #{@new_resource.status_command} failed."
                            else

@@ -122,7 +122,7 @@ class Chef
             FileSystemCache.instance.delete!(file_path)
             begin
               if dir?
-                if !recurse
+                unless recurse
                   raise MustDeleteRecursivelyError.new(self, $!)
                 end
 

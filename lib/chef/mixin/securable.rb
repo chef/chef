@@ -134,7 +134,7 @@ class Chef
               end
 
               [ principals ].flatten.each do |principal|
-                if !principal.is_a?(String)
+                unless principal.is_a?(String)
                   raise ArgumentError, "principals parameter must be a string or array of strings representing usernames"
                 end
               end

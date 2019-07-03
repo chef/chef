@@ -36,7 +36,7 @@ class Chef
         last = args.pop
         prev_memo = prev_key = nil
         chain = args.inject(self) do |memo, key|
-          if !valid_container?(memo, key)
+          unless valid_container?(memo, key)
             prev_memo[prev_key] = {}
             memo = prev_memo[prev_key]
           end
@@ -44,7 +44,7 @@ class Chef
           prev_key = key
           memo[key]
         end
-        if !valid_container?(chain, last)
+        unless valid_container?(chain, last)
           prev_memo[prev_key] = {}
           chain = prev_memo[prev_key]
         end

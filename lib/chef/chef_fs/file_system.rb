@@ -195,7 +195,7 @@ class Chef
           # Check the outer regex pattern to see if it matches anything on the
           # filesystem that isn't on the server
           Chef::ChefFS::FileSystem.list(b_root, pattern).each do |b|
-            if !found_paths.include?(b.display_path)
+            unless found_paths.include?(b.display_path)
               a = Chef::ChefFS::FileSystem.resolve_path(a_root, b.display_path)
               yield [ a, b ]
             end
@@ -229,7 +229,7 @@ class Chef
 
         # Check b for children that aren't in a
         b.children.each do |b_child|
-          if !a_children_names.include?(b_child.bare_name)
+          unless a_children_names.include?(b_child.bare_name)
             result << [ a.child(b_child.bare_name), b_child ]
           end
         end

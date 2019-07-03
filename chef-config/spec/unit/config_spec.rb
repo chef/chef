@@ -618,7 +618,7 @@ RSpec.describe ChefConfig::Config do
         # On Windows, we'll detect an omnibus build and set this to the
         # cacert.pem included in the package, but it's nil if you're on Windows
         # w/o omnibus (e.g., doing development on Windows, custom build, etc.)
-        if !is_windows
+        unless is_windows
           it "ChefConfig::Config[:ssl_ca_file] defaults to nil" do
             expect(ChefConfig::Config[:ssl_ca_file]).to be_nil
           end
