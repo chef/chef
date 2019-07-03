@@ -48,12 +48,6 @@ builder-to-testers-map:
     - solaris-11-i86pc
   solaris-11-sparc:
     - solaris-11-sparc
-  ubuntu-14.04-i386:
-    - ubuntu-14.04-i386
-  ubuntu-14.04-ppc64le:
-    - ubuntu-14.04-ppc64le
-  ubuntu-14.04-x86_64:
-    - ubuntu-14.04-x86_64
   ubuntu-16.04-x86_64:
     - ubuntu-16.04-x86_64
     - ubuntu-18.04-x86_64
