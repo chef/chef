@@ -160,7 +160,7 @@ class Chef
 
       property :environment, Hash,
         description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}).",
-        default: lazy { Hash.new }
+        default: lazy { {} }
 
       private
 

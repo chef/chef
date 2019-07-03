@@ -23,7 +23,7 @@ describe Chef::HTTP::Authenticator do
   let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: "test") }
   let(:method) { "GET" }
   let(:url) { URI("https://chef.example.com/organizations/test") }
-  let(:headers) { Hash.new }
+  let(:headers) { {} }
   let(:data) { "" }
 
   context "when handle_request is called" do

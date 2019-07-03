@@ -49,8 +49,8 @@ class Chef
         node ||= begin
           os_arch = ENV["PROCESSOR_ARCHITEW6432"] ||
             ENV["PROCESSOR_ARCHITECTURE"]
-          Hash.new.tap do |n|
-            n[:kernel] = Hash.new
+          {}.tap do |n|
+            n[:kernel] = {}
             n[:kernel][:machine] = os_arch == "AMD64" ? :x86_64 : :i386
           end
         end

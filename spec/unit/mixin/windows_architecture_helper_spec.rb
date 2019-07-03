@@ -74,7 +74,7 @@ describe Chef::Mixin::WindowsArchitectureHelper do
   def with_node_architecture_combinations
     @valid_architectures.each do |node_architecture|
       new_node = Chef::Node.new
-      new_node.default["kernel"] = Hash.new
+      new_node.default["kernel"] = {}
       new_node.default["kernel"][:machine] = node_architecture.to_s
 
       @valid_architectures.each do |architecture|

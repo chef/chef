@@ -108,7 +108,7 @@ class Chef
               end
             end
 
-            line_parts = Array.new
+            line_parts = []
 
             if node["ohai_time"]
               hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])

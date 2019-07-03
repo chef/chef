@@ -24,7 +24,7 @@ class DataQueryDSLTester
 end
 
 describe Chef::DSL::DataQuery do
-  let(:node) { Hash.new }
+  let(:node) { {} }
 
   let(:language) do
     language = DataQueryDSLTester.new

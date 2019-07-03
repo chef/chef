@@ -207,7 +207,7 @@ class Chef
         def format_cookbook_list_for_display(item)
           if config[:with_uri]
             item.inject({}) do |collected, (cookbook, versions)|
-              collected[cookbook] = Hash.new
+              collected[cookbook] = {}
               versions["versions"].each do |ver|
                 collected[cookbook][ver["version"]] = ver["url"]
               end

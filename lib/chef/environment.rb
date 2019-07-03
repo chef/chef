@@ -42,7 +42,7 @@ class Chef
       @description = ""
       @default_attributes = Mash.new
       @override_attributes = Mash.new
-      @cookbook_versions = Hash.new
+      @cookbook_versions = {}
       @chef_server_rest = chef_server_rest
     end
 
@@ -158,7 +158,7 @@ class Chef
       # reset because everything we need will be in the params, this is necessary because certain constraints
       # may have been removed in the params and need to be removed from cookbook_versions as well.
       bkup_cb_versions = cookbook_versions
-      cookbook_versions(Hash.new)
+      cookbook_versions({})
       valid = true
 
       begin
@@ -229,7 +229,7 @@ class Chef
 
     def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:environment) do |e|
           response[e.name] = e unless e.nil?
         end

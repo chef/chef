@@ -185,7 +185,7 @@ class Chef
       @logger = logger || Chef::Log.with_child
       @cookbook_collection = cookbook_collection
       self.node = node if node
-      @definitions = Hash.new
+      @definitions = {}
       @loaded_recipes_hash = {}
       @loaded_attributes_hash = {}
       @reboot_info = {}
@@ -313,7 +313,7 @@ class Chef
     # @see DSL::IncludeRecipe#include_recipe
     #
     def include_recipe(*recipe_names, current_cookbook: nil)
-      result_recipes = Array.new
+      result_recipes = []
       recipe_names.flatten.each do |recipe_name|
         if result = load_recipe(recipe_name, current_cookbook: current_cookbook)
           result_recipes << result

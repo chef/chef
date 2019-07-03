@@ -59,7 +59,7 @@ class Chef
       @recipe_name = recipe_name
       @run_context = run_context
       # TODO: 5/19/2010 cw/tim: determine whether this can be removed
-      @params = Hash.new
+      @params = {}
     end
 
     # Used in DSL mixins

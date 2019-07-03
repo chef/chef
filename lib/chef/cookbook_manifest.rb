@@ -223,7 +223,7 @@ class Chef
     # See #preferred_manifest_record for a description an individual manifest record.
     def generate_manifest
       manifest = Mash.new({
-        all_files: Array.new,
+        all_files: [],
       })
       @checksums = {}
 

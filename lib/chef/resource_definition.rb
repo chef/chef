@@ -29,7 +29,7 @@ class Chef
 
     def initialize(node = nil)
       @name = nil
-      @params = Hash.new
+      @params = {}
       @recipe = nil
       @node = node
     end

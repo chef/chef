@@ -36,7 +36,7 @@ class Chef
       NAMELESS_RESOURCE_MATCH = /^([^\[\]\s]+)$/.freeze
 
       def initialize
-        @resources_by_key = Hash.new
+        @resources_by_key = {}
       end
 
       def keys
@@ -89,7 +89,7 @@ class Chef
       # Raises an ArgumentError if you feed it bad lookup information
       # Raises a Runtime Error if it can't find the resources you are looking for.
       def find(*args)
-        results = Array.new
+        results = []
         args.each do |arg|
           case arg
             when Hash
@@ -154,7 +154,7 @@ class Chef
       end
 
       def find_resource_by_hash(arg)
-        results = Array.new
+        results = []
         arg.each do |resource_type, name_list|
           instance_names = name_list.kind_of?(Array) ? name_list : [ name_list ]
           instance_names.each do |instance_name|
@@ -174,7 +174,7 @@ class Chef
         rescue Chef::Exceptions::ResourceNotFound => e
           if arg =~ MULTIPLE_RESOURCE_MATCH
             begin
-              results = Array.new
+              results = []
               resource_type = $1
               arg =~ /^.+\[(.+)\]$/
               resource_list = $1

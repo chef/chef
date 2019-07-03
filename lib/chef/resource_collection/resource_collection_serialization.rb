@@ -23,7 +23,7 @@ class Chef
     module ResourceCollectionSerialization
       # Serialize this object as a hash
       def to_h
-        instance_vars = Hash.new
+        instance_vars = {}
         instance_variables.each do |iv|
           instance_vars[iv] = instance_variable_get(iv)
         end

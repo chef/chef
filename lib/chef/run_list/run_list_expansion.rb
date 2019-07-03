@@ -64,7 +64,7 @@ class Chef
 
       def initialize(environment, run_list_items, source = nil)
         @environment = environment
-        @missing_roles_with_including_role = Array.new
+        @missing_roles_with_including_role = []
 
         @run_list_items = run_list_items.dup
         @source = source

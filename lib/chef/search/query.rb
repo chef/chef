@@ -122,10 +122,10 @@ class Chef
       end
 
       def hashify_args(*args)
-        return Hash.new if args.empty?
+        return {} if args.empty?
         return args.first if args.first.is_a?(Hash)
 
-        args_h = Hash.new
+        args_h = {}
         # If we have 4 arguments, the first is the now-removed sort option, so
         # just ignore it.
         args.pop(0) if args.length == 4

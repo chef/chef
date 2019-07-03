@@ -40,7 +40,7 @@ class Chef
       def_delegators :resources, *(direct_access_methods)
 
       def initialize
-        @resources = Array.new
+        @resources = []
         @insert_after_idx = nil
       end
 

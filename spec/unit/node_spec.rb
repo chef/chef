@@ -103,7 +103,7 @@ describe Chef::Node do
     end
 
     it "should always have a string for name" do
-      expect { node.name(Hash.new) }.to raise_error(ArgumentError)
+      expect { node.name({}) }.to raise_error(ArgumentError)
     end
 
     it "cannot be blank" do
@@ -126,7 +126,7 @@ describe Chef::Node do
     end
 
     it "should disallow non-strings" do
-      expect { node.chef_environment(Hash.new) }.to raise_error(ArgumentError)
+      expect { node.chef_environment({}) }.to raise_error(ArgumentError)
       expect { node.chef_environment(42) }.to raise_error(ArgumentError)
     end
 
@@ -162,7 +162,7 @@ describe Chef::Node do
     end
 
     it "disallows non-strings" do
-      expect { node.policy_name(Hash.new) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_name({}) }.to raise_error(Chef::Exceptions::ValidationFailed)
       expect { node.policy_name(42) }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
@@ -198,7 +198,7 @@ describe Chef::Node do
     end
 
     it "disallows non-strings" do
-      expect { node.policy_group(Hash.new) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_group({}) }.to raise_error(Chef::Exceptions::ValidationFailed)
       expect { node.policy_group(42) }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
@@ -793,7 +793,7 @@ describe Chef::Node do
     it "should allow you to iterate over attributes with each_attribute" do
       node.default["sunshine"] = "is bright"
       node.default["canada"] = "is a nice place"
-      seen_attributes = Hash.new
+      seen_attributes = {}
       node.each_attribute do |a, v|
         seen_attributes[a] = v
       end

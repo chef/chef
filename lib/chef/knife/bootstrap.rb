@@ -283,9 +283,9 @@ class Chef
         long: "--hint HINT_NAME[=HINT_FILE]",
         description: "Specify an Ohai hint to be set on the bootstrap target. Use multiple --hint options to specify multiple hints.",
         proc: Proc.new { |h|
-          Chef::Config[:knife][:hints] ||= Hash.new
+          Chef::Config[:knife][:hints] ||= {}
           name, path = h.split("=")
-          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : Hash.new
+          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : {}
         }
 
       # bootstrap override: url of a an installer shell script touse in place of omnitruck

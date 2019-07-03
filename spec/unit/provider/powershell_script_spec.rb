@@ -22,7 +22,7 @@ describe Chef::Provider::PowershellScript, "action_run" do
   let(:powershell_version) { nil }
   let(:node) do
     node = Chef::Node.new
-    node.default["kernel"] = Hash.new
+    node.default["kernel"] = {}
     node.default["kernel"][:machine] = :x86_64.to_s
     if ! powershell_version.nil?
       node.default[:languages] = { powershell: { version: powershell_version } }

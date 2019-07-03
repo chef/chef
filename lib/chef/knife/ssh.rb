@@ -225,7 +225,7 @@ class Chef
       end
 
       def search_nodes
-        list = Array.new
+        list = []
         query = Chef::Search::Query.new
         required_attributes = { fqdn: ["fqdn"], cloud: ["cloud"] }
 
@@ -433,7 +433,7 @@ class Chef
             break
           when /^on (.+?); (.+)$/
             raw_list = $1.split(" ")
-            server_list = Array.new
+            server_list = []
             session.servers.each do |session_server|
               server_list << session_server if raw_list.include?(session_server.host)
             end

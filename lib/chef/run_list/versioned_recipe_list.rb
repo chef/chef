@@ -26,7 +26,7 @@ class Chef
 
       def initialize
         super
-        @versions = Hash.new
+        @versions = {}
       end
 
       def add_recipe(name, version = nil)

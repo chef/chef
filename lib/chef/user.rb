@@ -181,7 +181,7 @@ class Chef
     # into the form
     # { "USERNAME" => "URI" }
     def self.transform_ohc_list_response(response)
-      new_response = Hash.new
+      new_response = {}
       response.each do |u|
         name = u["user"]["username"]
         new_response[name] = Chef::Config[:chef_server_url] + "/users/#{name}"

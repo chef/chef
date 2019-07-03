@@ -121,7 +121,7 @@ class Chef
                 end
 
       @before = nil
-      @params = Hash.new
+      @params = {}
       @provider = nil
       @allowed_actions = self.class.allowed_actions.to_a
       @action = self.class.default_action
@@ -676,7 +676,7 @@ class Chef
     # json is encoded as expected
     def as_json(*a)
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
-      instance_vars = Hash.new
+      instance_vars = {}
       safe_ivars.each do |iv|
         instance_vars[iv.to_s.sub(/^@/, "")] = instance_variable_get(iv)
       end

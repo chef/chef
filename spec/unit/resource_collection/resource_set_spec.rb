@@ -172,7 +172,7 @@ describe Chef::ResourceCollection::ResourceSet do
     end
 
     it "should raise an exception if you pass something other than a string or hash to resource" do
-      expect { collection.find([Array.new]) }.to raise_error(ArgumentError)
+      expect { collection.find([[]]) }.to raise_error(ArgumentError)
     end
 
     it "raises an error when attempting to find a resource that does not exist" do

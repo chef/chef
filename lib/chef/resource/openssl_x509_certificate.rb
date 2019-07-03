@@ -70,7 +70,7 @@ class Chef
 
       property :extensions, Hash,
         description: "Hash of X509 Extensions entries, in format { 'keyUsage' => { 'values' => %w( keyEncipherment digitalSignature), 'critical' => true } }.",
-        default: lazy { Hash.new }
+        default: lazy { {} }
 
       property :subject_alt_name, Array,
         description: "Array of Subject Alternative Name entries, in format DNS:example.com or IP:1.2.3.4.",

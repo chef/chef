@@ -66,7 +66,7 @@ describe Chef::Key do
 
     context "when you feed it anything but a string" do
       it "should raise an ArgumentError" do
-        expect { key.send(field, Hash.new) }.to raise_error(ArgumentError)
+        expect { key.send(field, {}) }.to raise_error(ArgumentError)
       end
     end
   end

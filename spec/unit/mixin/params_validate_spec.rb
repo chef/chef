@@ -44,7 +44,7 @@ describe Chef::Mixin::ParamsValidate do
   it "should require validation map keys to be symbols or strings" do
     expect { @vo.validate({ one: "two" }, { one: true }) }.not_to raise_error
     expect { @vo.validate({ one: "two" }, { "one" => true }) }.not_to raise_error
-    expect { @vo.validate({ one: "two" }, { Hash.new => true }) }.to raise_error(ArgumentError)
+    expect { @vo.validate({ one: "two" }, { {} => true }) }.to raise_error(ArgumentError)
   end
 
   it "should allow options to be required with true" do
@@ -163,7 +163,7 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should let you set a default value with default => value" do
-    arguments = Hash.new
+    arguments = {}
     @vo.validate(arguments, {
       one: {
         default: "is the loneliest number",
@@ -321,7 +321,7 @@ describe Chef::Mixin::ParamsValidate do
     end.not_to raise_error
     expect do
       @vo.validate(
-        { one: Hash.new },
+        { one: {} },
         {
           one: {
             kind_of: [ String, Array ],

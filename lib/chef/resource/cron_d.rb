@@ -159,7 +159,7 @@ class Chef
 
       property :environment, Hash,
         description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
-        default: lazy { Hash.new }
+        default: lazy { {} }
 
       property :mode, [String, Integer],
         description: "The octal mode of the generated crontab file.",

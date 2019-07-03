@@ -28,7 +28,7 @@ describe Chef::Knife::NodeBulkDelete do
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
     allow(@knife.ui).to receive(:confirm).and_return(true)
-    @nodes = Hash.new
+    @nodes = {}
     %w{adam brent jacob}.each do |node_name|
       @nodes[node_name] = "http://localhost:4000/nodes/#{node_name}"
     end

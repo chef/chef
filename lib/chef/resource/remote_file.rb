@@ -88,7 +88,7 @@ class Chef
 
       property :ftp_active_mode, [ TrueClass, FalseClass ], default: false
 
-      property :headers, Hash, default: lazy { Hash.new }
+      property :headers, Hash, default: lazy { {} }
 
       property :show_progress, [ TrueClass, FalseClass ], default: false
 

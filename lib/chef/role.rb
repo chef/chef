@@ -192,7 +192,7 @@ class Chef
     # Get the list of all roles from the API.
     def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:role) do |n|
           response[n.name] = n unless n.nil?
         end

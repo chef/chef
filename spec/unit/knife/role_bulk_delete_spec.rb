@@ -29,7 +29,7 @@ describe Chef::Knife::RoleBulkDelete do
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
     allow(@knife.ui).to receive(:confirm).and_return(true)
-    @roles = Hash.new
+    @roles = {}
     %w{dev staging production}.each do |role_name|
       role = Chef::Role.new
       role.name(role_name)

@@ -158,7 +158,7 @@ class Chef
       # === Returns
       # [String] - An array of file cache keys matching the glob
       def find(glob_pattern)
-        keys = Array.new
+        keys = []
         Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(file_cache_path), glob_pattern)].each do |f|
           if File.file?(f)
             keys << f[/^#{Regexp.escape(Dir[Chef::Util::PathHelper.escape_glob_dir(file_cache_path)].first) + File::Separator}(.+)/, 1]

@@ -42,7 +42,7 @@ describe Chef::Knife::ClientBulkDelete do
 
   let(:nonvalidator_client_names) { %w{tim dan stephen} }
   let(:nonvalidator_clients) do
-    clients = Hash.new
+    clients = {}
 
     nonvalidator_client_names.each do |client_name|
       client = Chef::ApiClientV1.new
@@ -56,7 +56,7 @@ describe Chef::Knife::ClientBulkDelete do
 
   let(:validator_client_names) { %w{myorg-validator} }
   let(:validator_clients) do
-    clients = Hash.new
+    clients = {}
 
     validator_client_names.each do |validator_client_name|
       validator_client = Chef::ApiClientV1.new

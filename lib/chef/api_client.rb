@@ -157,7 +157,7 @@ class Chef
 
     def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:client) do |n|
           n = json_create(n) if n.instance_of?(Hash)
           response[n.name] = n

@@ -80,7 +80,7 @@ class Chef
         @sku = get_product_info(@major_version, @minor_version, @sp_major_version, @sp_minor_version)
       end
 
-      marketing_names = Array.new
+      marketing_names = []
 
       # General Windows checks
       WIN_VERSIONS.each do |k, v|

@@ -23,7 +23,7 @@ describe Chef::Knife::SupermarketInstall do
   let(:knife) { Chef::Knife::SupermarketInstall.new }
   let(:stdout) { StringIO.new }
   let(:stderr) { StringIO.new }
-  let(:downloader) { Hash.new }
+  let(:downloader) { {} }
   let(:archive) { double(Mixlib::Archive, extract: true) }
   let(:repo) do
     double(sanity_check: true, reset_to_default_state: true,

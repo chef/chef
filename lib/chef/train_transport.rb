@@ -94,7 +94,7 @@ class Chef
     def self.build_transport(logger = Chef::Log.with_child(subsystem: "transport"))
       # TODO: Consider supporting parsing the protocol from a URI passed to `--target`
       #
-      train_config = Hash.new
+      train_config = {}
 
       # Load the target_mode config context from Chef::Config, and place any valid settings into the train configuration
       tm_config = Chef::Config.target_mode

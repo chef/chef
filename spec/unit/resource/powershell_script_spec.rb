@@ -23,7 +23,7 @@ describe Chef::Resource::PowershellScript do
   before(:each) do
     node = Chef::Node.new
 
-    node.default["kernel"] = Hash.new
+    node.default["kernel"] = {}
     node.default["kernel"][:machine] = :x86_64.to_s
     node.automatic[:os] = "windows"
 

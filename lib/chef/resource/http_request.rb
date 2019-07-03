@@ -33,7 +33,7 @@ class Chef
       property :url, String, identity: true,
                description: "The URL to which an HTTP request is sent."
 
-      property :headers, Hash, default: lazy { Hash.new },
+      property :headers, Hash, default: lazy { {} },
                description: "A Hash of custom headers."
 
       def initialize(name, run_context = nil)

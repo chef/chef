@@ -43,7 +43,7 @@ shared_examples_for "a platform introspector" do
   end
 
   it "returns a default value when there is no known platform" do
-    node = Hash.new
+    node = {}
     expect(platform_introspector.value_for_platform(@platform_hash)).to eq("default")
   end
 

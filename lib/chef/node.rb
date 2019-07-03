@@ -580,7 +580,7 @@ class Chef
 
     def self.list_by_environment(environment, inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") { |n| response[n.name] = n unless n.nil? }
         response
       else
@@ -590,7 +590,7 @@ class Chef
 
     def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:node) do |n|
           n = Chef::Node.from_hash(n)
           response[n.name] = n unless n.nil?

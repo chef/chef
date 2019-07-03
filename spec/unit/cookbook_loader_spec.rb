@@ -88,7 +88,7 @@ describe Chef::CookbookLoader do
 
     describe "each" do
       it "should allow you to iterate over cookbooks with each" do
-        seen = Hash.new
+        seen = {}
         cookbook_loader.each_key do |cookbook_name|
           seen[cookbook_name] = true
         end
@@ -97,7 +97,7 @@ describe Chef::CookbookLoader do
       end
 
       it "should iterate in alphabetical order" do
-        seen = Array.new
+        seen = []
         cookbook_loader.each_key do |cookbook_name|
           seen << cookbook_name
         end
@@ -173,7 +173,7 @@ describe Chef::CookbookLoader do
     end
 
     it "should have loaded the correct cookbook" do
-      seen = Hash.new
+      seen = {}
       cookbook_loader.each_key do |cookbook_name|
         seen[cookbook_name] = true
       end
@@ -203,7 +203,7 @@ describe Chef::CookbookLoader do
     end
 
     it "should not load the other cookbooks" do
-      seen = Hash.new
+      seen = {}
       cookbook_loader.each_key do |cookbook_name|
         seen[cookbook_name] = true
       end
@@ -239,7 +239,7 @@ describe Chef::CookbookLoader do
       end
 
       it "should load all cookbooks" do
-        seen = Hash.new
+        seen = {}
         cookbook_loader.each_key do |cookbook_name|
           seen[cookbook_name] = true
         end

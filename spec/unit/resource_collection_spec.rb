@@ -97,7 +97,7 @@ describe Chef::ResourceCollection do
   describe "each" do
     it "should allow you to iterate over every resource in the collection" do
       load_up_resources
-      results = Array.new
+      results = []
       expect do
         rc.each do |r|
           results << r.name
@@ -119,7 +119,7 @@ describe Chef::ResourceCollection do
   describe "each_index" do
     it "should allow you to iterate over every resource by index" do
       load_up_resources
-      results = Array.new
+      results = []
       expect do
         rc.each_index do |i|
           results << rc[i].name
@@ -246,7 +246,7 @@ describe Chef::ResourceCollection do
     end
 
     it "should raise an exception if you pass something other than a string or hash to resource" do
-      expect { rc.resources([Array.new]) }.to raise_error(ArgumentError)
+      expect { rc.resources([[]]) }.to raise_error(ArgumentError)
     end
 
     it "raises an error when attempting to find a resource that does not exist" do

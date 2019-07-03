@@ -85,7 +85,7 @@ describe Chef::Resource::File do
   it "accepts a string as the path" do
     expect { resource.path "/tmp" }.not_to raise_error
     expect(resource.path).to eql("/tmp")
-    expect { resource.path Hash.new }.to raise_error(ArgumentError)
+    expect { resource.path({}) }.to raise_error(ArgumentError)
   end
 
   describe "when it has a path, owner, group, mode, and checksum" do

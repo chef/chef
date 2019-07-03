@@ -96,7 +96,7 @@ class Chef
       @root_paths = root_paths
       @frozen = false
 
-      @all_files = Array.new
+      @all_files = []
 
       @file_vendor = nil
       @cookbook_manifest = Chef::CookbookManifest.new(self)
@@ -279,8 +279,8 @@ class Chef
 
     def relative_filenames_in_preferred_directory(node, segment, dirname)
       preferences = preferences_for_path(node, segment, dirname)
-      filenames_by_pref = Hash.new
-      preferences.each { |pref| filenames_by_pref[pref] = Array.new }
+      filenames_by_pref = {}
+      preferences.each { |pref| filenames_by_pref[pref] = [] }
 
       files_for(segment).each do |manifest_record|
         manifest_record_path = manifest_record[:path]
@@ -319,8 +319,8 @@ class Chef
     # description of entries of the returned Array.
     def preferred_manifest_records_for_directory(node, segment, dirname)
       preferences = preferences_for_path(node, segment, dirname)
-      records_by_pref = Hash.new
-      preferences.each { |pref| records_by_pref[pref] = Array.new }
+      records_by_pref = {}
+      preferences.each { |pref| records_by_pref[pref] = [] }
 
       files_for(segment).each do |manifest_record|
         manifest_record_path = manifest_record[:path]

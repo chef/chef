@@ -31,7 +31,7 @@ describe Chef::Knife::Ssh do
     @server.stop
   end
 
-  let(:ssh_config) { Hash.new }
+  let(:ssh_config) { {} }
   before do
     allow(Net::SSH).to receive(:configuration_for).and_return(ssh_config)
   end

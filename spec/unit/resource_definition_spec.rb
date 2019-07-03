@@ -92,7 +92,7 @@ describe Chef::ResourceDefinition do
 
   it "should raise an exception if prototype_params is not a hash" do
     expect do
-      defn.define :monkey, Array.new do
+      defn.define :monkey, [] do
       end
     end.to raise_error(ArgumentError)
   end
