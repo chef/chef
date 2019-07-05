@@ -92,9 +92,9 @@ class Chef
               old_services_list = old_services_list ? old_services_list[1].split(" ") : []
               new_services_list = old_services_list + [new_resource.service_name]
               if rc_conf_local =~ /^pkg_scripts="(.*)"/
-                new_rcl = rc_conf_local.sub(/^pkg_scripts="(.*)"/, "pkg_scripts=\"#{new_services_list.join(' ')}\"")
+                new_rcl = rc_conf_local.sub(/^pkg_scripts="(.*)"/, "pkg_scripts=\"#{new_services_list.join(" ")}\"")
               else
-                new_rcl = rc_conf_local + "\n" + "pkg_scripts=\"#{new_services_list.join(' ')}\"\n"
+                new_rcl = rc_conf_local + "\n" + "pkg_scripts=\"#{new_services_list.join(" ")}\"\n"
               end
               update_rcl new_rcl
             end

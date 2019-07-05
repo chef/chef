@@ -146,7 +146,7 @@ class Chef
 
         def remount_command
           if !(@new_resource.options.nil? || @new_resource.options.empty?)
-            [ "mount", "-o", "remount,#{@new_resource.options.join(',')}", @new_resource.device, @new_resource.mount_point ]
+            [ "mount", "-o", "remount,#{@new_resource.options.join(",")}", @new_resource.device, @new_resource.mount_point ]
           else
             [ "mount", "-o", "remount", @new_resource.device, @new_resource.mount_point ]
           end
@@ -174,7 +174,7 @@ class Chef
             end
             fstab.puts("\tvfs\t\t= #{@new_resource.fstype}")
             fstab.puts("\tmount\t\t= false")
-            fstab.puts "\toptions\t\t= #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
+            fstab.puts "\toptions\t\t= #{@new_resource.options.join(",")}" unless @new_resource.options.nil? || @new_resource.options.empty?
             logger.trace("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
         end

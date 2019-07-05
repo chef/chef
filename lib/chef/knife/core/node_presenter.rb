@@ -98,47 +98,47 @@ class Chef
             ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
 
             summarized = <<~SUMMARY
-              #{ui.color('Node Name:', :bold)}   #{ui.color(node.name, :bold)}
+              #{ui.color("Node Name:", :bold)}   #{ui.color(node.name, :bold)}
             SUMMARY
             show_policy = !(node.policy_name.nil? && node.policy_group.nil?)
             if show_policy
               summarized << <<~POLICY
-                #{key('Policy Name:')}  #{node.policy_name}
-                #{key('Policy Group:')} #{node.policy_group}
+                #{key("Policy Name:")}  #{node.policy_name}
+                #{key("Policy Group:")} #{node.policy_group}
               POLICY
             else
               summarized << <<~ENV
-                #{key('Environment:')} #{node.chef_environment}
+                #{key("Environment:")} #{node.chef_environment}
               ENV
             end
             summarized << <<~SUMMARY
-              #{key('FQDN:')}        #{node[:fqdn]}
-              #{key('IP:')}          #{ip}
-              #{key('Run List:')}    #{node.run_list}
+              #{key("FQDN:")}        #{node[:fqdn]}
+              #{key("IP:")}          #{ip}
+              #{key("Run List:")}    #{node.run_list}
             SUMMARY
             unless show_policy
               summarized << <<~ROLES
-                #{key('Roles:')}       #{Array(node[:roles]).join(', ')}
+                #{key("Roles:")}       #{Array(node[:roles]).join(", ")}
               ROLES
             end
             summarized << <<~SUMMARY
-              #{key('Recipes:')}     #{Array(node[:recipes]).join(', ')}
-              #{key('Platform:')}    #{node[:platform]} #{node[:platform_version]}
-              #{key('Tags:')}        #{node.tags.join(', ')}
+              #{key("Recipes:")}     #{Array(node[:recipes]).join(", ")}
+              #{key("Platform:")}    #{node[:platform]} #{node[:platform_version]}
+              #{key("Tags:")}        #{node.tags.join(", ")}
             SUMMARY
             if config[:medium_output] || config[:long_output]
               summarized += <<~MORE
-                #{key('Attributes:')}
+                #{key("Attributes:")}
                 #{text_format(node.normal_attrs)}
               MORE
             end
             if config[:long_output]
               summarized += <<~MOST
-                #{key('Default Attributes:')}
+                #{key("Default Attributes:")}
                 #{text_format(node.default_attrs)}
-                #{key('Override Attributes:')}
+                #{key("Override Attributes:")}
                 #{text_format(node.override_attrs)}
-                #{key('Automatic Attributes (Ohai Data):')}
+                #{key("Automatic Attributes (Ohai Data):")}
                 #{text_format(node.automatic_attrs)}
               MOST
             end

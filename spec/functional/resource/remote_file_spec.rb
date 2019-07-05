@@ -134,7 +134,7 @@ describe Chef::Resource::RemoteFile do
       let(:smb_file_local_file_name) { "smb_file.txt" }
       let(:smb_file_local_path) { File.join( smb_share_root_directory, smb_file_local_file_name ) }
       let(:smb_share_name) { "chef_smb_test" }
-      let(:smb_remote_path) { File.join("//#{ENV['COMPUTERNAME']}", smb_share_name, smb_file_local_file_name).gsub(%r{/}, "\\") }
+      let(:smb_remote_path) { File.join("//#{ENV["COMPUTERNAME"]}", smb_share_name, smb_file_local_file_name).gsub(%r{/}, "\\") }
       let(:smb_file_content) { "hellofun" }
       let(:local_destination_path) { File.join(Dir.tmpdir, make_tmpname("chef_remote_file")) }
       let(:windows_current_user) { ENV["USERNAME"] }

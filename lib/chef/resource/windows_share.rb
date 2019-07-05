@@ -173,7 +173,7 @@ class Chef
 # local names are returned from Get-SmbShareAccess in the full format MACHINE\\NAME
 # but users of this resource would simply say NAME so we need to strip the values for comparison
       def stripped_account(name)
-        name.slice!("#{node['hostname']}\\")
+        name.slice!("#{node["hostname"]}\\")
         name
       end
 

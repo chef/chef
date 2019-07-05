@@ -126,7 +126,7 @@ class Chef
           homebrew_uid = find_homebrew_uid(new_resource.respond_to?(:homebrew_user) && new_resource.homebrew_user)
           homebrew_user = Etc.getpwuid(homebrew_uid)
 
-          logger.trace "Executing '#{command.join(' ')}' as user '#{homebrew_user.name}'"
+          logger.trace "Executing '#{command.join(" ")}' as user '#{homebrew_user.name}'"
           # FIXME: this 1800 second default timeout should be deprecated
           output = shell_out!(*command, timeout: 1800, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp

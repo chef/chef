@@ -42,7 +42,7 @@ class Chef
                        end
             "#{property}=>#{obj_text}"
           end
-          "{#{descriptions.join(', ')}}"
+          "{#{descriptions.join(", ")}}"
         end
       end
 

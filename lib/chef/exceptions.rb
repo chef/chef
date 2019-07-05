@@ -493,9 +493,9 @@ class Chef
         @resources_found = resources_found
         matches_info = @resources_found.each do |r|
           if r["Module"].nil?
-            "Resource #{r['Name']} was found in #{r['Module']['Name']}"
+            "Resource #{r["Name"]} was found in #{r["Module"]["Name"]}"
           else
-            "Resource #{r['Name']} is a binary resource"
+            "Resource #{r["Name"]} is a binary resource"
           end
         end
         super "Found multiple resources matching #{matches_info[0]["Module"]["Name"]}:\n#{(matches_info.map { |f| f["Module"]["Version"] }).uniq.join("\n")}"

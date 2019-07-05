@@ -197,7 +197,7 @@ class Chef
     end
 
     def inspect
-      "data_bag_item[#{data_bag.inspect}, #{raw_data['id'].inspect}, #{raw_data.inspect}]"
+      "data_bag_item[#{data_bag.inspect}, #{raw_data["id"].inspect}, #{raw_data.inspect}]"
     end
 
     def pretty_print(pretty_printer)

@@ -199,7 +199,7 @@ class Chef
               logger.trace { "found gem #{spec.name} version #{version} for platform #{spec.platform} from #{source}" }
               version
             else
-              source_list = sources.compact.empty? ? "[#{Gem.sources.to_a.join(', ')}]" : "[#{sources.join(', ')}]"
+              source_list = sources.compact.empty? ? "[#{Gem.sources.to_a.join(", ")}]" : "[#{sources.join(", ")}]"
               logger.warn { "failed to find gem #{gem_dependency} from #{source_list}" }
               nil
             end
@@ -421,11 +421,11 @@ class Chef
 
         def is_omnibus?
           if RbConfig::CONFIG["bindir"] =~ %r{/(opscode|chef|chefdk)/embedded/bin}
-            logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
+            logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG["bindir"]}")
             # Omnibus installs to a static path because of linking on unix, find it.
             true
           elsif RbConfig::CONFIG["bindir"].sub(/^[\w]:/, "") == "/opscode/chef/embedded/bin"
-            logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
+            logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG["bindir"]}")
             # windows, with the drive letter removed
             true
           else

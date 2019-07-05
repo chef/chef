@@ -108,28 +108,28 @@ class Chef
       #
       # @param message [String] the text string
       def debug(message)
-        log("#{color('DEBUG:', :blue, :bold)} #{message}")
+        log("#{color("DEBUG:", :blue, :bold)} #{message}")
       end
 
       # Print a warning message
       #
       # @param message [String] the text string
       def warn(message)
-        log("#{color('WARNING:', :yellow, :bold)} #{message}")
+        log("#{color("WARNING:", :yellow, :bold)} #{message}")
       end
 
       # Print an error message
       #
       # @param message [String] the text string
       def error(message)
-        log("#{color('ERROR:', :red, :bold)} #{message}")
+        log("#{color("ERROR:", :red, :bold)} #{message}")
       end
 
       # Print a message describing a fatal error.
       #
       # @param message [String] the text string
       def fatal(message)
-        log("#{color('FATAL:', :red, :bold)} #{message}")
+        log("#{color("FATAL:", :red, :bold)} #{message}")
       end
 
       def color(string, *colors)

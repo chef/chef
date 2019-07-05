@@ -184,8 +184,8 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   end
 
   let(:dsc_environment_env_var_name) { "dsc_test_cwd" }
-  let(:dsc_environment_no_fail_not_etc_directory) { "#{ENV['systemroot']}\\system32" }
-  let(:dsc_environment_fail_etc_directory) { "#{ENV['systemroot']}\\system32\\drivers\\etc" }
+  let(:dsc_environment_no_fail_not_etc_directory) { "#{ENV["systemroot"]}\\system32" }
+  let(:dsc_environment_fail_etc_directory) { "#{ENV["systemroot"]}\\system32\\drivers\\etc" }
   let(:exception_message_signature) { "LL927-LL928" }
   let(:dsc_environment_config) do
     <<~EOH
@@ -464,7 +464,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
           User dsctestusercreate
           {
               UserName = '#{dsc_user}'
-              Password = #{r.ps_credential('jf9a8m49jrajf4#')}
+              Password = #{r.ps_credential("jf9a8m49jrajf4#")}
               Ensure = "Present"
           }
         EOF

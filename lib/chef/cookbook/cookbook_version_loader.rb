@@ -178,7 +178,7 @@ class Chef
         # actually empty, a metadata error here would be misleading, so don't
         # raise it (if called by #load!, a different error is raised).
         if !empty? && !metadata.valid?
-          message = "Cookbook loaded at path [#{cookbook_path}] has invalid metadata: #{metadata.errors.join('; ')}"
+          message = "Cookbook loaded at path [#{cookbook_path}] has invalid metadata: #{metadata.errors.join("; ")}"
           raise Exceptions::MetadataNotValid, message
         end
         false

@@ -56,7 +56,7 @@ class Chef
             "Deploying remote branches is not supported. " +
             "Specify the remote branch as a local branch for " +
             "the git repository you're deploying from " +
-            "(ie: '#{new_resource.revision.gsub('origin/', '')}' rather than '#{new_resource.revision}')."
+            "(ie: '#{new_resource.revision.gsub("origin/", "")}' rather than '#{new_resource.revision}')."
         end
 
         requirements.assert(:all_actions) do |a|

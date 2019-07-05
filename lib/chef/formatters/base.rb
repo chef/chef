@@ -52,7 +52,7 @@ class Chef
     # TODO: is it too clever to be defining new() on a module like this?
     def self.new(name, out, err)
       formatter_class = by_name(name.to_s)
-      raise UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(', ')})" unless formatter_class
+      raise UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(", ")})" unless formatter_class
 
       formatter_class.new(out, err)
     end

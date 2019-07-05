@@ -87,7 +87,7 @@ class Chef
           ui.info("Downloading #{segment}")
           files.each do |segment_file|
             dest = File.join(basedir, segment_file["path"].gsub("/", File::SEPARATOR))
-            Chef::Log.trace("Downloading #{segment_file['path']} to #{dest}")
+            Chef::Log.trace("Downloading #{segment_file["path"]} to #{dest}")
             FileUtils.mkdir_p(File.dirname(dest))
             tempfile = rest.streaming_request(segment_file["url"])
             FileUtils.mv(tempfile.path, dest)

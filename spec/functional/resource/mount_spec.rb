@@ -73,7 +73,7 @@ describe Chef::Resource::Mount, :requires_root, :skip_travis, external: include_
   def mount_should_exist(mount_point, device, fstype = nil, options = nil)
     validation_cmd = "mount | grep #{mount_point} | grep #{device} "
     validation_cmd << " | grep #{fstype} " unless fstype.nil?
-    validation_cmd << " | grep #{options.join(',')} " unless options.nil? || options.empty?
+    validation_cmd << " | grep #{options.join(",")} " unless options.nil? || options.empty?
     expect(shell_out(validation_cmd).exitstatus).to eq(0)
   end
 

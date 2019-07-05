@@ -77,7 +77,7 @@ class Chef
           guard_script = cert_script(false)
         else
           # make sure we have no spaces in the hash string
-          hash = "\"#{new_resource.source.gsub(/\s/, '')}\""
+          hash = "\"#{new_resource.source.gsub(/\s/, "")}\""
           code_script = ""
           guard_script = ""
         end

@@ -68,8 +68,8 @@ class Chef
         # if not, shouldn't we raise to tell the user to use install instead of upgrade if they want to pin a version?
         requirements.assert(:install) do |a|
           a.assertion { candidates_exist_for_all_forced_changes? }
-          a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{forced_packages_missing_candidates.join(', ')}")
-          a.whyrun("Assuming a repository that offers #{forced_packages_missing_candidates.join(', ')} would have been configured")
+          a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{forced_packages_missing_candidates.join(", ")}")
+          a.whyrun("Assuming a repository that offers #{forced_packages_missing_candidates.join(", ")} would have been configured")
         end
 
         # XXX: Does it make sense to pass in a source with :upgrade? Probably
@@ -77,8 +77,8 @@ class Chef
         # so we'll just leave things as-is for now.
         requirements.assert(:upgrade, :install) do |a|
           a.assertion { candidates_exist_for_all_uninstalled? || new_resource.source }
-          a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(', ')}")
-          a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(', ')} would have been configured")
+          a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
+          a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
         end
       end
 

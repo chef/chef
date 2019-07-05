@@ -265,7 +265,7 @@ class Chef
       # user could not be resolved to a subcommand.
       # @api private
       def subcommand_not_found!(args)
-        ui.fatal("Cannot find subcommand for: '#{args.join(' ')}'")
+        ui.fatal("Cannot find subcommand for: '#{args.join(" ")}'")
 
         # Mention rehash when the subcommands cache(plugin_manifest.json) is used
         if subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::HashedCommandLoader)

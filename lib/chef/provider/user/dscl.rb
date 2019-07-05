@@ -128,7 +128,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
                 # Convert the salt from Base64 encoding to hex before consuming them
                 current_resource.salt(shadow_hash["SALTED-SHA512-PBKDF2"]["salt"].string.unpack("H*").first)
               else
-                raise(Chef::Exceptions::User, "Unknown shadow_hash format: #{shadow_hash.keys.join(' ')}")
+                raise(Chef::Exceptions::User, "Unknown shadow_hash format: #{shadow_hash.keys.join(" ")}")
               end
             end
 

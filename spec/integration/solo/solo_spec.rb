@@ -27,7 +27,7 @@ describe Chef::Dist::SOLOEXEC do
       file "config/solo.rb", <<~EOM
         chef_repo_path "#{@repository_dir}"
       EOM
-      result = shell_out("bundle exec chef-solo -c \"#{path_to('config/solo.rb')}\" -l debug", cwd: chef_dir)
+      result = shell_out("bundle exec chef-solo -c \"#{path_to("config/solo.rb")}\" -l debug", cwd: chef_dir)
       result.error!
     end
 
@@ -76,25 +76,25 @@ describe Chef::Dist::SOLOEXEC do
 
     it "should complete with success" do
       file "config/solo.rb", <<~EOM
-        cookbook_path "#{path_to('cookbooks')}"
-        file_cache_path "#{path_to('config/cache')}"
+        cookbook_path "#{path_to("cookbooks")}"
+        file_cache_path "#{path_to("config/cache")}"
       EOM
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default' -l debug", cwd: chef_dir)
       result.error!
       expect(result.stdout).to include("ITWORKS")
     end
 
     it "should evaluate its node.json file" do
       file "config/solo.rb", <<~EOM
-        cookbook_path "#{path_to('cookbooks')}"
-        file_cache_path "#{path_to('config/cache')}"
+        cookbook_path "#{path_to("cookbooks")}"
+        file_cache_path "#{path_to("config/cache")}"
       EOM
 
       file "config/node.json", <<~E
         {"run_list":["x::default"]}
       E
 
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -j '#{path_to('config/node.json')}' -l debug", cwd: chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -j '#{path_to("config/node.json")}' -l debug", cwd: chef_dir)
       result.error!
       expect(result.stdout).to include("ITWORKS")
     end
@@ -112,10 +112,10 @@ describe Chef::Dist::SOLOEXEC do
 
     it "should exit with an error" do
       file "config/solo.rb", <<~EOM
-        cookbook_path "#{path_to('cookbooks')}"
-        file_cache_path "#{path_to('config/cache')}"
+        cookbook_path "#{path_to("cookbooks")}"
+        file_cache_path "#{path_to("config/cache")}"
       EOM
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default' -l debug", cwd: chef_dir)
       expect(result.exitstatus).to eq(0) # For CHEF-5120 this becomes 1
       expect(result.stdout).to include("WARN: MissingCookbookDependency")
     end
@@ -126,13 +126,13 @@ describe Chef::Dist::SOLOEXEC do
       file "cookbooks/x/metadata.rb", cb_metadata("x", "1.0.0", "\nchef_version '~> 999.0'")
       file "cookbooks/x/recipes/default.rb", 'puts "ITWORKS"'
       file "config/solo.rb", <<~EOM
-        cookbook_path "#{path_to('cookbooks')}"
-        file_cache_path "#{path_to('config/cache')}"
+        cookbook_path "#{path_to("cookbooks")}"
+        file_cache_path "#{path_to("config/cache")}"
       EOM
     end
 
     it "should exit with an error" do
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default' -l debug", cwd: chef_dir)
       expect(result.exitstatus).to eq(1)
       expect(result.stdout).to include("Chef::Exceptions::CookbookChefVersionMismatch")
     end
@@ -143,13 +143,13 @@ describe Chef::Dist::SOLOEXEC do
       file "cookbooks/x/metadata.rb", cb_metadata("x", "1.0.0", "\nohai_version '~> 999.0'")
       file "cookbooks/x/recipes/default.rb", 'puts "ITWORKS"'
       file "config/solo.rb", <<~EOM
-        cookbook_path "#{path_to('cookbooks')}"
-        file_cache_path "#{path_to('config/cache')}"
+        cookbook_path "#{path_to("cookbooks")}"
+        file_cache_path "#{path_to("config/cache")}"
       EOM
     end
 
     it "should exit with an error" do
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default' -l debug", cwd: chef_dir)
       expect(result.exitstatus).to eq(1)
       expect(result.stdout).to include("Chef::Exceptions::CookbookOhaiVersionMismatch")
     end
@@ -175,8 +175,8 @@ describe Chef::Dist::SOLOEXEC do
 
     it "while running solo concurrently" do
       file "config/solo.rb", <<~EOM
-        cookbook_path "#{path_to('cookbooks')}"
-        file_cache_path "#{path_to('config/cache')}"
+        cookbook_path "#{path_to("cookbooks")}"
+        file_cache_path "#{path_to("config/cache")}"
       EOM
       # We have a timeout protection here so that if due to some bug
       # run_lock gets stuck we can discover it.
@@ -188,13 +188,13 @@ describe Chef::Dist::SOLOEXEC do
 
           # Instantiate the first chef-solo run
           threads << Thread.new do
-            s1 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", chdir: chef_dir)
+            s1 = Process.spawn("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default'  -l debug -L #{path_to("logs/runs.log")}", chdir: chef_dir)
             Process.waitpid(s1)
           end
 
           # Instantiate the second chef-solo run
           threads << Thread.new do
-            s2 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", chdir: chef_dir)
+            s2 = Process.spawn("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default'  -l debug -L #{path_to("logs/runs.log")}", chdir: chef_dir)
             Process.waitpid(s2)
           end
 

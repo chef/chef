@@ -43,7 +43,7 @@ class Chef
           if h.respond_to?(:keys)
             invalid_keys = h.keys - LC_VARIABLES
             unless invalid_keys.empty?
-              error_msg = "Key of option lc_env must be equal to one of: \"#{LC_VARIABLES.join('", "')}\"!  You passed \"#{invalid_keys.join(', ')}\"."
+              error_msg = "Key of option lc_env must be equal to one of: \"#{LC_VARIABLES.join('", "')}\"!  You passed \"#{invalid_keys.join(", ")}\"."
               raise Chef::Exceptions::ValidationFailed, error_msg
             end
           end
@@ -97,7 +97,7 @@ class Chef
         # @raise [Mixlib::ShellOut::ShellCommandFailed] not a supported language or locale
         #
         def generate_locales
-          shell_out!("locale-gen #{unavailable_locales.join(' ')}")
+          shell_out!("locale-gen #{unavailable_locales.join(" ")}")
         end
 
         # Updates system locale by appropriately writing them in /etc/locale.conf

@@ -161,7 +161,7 @@ class Chef
           # the indents.
           if options[:name]
             if @current_stream != options[:stream]
-              @out.print "#{(' ' * indent)}[#{options[:name]}] "
+              @out.print "#{(" " * indent)}[#{options[:name]}] "
             else
               @out.print " " * (indent + 3 + options[:name].size)
             end

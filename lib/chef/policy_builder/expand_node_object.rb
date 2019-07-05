@@ -139,7 +139,7 @@ class Chef
         expand_run_list
 
         Chef::Log.info("Run List is [#{node.run_list}]")
-        Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
+        Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(", ")}]")
 
         events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
         events.run_list_expanded(@run_list_expansion)

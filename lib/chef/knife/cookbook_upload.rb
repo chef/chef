@@ -224,7 +224,7 @@ class Chef
           broken_filenames = Array(broken_files).map { |path, info| path }
           ui.error "The cookbook #{cookbook.name} has one or more broken files"
           ui.error "This is probably caused by broken symlinks in the cookbook directory"
-          ui.error "The broken file(s) are: #{broken_filenames.join(' ')}"
+          ui.error "The broken file(s) are: #{broken_filenames.join(" ")}"
           exit 1
         end
       end
@@ -240,7 +240,7 @@ class Chef
           missing_cookbook_names = missing_dependencies.map { |cookbook_name, version| "'#{cookbook_name}' version '#{version}'" }
           ui.error "Cookbook #{cookbook.name} depends on cookbooks which are not currently"
           ui.error "being uploaded and cannot be found on the server."
-          ui.error "The missing cookbook(s) are: #{missing_cookbook_names.join(', ')}"
+          ui.error "The missing cookbook(s) are: #{missing_cookbook_names.join(", ")}"
           exit 1
         end
       end
@@ -253,7 +253,7 @@ class Chef
           Log.debug "Versions of cookbook '#{cookbook_name}' returned by the server: #{versions.join(", ")}"
           @server_side_cookbooks[cookbook_name]["versions"].each do |versions_hash|
             if Chef::VersionConstraint.new(version).include?(versions_hash["version"])
-              Log.debug "Matched cookbook '#{cookbook_name}' with constraint '#{version}' to cookbook version '#{versions_hash['version']}' on the server"
+              Log.debug "Matched cookbook '#{cookbook_name}' with constraint '#{version}' to cookbook version '#{versions_hash["version"]}' on the server"
               return true
             end
           end

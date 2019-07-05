@@ -911,7 +911,7 @@ class Chef
         # Chef::Config[:cookbook_path] can be a string or an array
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
         cookbook_paths = Array(Chef::Config[:cookbook_path])
-        logger.trace "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(', ')}"
+        logger.trace "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(", ")}"
         if cookbook_paths.all? { |path| empty_directory?(path) }
           msg = "None of the cookbook paths set in Chef::Config[:cookbook_path], #{cookbook_paths.inspect}, contain any cookbooks"
           logger.fatal(msg)

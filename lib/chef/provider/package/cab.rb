@@ -89,7 +89,7 @@ class Chef
           # e.g. Package_for_KB2975719~31bf3856ad364e35~amd64~~6.3.1.8
           package = new_cab_identity
           # Search for just the package name to catch a different version being installed
-          logger.trace("#{new_resource} searching for installed package #{package['name']}")
+          logger.trace("#{new_resource} searching for installed package #{package["name"]}")
           existing_package_identities = installed_packages.map do |p|
             split_package_identity(p["package_identity"])
           end
@@ -102,7 +102,7 @@ class Chef
             found_packages.first["version"]
           else
             # Presuming this won't happen, otherwise we need to handle it
-            raise Chef::Exceptions::Package, "Found multiple packages installed matching name #{package['name']}, found: #{found_packages.length} matches"
+            raise Chef::Exceptions::Package, "Found multiple packages installed matching name #{package["name"]}, found: #{found_packages.length} matches"
           end
         end
 

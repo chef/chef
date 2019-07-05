@@ -216,7 +216,7 @@ class Chef
             # does not match what the yum library accepts.
             case line
               when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
-                return Version.new($1, "#{$2 == '(none)' ? '0' : $2}:#{$3}-#{$4}", $5)
+                return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)
             end
           end
         end

@@ -302,7 +302,7 @@ class Chef
           else
             days.map! { |day| day.to_s.strip.downcase }
             unless (days - VALID_WEEK_DAYS).empty?
-              raise ArgumentError, "day property invalid. Only valid values are: #{VALID_WEEK_DAYS.map(&:upcase).join(', ')}. Multiple values must be separated by a comma."
+              raise ArgumentError, "day property invalid. Only valid values are: #{VALID_WEEK_DAYS.map(&:upcase).join(", ")}. Multiple values must be separated by a comma."
             end
           end
         end
@@ -315,7 +315,7 @@ class Chef
           months = months.split(",")
           months.map! { |month| month.strip.upcase }
           unless (months - VALID_MONTHS).empty?
-            raise ArgumentError, "months property invalid. Only valid values are: #{VALID_MONTHS.join(', ')}. Multiple values must be separated by a comma."
+            raise ArgumentError, "months property invalid. Only valid values are: #{VALID_MONTHS.join(", ")}. Multiple values must be separated by a comma."
           end
         end
       end

@@ -30,13 +30,13 @@ namespace :docs_site do
       # build the resource string with property spacing between property names and comments
       text = "  #{resource_name} 'name' do\n"
       properties.each do |p|
-        text << "    #{p['name'].ljust(padding_size)}"
+        text << "    #{p["name"].ljust(padding_size)}"
         text << friendly_types_list(p["is"])
         text << " # default value: 'name' unless specified" if p["name_property"]
-        text << " # default value: #{pretty_default(p['default'])}" unless pretty_default(p["default"]).nil?
+        text << " # default value: #{pretty_default(p["default"])}" unless pretty_default(p["default"]).nil?
         text << "\n"
       end
-      text << "    #{'action'.ljust(padding_size)}Symbol # defaults to :#{@default_action.first} if not specified\n"
+      text << "    #{"action".ljust(padding_size)}Symbol # defaults to :#{@default_action.first} if not specified\n"
       text << "  end"
       text
     end
@@ -58,7 +58,7 @@ namespace :docs_site do
     def friendly_properly_list(arr)
       return nil if arr.empty? # resources w/o properties
 
-      props = arr.map { |x| "``#{x['name']}``" }
+      props = arr.map { |x| "``#{x["name"]}``" }
 
       # build the text string containing all properties bolded w/ punctuation
       if props.size > 1

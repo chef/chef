@@ -58,7 +58,7 @@ module KnifeSupport
       old_loggers = Chef::Log.loggers
       old_log_level = Chef::Log.level
       begin
-        puts "knife: #{args.join(' ')}" if DEBUG
+        puts "knife: #{args.join(" ")}" if DEBUG
         subcommand_class = Chef::Knife.subcommand_class_from(args)
         subcommand_class.options = Chef::Application::Knife.options.merge(subcommand_class.options)
         subcommand_class.load_deps

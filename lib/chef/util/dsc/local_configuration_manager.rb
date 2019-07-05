@@ -93,9 +93,9 @@ class Chef::Util::DSC
         # LCM returns an error if any of the resources do not support the opptional What-If
         Chef::Log.warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
       elsif dsc_module_import_failure?(dsc_exception_output)
-        Chef::Log.warn("Received error while testing configuration due to a module for an imported resource possibly not being fully installed:\n#{dsc_exception_output.gsub(/\s+/, ' ')}")
+        Chef::Log.warn("Received error while testing configuration due to a module for an imported resource possibly not being fully installed:\n#{dsc_exception_output.gsub(/\s+/, " ")}")
       else
-        Chef::Log.warn("Received error while testing configuration:\n#{dsc_exception_output.gsub(/\s+/, ' ')}")
+        Chef::Log.warn("Received error while testing configuration:\n#{dsc_exception_output.gsub(/\s+/, " ")}")
       end
     end
 

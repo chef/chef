@@ -45,7 +45,7 @@ class Chef
         when 1
           noauth_rest.get("#{supermarket_uri}/cookbooks/#{@name_args[0]}")
         when 2
-          noauth_rest.get("#{supermarket_uri}/cookbooks/#{@name_args[0]}/versions/#{name_args[1].tr('.', '_')}")
+          noauth_rest.get("#{supermarket_uri}/cookbooks/#{@name_args[0]}/versions/#{name_args[1].tr(".", "_")}")
         end
       end
 

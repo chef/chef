@@ -195,7 +195,7 @@ RSpec.describe ChefConfig::Config do
 
   [ false, true ].each do |is_windows|
 
-    context "On #{is_windows ? 'Windows' : 'Unix'}" do
+    context "On #{is_windows ? "Windows" : "Unix"}" do
       def to_platform(*args)
         ChefConfig::Config.platform_specific_path(*args)
       end

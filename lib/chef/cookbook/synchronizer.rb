@@ -163,7 +163,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def sync_cookbooks
-      Chef::Log.info("Loading cookbooks [#{cookbooks.map { |ckbk| ckbk.name + '@' + ckbk.version }.join(', ')}]")
+      Chef::Log.info("Loading cookbooks [#{cookbooks.map { |ckbk| ckbk.name + "@" + ckbk.version }.join(", ")}]")
       Chef::Log.trace("Cookbooks detail: #{cookbooks.inspect}")
 
       clear_obsoleted_cookbooks

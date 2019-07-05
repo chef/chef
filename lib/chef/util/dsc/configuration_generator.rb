@@ -101,7 +101,7 @@ class Chef::Util::DSC
           if resources.length == 0 || resources.include?("*")
             "Import-DscResource -ModuleName #{resource_module}"
           else
-            "Import-DscResource -ModuleName #{resource_module} -Name #{resources.join(',')}"
+            "Import-DscResource -ModuleName #{resource_module} -Name #{resources.join(",")}"
           end
         end
       else

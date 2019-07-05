@@ -59,7 +59,7 @@ describe Chef::Deprecated do
     end
     collisions = id_map.select { |k, v| v.size != 1 }
     unless collisions.empty?
-      raise "Found deprecation ID collisions:\n#{collisions.map { |k, v| "* #{k} #{v.map(&:name).join(', ')}" }.join("\n")}"
+      raise "Found deprecation ID collisions:\n#{collisions.map { |k, v| "* #{k} #{v.map(&:name).join(", ")}" }.join("\n")}"
     end
   end
 end

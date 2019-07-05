@@ -68,7 +68,7 @@ class Chef
       new_sandbox["checksums"].each do |checksum, info|
         if info["needs_upload"] == true
           checksums_to_upload << checksum
-          Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
+          Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info["url"]}")
           queue << uploader_function_for(checksum_files[checksum], checksum, info["url"], checksums_to_upload)
         else
           Chef::Log.trace("#{checksum_files[checksum]} has not changed")

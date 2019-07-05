@@ -38,7 +38,7 @@ class Chef
                 when Chef::Platform.windows?
                   # should this do /f as well? do we then need a minimum delay to let apps quit?
                   # Use explicit path to shutdown.exe, to protect against https://github.com/chef/chef/issues/5594
-                  windows_shutdown_path = "#{ENV['SYSTEMROOT']}/System32/shutdown.exe"
+                  windows_shutdown_path = "#{ENV["SYSTEMROOT"]}/System32/shutdown.exe"
                   "#{windows_shutdown_path} /r /t #{reboot_info[:delay_mins] * 60} /c \"#{reboot_info[:reason]}\""
                 when node["os"] == "solaris2"
                   # SysV-flavored shutdown

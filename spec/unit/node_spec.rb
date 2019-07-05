@@ -769,7 +769,7 @@ describe Chef::Node do
 
       it "caches both strings and symbols correctly" do
         node.force_default[:solr][:version] = "4.10.2"
-        node.force_default[:solr][:data_dir] = "/opt/solr-#{node['solr'][:version]}/example/solr"
+        node.force_default[:solr][:data_dir] = "/opt/solr-#{node["solr"][:version]}/example/solr"
         node.force_default[:solr][:xms] = "512M"
         expect(node[:solr][:xms]).to eql("512M")
         expect(node["solr"][:xms]).to eql("512M")
@@ -778,8 +778,8 @@ describe Chef::Node do
       it "method interpolation syntax also works" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         node.default["passenger"]["version"]     = "4.0.57"
-        node.default["passenger"]["root_path"]   = "passenger-#{node['passenger']['version']}"
-        node.default["passenger"]["root_path_2"] = "passenger-#{node[:passenger]['version']}"
+        node.default["passenger"]["root_path"]   = "passenger-#{node["passenger"]["version"]}"
+        node.default["passenger"]["root_path_2"] = "passenger-#{node[:passenger]["version"]}"
         expect(node["passenger"]["root_path_2"]).to eql("passenger-4.0.57")
         expect(node[:passenger]["root_path_2"]).to eql("passenger-4.0.57")
       end

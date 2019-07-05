@@ -160,7 +160,7 @@ describe Chef::Version do
        [ "1.2.2", :<=, "1.2.1", false ],
        [ "1.2.2", :<, "1.2.1", false ],
       ].each do |spec|
-        it "(#{spec.first(3).join(' ')}) should be #{spec[3]}" do
+        it "(#{spec.first(3).join(" ")}) should be #{spec[3]}" do
           got = Chef::Version.new(spec[0]).send(spec[1],
             Chef::Version.new(spec[2]))
           expect(got).to eq(spec[3])

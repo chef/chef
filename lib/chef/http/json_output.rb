@@ -61,7 +61,7 @@ class Chef
           end
           [http_response, rest_request, return_value]
         else
-          Chef::Log.trace("Expected JSON response, but got content-type '#{http_response['content-type']}'")
+          Chef::Log.trace("Expected JSON response, but got content-type '#{http_response["content-type"]}'")
           if http_response.body
             Chef::Log.trace("Response body contains:\n#{http_response.body.length < 256 ? http_response.body : http_response.body[0..256] + " [...truncated...]"}")
           end

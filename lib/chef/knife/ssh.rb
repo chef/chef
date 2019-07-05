@@ -185,8 +185,8 @@ class Chef
           if fqdns.count != fqdns.uniq.count
             duplicated_fqdns = fqdns.uniq
             ui.send(config[:duplicated_fqdns],
-              "SSH #{duplicated_fqdns.count > 1 ? 'nodes are' : 'node is'} " +
-              "duplicated: #{duplicated_fqdns.join(',')}")
+              "SSH #{duplicated_fqdns.count > 1 ? "nodes are" : "node is"} " +
+              "duplicated: #{duplicated_fqdns.join(",")}")
             exit 10 if config[:duplicated_fqdns] == :fatal
           end
         end
@@ -397,7 +397,7 @@ class Chef
       # line is input.
       def read_line
         loop do
-          command = reader.readline("#{ui.color('knife-ssh>', :bold)} ", true)
+          command = reader.readline("#{ui.color("knife-ssh>", :bold)} ", true)
 
           if command.nil?
             command = "exit"
@@ -486,7 +486,7 @@ class Chef
           end.join(" \\; ")
         end
 
-        tmux_name = "'knife ssh #{@name_args[0].tr(':.', '=-')}'"
+        tmux_name = "'knife ssh #{@name_args[0].tr(":.", "=-")}'"
         begin
           server = session.servers_for.first
           cmd = ["tmux new-session -d -s #{tmux_name}",

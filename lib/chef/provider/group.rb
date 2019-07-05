@@ -66,7 +66,7 @@ class Chef
           if !new_resource.members.nil? && !new_resource.excluded_members.nil?
             common_members = new_resource.members & new_resource.excluded_members
             a.assertion { common_members.empty? }
-            a.failure_message(Chef::Exceptions::ConflictingMembersInGroup, "Attempting to both add and remove users from a group: '#{common_members.join(', ')}'")
+            a.failure_message(Chef::Exceptions::ConflictingMembersInGroup, "Attempting to both add and remove users from a group: '#{common_members.join(", ")}'")
             # No why-run alternative
           end
         end
@@ -93,7 +93,7 @@ class Chef
             missing_members << member
           end
           unless missing_members.empty?
-            @change_desc << "add missing member(s): #{missing_members.join(', ')}"
+            @change_desc << "add missing member(s): #{missing_members.join(", ")}"
           end
 
           members_to_be_removed = []
@@ -103,7 +103,7 @@ class Chef
             end
           end
           unless members_to_be_removed.empty?
-            @change_desc << "remove existing member(s): #{members_to_be_removed.join(', ')}"
+            @change_desc << "remove existing member(s): #{members_to_be_removed.join(", ")}"
           end
         elsif new_resource.members != current_resource.members
           @change_desc << "replace group members with new list of members"

@@ -61,7 +61,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 
   # FIXME: Multiple entries of DAEMONS will cause very bad results :)
   def update_daemons(entries)
-    content = ::File.read("/etc/rc.conf").gsub(/DAEMONS=\((.*)\)/m, "DAEMONS=(#{entries.join(' ')})")
+    content = ::File.read("/etc/rc.conf").gsub(/DAEMONS=\((.*)\)/m, "DAEMONS=(#{entries.join(" ")})")
     ::File.open("/etc/rc.conf", "w") do |f|
       f.write(content)
     end

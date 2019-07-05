@@ -165,7 +165,7 @@ class Chef
         unless current_resource.inet_addr
           unless new_resource.device == loopback_device
             command = add_command
-            converge_by("run #{command.join(' ')} to add #{new_resource}") do
+            converge_by("run #{command.join(" ")} to add #{new_resource}") do
               shell_out!(command)
               logger.info("#{new_resource} added")
             end
@@ -182,7 +182,7 @@ class Chef
         return if new_resource.device == loopback_device
 
         command = enable_command
-        converge_by("run #{command.join(' ')} to enable #{new_resource}") do
+        converge_by("run #{command.join(" ")} to enable #{new_resource}") do
           shell_out!(command)
           logger.info("#{new_resource} enabled")
         end
@@ -192,7 +192,7 @@ class Chef
         # check to see if load_current_resource found the interface
         if current_resource.device
           command = delete_command
-          converge_by("run #{command.join(' ')} to delete #{new_resource}") do
+          converge_by("run #{command.join(" ")} to delete #{new_resource}") do
             shell_out!(command)
             logger.info("#{new_resource} deleted")
           end
@@ -207,7 +207,7 @@ class Chef
         # disables, but leaves config files in place.
         if current_resource.device
           command = disable_command
-          converge_by("run #{command.join(' ')} to disable #{new_resource}") do
+          converge_by("run #{command.join(" ")} to disable #{new_resource}") do
             shell_out!(command)
             logger.info("#{new_resource} disabled")
           end

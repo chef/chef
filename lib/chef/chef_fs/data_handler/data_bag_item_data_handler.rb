@@ -54,7 +54,7 @@ class Chef
         def verify_integrity(object, entry)
           base_name = remove_dot_json(entry.name)
           if object["raw_data"]["id"] != base_name
-            yield("ID in #{entry.path_for_printing} must be '#{base_name}' (is '#{object['raw_data']['id']}')")
+            yield("ID in #{entry.path_for_printing} must be '#{base_name}' (is '#{object["raw_data"]["id"]}')")
           elsif entry.parent.name =~ RESERVED_NAMES
             yield("Data bag name ('#{entry.parent.name}') must not match #{RESERVED_NAMES.inspect}")
           end

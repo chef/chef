@@ -50,14 +50,14 @@ class Chef
         powershell_script "Create or Update DFS Folder" do
           code <<-EOH
 
-            $needs_creating = (Get-DfsnFolder -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -ErrorAction SilentlyContinue) -eq $null
+            $needs_creating = (Get-DfsnFolder -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -ErrorAction SilentlyContinue) -eq $null
             if (!($needs_creating))
             {
-              Remove-DfsnFolder -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -Force
+              Remove-DfsnFolder -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -Force
             }
-              New-DfsnFolder -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -TargetPath '#{new_resource.target_path}' -Description '#{new_resource.description}'
+              New-DfsnFolder -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -TargetPath '#{new_resource.target_path}' -Description '#{new_resource.description}'
           EOH
-          not_if "return ((Get-DfsnFolder -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -ErrorAction SilentlyContinue).Description -eq '#{new_resource.description}' -and  (Get-DfsnFolderTarget -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}').TargetPath -eq '#{new_resource.target_path}' )"
+          not_if "return ((Get-DfsnFolder -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -ErrorAction SilentlyContinue).Description -eq '#{new_resource.description}' -and  (Get-DfsnFolderTarget -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}').TargetPath -eq '#{new_resource.target_path}' )"
         end
       end
 
@@ -66,9 +66,9 @@ class Chef
 
         powershell_script "Delete DFS Namespace" do
           code <<-EOH
-            Remove-DfsnFolder -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -Force
+            Remove-DfsnFolder -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' -Force
           EOH
-          only_if "return ((Get-DfsnFolder -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' ) -ne $null)"
+          only_if "return ((Get-DfsnFolder -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}\\#{new_resource.folder_path}' ) -ne $null)"
         end
       end
     end

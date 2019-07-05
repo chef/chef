@@ -231,19 +231,19 @@ class Chef
         end
 
         def self.None
-          SID.from_account("#{::ENV['COMPUTERNAME']}\\None")
+          SID.from_account("#{::ENV["COMPUTERNAME"]}\\None")
         end
 
         def self.Administrator
-          SID.from_account("#{::ENV['COMPUTERNAME']}\\#{SID.admin_account_name}")
+          SID.from_account("#{::ENV["COMPUTERNAME"]}\\#{SID.admin_account_name}")
         end
 
         def self.Guest
-          SID.from_account("#{::ENV['COMPUTERNAME']}\\Guest")
+          SID.from_account("#{::ENV["COMPUTERNAME"]}\\Guest")
         end
 
         def self.current_user
-          SID.from_account("#{::ENV['USERDOMAIN']}\\#{::ENV['USERNAME']}")
+          SID.from_account("#{::ENV["USERDOMAIN"]}\\#{::ENV["USERNAME"]}")
         end
 
         SERVICE_ACCOUNT_USERS = [self.LocalSystem,

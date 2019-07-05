@@ -90,7 +90,7 @@ class Chef
         parse(constraint_spec.first)
       else
         msg = "only one version constraint operation is supported, but you gave #{constraint_spec.size} "
-        msg << "['#{constraint_spec.join(', ')}']"
+        msg << "['#{constraint_spec.join(", ")}']"
         raise Chef::Exceptions::InvalidVersionConstraint, msg
       end
     end

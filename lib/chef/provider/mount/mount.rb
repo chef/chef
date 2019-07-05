@@ -138,7 +138,7 @@ class Chef
         end
 
         def remount_command
-          [ "mount", "-o", "remount,#{@new_resource.options.join(',')}", @new_resource.mount_point ]
+          [ "mount", "-o", "remount,#{@new_resource.options.join(",")}", @new_resource.mount_point ]
         end
 
         def remount_fs

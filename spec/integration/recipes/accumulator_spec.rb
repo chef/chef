@@ -115,11 +115,11 @@ describe "Accumulators" do
     it "should complete with success" do
       file "config/client.rb", <<-EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
         log_level :warn
       EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       result.error!
       # runs only a single template resource (in the outer run context, as a delayed resource)
       expect(result.stdout.scan(/template\S+ action create/).size).to eql(1)
@@ -217,11 +217,11 @@ describe "Accumulators" do
     it "should complete with success" do
       file "config/client.rb", <<-EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
         log_level :warn
       EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       result.error!
       # runs only a single template resource (in the outer run context, as a delayed resource)
       expect(result.stdout.scan(/template\S+ action create/).size).to eql(1)

@@ -197,7 +197,7 @@ class Chef
         def verify_integrity(object, entry)
           base_name = remove_file_extension(entry.name)
           if object["name"] != base_name
-            yield("Name must be '#{base_name}' (is '#{object['name']}')")
+            yield("Name must be '#{base_name}' (is '#{object["name"]}')")
           end
         end
 

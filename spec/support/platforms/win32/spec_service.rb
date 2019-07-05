@@ -20,7 +20,7 @@ require "win32/daemon"
 
 class SpecService < ::Win32::Daemon
   def service_init
-    @test_service_file = "#{ENV['TMP']}/spec_service_file"
+    @test_service_file = "#{ENV["TMP"]}/spec_service_file"
   end
 
   def service_main(*startup_parameters)

@@ -79,7 +79,7 @@ class Chef
 
       def print_dependencies_tree(entry, dependencies, printed = {}, depth = 0)
         dependencies[entry.path] = get_dependencies(entry) unless dependencies[entry.path]
-        output "#{'  ' * depth}#{format_path(entry)}"
+        output "#{"  " * depth}#{format_path(entry)}"
         if !printed[entry.path] && (config[:recurse] || depth == 0)
           printed[entry.path] = true
           dependencies[entry.path].each do |child|
@@ -97,7 +97,7 @@ class Chef
           node = Chef::JSONCompat.parse(entry.read)
           result = []
           if node["chef_environment"] && node["chef_environment"] != "_default"
-            result << "/environments/#{node['chef_environment']}.json"
+            result << "/environments/#{node["chef_environment"]}.json"
           end
           if node["run_list"]
             result += dependencies_from_runlist(node["run_list"])

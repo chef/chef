@@ -604,7 +604,7 @@ class Chef
           validate << "Task Name" if new_resource.task_name.nil? || new_resource.task_name.empty?
           return true if validate.empty?
 
-          raise Chef::Exceptions::ValidationFailed.new "Value for '#{validate.join(', ')}' option cannot be empty"
+          raise Chef::Exceptions::ValidationFailed.new "Value for '#{validate.join(", ")}' option cannot be empty"
         end
 
         # rubocop:disable Style/StringLiteralsInInterpolation

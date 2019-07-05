@@ -48,7 +48,7 @@ class Chef
         default: 3600
 
       load_current_value do
-        ps_results = powershell_out("Get-DfsnServerConfiguration -ComputerName '#{ENV['COMPUTERNAME']}' | Select LdapTimeoutSec, PreferLogonDC, EnableSiteCostedReferrals, SyncIntervalSec, UseFqdn | ConvertTo-Json")
+        ps_results = powershell_out("Get-DfsnServerConfiguration -ComputerName '#{ENV["COMPUTERNAME"]}' | Select LdapTimeoutSec, PreferLogonDC, EnableSiteCostedReferrals, SyncIntervalSec, UseFqdn | ConvertTo-Json")
 
         if ps_results.error?
           raise "The dfs_server resource failed to fetch the current state via the Get-DfsnServerConfiguration PowerShell cmlet. Is the DFS Windows feature installed?"
@@ -68,7 +68,7 @@ class Chef
         description "Configure DFS settings."
 
         converge_if_changed do
-          powershell_out("Set-DfsnServerConfiguration -ComputerName '#{ENV['COMPUTERNAME']}' EnableSiteCostedReferrals $#{new_resource.enable_site_costed_referrals} -UseFqdn $#{new_resource.use_fqdn} -LdapTimeoutSec #{new_resource.ldap_timeout_secs} -PreferLogonDC $#{new_resource.prefer_login_dc} -SyncIntervalSec #{new_resource.sync_interval_secs}")
+          powershell_out("Set-DfsnServerConfiguration -ComputerName '#{ENV["COMPUTERNAME"]}' EnableSiteCostedReferrals $#{new_resource.enable_site_costed_referrals} -UseFqdn $#{new_resource.use_fqdn} -LdapTimeoutSec #{new_resource.ldap_timeout_secs} -PreferLogonDC $#{new_resource.prefer_login_dc} -SyncIntervalSec #{new_resource.sync_interval_secs}")
         end
       end
     end

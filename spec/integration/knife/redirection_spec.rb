@@ -34,7 +34,7 @@ describe "redirection", :workstation do
         real_chef_server_url = Chef::Config.chef_server_url
         Chef::Config.chef_server_url = "http://localhost:9018"
         app = lambda do |env|
-          [302, { "Content-Type" => "text", "Location" => "#{real_chef_server_url}#{env['PATH_INFO']}" }, ["302 found"] ]
+          [302, { "Content-Type" => "text", "Location" => "#{real_chef_server_url}#{env["PATH_INFO"]}" }, ["302 found"] ]
         end
         @redirector_server_thread = start_app_server(app, 9018)
       end
