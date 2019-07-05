@@ -132,7 +132,7 @@ describe Chef::Provider::OsxProfile do
       provider.load_current_resource
       expect(
         provider.instance_variable_get(:@new_profile_identifier)
-        ).to eql(test_profile["PayloadIdentifier"])
+      ).to eql(test_profile["PayloadIdentifier"])
     end
 
     it "should install when not installed" do
@@ -228,16 +228,14 @@ describe Chef::Provider::OsxProfile do
       new_resource.profile_name "com.testprofile.screensaver"
       new_resource.action(:remove)
       provider.load_current_resource
-      expect(provider.instance_variable_get(:@new_profile_identifier)
-        ).to eql(new_resource.profile_name)
+      expect(provider.instance_variable_get(:@new_profile_identifier)).to eql(new_resource.profile_name)
     end
 
     it "should use specified identifier" do
       new_resource.identifier "com.testprofile.screensaver"
       new_resource.action(:remove)
       provider.load_current_resource
-      expect(provider.instance_variable_get(:@new_profile_identifier)
-        ).to eql(new_resource.identifier)
+      expect(provider.instance_variable_get(:@new_profile_identifier)).to eql(new_resource.identifier)
     end
 
     it "should work with spaces in the identifier" do

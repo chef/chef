@@ -74,10 +74,9 @@ module ChefHTTPShared
     @api.get("/nyan_cat_content_length.png", 200, nil,
       {
         "Content-Length" => nyan_uncompressed_size.to_s,
-      }
-    ) do
-      File.open(nyan_uncompressed_filename, "rb", &:read)
-    end
+      }) do
+        File.open(nyan_uncompressed_filename, "rb", &:read)
+      end
 
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_content_length_compressed.png", 200, nil,
@@ -85,10 +84,9 @@ module ChefHTTPShared
         "Content-Length" => nyan_compressed_size.to_s,
         "Content-Type" => "application/gzip",
         "Content-Encoding" => "gzip",
-      }
-    ) do
-      File.open(nyan_compressed_filename, "rb", &:read)
-    end
+      }) do
+        File.open(nyan_compressed_filename, "rb", &:read)
+      end
 
     #
     # endpoints that simulate truncated downloads (bad content-length header)
@@ -98,10 +96,9 @@ module ChefHTTPShared
     @api.get("/nyan_cat_truncated.png", 200, nil,
       {
         "Content-Length" => (nyan_uncompressed_size + 1).to_s,
-      }
-    ) do
-      File.open(nyan_uncompressed_filename, "rb", &:read)
-    end
+      }) do
+        File.open(nyan_uncompressed_filename, "rb", &:read)
+      end
 
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_truncated_compressed.png", 200, nil,
@@ -109,10 +106,9 @@ module ChefHTTPShared
         "Content-Length" => (nyan_compressed_size + 1).to_s,
         "Content-Type" => "application/gzip",
         "Content-Encoding" => "gzip",
-      }
-    ) do
-      File.open(nyan_compressed_filename, "rb", &:read)
-    end
+      }) do
+        File.open(nyan_compressed_filename, "rb", &:read)
+      end
 
     #
     # in the presence of a transfer-encoding header, we must ignore the content-length (this bad content-length should work)
@@ -123,10 +119,9 @@ module ChefHTTPShared
       {
         "Content-Length" => (nyan_uncompressed_size + 1).to_s,
         "Transfer-Encoding" => "anything",
-      }
-    ) do
-      File.open(nyan_uncompressed_filename, "rb", &:read)
-    end
+      }) do
+        File.open(nyan_uncompressed_filename, "rb", &:read)
+      end
 
     #
     # 403 with a Content-Length
@@ -134,8 +129,7 @@ module ChefHTTPShared
     @api.get("/forbidden", 403, "Forbidden",
       {
         "Content-Length" => "Forbidden".bytesize.to_s,
-      }
-    )
+      })
 
     @api.post("/posty", 200, "Hi!")
 

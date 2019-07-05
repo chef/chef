@@ -121,7 +121,7 @@ describe Chef::Provider::Group::Dscl do
             500
         )
       EOS
-      )
+                                                        )
     end
 
     it "should run safe_dscl with search /Groups gid" do

@@ -334,9 +334,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     describe "when group name is length 256", :windows_only do
       let!(:group_name) do
         "theoldmanwalkingdownthestreetalwayshadagood\
-smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
-theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
-downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" end
+      smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
+      theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
+      downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
+      end
 
       it "should create a group" do
         group_resource.run_action(:create)
@@ -360,9 +361,10 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" end
   context "group create action: when group name length is more than 256", :windows_only do
     let!(:group_name) do
       "theoldmanwalkingdownthestreetalwayshadagood\
-smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
-theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
-downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" end
+    smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
+    theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
+    downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ"
+    end
 
     it "should not create a group" do
       expect { group_resource.run_action(:create) }.to raise_error(ArgumentError)

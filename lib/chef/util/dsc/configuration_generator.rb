@@ -40,7 +40,8 @@ class Chef::Util::DSC
 
       document_generation_cmdlet = Chef::Util::Powershell::Cmdlet.new(
         @node,
-        configuration_document_generation_code(script_path, configuration_name))
+        configuration_document_generation_code(script_path, configuration_name)
+      )
 
       merged_configuration_flags = get_merged_configuration_flags!(configuration_flags, configuration_name)
 

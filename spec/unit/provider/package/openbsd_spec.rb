@@ -53,7 +53,8 @@ describe Chef::Provider::Package::Openbsd do
         context "when source is not provided" do
           it "should run the installation command" do
             expect(provider).to receive(:shell_out_compacted!).with("pkg_info", "-I", name, anything).and_return(
-              instance_double("shellout", stdout: "#{name}-#{version}\n"))
+              instance_double("shellout", stdout: "#{name}-#{version}\n")
+            )
             expect(provider).to receive(:shell_out_compacted!).with(
               "pkg_add", "-r", "#{name}-#{version}",
               { env: { "PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/" }, timeout: 900 }
@@ -70,7 +71,8 @@ describe Chef::Provider::Package::Openbsd do
         context "if no version is specified" do
           it "should raise an exception" do
             expect(provider).to receive(:shell_out_compacted!).with("pkg_info", "-I", name, anything).and_return(
-              instance_double("shellout", stdout: "#{name}-#{version}-#{flavor_a}\n#{name}-#{version}-#{flavor_b}\n"))
+              instance_double("shellout", stdout: "#{name}-#{version}-#{flavor_a}\n#{name}-#{version}-#{flavor_b}\n")
+            )
             expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /multiple matching candidates/)
           end
         end
@@ -85,7 +87,8 @@ describe Chef::Provider::Package::Openbsd do
             it "should run the installation command" do
               expect(provider).to receive(:shell_out_compacted!).with("pkg_info", "-e", "#{package_name}->0", anything).and_return(instance_double("shellout", stdout: ""))
               expect(provider).to receive(:shell_out_compacted!).with("pkg_info", "-I", name, anything).and_return(
-                instance_double("shellout", stdout: "#{name}-#{version}-#{flavor}\n"))
+                instance_double("shellout", stdout: "#{name}-#{version}-#{flavor}\n")
+              )
               expect(provider).to receive(:shell_out_compacted!).with(
                 "pkg_add", "-r", "#{name}-#{version}-#{flavor}",
                 { env: { "PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/" }, timeout: 900 }
@@ -99,7 +102,8 @@ describe Chef::Provider::Package::Openbsd do
         context "if a version is specified" do
           it "should use the flavor from the version" do
             expect(provider).to receive(:shell_out_compacted!).with("pkg_info", "-I", "#{name}-#{version}-#{flavor_b}", anything).and_return(
-              instance_double("shellout", stdout: "#{name}-#{version}-#{flavor_a}\n"))
+              instance_double("shellout", stdout: "#{name}-#{version}-#{flavor_a}\n")
+            )
 
             new_resource.version("#{version}-#{flavor_b}")
             expect(provider).to receive(:shell_out_compacted!).with(

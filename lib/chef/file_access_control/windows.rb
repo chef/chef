@@ -34,7 +34,8 @@ class Chef
         # We want to mix these in as class methods
         def writable?(path)
           ::File.exists?(path) && Chef::ReservedNames::Win32::File.file_access_check(
-            path, Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE)
+            path, Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE
+          )
         end
       end
 

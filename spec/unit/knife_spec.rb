@@ -166,7 +166,8 @@ describe Chef::Knife do
         "X-Chef-Version" => Chef::VERSION,
         "Host" => "api.opscode.piab",
         "X-REMOTE-REQUEST-ID" => request_id,
-    } end
+    }
+    end
 
     let(:request_id) { "1234" }
 

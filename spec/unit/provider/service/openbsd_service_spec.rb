@@ -178,7 +178,8 @@ describe Chef::Provider::Service::Openbsd do
           [
           %Q{thing_#{provider.builtin_service_enable_variable_name}="YES"},
           %Q{#{provider.builtin_service_enable_variable_name}="NO"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -190,7 +191,8 @@ describe Chef::Provider::Service::Openbsd do
           [
           %Q{#{provider.builtin_service_enable_variable_name}_thing="YES"},
           (provider.builtin_service_enable_variable_name).to_s,
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -202,7 +204,8 @@ describe Chef::Provider::Service::Openbsd do
           [
           %Q{thing_#{provider.builtin_service_enable_variable_name}="NO"},
           %Q{#{provider.builtin_service_enable_variable_name}="YES"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
@@ -214,7 +217,8 @@ describe Chef::Provider::Service::Openbsd do
           [
           %Q{#{provider.builtin_service_enable_variable_name}_thing="NO"},
           %Q{#{provider.builtin_service_enable_variable_name}="YES"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true

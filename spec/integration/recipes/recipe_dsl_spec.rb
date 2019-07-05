@@ -1153,7 +1153,8 @@ describe "Recipe DSL methods" do
           def to_s
             "MyResource"
           end
-        end end
+        end
+      end
       let(:my_resource) { :"my_resource#{Namer.current_index}" }
       let(:blarghle_blarghle_little_star) { :"blarghle_blarghle_little_star#{Namer.current_index}" }
 

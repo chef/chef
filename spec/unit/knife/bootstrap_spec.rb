@@ -35,7 +35,8 @@ describe Chef::Knife::Bootstrap do
     double("TrainConnector",
       windows?: windows_test,
       linux?: linux_test,
-      unix?: unix_test) end
+      unix?: unix_test)
+  end
 
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)
@@ -569,7 +570,9 @@ describe Chef::Knife::Bootstrap do
     context "when client_d_dir is set" do
       let(:client_d_dir) do
         Chef::Util::PathHelper.cleanpath(
-          File.join(File.dirname(__FILE__), "../../data/client.d_00")) end
+          File.join(File.dirname(__FILE__), "../../data/client.d_00")
+        )
+      end
 
       it "creates /etc/chef/client.d" do
         expect(rendered_template).to match("mkdir -p /etc/chef/client\.d")
@@ -594,7 +597,9 @@ describe Chef::Knife::Bootstrap do
       context "a nested directory structure" do
         let(:client_d_dir) do
           Chef::Util::PathHelper.cleanpath(
-            File.join(File.dirname(__FILE__), "../../data/client.d_01")) end
+            File.join(File.dirname(__FILE__), "../../data/client.d_01")
+          )
+        end
         it "creates a file foo/bar.rb" do
           expect(rendered_template).to match("cat > /etc/chef/client.d/foo/bar.rb <<'EOP'")
           expect(rendered_template).to match("1 / 0")
@@ -1554,7 +1559,8 @@ describe Chef::Knife::Bootstrap do
         ssl: false,
         ssl_peer_fingerprint: nil,
         operation_timeout: 60,
-      } end
+      }
+      end
 
       it "generates a correct configuration hash with expected defaults" do
         expect(knife.winrm_opts).to eq expected

@@ -46,8 +46,8 @@ class Chef
         if SendMessageTimeoutA(HWND_BROADCAST, WM_SETTINGCHANGE, 0, FFI::MemoryPointer.from_string("Environment").address, flags, 5000, nil) == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
-        if  SendMessageTimeoutW(HWND_BROADCAST, WM_SETTINGCHANGE, 0, FFI::MemoryPointer.from_string(
-            utf8_to_wide("Environment")
+        if SendMessageTimeoutW(HWND_BROADCAST, WM_SETTINGCHANGE, 0, FFI::MemoryPointer.from_string(
+          utf8_to_wide("Environment")
         ).address, flags, 5000, nil) == 0
           Chef::ReservedNames::Win32::Error.raise!
         end

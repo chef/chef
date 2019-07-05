@@ -261,7 +261,8 @@ describe Chef::Provider::Service::Freebsd do
           [
           %Q{thing_#{new_resource.service_name}_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -273,7 +274,8 @@ describe Chef::Provider::Service::Freebsd do
           [
           %Q{#{new_resource.service_name}_thing_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -285,7 +287,8 @@ describe Chef::Provider::Service::Freebsd do
           [
           %Q{thing_#{new_resource.service_name}_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
@@ -297,7 +300,8 @@ describe Chef::Provider::Service::Freebsd do
           [
           %Q{#{new_resource.service_name}_thing_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true

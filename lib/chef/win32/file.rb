@@ -182,7 +182,8 @@ class Chef
           Chef::ReservedNames::Win32::Security::STANDARD_RIGHTS_READ
         token = Chef::ReservedNames::Win32::Security.open_process_token(
           Chef::ReservedNames::Win32::Process.get_current_process,
-          token_rights)
+          token_rights
+        )
         duplicate_token = token.duplicate_token(:SecurityImpersonation)
 
         mapping = Chef::ReservedNames::Win32::Security::GENERIC_MAPPING.new

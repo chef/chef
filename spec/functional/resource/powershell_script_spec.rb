@@ -590,7 +590,8 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
         resource.only_if "$true", architecture: :i386
         expect { resource.run_action(:run) }.to raise_error(
           Chef::Exceptions::Win32ArchitectureIncorrect,
-          /cannot execute script with requested architecture 'i386' on Windows Nano Server/)
+          /cannot execute script with requested architecture 'i386' on Windows Nano Server/
+        )
       end
     end
   end

@@ -61,7 +61,8 @@ describe "Chef::Win32::Security", :windows_only do
   describe "get_file_security" do
     it "should return a security descriptor when called with a path that exists" do
       security_descriptor = Chef::ReservedNames::Win32::Security.get_file_security(
-        "C:\\Program Files")
+        "C:\\Program Files"
+      )
       # Make sure the security descriptor works
       expect(security_descriptor.dacl_present?).to be true
     end
@@ -70,7 +71,8 @@ describe "Chef::Win32::Security", :windows_only do
   describe "access_check" do
     let(:security_descriptor) do
       Chef::ReservedNames::Win32::Security.get_file_security(
-        "C:\\Program Files")
+        "C:\\Program Files"
+      )
     end
 
     let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_ALL_ACCESS }
@@ -78,7 +80,8 @@ describe "Chef::Win32::Security", :windows_only do
     let(:token) do
       Chef::ReservedNames::Win32::Security.open_process_token(
         Chef::ReservedNames::Win32::Process.get_current_process,
-        token_rights).duplicate_token(:SecurityImpersonation)
+        token_rights
+      ).duplicate_token(:SecurityImpersonation)
     end
 
     let(:mapping) do
@@ -102,7 +105,8 @@ describe "Chef::Win32::Security", :windows_only do
     let(:token) do
       Chef::ReservedNames::Win32::Security.open_process_token(
         Chef::ReservedNames::Win32::Process.get_current_process,
-        token_rights)
+        token_rights
+      )
     end
     context "with all rights" do
       let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_ALL_ACCESS }
@@ -127,7 +131,8 @@ describe "Chef::Win32::Security", :windows_only do
     let(:token) do
       Chef::ReservedNames::Win32::Security.open_process_token(
         Chef::ReservedNames::Win32::Process.get_current_process,
-        token_rights)
+        token_rights
+      )
     end
 
     context "when the token is valid" do

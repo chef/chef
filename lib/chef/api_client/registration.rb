@@ -162,8 +162,7 @@ class Chef
             api_version: "0",
             client_name: Chef::Config[:validation_client_name],
             signing_key_filename: Chef::Config[:validation_key],
-          }
-                                         )
+          })
       end
 
       # Whether or not to generate keys locally and post the public key to the

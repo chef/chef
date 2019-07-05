@@ -70,7 +70,8 @@ describe Chef::Application::ExitCode do
 
     it "does write a warning on non-standard exit codes" do
       expect(Chef::Log).to receive(:warn).with(
-        /attempted to exit with a non-standard exit code of 151/)
+        /attempted to exit with a non-standard exit code of 151/
+      )
       expect(exit_codes.normalize_exit_code(151)).to eq(1)
     end
 

@@ -149,7 +149,8 @@ describe Chef::Search::Query do
       ],
       "start" => 0,
       "total" => 4,
-    } end
+    }
+    end
 
     let(:big_response_empty) do
       {
