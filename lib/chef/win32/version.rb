@@ -128,7 +128,7 @@ class Chef
         # The operating system version is a string in the following form
         # that can be split into components based on the '.' delimiter:
         # MajorVersionNumber.MinorVersionNumber.BuildNumber
-        os_version.split(".").collect { |version_string| version_string.to_i }
+        os_version.split(".").collect(&:to_i)
       end
 
       def get_version_ex

@@ -132,9 +132,7 @@ class Chef::Util::DSC
     end
 
     def get_configuration_document(document_path)
-      ::File.open(document_path, "rb") do |file|
-        file.read
-      end
+      ::File.open(document_path, "rb", &:read)
     end
   end
 end

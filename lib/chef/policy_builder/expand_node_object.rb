@@ -235,7 +235,7 @@ class Chef
       def runlist_override_sanity_check!
         # Convert to array and remove whitespace
         if override_runlist.is_a?(String)
-          @override_runlist = override_runlist.split(",").map { |e| e.strip }
+          @override_runlist = override_runlist.split(",").map(&:strip)
         end
         @override_runlist = [override_runlist].flatten.compact
         override_runlist.map! do |item|

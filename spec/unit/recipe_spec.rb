@@ -94,7 +94,7 @@ describe Chef::Recipe do
           end
         end
 
-        expect(run_context.resource_collection.map { |r| r.name }).to eql(%w{monkey dog cat})
+        expect(run_context.resource_collection.map(&:name)).to eql(%w{monkey dog cat})
       end
 
       it "should return the new resource after creating it" do

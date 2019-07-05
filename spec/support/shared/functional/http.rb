@@ -30,9 +30,7 @@ module ChefHTTPShared
   end
 
   def binread(file)
-    content = File.open(file, "rb") do |f|
-      f.read
-    end
+    content = File.open(file, "rb", &:read)
     content.force_encoding(Encoding::BINARY) if "".respond_to?(:force_encoding)
     content
   end
@@ -53,25 +51,19 @@ module ChefHTTPShared
     # just a normal file
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat.png", 200) do
-      File.open(nyan_uncompressed_filename, "rb") do |f|
-        f.read
-      end
+      File.open(nyan_uncompressed_filename, "rb", &:read)
     end
 
     # this ends in .gz, we do not uncompress it and drop it on the filesystem as a .gz file (the internet often lies)
     # (expected_content should be compressed)
     @api.get("/nyan_cat.png.gz", 200, nil, { "Content-Type" => "application/gzip", "Content-Encoding" => "gzip" } ) do
-      File.open(nyan_compressed_filename, "rb") do |f|
-        f.read
-      end
+      File.open(nyan_compressed_filename, "rb", &:read)
     end
 
     # this is an uncompressed file that was compressed by some mod_gzip-ish webserver thingy, so we will expand it
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_compressed.png", 200, nil, { "Content-Type" => "application/gzip", "Content-Encoding" => "gzip" } ) do
-      File.open(nyan_compressed_filename, "rb") do |f|
-        f.read
-      end
+      File.open(nyan_compressed_filename, "rb", &:read)
     end
 
     #
@@ -84,9 +76,7 @@ module ChefHTTPShared
         "Content-Length" => nyan_uncompressed_size.to_s,
       }
     ) do
-      File.open(nyan_uncompressed_filename, "rb") do |f|
-        f.read
-      end
+      File.open(nyan_uncompressed_filename, "rb", &:read)
     end
 
     # (expected_content should be uncompressed)
@@ -97,9 +87,7 @@ module ChefHTTPShared
         "Content-Encoding" => "gzip",
       }
     ) do
-      File.open(nyan_compressed_filename, "rb") do |f|
-        f.read
-      end
+      File.open(nyan_compressed_filename, "rb", &:read)
     end
 
     #
@@ -112,9 +100,7 @@ module ChefHTTPShared
         "Content-Length" => (nyan_uncompressed_size + 1).to_s,
       }
     ) do
-      File.open(nyan_uncompressed_filename, "rb") do |f|
-        f.read
-      end
+      File.open(nyan_uncompressed_filename, "rb", &:read)
     end
 
     # (expected_content should be uncompressed)
@@ -125,9 +111,7 @@ module ChefHTTPShared
         "Content-Encoding" => "gzip",
       }
     ) do
-      File.open(nyan_compressed_filename, "rb") do |f|
-        f.read
-      end
+      File.open(nyan_compressed_filename, "rb", &:read)
     end
 
     #
@@ -141,9 +125,7 @@ module ChefHTTPShared
         "Transfer-Encoding" => "anything",
       }
     ) do
-      File.open(nyan_uncompressed_filename, "rb") do |f|
-        f.read
-      end
+      File.open(nyan_uncompressed_filename, "rb", &:read)
     end
 
     #

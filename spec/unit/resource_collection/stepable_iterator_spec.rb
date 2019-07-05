@@ -72,7 +72,7 @@ describe Chef::ResourceCollection::StepableIterator do
       @collection << lambda { @snitch_var = 42 }
 
       @iterator = CRSI.for_collection(@collection)
-      @iterator.each { |proc| proc.call }
+      @iterator.each(&:call)
     end
 
     it "allows the iteration to be paused" do
@@ -124,7 +124,7 @@ describe Chef::ResourceCollection::StepableIterator do
     it "allows the iteration to start by being stepped" do
       @snitch_var = nil
       @iterator = CRSI.for_collection(@collection)
-      @iterator.iterate_on(:element) { |proc| proc.call }
+      @iterator.iterate_on(:element, &:call)
       @iterator.step
       expect(@iterator.position).to eq(1)
       expect(@snitch_var).to eq(23)

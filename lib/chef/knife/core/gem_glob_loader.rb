@@ -118,7 +118,7 @@ class Chef
 
           glob = File.join(Chef::Util::PathHelper.escape_glob_dir(spec.full_gem_path, dirs), glob)
 
-          Dir[glob].map { |f| f.untaint }
+          Dir[glob].map(&:untaint)
         end
 
         def from_different_chef_version?(path)

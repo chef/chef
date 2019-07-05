@@ -372,7 +372,7 @@ class Chef
         if block_given?
           request, response = client.request(method, url, body, headers, &response_handler)
         else
-          request, response = client.request(method, url, body, headers) { |r| r.read_body }
+          request, response = client.request(method, url, body, headers, &:read_body)
           return_value = response.read_body
         end
         @last_response = response

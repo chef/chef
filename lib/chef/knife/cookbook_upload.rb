@@ -92,7 +92,7 @@ class Chef
         # Get a list of cookbooks and their versions from the server
         # to check for the existence of a cookbook's dependencies.
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
-        justify_width = @server_side_cookbooks.map { |name| name.size }.max.to_i + 2
+        justify_width = @server_side_cookbooks.map(&:size).max.to_i + 2
         if config[:all]
           cookbook_repo.load_cookbooks
           cookbooks_for_upload = []

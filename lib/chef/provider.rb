@@ -242,7 +242,7 @@ class Chef
       Chef::Runner.new(run_context).converge
       return_value
     ensure
-      if run_context.resource_collection.any? { |r| r.updated? }
+      if run_context.resource_collection.any?(&:updated?)
         new_resource.updated_by_last_action(true)
       end
       @run_context = old_run_context
@@ -270,8 +270,8 @@ class Chef
         raise ArgumentError, "converge_if_changed must be passed a block!"
       end
 
-      properties = new_resource.class.state_properties.map { |p| p.name } if properties.empty?
-      properties = properties.map { |p| p.to_sym }
+      properties = new_resource.class.state_properties.map(&:name) if properties.empty?
+      properties = properties.map(&:to_sym)
       if current_resource
         # Collect the list of modified properties
         specified_properties = properties.select { |property| new_resource.property_is_set?(property) }
@@ -293,7 +293,7 @@ class Chef
         end
 
         # Print the pretty green text and run the block
-        property_size = modified.map { |p| p.size }.max
+        property_size = modified.map(&:size).max
         modified.map! do |p|
           properties_str = if new_resource.sensitive || new_resource.class.properties[p].sensitive?
                              "(suppressed sensitive property)"
@@ -307,7 +307,7 @@ class Chef
       else
         # The resource doesn't exist. Mark that we are *creating* this, and
         # write down any properties we are setting.
-        property_size = properties.map { |p| p.size }.max
+        property_size = properties.map(&:size).max
         created = properties.map do |property|
           default = " (default value)" unless new_resource.property_is_set?(property)
           properties_str = if new_resource.sensitive || new_resource.class.properties[property].sensitive?

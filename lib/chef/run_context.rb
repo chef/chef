@@ -705,7 +705,7 @@ class Chef
         resource_collection=
         runner
         runner=
-      }.map { |x| x.to_sym }
+      }.map(&:to_sym)
 
       # Verify that we didn't miss any methods
       unless @__skip_method_checking # hook specifically for compat_resource

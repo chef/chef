@@ -531,7 +531,7 @@ class Chef
                 # /cookbooks/name-version -> /cookbooks/name
                 entry.children.map { |child| split_name_version(child.name)[0] }.uniq
               else
-                entry.children.map { |child| child.name }
+                entry.children.map(&:name)
               end
             rescue Chef::ChefFS::FileSystem::NotFoundError
               # If the cookbooks dir doesn't exist, we have no cookbooks (not 404)

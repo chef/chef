@@ -177,7 +177,7 @@ class Chef
           end
           # Ruby will print :something as something, which confuses users so make sure to print them as symbols
           # by inspecting the value instead of just printing it
-          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be equal to one of: #{to_be.map { |v| v.inspect }.join(", ")}!  You passed #{value.inspect}.")
+          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be equal to one of: #{to_be.map(&:inspect).join(", ")}!  You passed #{value.inspect}.")
         end
       end
 
@@ -438,7 +438,7 @@ class Chef
         if passed
           true
         else
-          message = "Property #{key} must be one of: #{to_be.map { |v| v.inspect }.join(", ")}!  You passed #{value.inspect}."
+          message = "Property #{key} must be one of: #{to_be.map(&:inspect).join(", ")}!  You passed #{value.inspect}."
           unless errors.empty?
             message << " Errors:\n#{errors.map { |m| "- #{m}" }.join("\n")}"
           end

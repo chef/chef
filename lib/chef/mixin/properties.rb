@@ -192,7 +192,7 @@ class Chef
         #
         def state_properties(*names)
           unless names.empty?
-            names = names.map { |name| name.to_sym }.uniq
+            names = names.map(&:to_sym).uniq
 
             local_properties = properties(false)
             # Add new properties to the list.
@@ -214,7 +214,7 @@ class Chef
             end
           end
 
-          properties.values.select { |property| property.desired_state? }
+          properties.values.select(&:desired_state?)
         end
 
         #
@@ -241,7 +241,7 @@ class Chef
         #
         def identity_properties(*names)
           unless names.empty?
-            names = names.map { |name| name.to_sym }
+            names = names.map(&:to_sym)
 
             # Add or change properties that are not part of the identity.
             names.each do |name|
@@ -263,7 +263,7 @@ class Chef
             end
           end
 
-          result = properties.values.select { |property| property.identity? }
+          result = properties.values.select(&:identity?)
           result = [ properties[:name] ] if result.empty?
           result
         end

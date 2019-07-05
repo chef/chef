@@ -120,7 +120,7 @@ class Chef
         # but we need the base64 encoding for the content-md5
         # header
         checksum64 = Base64.encode64([checksum].pack("H*")).strip
-        file_contents = File.open(file, "rb") { |f| f.read }
+        file_contents = File.open(file, "rb", &:read)
 
         # Custom headers. 'content-type' disables JSON serialization of the request body.
         headers = { "content-type" => "application/x-binary", "content-md5" => checksum64, "accept" => "application/json" }

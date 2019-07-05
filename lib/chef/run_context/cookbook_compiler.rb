@@ -331,7 +331,7 @@ class Chef
       # +cookbook_name+ in lexical sort order.
       def each_cookbook_dep(cookbook_name, &block)
         cookbook = cookbook_collection[cookbook_name]
-        cookbook.metadata.dependencies.keys.sort.map { |x| x.to_sym }.each(&block)
+        cookbook.metadata.dependencies.keys.sort.map(&:to_sym).each(&block)
       end
 
       # Given a +recipe_name+, finds the file associated with the recipe.

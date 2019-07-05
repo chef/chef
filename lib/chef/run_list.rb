@@ -87,7 +87,7 @@ class Chef
     end
 
     def for_json
-      to_a.map { |item| item.to_s }
+      to_a.map(&:to_s)
     end
 
     def to_json(*a)

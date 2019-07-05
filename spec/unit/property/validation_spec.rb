@@ -56,7 +56,7 @@ describe "Chef::Resource.property validation" do
     return "<nothing>" if values.size == 0
     return values[0].inspect if values.size == 1
 
-    "#{values[0..-2].map { |v| v.inspect }.join(", ")} and #{values[-1].inspect}"
+    "#{values[0..-2].map(&:inspect).join(", ")} and #{values[-1].inspect}"
   end
 
   def self.with_property(*properties, &block)

@@ -44,7 +44,7 @@ describe Chef::Knife::NodeBulkDelete do
       # I hate not having == defined for anything :(
       actual = @knife.all_nodes
       expect(actual.keys).to match_array(expected.keys)
-      expect(actual.values.map { |n| n.name }).to match_array(%w{adam brent jacob})
+      expect(actual.values.map(&:name)).to match_array(%w{adam brent jacob})
     end
   end
 

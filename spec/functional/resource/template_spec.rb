@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Resource::Template do
 
   def binread(file)
-    File.open(file, "rb") { |f| f.read }
+    File.open(file, "rb", &:read)
   end
 
   include_context Chef::Resource::File

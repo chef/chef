@@ -523,7 +523,7 @@ class Chef
         "default" => attributes.combined_default.to_hash,
         "override" => attributes.combined_override.to_hash,
         # Render correctly for run_list items so malformed json does not result
-        "run_list" => @primary_runlist.run_list.map { |item| item.to_s },
+        "run_list" => @primary_runlist.run_list.map(&:to_s),
       }
       # Chef Server rejects node JSON with extra keys; prior to 12.3,
       # "policy_name" and "policy_group" are unknown; after 12.3 they are

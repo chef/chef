@@ -138,7 +138,7 @@ class Chef
     end
 
     def files_by_cookbook
-      files.group_by { |file| file.cookbook }
+      files.group_by(&:cookbook)
     end
 
     def files_remaining_by_cookbook

@@ -89,9 +89,7 @@ class Chef
     # +run_action+ for each resource in turn.
     def converge
       # Resolve all lazy/forward references in notifications
-      run_context.resource_collection.each do |resource|
-        resource.resolve_notification_references
-      end
+      run_context.resource_collection.each(&:resolve_notification_references)
 
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|

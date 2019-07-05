@@ -185,7 +185,7 @@ class Chef
       end
 
       def empty?
-        cookbook_settings.values.all? { |files_hash| files_hash.empty? } && metadata_filenames.size == 0
+        cookbook_settings.values.all?(&:empty?) && metadata_filenames.size == 0
       end
 
       def chefignore

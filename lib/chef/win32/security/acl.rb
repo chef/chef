@@ -89,7 +89,7 @@ class Chef
         end
 
         def to_s
-          "[#{collect { |ace| ace.to_s }.join(", ")}]"
+          "[#{collect(&:to_s).join(", ")}]"
         end
 
         def self.align_dword(size)

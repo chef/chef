@@ -143,9 +143,9 @@ class Chef
 
         # Render to_json correctly for run_list items (both run_list and evn_run_lists)
         # so malformed json does not result
-        "run_list" => run_list.run_list.map { |item| item.to_s },
+        "run_list" => run_list.run_list.map(&:to_s),
         "env_run_lists" => env_run_lists_without_default.inject({}) do |accumulator, (k, v)|
-          accumulator[k] = v.map { |x| x.to_s }
+          accumulator[k] = v.map(&:to_s)
           accumulator
         end,
       }

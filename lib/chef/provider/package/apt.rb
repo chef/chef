@@ -84,9 +84,7 @@ class Chef
           @locked_packages ||=
             begin
               locked = shell_out!("apt-mark", "showhold")
-              locked.stdout.each_line.map do |line|
-                line.strip
-              end
+              locked.stdout.each_line.map(&:strip)
             end
         end
 

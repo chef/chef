@@ -90,7 +90,7 @@ class Chef
             @children ||= begin
                             result = child_paths.keys.sort.map { |name| make_child_entry(name) }
                             result += CHILDREN.map { |name| make_child_entry(name) }
-                            result.select { |c| c && c.exists? }.sort_by { |c| c.name }
+                            result.select { |c| c && c.exists? }.sort_by(&:name)
                           end
           end
 

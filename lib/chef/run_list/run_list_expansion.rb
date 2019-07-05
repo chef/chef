@@ -141,7 +141,7 @@ class Chef
       end
 
       def errors
-        @missing_roles_with_including_role.map { |item| item.first }
+        @missing_roles_with_including_role.map(&:first)
       end
 
       def to_json(*a)

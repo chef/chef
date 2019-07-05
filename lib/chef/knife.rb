@@ -231,9 +231,7 @@ class Chef
     end
 
     def self.load_deps
-      dependency_loaders.each do |dep_loader|
-        dep_loader.call
-      end
+      dependency_loaders.each(&:call)
     end
 
     OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack azure google linode push vcenter lpar}.freeze

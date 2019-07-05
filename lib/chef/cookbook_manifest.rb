@@ -180,7 +180,7 @@ class Chef
     end
 
     def each_file(excluded_parts: [], &block)
-      excluded_parts = Array(excluded_parts).map { |p| p.to_s }
+      excluded_parts = Array(excluded_parts).map(&:to_s)
 
       manifest[:all_files].each do |file|
         seg = file[:name].split("/")[0]

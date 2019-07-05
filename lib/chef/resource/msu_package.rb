@@ -40,7 +40,7 @@ class Chef
             uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
           end
         end),
-        default: lazy { |r| r.package_name }
+        default: lazy(&:package_name)
 
       property :checksum, String, desired_state: false,
                description: "SHA-256 digest used to verify the checksum of the downloaded MSU package."

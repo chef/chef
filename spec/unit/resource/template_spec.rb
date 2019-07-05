@@ -147,7 +147,7 @@ describe Chef::Resource::Template do
     end
 
     it "compiles helper methods with arguments into a module" do
-      resource.helper(:shout) { |quiet| quiet.upcase }
+      resource.helper(:shout, &:upcase)
       modules = resource.helper_modules
       o = Object.new
       modules.each { |m| o.extend(m) }

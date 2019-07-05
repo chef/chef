@@ -644,7 +644,7 @@ class Chef
         end
       end
 
-      ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
+      ivars = instance_variables.map(&:to_sym) - HIDDEN_IVARS
       ivars.each do |ivar|
         iv = ivar.to_s.sub(/^@/, "")
         if all_props.keys.include?(iv)
@@ -665,7 +665,7 @@ class Chef
     end
 
     def inspect
-      ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
+      ivars = instance_variables.map(&:to_sym) - FORBIDDEN_IVARS
       ivars.inject("<#{self}") do |str, ivar|
         str << " #{ivar}: #{instance_variable_get(ivar).inspect}"
       end << ">"
@@ -675,7 +675,7 @@ class Chef
     # is loaded. activesupport will call as_json and skip over to_json. This ensure
     # json is encoded as expected
     def as_json(*a)
-      safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
+      safe_ivars = instance_variables.map(&:to_sym) - FORBIDDEN_IVARS
       instance_vars = {}
       safe_ivars.each do |iv|
         instance_vars[iv.to_s.sub(/^@/, "")] = instance_variable_get(iv)
@@ -698,7 +698,7 @@ class Chef
       self.class.state_properties.each do |p|
         result[p.name] = p.get(self)
       end
-      safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
+      safe_ivars = instance_variables.map(&:to_sym) - FORBIDDEN_IVARS
       safe_ivars.each do |iv|
         key = iv.to_s.sub(/^@/, "").to_sym
         next if result.key?(key)
@@ -783,7 +783,7 @@ class Chef
     # @return [Array<Symbol>] All property names with desired state.
     #
     def self.state_attrs(*names)
-      state_properties(*names).map { |property| property.name }
+      state_properties(*names).map(&:name)
     end
 
     #
@@ -813,7 +813,7 @@ class Chef
     def self.identity_property(name = nil)
       result = identity_properties(*Array(name))
       if result.size > 1
-        raise Chef::Exceptions::MultipleIdentityError, "identity_property cannot be called on an object with more than one identity property (#{result.map { |r| r.name }.join(", ")})."
+        raise Chef::Exceptions::MultipleIdentityError, "identity_property cannot be called on an object with more than one identity property (#{result.map(&:name).join(", ")})."
       end
 
       result.first
@@ -1296,7 +1296,7 @@ class Chef
     # life as well.
     @@sorted_descendants = nil
     def self.sorted_descendants
-      @@sorted_descendants ||= descendants.sort_by { |x| x.to_s }
+      @@sorted_descendants ||= descendants.sort_by(&:to_s)
     end
 
     def self.inherited(child)

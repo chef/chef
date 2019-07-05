@@ -126,7 +126,7 @@ class Chef
       #   abc/*def.exact_path == 'abc/def'
       #   abc/x\\yz.exact_path == 'abc/xyz'
       def exact_path
-        return nil if has_double_star || exact_parts.any? { |part| part.nil? }
+        return nil if has_double_star || exact_parts.any?(&:nil?)
 
         result = Chef::ChefFS::PathUtils.join(*exact_parts)
         is_absolute ? Chef::ChefFS::PathUtils.join("", result) : result
