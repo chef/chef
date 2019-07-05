@@ -220,14 +220,14 @@ class Chef::Application::Solo < Chef::Application
 
   # Get this party started
   def run(enforce_license: false)
-    setup_signal_handlers
-    setup_application
-    reconfigure
-    check_license_acceptance if enforce_license
     for_ezra if Chef::Config[:ez]
     if !Chef::Config[:solo_legacy_mode]
       Chef::Application::Client.new.run
     else
+      setup_signal_handlers
+      reconfigure
+      setup_application
+      check_license_acceptance if enforce_license
       run_application
     end
   end
