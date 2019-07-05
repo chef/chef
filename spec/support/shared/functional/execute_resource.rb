@@ -58,7 +58,7 @@ shared_context "a command that can be executed as an alternate user" do
   include Chef::Mixin::ShellOut
 
   before do
-    shell_out!("icacls \"#{script_output_dir.gsub(/\//, '\\')}\" /grant \"authenticated users:(F)\"")
+    shell_out!("icacls \"#{script_output_dir.gsub(%r{/}, '\\')}\" /grant \"authenticated users:(F)\"")
   end
 
   after do

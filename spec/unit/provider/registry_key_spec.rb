@@ -322,7 +322,7 @@ describe Chef::Provider::RegistryKey do
           expect(@double_registry).to receive(:get_values).with(keyname).and_return(
             [
               { name: "one", type: :string, data: "initial value" },
-              { name: "two", type: :dword, data: 9001 }
+              { name: "two", type: :dword, data: 9001 },
             ]
           )
         end

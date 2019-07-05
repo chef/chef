@@ -37,7 +37,7 @@ class Chef
       # Chef::Config.cookbook_path file hierarchy for the requested
       # file.
       def get_filename(filename)
-        if filename =~ /([^\/]+)\/(.+)$/
+        if filename =~ %r{([^/]+)/(.+)$}
           segment = $1
         else
           raise "get_filename: Cannot determine segment/filename for incoming filename #{filename}"

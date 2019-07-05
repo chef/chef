@@ -164,7 +164,7 @@ class Chef
       attr_reader :cookbook_version
 
       def is_hosted?
-        @chef_config[:chef_server_url] =~ /\/+organizations\/.+/
+        @chef_config[:chef_server_url] =~ %r{/+organizations/.+}
       end
 
       def chef_fs

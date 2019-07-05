@@ -52,7 +52,7 @@ class Chef
         @inferred_cookbook_name = File.basename( path )
         @chefignore = chefignore
         @metadata = nil
-        @relative_path = /#{Regexp.escape(cookbook_path)}\/(.+)$/
+        @relative_path = %r{#{Regexp.escape(cookbook_path)}/(.+)$}
         @metadata_loaded = false
         @cookbook_settings = {
           all_files: {},

@@ -291,7 +291,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         end
 
         def validate_home_dir_specification!
-          unless new_resource.home =~ /^\//
+          unless new_resource.home =~ %r{^/}
             raise(Chef::Exceptions::InvalidHomeDirectory, "invalid path spec for User: '#{new_resource.username}', home directory: '#{new_resource.home}'")
           end
         end

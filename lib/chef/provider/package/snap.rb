@@ -190,7 +190,7 @@ class Chef
         def get_snap_version_from_source(path)
           body = {
               "context-id" => "get_snap_version_from_source_#{path}",
-              "args" => ["info", path,],
+              "args" => ["info", path],
           }.to_json
 
           # json = call_snap_api('POST', '/v2/snapctl', body)

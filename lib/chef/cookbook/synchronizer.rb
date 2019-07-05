@@ -209,7 +209,7 @@ class Chef
     # (if we have an override run_list we may not want to do this)
     def remove_old_cookbooks
       cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_file|
-        cache_file =~ /^cookbooks\/([^\/]+)\//
+        cache_file =~ %r{^cookbooks/([^/]+)/}
         unless have_cookbook?($1)
           Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
           cache.delete(cache_file)
@@ -221,7 +221,7 @@ class Chef
     # remove deleted files in cookbooks that are being used on the node
     def remove_deleted_files
       cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_file|
-        md = cache_file.match(/^cookbooks\/([^\/]+)\/([^\/]+)\/(.*)/)
+        md = cache_file.match(%r{^cookbooks/([^/]+)/([^/]+)/(.*)})
         next unless md
 
         ( cookbook_name, segment, file ) = md[1..3]

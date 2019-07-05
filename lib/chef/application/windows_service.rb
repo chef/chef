@@ -307,7 +307,7 @@ class Chef
 
         begin
           case config[:config_file]
-          when /^(http|https):\/\//
+          when %r{^(http|https)://}
             Chef::HTTP.new("").streaming_request(config[:config_file]) { |f| apply_config(f.path) }
           else
             ::File.open(config[:config_file]) { |f| apply_config(f.path) }

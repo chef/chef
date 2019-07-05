@@ -135,7 +135,7 @@ class Chef::EncryptedDataBagItem
     end
 
     secret = case path
-             when /^\w+:\/\//
+             when %r{^\w+://}
                # We have a remote key
                begin
                  Kernel.open(path).read.strip

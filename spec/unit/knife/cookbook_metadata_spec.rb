@@ -98,8 +98,8 @@ describe Chef::Knife::CookbookMetadata do
       it "should generate the metadata for each cookbook" do
         expect(Chef::CookbookLoader).to receive(:new).with(cookbook_dir).and_call_original
         knife.run
-        expect(stderr.string).to match /generating metadata for foo from #{cookbook_dir}\/foo\/metadata\.rb/im
-        expect(stderr.string).to match /generating metadata for bar from #{cookbook_dir}\/bar\/metadata\.rb/im
+        expect(stderr.string).to match %r{generating metadata for foo from #{cookbook_dir}/foo/metadata\.rb}im
+        expect(stderr.string).to match %r{generating metadata for bar from #{cookbook_dir}/bar/metadata\.rb}im
       end
 
       it "with -o or --cookbook_path should look in the provided path and generate cookbook metadata" do
@@ -107,8 +107,8 @@ describe Chef::Knife::CookbookMetadata do
         knife.config[:cookbook_path] = cookbook_dir
         expect(Chef::CookbookLoader).to receive(:new).with(cookbook_dir).and_call_original
         knife.run
-        expect(stderr.string).to match /generating metadata for foo from #{cookbook_dir}\/foo\/metadata\.rb/im
-        expect(stderr.string).to match /generating metadata for bar from #{cookbook_dir}\/bar\/metadata\.rb/im
+        expect(stderr.string).to match %r{generating metadata for foo from #{cookbook_dir}/foo/metadata\.rb}im
+        expect(stderr.string).to match %r{generating metadata for bar from #{cookbook_dir}/bar/metadata\.rb}im
       end
     end
 

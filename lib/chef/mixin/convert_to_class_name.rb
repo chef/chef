@@ -25,7 +25,7 @@ class Chef
       def convert_to_class_name(str)
         str = normalize_snake_case_name(str)
         rname = nil
-        regexp = %r{^(.+?)(_(.+))?$}
+        regexp = /^(.+?)(_(.+))?$/
 
         mn = str.match(regexp)
         if mn

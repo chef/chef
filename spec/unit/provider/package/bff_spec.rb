@@ -81,7 +81,7 @@ describe Chef::Provider::Package::Bff do
       status = double("Status", stdout: info, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted).with("installp", "-L", "-d", "/tmp/samba.base", timeout: 900).and_return(status)
       expect(@provider).to receive(:shell_out_compacted).with("lslpp", "-lcq", "samba.base", timeout: 900).and_return(@empty_status)
-      expect(logger).to receive(:warn).once.with(%r{bff package by product name})
+      expect(logger).to receive(:warn).once.with(/bff package by product name/)
       @provider.load_current_resource
 
       expect(@provider.current_resource.package_name).to eq("samba.base")

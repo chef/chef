@@ -37,12 +37,12 @@ class Chef
             case port
 
             # When the package name starts with a '/' treat it as the full path to the ports directory.
-            when /^\//
+            when %r{^/}
               port
 
             # Otherwise if the package name contains a '/' not at the start (like 'www/wordpress') treat
             # as a relative path from /usr/ports.
-            when /\//
+            when %r{/}
               "/usr/ports/#{port}"
 
             # Otherwise look up the path to the ports directory using 'whereis'

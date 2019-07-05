@@ -71,7 +71,7 @@ class Chef
               @current_resource.pass($5.to_i)
               logger.trace("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/fstab")
               next
-            when /^[\/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+/
+            when %r{^[/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+}
               enabled = false
               logger.trace("Found conflicting mount point #{@new_resource.mount_point} in /etc/fstab")
             end
@@ -96,7 +96,7 @@ class Chef
             when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(real_mount_point)}\s/
               mounted = true
               logger.trace("Special device #{device_logstring} mounted as #{real_mount_point}")
-            when /^([\/\w])+\son\s#{Regexp.escape(real_mount_point)}\s+/
+            when %r{^([/\w])+\son\s#{Regexp.escape(real_mount_point)}\s+}
               mounted = false
               logger.trace("Special device #{$~[1]} mounted as #{real_mount_point}")
             end
@@ -201,7 +201,7 @@ class Chef
         end
 
         def network_device?
-          @new_resource.device =~ /:/ || @new_resource.device =~ /\/\//
+          @new_resource.device =~ /:/ || @new_resource.device =~ %r{//}
         end
 
         def device_should_exist?

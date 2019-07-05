@@ -27,7 +27,7 @@ class Chef
           def install_package(name, version)
             unless current_resource.version
               case new_resource.source
-              when /^(http|ftp|\/)/
+              when %r{^(http|ftp|/)}
                 shell_out!("pkg", "add", options, new_resource.source, env: { "LC_ALL" => nil }).status
                 logger.trace("#{new_resource} installed from: #{new_resource.source}")
               else

@@ -51,7 +51,7 @@ class Chef
         end
 
         requirements.assert(:all_actions) do |a|
-          a.assertion { !(new_resource.revision =~ /^origin\//) }
+          a.assertion { !(new_resource.revision =~ %r{^origin/}) }
           a.failure_message Chef::Exceptions::InvalidRemoteGitReference,
             "Deploying remote branches is not supported. " +
             "Specify the remote branch as a local branch for " +

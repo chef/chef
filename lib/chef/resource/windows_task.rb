@@ -31,7 +31,7 @@ class Chef
       allowed_actions :create, :delete, :run, :end, :enable, :disable, :change
       default_action :create
 
-      property :task_name, String, regex: [/\A[^\/\:\*\?\<\>\|]+\z/],
+      property :task_name, String, regex: [%r{\A[^/\:\*\?\<\>\|]+\z}],
                description: "An optional property to set the task name if it differs from the resource block's name. Example: 'Task Name' or '/Task Name'",
                name_property: true
 
@@ -216,7 +216,7 @@ class Chef
 
         # make sure the start_day is in MM/DD/YYYY format: http://rubular.com/r/cgjHemtWl5
         if start_day
-          raise ArgumentError, "`start_day` property must be in the MM/DD/YYYY format." unless /^(0[1-9]|1[012])[- \/.](0[1-9]|[12][0-9]|3[01])[- \/.](19|20)\d\d$/ =~ start_day
+          raise ArgumentError, "`start_day` property must be in the MM/DD/YYYY format." unless %r{^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d$} =~ start_day
         end
       end
 

@@ -113,19 +113,19 @@ describe Chef::CookbookLoader do
 
       it "should load different attribute files from deeper paths" do
         expect(full_paths_for_part(:openldap, "attributes").detect do |f|
-          f =~ /cookbooks\/openldap\/attributes\/smokey.rb/
+          f =~ %r{cookbooks/openldap/attributes/smokey.rb}
         end).not_to eql(nil)
       end
 
       it "should load definition files from deeper paths" do
         expect(full_paths_for_part(:openldap, "definitions").detect do |f|
-          f =~ /cookbooks\/openldap\/definitions\/server.rb/
+          f =~ %r{cookbooks/openldap/definitions/server.rb}
         end).not_to eql(nil)
       end
 
       it "should load recipe files from deeper paths" do
         expect(full_paths_for_part(:openldap, "recipes").detect do |f|
-          f =~ /cookbooks\/openldap\/recipes\/one.rb/
+          f =~ %r{cookbooks/openldap/recipes/one.rb}
         end).not_to eql(nil)
       end
 
@@ -134,8 +134,8 @@ describe Chef::CookbookLoader do
           f =~ /\.dotfile$/
         end).to match(/\.dotfile$/)
         expect(full_paths_for_part(:openldap, "files").detect do |f|
-          f =~ /\.ssh\/id_rsa$/
-        end).to match(/\.ssh\/id_rsa$/)
+          f =~ %r{\.ssh/id_rsa$}
+        end).to match(%r{\.ssh/id_rsa$})
       end
 
       it "should load the metadata for the cookbook" do

@@ -272,7 +272,7 @@ class Chef::Application::Solo < Chef::Application
     Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
 
     if Chef::Config[:recipe_url]
-      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ /\/cookbooks\/*$/ }
+      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ %r{/cookbooks/*$} }
       recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
 
       if Chef::Config[:delete_entire_chef_repo]

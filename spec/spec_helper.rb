@@ -52,7 +52,7 @@ require "chef/knife"
 
 Dir["lib/chef/knife/**/*.rb"]
   .map { |f| f.gsub("lib/", "") }
-  .map { |f| f.gsub(%r{\.rb$}, "") }
+  .map { |f| f.gsub(/\.rb$/, "") }
   .each { |f| require f }
 
 require "chef/resource_resolver"
@@ -93,7 +93,7 @@ require "spec/support/shared/unit/mock_shellout"
 Dir["spec/support/**/*.rb"]
   .reject { |f| f =~ %r{^spec/support/platforms} }
   .reject { |f| f =~ %r{^spec/support/pedant} }
-  .map { |f| f.gsub(%r{.rb$}, "") }
+  .map { |f| f.gsub(/.rb$/, "") }
   .map { |f| f.gsub(%r{spec/}, "") }
   .each { |f| require f }
 

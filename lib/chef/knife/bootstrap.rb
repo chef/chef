@@ -663,7 +663,7 @@ class Chef
       def connection_protocol
         return @connection_protocol if @connection_protocol
 
-        from_url = host_descriptor =~ /^(.*):\/\// ? $1 : nil
+        from_url = host_descriptor =~ %r{^(.*)://} ? $1 : nil
         from_cli = config[:connection_protocol]
         from_knife = Chef::Config[:knife][:connection_protocol]
         @connection_protocol = from_url || from_cli || from_knife || "ssh"

@@ -307,7 +307,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   # remove characters that make for broken or wonky filenames.
   def clean_username_for_path(username)
-    username.gsub(/[\/\\. ]+/, "_")
+    username.gsub(%r{[/\\. ]+}, "_")
   end
 
   def canonicalize_username(username)

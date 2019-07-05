@@ -158,7 +158,7 @@ class Chef
             when /^#{device_regex}\s+on\s+#{Regexp.escape(mount_point)}\s+/
               logger.trace("Special device #{device} is mounted as #{mount_point}")
               mounted = true
-            when /^([\/\w]+)\son\s#{Regexp.escape(mount_point)}\s+/
+            when %r{^([/\w]+)\son\s#{Regexp.escape(mount_point)}\s+}
               logger.trace("Special device #{Regexp.last_match[1]} is mounted as #{mount_point}")
               mounted = false
             end
@@ -180,7 +180,7 @@ class Chef
               # solaris /etc/vfstab format:
               # device         device          mount           FS      fsck    mount   mount
               # to mount       to fsck         point           type    pass    at boot options
-            when /^#{device_regex}\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
+            when %r{^#{device_regex}\s+[-/\w]+\s+#{Regexp.escape(mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)}
               enabled = true
               fstype = Regexp.last_match[1]
               options = Regexp.last_match[4]
@@ -196,7 +196,7 @@ class Chef
               pass = (Regexp.last_match[2] == "-") ? 0 : Regexp.last_match[2].to_i
               logger.trace("Found mount #{device} to #{mount_point} in #{VFSTAB}")
               next
-            when /^[-\/\w]+\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+/
+            when %r{^[-/\w]+\s+[-/\w]+\s+#{Regexp.escape(mount_point)}\s+}
               # if we find a mountpoint on top of our mountpoint, then we are not enabled
               enabled = false
               logger.trace("Found conflicting mount point #{mount_point} in #{VFSTAB}")

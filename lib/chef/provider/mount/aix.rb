@@ -110,7 +110,7 @@ class Chef
             when /#{search_device}\s+#{Regexp.escape(@new_resource.mount_point)}/
               mounted = true
               logger.trace("Special device #{device_logstring} mounted as #{@new_resource.mount_point}")
-            when /^[\/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+/
+            when %r{^[/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+}
               mounted = false
               logger.trace("Found conflicting mount point #{@new_resource.mount_point} in /etc/fstab")
             end
@@ -196,7 +196,7 @@ class Chef
             found_device = false
             ::File.open("/etc/filesystems", "r").each_line do |line|
               case line
-              when /^\/.+:\s*$/
+              when %r{^/.+:\s*$}
                 if line =~ /#{Regexp.escape(@new_resource.mount_point)}+:/
                   found_device = true
                 else
