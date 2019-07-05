@@ -110,9 +110,9 @@ class Chef
       end
 
       def get_sid(value)
-        if value.kind_of?(String)
+        if value.is_a?(String)
           SID.from_account(value)
-        elsif value.kind_of?(SID)
+        elsif value.is_a?(SID)
           value
         else
           raise "Must specify username, group or SID: #{value}"
@@ -121,10 +121,10 @@ class Chef
 
       def securable_object
         @securable_object ||= begin
-          if file.kind_of?(String)
+          if file.is_a?(String)
             so = Chef::ReservedNames::Win32::Security::SecurableObject.new(file.dup)
           end
-          raise ArgumentError, "'file' must be a valid path or object of type 'Chef::ReservedNames::Win32::Security::SecurableObject'" unless so.kind_of? Chef::ReservedNames::Win32::Security::SecurableObject
+          raise ArgumentError, "'file' must be a valid path or object of type 'Chef::ReservedNames::Win32::Security::SecurableObject'" unless so.is_a? Chef::ReservedNames::Win32::Security::SecurableObject
 
           so
         end

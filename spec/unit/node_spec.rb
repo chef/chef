@@ -1385,7 +1385,7 @@ describe Chef::Node do
       describe "inflated" do
         it "should return a hash of node names and objects" do
           n1 = double("Chef::Node", name: "one")
-          allow(n1).to receive(:kind_of?).with(Chef::Node) { true }
+          allow(n1).to receive(:is_a?).with(Chef::Node) { true }
           expect(@query).to receive(:search).with(:node).and_yield(n1)
           r = Chef::Node.list(true)
           expect(r["one"]).to eq(n1)

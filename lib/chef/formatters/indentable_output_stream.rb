@@ -112,7 +112,7 @@ class Chef
       end
 
       def from_args(colors, merge_options = {})
-        if colors.size == 1 && colors[0].kind_of?(Hash)
+        if colors.size == 1 && colors[0].is_a?(Hash)
           merge_options.merge(colors[0])
         else
           merge_options.merge({ colors: colors })

@@ -582,7 +582,7 @@ class Chef
 
       # needed for __path__
       def convert_key(key)
-        key.kind_of?(Symbol) ? key.to_s : key
+        key.is_a?(Symbol) ? key.to_s : key
       end
 
       NIL = Object.new
@@ -590,7 +590,7 @@ class Chef
       # @api private
       def deep_merge!(merge_onto, merge_with)
         # If there are two Hashes, recursively merge.
-        if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
+        if merge_onto.is_a?(Hash) && merge_with.is_a?(Hash)
           merge_with.each do |key, merge_with_value|
             value =
               if merge_onto.key?(key)
@@ -604,7 +604,7 @@ class Chef
           end
           merge_onto
 
-        elsif merge_onto.kind_of?(Array) && merge_with.kind_of?(Array)
+        elsif merge_onto.is_a?(Array) && merge_with.is_a?(Array)
           merge_onto |= merge_with
 
         # If merge_with is NIL, don't replace merge_onto
@@ -613,9 +613,9 @@ class Chef
 
         # In all other cases, replace merge_onto with merge_with
         else
-          if merge_with.kind_of?(Hash)
+          if merge_with.is_a?(Hash)
             Chef::Node::ImmutableMash.new(merge_with)
-          elsif merge_with.kind_of?(Array)
+          elsif merge_with.is_a?(Array)
             Chef::Node::ImmutableArray.new(merge_with)
           else
             merge_with
@@ -626,7 +626,7 @@ class Chef
       # @api private
       def hash_only_merge!(merge_onto, merge_with)
         # If there are two Hashes, recursively merge.
-        if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
+        if merge_onto.is_a?(Hash) && merge_with.is_a?(Hash)
           merge_with.each do |key, merge_with_value|
             value =
               if merge_onto.key?(key)
@@ -646,9 +646,9 @@ class Chef
 
         # In all other cases, replace merge_onto with merge_with
         else
-          if merge_with.kind_of?(Hash)
+          if merge_with.is_a?(Hash)
             Chef::Node::ImmutableMash.new(merge_with)
-          elsif merge_with.kind_of?(Array)
+          elsif merge_with.is_a?(Array)
             Chef::Node::ImmutableArray.new(merge_with)
           else
             merge_with

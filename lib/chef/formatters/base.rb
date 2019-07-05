@@ -221,7 +221,7 @@ class Chef
       end
 
       def is_structured_deprecation?(deprecation)
-        deprecation.kind_of?(Chef::Deprecated::Base)
+        deprecation.is_a?(Chef::Deprecated::Base)
       end
 
       def is_formatter?

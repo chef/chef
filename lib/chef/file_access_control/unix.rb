@@ -119,9 +119,9 @@ class Chef
       def gid_from_resource(resource)
         return nil if resource.nil? || resource.group.nil?
 
-        if resource.group.kind_of?(String)
+        if resource.group.is_a?(String)
           diminished_radix_complement( Etc.getgrnam(resource.group).gid )
-        elsif resource.group.kind_of?(Integer)
+        elsif resource.group.is_a?(Integer)
           resource.group
         else
           Chef::Log.error("The `group` parameter of the #{@resource} resource is set to an invalid value (#{resource.owner.inspect})")
@@ -268,9 +268,9 @@ class Chef
       def uid_from_resource(resource)
         return nil if resource.nil? || resource.owner.nil?
 
-        if resource.owner.kind_of?(String)
+        if resource.owner.is_a?(String)
           diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
-        elsif resource.owner.kind_of?(Integer)
+        elsif resource.owner.is_a?(Integer)
           resource.owner
         else
           Chef::Log.error("The `owner` parameter of the #{@resource} resource is set to an invalid value (#{resource.owner.inspect})")

@@ -45,7 +45,7 @@ class Chef
 
       property :device_type, [String, Symbol],
         description: "The type of device: :device, :label, or :uuid",
-        coerce: proc { |arg| arg.kind_of?(String) ? arg.to_sym : arg },
+        coerce: proc { |arg| arg.is_a?(String) ? arg.to_sym : arg },
         default: :device,
         equal_to: RUBY_PLATFORM =~ /solaris/i ? %i{ device } : %i{ device label uuid }
 
@@ -62,7 +62,7 @@ class Chef
 
       property :options, [Array, String, nil],
         description: "An array or comma separated list of options for the mount.",
-        coerce: proc { |arg| arg.kind_of?(String) ? arg.split(",") : arg },
+        coerce: proc { |arg| arg.is_a?(String) ? arg.split(",") : arg },
         default: %w{defaults}
 
       property :dump, [Integer, FalseClass],

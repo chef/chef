@@ -902,7 +902,7 @@ class Chef
     end
 
     def is_last_element?(index, object)
-      object.kind_of?(Array) ? index == object.size - 1 : true
+      object.is_a?(Array) ? index == object.size - 1 : true
     end
 
     def assert_cookbook_path_not_empty(run_context)

@@ -90,13 +90,13 @@ class Chef
         # looking for _pv_:symbol as methods.  Assuming it find them, it calls the right
         # one.
         #++
-        raise ArgumentError, "Options must be a hash" unless opts.kind_of?(Hash)
-        raise ArgumentError, "Validation Map must be a hash" unless map.kind_of?(Hash)
+        raise ArgumentError, "Options must be a hash" unless opts.is_a?(Hash)
+        raise ArgumentError, "Validation Map must be a hash" unless map.is_a?(Hash)
 
         @validation_message ||= {}
 
         map.each do |key, validation|
-          unless key.kind_of?(Symbol) || key.kind_of?(String)
+          unless key.is_a?(Symbol) || key.is_a?(String)
             raise ArgumentError, "Validation map keys must be symbols or strings!"
           end
 
@@ -194,7 +194,7 @@ class Chef
         unless value.nil?
           to_be = Array(to_be)
           to_be.each do |tb|
-            return true if value.kind_of?(tb)
+            return true if value.is_a?(tb)
           end
           raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}.")
         end
@@ -320,7 +320,7 @@ class Chef
       #   ```
       #
       def _pv_callbacks(opts, key, callbacks)
-        raise ArgumentError, "Callback list must be a hash!" unless callbacks.kind_of?(Hash)
+        raise ArgumentError, "Callback list must be a hash!" unless callbacks.is_a?(Hash)
 
         value = _pv_opts_lookup(opts, key)
         unless value.nil?

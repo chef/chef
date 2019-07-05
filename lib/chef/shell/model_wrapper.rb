@@ -82,7 +82,7 @@ module Shell
     # the user wanted instead of the URI=>object stuff
     def list_objects
       objects = @model_class.method(:list).arity == 0 ? @model_class.list : @model_class.list(true)
-      objects.map { |obj| Array(obj).find { |o| o.kind_of?(@model_class) } }
+      objects.map { |obj| Array(obj).find { |o| o.is_a?(@model_class) } }
     end
 
     def format_query(query)

@@ -201,7 +201,7 @@ class Chef
               end
           end
           # necessary (?) for coercing objects (the run_list object?) to hashes
-          ( !data.kind_of?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
+          ( !data.is_a?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
         end
 
         def format_cookbook_list_for_display(item)

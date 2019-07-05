@@ -38,7 +38,7 @@ class Chef
 
     # if we wrap a Hash then decorator.kind_of?(Hash) should be true
     def kind_of?(klass)
-      __getobj__.kind_of?(klass) || super
+      __getobj__.is_a?(klass) || super
     end
 
     # reset our methods on the instance if the object changes under us (this also

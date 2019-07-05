@@ -547,7 +547,7 @@ class Chef
     end
 
     def self.from_hash(o)
-      return o if o.kind_of? Chef::Node
+      return o if o.is_a? Chef::Node
 
       node = new
       node.name(o["name"])
@@ -667,7 +667,7 @@ class Chef
     end
 
     def ==(other)
-      if other.kind_of?(self.class)
+      if other.is_a?(self.class)
         name == other.name
       else
         false

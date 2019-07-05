@@ -126,7 +126,7 @@ class Chef
         end
 
         def assert_valid_platform_values!(platforms, value)
-          unless value.kind_of?(Hash)
+          unless value.is_a?(Hash)
             msg = "platform dependent values must be specified in the format :platform => {:version => value} "
             msg << "you gave a value #{value.inspect} for platform(s) #{platforms}"
             raise ArgumentError, msg

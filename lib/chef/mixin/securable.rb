@@ -44,7 +44,7 @@ class Chef
           arg,
           callbacks: {
             "not in valid numeric range" => lambda do |m|
-              if m.kind_of?(String)
+              if m.is_a?(String)
                 m =~ /^0/ || m = "0#{m}"
               end
 

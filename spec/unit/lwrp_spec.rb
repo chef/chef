@@ -590,7 +590,7 @@ describe "LWRP" do
 
     it "get_lwrp(:lwrp_once).new is an instance of the LWRP class" do
       lwrp = get_lwrp(:lwrp_once).new("hi")
-      expect(lwrp.kind_of?(test_lwrp_class)).to be_truthy
+      expect(lwrp.is_a?(test_lwrp_class)).to be_truthy
       expect(lwrp.is_a?(test_lwrp_class)).to be_truthy
       expect(get_lwrp(:lwrp_once) === lwrp).to be_truthy
       expect(test_lwrp_class === lwrp).to be_truthy
@@ -603,28 +603,28 @@ describe "LWRP" do
 
       it "subclass.new is a subclass" do
         lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(subclass)).to be_truthy
+        expect(lwrp.is_a?(subclass)).to be_truthy
         expect(lwrp.is_a?(subclass)).to be_truthy
         expect(subclass === lwrp).to be_truthy
         expect(lwrp.class === subclass)
       end
       it "subclass.new is an instance of the LWRP class" do
         lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(test_lwrp_class)).to be_truthy
+        expect(lwrp.is_a?(test_lwrp_class)).to be_truthy
         expect(lwrp.is_a?(test_lwrp_class)).to be_truthy
         expect(test_lwrp_class === lwrp).to be_truthy
         expect(lwrp.class === test_lwrp_class)
       end
       it "subclass.new is a get_lwrp(:lwrp_once)" do
         lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(get_lwrp(:lwrp_once))).to be_truthy
+        expect(lwrp.is_a?(get_lwrp(:lwrp_once))).to be_truthy
         expect(lwrp.is_a?(get_lwrp(:lwrp_once))).to be_truthy
         expect(get_lwrp(:lwrp_once) === lwrp).to be_truthy
         expect(lwrp.class === get_lwrp(:lwrp_once))
       end
       it "get_lwrp(:lwrp_once).new is *not* a subclass" do
         lwrp = get_lwrp(:lwrp_once).new("hi")
-        expect(lwrp.kind_of?(subclass)).to be_falsey
+        expect(lwrp.is_a?(subclass)).to be_falsey
         expect(lwrp.is_a?(subclass)).to be_falsey
         expect(subclass === lwrp.class).to be_falsey
         expect(subclass === get_lwrp(:lwrp_once)).to be_falsey

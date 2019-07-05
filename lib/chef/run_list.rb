@@ -70,7 +70,7 @@ class Chef
     alias :add :<<
 
     def ==(other)
-      if other.kind_of?(Chef::RunList)
+      if other.is_a?(Chef::RunList)
         other.run_list_items == @run_list_items
       else
         return false unless other.respond_to?(:size) && (other.size == @run_list_items.size)
@@ -123,7 +123,7 @@ class Chef
     def reset!(*args)
       @run_list_items.clear
       args.flatten.each do |item|
-        if item.kind_of?(Chef::RunList)
+        if item.is_a?(Chef::RunList)
           item.each { |r| self << r }
         else
           self << item
@@ -153,7 +153,7 @@ class Chef
     end
 
     def coerce_to_run_list_item(item)
-      item.kind_of?(RunListItem) ? item : parse_entry(item)
+      item.is_a?(RunListItem) ? item : parse_entry(item)
     end
 
     def expansion_for_data_source(environment, data_source, opts = {})

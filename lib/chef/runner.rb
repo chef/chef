@@ -118,7 +118,7 @@ class Chef
       collected_failures.client_run_failure(error) unless error.nil?
       delayed_actions.each do |notification|
         result = run_delayed_notification(notification)
-        if result.kind_of?(Exception)
+        if result.is_a?(Exception)
           collected_failures.notification_failure(result)
         end
       end

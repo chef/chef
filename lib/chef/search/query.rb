@@ -113,7 +113,7 @@ class Chef
       end
 
       def validate_type(t)
-        unless t.kind_of?(String) || t.kind_of?(Symbol)
+        unless t.is_a?(String) || t.is_a?(Symbol)
           msg = "Invalid search object type #{t.inspect} (#{t.class}), must be a String or Symbol." +
             "Usage: search(:node, QUERY[, OPTIONAL_ARGS])" +
             "        `knife search environment QUERY (options)`"

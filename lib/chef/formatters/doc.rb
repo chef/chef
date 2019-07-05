@@ -293,9 +293,9 @@ class Chef
           next if line.nil?
 
           output_record line
-          if line.kind_of? String
+          if line.is_a? String
             start_line "- #{prefix}#{line}", :green
-          elsif line.kind_of? Array
+          elsif line.is_a? Array
             # Expanded output - delta
             # @todo should we have a resource_update_delta callback?
             line.each do |detail|

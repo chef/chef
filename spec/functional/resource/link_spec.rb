@@ -133,9 +133,9 @@ describe Chef::Resource::Link do
   end
 
   def get_sid(value)
-    if value.kind_of?(String)
+    if value.is_a?(String)
       Chef::ReservedNames::Win32::Security::SID.from_account(value)
-    elsif value.kind_of?(Chef::ReservedNames::Win32::Security::SID)
+    elsif value.is_a?(Chef::ReservedNames::Win32::Security::SID)
       value
     else
       raise "Must specify username or SID: #{value}"

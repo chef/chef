@@ -61,7 +61,7 @@ class Chef
         end
 
         def summarize_json(data)
-          if data.kind_of?(Chef::Node)
+          if data.is_a?(Chef::Node)
             node = data
             result = {}
 
@@ -92,7 +92,7 @@ class Chef
         # the volume of output is adjusted accordingly. Uses colors if enabled
         # in the ui object.
         def summarize(data)
-          if data.kind_of?(Chef::Node)
+          if data.is_a?(Chef::Node)
             node = data
             # special case ec2 with their split horizon whatsis.
             ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]

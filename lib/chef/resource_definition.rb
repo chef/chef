@@ -35,13 +35,13 @@ class Chef
     end
 
     def define(resource_name, prototype_params = nil, &block)
-      unless resource_name.kind_of?(Symbol)
+      unless resource_name.is_a?(Symbol)
         raise ArgumentError, "You must use a symbol when defining a new resource!"
       end
 
       @name = resource_name
       if prototype_params
-        unless prototype_params.kind_of?(Hash)
+        unless prototype_params.is_a?(Hash)
           raise ArgumentError, "You must pass a hash as the prototype parameters for a definition."
         end
 

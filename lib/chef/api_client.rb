@@ -171,7 +171,7 @@ class Chef
     # Load a client by name via the API
     def self.load(name)
       response = http_api.get("clients/#{name}")
-      if response.kind_of?(Chef::ApiClient)
+      if response.is_a?(Chef::ApiClient)
         response
       else
         from_hash(response)

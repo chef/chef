@@ -73,7 +73,7 @@ class Chef
     # assumed to contain exact keys (that is, Array elements will not be split
     # by "/").
     def self.to_array(item)
-      return item if item.kind_of? Array
+      return item if item.is_a? Array
 
       parts = item.split("/")
       parts.shift if !parts.empty? && parts[0].empty?

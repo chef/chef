@@ -639,7 +639,7 @@ class Chef
       # === Parameters
       # arry<Array>:: An array to be validated
       def validate_string_array(arry)
-        if arry.kind_of?(Array)
+        if arry.is_a?(Array)
           arry.each do |choice|
             validate( { choice: choice }, { choice: { kind_of: String } } )
           end
@@ -652,7 +652,7 @@ class Chef
       # === Parameters
       # opts<Hash>:: The options hash
       def validate_choice_array(opts)
-        if opts[:choice].kind_of?(Array)
+        if opts[:choice].is_a?(Array)
           case opts[:type]
           when "string"
             validator = [ String ]

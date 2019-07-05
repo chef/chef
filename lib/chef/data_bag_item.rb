@@ -148,7 +148,7 @@ class Chef
         item = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data/#{data_bag}/#{name}")
       end
 
-      if item.kind_of?(DataBagItem)
+      if item.is_a?(DataBagItem)
         item
       else
         item = from_hash(item)

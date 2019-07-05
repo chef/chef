@@ -56,7 +56,7 @@ class Chef
 
       property :link_type, [String, Symbol],
         description: "The type of link: :symbolic or :hard.",
-        coerce: proc { |arg| arg.kind_of?(String) ? arg.to_sym : arg },
+        coerce: proc { |arg| arg.is_a?(String) ? arg.to_sym : arg },
         equal_to: %i{symbolic hard}, default: :symbolic
 
       property :group, [String, Integer],

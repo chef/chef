@@ -115,7 +115,7 @@ describe Chef::Recipe do
           node.automatic[:platform_version] = "123"
           res = recipe.laughter "timmy"
           expect(res.name).to eql("timmy")
-          res.kind_of?(ShaunTheSheep)
+          res.is_a?(ShaunTheSheep)
         end
 
         it "locate a resource for all platforms" do
@@ -124,7 +124,7 @@ describe Chef::Recipe do
           YourMom.provides :love_and_caring
           res = recipe.love_and_caring "mommy"
           expect(res.name).to eql("mommy")
-          res.kind_of?(YourMom)
+          res.is_a?(YourMom)
         end
 
         describe "when there is more than one resource that resolves on a node" do

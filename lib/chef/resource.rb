@@ -750,7 +750,7 @@ class Chef
     # @see Chef::Resource.action_class
     #
     def provider(arg = nil)
-      klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
+      klass = if arg.is_a?(String) || arg.is_a?(Symbol)
                 lookup_provider_constant(arg)
               else
                 arg

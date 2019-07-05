@@ -162,7 +162,7 @@ module ChefConfig
     # etc.) work.
     default :chef_repo_path do
       if configuration[:cookbook_path]
-        if configuration[:cookbook_path].kind_of?(String)
+        if configuration[:cookbook_path].is_a?(String)
           File.expand_path("..", configuration[:cookbook_path])
         else
           configuration[:cookbook_path].map do |path|
@@ -194,7 +194,7 @@ module ChefConfig
 
     # @param child_path [String]
     def self.derive_path_from_chef_repo_path(child_path)
-      if chef_repo_path.kind_of?(String)
+      if chef_repo_path.is_a?(String)
         PathHelper.join(chef_repo_path, child_path)
       else
         chef_repo_path.uniq.map { |path| PathHelper.join(path, child_path) }

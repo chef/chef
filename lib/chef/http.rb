@@ -155,7 +155,7 @@ class Chef
     rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
-      if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
         Chef::Log.trace("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
         retry
       else
@@ -180,21 +180,21 @@ class Chef
       method, url, processed_headers, data = apply_request_middleware(method, url, headers, data)
 
       response, rest_request, return_value = send_http_request(method, url, processed_headers, data) do |http_response|
-        if http_response.kind_of?(Net::HTTPSuccess)
+        if http_response.is_a?(Net::HTTPSuccess)
           tempfile = stream_to_tempfile(url, http_response, tempfile, &progress_block)
         end
         apply_stream_complete_middleware(http_response, rest_request, return_value)
       end
-      return nil if response.kind_of?(Net::HTTPRedirection)
+      return nil if response.is_a?(Net::HTTPRedirection)
 
-      unless response.kind_of?(Net::HTTPSuccess)
+      unless response.is_a?(Net::HTTPSuccess)
         response.error!
       end
       tempfile
     rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
-      if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
         Chef::Log.trace("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
         retry
       else
@@ -227,15 +227,15 @@ class Chef
       method, url, processed_headers, data = apply_request_middleware(method, url, headers, data)
 
       response, rest_request, return_value = send_http_request(method, url, processed_headers, data) do |http_response|
-        if http_response.kind_of?(Net::HTTPSuccess)
+        if http_response.is_a?(Net::HTTPSuccess)
           tempfile = stream_to_tempfile(url, http_response, tempfile)
         end
         apply_stream_complete_middleware(http_response, rest_request, return_value)
       end
 
-      return nil if response.kind_of?(Net::HTTPRedirection)
+      return nil if response.is_a?(Net::HTTPRedirection)
 
-      unless response.kind_of?(Net::HTTPSuccess)
+      unless response.is_a?(Net::HTTPSuccess)
         response.error!
       end
 
@@ -250,7 +250,7 @@ class Chef
     rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
-      if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
         Chef::Log.trace("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
         retry
       else
@@ -358,7 +358,7 @@ class Chef
 
     # @api private
     def success_response?(response)
-      response.kind_of?(Net::HTTPSuccess) || response.kind_of?(Net::HTTPRedirection)
+      response.is_a?(Net::HTTPSuccess) || response.is_a?(Net::HTTPRedirection)
     end
 
     # Runs a synchronous HTTP request, with no middleware applied (use #request
@@ -377,9 +377,9 @@ class Chef
         end
         @last_response = response
 
-        if response.kind_of?(Net::HTTPSuccess)
+        if response.is_a?(Net::HTTPSuccess)
           [response, request, return_value]
-        elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
+        elsif response.is_a?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
           [response, request, false]
         elsif redirect_location = redirected_to(response)
           if %i{GET HEAD}.include?(method)
@@ -413,7 +413,7 @@ class Chef
           http_attempts += 1
           response, request, return_value = yield
           # handle HTTP 50X Error
-          if response.kind_of?(Net::HTTPServerError) && !Chef::Config.local_mode
+          if response.is_a?(Net::HTTPServerError) && !Chef::Config.local_mode
             if http_retry_count - http_attempts + 1 > 0
               sleep_time = 1 + (2**http_attempts) + rand(2**http_attempts)
               Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
@@ -499,9 +499,9 @@ class Chef
 
     # @api private
     def redirected_to(response)
-      return nil  unless response.kind_of?(Net::HTTPRedirection)
+      return nil  unless response.is_a?(Net::HTTPRedirection)
       # Net::HTTPNotModified is undesired subclass of Net::HTTPRedirection so test for this
-      return nil  if response.kind_of?(Net::HTTPNotModified)
+      return nil  if response.is_a?(Net::HTTPNotModified)
 
       response["location"]
     end

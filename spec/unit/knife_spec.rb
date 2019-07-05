@@ -205,7 +205,7 @@ describe Chef::Knife do
         KnifeSpecs.send :remove_const, :TestYourself
       end
       Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
-      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
+      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.is_a?(Class) }
     end
 
     it "confirms that the headers include X-Remote-Request-Id" do
@@ -220,7 +220,7 @@ describe Chef::Knife do
         KnifeSpecs.send :remove_const, :TestYourself
       end
       Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
-      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
+      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.is_a?(Class) }
     end
 
     it "merges the global knife CLI options" do

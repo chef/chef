@@ -298,7 +298,7 @@ class Chef
     end
 
     def self.validate_cookbook_versions(cv)
-      return false unless cv.kind_of?(Hash)
+      return false unless cv.is_a?(Hash)
 
       cv.each_value do |version|
         return false unless Chef::Environment.validate_cookbook_version(version)

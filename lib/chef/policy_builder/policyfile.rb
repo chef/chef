@@ -340,7 +340,7 @@ class Chef
         unless policy.key?("cookbook_locks")
           errors << "Policyfile is missing cookbook_locks element"
         end
-        if run_list.kind_of?(Array)
+        if run_list.is_a?(Array)
           run_list_errors = run_list.select do |maybe_recipe_spec|
             validate_recipe_spec(maybe_recipe_spec)
           end

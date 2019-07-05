@@ -156,7 +156,7 @@ class Chef
       def find_resource_by_hash(arg)
         results = []
         arg.each do |resource_type, name_list|
-          instance_names = name_list.kind_of?(Array) ? name_list : [ name_list ]
+          instance_names = name_list.is_a?(Array) ? name_list : [ name_list ]
           instance_names.each do |instance_name|
             results << lookup(create_key(resource_type, instance_name))
           end
