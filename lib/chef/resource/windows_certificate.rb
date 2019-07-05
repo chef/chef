@@ -2,7 +2,7 @@
 # Author:: Richard Lavey (richard.lavey@calastone.com)
 #
 # Copyright:: 2015-2017, Calastone Ltd.
-# Copyright:: 2018, Chef Software, Inc.
+# Copyright:: 2018-2019, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class Chef
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [TrueClass, FalseClass],
         description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
-        default: lazy { |r| r.pfx_password ? true : false }, skip_docs: true
+        default: lazy { pfx_password ? true : false }, skip_docs: true
 
       action :create do
         description "Creates or updates a certificate."
