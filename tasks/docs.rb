@@ -139,7 +139,7 @@ namespace :docs_site do
         ``sensitive``
           **Ruby Type:** true, false | **Default Value:** ``false``
 
-          Ensure that sensitive resource data is not logged by the Chef Infra Client.
+          Ensure that sensitive resource data is not logged by Chef Infra Client.
 
         .. end_tag
 
@@ -255,62 +255,64 @@ namespace :docs_site do
       HEREDOC
     end
 
-    template = %{=====================================================
-    <%= @name %> resource
-    =====================================================
-    `[edit on GitHub] <https://github.com/chef/chef-web-docs/blob/master/chef_master/source/resource_<%= @name %>.rst>`__
+    template = %{
+=====================================================
+<%= @name %> resource
+=====================================================
+`[edit on GitHub] <https://github.com/chef/chef-web-docs/blob/master/chef_master/source/resource_<%= @name %>.rst>`__
 
-    <%= bolded_description(@name, @description) %>
-    <%= note_text(@description) %>
-    <% unless @introduced.nil? %>
-    **New in Chef Infra Client <%= @introduced %>.**
-    <% end %>
-    Syntax
-    =====================================================
-    The <%= @name %> resource has the following syntax:
+<%= bolded_description(@name, @description) %>
+<%= note_text(@description) %>
+<% unless @introduced.nil? %>
+**New in Chef Infra Client <%= @introduced %>.**
+<% end %>
+Syntax
+=====================================================
+The <%= @name %> resource has the following syntax:
 
-    .. code-block:: ruby
+.. code-block:: ruby
 
-    <%= @resource_block %>
+<%= @resource_block %>
 
-    where:
+where:
 
-    * ``<%= @name %>`` is the resource.
-    * ``name`` is the name given to the resource block.
-    * ``action`` identifies which steps the Chef Infra Client will take to bring the node into the desired state.
-    <% unless @property_list.nil? %>* <%= @property_list %><% end %>
+* ``<%= @name %>`` is the resource.
+* ``name`` is the name given to the resource block.
+* ``action`` identifies which steps Chef Infra Client will take to bring the node into the desired state.
+<% unless @property_list.nil? %>* <%= @property_list %><% end %>
 
-    Actions
-    =====================================================
+Actions
+=====================================================
 
-    The <%= @name %> resource has the following actions:
-    <% @actions.each do |a| %>
-    ``:<%= a %>``
-       <% if a == @default_action %>Default. <% end %>Description here.
-    <% end %>
-    ``:nothing``
-       .. tag resources_common_actions_nothing
+The <%= @name %> resource has the following actions:
+<% @actions.each do |a| %>
+``:<%= a %>``
+   <% if a == @default_action %>Default. <% end %>Description here.
+<% end %>
+``:nothing``
+   .. tag resources_common_actions_nothing
 
-       This resource block does not act unless notified by another resource to take action. Once notified, this resource block either runs immediately or is queued up to run at the end of the Chef Infra Client run.
+   This resource block does not act unless notified by another resource to take action. Once notified, this resource block either runs immediately or is queued up to run at the end of the Chef Infra Client run.
 
-       .. end_tag
+   .. end_tag
 
-    Properties
-    =====================================================
+Properties
+=====================================================
 
-    The <%= @name %> resource has the following properties:
-    <% @properties.each do |p| %>
-    ``<%= p['name'] %>``
-       **Ruby Type:** <%= friendly_types_list(p['is']) %><% unless pretty_default(p['default']).nil? %> | **Default Value:** ``<%= pretty_default(p['default']) %>``<% end %><% if p['required'] %> | ``REQUIRED``<% end %><% if p['deprecated'] %> | ``DEPRECATED``<% end %><% if p['name_property'] %> | **Default Value:** ``The resource block's name``<% end %>
+The <%= @name %> resource has the following properties:
+<% @properties.each do |p| %>
+``<%= p['name'] %>``
+   **Ruby Type:** <%= friendly_types_list(p['is']) %><% unless pretty_default(p['default']).nil? %> | **Default Value:** ``<%= pretty_default(p['default']) %>``<% end %><% if p['required'] %> | ``REQUIRED``<% end %><% if p['deprecated'] %> | ``DEPRECATED``<% end %><% if p['name_property'] %> | **Default Value:** ``The resource block's name``<% end %>
 
-       <%= p['description'] %>
-    <% unless p['introduced'].nil? %>\n   *New in Chef Infra Client <%= p['introduced'] %>.*<% end %>
-    <% end %>
-    <% if @properties.empty? %>This resource does not have any properties.\n<% end %>
-    <%= boilerplate_content %>
-    Examples
-    ==========================================
-    }
+   <%= p['description'] %>
+<% unless p['introduced'].nil? -%>\n   *New in Chef Infra Client <%= p['introduced'] -%>.*<% end -%>
+<% end %>
+<% if @properties.empty? %>This resource does not have any properties.\n<% end %>
+<%= boilerplate_content %>
+Examples
+==========================================
+<%= @examples -%>
+}
 
     FileUtils.mkdir_p "docs_site"
     resources = Chef::JSONCompat.parse(ResourceInspector.inspect)
@@ -327,8 +329,9 @@ namespace :docs_site do
       @properties = data["properties"].reject { |v| v["name"] == "name" }.sort_by! { |v| v["name"] }
       @resource_block = generate_resource_block(resource, @properties)
       @property_list = friendly_properly_list(@properties)
+      @examples = data["examples"]
 
-      t = ERB.new(template)
+      t = ERB.new(template, nil, '-')
       File.open("docs_site/resource_#{@name}.rst", "w") do |f|
         f.write t.result(binding)
       end
