@@ -26,47 +26,135 @@ class Chef
       resource_name :runit_service
 
       # For legacy reasons we allow setting these via attribute
-      property :sv_bin, String, default: lazy { ( node["runit"] && node["runit"]["sv_bin"]) || (platform_family?("debian") ? "/usr/bin/sv" : "/sbin/sv") }
-      property :sv_dir, [String, FalseClass], default: lazy { ( node["runit"] && node["runit"]["sv_dir"]) || "/etc/sv" }
-      property :service_dir, String, default: lazy { ( node["runit"] && node["runit"]["service_dir"]) || "/etc/service" }
-      property :lsb_init_dir, String, default: lazy { ( node["runit"] && node["runit"]["lsb_init_dir"]) || "/etc/init.d" }
+      property :sv_bin, String,
+               default: lazy { (node["runit"] && node["runit"]["sv_bin"]) || (platform_family?("debian") ? "/usr/bin/sv" : "/sbin/sv") },
+               description: "The path to the sv program binary. This will attempt to use the node['runit']['sv_bin'] attribute, and falls back to /usr/bin/sv."
 
-      property :control, Array, default: []
-      property :env, Hash, default: {}
-      property :options, Hash, default: lazy { default_options }, coerce: proc { |r| default_options.merge(r) if r.respond_to?(:merge) }
-      property :log, [TrueClass, FalseClass], default: true
-      property :cookbook, String
-      property :check, [TrueClass, FalseClass], default: false
-      property :start_down, [TrueClass, FalseClass], default: false
-      property :delete_downfile, [TrueClass, FalseClass], default: false
-      property :finish, [TrueClass, FalseClass], default: false
-      property :supervisor_owner, String, regex: [Chef::Config[:user_valid_regex]]
-      property :supervisor_group, String, regex: [Chef::Config[:group_valid_regex]]
-      property :owner, String, regex: [Chef::Config[:user_valid_regex]]
-      property :group, String, regex: [Chef::Config[:group_valid_regex]]
-      property :enabled, [TrueClass, FalseClass], default: false
-      property :running, [TrueClass, FalseClass], default: false
-      property :default_logger, [TrueClass, FalseClass], default: false
-      property :restart_on_update, [TrueClass, FalseClass], default: true
-      property :run_template_name, String, default: lazy { service_name }
-      property :log_template_name, String, default: lazy { service_name }
-      property :check_script_template_name, String, default: lazy { service_name }
-      property :finish_script_template_name, String, default: lazy { service_name }
-      property :control_template_names, Hash, default: lazy { set_control_template_names }
-      property :status_command, String, default: lazy { "#{sv_bin} status #{service_name}" }
-      property :sv_templates, [TrueClass, FalseClass], default: true
-      property :sv_timeout, Integer
-      property :sv_verbose, [TrueClass, FalseClass], default: false
-      property :log_dir, String, default: lazy { ::File.join("/var/log/", service_name) }
-      property :log_flags, String, default: "-tt"
-      property :log_size, Integer
-      property :log_num, Integer
-      property :log_min, Integer
-      property :log_timeout, Integer
-      property :log_processor, String
-      property :log_socket, [String, Hash]
-      property :log_prefix, String
-      property :log_config_append, String
+      property :sv_dir, [String, FalseClass],
+               default: lazy { (node["runit"] && node["runit"]["sv_dir"]) || "/etc/sv" },
+               description: "The base 'service directory' for the services managed by the resource. By default, this will attempt to use the node['runit']['sv_dir'] attribute, and falls back to /etc/sv."
+
+      property :service_dir, String,
+               default: lazy { (node["runit"] && node["runit"]["service_dir"]) || "/etc/service" },
+               description: "The directory where services are symlinked to be supervised by runsvdir. By default, this will attempt to use the node['runit']['service_dir'] attribute, and falls back to /etc/service."
+
+      property :lsb_init_dir, String,
+               default: lazy { (node["runit"] && node["runit"]["lsb_init_dir"]) || "/etc/init.d" },
+               description: "The directory where an LSB-compliant init script interface will be created. By default, this will attempt to use the node['runit']['lsb_init_dir'] attribute, and falls back to /etc/init.d."
+
+      property :control, Array, default: [],
+               description: "An array of signals to customize control of the service, see runsv man page on how to use this. This requires that each template be created with the name sv-service_name-signal.erb."
+
+      property :env, Hash, default: {},
+               description: "A hash of environment variables with their values as content used in the service's env directory. Default is an empty hash. When this hash is non-empty, the contents of the runit service's env directory will be managed by Chef in order to conform to the declared state."
+
+      property :options, Hash, # deprecated: true should be set in the future
+               default: lazy { default_options }, coerce: proc { |r| default_options.merge(r) if r.respond_to?(:merge) },
+               description: "Options passed as variables to templates, for compatibility with legacy runit service definition. Default is an empty hash."
+
+      property :log, [TrueClass, FalseClass], default: true,
+               description: "Whether to start the service's logger with svlogd, requires a template sv-service_name-log-run.erb to configure the log's run script."
+
+      property :cookbook, String,
+               description: "A cookbook where templates are located instead of where the resource is used. Applies for all the templates in the enable action."
+
+      property :check, [TrueClass, FalseClass], default: false,
+               description: "Whether the service has a check script, requires a template sv-service_name-check.erb."
+
+      property :start_down, [TrueClass, FalseClass], default: false,
+               description: "Set the default state of the runit service to 'down' by creating <sv_dir>/down file. Defaults to false. Services using start_down will not be notified to restart when their run script is updated."
+
+      property :delete_downfile, [TrueClass, FalseClass], default: false,
+               description: "Delete previously created <sv_dir>/down file."
+
+      property :finish, [TrueClass, FalseClass], default: false,
+               description: "Whether the service has a finish script, requires a template sv-service_name-finish.erb."
+
+      property :supervisor_owner, String,
+               description: "The user that should be allowed to control this service, see runsv faq.",
+               regex: [Chef::Config[:user_valid_regex]]
+
+      property :supervisor_group, String,
+               description: "The group that should be allowed to control this service, see runsv faq.",
+               regex: [Chef::Config[:group_valid_regex]]
+
+      property :owner, String,
+               description: "The user that should own the templates created to enable the service.",
+               regex: [Chef::Config[:user_valid_regex]]
+
+      property :group, String,
+               description: "The group that should own the templates created to enable the service.",
+               regex: [Chef::Config[:group_valid_regex]]
+
+      property :enabled, [TrueClass, FalseClass], default: false,
+               deprecated: true, skip_docs: true
+
+      property :running, [TrueClass, FalseClass], default: false,
+               deprecated: true, skip_docs: true
+
+      property :default_logger, [TrueClass, FalseClass], default: false,
+               description: "Whether a default log/run script should be set up. If true, the default content of the run script will use svlogd to write logs to /var/log/service_name."
+
+      property :restart_on_update, [TrueClass, FalseClass], default: true,
+               description: "Whether the service should be restarted when the run script is updated. Defaults to true. Set to false if the service shouldn't be restarted when the run script is updated."
+
+      property :run_template_name, String, default: lazy { service_name },
+               description: "An alternate filename of the run run script to use instead of the value provided in service_name."
+
+      property :log_template_name, String, default: lazy { service_name },
+               description: "An alternate filename of the log run script to use instead of the value provided in service_name."
+
+      property :check_script_template_name, String, default: lazy { service_name },
+               description: "An alternate filename for the check script to use instead of the value provided in service_name."
+
+      property :finish_script_template_name, String, default: lazy { service_name },
+               description: "An alternate filename for the finish script to use instead of the value provided in service_name."
+
+      property :control_template_names, Hash, default: lazy { set_control_template_names },
+               description: "A hash of control signals (see control above) and their alternate template name(s) replacing service_name."
+
+      property :status_command, String, default: lazy { "#{sv_bin} status #{service_name}" },
+               description: "The command used to check the status of the service to see if it is enabled/running (if it's running, it's enabled). This hardcodes the location of the sv program to /usr/bin/sv due to the aforementioned cookbook load order."
+
+      property :sv_templates, [TrueClass, FalseClass], default: true, description: "If true, the :enable action will create the service directory with the appropriate templates. Default is true. Set this to false if the service has a package that provides its own service directory. See Usage examples."
+
+      property :sv_timeout, Integer,
+               description: "Override the default sv timeout of 7 seconds."
+
+      property :sv_verbose, [TrueClass, FalseClass], default: false, description: "Whether to enable sv verbose mode. Default is false."
+
+      property :log_dir, String,
+               default: lazy { ::File.join("/var/log/", service_name) },
+               description: "The directory where the svlogd log service will run. Used when default_logger is true."
+
+      property :log_flags, String, default: "-tt",
+               description: "The flags to pass to the svlogd command. Used when default_logger is true."
+
+      property :log_size, Integer,
+               description: "The maximum size a log file can grow to before it is automatically rotated. See svlogd(8) for the default value."
+
+      property :log_num, Integer,
+               description: "The maximum number of log files that will be retained after rotation. See svlogd(8) for the default value."
+
+      property :log_min, Integer,
+               description: "The minimum number of log files that will be retained after rotation (if svlogd cannot create a new file and the minimum has not been reached, it will block).",
+               default_description: "No minimum"
+
+      property :log_timeout, Integer,
+               description: "The maximum age a log file can get to before it is automatically rotated, whether it has reached log_size or not.",
+               default_description: "No timeout"
+
+      property :log_processor, String,
+               description: "A string containing a path to a program that rotated log files will be fed through. See the PROCESSOR section of svlogd(8) for details."
+
+      property :log_socket, [String, Hash],
+               description: "An string containing an IP:port pair identifying a UDP socket that log lines will be copied to."
+
+      property :log_prefix, String,
+               description: "A string that will be prepended to each line as it is logged."
+
+      property :log_config_append, String,
+               description: "A string containing optional additional lines to add to the log service configuration. See svlogd(8) for more details."
 
       # Use a link to sv instead of a full blown init script calling runit.
       # This was added for omnibus projects and probably shouldn't be used elsewhere
@@ -105,7 +193,7 @@ class Chef
         end
       end
 
-     # Mapping of valid signals with optional friendly name
+      # Mapping of valid signals with optional friendly name
       VALID_SIGNALS ||= Mash.new(
         :down => nil,
         :hup => nil,
