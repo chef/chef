@@ -25,6 +25,10 @@ class Chef
     class RunitService < Chef::Resource::Service
       resource_name :runit_service
 
+      description "The runit_service manages services running under the runit init system. Note: The runit init system must be installed to use this resource."
+
+      introduced "15.2"
+
       # For legacy reasons we allow setting these via attribute
       property :sv_bin, String,
                default: lazy { (node["runit"] && node["runit"]["sv_bin"]) || (platform_family?("debian") ? "/usr/bin/sv" : "/sbin/sv") },
