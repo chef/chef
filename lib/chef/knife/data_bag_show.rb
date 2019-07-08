@@ -44,8 +44,8 @@ class Chef
                       # Users do not need to pass --encrypt to read data, we simply try to use the provided secret
                       ui.info("Encrypted data bag detected, decrypting with provided secret.")
                       raw = Chef::EncryptedDataBagItem.load(@name_args[0],
-                                                            @name_args[1],
-                                                            secret)
+                        @name_args[1],
+                        secret)
                       format_for_display(raw.to_h)
                     elsif encrypted && !secret
                       ui.warn("Encrypted data bag detected, but no secret provided for decoding. Displaying encrypted data.")

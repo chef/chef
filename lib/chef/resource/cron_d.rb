@@ -88,78 +88,78 @@ class Chef
       end
 
       property :cron_name, String,
-               description: "An optional property to set the cron name if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the cron name if it differs from the resource block's name.",
+        name_property: true
 
       property :cookbook, String, desired_state: false
 
       property :predefined_value, String,
-               description: 'Schedule your cron job with one of the special predefined value instead of ** * pattern. This correspond to "@reboot", "@yearly", "@annually", "@monthly", "@weekly", "@daily", "@midnight" or "@hourly".',
-               equal_to: %w{ @reboot @yearly @annually @monthly @weekly @daily @midnight @hourly }
+        description: 'Schedule your cron job with one of the special predefined value instead of ** * pattern. This correspond to "@reboot", "@yearly", "@annually", "@monthly", "@weekly", "@daily", "@midnight" or "@hourly".',
+        equal_to: %w{ @reboot @yearly @annually @monthly @weekly @daily @midnight @hourly }
 
       property :minute, [Integer, String],
-               description: "The minute at which the cron entry should run (0 - 59).",
-               default: "*", callbacks: {
-                 "should be a valid minute spec" => ->(spec) { validate_numeric(spec, 0, 59) },
-               }
+        description: "The minute at which the cron entry should run (0 - 59).",
+        default: "*", callbacks: {
+          "should be a valid minute spec" => ->(spec) { validate_numeric(spec, 0, 59) },
+        }
 
       property :hour, [Integer, String],
-               description: "The hour at which the cron entry should run (0 - 23).",
-               default: "*", callbacks: {
-                 "should be a valid hour spec" => ->(spec) { validate_numeric(spec, 0, 23) },
-               }
+        description: "The hour at which the cron entry should run (0 - 23).",
+        default: "*", callbacks: {
+          "should be a valid hour spec" => ->(spec) { validate_numeric(spec, 0, 23) },
+        }
 
       property :day, [Integer, String],
-               description: "The day of month at which the cron entry should run (1 - 31).",
-               default: "*", callbacks: {
-                 "should be a valid day spec" => ->(spec) { validate_numeric(spec, 1, 31) },
-               }
+        description: "The day of month at which the cron entry should run (1 - 31).",
+        default: "*", callbacks: {
+          "should be a valid day spec" => ->(spec) { validate_numeric(spec, 1, 31) },
+        }
 
       property :month, [Integer, String],
-               description: "The month in the year on which a cron entry is to run (1 - 12, jan-dec, or *).",
-               default: "*", callbacks: {
-                 "should be a valid month spec" => ->(spec) { validate_month(spec) },
-               }
+        description: "The month in the year on which a cron entry is to run (1 - 12, jan-dec, or *).",
+        default: "*", callbacks: {
+          "should be a valid month spec" => ->(spec) { validate_month(spec) },
+        }
 
       property :weekday, [Integer, String],
-               description: "The day of the week on which this entry is to run (0-7, mon-sun, or *), where Sunday is both 0 and 7.",
-               default: "*", callbacks: {
-                 "should be a valid weekday spec" => ->(spec) { validate_dow(spec) },
-               }
+        description: "The day of the week on which this entry is to run (0-7, mon-sun, or *), where Sunday is both 0 and 7.",
+        default: "*", callbacks: {
+          "should be a valid weekday spec" => ->(spec) { validate_dow(spec) },
+        }
 
       property :command, String,
-               description: "The command to run.",
-               required: true
+        description: "The command to run.",
+        required: true
 
       property :user, String,
-               description: "The name of the user that runs the command.",
-               default: "root"
+        description: "The name of the user that runs the command.",
+        default: "root"
 
       property :mailto, String,
-               description: "Set the MAILTO environment variable in the cron.d file."
+        description: "Set the MAILTO environment variable in the cron.d file."
 
       property :path, String,
-               description: "Set the PATH environment variable in the cron.d file."
+        description: "Set the PATH environment variable in the cron.d file."
 
       property :home, String,
-               description: "Set the HOME environment variable in the cron.d file."
+        description: "Set the HOME environment variable in the cron.d file."
 
       property :shell, String,
-               description: "Set the SHELL environment variable in the cron.d file."
+        description: "Set the SHELL environment variable in the cron.d file."
 
       property :comment, String,
-               description: "A comment to place in the cron.d file."
+        description: "A comment to place in the cron.d file."
 
       property :environment, Hash,
-               description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
-               default: lazy { Hash.new }
+        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
+        default: lazy { Hash.new }
 
       property :mode, [String, Integer],
-               description: "The octal mode of the generated crontab file.",
-               default: "0600"
+        description: "The octal mode of the generated crontab file.",
+        default: "0600"
 
       property :random_delay, Integer,
-               description: "Set the RANDOM_DELAY environment variable in the cron.d file."
+        description: "Set the RANDOM_DELAY environment variable in the cron.d file."
 
       # warn if someone passes the deprecated cookbook property
       def after_created

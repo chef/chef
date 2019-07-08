@@ -32,20 +32,20 @@ class Chef
       allowed_actions :install, :remove
 
       property :package_name, [String, Array],
-               description: "The name of the package. Default value: the name of the resource block.",
-               coerce: proc { |x| [x].flatten }
+        description: "The name of the package. Default value: the name of the resource block.",
+        coerce: proc { |x| [x].flatten }
 
       property :version, [String, Array],
-               description: "The version of a package to be installed or upgraded.",
-               coerce: proc { |x| [x].flatten }
+        description: "The version of a package to be installed or upgraded.",
+        coerce: proc { |x| [x].flatten }
 
       property :source, String,
-               description: "Specify the source of the package.",
-               introduced: "14.0"
+        description: "Specify the source of the package.",
+        introduced: "14.0"
 
       property :skip_publisher_check, [true, false],
-               description: "Skip validating module author.",
-               default: false, introduced: "14.3", desired_state: false
+        description: "Skip validating module author.",
+        default: false, introduced: "14.3", desired_state: false
 
     end
   end

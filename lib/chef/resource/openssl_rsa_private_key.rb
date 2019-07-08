@@ -31,37 +31,37 @@ class Chef
       introduced "14.0"
 
       property :path, String,
-               description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
+        name_property: true
 
       property :key_length, Integer,
-               equal_to: [1024, 2048, 4096, 8192],
-               validation_message: "key_length (bits) must be 1024, 2048, 4096, or 8192!",
-               description: "The desired bit length of the generated key.",
-               default: 2048
+        equal_to: [1024, 2048, 4096, 8192],
+        validation_message: "key_length (bits) must be 1024, 2048, 4096, or 8192!",
+        description: "The desired bit length of the generated key.",
+        default: 2048
 
       property :key_pass, String,
-               description: "The desired passphrase for the key."
+        description: "The desired passphrase for the key."
 
       property :key_cipher, String,
-               equal_to: OpenSSL::Cipher.ciphers,
-               validation_message: "key_cipher must be a cipher known to openssl. Run `openssl list-cipher-algorithms` to see available options.",
-               description: "The designed cipher to use when generating your key. Run `openssl list-cipher-algorithms` to see available options.",
-               default: "des3"
+        equal_to: OpenSSL::Cipher.ciphers,
+        validation_message: "key_cipher must be a cipher known to openssl. Run `openssl list-cipher-algorithms` to see available options.",
+        description: "The designed cipher to use when generating your key. Run `openssl list-cipher-algorithms` to see available options.",
+        default: "des3"
 
       property :owner, [String, Integer],
-               description: "The owner applied to all files created by the resource."
+        description: "The owner applied to all files created by the resource."
 
       property :group, [String, Integer],
-               description: "The group ownership applied to all files created by the resource."
+        description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],
-               description: "The permission mode applied to all files created by the resource.",
-               default: "0600"
+        description: "The permission mode applied to all files created by the resource.",
+        default: "0600"
 
       property :force, [TrueClass, FalseClass],
-               description: "Force creation of the key even if the same key already exists on the node.",
-               default: false, desired_state: false
+        description: "Force creation of the key even if the same key already exists on the node.",
+        default: false, desired_state: false
 
       action :create do
         description "Create the RSA private key."

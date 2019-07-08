@@ -30,62 +30,62 @@ class Chef
       introduced "14.7"
 
       property :rule_name, String,
-               name_property: true,
-               description: "An optional property to set the name of the firewall rule to assign if it differs from the resource block's name."
+        name_property: true,
+        description: "An optional property to set the name of the firewall rule to assign if it differs from the resource block's name."
 
       property :description, String,
-               default: "Firewall rule",
-               description: "The description to assign to the firewall rule."
+        default: "Firewall rule",
+        description: "The description to assign to the firewall rule."
 
       property :local_address, String,
-               description: "The local address the firewall rule applies to."
+        description: "The local address the firewall rule applies to."
 
       property :local_port, [String, Integer, Array],
                # split various formats of comma separated lists and provide a sorted array of strings to match PS output
-               coerce: proc { |d| d.is_a?(String) ? d.split(/\s*,\s*/).sort : Array(d).sort.map { |x| x.to_s } },
-               description: "The local port the firewall rule applies to."
+        coerce: proc { |d| d.is_a?(String) ? d.split(/\s*,\s*/).sort : Array(d).sort.map { |x| x.to_s } },
+        description: "The local port the firewall rule applies to."
 
       property :remote_address, String,
-               description: "The remote address the firewall rule applies to."
+        description: "The remote address the firewall rule applies to."
 
       property :remote_port, [String, Integer, Array],
                # split various formats of comma separated lists and provide a sorted array of strings to match PS output
-               coerce: proc { |d| d.is_a?(String) ? d.split(/\s*,\s*/).sort : Array(d).sort.map { |x| x.to_s } },
-               description: "The remote port the firewall rule applies to."
+        coerce: proc { |d| d.is_a?(String) ? d.split(/\s*,\s*/).sort : Array(d).sort.map { |x| x.to_s } },
+        description: "The remote port the firewall rule applies to."
 
       property :direction, [Symbol, String],
-               default: :inbound, equal_to: [:inbound, :outbound],
-               description: "The direction of the firewall rule. Direction means either inbound or outbound traffic.",
-               coerce: proc { |d| d.is_a?(String) ? d.downcase.to_sym : d }
+        default: :inbound, equal_to: [:inbound, :outbound],
+        description: "The direction of the firewall rule. Direction means either inbound or outbound traffic.",
+        coerce: proc { |d| d.is_a?(String) ? d.downcase.to_sym : d }
 
       property :protocol, String,
-               default: "TCP",
-               description: "The protocol the firewall rule applies to."
+        default: "TCP",
+        description: "The protocol the firewall rule applies to."
 
       property :firewall_action, [Symbol, String],
-               default: :allow, equal_to: [:allow, :block, :notconfigured],
-               description: "The action of the firewall rule.",
-               coerce: proc { |f| f.is_a?(String) ? f.downcase.to_sym : f }
+        default: :allow, equal_to: [:allow, :block, :notconfigured],
+        description: "The action of the firewall rule.",
+        coerce: proc { |f| f.is_a?(String) ? f.downcase.to_sym : f }
 
       property :profile, [Symbol, String],
-               default: :any, equal_to: [:public, :private, :domain, :any, :notapplicable],
-               description: "The profile the firewall rule applies to.",
-               coerce: proc { |p| p.is_a?(String) ? p.downcase.to_sym : p }
+        default: :any, equal_to: [:public, :private, :domain, :any, :notapplicable],
+        description: "The profile the firewall rule applies to.",
+        coerce: proc { |p| p.is_a?(String) ? p.downcase.to_sym : p }
 
       property :program, String,
-               description: "The program the firewall rule applies to."
+        description: "The program the firewall rule applies to."
 
       property :service, String,
-               description: "The service the firewall rule applies to."
+        description: "The service the firewall rule applies to."
 
       property :interface_type, [Symbol, String],
-               default: :any, equal_to: [:any, :wireless, :wired, :remoteaccess],
-               description: "The interface type the firewall rule applies to.",
-               coerce: proc { |i| i.is_a?(String) ? i.downcase.to_sym : i }
+        default: :any, equal_to: [:any, :wireless, :wired, :remoteaccess],
+        description: "The interface type the firewall rule applies to.",
+        coerce: proc { |i| i.is_a?(String) ? i.downcase.to_sym : i }
 
       property :enabled, [TrueClass, FalseClass],
-               default: true,
-               description: "Whether or not to enable the firewall rule."
+        default: true,
+        description: "Whether or not to enable the firewall rule."
 
       alias_method :localip, :local_address
       alias_method :remoteip, :remote_address
@@ -120,7 +120,7 @@ class Chef
 
         if current_resource
           converge_if_changed :rule_name, :local_address, :local_port, :remote_address, :remote_port, :direction,
-                              :protocol, :firewall_action, :profile, :program, :service, :interface_type, :enabled do
+            :protocol, :firewall_action, :profile, :program, :service, :interface_type, :enabled do
             cmd = firewall_command("Set")
             powershell_out!(cmd)
           end

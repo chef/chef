@@ -162,7 +162,7 @@ describe Chef::Version do
       ].each do |spec|
         it "(#{spec.first(3).join(' ')}) should be #{spec[3]}" do
           got = Chef::Version.new(spec[0]).send(spec[1],
-                                                Chef::Version.new(spec[2]))
+            Chef::Version.new(spec[2]))
           expect(got).to eq(spec[3])
         end
       end

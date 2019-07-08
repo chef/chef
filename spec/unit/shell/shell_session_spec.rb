@@ -238,11 +238,11 @@ describe Shell::SoloLegacySession do
 
   it "passes the shell CLI args to the client" do
     @client = double("Chef::Client.new",
-                     run_ohai: true,
-                     load_node: true,
-                     build_node: true,
-                     register: true,
-                     sync_cookbooks: {})
+      run_ohai: true,
+      load_node: true,
+      build_node: true,
+      register: true,
+      sync_cookbooks: {})
     expect(Chef::Client).to receive(:new).with(json_attribs, Chef::Config[:shell_config]).and_return(@client)
     @session.json_configuration = json_attribs
     @session.send(:rebuild_node)

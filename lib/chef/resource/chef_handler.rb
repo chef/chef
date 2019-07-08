@@ -28,19 +28,19 @@ class Chef
       introduced "14.0"
 
       property :class_name, String,
-               description: "The name of the handler class (can be module name-spaced).",
-               name_property: true
+        description: "The name of the handler class (can be module name-spaced).",
+        name_property: true
 
       property :source, String,
-               description: "The full path to the handler file. Can also be a gem path if the handler ships as part of a Ruby gem."
+        description: "The full path to the handler file. Can also be a gem path if the handler ships as part of a Ruby gem."
 
       property :arguments, [Array, Hash],
-               description: "Arguments to pass the handler's class initializer.",
-               default: lazy { [] }
+        description: "Arguments to pass the handler's class initializer.",
+        default: lazy { [] }
 
       property :type, Hash,
-               description: "The type of handler to register as, i.e. :report, :exception or both.",
-               default: { report: true, exception: true }
+        description: "The type of handler to register as, i.e. :report, :exception or both.",
+        default: { report: true, exception: true }
 
       # supports means a different thing in chef-land so we renamed it but
       # wanted to make sure we didn't break the world

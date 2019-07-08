@@ -43,8 +43,8 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
 
   let(:loader) do
     Chef::Knife::SubcommandLoader::HashedCommandLoader.new(
-    File.join(CHEF_SPEC_DATA, "knife-site-subcommands"),
-    plugin_manifest) end
+      File.join(CHEF_SPEC_DATA, "knife-site-subcommands"),
+      plugin_manifest) end
 
   describe "#list_commands" do
     before do

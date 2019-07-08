@@ -190,7 +190,7 @@ class Chef
         mapping[:GenericAll] = Chef::ReservedNames::Win32::Security::FILE_ALL_ACCESS
 
         Chef::ReservedNames::Win32::Security.access_check(security_descriptor, duplicate_token,
-                                                          desired_access, mapping)
+          desired_access, mapping)
       end
 
       def self.delete_volume_mount_point(mount_point)

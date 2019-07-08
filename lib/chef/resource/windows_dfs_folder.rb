@@ -28,18 +28,18 @@ class Chef
       introduced "15.0"
 
       property :folder_path, String,
-               description: "An optional property to set the path of the dfs folder if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the path of the dfs folder if it differs from the resource block's name.",
+        name_property: true
 
       property :namespace_name, String,
-               description: "The namespace this should be created within.",
-               required: true
+        description: "The namespace this should be created within.",
+        required: true
 
       property :target_path, String,
-               description: "The target that this path will connect you to."
+        description: "The target that this path will connect you to."
 
       property :description, String,
-               description: "Description for the share."
+        description: "Description for the share."
 
       action :create do
         description "Creates the folder in dfs namespace."

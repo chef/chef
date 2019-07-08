@@ -103,7 +103,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
               if ex.errno == ERROR_SERVICE_LOGON_FAILED
                 logger.error ex.message
                 raise Chef::Exceptions::Service,
-                "Service #{@new_resource} did not start due to a logon failure (error #{ERROR_SERVICE_LOGON_FAILED}): possibly the specified user '#{@new_resource.run_as_user}' does not have the 'log on as a service' privilege, or the password is incorrect."
+                  "Service #{@new_resource} did not start due to a logon failure (error #{ERROR_SERVICE_LOGON_FAILED}): possibly the specified user '#{@new_resource.run_as_user}' does not have the 'log on as a service' privilege, or the password is incorrect."
               else
                 raise ex
               end
@@ -209,8 +209,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     end
 
     converge_if_changed :service_type, :startup_type, :error_control,
-                        :binary_path_name, :load_order_group, :dependencies,
-                        :run_as_user, :display_name, :description do
+      :binary_path_name, :load_order_group, :dependencies,
+      :run_as_user, :display_name, :description do
       Win32::Service.configure(windows_service_config(:configure))
     end
 

@@ -108,7 +108,7 @@ class Chef
         cmd_words = positional_arguments(args)
         load_command(cmd_words)
         result = Chef::Knife.subcommands[find_longest_key(Chef::Knife.subcommands,
-                                                          cmd_words, "_")]
+          cmd_words, "_")]
         result || Chef::Knife.subcommands[args.first.tr("-", "_")]
       end
 
@@ -116,7 +116,7 @@ class Chef
         category_words = positional_arguments(args)
         category_words.map! { |w| w.split("-") }.flatten!
         find_longest_key(Chef::Knife.subcommands_by_category,
-                         category_words, " ")
+          category_words, " ")
       end
 
       #

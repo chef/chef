@@ -28,23 +28,23 @@ class Chef
       introduced "14.0"
 
       property :shortcut_name, String,
-               description: "An optional property to set the shortcut name if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the shortcut name if it differs from the resource block's name.",
+        name_property: true
 
       property :target, String,
-               description: "The destination that the shortcut links to."
+        description: "The destination that the shortcut links to."
 
       property :arguments, String,
-               description: "Arguments to pass to the target when the shortcut is executed."
+        description: "Arguments to pass to the target when the shortcut is executed."
 
       property :description, String,
-               description: "The description of the shortcut"
+        description: "The description of the shortcut"
 
       property :cwd, String,
-               description: "Working directory to use when the target is executed."
+        description: "Working directory to use when the target is executed."
 
       property :iconlocation, String,
-               description: "Icon to use for the shortcut. Accepts the format of 'path, index', where index is the icon file to use. See https://msdn.microsoft.com/en-us/library/3s9bx7at.aspx for details"
+        description: "Icon to use for the shortcut. Accepts the format of 'path, index', where index is the icon file to use. See https://msdn.microsoft.com/en-us/library/3s9bx7at.aspx for details"
 
       load_current_value do |desired|
         require "win32ole" if RUBY_PLATFORM =~ /mswin|mingw32|windows/

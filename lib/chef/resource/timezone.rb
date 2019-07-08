@@ -28,8 +28,8 @@ class Chef
       introduced "14.6"
 
       property :timezone, String,
-               description: "An optional property to set the timezone value if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the timezone value if it differs from the resource block's name.",
+        name_property: true
 
       action :set do
         description "Set the timezone."

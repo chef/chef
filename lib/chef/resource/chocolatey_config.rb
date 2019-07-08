@@ -26,7 +26,7 @@ class Chef
                description: "An optional property to set the config key name if it differs from the resource block's name."
 
       property :value, String,
-               description: "The value to set."
+        description: "The value to set."
 
       load_current_value do
         current_val = fetch_config_element(config_key)

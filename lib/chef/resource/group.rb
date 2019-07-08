@@ -28,11 +28,11 @@ class Chef
       default_action :create
 
       property :group_name, String,
-               name_property: true, identity: true,
-               description: "The name of the group."
+        name_property: true, identity: true,
+        description: "The name of the group."
 
       property :gid, [ String, Integer ],
-               description: "The identifier for the group."
+        description: "The identifier for the group."
 
       property :members, [String, Array], default: lazy { [] },
                coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
@@ -52,8 +52,8 @@ class Chef
                description: "Allow gid duplication. May only be used with the Groupadd provider."
 
       property :comment, String,
-               introduced: "14.9",
-               description: "Specifies a comment to associate with the local group."
+        introduced: "14.9",
+        description: "Specifies a comment to associate with the local group."
 
       alias_method :users, :members
     end

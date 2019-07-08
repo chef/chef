@@ -156,11 +156,11 @@ class Chef
 
       def http_api
         @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url],
-                                          {
-                                            api_version: "0",
-                                            client_name: Chef::Config[:validation_client_name],
-                                            signing_key_filename: Chef::Config[:validation_key],
-                                          }
+          {
+            api_version: "0",
+            client_name: Chef::Config[:validation_client_name],
+            signing_key_filename: Chef::Config[:validation_key],
+          }
                                          )
       end
 

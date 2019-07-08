@@ -33,12 +33,12 @@ class Chef
       description "Use the cookbook_file resource to transfer files from a sub-directory of COOKBOOK_NAME/files/ to a specified path located on a host that is running the #{Chef::Dist::CLIENT}. The file is selected according to file specificity, which allows different source files to be used based on the hostname, host platform (operating system, distro, or as appropriate), or platform version. Files that are located in the COOKBOOK_NAME/files/default sub-directory may be used on any platform.\n\nDuring a #{Chef::Dist::CLIENT} run, the checksum for each local file is calculated and then compared against the checksum for the same file as it currently exists in the cookbook on the Chef server. A file is not transferred when the checksums match. Only files that require an update are transferred from the Chef server to a node."
 
       property :source, [ String, Array ],
-                description: "The name of the file in COOKBOOK_NAME/files/default or the path to a file located in COOKBOOK_NAME/files. The path must include the file name and its extension. This can be used to distribute specific files depending upon the platform used.",
-                default: lazy { ::File.basename(name) }
+        description: "The name of the file in COOKBOOK_NAME/files/default or the path to a file located in COOKBOOK_NAME/files. The path must include the file name and its extension. This can be used to distribute specific files depending upon the platform used.",
+        default: lazy { ::File.basename(name) }
 
       property :cookbook, String,
-                description: "The cookbook in which a file is located (if it is not located in the current cookbook).",
-                desired_state: false
+        description: "The cookbook in which a file is located (if it is not located in the current cookbook).",
+        desired_state: false
 
       default_action :create
     end

@@ -27,15 +27,15 @@ class Chef
       introduced "14.0"
 
       property :hint_name, String,
-               description: "An optional property to set the hint name if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the hint name if it differs from the resource block's name.",
+        name_property: true
 
       property :content, Hash,
-               description: "Values to include in the hint file."
+        description: "Values to include in the hint file."
 
       property :compile_time, [TrueClass, FalseClass],
-               description: "Determines whether or not the resource is executed during the compile time phase.",
-               default: true, desired_state: false
+        description: "Determines whether or not the resource is executed during the compile time phase.",
+        default: true, desired_state: false
 
       action :create do
         description "Create an Ohai hint file."

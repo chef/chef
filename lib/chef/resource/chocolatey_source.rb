@@ -26,7 +26,7 @@ class Chef
                description: "An optional property to set the source name if it differs from the resource block's name."
 
       property :source, String,
-               description: "The source URL."
+        description: "The source URL."
 
       property :bypass_proxy, [TrueClass, FalseClass], default: false,
                description: "Whether or not to bypass the system's proxy settings to access the source."

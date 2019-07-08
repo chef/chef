@@ -29,8 +29,8 @@ class Chef
       introduced "14.0"
 
       property :errata_id, String,
-               description: "An optional property for specifying the errata ID if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property for specifying the errata ID if it differs from the resource block's name.",
+        name_property: true
 
       action :install do
         description "Installs a package for a specific errata ID."

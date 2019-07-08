@@ -33,21 +33,21 @@ class Chef
       introduced "14.0"
 
       property :key, String,
-               description: "The kernel parameter key in dotted format if it differs from the resource block's name.",
-               name_property: true
+        description: "The kernel parameter key in dotted format if it differs from the resource block's name.",
+        name_property: true
 
       property :ignore_error, [TrueClass, FalseClass],
-               description: "Ignore any errors when setting the value on the command line.",
-               default: false, desired_state: false
+        description: "Ignore any errors when setting the value on the command line.",
+        default: false, desired_state: false
 
       property :value, [Array, String, Integer, Float],
-               description: "The value to set.",
-               coerce: proc { |v| coerce_value(v) },
-               required: true
+        description: "The value to set.",
+        coerce: proc { |v| coerce_value(v) },
+        required: true
 
       property :conf_dir, String,
-               description: "The configuration directory to write the config to.",
-               default: "/etc/sysctl.d"
+        description: "The configuration directory to write the config to.",
+        default: "/etc/sysctl.d"
 
       def after_created
         raise "The sysctl resource requires Linux as it needs sysctl and the sysctl.d directory functionality." unless node["os"] == "linux"

@@ -32,14 +32,14 @@ class Chef
 
       allowed_actions :install, :remove
 
-      property  :source, String,
-                description: "The local file path or URL for the CAB package.",
-                coerce: (proc do |s|
-                  unless s.nil?
-                    uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
-                  end
-                end),
-                default: lazy { |r| r.package_name }, default_description: "The package name."
+      property :source, String,
+        description: "The local file path or URL for the CAB package.",
+        coerce: (proc do |s|
+          unless s.nil?
+            uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
+          end
+        end),
+        default: lazy { |r| r.package_name }, default_description: "The package name."
     end
   end
 end

@@ -189,7 +189,7 @@ class Chef
         # see https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464(v=vs.85).aspx
         class Translation < FFI::Struct
           layout :w_lang, :WORD,
-          :w_code_page, :WORD
+            :w_code_page, :WORD
         end
 
 =begin
@@ -200,7 +200,7 @@ typedef struct _FILETIME {
 =end
         class FILETIME < FFI::Struct
           layout :dw_low_date_time, :DWORD,
-          :dw_high_date_time, :DWORD
+            :dw_high_date_time, :DWORD
         end
 
 =begin
@@ -212,8 +212,8 @@ typedef struct _SECURITY_ATTRIBUTES {
 =end
         class SECURITY_ATTRIBUTES < FFI::Struct
           layout :n_length, :DWORD,
-          :lp_security_descriptor, :LPVOID,
-          :b_inherit_handle, :DWORD
+            :lp_security_descriptor, :LPVOID,
+            :b_inherit_handle, :DWORD
         end
 
 =begin
@@ -232,15 +232,15 @@ typedef struct _WIN32_FIND_DATA {
 =end
         class WIN32_FIND_DATA < FFI::Struct
           layout :dw_file_attributes, :DWORD,
-          :ft_creation_time, FILETIME,
-          :ft_last_access_time, FILETIME,
-          :ft_last_write_time, FILETIME,
-          :n_file_size_high, :DWORD,
-          :n_file_size_low, :DWORD,
-          :dw_reserved_0, :DWORD,
-          :dw_reserved_1, :DWORD,
-          :c_file_name, [:BYTE, MAX_PATH * 2],
-          :c_alternate_file_name, [:BYTE, 14]
+            :ft_creation_time, FILETIME,
+            :ft_last_access_time, FILETIME,
+            :ft_last_write_time, FILETIME,
+            :n_file_size_high, :DWORD,
+            :n_file_size_low, :DWORD,
+            :dw_reserved_0, :DWORD,
+            :dw_reserved_1, :DWORD,
+            :c_file_name, [:BYTE, MAX_PATH * 2],
+            :c_alternate_file_name, [:BYTE, 14]
         end
 
 =begin
@@ -259,15 +259,15 @@ typedef struct _BY_HANDLE_FILE_INFORMATION {
 =end
         class BY_HANDLE_FILE_INFORMATION < FFI::Struct
           layout :dw_file_attributes, :DWORD,
-          :ft_creation_time, FILETIME,
-          :ft_last_access_time, FILETIME,
-          :ft_last_write_time, FILETIME,
-          :dw_volume_serial_number, :DWORD,
-          :n_file_size_high, :DWORD,
-          :n_file_size_low, :DWORD,
-          :n_number_of_links, :DWORD,
-          :n_file_index_high, :DWORD,
-          :n_file_index_low, :DWORD
+            :ft_creation_time, FILETIME,
+            :ft_last_access_time, FILETIME,
+            :ft_last_write_time, FILETIME,
+            :dw_volume_serial_number, :DWORD,
+            :n_file_size_high, :DWORD,
+            :n_file_size_low, :DWORD,
+            :n_number_of_links, :DWORD,
+            :n_file_index_high, :DWORD,
+            :n_file_index_low, :DWORD
         end
 
 =begin
@@ -563,7 +563,7 @@ BOOL WINAPI VerQueryValue(
         def file_handle(path)
           path = canonical_encode_path(path)
           handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
-                                nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
+            nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
 
           if handle == INVALID_HANDLE_VALUE
             Chef::ReservedNames::Win32::Error.raise!
@@ -577,7 +577,7 @@ BOOL WINAPI VerQueryValue(
         def symlink_file_handle(path)
           path = encode_path(path)
           handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,
-                                nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
+            nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
 
           if handle == INVALID_HANDLE_VALUE
             Chef::ReservedNames::Win32::Error.raise!

@@ -28,24 +28,24 @@ class Chef
       introduced "15.0"
 
       property :use_fqdn, [TrueClass, FalseClass],
-               description: "Indicates whether a DFS namespace server uses FQDNs in referrals. If this parameter has a value of true, the server uses FQDNs in referrals. If this parameter has a value of false, the server uses NetBIOS names.",
-               default: false
+        description: "Indicates whether a DFS namespace server uses FQDNs in referrals. If this parameter has a value of true, the server uses FQDNs in referrals. If this parameter has a value of false, the server uses NetBIOS names.",
+        default: false
 
       property :ldap_timeout_secs, Integer,
-               description: "",
-               default: 30
+        description: "",
+        default: 30
 
       property :prefer_login_dc, [TrueClass, FalseClass],
-               description: "",
-               default: false
+        description: "",
+        default: false
 
       property :enable_site_costed_referrals, [TrueClass, FalseClass],
-               description: "",
-               default: false
+        description: "",
+        default: false
 
       property :sync_interval_secs, Integer,
-               description: "",
-               default: 3600
+        description: "",
+        default: 3600
 
       load_current_value do
         ps_results = powershell_out("Get-DfsnServerConfiguration -ComputerName '#{ENV['COMPUTERNAME']}' | Select LdapTimeoutSec, PreferLogonDC, EnableSiteCostedReferrals, SyncIntervalSec, UseFqdn | ConvertTo-Json")

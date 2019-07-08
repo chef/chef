@@ -31,37 +31,37 @@ class Chef
       introduced "14.0"
 
       property :device_id, String,
-               description: "An optional property to set the printer queue name if it differs from the resource block's name. Example: 'HP LJ 5200 in fifth floor copy room'.",
-               name_property: true
+        description: "An optional property to set the printer queue name if it differs from the resource block's name. Example: 'HP LJ 5200 in fifth floor copy room'.",
+        name_property: true
 
       property :comment, String,
-               description: "Optional descriptor for the printer queue."
+        description: "Optional descriptor for the printer queue."
 
       property :default, [TrueClass, FalseClass],
-               description: "Determines whether or not this should be the system's default printer.",
-               default: false
+        description: "Determines whether or not this should be the system's default printer.",
+        default: false
 
       property :driver_name, String,
-               description: "The exact name of printer driver installed on the system.",
-               required: true
+        description: "The exact name of printer driver installed on the system.",
+        required: true
 
       property :location, String,
-               description: "Printer location, such as 'Fifth floor copy room'."
+        description: "Printer location, such as 'Fifth floor copy room'."
 
       property :shared, [TrueClass, FalseClass],
-               description: "Determines whether or not the printer is shared.",
-               default: false
+        description: "Determines whether or not the printer is shared.",
+        default: false
 
       property :share_name, String,
-               description: "The name used to identify the shared printer."
+        description: "The name used to identify the shared printer."
 
       property :ipv4_address, String,
-               description: "The IPv4 address of the printer, such as '10.4.64.23'",
-               validation_message: "The ipv4_address property must be in the IPv4 format of WWW.XXX.YYY.ZZZ",
-               regex: Resolv::IPv4::Regex
+        description: "The IPv4 address of the printer, such as '10.4.64.23'",
+        validation_message: "The ipv4_address property must be in the IPv4 format of WWW.XXX.YYY.ZZZ",
+        regex: Resolv::IPv4::Regex
 
       property :exists, [TrueClass, FalseClass],
-               skip_docs: true
+        skip_docs: true
 
       PRINTERS_REG_KEY = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\\'.freeze unless defined?(PRINTERS_REG_KEY)
 

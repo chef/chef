@@ -35,8 +35,8 @@ describe Chef::Knife::Raw do
     it "should set the x-ops-request-source header when --proxy-auth is set" do
       knife.config[:proxy_auth] = true
       expect(rest).to receive(:request).with(:GET, "/nodes",
-                                              { "Content-Type" => "application/json",
-                                                "x-ops-request-source" => "web" }, false)
+        { "Content-Type" => "application/json",
+          "x-ops-request-source" => "web" }, false)
       knife.run
     end
   end

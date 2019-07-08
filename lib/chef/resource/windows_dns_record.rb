@@ -28,20 +28,20 @@ class Chef
       introduced "15.0"
 
       property :record_name, String,
-               description: "An optional property to set the dns record name if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the dns record name if it differs from the resource block's name.",
+        name_property: true
 
       property :zone, String,
-               description: "The zone to create the record in.",
-               required: true
+        description: "The zone to create the record in.",
+        required: true
 
       property :target, String,
-               description: "The target for the record.",
-               required: true
+        description: "The target for the record.",
+        required: true
 
       property :record_type, String,
-               description: "The type of record to create, can be either ARecord, CNAME or PTR.",
-               default: "ARecord", equal_to: %w{ARecord CNAME PTR}
+        description: "The type of record to create, can be either ARecord, CNAME or PTR.",
+        default: "ARecord", equal_to: %w{ARecord CNAME PTR}
 
       action :create do
         description "Creates and updates the DNS entry."

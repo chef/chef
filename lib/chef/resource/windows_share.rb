@@ -33,65 +33,65 @@ class Chef
 
       # Specifies a name for the SMB share. The name may be composed of any valid file name characters, but must be less than 80 characters long. The names pipe and mailslot are reserved for use by the computer.
       property :share_name, String,
-               description: "An optional property to set the share name if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the share name if it differs from the resource block's name.",
+        name_property: true
 
       # Specifies the path of the location of the folder to share. The path must be fully qualified. Relative paths or paths that contain wildcard characters are not permitted.
       property :path, String,
-               description: "The path of the folder to share. Required when creating. If the share already exists on a different path then it is deleted and re-created."
+        description: "The path of the folder to share. Required when creating. If the share already exists on a different path then it is deleted and re-created."
 
       # Specifies an optional description of the SMB share. A description of the share is displayed by running the Get-SmbShare cmdlet. The description may not contain more than 256 characters.
       property :description, String,
-               description: "The description to be applied to the share.",
-               default: ""
+        description: "The description to be applied to the share.",
+        default: ""
 
       # Specifies which accounts are granted full permission to access the share. Use a comma-separated list to specify multiple accounts. An account may not be specified more than once in the FullAccess, ChangeAccess, or ReadAccess parameter lists, but may be specified once in the FullAccess, ChangeAccess, or ReadAccess parameter list and once in the NoAccess parameter list.
       property :full_users, Array,
-               description: "The users that should have 'Full control' permissions on the share in domain\\username format.",
-               default: lazy { [] }, coerce: proc { |u| u.sort }
+        description: "The users that should have 'Full control' permissions on the share in domain\\username format.",
+        default: lazy { [] }, coerce: proc { |u| u.sort }
 
       # Specifies which users are granted modify permission to access the share
       property :change_users, Array,
-               description: "The users that should have 'modify' permission on the share in domain\\username format.",
-               default: lazy { [] }, coerce: proc { |u| u.sort }
+        description: "The users that should have 'modify' permission on the share in domain\\username format.",
+        default: lazy { [] }, coerce: proc { |u| u.sort }
 
       # Specifies which users are granted read permission to access the share. Multiple users can be specified by supplying a comma-separated list.
       property :read_users, Array,
-               description: "The users that should have 'read' permission on the share in domain\\username format.",
-               default: lazy { [] }, coerce: proc { |u| u.sort }
+        description: "The users that should have 'read' permission on the share in domain\\username format.",
+        default: lazy { [] }, coerce: proc { |u| u.sort }
 
       # Specifies the lifetime of the new SMB share. A temporary share does not persist beyond the next restart of the computer. By default, new SMB shares are persistent, and non-temporary.
       property :temporary, [TrueClass, FalseClass],
-               description: "The lifetime of the new SMB share. A temporary share does not persist beyond the next restart of the computer.",
-               default: false
+        description: "The lifetime of the new SMB share. A temporary share does not persist beyond the next restart of the computer.",
+        default: false
 
       # Specifies the scope name of the share.
       property :scope_name, String,
-               description: "The scope name of the share.",
-               default: "*"
+        description: "The scope name of the share.",
+        default: "*"
 
       # Specifies the continuous availability time-out for the share.
       property :ca_timeout, Integer,
-               description: "The continuous availability time-out for the share.",
-               default: 0
+        description: "The continuous availability time-out for the share.",
+        default: 0
 
       # Indicates that the share is continuously available.
       property :continuously_available, [TrueClass, FalseClass],
-               description: "Indicates that the share is continuously available.",
-               default: false
+        description: "Indicates that the share is continuously available.",
+        default: false
 
       # Specifies the caching mode of the offline files for the SMB share.
       # property :caching_mode, String, equal_to: %w(None Manual Documents Programs BranchCache)
 
       # Specifies the maximum number of concurrently connected users that the new SMB share may accommodate. If this parameter is set to zero (0), then the number of users is unlimited.
       property :concurrent_user_limit, Integer,
-               description: "The maximum number of concurrently connected users the share can accommodate.",
-               default: 0
+        description: "The maximum number of concurrently connected users the share can accommodate.",
+        default: 0
 
       # Indicates that the share is encrypted.
       property :encrypt_data, [TrueClass, FalseClass],
-               description: "Indicates that the share is encrypted.",
-               default: false
+        description: "Indicates that the share is encrypted.",
+        default: false
 
       # Specifies which files and folders in the SMB share are visible to users. AccessBased: SMB does not the display the files and folders for a share to a user unless that user has rights to access the files and folders. By default, access-based enumeration is disabled for new SMB shares. Unrestricted: SMB displays files and folders to a user even when the user does not have permission to access the items.
       # property :folder_enumeration_mode, String, equal_to: %(AccessBased Unrestricted)

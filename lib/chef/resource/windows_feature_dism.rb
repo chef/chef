@@ -29,20 +29,20 @@ class Chef
       introduced "14.0"
 
       property :feature_name, [Array, String],
-               description: "The name of the feature(s) or role(s) to install if they differ from the resource name.",
-               coerce: proc { |x| to_formatted_array(x) },
-               name_property: true
+        description: "The name of the feature(s) or role(s) to install if they differ from the resource name.",
+        coerce: proc { |x| to_formatted_array(x) },
+        name_property: true
 
       property :source, String,
-               description: "Specify a local repository for the feature install."
+        description: "Specify a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
-               description: "Install all sub-features. When set to 'true', this is the equivalent of specifying the /All switch to dism.exe",
-               default: false
+        description: "Install all sub-features. When set to 'true', this is the equivalent of specifying the /All switch to dism.exe",
+        default: false
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for the feature installation.",
-               default: 600
+        description: "Specifies a timeout (in seconds) for the feature installation.",
+        default: 600
 
       # @return [Array] lowercase the array unless we're on < Windows 2012
       def to_formatted_array(x)

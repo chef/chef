@@ -36,33 +36,33 @@ class Chef
                name_property: true
 
       property :command, String,
-               description: "The command to be executed by the windows scheduled task."
+        description: "The command to be executed by the windows scheduled task."
 
       property :cwd, String,
-               description: "The directory the task will be run from."
+        description: "The directory the task will be run from."
 
       property :user, String,
-               description: "The user to run the task as.",
-               default: lazy { Chef::ReservedNames::Win32::Security::SID.LocalSystem.account_simple_name if Chef::Platform.windows? },
-               default_description: "The localized SYSTEM user for the node."
+        description: "The user to run the task as.",
+        default: lazy { Chef::ReservedNames::Win32::Security::SID.LocalSystem.account_simple_name if Chef::Platform.windows? },
+        default_description: "The localized SYSTEM user for the node."
 
       property :password, String,
-               description: "The user’s password. The user property must be set if using this property."
+        description: "The user’s password. The user property must be set if using this property."
 
       property :run_level, Symbol, equal_to: [:highest, :limited],
                description: "Run with ':limited' or ':highest' privileges.",
                default: :limited
 
       property :force, [TrueClass, FalseClass],
-               description: "When used with create, will update the task.",
-               default: false
+        description: "When used with create, will update the task.",
+        default: false
 
       property :interactive_enabled, [TrueClass, FalseClass],
-               description: "Allow task to run interactively or non-interactively. Requires user and password to also be set.",
-               default: false
+        description: "Allow task to run interactively or non-interactively. Requires user and password to also be set.",
+        default: false
 
       property :frequency_modifier, [Integer, String],
-               default: 1
+        default: 1
 
       property :frequency, Symbol, equal_to: [:minute,
                                               :hourly,
@@ -77,52 +77,52 @@ class Chef
                description: "The frequency with which to run the task."
 
       property :start_day, String,
-               description: "Specifies the first date on which the task runs in MM/DD/YYYY format."
+        description: "Specifies the first date on which the task runs in MM/DD/YYYY format."
 
       property :start_time, String,
-               description: "Specifies the start time to run the task, in HH:mm format."
+        description: "Specifies the start time to run the task, in HH:mm format."
 
       property :day, [String, Integer],
-               description: "The day(s) on which the task runs."
+        description: "The day(s) on which the task runs."
 
       property :months, String,
-               description: "The Months of the year on which the task runs, such as: 'JAN, FEB' or '\*'. Multiple months should be comma delimited. e.g. 'Jan, Feb, Mar, Dec'."
+        description: "The Months of the year on which the task runs, such as: 'JAN, FEB' or '\*'. Multiple months should be comma delimited. e.g. 'Jan, Feb, Mar, Dec'."
 
       property :idle_time, Integer,
-               description: "For :on_idle frequency, the time (in minutes) without user activity that must pass to trigger the task, from 1 - 999."
+        description: "For :on_idle frequency, the time (in minutes) without user activity that must pass to trigger the task, from 1 - 999."
 
       property :random_delay, [String, Integer],
-               description: "Delays the task up to a given time (in seconds)."
+        description: "Delays the task up to a given time (in seconds)."
 
       property :execution_time_limit, [String, Integer],
-               description: "The maximum time (in seconds) the task will run.",
-               default: "PT72H" # 72 hours in ISO8601 duration format
+        description: "The maximum time (in seconds) the task will run.",
+        default: "PT72H" # 72 hours in ISO8601 duration format
 
       property :minutes_duration, [String, Integer],
-               description: ""
+        description: ""
 
       property :minutes_interval, [String, Integer],
-               description: ""
+        description: ""
 
       property :priority, Integer,
-               description: "Use to set Priority Levels range from 0 to 10.",
-               default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
+        description: "Use to set Priority Levels range from 0 to 10.",
+        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
 
       property :disallow_start_if_on_batteries, [TrueClass, FalseClass],
-               introduced: "14.4", default: false,
-               description: "Disallow start of the task if the system is running on battery power."
+        introduced: "14.4", default: false,
+        description: "Disallow start of the task if the system is running on battery power."
 
       property :stop_if_going_on_batteries, [TrueClass, FalseClass],
-               introduced: "14.4", default: false,
-               description: "Scheduled task option when system is switching on battery."
+        introduced: "14.4", default: false,
+        description: "Scheduled task option when system is switching on battery."
 
       property :description, String,
-               introduced: "14.7",
-               description: "The task description."
+        introduced: "14.7",
+        description: "The task description."
 
       property :start_when_available, [TrueClass, FalseClass],
-               introduced: "15.0", default: false,
-               description: "To start the task at any time after its scheduled time has passed."
+        introduced: "15.0", default: false,
+        description: "To start the task at any time after its scheduled time has passed."
 
       attr_accessor :exists, :task, :command_arguments
 

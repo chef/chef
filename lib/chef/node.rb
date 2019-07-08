@@ -116,11 +116,11 @@ class Chef
     def name(arg = nil)
       if !arg.nil?
         validate(
-                 { name: arg },
-                 { name: { kind_of: String,
-                           cannot_be: :blank,
-                           regex: /^[\-[:alnum:]_:.]+$/ },
-                 })
+          { name: arg },
+          { name: { kind_of: String,
+                    cannot_be: :blank,
+                    regex: /^[\-[:alnum:]_:.]+$/ },
+          })
         @name = arg
       else
         @name

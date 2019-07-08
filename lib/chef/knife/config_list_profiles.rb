@@ -24,10 +24,10 @@ class Chef
       banner "knife config list-profiles (options)"
 
       option :ignore_knife_rb,
-             short: "-i",
-             long: "--ignore-knife-rb",
-             description: "Ignore the current config.rb/knife.rb configuration.",
-             default: false
+        short: "-i",
+        long: "--ignore-knife-rb",
+        description: "Ignore the current config.rb/knife.rb configuration.",
+        default: false
 
       def run
         credentials_data = self.class.config_loader.parse_credentials_file

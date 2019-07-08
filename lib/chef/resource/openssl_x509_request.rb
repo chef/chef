@@ -33,53 +33,53 @@ class Chef
                description: "An optional property for specifying the path to write the file to if it differs from the resource block's name."
 
       property :owner, [String, Integer],
-               description: "The owner applied to all files created by the resource."
+        description: "The owner applied to all files created by the resource."
 
       property :group, [String, Integer],
-               description: "The group ownership applied to all files created by the resource."
+        description: "The group ownership applied to all files created by the resource."
 
       property :mode, [Integer, String],
-               description: "The permission mode applied to all files created by the resource."
+        description: "The permission mode applied to all files created by the resource."
 
       property :country, String,
-               description: "Value for the C certificate field."
+        description: "Value for the C certificate field."
 
       property :state, String,
-               description: "Value for the ST certificate field."
+        description: "Value for the ST certificate field."
 
       property :city, String,
-               description: "Value for the L certificate field."
+        description: "Value for the L certificate field."
 
       property :org, String,
-               description: "Value for the O certificate field."
+        description: "Value for the O certificate field."
 
       property :org_unit, String,
-               description: "Value for the OU certificate field."
+        description: "Value for the OU certificate field."
 
       property :common_name, String,
-               required: true,
-               description: "Value for the CN certificate field."
+        required: true,
+        description: "Value for the CN certificate field."
 
       property :email, String,
-               description: "Value for the email certificate field."
+        description: "Value for the email certificate field."
 
       property :key_file, String,
-               description: "The path to a certificate key file on the filesystem. If the key_file property is specified, the resource will attempt to source a key from this location. If no key file is found, the resource will generate a new key file at this location. If the key_file property is not specified, the resource will generate a key file in the same directory as the generated certificate, with the same name as the generated certificate."
+        description: "The path to a certificate key file on the filesystem. If the key_file property is specified, the resource will attempt to source a key from this location. If no key file is found, the resource will generate a new key file at this location. If the key_file property is not specified, the resource will generate a key file in the same directory as the generated certificate, with the same name as the generated certificate."
 
       property :key_pass, String,
-               description: "The passphrase for an existing key's passphrase."
+        description: "The passphrase for an existing key's passphrase."
 
       property :key_type, String,
-               equal_to: %w{rsa ec}, default: "ec",
-               description: "The desired type of the generated key (rsa or ec)."
+        equal_to: %w{rsa ec}, default: "ec",
+        description: "The desired type of the generated key (rsa or ec)."
 
       property :key_length, Integer,
-               equal_to: [1024, 2048, 4096, 8192], default: 2048,
-               description: "The desired bit length of the generated key (if key_type is equal to 'rsa')."
+        equal_to: [1024, 2048, 4096, 8192], default: 2048,
+        description: "The desired bit length of the generated key (if key_type is equal to 'rsa')."
 
       property :key_curve, String,
-               equal_to: %w{secp384r1 secp521r1 prime256v1}, default: "prime256v1",
-               description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run openssl ecparam -list_curves to see available options."
+        equal_to: %w{secp384r1 secp521r1 prime256v1}, default: "prime256v1",
+        description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run openssl ecparam -list_curves to see available options."
 
       default_action :create
 

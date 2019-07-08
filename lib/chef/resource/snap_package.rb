@@ -27,10 +27,10 @@ class Chef
       introduced "15.0"
 
       property :channel, String,
-               description: "The default channel. For example: stable.",
-               default: "stable",
-               equal_to: %w{edge beta candidate stable},
-               desired_state: false
+        description: "The default channel. For example: stable.",
+        default: "stable",
+        equal_to: %w{edge beta candidate stable},
+        desired_state: false
     end
   end
 end

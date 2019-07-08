@@ -343,7 +343,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
           # Shadow info is saved as binary plist. Convert the info to binary plist.
           shadow_info_binary = StringIO.new
           shell_out("plutil", "-convert", "binary1", "-o", "-", "-",
-                            input: shadow_info.to_plist, live_stream: shadow_info_binary)
+            input: shadow_info.to_plist, live_stream: shadow_info_binary)
 
           if user_info.nil?
             # User is  just created. read_user_info() will read the fresh information

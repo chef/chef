@@ -32,30 +32,30 @@ class Chef
       introduced "14.7"
 
       property :source, String,
-               description: "The source file (for create and acl_add), thumbprint (for delete and acl_add) or subject (for delete) if it differs from the resource block's name.",
-               name_property: true
+        description: "The source file (for create and acl_add), thumbprint (for delete and acl_add) or subject (for delete) if it differs from the resource block's name.",
+        name_property: true
 
       property :pfx_password, String,
-               description: "The password to access the source if it is a pfx file."
+        description: "The password to access the source if it is a pfx file."
 
       property :private_key_acl, Array,
-               description: "An array of 'domain\account' entries to be granted read-only access to the certificate's private key. Not idempotent."
+        description: "An array of 'domain\account' entries to be granted read-only access to the certificate's private key. Not idempotent."
 
       property :store_name, String,
-               description: "The certificate store to manipulate.",
-               default: "MY", equal_to: ["TRUSTEDPUBLISHER", "TrustedPublisher", "CLIENTAUTHISSUER", "REMOTE DESKTOP", "ROOT", "TRUSTEDDEVICES", "WEBHOSTING", "CA", "AUTHROOT", "TRUSTEDPEOPLE", "MY", "SMARTCARDROOT", "TRUST", "DISALLOWED"]
+        description: "The certificate store to manipulate.",
+        default: "MY", equal_to: ["TRUSTEDPUBLISHER", "TrustedPublisher", "CLIENTAUTHISSUER", "REMOTE DESKTOP", "ROOT", "TRUSTEDDEVICES", "WEBHOSTING", "CA", "AUTHROOT", "TRUSTEDPEOPLE", "MY", "SMARTCARDROOT", "TRUST", "DISALLOWED"]
 
       property :user_store, [TrueClass, FalseClass],
-               description: "Use the user store of the local machine store if set to false.",
-               default: false
+        description: "Use the user store of the local machine store if set to false.",
+        default: false
 
       property :cert_path, String,
-               description: ""
+        description: ""
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [TrueClass, FalseClass],
-               description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
-               default: lazy { |r| r.pfx_password ? true : false }, skip_docs: true
+        description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
+        default: lazy { |r| r.pfx_password ? true : false }, skip_docs: true
 
       action :create do
         description "Creates or updates a certificate."

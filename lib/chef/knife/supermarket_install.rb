@@ -34,11 +34,11 @@ class Chef
       category "supermarket"
 
       option :no_deps,
-       short: "-D",
-       long: "--skip-dependencies",
-       boolean: true,
-       default: false,
-       description: "Skips automatic dependency installation."
+        short: "-D",
+        long: "--skip-dependencies",
+        boolean: true,
+        default: false,
+        description: "Skips automatic dependency installation."
 
       option :cookbook_path,
         short: "-o PATH:PATH",

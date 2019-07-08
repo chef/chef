@@ -30,43 +30,43 @@ class Chef
       introduced "14.4"
 
       property :path, String,
-               description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
+        name_property: true
 
       property :serial_to_revoke, [Integer, String],
-               description: "Serial of the X509 Certificate to revoke."
+        description: "Serial of the X509 Certificate to revoke."
 
       property :revocation_reason, Integer,
-               description: "Reason for the revocation.",
-               default: 0
+        description: "Reason for the revocation.",
+        default: 0
 
       property :expire, Integer,
-               description: "Value representing the number of days from now through which the issued CRL will remain valid. The CRL will expire after this period.",
-               default: 8
+        description: "Value representing the number of days from now through which the issued CRL will remain valid. The CRL will expire after this period.",
+        default: 8
 
       property :renewal_threshold, Integer,
-               description: "Number of days before the expiration. It this threshold is reached, the CRL will be renewed.",
-               default: 1
+        description: "Number of days before the expiration. It this threshold is reached, the CRL will be renewed.",
+        default: 1
 
       property :ca_cert_file, String,
-               description: "The path to the CA X509 Certificate on the filesystem. If the ca_cert_file property is specified, the ca_key_file property must also be specified, the CRL will be signed with them.",
-               required: true
+        description: "The path to the CA X509 Certificate on the filesystem. If the ca_cert_file property is specified, the ca_key_file property must also be specified, the CRL will be signed with them.",
+        required: true
 
       property :ca_key_file, String,
-               description: "The path to the CA private key on the filesystem. If the ca_key_file property is specified, the ca_cert_file property must also be specified, the CRL will be signed with them.",
-               required: true
+        description: "The path to the CA private key on the filesystem. If the ca_key_file property is specified, the ca_cert_file property must also be specified, the CRL will be signed with them.",
+        required: true
 
       property :ca_key_pass, String,
-               description: "The passphrase for CA private key's passphrase."
+        description: "The passphrase for CA private key's passphrase."
 
       property :owner, [String, Integer],
-               description: "The owner permission for the CRL file."
+        description: "The owner permission for the CRL file."
 
       property :group, [String, Integer],
-               description: "The group permission for the CRL file."
+        description: "The group permission for the CRL file."
 
       property :mode, [Integer, String],
-               description: "The permission mode of the CRL file."
+        description: "The permission mode of the CRL file."
 
       action :create do
         description "Create the CRL file."

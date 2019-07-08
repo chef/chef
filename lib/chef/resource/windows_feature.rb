@@ -28,28 +28,28 @@ class Chef
       introduced "14.0"
 
       property :feature_name, [Array, String],
-               description: "The name of the feature(s) or role(s) to install if they differ from the resource block's name. The same feature may have different names depending on the underlying installation method being used (ie DHCPServer vs DHCP; DNS-Server-Full-Role vs DNS).",
-               name_property: true
+        description: "The name of the feature(s) or role(s) to install if they differ from the resource block's name. The same feature may have different names depending on the underlying installation method being used (ie DHCPServer vs DHCP; DNS-Server-Full-Role vs DNS).",
+        name_property: true
 
       property :source, String,
-               description: "Specify a local repository for the feature install."
+        description: "Specify a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
-               description: "Install all sub features.",
-               default: false
+        description: "Install all sub features.",
+        default: false
 
       property :management_tools, [TrueClass, FalseClass],
-               description: "Install all applicable management tools for the roles, role services, or features (PowerShell-only).",
-               default: false
+        description: "Install all applicable management tools for the roles, role services, or features (PowerShell-only).",
+        default: false
 
       property :install_method, Symbol,
-               description: "The underlying installation method to use for feature installation. Specify ':windows_feature_dism' for DISM or ':windows_feature_powershell' for PowerShell.",
-               equal_to: [:windows_feature_dism, :windows_feature_powershell, :windows_feature_servermanagercmd],
-               default: :windows_feature_dism
+        description: "The underlying installation method to use for feature installation. Specify ':windows_feature_dism' for DISM or ':windows_feature_powershell' for PowerShell.",
+        equal_to: [:windows_feature_dism, :windows_feature_powershell, :windows_feature_servermanagercmd],
+        default: :windows_feature_dism
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for the feature installation.",
-               default: 600
+        description: "Specifies a timeout (in seconds) for the feature installation.",
+        default: 600
 
       action :install do
         description "Install a Windows role/feature"

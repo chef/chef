@@ -75,25 +75,25 @@ class Chef
       # 1 == delayed start is enabled
       # 0 == NO delayed start
       property :delayed_start, [TrueClass, FalseClass],
-               introduced: "14.0",
-               default: false, coerce: proc { |x|
-                 if x.is_a?(Integer)
-                   x == 0 ? false : true
-                 else
-                   x
-                 end
-               }
+        introduced: "14.0",
+        default: false, coerce: proc { |x|
+          if x.is_a?(Integer)
+            x == 0 ? false : true
+          else
+            x
+          end
+        }
 
       # https://github.com/chef/win32-service/blob/ffi/lib/win32/windows/constants.rb#L43-L47
       property :error_control, Integer, default: SERVICE_ERROR_NORMAL
 
       property :binary_path_name, String,
-               introduced: "14.0",
-               description: "The fully qualified path to the service binary file. The path can also include arguments for an auto-start service. This is required for ':create' and ':configure' actions"
+        introduced: "14.0",
+        description: "The fully qualified path to the service binary file. The path can also include arguments for an auto-start service. This is required for ':create' and ':configure' actions"
 
       property :load_order_group, String,
-               introduced: "14.0",
-               description: "The names of the load ordering group of which this service is a member. Don't set this property if the service does not belong to a group."
+        introduced: "14.0",
+        description: "The names of the load ordering group of which this service is a member. Don't set this property if the service does not belong to a group."
 
       # A pointer to a double null-terminated array of null-separated names of
       # services or load ordering groups that the system must start before this
@@ -102,11 +102,11 @@ class Chef
       # at least one member of the group is running after an attempt to start
       # all members of the group.
       property :dependencies, [String, Array],
-               introduced: "14.0"
+        introduced: "14.0"
 
       property :description, String,
-               description: "Description of the service.",
-               introduced: "14.0"
+        description: "Description of the service.",
+        introduced: "14.0"
 
       property :run_as_user, String, default: "LocalSystem"
       property :run_as_password, String, default: ""

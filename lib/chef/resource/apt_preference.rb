@@ -29,21 +29,21 @@ class Chef
       introduced "13.3"
 
       property :package_name, String,
-               name_property: true,
-               description: "An optional property to set the package name if it differs from the resource block's name.",
-               regex: [/^([a-z]|[A-Z]|[0-9]|_|-|\.|\*|\+)+$/],
-               validation_message: "The provided package name is not valid. Package names can only contain alphanumeric characters as well as _, -, +, or *!"
+        name_property: true,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        regex: [/^([a-z]|[A-Z]|[0-9]|_|-|\.|\*|\+)+$/],
+        validation_message: "The provided package name is not valid. Package names can only contain alphanumeric characters as well as _, -, +, or *!"
 
       property :glob, String,
-               description: "Pin by glob() expression or with regular expressions surrounded by /."
+        description: "Pin by glob() expression or with regular expressions surrounded by /."
 
       property :pin, String,
-               description: "The package version or repository to pin.",
-               required: true
+        description: "The package version or repository to pin.",
+        required: true
 
       property :pin_priority, [String, Integer],
-               description: "Sets the Pin-Priority for a package.",
-               required: true
+        description: "Sets the Pin-Priority for a package.",
+        required: true
 
       default_action :add
       allowed_actions :add, :remove

@@ -54,27 +54,27 @@ class Chef
 
     def name(arg = nil)
       set_or_return(:name, arg,
-                    regex: /^[a-z0-9\-_]+$/)
+        regex: /^[a-z0-9\-_]+$/)
     end
 
     def admin(arg = nil)
       set_or_return(:admin,
-                    arg, kind_of: [TrueClass, FalseClass])
+        arg, kind_of: [TrueClass, FalseClass])
     end
 
     def public_key(arg = nil)
       set_or_return(:public_key,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def private_key(arg = nil)
       set_or_return(:private_key,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def password(arg = nil)
       set_or_return(:password,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def to_h

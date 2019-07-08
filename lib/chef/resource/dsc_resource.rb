@@ -73,8 +73,8 @@ class Chef
       end
 
       property :module_version, String,
-               introduced: "12.21",
-               description: "The version number of the module to use. PowerShell 5.0.10018.0 (or higher) supports having multiple versions of a module installed. This should be specified along with the module_name."
+        introduced: "12.21",
+        description: "The version number of the module to use. PowerShell 5.0.10018.0 (or higher) supports having multiple versions of a module installed. This should be specified along with the module_name."
 
       def property(property_name, value = nil)
         if not property_name.is_a?(Symbol)
@@ -104,8 +104,8 @@ class Chef
                 description: "Use to request an immediate reboot or to queue a reboot using the :reboot_now (immediate reboot) or :request_reboot (queued reboot) actions built into the reboot resource."
 
       property :timeout, Integer,
-               introduced: "12.6",
-               description: "The amount of time (in seconds) a command is to wait before timing out."
+        introduced: "12.6",
+        description: "The amount of time (in seconds) a command is to wait before timing out."
 
       private
 

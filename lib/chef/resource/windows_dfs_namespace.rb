@@ -28,28 +28,28 @@ class Chef
       introduced "15.0"
 
       property :namespace_name, String,
-               description: "An optional property to set the dfs namespace if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the dfs namespace if it differs from the resource block's name.",
+        name_property: true
 
       property :description, String,
-               description: "Description of the share.",
-               required: true
+        description: "Description of the share.",
+        required: true
 
       property :full_users, Array,
-               description: "Determines which users should have full access to the share.",
-               default: ['BUILTIN\\administrators']
+        description: "Determines which users should have full access to the share.",
+        default: ['BUILTIN\\administrators']
 
       property :change_users, Array,
-               description: "Determines which users should have change access to the share.",
-               default: []
+        description: "Determines which users should have change access to the share.",
+        default: []
 
       property :read_users, Array,
-               description: "Determines which users should have read access to the share.",
-               default: []
+        description: "Determines which users should have read access to the share.",
+        default: []
 
       property :root, String,
-               description: "The root from which to create the DFS tree. Defaults to C:\\DFSRoots.",
-               default: 'C:\\DFSRoots'
+        description: "The root from which to create the DFS tree. Defaults to C:\\DFSRoots.",
+        default: 'C:\\DFSRoots'
 
       action :create do
         description "Creates the dfs namespace on the server."

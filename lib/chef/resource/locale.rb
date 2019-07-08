@@ -32,27 +32,27 @@ class Chef
       LOCALE_PLATFORM_FAMILIES = %w{debian}.freeze
 
       property :lang, String,
-               description: "Sets the default system language.",
-               regex: [LOCALE_REGEX],
-               validation_message: "The provided lang is not valid. It should be a non-empty string without any leading whitespaces."
+        description: "Sets the default system language.",
+        regex: [LOCALE_REGEX],
+        validation_message: "The provided lang is not valid. It should be a non-empty string without any leading whitespaces."
 
       property :lc_env, Hash,
-               description: "A Hash of LC_* env variables in the form of ({ 'LC_ENV_VARIABLE' => 'VALUE' }).",
-               default: lazy { {} },
-               coerce: proc { |h|
-                         if h.respond_to?(:keys)
-                           invalid_keys = h.keys - LC_VARIABLES
-                           unless invalid_keys.empty?
-                             error_msg = "Key of option lc_env must be equal to one of: \"#{LC_VARIABLES.join('", "')}\"!  You passed \"#{invalid_keys.join(', ')}\"."
-                             raise Chef::Exceptions::ValidationFailed, error_msg
-                           end
-                         end
-                         unless h.values.all? { |x| x =~ LOCALE_REGEX }
-                           error_msg = "Values of option lc_env should be non-empty string without any leading whitespaces."
-                           raise Chef::Exceptions::ValidationFailed, error_msg
-                         end
-                         h
-                       }
+        description: "A Hash of LC_* env variables in the form of ({ 'LC_ENV_VARIABLE' => 'VALUE' }).",
+        default: lazy { {} },
+        coerce: proc { |h|
+                  if h.respond_to?(:keys)
+                    invalid_keys = h.keys - LC_VARIABLES
+                    unless invalid_keys.empty?
+                      error_msg = "Key of option lc_env must be equal to one of: \"#{LC_VARIABLES.join('", "')}\"!  You passed \"#{invalid_keys.join(', ')}\"."
+                      raise Chef::Exceptions::ValidationFailed, error_msg
+                    end
+                  end
+                  unless h.values.all? { |x| x =~ LOCALE_REGEX }
+                    error_msg = "Values of option lc_env should be non-empty string without any leading whitespaces."
+                    raise Chef::Exceptions::ValidationFailed, error_msg
+                  end
+                  h
+                }
 
       # @deprecated Use {#lc_env} instead of this property.
       #   {#lc_env} uses Hash with specific LC var as key.

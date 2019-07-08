@@ -64,52 +64,52 @@ class Chef
 
     def username(arg = nil)
       set_or_return(:username, arg,
-                    regex: /^[a-z0-9\-_]+$/)
+        regex: /^[a-z0-9\-_]+$/)
     end
 
     def display_name(arg = nil)
       set_or_return(:display_name,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def first_name(arg = nil)
       set_or_return(:first_name,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def middle_name(arg = nil)
       set_or_return(:middle_name,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def last_name(arg = nil)
       set_or_return(:last_name,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def email(arg = nil)
       set_or_return(:email,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def create_key(arg = nil)
       set_or_return(:create_key, arg,
-                    kind_of: [TrueClass, FalseClass])
+        kind_of: [TrueClass, FalseClass])
     end
 
     def public_key(arg = nil)
       set_or_return(:public_key,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def private_key(arg = nil)
       set_or_return(:private_key,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def password(arg = nil)
       set_or_return(:password,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def to_h
