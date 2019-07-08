@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.42 -->
-## [v15.1.42](https://github.com/chef/chef/tree/v15.1.42) (2019-07-03)
+<!-- latest_release 15.1.43 -->
+## [v15.1.43](https://github.com/chef/chef/tree/v15.1.43) (2019-07-08)
 
 #### Merged Pull Requests
-- Deprecate Ubuntu-14 [#8712](https://github.com/chef/chef/pull/8712) ([jaymalasinha](https://github.com/jaymalasinha))
+- Improve generation of docs site resource pages [#8718](https://github.com/chef/chef/pull/8718) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Improve generation of docs site resource pages [#8718](https://github.com/chef/chef/pull/8718) ([tas50](https://github.com/tas50)) <!-- 15.1.43 -->
 - Deprecate Ubuntu-14 [#8712](https://github.com/chef/chef/pull/8712) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.1.42 -->
 - fixes for chefstyle bump [#8707](https://github.com/chef/chef/pull/8707) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.40 -->
 - update bldr config with new hab package name [#8706](https://github.com/chef/chef/pull/8706) ([robbkidd](https://github.com/robbkidd)) <!-- 15.1.39 -->
