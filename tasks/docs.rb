@@ -14,7 +14,7 @@ namespace :docs_site do
     # @param version String
     # @return String Chef Infra Client or Chef Client depending on version
     def branded_chef_client_name(version)
-      return "Chef Infra Client" if Gem::Version.new(version) >= Gem::Version.new('15')
+      return "Chef Infra Client" if Gem::Version.new(version) >= Gem::Version.new("15")
       "Chef Client"
     end
 
@@ -340,7 +340,7 @@ Examples
       @property_list = friendly_properly_list(@properties)
       @examples = data["examples"]
 
-      t = ERB.new(template, nil, '-')
+      t = ERB.new(template, nil, "-")
       File.open("docs_site/resource_#{@name}.rst", "w") do |f|
         f.write t.result(binding)
       end
