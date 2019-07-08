@@ -11,6 +11,13 @@ namespace :docs_site do
     require "erb"
     require "fileutils"
 
+    # @param version String
+    # @return String Chef Infra Client or Chef Client depending on version
+    def branded_chef_client_name(version)
+      return "Chef Infra Client" if Gem::Version.new(version) >= Gem::Version.new('15')
+      "Chef Client"
+    end
+
     # @return [String, nil] a pretty defaul value string or nil if we want to skip it
     def pretty_default(default)
       return nil if default.nil? || default == "" || default == "lazy default"
@@ -262,10 +269,12 @@ namespace :docs_site do
 `[edit on GitHub] <https://github.com/chef/chef-web-docs/blob/master/chef_master/source/resource_<%= @name %>.rst>`__
 
 <%= bolded_description(@name, @description) %>
-<%= note_text(@description) %>
-<% unless @introduced.nil? %>
-**New in Chef Infra Client <%= @introduced %>.**
-<% end %>
+<%= note_text(@description) -%>
+<% unless @introduced.nil? -%>
+
+**New in <%= branded_chef_client_name(@introduced) %> <%= @introduced %>.**
+<% end -%>
+
 Syntax
 =====================================================
 The <%= @name %> resource has the following syntax:
@@ -305,9 +314,9 @@ The <%= @name %> resource has the following properties:
    **Ruby Type:** <%= friendly_types_list(p['is']) %><% unless pretty_default(p['default']).nil? %> | **Default Value:** ``<%= pretty_default(p['default']) %>``<% end %><% if p['required'] %> | ``REQUIRED``<% end %><% if p['deprecated'] %> | ``DEPRECATED``<% end %><% if p['name_property'] %> | **Default Value:** ``The resource block's name``<% end %>
 
    <%= p['description'] %>
-<% unless p['introduced'].nil? -%>\n   *New in Chef Infra Client <%= p['introduced'] -%>.*<% end -%>
+<% unless p['introduced'].nil? -%>\n   *New in <%= branded_chef_client_name(@introduced) %> <%= p['introduced'] -%>.*<% end -%>
 <% end %>
-<% if @properties.empty? %>This resource does not have any properties.\n<% end %>
+<% if @properties.empty? %>This resource does not have any properties.\n<% end -%>
 <%= boilerplate_content %>
 Examples
 ==========================================
