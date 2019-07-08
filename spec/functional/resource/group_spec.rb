@@ -1,7 +1,7 @@
 #
 # Author:: Chirag Jog (<chirag@clogeny.com>)
 # Author:: Siddheshwar More (<siddheshwar.more@clogeny.com>)
-# Copyright:: Copyright 2013-2018, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -333,10 +333,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
     describe "when group name is length 256", :windows_only do
       let!(:group_name) do
-        "theoldmanwalkingdownthestreetalwayshadagood\
-      smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
-      theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
-      downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
+        "theoldmanwalkingdownthestreetalwayshadagood"\
+          "smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface"\
+          "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking"\
+          "downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
       end
 
       it "should create a group" do
@@ -360,10 +360,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   # for group name > 256, Windows 2016 returns "The parameter is incorrect"
   context "group create action: when group name length is more than 256", :windows_only do
     let!(:group_name) do
-      "theoldmanwalkingdownthestreetalwayshadagood\
-    smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
-    theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
-    downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ"
+      "theoldmanwalkingdownthestreetalwayshadagood"\
+        "smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface"\
+        "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking"\
+        "downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ"
     end
 
     it "should not create a group" do
