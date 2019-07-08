@@ -262,8 +262,7 @@ namespace :docs_site do
       HEREDOC
     end
 
-    template = %{
-=====================================================
+    template = %{=====================================================
 <%= @name %> resource
 =====================================================
 `[edit on GitHub] <https://github.com/chef/chef-web-docs/blob/master/chef_master/source/resource_<%= @name %>.rst>`__
@@ -277,6 +276,7 @@ namespace :docs_site do
 
 Syntax
 =====================================================
+
 The <%= @name %> resource has the following syntax:
 
 .. code-block:: ruby
