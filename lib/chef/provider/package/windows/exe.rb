@@ -1,7 +1,7 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
 # Author:: Matt Wrock <matt@mattwrock.com>
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright 2011-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,10 +71,10 @@ class Chef
           def remove_package
             uninstall_version = new_resource.version || current_installed_version
             uninstall_entries.select { |entry| [uninstall_version].flatten.include?(entry.display_version) }
-                             .map(&:uninstall_string).uniq.each do |uninstall_string|
-              logger.trace("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
-              shell_out!(uninstall_command(uninstall_string), timeout: new_resource.timeout, returns: new_resource.returns)
-            end
+              .map(&:uninstall_string).uniq.each do |uninstall_string|
+                logger.trace("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
+                shell_out!(uninstall_command(uninstall_string), timeout: new_resource.timeout, returns: new_resource.returns)
+              end
           end
 
           private

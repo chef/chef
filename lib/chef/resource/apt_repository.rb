@@ -33,7 +33,7 @@ class Chef
       # defaults, but since we allowed users to pass nil here we need to continue
       # to allow that so don't refactor this however tempting it is
       property :repo_name, String,
-        regex: [/^[^\/]+$/],
+        regex: [%r{^[^/]+$}],
         description: "An optional property to set the repository name if it differs from the resource block's name. The value of this setting must not contain spaces.",
         validation_message: "repo_name property cannot contain a forward slash '/'",
         introduced: "14.1", name_property: true

@@ -469,7 +469,7 @@ class Chef::Application::Client < Chef::Application
 
     loop do
       sleep_then_run_chef_client(time_to_sleep)
-      Chef::Application.exit!("Exiting", 0) if !Chef::Config[:interval]
+      Chef::Application.exit!("Exiting", 0) unless Chef::Config[:interval]
     end
   end
 

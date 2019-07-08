@@ -243,7 +243,7 @@ describe Chef::Provider::Package::Msu, :windows_only do
 
   describe "#extract_msu_contents" do
     it "extracts the msu contents by using mixlib shellout" do
-      expect(provider).to receive(:shell_out!).with("#{ENV['SYSTEMROOT']}\\system32\\expand.exe -f:* msu_file destination")
+      expect(provider).to receive(:shell_out!).with("#{ENV["SYSTEMROOT"]}\\system32\\expand.exe -f:* msu_file destination")
       provider.extract_msu_contents("msu_file", "destination")
     end
   end

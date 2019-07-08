@@ -82,6 +82,7 @@ class Chef
       # Load all the sub-commands
       def load_commands
         return true if @loaded
+
         subcommand_files.each { |subcommand| Kernel.load subcommand }
         @loaded = true
       end

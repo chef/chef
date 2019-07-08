@@ -53,7 +53,7 @@ describe Chef::Resource::ChefGem, "gem_binary" do
   end
 
   it "sets the gem_binary based on computing it from RbConfig" do
-    expect(resource.gem_binary).to eql("#{RbConfig::CONFIG['bindir']}/gem")
+    expect(resource.gem_binary).to eql("#{RbConfig::CONFIG["bindir"]}/gem")
   end
 
   it "sets compile_time to false by default" do

@@ -156,7 +156,7 @@ class Chef
         # this will resolve things like `/usr/bin/perl` or virtual packages like `mysql` -- it will not work (well? at all?) with globs that match multiple packages
         def resolved_package_lock_names(names)
           names.each_with_index.map do |name, i|
-            if !name.nil?
+            unless name.nil?
               if installed_version(i).version.nil?
                 available_version(i).name
               else
@@ -186,16 +186,19 @@ class Chef
 
         def version_gt?(v1, v2)
           return false if v1.nil? || v2.nil?
+
           python_helper.compare_versions(v1, v2) == 1
         end
 
         def version_equals?(v1, v2)
           return false if v1.nil? || v2.nil?
+
           python_helper.compare_versions(v1, v2) == 0
         end
 
         def version_compare(v1, v2)
           return false if v1.nil? || v2.nil?
+
           python_helper.compare_versions(v1, v2)
         end
 
@@ -213,7 +216,7 @@ class Chef
             # does not match what the yum library accepts.
             case line
               when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
-                return Version.new($1, "#{$2 == '(none)' ? '0' : $2}:#{$3}-#{$4}", $5)
+                return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)
             end
           end
         end

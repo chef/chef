@@ -57,8 +57,7 @@ describe Shell::ClientSession do
       load_node: true,
       build_node: true,
       register: true,
-      sync_cookbooks: {}
-    )
+      sync_cookbooks: {})
   end
 
   before do
@@ -94,8 +93,7 @@ describe Shell::SoloSession do
       load_node: true,
       build_node: true,
       register: true,
-      sync_cookbooks: {}
-    )
+      sync_cookbooks: {})
   end
 
   before do
@@ -132,8 +130,7 @@ describe Shell::StandAloneSession do
       load_node: true,
       build_node: true,
       register: true,
-      sync_cookbooks: {}
-    )
+      sync_cookbooks: {})
   end
   let(:recipe) { Chef::Recipe.new(nil, nil, run_context) }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }

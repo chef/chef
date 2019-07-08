@@ -98,7 +98,8 @@ class Chef
           end
 
           names += Dir.glob(File.join(
-            Chef::Util::PathHelper.escape_glob_dir(path), "*")).map { |f| File.basename(f) }.sort
+            Chef::Util::PathHelper.escape_glob_dir(path), "*"
+          )).map { |f| File.basename(f) }.sort
         end
         names.inject({}) { |h, n| h[n] = n; h }
       else

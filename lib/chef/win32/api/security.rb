@@ -216,21 +216,21 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        SE_OBJECT_TYPE = enum :SE_OBJECT_TYPE, [
-             :SE_UNKNOWN_OBJECT_TYPE,
-             :SE_FILE_OBJECT,
-             :SE_SERVICE,
-             :SE_PRINTER,
-             :SE_REGISTRY_KEY,
-             :SE_LMSHARE,
-             :SE_KERNEL_OBJECT,
-             :SE_WINDOW_OBJECT,
-             :SE_DS_OBJECT,
-             :SE_DS_OBJECT_ALL,
-             :SE_PROVIDER_DEFINED_OBJECT,
-             :SE_WMIGUID_OBJECT,
-             :SE_REGISTRY_WOW64_32KEY,
-        ]
+        SE_OBJECT_TYPE = enum :SE_OBJECT_TYPE, %i{
+             SE_UNKNOWN_OBJECT_TYPE
+             SE_FILE_OBJECT
+             SE_SERVICE
+             SE_PRINTER
+             SE_REGISTRY_KEY
+             SE_LMSHARE
+             SE_KERNEL_OBJECT
+             SE_WINDOW_OBJECT
+             SE_DS_OBJECT
+             SE_DS_OBJECT_ALL
+             SE_PROVIDER_DEFINED_OBJECT
+             SE_WMIGUID_OBJECT
+             SE_REGISTRY_WOW64_32KEY
+        }
 
         SID_NAME_USE = enum :SID_NAME_USE, [
              :SidTypeUser, 1,
@@ -298,12 +298,12 @@ class Chef
         end
 
         # https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572%28v=vs.85%29.aspx
-        SECURITY_IMPERSONATION_LEVEL = enum :SECURITY_IMPERSONATION_LEVEL, [
-             :SecurityAnonymous,
-             :SecurityIdentification,
-             :SecurityImpersonation,
-             :SecurityDelegation,
-        ]
+        SECURITY_IMPERSONATION_LEVEL = enum :SECURITY_IMPERSONATION_LEVEL, %i{
+             SecurityAnonymous
+             SecurityIdentification
+             SecurityImpersonation
+             SecurityDelegation
+        }
 
         # https://msdn.microsoft.com/en-us/library/windows/desktop/bb530718%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
         ELEVATION_TYPE = enum :ELEVATION_TYPE, [
@@ -415,58 +415,58 @@ class Chef
 
         ffi_lib "advapi32"
 
-        safe_attach_function :AccessCheck, [:pointer, :HANDLE, :DWORD, :pointer, :pointer, :pointer, :pointer, :pointer], :BOOL
-        safe_attach_function :AddAce, [ :pointer, :DWORD, :DWORD, :LPVOID, :DWORD ], :BOOL
-        safe_attach_function :AddAccessAllowedAce, [ :pointer, :DWORD, :DWORD, :pointer ], :BOOL
-        safe_attach_function :AddAccessAllowedAceEx, [ :pointer, :DWORD, :DWORD, :DWORD, :pointer ], :BOOL
-        safe_attach_function :AddAccessDeniedAce, [ :pointer, :DWORD, :DWORD, :pointer ], :BOOL
-        safe_attach_function :AddAccessDeniedAceEx, [ :pointer, :DWORD, :DWORD, :DWORD, :pointer ], :BOOL
-        safe_attach_function :AdjustTokenPrivileges, [ :HANDLE, :BOOL, :pointer, :DWORD, :pointer, :PDWORD ], :BOOL
-        safe_attach_function :ConvertSidToStringSidA, [ :pointer, :pointer ], :BOOL
-        safe_attach_function :ConvertStringSidToSidW, [ :pointer, :pointer ], :BOOL
-        safe_attach_function :DeleteAce, [ :pointer, :DWORD ], :BOOL
-        safe_attach_function :DuplicateToken, [:HANDLE, :SECURITY_IMPERSONATION_LEVEL, :PHANDLE], :BOOL
-        safe_attach_function :EqualSid, [ :pointer, :pointer ], :BOOL
+        safe_attach_function :AccessCheck, %i{pointer HANDLE DWORD pointer pointer pointer pointer pointer}, :BOOL
+        safe_attach_function :AddAce, %i{pointer DWORD DWORD LPVOID DWORD}, :BOOL
+        safe_attach_function :AddAccessAllowedAce, %i{pointer DWORD DWORD pointer}, :BOOL
+        safe_attach_function :AddAccessAllowedAceEx, %i{pointer DWORD DWORD DWORD pointer}, :BOOL
+        safe_attach_function :AddAccessDeniedAce, %i{pointer DWORD DWORD pointer}, :BOOL
+        safe_attach_function :AddAccessDeniedAceEx, %i{pointer DWORD DWORD DWORD pointer}, :BOOL
+        safe_attach_function :AdjustTokenPrivileges, %i{HANDLE BOOL pointer DWORD pointer PDWORD}, :BOOL
+        safe_attach_function :ConvertSidToStringSidA, %i{pointer pointer}, :BOOL
+        safe_attach_function :ConvertStringSidToSidW, %i{pointer pointer}, :BOOL
+        safe_attach_function :DeleteAce, %i{pointer DWORD}, :BOOL
+        safe_attach_function :DuplicateToken, %i{HANDLE SECURITY_IMPERSONATION_LEVEL PHANDLE}, :BOOL
+        safe_attach_function :EqualSid, %i{pointer pointer}, :BOOL
         safe_attach_function :FreeSid, [ :pointer ], :pointer
-        safe_attach_function :GetAce, [ :pointer, :DWORD, :pointer ], :BOOL
-        safe_attach_function :GetFileSecurityW, [:LPCWSTR, :DWORD, :pointer, :DWORD, :pointer], :BOOL
+        safe_attach_function :GetAce, %i{pointer DWORD pointer}, :BOOL
+        safe_attach_function :GetFileSecurityW, %i{LPCWSTR DWORD pointer DWORD pointer}, :BOOL
         safe_attach_function :GetLengthSid, [ :pointer ], :DWORD
-        safe_attach_function :GetNamedSecurityInfoW, [ :LPWSTR, :SE_OBJECT_TYPE, :DWORD, :pointer, :pointer, :pointer, :pointer, :pointer ], :DWORD
-        safe_attach_function :GetSecurityDescriptorControl, [ :pointer, :PWORD, :LPDWORD], :BOOL
-        safe_attach_function :GetSecurityDescriptorDacl, [ :pointer, :LPBOOL, :pointer, :LPBOOL ], :BOOL
-        safe_attach_function :GetSecurityDescriptorGroup, [ :pointer, :pointer, :LPBOOL], :BOOL
-        safe_attach_function :GetSecurityDescriptorOwner, [ :pointer, :pointer, :LPBOOL], :BOOL
-        safe_attach_function :GetSecurityDescriptorSacl, [ :pointer, :LPBOOL, :pointer, :LPBOOL ], :BOOL
-        safe_attach_function :InitializeAcl, [ :pointer, :DWORD, :DWORD ], :BOOL
-        safe_attach_function :InitializeSecurityDescriptor, [ :pointer, :DWORD ], :BOOL
+        safe_attach_function :GetNamedSecurityInfoW, %i{LPWSTR SE_OBJECT_TYPE DWORD pointer pointer pointer pointer pointer}, :DWORD
+        safe_attach_function :GetSecurityDescriptorControl, %i{pointer PWORD LPDWORD}, :BOOL
+        safe_attach_function :GetSecurityDescriptorDacl, %i{pointer LPBOOL pointer LPBOOL}, :BOOL
+        safe_attach_function :GetSecurityDescriptorGroup, %i{pointer pointer LPBOOL}, :BOOL
+        safe_attach_function :GetSecurityDescriptorOwner, %i{pointer pointer LPBOOL}, :BOOL
+        safe_attach_function :GetSecurityDescriptorSacl, %i{pointer LPBOOL pointer LPBOOL}, :BOOL
+        safe_attach_function :InitializeAcl, %i{pointer DWORD DWORD}, :BOOL
+        safe_attach_function :InitializeSecurityDescriptor, %i{pointer DWORD}, :BOOL
         safe_attach_function :IsValidAcl, [ :pointer ], :BOOL
         safe_attach_function :IsValidSecurityDescriptor, [ :pointer ], :BOOL
         safe_attach_function :IsValidSid, [ :pointer ], :BOOL
-        safe_attach_function :LookupAccountNameW, [ :LPCWSTR, :LPCWSTR, :pointer, :LPDWORD, :LPWSTR, :LPDWORD, :pointer ], :BOOL
-        safe_attach_function :LookupAccountSidW, [ :LPCWSTR, :pointer, :LPWSTR, :LPDWORD, :LPWSTR, :LPDWORD, :pointer ], :BOOL
-        safe_attach_function :LookupPrivilegeNameW, [ :LPCWSTR, :PLUID, :LPWSTR, :LPDWORD ], :BOOL
-        safe_attach_function :LookupPrivilegeDisplayNameW, [ :LPCWSTR, :LPCWSTR, :LPWSTR, :LPDWORD, :LPDWORD ], :BOOL
-        safe_attach_function :LookupPrivilegeValueW, [ :LPCWSTR, :LPCWSTR, :PLUID ], :BOOL
-        safe_attach_function :LsaAddAccountRights, [ :pointer, :pointer, :pointer, :ULONG ], :NTSTATUS
-        safe_attach_function :LsaRemoveAccountRights, [ :pointer, :pointer, :BOOL, :pointer, :ULONG ], :NTSTATUS
+        safe_attach_function :LookupAccountNameW, %i{LPCWSTR LPCWSTR pointer LPDWORD LPWSTR LPDWORD pointer}, :BOOL
+        safe_attach_function :LookupAccountSidW, %i{LPCWSTR pointer LPWSTR LPDWORD LPWSTR LPDWORD pointer}, :BOOL
+        safe_attach_function :LookupPrivilegeNameW, %i{LPCWSTR PLUID LPWSTR LPDWORD}, :BOOL
+        safe_attach_function :LookupPrivilegeDisplayNameW, %i{LPCWSTR LPCWSTR LPWSTR LPDWORD LPDWORD}, :BOOL
+        safe_attach_function :LookupPrivilegeValueW, %i{LPCWSTR LPCWSTR PLUID}, :BOOL
+        safe_attach_function :LsaAddAccountRights, %i{pointer pointer pointer ULONG}, :NTSTATUS
+        safe_attach_function :LsaRemoveAccountRights, %i{pointer pointer BOOL pointer ULONG}, :NTSTATUS
         safe_attach_function :LsaClose, [ :LSA_HANDLE ], :NTSTATUS
-        safe_attach_function :LsaEnumerateAccountRights, [ :LSA_HANDLE, :PSID, :PLSA_UNICODE_STRING, :PULONG ], :NTSTATUS
+        safe_attach_function :LsaEnumerateAccountRights, %i{LSA_HANDLE PSID PLSA_UNICODE_STRING PULONG}, :NTSTATUS
         safe_attach_function :LsaFreeMemory, [ :PVOID ], :NTSTATUS
         safe_attach_function :LsaNtStatusToWinError, [ :NTSTATUS ], :ULONG
-        safe_attach_function :LsaOpenPolicy, [ :PLSA_UNICODE_STRING, :PLSA_OBJECT_ATTRIBUTES, :DWORD, :PLSA_HANDLE ], :NTSTATUS
-        safe_attach_function :MakeAbsoluteSD, [ :pointer, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD], :BOOL
-        safe_attach_function :MapGenericMask, [ :PDWORD, :PGENERICMAPPING ], :void
-        safe_attach_function :OpenProcessToken, [ :HANDLE, :DWORD, :PHANDLE ], :BOOL
-        safe_attach_function :QuerySecurityAccessMask, [ :DWORD, :LPDWORD ], :void
-        safe_attach_function :SetFileSecurityW, [ :LPWSTR, :DWORD, :pointer ], :BOOL
-        safe_attach_function :SetNamedSecurityInfoW, [ :LPWSTR, :SE_OBJECT_TYPE, :DWORD, :pointer, :pointer, :pointer, :pointer ], :DWORD
-        safe_attach_function :SetSecurityAccessMask, [ :DWORD, :LPDWORD ], :void
-        safe_attach_function :SetSecurityDescriptorDacl, [ :pointer, :BOOL, :pointer, :BOOL ], :BOOL
-        safe_attach_function :SetSecurityDescriptorGroup, [ :pointer, :pointer, :BOOL ], :BOOL
-        safe_attach_function :SetSecurityDescriptorOwner, [ :pointer, :pointer, :BOOL ], :BOOL
-        safe_attach_function :SetSecurityDescriptorSacl, [ :pointer, :BOOL, :pointer, :BOOL ], :BOOL
-        safe_attach_function :GetTokenInformation, [ :HANDLE, :TOKEN_INFORMATION_CLASS, :pointer, :DWORD, :PDWORD ], :BOOL
-        safe_attach_function :LogonUserW, [:LPTSTR, :LPTSTR, :LPTSTR, :DWORD, :DWORD, :PHANDLE], :BOOL
+        safe_attach_function :LsaOpenPolicy, %i{PLSA_UNICODE_STRING PLSA_OBJECT_ATTRIBUTES DWORD PLSA_HANDLE}, :NTSTATUS
+        safe_attach_function :MakeAbsoluteSD, %i{pointer pointer LPDWORD pointer LPDWORD pointer LPDWORD pointer LPDWORD pointer LPDWORD}, :BOOL
+        safe_attach_function :MapGenericMask, %i{PDWORD PGENERICMAPPING}, :void
+        safe_attach_function :OpenProcessToken, %i{HANDLE DWORD PHANDLE}, :BOOL
+        safe_attach_function :QuerySecurityAccessMask, %i{DWORD LPDWORD}, :void
+        safe_attach_function :SetFileSecurityW, %i{LPWSTR DWORD pointer}, :BOOL
+        safe_attach_function :SetNamedSecurityInfoW, %i{LPWSTR SE_OBJECT_TYPE DWORD pointer pointer pointer pointer}, :DWORD
+        safe_attach_function :SetSecurityAccessMask, %i{DWORD LPDWORD}, :void
+        safe_attach_function :SetSecurityDescriptorDacl, %i{pointer BOOL pointer BOOL}, :BOOL
+        safe_attach_function :SetSecurityDescriptorGroup, %i{pointer pointer BOOL}, :BOOL
+        safe_attach_function :SetSecurityDescriptorOwner, %i{pointer pointer BOOL}, :BOOL
+        safe_attach_function :SetSecurityDescriptorSacl, %i{pointer BOOL pointer BOOL}, :BOOL
+        safe_attach_function :GetTokenInformation, %i{HANDLE TOKEN_INFORMATION_CLASS pointer DWORD PDWORD}, :BOOL
+        safe_attach_function :LogonUserW, %i{LPTSTR LPTSTR LPTSTR DWORD DWORD PHANDLE}, :BOOL
         safe_attach_function :ImpersonateLoggedOnUser, [:HANDLE], :BOOL
         safe_attach_function :RevertToSelf, [], :BOOL
 

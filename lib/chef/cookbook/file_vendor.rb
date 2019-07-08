@@ -54,6 +54,7 @@ class Chef
         if @vendor_class.nil?
           raise "Must configure FileVendor to use a specific implementation before creating an instance"
         end
+
         @vendor_class.new(manifest, @initialization_options)
       end
 

@@ -22,7 +22,7 @@ describe Chef::Resource::RemoteDirectory do
     before do
       file "config/client.rb", <<-EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
       directory "cookbooks/test" do
         directory "files/default/source_dir" do
@@ -50,7 +50,7 @@ describe Chef::Resource::RemoteDirectory do
              end
           EOM
         end
-        shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'test::default'", cwd: chef_dir)
+        shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'test::default'", cwd: chef_dir)
       end
 
       def mode_of(path)

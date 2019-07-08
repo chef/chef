@@ -62,6 +62,7 @@ class Chef
 
         def ensure_cache_path_created
           return true if @cache_path_created
+
           FileUtils.mkdir_p(cache_path)
           @cache_path_created = true
         end
@@ -86,6 +87,7 @@ class Chef
         unless cookbook_path
           raise ArgumentError, "Cannot find cookbook #{cookbook_name} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
         end
+
         new(File.join(cookbook_path, cookbook_name.to_s))
       end
 
@@ -157,6 +159,7 @@ class Chef
       def validate_ruby_files
         untested_ruby_files.each do |ruby_file|
           return false unless validate_ruby_file(ruby_file)
+
           validated(ruby_file)
         end
       end
@@ -164,6 +167,7 @@ class Chef
       def validate_templates
         untested_template_files.each do |template|
           return false unless validate_template(template)
+
           validated(template)
         end
       end

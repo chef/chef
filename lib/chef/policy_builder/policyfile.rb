@@ -156,7 +156,7 @@ class Chef
         apply_policyfile_attributes
 
         Chef::Log.info("Run List is [#{run_list}]")
-        Chef::Log.info("Run List expands to [#{run_list_with_versions_for_display.join(', ')}]")
+        Chef::Log.info("Run List expands to [#{run_list_with_versions_for_display.join(", ")}]")
 
         events.node_load_completed(node, run_list_with_versions_for_display, Chef::Config)
         events.run_list_expanded(run_list_expansion_ish)
@@ -304,7 +304,7 @@ class Chef
         if named_run_list_requested?
           named_run_list || raise(ConfigurationError,
             "Policy '#{retrieved_policy_name}' revision '#{revision_id}' does not have named_run_list '#{named_run_list_name}'" +
-            "(available named_run_lists: [#{available_named_run_lists.join(', ')}])")
+            "(available named_run_lists: [#{available_named_run_lists.join(", ")}])")
         else
           policy["run_list"]
         end
@@ -340,7 +340,7 @@ class Chef
         unless policy.key?("cookbook_locks")
           errors << "Policyfile is missing cookbook_locks element"
         end
-        if run_list.kind_of?(Array)
+        if run_list.is_a?(Array)
           run_list_errors = run_list.select do |maybe_recipe_spec|
             validate_recipe_spec(maybe_recipe_spec)
           end

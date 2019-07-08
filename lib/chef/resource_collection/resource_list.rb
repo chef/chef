@@ -36,11 +36,11 @@ class Chef
       private :resources
       # Delegate direct access methods to the @resources array
       # 4 extra methods here are not included in the Enumerable's instance methods
-      direct_access_methods = Enumerable.instance_methods + [ :[], :each, :each_index, :empty? ]
+      direct_access_methods = Enumerable.instance_methods + %i{[] each each_index empty?}
       def_delegators :resources, *(direct_access_methods)
 
       def initialize
-        @resources = Array.new
+        @resources = []
         @insert_after_idx = nil
       end
 
@@ -69,11 +69,13 @@ class Chef
 
       def delete(key)
         raise ArgumentError, "Must pass a Chef::Resource or String to delete" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+
         key = key.to_s
         ret = @resources.reject! { |r| r.to_s == key }
         if ret.nil?
           raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
         end
+
         ret
       end
 
@@ -96,7 +98,7 @@ class Chef
       end
 
       def self.from_hash(o)
-        collection = new()
+        collection = new
         resources = o["instance_vars"]["@resources"].map { |r| Chef::Resource.from_hash(r) }
         collection.instance_variable_set(:@resources, resources)
         collection

@@ -46,6 +46,7 @@ class Chef
         # Check if the dhparam.pem file exists
         # Verify the dhparam.pem file contains a key
         return false unless ::File.exist?(dhparam_pem_path)
+
         dhparam = ::OpenSSL::PKey::DH.new File.read(dhparam_pem_path)
         dhparam.params_ok?
       end
@@ -158,6 +159,7 @@ class Chef
       def gen_ec_priv_key(curve)
         raise TypeError, "curve must be a string" unless curve.is_a?(String)
         raise ArgumentError, "Specified curve is not available on this system" unless curve == "prime256v1" || curve == "secp384r1" || curve == "secp521r1"
+
         ::OpenSSL::PKey::EC.new(curve).generate_key
       end
 
@@ -262,7 +264,7 @@ class Chef
         cert = ::OpenSSL::X509::Certificate.new
         ef = ::OpenSSL::X509::ExtensionFactory.new
 
-        cert.serial = gen_serial()
+        cert.serial = gen_serial
         cert.version = 2
         cert.subject = request.subject
         cert.public_key = request.public_key
@@ -275,6 +277,7 @@ class Chef
           extension << ef.create_extension("basicConstraints", "CA:TRUE", true)
         else
           raise TypeError, "info['issuer'] must be a Ruby OpenSSL::X509::Certificate object" unless info["issuer"].is_a?(::OpenSSL::X509::Certificate)
+
           cert.issuer = info["issuer"].subject
           ef.issuer_certificate = info["issuer"]
         end
@@ -325,6 +328,7 @@ class Chef
       # @return [Integer]
       def get_next_crl_number(crl)
         raise TypeError, "crl must be a Ruby OpenSSL::X509::CRL object" unless crl.is_a?(::OpenSSL::X509::CRL)
+
         crlnum = 1
         crl.extensions.each do |e|
           crlnum = e.value if e.oid == "crlNumber"

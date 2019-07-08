@@ -134,7 +134,7 @@ class Chef
         511 => "Network Authentication Required",
       }.freeze
 
-      STATUS_MESSAGE.each_value { |v| v.freeze }
+      STATUS_MESSAGE.each_value(&:freeze)
       STATUS_MESSAGE.freeze
 
       def initialize(base_url)
@@ -181,6 +181,7 @@ class Chef
         body = chunked_body.join("")
         msg = STATUS_MESSAGE[code]
         raise "Cannot determine HTTP status message for code #{code}" unless msg
+
         response = Net::HTTPResponse.send(:response_class, code.to_s).new("1.0", code.to_s, msg)
         response.instance_variable_set(:@body, body)
         headers.each do |name, value|
@@ -200,7 +201,7 @@ class Chef
 
       def headers_extracted_from_options
         options.reject { |name, _| KNOWN_OPTIONS.include?(name) }.map do |name, value|
-          [name.to_s.split("_").map { |segment| segment.capitalize }.join("-"), value]
+          [name.to_s.split("_").map(&:capitalize).join("-"), value]
         end
       end
 

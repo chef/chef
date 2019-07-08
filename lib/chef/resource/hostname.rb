@@ -203,7 +203,7 @@ class Chef
             declare_resource(:execute, "svccfg -s system/identity:node setprop config/nodename=\'#{new_resource.hostname}\'") do
               notifies :run, "execute[svcadm refresh]", :immediately
               notifies :run, "execute[svcadm restart]", :immediately
-              not_if { shell_out!("svccfg -s system/identity:node listprop config/nodename").stdout.chomp =~ /config\/nodename\s+astring\s+#{new_resource.hostname}/ }
+              not_if { shell_out!("svccfg -s system/identity:node listprop config/nodename").stdout.chomp =~ %r{config/nodename\s+astring\s+#{new_resource.hostname}} }
             end
             declare_resource(:execute, "svcadm refresh") do
               command "svcadm refresh system/identity:node"

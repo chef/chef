@@ -40,6 +40,7 @@ class Chef
         # They could provide us a user name or a UID
         if provided_user
           return provided_user if provided_user.is_a? Integer
+
           return Etc.getpwnam(provided_user).uid
         end
 

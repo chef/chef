@@ -138,7 +138,7 @@ class Chef
     end
 
     def files_by_cookbook
-      files.group_by { |file| file.cookbook }
+      files.group_by(&:cookbook)
     end
 
     def files_remaining_by_cookbook
@@ -163,7 +163,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def sync_cookbooks
-      Chef::Log.info("Loading cookbooks [#{cookbooks.map { |ckbk| ckbk.name + '@' + ckbk.version }.join(', ')}]")
+      Chef::Log.info("Loading cookbooks [#{cookbooks.map { |ckbk| ckbk.name + "@" + ckbk.version }.join(", ")}]")
       Chef::Log.trace("Cookbooks detail: #{cookbooks.inspect}")
 
       clear_obsoleted_cookbooks
@@ -209,7 +209,7 @@ class Chef
     # (if we have an override run_list we may not want to do this)
     def remove_old_cookbooks
       cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_file|
-        cache_file =~ /^cookbooks\/([^\/]+)\//
+        cache_file =~ %r{^cookbooks/([^/]+)/}
         unless have_cookbook?($1)
           Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
           cache.delete(cache_file)
@@ -221,8 +221,9 @@ class Chef
     # remove deleted files in cookbooks that are being used on the node
     def remove_deleted_files
       cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_file|
-        md = cache_file.match(/^cookbooks\/([^\/]+)\/([^\/]+)\/(.*)/)
+        md = cache_file.match(%r{^cookbooks/([^/]+)/([^/]+)/(.*)})
         next unless md
+
         ( cookbook_name, segment, file ) = md[1..3]
         if have_cookbook?(cookbook_name)
           manifest_segment = cookbook_segment(cookbook_name, segment)
@@ -297,6 +298,7 @@ class Chef
 
     def cached_copy_up_to_date?(local_path, expected_checksum)
       return true if Chef::Config[:skip_cookbook_sync]
+
       if cache.key?(local_path)
         current_checksum = CookbookVersion.checksum_cookbook_file(cache.load(local_path, false))
         expected_checksum == current_checksum

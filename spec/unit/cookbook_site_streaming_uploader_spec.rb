@@ -25,8 +25,7 @@ class FakeTempfile
     @basename = basename
   end
 
-  def close
-  end
+  def close; end
 
   def path
     "#{@basename}.ZZZ"

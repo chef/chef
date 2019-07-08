@@ -53,8 +53,8 @@ class Chef
 
           def children
             entries = Dir.entries(file_path).sort
-                      .map { |child_name| make_child_entry(child_name) }
-                      .select { |child| child && can_have_child?(child.name, child.dir?) }
+              .map { |child_name| make_child_entry(child_name) }
+              .select { |child| child && can_have_child?(child.name, child.dir?) }
             entries.select { |entry| !(entry.dir? && entry.children.size == 0 ) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
@@ -101,6 +101,7 @@ class Chef
             if child.exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
+
             if file_contents
               child.write(file_contents)
             else
@@ -121,9 +122,10 @@ class Chef
             FileSystemCache.instance.delete!(file_path)
             begin
               if dir?
-                if !recurse
+                unless recurse
                   raise MustDeleteRecursivelyError.new(self, $!)
                 end
+
                 FileUtils.rm_r(file_path)
               else
                 File.delete(file_path)
@@ -138,7 +140,7 @@ class Chef
           end
 
           def read
-            File.open(file_path, "rb") { |f| f.read }
+            File.open(file_path, "rb", &:read)
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end

@@ -84,7 +84,7 @@ class Chef
 
         # Adds a list of usernames to the group using `user mod`
         def add_group_members(members)
-          logger.trace("#{new_resource} adding members #{members.join(', ')}") unless members.empty?
+          logger.trace("#{new_resource} adding members #{members.join(", ")}") unless members.empty?
           members.each do |user|
             shell_out!("user", "mod", "-G", new_resource.group_name, user)
           end

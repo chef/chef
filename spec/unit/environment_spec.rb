@@ -48,8 +48,8 @@ describe Chef::Environment do
     end
 
     it "should not accept anything but strings" do
-      expect { @environment.name(Array.new) }.to raise_error(ArgumentError)
-      expect { @environment.name(Hash.new) }.to raise_error(ArgumentError)
+      expect { @environment.name([]) }.to raise_error(ArgumentError)
+      expect { @environment.name({}) }.to raise_error(ArgumentError)
       expect { @environment.name(2) }.to raise_error(ArgumentError)
     end
   end
@@ -65,8 +65,8 @@ describe Chef::Environment do
     end
 
     it "should not accept anything but strings" do
-      expect { @environment.description(Array.new) }.to raise_error(ArgumentError)
-      expect { @environment.description(Hash.new) }.to raise_error(ArgumentError)
+      expect { @environment.description([]) }.to raise_error(ArgumentError)
+      expect { @environment.description({}) }.to raise_error(ArgumentError)
       expect { @environment.description(42) }.to raise_error(ArgumentError)
     end
   end
@@ -82,7 +82,7 @@ describe Chef::Environment do
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
-      expect { @environment.default_attributes(Array.new) }.to raise_error(ArgumentError)
+      expect { @environment.default_attributes([]) }.to raise_error(ArgumentError)
     end
   end
 
@@ -97,7 +97,7 @@ describe Chef::Environment do
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
-      expect { @environment.override_attributes(Array.new) }.to raise_error(ArgumentError)
+      expect { @environment.override_attributes([]) }.to raise_error(ArgumentError)
     end
   end
 
@@ -121,7 +121,7 @@ describe Chef::Environment do
 
     it "should not accept anything but a hash" do
       expect { @environment.cookbook_versions("I am a string!") }.to raise_error(ArgumentError)
-      expect { @environment.cookbook_versions(Array.new) }.to raise_error(ArgumentError)
+      expect { @environment.cookbook_versions([]) }.to raise_error(ArgumentError)
       expect { @environment.cookbook_versions(42) }.to raise_error(ArgumentError)
     end
 
@@ -257,7 +257,7 @@ describe Chef::Environment do
     end
 
     it "should return false if anything other than a hash is passed as the argument" do
-      expect(Chef::Environment.validate_cookbook_versions(Array.new)).to eq(false)
+      expect(Chef::Environment.validate_cookbook_versions([])).to eq(false)
       expect(Chef::Environment.validate_cookbook_versions(42)).to eq(false)
       expect(Chef::Environment.validate_cookbook_versions(Chef::CookbookVersion.new("meta"))).to eq(false)
       expect(Chef::Environment.validate_cookbook_versions("cookbook => 1.2.3")).to eq(false)

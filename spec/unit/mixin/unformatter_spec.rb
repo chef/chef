@@ -22,8 +22,7 @@ require "chef/mixin/unformatter"
 class Chef::UnformatterTest
   include Chef::Mixin::Unformatter
 
-  def foo
-  end
+  def foo; end
 
 end
 

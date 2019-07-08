@@ -61,18 +61,18 @@ describe Chef::Resource::Locale, :requires_root do
 
       context "Unsets system variable" do
         it "when LC var is not given" do
-          resource.lc_env()
+          resource.lc_env
           resource.run_action(:update)
           unsets_system_locale("LC_MESSAGES=en_US")
         end
         it "when lang is not given" do
-          resource.lang()
+          resource.lang
           resource.run_action(:update)
           unsets_system_locale("LANG=en_US")
         end
         it "when both lang & LC vars are not given" do
-          resource.lang()
-          resource.lc_env()
+          resource.lang
+          resource.lc_env
           resource.run_action(:update)
           unsets_system_locale("LANG=en_US", "LC_TIME=en_IN")
           sets_system_locale("")

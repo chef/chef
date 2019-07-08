@@ -55,7 +55,8 @@ describe "Chef::Resource.property validation" do
   def self.english_join(values)
     return "<nothing>" if values.size == 0
     return values[0].inspect if values.size == 1
-    "#{values[0..-2].map { |v| v.inspect }.join(", ")} and #{values[-1].inspect}"
+
+    "#{values[0..-2].map(&:inspect).join(", ")} and #{values[-1].inspect}"
   end
 
   def self.with_property(*properties, &block)
@@ -231,19 +232,19 @@ describe "Chef::Resource.property validation" do
       [ :b ]
 
     validation_test ":a, is: :b",
-      [ :a, :b ],
+      %i{a b},
       [ :c ]
 
     validation_test ":a, is: [ :b, :c ]",
-      [ :a, :b, :c ],
+      %i{a b c},
       [ :d ]
 
     validation_test "[ :a, :b ], is: :c",
-      [ :a, :b, :c ],
+      %i{a b c},
       [ :d ]
 
     validation_test "[ :a, :b ], is: [ :c, :d ]",
-      [ :a, :b, :c, :d ],
+      %i{a b c d},
       [ :e ]
 
     validation_test "nil",
@@ -279,12 +280,12 @@ describe "Chef::Resource.property validation" do
       [ :b ]
 
     validation_test "is: [ :a, :b ]",
-      [ :a, :b ],
-      [ [ :a, :b ] ]
+      %i{a b},
+      [ %i{a b} ]
 
     validation_test "is: [ [ :a, :b ] ]",
-      [ [ :a, :b ] ],
-      [ :a, :b ]
+      [ %i{a b} ],
+      %i{a b}
 
     # Regex
     validation_test "is: /abc/",
@@ -352,13 +353,13 @@ describe "Chef::Resource.property validation" do
       :nil_is_valid
 
     validation_test "equal_to: [ :a, :b ]",
-      [ :a, :b ],
-      [ [ :a, :b ] ],
+      %i{a b},
+      [ %i{a b} ],
       :nil_is_valid
 
     validation_test "equal_to: [ [ :a, :b ] ]",
-      [ [ :a, :b ] ],
-      [ :a, :b ],
+      [ %i{a b} ],
+      %i{a b},
       :nil_is_valid
 
     validation_test "equal_to: nil",

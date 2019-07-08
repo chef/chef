@@ -35,7 +35,8 @@ describe Chef::Knife::Bootstrap do
     double("TrainConnector",
       windows?: windows_test,
       linux?: linux_test,
-      unix?: unix_test) end
+      unix?: unix_test)
+  end
 
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)
@@ -107,7 +108,7 @@ describe Chef::Knife::Bootstrap do
         expect(knife).to receive(:read_secret).and_return("secrets")
         expect(rendered_template).to match("cat > /etc/chef/encrypted_data_bag_secret <<'EOP'")
         expect(rendered_template).to match('{"run_list":\[\]}')
-        expect(rendered_template).to match(%r{secrets})
+        expect(rendered_template).to match(/secrets/)
       end
     end
   end
@@ -127,7 +128,7 @@ describe Chef::Knife::Bootstrap do
       knife.render_template
     end
     it "configures the preinstall command in the bootstrap template correctly" do
-      expect(rendered_template).to match(%r{command})
+      expect(rendered_template).to match(/command/)
     end
   end
 
@@ -138,7 +139,7 @@ describe Chef::Knife::Bootstrap do
       knife.render_template
     end
     it "configures the https_proxy environment variable in the bootstrap template correctly" do
-      expect(rendered_template).to match(%r{https_proxy="1.1.1.1" export https_proxy})
+      expect(rendered_template).to match(/https_proxy="1.1.1.1" export https_proxy/)
     end
   end
 
@@ -149,7 +150,7 @@ describe Chef::Knife::Bootstrap do
       knife.render_template
     end
     it "configures the https_proxy environment variable in the bootstrap template correctly" do
-      expect(rendered_template).to match(%r{no_proxy="localserver" export no_proxy})
+      expect(rendered_template).to match(/no_proxy="localserver" export no_proxy/)
     end
   end
 
@@ -360,7 +361,7 @@ describe Chef::Knife::Bootstrap do
     it "should create a hint file when told to" do
       knife.parse_options(["--hint", "openstack"])
       knife.merge_configs
-      expect(knife.render_template).to match(/\/etc\/chef\/ohai\/hints\/openstack.json/)
+      expect(knife.render_template).to match(%r{/etc/chef/ohai/hints/openstack.json})
     end
 
     it "should populate a hint file with JSON when given a file to read" do
@@ -393,7 +394,7 @@ describe Chef::Knife::Bootstrap do
       let(:setting) { "api.opscode.com" }
 
       it "renders the client.rb with a single FQDN no_proxy entry" do
-        expect(rendered_template).to match(%r{.*no_proxy\s*"api.opscode.com".*})
+        expect(rendered_template).to match(/.*no_proxy\s*"api.opscode.com".*/)
       end
     end
 
@@ -401,7 +402,7 @@ describe Chef::Knife::Bootstrap do
       let(:setting) { "api.opscode.com,172.16.10.*" }
 
       it "renders the client.rb with comma-separated FQDN and wildcard IP address no_proxy entries" do
-        expect(rendered_template).to match(%r{.*no_proxy\s*"api.opscode.com,172.16.10.\*".*})
+        expect(rendered_template).to match(/.*no_proxy\s*"api.opscode.com,172.16.10.\*".*/)
       end
     end
 
@@ -459,7 +460,7 @@ describe Chef::Knife::Bootstrap do
     it "creates a secret file" do
       expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)
       expect(knife).to receive(:read_secret).and_return(secret)
-      expect(rendered_template).to match(%r{#{secret}})
+      expect(rendered_template).to match(/#{secret}/)
     end
 
     it "renders the client.rb with an encrypted_data_bag_secret entry" do
@@ -569,7 +570,9 @@ describe Chef::Knife::Bootstrap do
     context "when client_d_dir is set" do
       let(:client_d_dir) do
         Chef::Util::PathHelper.cleanpath(
-          File.join(File.dirname(__FILE__), "../../data/client.d_00")) end
+          File.join(File.dirname(__FILE__), "../../data/client.d_00")
+        )
+      end
 
       it "creates /etc/chef/client.d" do
         expect(rendered_template).to match("mkdir -p /etc/chef/client\.d")
@@ -594,7 +597,9 @@ describe Chef::Knife::Bootstrap do
       context "a nested directory structure" do
         let(:client_d_dir) do
           Chef::Util::PathHelper.cleanpath(
-            File.join(File.dirname(__FILE__), "../../data/client.d_01")) end
+            File.join(File.dirname(__FILE__), "../../data/client.d_01")
+          )
+        end
         it "creates a file foo/bar.rb" do
           expect(rendered_template).to match("cat > /etc/chef/client.d/foo/bar.rb <<'EOP'")
           expect(rendered_template).to match("1 / 0")
@@ -1554,7 +1559,8 @@ describe Chef::Knife::Bootstrap do
         ssl: false,
         ssl_peer_fingerprint: nil,
         operation_timeout: 60,
-      } end
+      }
+      end
 
       it "generates a correct configuration hash with expected defaults" do
         expect(knife.winrm_opts).to eq expected
@@ -1730,7 +1736,7 @@ describe Chef::Knife::Bootstrap do
       before do
         Chef::Config[:validation_key] = "/blah"
         allow(vault_handler_mock).to receive(:doing_chef_vault?).and_return false
-        allow(File).to receive(:exist?).with(/\/blah/).and_return false
+        allow(File).to receive(:exist?).with(%r{/blah}).and_return false
       end
       it_behaves_like "creating the client locally"
     end
@@ -1738,7 +1744,7 @@ describe Chef::Knife::Bootstrap do
     context "when a valid validation key is given and we're doing old-style client creation" do
       before do
         Chef::Config[:validation_key] = "/blah"
-        allow(File).to receive(:exist?).with(/\/blah/).and_return true
+        allow(File).to receive(:exist?).with(%r{/blah}).and_return true
         allow(vault_handler_mock).to receive(:doing_chef_vault?).and_return false
       end
 

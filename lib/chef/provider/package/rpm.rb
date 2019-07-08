@@ -116,6 +116,7 @@ class Chef
         def uri_scheme?(str)
           scheme = URI.split(str).first
           return false unless scheme
+
           %w{http https ftp file}.include?(scheme.downcase)
         rescue URI::InvalidURIError
           false

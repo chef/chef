@@ -44,12 +44,12 @@ class Chef
 
       property :consent_behavior_admins, Symbol,
         description: 'Behavior of the elevation prompt for administrators in Admin Approval Mode. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\ConsentPromptBehaviorAdmin.',
-        equal_to: [:no_prompt, :secure_prompt_for_creds, :secure_prompt_for_consent, :prompt_for_creds, :prompt_for_consent, :prompt_for_consent_non_windows_binaries],
+        equal_to: %i{no_prompt secure_prompt_for_creds secure_prompt_for_consent prompt_for_creds prompt_for_consent prompt_for_consent_non_windows_binaries},
         default: :prompt_for_consent_non_windows_binaries
 
       property :consent_behavior_users, Symbol,
         description: 'Behavior of the elevation prompt for standard users. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\ConsentPromptBehaviorUser.',
-        equal_to: [:auto_deny, :secure_prompt_for_creds, :prompt_for_creds],
+        equal_to: %i{auto_deny secure_prompt_for_creds prompt_for_creds},
         default: :prompt_for_creds
 
       action :configure do
@@ -79,14 +79,14 @@ class Chef
         #
         # @return [Integer]
         def consent_behavior_admins_symbol_to_reg(sym)
-          [:no_prompt, :secure_prompt_for_creds, :secure_prompt_for_consent, :prompt_for_creds, :prompt_for_consent, :prompt_for_consent_non_windows_binaries].index(sym)
+          %i{no_prompt secure_prompt_for_creds secure_prompt_for_consent prompt_for_creds prompt_for_consent prompt_for_consent_non_windows_binaries}.index(sym)
         end
 
         # converts the symbols we use in the consent_behavior_users property into numbers 0-2 based on their array index
         #
         # @return [Integer]
         def consent_behavior_users_symbol_to_reg(sym)
-          [:auto_deny, :secure_prompt_for_creds, :prompt_for_creds].index(sym)
+          %i{auto_deny secure_prompt_for_creds prompt_for_creds}.index(sym)
         end
       end
     end

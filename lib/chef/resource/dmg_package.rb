@@ -1,6 +1,6 @@
 #
 # Author:: Joshua Timberman (<jtimberman@chef.io>)
-# Copyright:: 2011-2018, Chef Software, Inc.
+# Copyright:: 2011-2019, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,12 +48,12 @@ class Chef
 
       property :volumes_dir, String,
         description: "The directory under /Volumes where the dmg is mounted if it differs from the name of the .dmg file.",
-        default: lazy { |r| r.app }, default_description: "The value passed for the application name."
+        default: lazy { app }, default_description: "The value passed for the application name."
 
       property :dmg_name, String,
         description: "The name of the .dmg file if it differs from that of the app, or if the name has spaces.",
         desired_state: false,
-        default: lazy { |r| r.app }, default_description: "The value passed for the application name."
+        default: lazy { app }, default_description: "The value passed for the application name."
 
       property :type, String,
         description: "The type of package.",

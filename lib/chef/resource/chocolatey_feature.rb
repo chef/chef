@@ -39,7 +39,7 @@ class Chef
       # @return [String] the element's value field
       def fetch_feature_element(name)
         require "rexml/document" unless defined?(REXML::Document)
-        config_file = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\config\\chocolatey.config"
+        config_file = "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\config\\chocolatey.config"
         raise "Could not find the Chocolatey config at #{config_file}!" unless ::File.exist?(config_file)
 
         contents = REXML::Document.new(::File.read(config_file))
@@ -71,7 +71,7 @@ class Chef
         # @param [String] action the name of the action to perform
         # @return [String] the choco feature command string
         def choco_cmd(action)
-          cmd = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\bin\\choco feature #{action} --name #{new_resource.feature_name}"
+          cmd = "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco feature #{action} --name #{new_resource.feature_name}"
           cmd
         end
       end

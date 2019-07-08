@@ -217,14 +217,14 @@ describe Chef::RunContext::CookbookCompiler do
     it "should return an array of cookbook names as symbols without duplicates" do
       node.run_list("test-with-circular-deps::default", "circular-dep1::default", "circular-dep2::default")
 
-      expect(compiler.cookbook_order).to eq([:"circular-dep2",
-                                         :"circular-dep1",
-                                         :"test-with-circular-deps"])
+      expect(compiler.cookbook_order).to eq(%i{circular-dep2
+                                         circular-dep1
+                                         test-with-circular-deps})
     end
 
     it "determines if a cookbook is in the list of cookbooks reachable by dependency" do
       node.run_list("test-with-deps::default", "test-with-deps::server")
-      expect(compiler.cookbook_order).to eq([:dependency1, :dependency2, :"test-with-deps"])
+      expect(compiler.cookbook_order).to eq(%i{dependency1 dependency2 test-with-deps})
       expect(compiler.unreachable_cookbook?(:dependency1)).to be_falsey
       expect(compiler.unreachable_cookbook?(:dependency2)).to be_falsey
       expect(compiler.unreachable_cookbook?(:'test-with-deps')).to be_falsey

@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2018, Chef Software Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -145,25 +145,25 @@ describe Chef::Node::ImmutableMash do
     end
   end
 
-  [
-    :[]=,
-    :clear,
-    :default=,
-    :default_proc=,
-    :delete,
-    :delete_if,
-    :keep_if,
-    :merge!,
-    :update,
-    :reject!,
-    :replace,
-    :select!,
-    :shift,
-    :write,
-    :write!,
-    :unlink,
-    :unlink!,
-  ].each do |mutator|
+  %i{
+    []=
+    clear
+    default=
+    default_proc=
+    delete
+    delete_if
+    keep_if
+    merge!
+    update
+    reject!
+    replace
+    select!
+    shift
+    write
+    write!
+    unlink
+    unlink!
+  }.each do |mutator|
     it "doesn't allow mutation via `#{mutator}'" do
       expect { @immutable_mash.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
@@ -190,36 +190,36 @@ describe Chef::Node::ImmutableArray do
   # with ImmutableMash, above
   ###
 
-  [
-    :<<,
-    :[]=,
-    :clear,
-    :collect!,
-    :compact!,
-    :default=,
-    :default_proc=,
-    :delete,
-    :delete_at,
-    :delete_if,
-    :fill,
-    :flatten!,
-    :insert,
-    :keep_if,
-    :map!,
-    :merge!,
-    :pop,
-    :push,
-    :reject!,
-    :reverse!,
-    :replace,
-    :select!,
-    :shift,
-    :slice!,
-    :sort!,
-    :sort_by!,
-    :uniq!,
-    :unshift,
-  ].each do |mutator|
+  %i{
+    <<
+    []=
+    clear
+    collect!
+    compact!
+    default=
+    default_proc=
+    delete
+    delete_at
+    delete_if
+    fill
+    flatten!
+    insert
+    keep_if
+    map!
+    merge!
+    pop
+    push
+    reject!
+    reverse!
+    replace
+    select!
+    shift
+    slice!
+    sort!
+    sort_by!
+    uniq!
+    unshift
+  }.each do |mutator|
     it "does not allow mutation via `#{mutator}" do
       expect { @immutable_array.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end

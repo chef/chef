@@ -161,6 +161,7 @@ class Chef
               retry
             else
               raise e if output.empty?
+
               raise "dnf-helper.py had stderr output:\n\n#{output}"
             end
           end

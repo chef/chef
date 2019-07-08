@@ -67,7 +67,7 @@ class Chef
       end
 
       def print_flattened_dependencies(entry, dependencies)
-        if !dependencies[entry.path]
+        unless dependencies[entry.path]
           dependencies[entry.path] = get_dependencies(entry)
           dependencies[entry.path].each do |child|
             child_entry = Chef::ChefFS::FileSystem.resolve_path(@root, child)
@@ -78,8 +78,8 @@ class Chef
       end
 
       def print_dependencies_tree(entry, dependencies, printed = {}, depth = 0)
-        dependencies[entry.path] = get_dependencies(entry) if !dependencies[entry.path]
-        output "#{'  ' * depth}#{format_path(entry)}"
+        dependencies[entry.path] = get_dependencies(entry) unless dependencies[entry.path]
+        output "#{"  " * depth}#{format_path(entry)}"
         if !printed[entry.path] && (config[:recurse] || depth == 0)
           printed[entry.path] = true
           dependencies[entry.path].each do |child|
@@ -97,7 +97,7 @@ class Chef
           node = Chef::JSONCompat.parse(entry.read)
           result = []
           if node["chef_environment"] && node["chef_environment"] != "_default"
-            result << "/environments/#{node['chef_environment']}.json"
+            result << "/environments/#{node["chef_environment"]}.json"
           end
           if node["run_list"]
             result += dependencies_from_runlist(node["run_list"])
@@ -109,13 +109,13 @@ class Chef
           result = []
           if role["run_list"]
             dependencies_from_runlist(role["run_list"]).each do |dependency|
-              result << dependency if !result.include?(dependency)
+              result << dependency unless result.include?(dependency)
             end
           end
           if role["env_run_lists"]
             role["env_run_lists"].each_pair do |env, run_list|
               dependencies_from_runlist(run_list).each do |dependency|
-                result << dependency if !result.include?(dependency)
+                result << dependency unless result.include?(dependency)
               end
             end
           end

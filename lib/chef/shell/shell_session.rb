@@ -260,7 +260,7 @@ module Shell
       @run_list_expansion = @node.expand!("server")
       @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
       Chef::Log.info("Run List is [#{@node.run_list}]")
-      Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
+      Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(", ")}]")
       @node
     end
 

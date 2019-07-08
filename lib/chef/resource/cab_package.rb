@@ -1,6 +1,6 @@
 #
 # Author:: Vasundhara Jagdale (<vasundhara.jagdale@msystechnologies.com>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,7 @@ class Chef
             uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
           end
         end),
-        default: lazy { |r| r.package_name }, default_description: "The package name."
+        default: lazy { package_name }, default_description: "The package name."
     end
   end
 end

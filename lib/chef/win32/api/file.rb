@@ -369,7 +369,7 @@ HANDLE WINAPI CreateFile(
   __in_opt  HANDLE hTemplateFile
 );
 =end
-        safe_attach_function :CreateFileW, [:LPCTSTR, :DWORD, :DWORD, :LPSECURITY_ATTRIBUTES, :DWORD, :DWORD, :pointer], :HANDLE
+        safe_attach_function :CreateFileW, %i{LPCTSTR DWORD DWORD LPSECURITY_ATTRIBUTES DWORD DWORD pointer}, :HANDLE
 
 =begin
 BOOL WINAPI FindClose(
@@ -393,7 +393,7 @@ DWORD WINAPI GetFinalPathNameByHandle(
   __in   DWORD dwFlags
 );
 =end
-        safe_attach_function :GetFinalPathNameByHandleW, [:HANDLE, :LPTSTR, :DWORD, :DWORD], :DWORD
+        safe_attach_function :GetFinalPathNameByHandleW, %i{HANDLE LPTSTR DWORD DWORD}, :DWORD
 
 =begin
 BOOL WINAPI GetFileInformationByHandle(
@@ -401,7 +401,7 @@ BOOL WINAPI GetFileInformationByHandle(
   __out  LPBY_HANDLE_FILE_INFORMATION lpFileInformation
 );
 =end
-        safe_attach_function :GetFileInformationByHandle, [:HANDLE, :LPBY_HANDLE_FILE_INFORMATION], :BOOL
+        safe_attach_function :GetFileInformationByHandle, %i{HANDLE LPBY_HANDLE_FILE_INFORMATION}, :BOOL
 
 =begin
 HANDLE WINAPI FindFirstFile(
@@ -409,7 +409,7 @@ HANDLE WINAPI FindFirstFile(
   __out  LPWIN32_FIND_DATA lpFindFileData
 );
 =end
-        safe_attach_function :FindFirstFileW, [:LPCTSTR, :LPWIN32_FIND_DATA], :HANDLE
+        safe_attach_function :FindFirstFileW, %i{LPCTSTR LPWIN32_FIND_DATA}, :HANDLE
 
 =begin
 BOOL WINAPI CreateHardLink(
@@ -418,7 +418,7 @@ BOOL WINAPI CreateHardLink(
   __reserved  LPSECURITY_ATTRIBUTES lpSecurityAttributes
 );
 =end
-        safe_attach_function :CreateHardLinkW, [:LPCTSTR, :LPCTSTR, :LPSECURITY_ATTRIBUTES], :BOOLEAN
+        safe_attach_function :CreateHardLinkW, %i{LPCTSTR LPCTSTR LPSECURITY_ATTRIBUTES}, :BOOLEAN
 
 =begin
 BOOLEAN WINAPI CreateSymbolicLink(
@@ -427,7 +427,7 @@ BOOLEAN WINAPI CreateSymbolicLink(
   __in  DWORD dwFlags
 );
 =end
-        safe_attach_function :CreateSymbolicLinkW, [:LPTSTR, :LPTSTR, :DWORD], :BOOLEAN
+        safe_attach_function :CreateSymbolicLinkW, %i{LPTSTR LPTSTR DWORD}, :BOOLEAN
 
 =begin
 DWORD WINAPI GetLongPathName(
@@ -436,7 +436,7 @@ DWORD WINAPI GetLongPathName(
   __in   DWORD cchBuffer
 );
 =end
-        safe_attach_function :GetLongPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
+        safe_attach_function :GetLongPathNameW, %i{LPCTSTR LPTSTR DWORD}, :DWORD
 
 =begin
 DWORD WINAPI GetShortPathName(
@@ -445,7 +445,7 @@ DWORD WINAPI GetShortPathName(
   __in   DWORD cchBuffer
 );
 =end
-        safe_attach_function :GetShortPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
+        safe_attach_function :GetShortPathNameW, %i{LPCTSTR LPTSTR DWORD}, :DWORD
 
 =begin
 BOOL WINAPI DeviceIoControl(
@@ -459,7 +459,7 @@ BOOL WINAPI DeviceIoControl(
   __inout_opt  LPOVERLAPPED lpOverlapped
 );
 =end
-        safe_attach_function :DeviceIoControl, [:HANDLE, :DWORD, :LPVOID, :DWORD, :LPVOID, :DWORD, :LPDWORD, :pointer], :BOOL
+        safe_attach_function :DeviceIoControl, %i{HANDLE DWORD LPVOID DWORD LPVOID DWORD LPDWORD pointer}, :BOOL
 
 # BOOL WINAPI DeleteVolumeMountPoint(
   # _In_ LPCTSTR lpszVolumeMountPoint
@@ -470,14 +470,14 @@ BOOL WINAPI DeviceIoControl(
   # _In_ LPCTSTR lpszVolumeMountPoint,
   # _In_ LPCTSTR lpszVolumeName
 # );
-        safe_attach_function :SetVolumeMountPointW, [:LPCTSTR, :LPCTSTR], :BOOL
+        safe_attach_function :SetVolumeMountPointW, %i{LPCTSTR LPCTSTR}, :BOOL
 
 # BOOL WINAPI GetVolumeNameForVolumeMountPoint(
   # _In_  LPCTSTR lpszVolumeMountPoint,
   # _Out_ LPTSTR  lpszVolumeName,
   # _In_  DWORD   cchBufferLength
 # );
-        safe_attach_function :GetVolumeNameForVolumeMountPointW, [:LPCTSTR, :LPTSTR, :DWORD], :BOOL
+        safe_attach_function :GetVolumeNameForVolumeMountPointW, %i{LPCTSTR LPTSTR DWORD}, :BOOL
 
 =begin
 BOOL WINAPI GetFileVersionInfo(
@@ -487,7 +487,7 @@ BOOL WINAPI GetFileVersionInfo(
   _Out_      LPVOID  lpData
 );
 =end
-        safe_attach_function :GetFileVersionInfoW, [:LPCTSTR, :DWORD, :DWORD, :LPVOID], :BOOL
+        safe_attach_function :GetFileVersionInfoW, %i{LPCTSTR DWORD DWORD LPVOID}, :BOOL
 
 =begin
 DWORD WINAPI GetFileVersionInfoSize(
@@ -495,7 +495,7 @@ DWORD WINAPI GetFileVersionInfoSize(
   _Out_opt_ LPDWORD lpdwHandle
 );
 =end
-        safe_attach_function :GetFileVersionInfoSizeW, [:LPCTSTR, :LPDWORD], :DWORD
+        safe_attach_function :GetFileVersionInfoSizeW, %i{LPCTSTR LPDWORD}, :DWORD
 
 =begin
 BOOL WINAPI VerQueryValue(
@@ -505,7 +505,7 @@ BOOL WINAPI VerQueryValue(
   _Out_ PUINT   puLen
 );
 =end
-        safe_attach_function :VerQueryValueW, [:LPCVOID, :LPCTSTR, :LPVOID, :PUINT], :BOOL
+        safe_attach_function :VerQueryValueW, %i{LPCVOID LPCTSTR LPVOID PUINT}, :BOOL
 
         ###############################################
         # Helpers

@@ -91,7 +91,7 @@ describe Chef::Resource::Locale do
       end
       context "without lang" do
         it "returns an empty array" do
-          resource.lang()
+          resource.lang
           resource.lc_env({ "LC_TIME" => "en_AG.utf8", "LC_MESSAGES" => "en_AG.utf8" })
           expect(provider.unavailable_locales).to eq([])
         end
@@ -99,14 +99,14 @@ describe Chef::Resource::Locale do
       context "without lc_env" do
         it "returns an empty array" do
           resource.lang("en_US")
-          resource.lc_env()
+          resource.lc_env
           expect(provider.unavailable_locales).to eq([])
         end
       end
       context "without both" do
         it "returns an empty array" do
-          resource.lang()
-          resource.lc_env()
+          resource.lang
+          resource.lc_env
           expect(provider.unavailable_locales).to eq([])
         end
       end
@@ -122,7 +122,7 @@ describe Chef::Resource::Locale do
       end
       context "without lang" do
         it "returns list" do
-          resource.lang()
+          resource.lang
           resource.lc_env({ "LC_TIME" => "en_AG.utf8", "LC_MESSAGES" => "en_US.utf8" })
           expect(provider.unavailable_locales).to eq(["en_US.utf8"])
         end
@@ -130,14 +130,14 @@ describe Chef::Resource::Locale do
       context "without lc_env" do
         it "returns list" do
           resource.lang("de_DE")
-          resource.lc_env()
+          resource.lc_env
           expect(provider.unavailable_locales).to eq(["de_DE"])
         end
       end
       context "without both" do
         it "returns an empty array" do
-          resource.lang()
-          resource.lc_env()
+          resource.lang
+          resource.lc_env
           expect(provider.unavailable_locales).to eq([])
         end
       end
@@ -166,7 +166,7 @@ describe Chef::Resource::Locale do
     end
     context "without lang" do
       it "returns a valid string" do
-        resource.lang()
+        resource.lang
         resource.lc_env({ "LC_TIME" => "en_AG.utf8", "LC_MESSAGES" => "en_AG.utf8" })
         expect(provider.new_content).to eq("LC_MESSAGES=en_AG.utf8\nLC_TIME=en_AG.utf8\n")
       end
@@ -174,14 +174,14 @@ describe Chef::Resource::Locale do
     context "without lc_env" do
       it "returns a valid string" do
         resource.lang("en_US")
-        resource.lc_env()
+        resource.lc_env
         expect(provider.new_content).to eq("LANG=en_US\n")
       end
     end
     context "without both" do
       it "returns string with only new-line character" do
-        resource.lang()
-        resource.lc_env()
+        resource.lang
+        resource.lc_env
         expect(provider.new_content).to eq("\n")
       end
     end

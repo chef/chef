@@ -30,7 +30,7 @@ end
 
 describe Chef::Mixin::ParamsValidate do
   before(:each) do
-    @vo = TinyClass.new()
+    @vo = TinyClass.new
   end
 
   it "should allow a hash and a hash as arguments to validate" do
@@ -44,7 +44,7 @@ describe Chef::Mixin::ParamsValidate do
   it "should require validation map keys to be symbols or strings" do
     expect { @vo.validate({ one: "two" }, { one: true }) }.not_to raise_error
     expect { @vo.validate({ one: "two" }, { "one" => true }) }.not_to raise_error
-    expect { @vo.validate({ one: "two" }, { Hash.new => true }) }.to raise_error(ArgumentError)
+    expect { @vo.validate({ one: "two" }, { {} => true }) }.to raise_error(ArgumentError)
   end
 
   it "should allow options to be required with true" do
@@ -163,7 +163,7 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should let you set a default value with default => value" do
-    arguments = Hash.new
+    arguments = {}
     @vo.validate(arguments, {
       one: {
         default: "is the loneliest number",
@@ -236,7 +236,7 @@ describe Chef::Mixin::ParamsValidate do
         {
           one: {
             kind_of: String,
-            respond_to: [ :to_s, :upcase ],
+            respond_to: %i{to_s upcase},
             regex: /^is good/,
             callbacks: {
               "should be your friend" => lambda do |a|
@@ -260,7 +260,7 @@ describe Chef::Mixin::ParamsValidate do
         {
           one: {
             kind_of: String,
-            respond_to: [ :to_s, :upcase ],
+            respond_to: %i{to_s upcase},
             regex: /^is good/,
             callbacks: {
               "should be your friend" => lambda do |a|
@@ -321,7 +321,7 @@ describe Chef::Mixin::ParamsValidate do
     end.not_to raise_error
     expect do
       @vo.validate(
-        { one: Hash.new },
+        { one: {} },
         {
           one: {
             kind_of: [ String, Array ],
@@ -334,22 +334,22 @@ describe Chef::Mixin::ParamsValidate do
   it "asserts that a value returns false from a predicate method" do
     expect do
       @vo.validate({ not_blank: "should pass" },
-        { not_blank: { cannot_be: [ :nil, :empty ] } })
+        { not_blank: { cannot_be: %i{nil empty} } })
     end.not_to raise_error
     expect do
       @vo.validate({ not_blank: "" },
-        { not_blank: { cannot_be: [ :nil, :empty ] } })
+        { not_blank: { cannot_be: %i{nil empty} } })
     end.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "allows a custom validation message" do
     expect do
       @vo.validate({ not_blank: "should pass" },
-        { not_blank: { cannot_be: [ :nil, :empty ], validation_message: "my validation message" } })
+        { not_blank: { cannot_be: %i{nil empty}, validation_message: "my validation message" } })
     end.not_to raise_error
     expect do
       @vo.validate({ not_blank: "" },
-        { not_blank: { cannot_be: [ :nil, :empty ], validation_message: "my validation message" } })
+        { not_blank: { cannot_be: %i{nil empty}, validation_message: "my validation message" } })
     end.to raise_error(Chef::Exceptions::ValidationFailed, "my validation message")
   end
 

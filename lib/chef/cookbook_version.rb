@@ -42,7 +42,7 @@ class Chef
     def_delegator :@cookbook_manifest, :files_for
     def_delegator :@cookbook_manifest, :each_file
 
-    COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ].freeze
+    COOKBOOK_SEGMENTS = %i{resources providers recipes definitions libraries attributes files templates root_files}.freeze
 
     attr_reader :all_files
 
@@ -96,7 +96,7 @@ class Chef
       @root_paths = root_paths
       @frozen = false
 
-      @all_files = Array.new
+      @all_files = []
 
       @file_vendor = nil
       @cookbook_manifest = Chef::CookbookManifest.new(self)
@@ -279,8 +279,8 @@ class Chef
 
     def relative_filenames_in_preferred_directory(node, segment, dirname)
       preferences = preferences_for_path(node, segment, dirname)
-      filenames_by_pref = Hash.new
-      preferences.each { |pref| filenames_by_pref[pref] = Array.new }
+      filenames_by_pref = {}
+      preferences.each { |pref| filenames_by_pref[pref] = [] }
 
       files_for(segment).each do |manifest_record|
         manifest_record_path = manifest_record[:path]
@@ -296,9 +296,9 @@ class Chef
         # we're just going to make cookbook_files out of these and make the
         # cookbook find them by filespecificity again. but it's the shortest
         # path to "success" for now.
-        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]*\/?#{Regexp.escape(dirname)})\/.+$/
+        if manifest_record_path =~ %r{(#{Regexp.escape(segment.to_s)}/[^/]*/?#{Regexp.escape(dirname)})/.+$}
           specificity_dirname = $1
-          non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]*\/?#{Regexp.escape(dirname)}\/(.+)$/, 1]
+          non_specific_path = manifest_record_path[%r{#{Regexp.escape(segment.to_s)}/[^/]*/?#{Regexp.escape(dirname)}/(.+)$}, 1]
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
           if filenames_by_pref[specificity_dirname]
@@ -319,14 +319,14 @@ class Chef
     # description of entries of the returned Array.
     def preferred_manifest_records_for_directory(node, segment, dirname)
       preferences = preferences_for_path(node, segment, dirname)
-      records_by_pref = Hash.new
-      preferences.each { |pref| records_by_pref[pref] = Array.new }
+      records_by_pref = {}
+      preferences.each { |pref| records_by_pref[pref] = [] }
 
       files_for(segment).each do |manifest_record|
         manifest_record_path = manifest_record[:path]
 
         # extract the preference part from the path.
-        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
+        if manifest_record_path =~ %r{(#{Regexp.escape(segment.to_s)}/[^/]+/#{Regexp.escape(dirname)})/.+$}
             # Note the specificy_dirname includes the segment and
             # dirname argument as above, which is what
             # preferences_for_path returns. It could be
@@ -502,6 +502,7 @@ class Chef
 
     def <=>(other)
       raise Chef::Exceptions::CookbookVersionNameMismatch if name != other.name
+
       # FIXME: can we change the interface to the Metadata class such
       # that metadata.version returns a Chef::Version instance instead
       # of a string?

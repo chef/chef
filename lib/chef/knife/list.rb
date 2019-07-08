@@ -77,7 +77,7 @@ class Chef
 
         # Process directories
         if !config[:bare_directories]
-          dir_results = parallelize(all_results.select { |result| result.dir? }) do |result|
+          dir_results = parallelize(all_results.select(&:dir?)) do |result|
             add_dir_result(result)
           end.flatten(1)
 
@@ -97,7 +97,7 @@ class Chef
         end
 
         # Sort by path for happy output
-        results = results.sort_by { |result| result.path }
+        results = results.sort_by(&:path)
         dir_results = dir_results.sort_by { |result| result[0].path }
 
         # Print!
@@ -123,7 +123,7 @@ class Chef
 
       def add_dir_result(result)
         begin
-          children = result.children.sort_by { |child| child.name }
+          children = result.children.sort_by(&:name)
         rescue Chef::ChefFS::FileSystem::NotFoundError => e
           ui.error "#{format_path(e.entry)}: No such file or directory"
           return []
@@ -131,7 +131,7 @@ class Chef
 
         result = [ [ result, children ] ]
         if config[:recursive]
-          child_dirs = children.select { |child| child.dir? }
+          child_dirs = children.select(&:dir?)
           result += parallelize(child_dirs) { |child| add_dir_result(child) }.flatten(1).to_a
         end
         result
@@ -144,7 +144,7 @@ class Chef
       def print_results(results, indent)
         return if results.length == 0
 
-        print_space = results.map { |result| result.length }.max + 2
+        print_space = results.map(&:length).max + 2
         if config[:one_column] || !stdout.isatty
           columns = 0
         else

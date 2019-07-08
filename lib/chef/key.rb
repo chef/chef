@@ -87,6 +87,7 @@ class Chef
 
     def public_key(arg = nil)
       raise Chef::Exceptions::InvalidKeyAttribute, "you cannot set the public_key if create_key is true" if !arg.nil? && @create_key
+
       set_or_return(:public_key, arg,
         kind_of: String)
     end
@@ -106,6 +107,7 @@ class Chef
 
     def create_key(arg = nil)
       raise Chef::Exceptions::InvalidKeyAttribute, "you cannot set create_key to true if the public_key field exists" if arg == true && !@public_key.nil?
+
       set_or_return(:create_key, arg,
         kind_of: [TrueClass, FalseClass])
     end

@@ -67,6 +67,7 @@ class Chef
       def coerce_booleans(val)
         return 1 if [true, "TRUE", "1", "true", "YES", "yes"].include?(val)
         return 0 if [false, "FALSE", "0", "false", "NO", "no"].include?(val)
+
         val
       end
 

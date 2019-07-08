@@ -1,7 +1,7 @@
 #
 # Author:: Chirag Jog (<chirag@clogeny.com>)
 # Author:: Siddheshwar More (<siddheshwar.more@clogeny.com>)
-# Copyright:: Copyright 2013-2018, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,7 +96,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def create_user(username, uid = nil)
-    if ! windows_domain_user?(username)
+    unless windows_domain_user?(username)
       user_to_create = user(username)
       user_to_create.uid(uid) if uid
       user_to_create.run_action(:create)
@@ -105,7 +105,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def remove_user(username)
-    if ! windows_domain_user?(username)
+    unless windows_domain_user?(username)
       u = user(username)
       u.manage_home false # jekins hosts throw mail spool file not owned by user if we use manage_home true
       u.run_action(:remove)
@@ -152,7 +152,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
         let(:excluded_members) { [] }
 
         it "should raise an error" do
-          expect { group_resource.run_action(tested_action) }.to raise_error()
+          expect { group_resource.run_action(tested_action) }.to raise_error
         end
       end
 
@@ -162,7 +162,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
         end
 
         it "should raise an error" do
-          expect { group_resource.run_action(tested_action) }.to raise_error()
+          expect { group_resource.run_action(tested_action) }.to raise_error
         end
       end
     end
@@ -333,10 +333,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
     describe "when group name is length 256", :windows_only do
       let!(:group_name) do
-        "theoldmanwalkingdownthestreetalwayshadagood\
-smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
-theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
-downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" end
+        "theoldmanwalkingdownthestreetalwayshadagood"\
+          "smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface"\
+          "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking"\
+          "downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
+      end
 
       it "should create a group" do
         group_resource.run_action(:create)
@@ -359,10 +360,11 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" end
   # for group name > 256, Windows 2016 returns "The parameter is incorrect"
   context "group create action: when group name length is more than 256", :windows_only do
     let!(:group_name) do
-      "theoldmanwalkingdownthestreetalwayshadagood\
-smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
-theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
-downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" end
+      "theoldmanwalkingdownthestreetalwayshadagood"\
+        "smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface"\
+        "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking"\
+        "downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ"
+    end
 
     it "should not create a group" do
       expect { group_resource.run_action(:create) }.to raise_error(ArgumentError)

@@ -60,7 +60,7 @@ class Chef
 
       property :variables, Hash,
         description: "The variables property of the template resource can be used to reference a partial template file by using a Hash.",
-        default: lazy { Hash.new }
+        default: lazy { {} }
 
       property :cookbook, String,
         description: "The cookbook in which a file is located (if it is not located in the current cookbook). The default value is the current cookbook.",
@@ -109,7 +109,7 @@ class Chef
             "`helper(:method)` requires a block argument (e.g., `helper(:method) { code }`)"
         end
 
-        unless method_name.kind_of?(Symbol)
+        unless method_name.is_a?(Symbol)
           raise Exceptions::ValidationFailed,
             "method_name argument to `helper(method_name)` must be a symbol (e.g., `helper(:method) { code }`)"
         end
@@ -163,7 +163,7 @@ class Chef
             "Passing both a module and block to #helpers is not supported. Call #helpers multiple times instead"
         elsif block_given?
           @inline_helper_modules << block
-        elsif module_name.kind_of?(::Module)
+        elsif module_name.is_a?(::Module)
           @helper_modules << module_name
         elsif module_name.nil?
           raise Exceptions::ValidationFailed,

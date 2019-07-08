@@ -24,7 +24,7 @@ describe Chef::Resource::WindowsUac do
     expect(resource.resource_name).to eql(:windows_uac)
   end
 
-  [:no_prompt, :secure_prompt_for_creds, :secure_prompt_for_consent, :prompt_for_creds, :prompt_for_consent, :prompt_for_consent_non_windows_binaries].each do |val|
+  %i{no_prompt secure_prompt_for_creds secure_prompt_for_consent prompt_for_creds prompt_for_consent prompt_for_consent_non_windows_binaries}.each do |val|
     it "the consent_behavior_admins property accepts :#{val}" do
       expect { resource.consent_behavior_admins val }.not_to raise_error(ArgumentError)
     end
@@ -34,7 +34,7 @@ describe Chef::Resource::WindowsUac do
     expect { resource.consent_behavior_admins :bogus }.to raise_error(ArgumentError)
   end
 
-  [:auto_deny, :secure_prompt_for_creds, :prompt_for_creds].each do |val|
+  %i{auto_deny secure_prompt_for_creds prompt_for_creds}.each do |val|
     it "the consent_behavior_users property accepts :#{val}" do
       expect { resource.consent_behavior_users val }.not_to raise_error(ArgumentError)
     end

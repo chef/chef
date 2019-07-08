@@ -125,7 +125,7 @@ describe Chef::Provider::Route do
       @resource_add.action(:add)
       @provider.run_action(:add)
       expect(route_file.string.split("\n").size).to eq(1)
-      expect(route_file.string).to match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+      expect(route_file.string).to match(%r{^192\.168\.1\.0/24 via 192\.168\.0\.1$})
     end
   end
 
@@ -150,12 +150,12 @@ describe Chef::Provider::Route do
   describe Chef::Provider::Route, "generate_command for action_add" do
     it "should include a netmask when a one is specified" do
       @new_resource.netmask("255.255.0.0")
-      expect(@provider.generate_command(:add).join(" ")).to match(/\/\d{1,2}/)
+      expect(@provider.generate_command(:add).join(" ")).to match(%r{/\d{1,2}})
     end
 
     it "should not include a netmask when a one is specified" do
       @new_resource.netmask(nil)
-      expect(@provider.generate_command(:add).join(" ")).not_to match(/\/\d{1,2}/)
+      expect(@provider.generate_command(:add).join(" ")).not_to match(%r{/\d{1,2}})
     end
 
     it "should include ' via $gateway ' when a gateway is specified" do
@@ -176,12 +176,12 @@ describe Chef::Provider::Route do
   describe Chef::Provider::Route, "generate_command for action_delete" do
     it "should include a netmask when a one is specified" do
       @new_resource.netmask("255.255.0.0")
-      expect(@provider.generate_command(:delete).join(" ")).to match(/\/\d{1,2}/)
+      expect(@provider.generate_command(:delete).join(" ")).to match(%r{/\d{1,2}})
     end
 
     it "should not include a netmask when a one is specified" do
       @new_resource.netmask(nil)
-      expect(@provider.generate_command(:delete).join(" ")).not_to match(/\/\d{1,2}/)
+      expect(@provider.generate_command(:delete).join(" ")).not_to match(%r{/\d{1,2}})
     end
 
     it "should include ' via $gateway ' when a gateway is specified" do
@@ -197,11 +197,11 @@ describe Chef::Provider::Route do
   describe Chef::Provider::Route, "config_file_contents for action_add" do
     it "should include a netmask when a one is specified" do
       @new_resource.netmask("255.255.0.0")
-      expect(@provider.config_file_contents(:add, target: @new_resource.target, netmask: @new_resource.netmask)).to match(/\/\d{1,2}.*\n$/)
+      expect(@provider.config_file_contents(:add, target: @new_resource.target, netmask: @new_resource.netmask)).to match(%r{/\d{1,2}.*\n$})
     end
 
     it "should not include a netmask when a one is specified" do
-      expect(@provider.config_file_contents(:add, target: @new_resource.target)).not_to match(/\/\d{1,2}.*\n$/)
+      expect(@provider.config_file_contents(:add, target: @new_resource.target)).not_to match(%r{/\d{1,2}.*\n$})
     end
 
     it "should include ' via $gateway ' when a gateway is specified" do
@@ -261,10 +261,10 @@ describe Chef::Provider::Route do
       @provider.action = :add
       @provider.generate_config
       expect(route_file.string.split("\n").size).to eq(4)
-      expect(route_file.string).to match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
-      expect(route_file.string).to match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
-      expect(route_file.string).to match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
-      expect(route_file.string).to match(/^192\.168\.4\.0\/24 via 192\.168\.0\.1$/)
+      expect(route_file.string).to match(%r{^192\.168\.1\.0/24 via 192\.168\.0\.1$})
+      expect(route_file.string).to match(%r{^192\.168\.2\.0/24 via 192\.168\.0\.1$})
+      expect(route_file.string).to match(%r{^192\.168\.3\.0/24 via 192\.168\.0\.1$})
+      expect(route_file.string).to match(%r{^192\.168\.4\.0/24 via 192\.168\.0\.1$})
     end
   end
 end

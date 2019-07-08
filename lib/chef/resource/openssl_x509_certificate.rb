@@ -70,7 +70,7 @@ class Chef
 
       property :extensions, Hash,
         description: "Hash of X509 Extensions entries, in format { 'keyUsage' => { 'values' => %w( keyEncipherment digitalSignature), 'critical' => true } }.",
-        default: lazy { Hash.new }
+        default: lazy { {} }
 
       property :subject_alt_name, Array,
         description: "Array of Subject Alternative Name entries, in format DNS:example.com or IP:1.2.3.4.",
@@ -168,7 +168,7 @@ class Chef
         end
 
         def subject
-          subject = OpenSSL::X509::Name.new()
+          subject = OpenSSL::X509::Name.new
           subject.add_entry("C", new_resource.country) unless new_resource.country.nil?
           subject.add_entry("ST", new_resource.state) unless new_resource.state.nil?
           subject.add_entry("L", new_resource.city) unless new_resource.city.nil?

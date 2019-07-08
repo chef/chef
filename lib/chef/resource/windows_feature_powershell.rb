@@ -68,10 +68,10 @@ class Chef
         fail_if_unavailable # fail if the features don't exist
         fail_if_removed # fail if the features are in removed state
 
-        Chef::Log.debug("Windows features needing installation: #{features_to_install.empty? ? 'none' : features_to_install.join(',')}")
+        Chef::Log.debug("Windows features needing installation: #{features_to_install.empty? ? "none" : features_to_install.join(",")}")
         unless features_to_install.empty?
-          converge_by("install Windows feature#{'s' if features_to_install.count > 1} #{features_to_install.join(',')}") do
-            install_command = "#{install_feature_cmdlet} #{features_to_install.join(',')}"
+          converge_by("install Windows feature#{"s" if features_to_install.count > 1} #{features_to_install.join(",")}") do
+            install_command = "#{install_feature_cmdlet} #{features_to_install.join(",")}"
             install_command << " -IncludeAllSubFeature"  if new_resource.all
             if older_than_win_2012_or_8? && (new_resource.source || new_resource.management_tools)
               Chef::Log.warn("The 'source' and 'management_tools' properties are only available on Windows 8/2012 or greater. Skipping these properties!")
@@ -93,11 +93,11 @@ class Chef
 
         reload_cached_powershell_data unless node["powershell_features_cache"]
 
-        Chef::Log.debug("Windows features needing removal: #{features_to_remove.empty? ? 'none' : features_to_remove.join(',')}")
+        Chef::Log.debug("Windows features needing removal: #{features_to_remove.empty? ? "none" : features_to_remove.join(",")}")
 
         unless features_to_remove.empty?
-          converge_by("remove Windows feature#{'s' if features_to_remove.count > 1} #{features_to_remove.join(',')}") do
-            cmd = powershell_out!("#{remove_feature_cmdlet} #{features_to_remove.join(',')}", timeout: new_resource.timeout)
+          converge_by("remove Windows feature#{"s" if features_to_remove.count > 1} #{features_to_remove.join(",")}") do
+            cmd = powershell_out!("#{remove_feature_cmdlet} #{features_to_remove.join(",")}", timeout: new_resource.timeout)
             Chef::Log.info(cmd.stdout)
 
             reload_cached_powershell_data # Reload cached powershell feature state
@@ -113,11 +113,11 @@ class Chef
 
         fail_if_unavailable # fail if the features don't exist
 
-        Chef::Log.debug("Windows features needing deletion: #{features_to_delete.empty? ? 'none' : features_to_delete.join(',')}")
+        Chef::Log.debug("Windows features needing deletion: #{features_to_delete.empty? ? "none" : features_to_delete.join(",")}")
 
         unless features_to_delete.empty?
-          converge_by("delete Windows feature#{'s' if features_to_delete.count > 1} #{features_to_delete.join(',')} from the image") do
-            cmd = powershell_out!("Uninstall-WindowsFeature #{features_to_delete.join(',')} -Remove", timeout: new_resource.timeout)
+          converge_by("delete Windows feature#{"s" if features_to_delete.count > 1} #{features_to_delete.join(",")} from the image") do
+            cmd = powershell_out!("Uninstall-WindowsFeature #{features_to_delete.join(",")} -Remove", timeout: new_resource.timeout)
             Chef::Log.info(cmd.stdout)
 
             reload_cached_powershell_data # Reload cached powershell feature state
@@ -132,6 +132,7 @@ class Chef
         def powershell_version
           cmd = powershell_out("$PSVersionTable.psversion.major")
           return 1 if cmd.stdout.empty? # PowerShell 1.0 doesn't have a $PSVersionTable
+
           Regexp.last_match(1).to_i if cmd.stdout =~ /^(\d+)/
         rescue Errno::ENOENT
           0 # zero as in nothing is installed
@@ -195,7 +196,7 @@ class Chef
 
           # the difference of desired features to install to all features is what's not available
           unavailable = (new_resource.feature_name - all_available)
-          raise "The Windows feature#{'s' if unavailable.count > 1} #{unavailable.join(',')} #{unavailable.count > 1 ? 'are' : 'is'} not available on this version of Windows. Run 'Get-WindowsFeature' to see the list of available feature names." unless unavailable.empty?
+          raise "The Windows feature#{"s" if unavailable.count > 1} #{unavailable.join(",")} #{unavailable.count > 1 ? "are" : "is"} not available on this version of Windows. Run 'Get-WindowsFeature' to see the list of available feature names." unless unavailable.empty?
         end
 
         # run Get-WindowsFeature to get a list of all available features and their state
@@ -218,7 +219,7 @@ class Chef
               add_to_feature_mash("disabled", feature_details_raw["Name"])
             end
           end
-          Chef::Log.debug("The powershell cache contains\n#{node['powershell_features_cache']}")
+          Chef::Log.debug("The powershell cache contains\n#{node["powershell_features_cache"]}")
         end
 
         # fetch the list of available feature names and state in JSON and parse the JSON
@@ -245,11 +246,12 @@ class Chef
         # @return [void]
         def fail_if_removed
           return if new_resource.source # if someone provides a source then all is well
+
           if node["platform_version"].to_f > 6.2 # 2012R2 or later
             return if registry_key_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing') && registry_value_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing', name: "LocalSourcePath") # if source is defined in the registry, still fine
           end
           removed = new_resource.feature_name & node["powershell_features_cache"]["removed"]
-          raise "The Windows feature#{'s' if removed.count > 1} #{removed.join(',')} #{removed.count > 1 ? 'are' : 'is'} removed from the host and cannot be installed." unless removed.empty?
+          raise "The Windows feature#{"s" if removed.count > 1} #{removed.join(",")} #{removed.count > 1 ? "are" : "is"} removed from the host and cannot be installed." unless removed.empty?
         end
 
         # Fail unless we're on windows 8+ / 2012+ where deleting a feature is supported

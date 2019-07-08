@@ -195,6 +195,7 @@ class Chef
           unless valid_values.include?(v)
             raise "Invalid value '#{v}' for --node-ssl-verify-mode. Valid values are: #{valid_values.join(", ")}"
           end
+
           v
         }
 
@@ -282,9 +283,9 @@ class Chef
         long: "--hint HINT_NAME[=HINT_FILE]",
         description: "Specify an Ohai hint to be set on the bootstrap target. Use multiple --hint options to specify multiple hints.",
         proc: Proc.new { |h|
-          Chef::Config[:knife][:hints] ||= Hash.new
+          Chef::Config[:knife][:hints] ||= {}
           name, path = h.split("=")
-          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : Hash.new
+          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : {}
         }
 
       # bootstrap override: url of a an installer shell script touse in place of omnitruck
@@ -647,6 +648,7 @@ class Chef
               q.echo = false
             end
           end
+
           opts.merge! force_ssh_password_opts(password)
           do_connect(opts)
         else
@@ -654,14 +656,14 @@ class Chef
         end
       end
 
-      def handle_ssh_error(e)
-      end
+      def handle_ssh_error(e); end
 
       # url values override CLI flags, if you provide both
       # we'll use the one that you gave in the URL.
       def connection_protocol
         return @connection_protocol if @connection_protocol
-        from_url = host_descriptor =~ /^(.*):\/\// ? $1 : nil
+
+        from_url = host_descriptor =~ %r{^(.*)://} ? $1 : nil
         from_cli = config[:connection_protocol]
         from_knife = Chef::Config[:knife][:connection_protocol]
         @connection_protocol = from_url || from_cli || from_knife || "ssh"
@@ -678,6 +680,7 @@ class Chef
         if @config[:first_boot_attributes] && @config[:first_boot_attributes_from_file]
           raise Chef::Exceptions::BootstrapCommandInputError
         end
+
         true
       end
 
@@ -783,16 +786,14 @@ class Chef
       # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to create connection objects
       #
       # @return [TrueClass] If instance successfully created, or exits
-      def plugin_setup!
-      end
+      def plugin_setup!; end
 
       # Perform any teardown or cleanup necessary by the plugin
       #
       # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to display a message or perform any cleanup
       #
       # @return [void]
-      def plugin_finalize
-      end
+      def plugin_finalize; end
 
       # If session_timeout is too short, it is likely
       # a holdover from "--winrm-session-timeout" which used
@@ -842,6 +843,7 @@ class Chef
       # host via train
       def connection_opts(reset: false)
         return @connection_opts unless @connection_opts.nil? || reset == true
+
         @connection_opts = {}
         @connection_opts.merge! base_opts
         @connection_opts.merge! host_verify_opts
@@ -892,6 +894,7 @@ class Chef
       def ssh_opts
         opts = {}
         return opts if winrm?
+
         opts[:pty] = true # ensure we can talk to systems with requiretty set true in sshd config
         opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
         opts[:forward_agent] = (config_value(:ssh_forward_agent) === true)
@@ -902,6 +905,7 @@ class Chef
       def ssh_identity_opts
         opts = {}
         return opts if winrm?
+
         identity_file = config_value(:ssh_identity_file)
         if identity_file
           opts[:key_files] = [identity_file]
@@ -962,6 +966,7 @@ class Chef
       #              should we change that for consistency?
       def sudo_opts
         return {} if winrm?
+
         opts = { sudo: false }
         if config[:use_sudo]
           opts[:sudo] = true
@@ -977,6 +982,7 @@ class Chef
 
       def winrm_opts
         return {} unless winrm?
+
         auth_method = config_value(:winrm_auth_method, :winrm_auth_method, "negotiate")
         opts = {
           winrm_transport: auth_method, # winrm gem and train calls auth method 'transport'
@@ -1006,7 +1012,7 @@ class Chef
           non_interactive: false,
           keys_only: false,
           key_files: [],
-          auth_methods: [:password, :keyboard_interactive],
+          auth_methods: %i{password keyboard_interactive},
         }
       end
 
@@ -1085,6 +1091,7 @@ class Chef
       def session_timeout
         timeout = config_value(:session_timeout)
         return options[:session_timeout][:default] if timeout.nil?
+
         timeout.to_i
       end
     end

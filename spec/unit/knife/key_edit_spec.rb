@@ -86,7 +86,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
 0wIDAQAB
 -----END PUBLIC KEY-----"
   end
-  let(:config) { Hash.new }
+  let(:config) { {} }
   let(:actor) { "charmander" }
   let(:keyname) { "charmander-key" }
   let(:ui) { instance_double("Chef::Knife::UI") }

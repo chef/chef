@@ -111,6 +111,7 @@ module IntegrationSupport
   RSpec.shared_context "with a chef repo" do
     before :each do
       raise "Can only create one directory per test" if @repository_dir
+
       @repository_dir = Dir.mktmpdir("chef_repo")
       Chef::Config.chef_repo_path = @repository_dir
       %w{client cookbook data_bag environment node role user}.each do |object_name|

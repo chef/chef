@@ -417,7 +417,7 @@ shared_examples_for Chef::Provider::File do
     context "when the enclosing directory does not exist" do
       before { setup_missing_enclosing_directory }
 
-      [:create, :create_if_missing, :touch].each do |action|
+      %i{create create_if_missing touch}.each do |action|
         context "action #{action}" do
           it "raises EnclosingDirectoryDoesNotExist" do
             expect { provider.run_action(action) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)

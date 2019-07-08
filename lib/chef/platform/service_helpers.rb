@@ -72,7 +72,7 @@ class Chef
           configs = []
 
           if file_exist?(Chef.path_to("/etc/init.d/#{service_name}"))
-            configs += [ :initd, :systemd ]
+            configs += %i{initd systemd}
           end
 
           if file_exist?(Chef.path_to("/etc/init/#{service_name}.conf"))
@@ -108,7 +108,7 @@ class Chef
         def has_systemd_service_unit?(svc_name)
           %w{ /etc /usr/lib /lib /run }.any? do |load_path|
             file_exist?(
-              Chef.path_to("#{load_path}/systemd/system/#{svc_name.gsub(/@.*$/, '@')}.service")
+              Chef.path_to("#{load_path}/systemd/system/#{svc_name.gsub(/@.*$/, "@")}.service")
             )
           end
         end

@@ -88,7 +88,7 @@ class Chef
 
       property :ftp_active_mode, [ TrueClass, FalseClass ], default: false
 
-      property :headers, Hash, default: lazy { Hash.new }
+      property :headers, Hash, default: lazy { {} }
 
       property :show_progress, [ TrueClass, FalseClass ], default: false
 
@@ -98,7 +98,7 @@ class Chef
 
       property :remote_password, String, sensitive: true
 
-      property :authentication, equal_to: [:remote, :local], default: :remote
+      property :authentication, equal_to: %i{remote local}, default: :remote
 
       def after_created
         validate_identity_platform(remote_user, remote_password, remote_domain)
@@ -161,6 +161,7 @@ class Chef
       def validate_source(source)
         source = Array(source).flatten
         raise ArgumentError, "#{resource_name} has an empty source" if source.empty?
+
         source.each do |src|
           unless absolute_uri?(src)
             raise Exceptions::InvalidRemoteFileURI,
@@ -171,7 +172,7 @@ class Chef
       end
 
       def absolute_uri?(source)
-        Chef::Provider::RemoteFile::Fetcher.network_share?(source) || (source.kind_of?(String) && as_uri(source).absolute?)
+        Chef::Provider::RemoteFile::Fetcher.network_share?(source) || (source.is_a?(String) && as_uri(source).absolute?)
       rescue URI::InvalidURIError
         false
       end

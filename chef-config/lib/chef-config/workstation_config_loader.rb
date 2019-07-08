@@ -155,6 +155,7 @@ module ChefConfig
       if creds.key?("node_name") && creds.key?("client_name")
         raise ChefConfig::ConfigurationError, "Do not specify both node_name and client_name. You should prefer client_name."
       end
+
       # Load credentials data into the Chef configuration.
       creds.each do |key, value|
         case key.to_s

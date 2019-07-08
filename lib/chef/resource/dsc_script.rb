@@ -45,6 +45,7 @@ class Chef
         if arg && configuration_name
           raise ArgumentError, "The 'code' and 'command' properties may not be used together"
         end
+
         set_or_return(
           :code,
           arg,
@@ -56,6 +57,7 @@ class Chef
         if arg && code
           raise ArgumentError, "Property `configuration_name` may not be set if `code` is set"
         end
+
         set_or_return(
           :configuration_name,
           arg,
@@ -67,6 +69,7 @@ class Chef
         if arg && code
           raise ArgumentError, "The 'code' and 'command' properties may not be used together"
         end
+
         set_or_return(
           :command,
           arg,
@@ -78,6 +81,7 @@ class Chef
         if arg && configuration_data_script
           raise ArgumentError, "The 'configuration_data' and 'configuration_data_script' properties may not be used together"
         end
+
         set_or_return(
           :configuration_data,
           arg,
@@ -89,6 +93,7 @@ class Chef
         if arg && configuration_data
           raise ArgumentError, "The 'configuration_data' and 'configuration_data_script' properties may not be used together"
         end
+
         set_or_return(
           :configuration_data_script,
           arg,

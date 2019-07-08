@@ -73,6 +73,7 @@ class Chef
       def _get_parent(path)
         parts = ChefFS::PathUtils.split(path)
         return nil if parts.nil? || parts.length < 2
+
         ChefFS::PathUtils.join(*parts[0..-2])
       end
     end

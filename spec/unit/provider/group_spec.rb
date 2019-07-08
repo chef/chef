@@ -39,8 +39,7 @@ describe Chef::Provider::User do
     @pw_group = double("Struct::Group",
       name: "wheel",
       gid: 20,
-      mem: %w{root aj}
-      )
+      mem: %w{root aj})
     allow(Etc).to receive(:getgrnam).with("wheel").and_return(@pw_group)
   end
 
@@ -85,7 +84,7 @@ describe Chef::Provider::User do
   end
 
   describe "when determining if the system is already in the target state" do
-    [ :gid, :members ].each do |property|
+    %i{gid members}.each do |property|
       it "should return true if #{property} doesn't match" do
         allow(@current_resource).to receive(property).and_return("looooooooooooooooooool")
         expect(@provider.compare_group).to be_truthy

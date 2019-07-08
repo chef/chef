@@ -94,12 +94,15 @@ describe Chef::RunList::RunListExpansion do
       allow(@expansion).to receive(:fetch_role).and_return(@first_role, @second_role)
       @expansion.expand
       @json = '{"id":"_default","run_list":[{"type":"recipe","name":"lobster::mastercookbook","version":"0.1.0",'
-              .concat(
-'"skipped":false},{"type":"role","name":"rage","children":[{"type":"role","name":"mollusk","children":[],"missing":null,'
-      .concat(
-'"error":null,"skipped":null},{"type":"recipe","name":"crabrevenge","version":null,"skipped":false}],"missing":null,'
-      .concat(
-'"error":null,"skipped":null},{"type":"recipe","name":"fist","version":"0.1","skipped":false}]}')))
+        .concat(
+          '"skipped":false},{"type":"role","name":"rage","children":[{"type":"role","name":"mollusk","children":[],"missing":null,'
+                .concat(
+                  '"error":null,"skipped":null},{"type":"recipe","name":"crabrevenge","version":null,"skipped":false}],"missing":null,'
+                        .concat(
+                          '"error":null,"skipped":null},{"type":"recipe","name":"fist","version":"0.1","skipped":false}]}'
+                        )
+                )
+        )
 
     end
 

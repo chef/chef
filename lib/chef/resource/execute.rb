@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -94,7 +94,7 @@ class Chef
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [ TrueClass, FalseClass ],
         description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
-        default: lazy { |r| r.password ? true : false }, default_description: "True if the password property is set. False otherwise."
+        default: lazy { password ? true : false }, default_description: "True if the password property is set. False otherwise."
 
       property :elevated, [ TrueClass, FalseClass ], default: false,
                description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running #{Chef::Dist::CLIENT} needs the “Replace a process level token” and “Adjust Memory Quotas for a process” permissions. The user that is running the command needs the “Log on as a batch job” permission.\nBecause this requires a login, the user and password properties are required.",

@@ -200,6 +200,7 @@ class Chef
           result = LsaEnumerateAccountRights(policy_handle.read_pointer, sid, privilege_pointer, privilege_length)
           win32_error = LsaNtStatusToWinError(result)
           return [] if win32_error == 2 # FILE_NOT_FOUND - No rights assigned
+
           test_and_raise_lsa_nt_status(result)
 
           privilege_length.read_ulong.times do |i|
@@ -327,6 +328,7 @@ class Chef
         elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
+
         owner_result_storage = FFI::MemoryPointer.new owner_result_size.read_ulong
         unless GetTokenInformation(token.handle.handle, :TokenOwner, owner_result_storage, owner_result_size.read_ulong, owner_result_size)
           Chef::ReservedNames::Win32::Error.raise!
@@ -342,6 +344,7 @@ class Chef
         elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
+
         group_result_storage = FFI::MemoryPointer.new group_result_size.read_ulong
         unless GetTokenInformation(token.handle.handle, :TokenPrimaryGroup, group_result_storage, group_result_size.read_ulong, group_result_size)
           Chef::ReservedNames::Win32::Error.raise!
@@ -357,6 +360,7 @@ class Chef
         elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
+
         info_ptr = FFI::MemoryPointer.new(:pointer)
         token_info_pointer = TOKEN_ELEVATION_TYPE.new info_ptr
         token_info_length = 4
@@ -653,6 +657,7 @@ class Chef
           process_token = open_current_process_token(TOKEN_READ)
         rescue Exception => run_error
           return false if run_error.message =~ /Access is denied/
+
           Chef::ReservedNames::Win32::Error.raise!
         end
 

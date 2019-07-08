@@ -182,7 +182,7 @@ describe Chef::Node::Attribute do
       expect { Chef::Node::Attribute.new({}, {}, {}, {}) }.not_to raise_error
     end
 
-    [ :normal, :default, :override, :automatic ].each do |accessor|
+    %i{normal default override automatic}.each do |accessor|
       it "should set #{accessor}" do
         na = Chef::Node::Attribute.new({ normal: true }, { default: true }, { override: true }, { automatic: true })
         expect(na.send(accessor)).to eq({ accessor.to_s => true })
@@ -546,7 +546,7 @@ describe Chef::Node::Attribute do
       expect(@attributes["music"]["this"]).not_to have_key("must")
     end
 
-    [:include?, :key?, :member?].each do |method|
+    %i{include? key? member?}.each do |method|
       it "should alias the method #{method} to itself" do
         expect(@attributes).to respond_to(method)
       end
@@ -589,7 +589,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should yield each top level key" do
-      collect = Array.new
+      collect = []
       @attributes.each_key do |k|
         collect << k
       end
@@ -602,7 +602,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should yield lower if we go deeper" do
-      collect = Array.new
+      collect = []
       @attributes["one"].each_key do |k|
         collect << k
       end
@@ -637,7 +637,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should yield each top level key and value, post merge rules" do
-      collect = Hash.new
+      collect = {}
       @attributes.each do |k, v|
         collect[k] = v
       end
@@ -679,7 +679,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should yield each top level key, post merge rules" do
-      collect = Array.new
+      collect = []
       @attributes.each_key do |k|
         collect << k
       end
@@ -715,7 +715,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should yield each top level key and value pair, post merge rules" do
-      collect = Hash.new
+      collect = {}
       @attributes.each_pair do |k, v|
         collect[k] = v
       end
@@ -751,7 +751,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should yield each value, post merge rules" do
-      collect = Array.new
+      collect = []
       @attributes.each_value do |v|
         collect << v
       end
@@ -762,7 +762,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should yield four elements" do
-      collect = Array.new
+      collect = []
       @attributes.each_value do |v|
         collect << v
       end

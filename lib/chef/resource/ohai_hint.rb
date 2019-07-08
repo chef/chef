@@ -79,6 +79,7 @@ class Chef
         # @return [JSON] json representation of the content of an empty string if content was nil
         def format_content(content)
           return "" if content.nil? || content.empty?
+
           JSON.pretty_generate(content)
         end
       end
@@ -88,6 +89,7 @@ class Chef
       # @return [void]
       def after_created
         return unless compile_time
+
         Array(action).each do |action|
           run_action(action)
         end

@@ -43,7 +43,7 @@ class Chef
       private_class_method :get_system_metrics
 
       def self.method_name_from_marketing_name(marketing_name)
-        "#{marketing_name.gsub(/\s/, '_').tr('.', '_').downcase}?"
+        "#{marketing_name.gsub(/\s/, "_").tr(".", "_").downcase}?"
       end
 
       private_class_method :method_name_from_marketing_name
@@ -80,7 +80,7 @@ class Chef
         @sku = get_product_info(@major_version, @minor_version, @sp_major_version, @sp_minor_version)
       end
 
-      marketing_names = Array.new
+      marketing_names = []
 
       # General Windows checks
       WIN_VERSIONS.each do |k, v|
@@ -128,7 +128,7 @@ class Chef
         # The operating system version is a string in the following form
         # that can be split into components based on the '.' delimiter:
         # MajorVersionNumber.MinorVersionNumber.BuildNumber
-        os_version.split(".").collect { |version_string| version_string.to_i }
+        os_version.split(".").collect(&:to_i)
       end
 
       def get_version_ex

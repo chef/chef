@@ -21,9 +21,7 @@ describe "chef-client" do
     # just a normal file
     # (expected_content should be uncompressed)
     @api.get("/recipes.tgz", 200) do
-      File.open(recipes_filename, "rb") do |f|
-        f.read
-      end
+      File.open(recipes_filename, "rb", &:read)
     end
   end
 
@@ -55,19 +53,19 @@ describe "chef-client" do
     it "should complete with success" do
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
 
-      shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+      shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
     end
 
     it "should complete successfully with --no-listen" do
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
 
-      result = shell_out("#{chef_client} --no-listen -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+      result = shell_out("#{chef_client} --no-listen -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       result.error!
     end
 
@@ -108,10 +106,10 @@ describe "chef-client" do
     it "should complete with success" do
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       result.error!
     end
 
@@ -151,34 +149,34 @@ describe "chef-client" do
       it "should complete with success even with a client key" do
         file "config/client.rb", <<~EOM
           local_mode true
-          client_key #{path_to('mykey.pem').inspect}
-          cookbook_path #{path_to('cookbooks').inspect}
+          client_key #{path_to("mykey.pem").inspect}
+          cookbook_path #{path_to("cookbooks").inspect}
         EOM
 
-        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+        result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
         result.error!
       end
 
       it "should run recipes specified directly on the command line" do
         file "config/client.rb", <<~EOM
           local_mode true
-          client_key #{path_to('mykey.pem').inspect}
-          cookbook_path #{path_to('cookbooks').inspect}
+          client_key #{path_to("mykey.pem").inspect}
+          cookbook_path #{path_to("cookbooks").inspect}
         EOM
 
         file "arbitrary.rb", <<~EOM
-          file #{path_to('tempfile.txt').inspect} do
+          file #{path_to("tempfile.txt").inspect} do
             content '1'
           end
         EOM
 
         file "arbitrary2.rb", <<~EOM
-          file #{path_to('tempfile2.txt').inspect} do
+          file #{path_to("tempfile2.txt").inspect} do
             content '2'
           end
         EOM
 
-        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" #{path_to('arbitrary.rb')} #{path_to('arbitrary2.rb')}", cwd: chef_dir)
+        result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" #{path_to("arbitrary.rb")} #{path_to("arbitrary2.rb")}", cwd: chef_dir)
         result.error!
 
         expect(IO.read(path_to("tempfile.txt"))).to eq("1")
@@ -188,17 +186,17 @@ describe "chef-client" do
       it "should run recipes specified as relative paths directly on the command line" do
         file "config/client.rb", <<~EOM
           local_mode true
-          client_key #{path_to('mykey.pem').inspect}
-          cookbook_path #{path_to('cookbooks').inspect}
+          client_key #{path_to("mykey.pem").inspect}
+          cookbook_path #{path_to("cookbooks").inspect}
         EOM
 
         file "arbitrary.rb", <<~EOM
-          file #{path_to('tempfile.txt').inspect} do
+          file #{path_to("tempfile.txt").inspect} do
             content '1'
           end
         EOM
 
-        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" arbitrary.rb", cwd: path_to(""))
+        result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" arbitrary.rb", cwd: path_to(""))
         result.error!
 
         expect(IO.read(path_to("tempfile.txt"))).to eq("1")
@@ -207,8 +205,8 @@ describe "chef-client" do
       it "should run recipes specified directly on the command line AFTER recipes in the run list" do
         file "config/client.rb", <<~EOM
           local_mode true
-          client_key #{path_to('mykey.pem').inspect}
-          cookbook_path #{path_to('cookbooks').inspect}
+          client_key #{path_to("mykey.pem").inspect}
+          cookbook_path #{path_to("cookbooks").inspect}
         EOM
 
         file "cookbooks/x/recipes/constant_definition.rb", <<~EOM
@@ -218,12 +216,12 @@ describe "chef-client" do
         EOM
 
         file "arbitrary.rb", <<~EOM
-          file #{path_to('tempfile.txt').inspect} do
+          file #{path_to("tempfile.txt").inspect} do
             content ::Blah::THECONSTANT
           end
         EOM
 
-        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", cwd: path_to(""))
+        result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o x::constant_definition arbitrary.rb", cwd: path_to(""))
         result.error!
 
         expect(IO.read(path_to("tempfile.txt"))).to eq("1")
@@ -232,8 +230,8 @@ describe "chef-client" do
       it "should run recipes specified directly on the command line AFTER recipes in the run list (without an override_runlist this time)" do
         file "config/client.rb", <<~EOM
           local_mode true
-          client_key #{path_to('mykey.pem').inspect}
-          cookbook_path #{path_to('cookbooks').inspect}
+          client_key #{path_to("mykey.pem").inspect}
+          cookbook_path #{path_to("cookbooks").inspect}
         EOM
 
         file "config/dna.json", <<~EOM
@@ -249,12 +247,12 @@ describe "chef-client" do
         EOM
 
         file "arbitrary.rb", <<~EOM
-          file #{path_to('tempfile.txt').inspect} do
+          file #{path_to("tempfile.txt").inspect} do
             content ::Blah::THECONSTANT
           end
         EOM
 
-        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -j \"#{path_to('config/dna.json')}\" arbitrary.rb", cwd: path_to(""))
+        result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -j \"#{path_to("config/dna.json")}\" arbitrary.rb", cwd: path_to(""))
         result.error!
 
         expect(IO.read(path_to("tempfile.txt"))).to eq("1")
@@ -263,8 +261,8 @@ describe "chef-client" do
       it "an override_runlist of an empty string should allow a recipe specified directly on the command line to be the only one run" do
         file "config/client.rb", <<~EOM
           local_mode true
-          client_key #{path_to('mykey.pem').inspect}
-          cookbook_path #{path_to('cookbooks').inspect}
+          client_key #{path_to("mykey.pem").inspect}
+          cookbook_path #{path_to("cookbooks").inspect}
           class ::Blah
             THECONSTANT = "1"
           end
@@ -284,12 +282,12 @@ describe "chef-client" do
 
         file "arbitrary.rb", <<~EOM
           raise "this test failed" unless ::Blah::THECONSTANT == "1"
-          file #{path_to('tempfile.txt').inspect} do
+          file #{path_to("tempfile.txt").inspect} do
             content ::Blah::THECONSTANT
           end
         EOM
 
-        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -j \"#{path_to('config/dna.json')}\" -o \"\" arbitrary.rb", cwd: path_to(""))
+        result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -j \"#{path_to("config/dna.json")}\" -o \"\" arbitrary.rb", cwd: path_to(""))
         result.error!
 
         expect(IO.read(path_to("tempfile.txt"))).to eq("1")
@@ -300,30 +298,30 @@ describe "chef-client" do
     it "should complete with success when passed the -z flag" do
       file "config/client.rb", <<~EOM
         chef_server_url 'http://omg.com/blah'
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", cwd: chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' -z", cwd: chef_dir)
       result.error!
     end
 
     it "should complete with success when passed the --local-mode flag" do
       file "config/client.rb", <<~EOM
         chef_server_url 'http://omg.com/blah'
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", cwd: chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --local-mode", cwd: chef_dir)
       result.error!
     end
 
     it "should not print SSL warnings when running in local-mode" do
       file "config/client.rb", <<~EOM
         chef_server_url 'http://omg.com/blah'
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", cwd: chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --local-mode", cwd: chef_dir)
       expect(result.stdout).not_to include("SSL validation of HTTPS requests is disabled.")
       result.error!
     end
@@ -331,20 +329,20 @@ describe "chef-client" do
     it "should complete with success when passed -z and --chef-zero-port" do
       file "config/client.rb", <<~EOM
         chef_server_url 'http://omg.com/blah'
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", cwd: chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' -z", cwd: chef_dir)
       result.error!
     end
 
     it "should complete with success when setting the run list with -r" do
       file "config/client.rb", <<~EOM
         chef_server_url 'http://omg.com/blah'
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z -l info", cwd: chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -r 'x::default' -z -l info", cwd: chef_dir)
       expect(result.stdout).not_to include("Overridden Run List")
       expect(result.stdout).to include("Run List is [recipe[x::default]]")
       result.error!
@@ -353,9 +351,9 @@ describe "chef-client" do
     it "should complete with success when using --profile-ruby and output a profile file", :not_supported_on_aix do
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
-      result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z --profile-ruby", cwd: chef_dir)
+      result = shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' -z --profile-ruby", cwd: chef_dir)
       result.error!
       expect(File.exist?(path_to("config/local-mode-cache/cache/graph_profile.out"))).to be true
     end
@@ -363,9 +361,9 @@ describe "chef-client" do
     it "doesn't produce a profile when --profile-ruby is not present" do
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
-      result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", cwd: chef_dir)
+      result = shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' -z", cwd: chef_dir)
       result.error!
       expect(File.exist?(path_to("config/local-mode-cache/cache/graph_profile.out"))).to be false
     end
@@ -381,11 +379,11 @@ describe "chef-client" do
       EOM
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
     end
     it "should fail the chef client run" do
-      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       expect(command.exitstatus).to eql(1)
       expect(command.stdout).to match(/Chef::Exceptions::CookbookChefVersionMismatch/)
     end
@@ -406,12 +404,12 @@ describe "chef-client" do
       EOM
       file "config/client.rb", <<-EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
     end
 
     it "the cheffish DSL is loaded lazily" do
-      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       expect(command.exitstatus).to eql(0)
     end
   end
@@ -437,7 +435,7 @@ describe "chef-client" do
     it "should output each deprecation warning only once, at the end of the run" do
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
         # Mimick what happens when you are on the console
         formatters << :doc
         log_level :warn
@@ -445,7 +443,7 @@ describe "chef-client" do
 
       ENV.delete("CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS")
 
-      result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+      result = shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       expect(result.error?).to be_falsey
 
       # Search to the end of the client run in the output
@@ -460,7 +458,7 @@ describe "chef-client" do
   when_the_repository "has a cookbook that deploys a file" do
     before do
       file "cookbooks/x/recipes/default.rb", <<~RECIPE
-        cookbook_file #{path_to('tempfile.txt').inspect} do
+        cookbook_file #{path_to("tempfile.txt").inspect} do
           source "my_file"
         end
       RECIPE
@@ -476,9 +474,9 @@ describe "chef-client" do
           file "config/client.rb", <<~EOM
             no_lazy_load #{lazy}
             local_mode true
-            cookbook_path "#{path_to('cookbooks')}"
+            cookbook_path "#{path_to("cookbooks")}"
           EOM
-          result = shell_out("#{chef_client} -l debug -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
+          result = shell_out("#{chef_client} -l debug -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
           result.error!
 
           expect(IO.read(path_to("tempfile.txt")).strip).to eq("this is my file")
@@ -490,7 +488,7 @@ describe "chef-client" do
   when_the_repository "has a cookbook with an ohai plugin" do
     before do
       file "cookbooks/x/recipes/default.rb", <<~RECIPE
-        file #{path_to('tempfile.txt').inspect} do
+        file #{path_to("tempfile.txt").inspect} do
           content node["english"]["version"]
         end
       RECIPE
@@ -508,12 +506,12 @@ describe "chef-client" do
 
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
     end
 
     it "should run the ohai plugin" do
-      result = shell_out("#{chef_client} -l debug -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      result = shell_out("#{chef_client} -l debug -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       result.error!
 
       expect(IO.read(path_to("tempfile.txt"))).to eq("2014")
@@ -536,7 +534,7 @@ describe "chef-client" do
       file "config/client.rb", <<~EOM
         chef_repo_path "#{tmp_dir}"
       EOM
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", cwd: tmp_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", cwd: tmp_dir)
       result.error!
     end
 
@@ -569,17 +567,17 @@ describe "chef-client" do
 
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
     end
 
     it "the chef client run should succeed" do
-      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       command.error!
     end
 
     it "a chef-solo run should succeed" do
-      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      command = shell_out("#{chef_solo} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       command.error!
     end
   end
@@ -593,30 +591,30 @@ describe "chef-client" do
 EOM
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
     end
 
     it "a chef client run should not log to info by default" do
-      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       command.error!
       expect(command.stdout).not_to include("INFO")
     end
 
     it "a chef client run to a pipe should not log to info by default" do
-      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork | tee #{path_to('chefrun.out')}", cwd: chef_dir)
+      command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork | tee #{path_to("chefrun.out")}", cwd: chef_dir)
       command.error!
       expect(command.stdout).not_to include("INFO")
     end
 
     it "a chef solo run should not log to info by default" do
-      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      command = shell_out("#{chef_solo} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       command.error!
       expect(command.stdout).not_to include("INFO")
     end
 
     it "a chef solo run to a pipe should not log to info by default" do
-      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork | tee #{path_to('chefrun.out')}", cwd: chef_dir)
+      command = shell_out("#{chef_solo} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork | tee #{path_to("chefrun.out")}", cwd: chef_dir)
       command.error!
       expect(command.stdout).not_to include("INFO")
     end
@@ -629,42 +627,42 @@ EOM
       EOM
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
     end
 
     it "chef-client runs by default with no supervisor" do
-      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+      command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("NOFORK")
     end
 
     it "chef-solo runs by default with no supervisor" do
-      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+      command = shell_out("#{chef_solo} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("NOFORK")
     end
 
     it "chef-client --no-fork does not fork" do
-      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("NOFORK")
     end
 
     it "chef-solo --no-fork does not fork" do
-      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      command = shell_out("#{chef_solo} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("NOFORK")
     end
 
     it "chef-client with --fork uses a supervisor" do
-      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --fork", cwd: chef_dir)
+      command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --fork", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("WITHFORK")
     end
 
     it "chef-solo with --fork uses a supervisor" do
-      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --fork", cwd: chef_dir)
+      command = shell_out("#{chef_solo} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --fork", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("WITHFORK")
     end
@@ -677,19 +675,19 @@ EOM
       EOM
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
         client_fork true
       EOM
     end
 
     it "chef-client uses a supervisor" do
-      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+      command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("WITHFORK")
     end
 
     it "chef-solo uses a supervisor" do
-      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+      command = shell_out("#{chef_solo} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("WITHFORK")
     end
@@ -702,19 +700,19 @@ EOM
       EOM
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
         client_fork false
       EOM
     end
 
     it "chef-client uses a supervisor" do
-      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+      command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("NOFORK")
     end
 
     it "chef-solo uses a supervisor" do
-      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
+      command = shell_out("#{chef_solo} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("NOFORK")
     end

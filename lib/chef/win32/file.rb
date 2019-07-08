@@ -41,6 +41,7 @@ class Chef
       #
       def self.link(old_name, new_name)
         raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name) || ::File.symlink?(old_name)
+
         # TODO do a check for CreateHardLinkW and
         # raise NotImplemented exception on older Windows
         old_name = encode_path(old_name)
@@ -104,6 +105,7 @@ class Chef
       #
       def self.readlink(link_name)
         raise Errno::ENOENT, link_name unless ::File.exists?(link_name) || ::File.symlink?(link_name)
+
         symlink_file_handle(link_name) do |handle|
           # Go to DeviceIoControl to get the symlink information
           # http://msdn.microsoft.com/en-us/library/windows/desktop/aa364571(v=vs.85).aspx
@@ -180,7 +182,8 @@ class Chef
           Chef::ReservedNames::Win32::Security::STANDARD_RIGHTS_READ
         token = Chef::ReservedNames::Win32::Security.open_process_token(
           Chef::ReservedNames::Win32::Process.get_current_process,
-          token_rights)
+          token_rights
+        )
         duplicate_token = token.duplicate_token(:SecurityImpersonation)
 
         mapping = Chef::ReservedNames::Win32::Security::GENERIC_MAPPING.new

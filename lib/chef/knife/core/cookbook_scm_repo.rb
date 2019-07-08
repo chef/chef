@@ -50,7 +50,7 @@ class Chef
           exit 1
         end
         if use_current_branch
-          @default_branch = get_current_branch()
+          @default_branch = get_current_branch
         end
         unless branch_exists?(default_branch)
           ui.error "The default branch '#{default_branch}' does not exist"

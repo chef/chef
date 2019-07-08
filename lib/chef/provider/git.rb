@@ -51,12 +51,12 @@ class Chef
         end
 
         requirements.assert(:all_actions) do |a|
-          a.assertion { !(new_resource.revision =~ /^origin\//) }
+          a.assertion { !(new_resource.revision =~ %r{^origin/}) }
           a.failure_message Chef::Exceptions::InvalidRemoteGitReference,
             "Deploying remote branches is not supported. " +
             "Specify the remote branch as a local branch for " +
             "the git repository you're deploying from " +
-            "(ie: '#{new_resource.revision.gsub('origin/', '')}' rather than '#{new_resource.revision}')."
+            "(ie: '#{new_resource.revision.gsub("origin/", "")}' rather than '#{new_resource.revision}')."
         end
 
         requirements.assert(:all_actions) do |a|
@@ -111,6 +111,7 @@ class Chef
 
       def git_gem_version
         return @git_gem_version if defined?(@git_gem_version)
+
         output = git("--version").stdout
         match = GIT_VERSION_PATTERN.match(output)
         if match

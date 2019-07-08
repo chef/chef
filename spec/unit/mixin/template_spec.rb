@@ -242,17 +242,13 @@ describe Chef::Mixin::Template, "render_template" do
 
       it "emits a warning when overriding 'core' methods" do
         mod = Module.new do
-          def render
-          end
+          def render; end
 
-          def node
-          end
+          def node; end
 
-          def render_template
-          end
+          def render_template; end
 
-          def render_template_from_string
-          end
+          def render_template_from_string; end
         end
         %w{node render render_template render_template_from_string}.each do |method_name|
           expect(Chef::Log).to receive(:warn).with(/^Core template method `#{method_name}' overridden by extension module/)

@@ -96,7 +96,7 @@ class Chef
             client_rb << "chef_license \"#{@chef_config[:chef_license]}\"\n"
           end
 
-          if !(@chef_config[:config_log_level].nil? || @chef_config[:config_log_level].empty?)
+          unless @chef_config[:config_log_level].nil? || @chef_config[:config_log_level].empty?
             client_rb << %Q{log_level   :#{@chef_config[:config_log_level]}\n}
           end
 

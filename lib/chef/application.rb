@@ -353,6 +353,7 @@ class Chef
     def handle_child_exit(pid_and_status)
       status = pid_and_status[1]
       return true if status.success?
+
       message = if status.signaled?
                   "Chef run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
                 else

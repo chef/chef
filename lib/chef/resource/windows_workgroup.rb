@@ -45,7 +45,7 @@ class Chef
         desired_state: false
 
       property :reboot, Symbol,
-        equal_to: [:never, :request_reboot, :reboot_now],
+        equal_to: %i{never request_reboot reboot_now},
         validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the #{Chef::Dist::PRODUCT} run completes), and :never (Don't reboot)",
         description: "Controls the system reboot behavior post workgroup joining. Reboot immediately, after the #{Chef::Dist::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
         coerce: proc { |x| clarify_reboot(x) },
@@ -105,6 +105,7 @@ class Chef
         def workgroup_member?
           node_workgroup = powershell_out!("(Get-WmiObject -Class Win32_ComputerSystem).Workgroup")
           raise "Failed to determine if system already a member of workgroup #{new_resource.workgroup_name}" if node_workgroup.error?
+
           node_workgroup.stdout.downcase.strip == new_resource.workgroup_name.downcase
         end
       end

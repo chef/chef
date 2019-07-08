@@ -47,8 +47,7 @@ class Chef
         @eventlog = eventlog || ::Win32::EventLog.open("Application")
       end
 
-      def close
-      end
+      def close; end
 
       def info(msg)
         @eventlog.report_event(

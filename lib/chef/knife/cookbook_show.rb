@@ -57,7 +57,7 @@ class Chef
 
         case @name_args.length
         when 4 # We are showing a specific file
-          node = Hash.new
+          node = {}
           node[:fqdn] = config[:fqdn] if config.key?(:fqdn)
           node[:platform] = config[:platform] if config.key?(:platform)
           node[:platform_version] = config[:platform_version] if config.key?(:platform_version)

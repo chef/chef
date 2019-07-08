@@ -89,7 +89,7 @@ class Chef
         def run!(switches = {}, execution_options = {}, *arguments)
           result = run(switches, execution_options, arguments)
 
-          if ! result.succeeded?
+          unless result.succeeded?
             raise Chef::Exceptions::PowershellCmdletException, "PowerShell Cmdlet failed: #{result.stderr}"
           end
 

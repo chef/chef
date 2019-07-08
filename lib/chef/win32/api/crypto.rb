@@ -47,15 +47,15 @@ class Chef
 
         end
 
-        safe_attach_function :CryptProtectData, [
-          :PDATA_BLOB,
-          :LPCWSTR,
-          :PDATA_BLOB,
-          :pointer,
-          :PCRYPTPROTECT_PROMPTSTRUCT,
-          :DWORD,
-          :PDATA_BLOB,
-        ], :BOOL
+        safe_attach_function :CryptProtectData, %i{
+          PDATA_BLOB
+          LPCWSTR
+          PDATA_BLOB
+          pointer
+          PCRYPTPROTECT_PROMPTSTRUCT
+          DWORD
+          PDATA_BLOB
+        }, :BOOL
 
       end
     end

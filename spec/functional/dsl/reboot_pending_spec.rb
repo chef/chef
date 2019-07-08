@@ -36,7 +36,7 @@ describe Chef::DSL::RebootPending, :windows_only do
     let(:reg_key) { nil }
     let(:original_set) { false }
 
-    before(:all) { @any_flag = Hash.new }
+    before(:all) { @any_flag = {} }
 
     after { @any_flag[reg_key] = original_set }
 

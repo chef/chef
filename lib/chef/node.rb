@@ -90,6 +90,7 @@ class Chef
     # and setup the node[:cookbooks] attribute so that it is published in the node object
     def set_cookbook_attribute
       return unless run_context.cookbook_collection
+
       run_context.cookbook_collection.each do |cookbook_name, cookbook|
         automatic_attrs[:cookbooks][cookbook_name][:version] = cookbook.version
       end
@@ -120,7 +121,8 @@ class Chef
           { name: { kind_of: String,
                     cannot_be: :blank,
                     regex: /^[\-[:alnum:]_:.]+$/ },
-          })
+          }
+        )
         @name = arg
       else
         @name
@@ -152,6 +154,7 @@ class Chef
     # @return [String] the current policy_name, or the one you just set
     def policy_name(arg = NULL_ARG)
       return @policy_name if arg.equal?(NULL_ARG)
+
       validate({ policy_name: arg }, { policy_name: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_name = arg
     end
@@ -174,6 +177,7 @@ class Chef
     # @return [String] the current policy_group, or the one you just set
     def policy_group(arg = NULL_ARG)
       return @policy_group if arg.equal?(NULL_ARG)
+
       validate({ policy_group: arg }, { policy_group: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_group = arg
     end
@@ -316,6 +320,7 @@ class Chef
     # @return [Chef::RunList] the override run list
     def override_runlist(*args)
       return @override_runlist if args.length == 0
+
       @override_runlist_set = true
       @override_runlist.reset!(args)
     end
@@ -403,6 +408,7 @@ class Chef
         if attrs.key?("recipes") || attrs.key?("run_list")
           raise Chef::Exceptions::AmbiguousRunlistSpecification, "please set the node's run list using the 'run_list' attribute only."
         end
+
         logger.info("Setting the run_list to #{new_run_list} from CLI options")
         run_list(new_run_list)
       end
@@ -518,7 +524,7 @@ class Chef
         "default" => attributes.combined_default.to_hash,
         "override" => attributes.combined_override.to_hash,
         # Render correctly for run_list items so malformed json does not result
-        "run_list" => @primary_runlist.run_list.map { |item| item.to_s },
+        "run_list" => @primary_runlist.run_list.map(&:to_s),
       }
       # Chef Server rejects node JSON with extra keys; prior to 12.3,
       # "policy_name" and "policy_group" are unknown; after 12.3 they are
@@ -542,7 +548,8 @@ class Chef
     end
 
     def self.from_hash(o)
-      return o if o.kind_of? Chef::Node
+      return o if o.is_a? Chef::Node
+
       node = new
       node.name(o["name"])
 
@@ -574,7 +581,7 @@ class Chef
 
     def self.list_by_environment(environment, inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") { |n| response[n.name] = n unless n.nil? }
         response
       else
@@ -584,7 +591,7 @@ class Chef
 
     def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:node) do |n|
           n = Chef::Node.from_hash(n)
           response[n.name] = n unless n.nil?
@@ -599,6 +606,7 @@ class Chef
       load(node_name)
     rescue Net::HTTPClientException => e
       raise unless e.response.code == "404"
+
       node = build(node_name)
       node.create
     end
@@ -660,7 +668,7 @@ class Chef
     end
 
     def ==(other)
-      if other.kind_of?(self.class)
+      if other.is_a?(self.class)
         name == other.name
       else
         false
@@ -679,6 +687,7 @@ class Chef
       chef_server_rest.put("nodes/#{name}", trimmed_data)
     rescue Net::HTTPClientException => e
       raise e unless e.response.code == "404"
+
       chef_server_rest.post("nodes", trimmed_data)
     end
 

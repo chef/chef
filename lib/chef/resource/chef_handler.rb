@@ -67,6 +67,7 @@ class Chef
 
         new_resource.type.each do |type, enable|
           next unless enable
+
           register_handler(type, handler)
         end
       end

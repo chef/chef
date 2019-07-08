@@ -52,7 +52,7 @@ class Chef
         @inferred_cookbook_name = File.basename( path )
         @chefignore = chefignore
         @metadata = nil
-        @relative_path = /#{Regexp.escape(cookbook_path)}\/(.+)$/
+        @relative_path = %r{#{Regexp.escape(cookbook_path)}/(.+)$}
         @metadata_loaded = false
         @cookbook_settings = {
           all_files: {},
@@ -70,6 +70,7 @@ class Chef
         if empty?
           raise Exceptions::CookbookNotFoundInRepo, "The directory #{cookbook_path} does not contain a cookbook"
         end
+
         file_paths_map
       end
 
@@ -152,6 +153,7 @@ class Chef
 
       def metadata_filenames
         return @metadata_filenames unless @metadata_filenames.empty?
+
         if File.exists?(File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
           @uploaded_cookbook_version_file = File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
         end
@@ -171,18 +173,19 @@ class Chef
 
       def raise_metadata_error!
         raise metadata_error unless metadata_error.nil?
+
         # Metadata won't be valid if the cookbook is empty. If the cookbook is
         # actually empty, a metadata error here would be misleading, so don't
         # raise it (if called by #load!, a different error is raised).
         if !empty? && !metadata.valid?
-          message = "Cookbook loaded at path [#{cookbook_path}] has invalid metadata: #{metadata.errors.join('; ')}"
+          message = "Cookbook loaded at path [#{cookbook_path}] has invalid metadata: #{metadata.errors.join("; ")}"
           raise Exceptions::MetadataNotValid, message
         end
         false
       end
 
       def empty?
-        cookbook_settings.values.all? { |files_hash| files_hash.empty? } && metadata_filenames.size == 0
+        cookbook_settings.values.all?(&:empty?) && metadata_filenames.size == 0
       end
 
       def chefignore

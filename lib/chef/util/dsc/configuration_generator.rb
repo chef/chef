@@ -40,14 +40,15 @@ class Chef::Util::DSC
 
       document_generation_cmdlet = Chef::Util::Powershell::Cmdlet.new(
         @node,
-        configuration_document_generation_code(script_path, configuration_name))
+        configuration_document_generation_code(script_path, configuration_name)
+      )
 
       merged_configuration_flags = get_merged_configuration_flags!(configuration_flags, configuration_name)
 
       document_generation_cmdlet.run!(merged_configuration_flags, shellout_flags)
       configuration_document_location = find_configuration_document(configuration_name)
 
-      if ! configuration_document_location
+      unless configuration_document_location
         raise "No DSC configuration for '#{configuration_name}' was generated from supplied DSC script"
       end
 
@@ -74,6 +75,7 @@ class Chef::Util::DSC
           if merged_configuration_flags.key?(switch.to_s.downcase.to_sym)
             raise ArgumentError, "The `flags` attribute for the dsc_script resource contained a command line switch :#{switch} that is disallowed."
           end
+
           merged_configuration_flags[switch.to_s.downcase.to_sym] = value
         end
       end
@@ -100,7 +102,7 @@ class Chef::Util::DSC
           if resources.length == 0 || resources.include?("*")
             "Import-DscResource -ModuleName #{resource_module}"
           else
-            "Import-DscResource -ModuleName #{resource_module} -Name #{resources.join(',')}"
+            "Import-DscResource -ModuleName #{resource_module} -Name #{resources.join(",")}"
           end
         end
       else
@@ -131,9 +133,7 @@ class Chef::Util::DSC
     end
 
     def get_configuration_document(document_path)
-      ::File.open(document_path, "rb") do |file|
-        file.read
-      end
+      ::File.open(document_path, "rb", &:read)
     end
   end
 end

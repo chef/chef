@@ -83,7 +83,7 @@ class Chef
         result_items = []
         result_count = 0
 
-        search_args = Hash.new
+        search_args = {}
         search_args[:fuzz] = true
         search_args[:start] = config[:start] if config[:start]
         search_args[:rows] = config[:rows] if config[:rows]
@@ -97,7 +97,7 @@ class Chef
 
         begin
           q.search(@type, @query, search_args) do |item|
-            formatted_item = Hash.new
+            formatted_item = {}
             if config[:id_only]
               formatted_item = format_for_display({ "id" => item["__display_name"] })
             elsif item.is_a?(Hash)
@@ -169,7 +169,7 @@ class Chef
       # and the path is an array with the path elements as strings (in order)
       # See lib/chef/search/query.rb for more examples of this.
       def create_result_filter(filter_string)
-        final_filter = Hash.new
+        final_filter = {}
         filter_string.delete!(" ")
         filters = filter_string.split(",")
         filters.each do |f|
@@ -180,7 +180,7 @@ class Chef
       end
 
       def create_result_filter_from_attributes(filter_array)
-        final_filter = Hash.new
+        final_filter = {}
         filter_array.each do |f|
           final_filter[f] = f.split(".")
         end

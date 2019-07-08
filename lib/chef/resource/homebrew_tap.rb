@@ -57,7 +57,7 @@ class Chef
 
         unless tapped?(new_resource.tap_name)
           converge_by("tap #{new_resource.tap_name}") do
-            shell_out!("#{new_resource.homebrew_path} tap #{new_resource.full ? '--full' : ''} #{new_resource.tap_name} #{new_resource.url || ''}",
+            shell_out!("#{new_resource.homebrew_path} tap #{new_resource.full ? "--full" : ""} #{new_resource.tap_name} #{new_resource.url || ""}",
               user: new_resource.owner,
               env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
               cwd: ::Dir.home(new_resource.owner))

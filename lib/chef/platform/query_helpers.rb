@@ -26,6 +26,7 @@ class Chef
 
       def windows_nano_server?
         return false unless windows?
+
         require "win32/registry" unless defined?(Win32::Registry)
 
         # This method may be called before ohai runs (e.g., it may be used to
@@ -48,6 +49,7 @@ class Chef
 
       def supports_msi?
         return false unless windows?
+
         require "win32/registry" unless defined?(Win32::Registry)
 
         key = "System\\CurrentControlSet\\Services\\msiserver"
@@ -90,6 +92,7 @@ class Chef
 
       def supported_powershell_version?(node, version_string)
         return false unless node[:languages] && node[:languages][:powershell]
+
         require "rubygems" unless defined?(Gem)
         Gem::Version.new(node[:languages][:powershell][:version]) >=
           Gem::Version.new(version_string)

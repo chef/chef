@@ -98,7 +98,8 @@ describe "Chef::Win32::Security", :windows_only do
     let(:token) do
       Chef::ReservedNames::Win32::Security.open_process_token(
         Chef::ReservedNames::Win32::Process.get_current_process,
-        token_rights)
+        token_rights
+      )
     end
 
     it "raises error if GetTokenInformation fails" do

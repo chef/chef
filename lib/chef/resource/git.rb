@@ -25,7 +25,7 @@ class Chef
 
       property :additional_remotes, Hash,
         description: "A Hash of additional remotes that are added to the git repository configuration.",
-        default: lazy { Hash.new }
+        default: lazy { {} }
 
       alias :branch :revision
       alias :reference :revision

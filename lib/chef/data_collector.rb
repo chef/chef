@@ -174,6 +174,7 @@ class Chef
       #
       def send_to_data_collector(message)
         return unless Chef::Config[:data_collector][:server_url]
+
         @http ||= setup_http_client(Chef::Config[:data_collector][:server_url])
         @http.post(nil, message, headers)
       rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,

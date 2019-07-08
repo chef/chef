@@ -44,13 +44,13 @@ describe Chef::Knife::NodeEditor do
   describe "#view" do
     it "returns a Hash with only the name, chef_environment, normal, " +
       "policy_name, policy_group, and run_list properties" do
-      expected = node_data.select do |key,|
-        %w{ name chef_environment normal
-            policy_name policy_group run_list }.include?(key)
-      end
+        expected = node_data.select do |key,|
+          %w{ name chef_environment normal
+              policy_name policy_group run_list }.include?(key)
+        end
 
-      expect(subject.view).to eq(expected)
-    end
+        expect(subject.view).to eq(expected)
+      end
 
     context "when config[:all_attributes] == true" do
       let(:config) { base_config.merge(all_attributes: true) }
@@ -190,8 +190,8 @@ describe Chef::Knife::NodeEditor do
 
           it "returns an array of property names that doesn't include " +
             "the non-editable properties" do
-            expect(subject.updated?).to eql %w{ chef_environment normal policy_name policy_group run_list }
-          end
+              expect(subject.updated?).to eql %w{ chef_environment normal policy_name policy_group run_list }
+            end
         end
       end
 

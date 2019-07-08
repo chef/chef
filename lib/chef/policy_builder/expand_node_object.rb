@@ -139,7 +139,7 @@ class Chef
         expand_run_list
 
         Chef::Log.info("Run List is [#{node.run_list}]")
-        Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
+        Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(", ")}]")
 
         events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
         events.run_list_expanded(@run_list_expansion)
@@ -235,7 +235,7 @@ class Chef
       def runlist_override_sanity_check!
         # Convert to array and remove whitespace
         if override_runlist.is_a?(String)
-          @override_runlist = override_runlist.split(",").map { |e| e.strip }
+          @override_runlist = override_runlist.split(",").map(&:strip)
         end
         @override_runlist = [override_runlist].flatten.compact
         override_runlist.map! do |item|

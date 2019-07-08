@@ -29,7 +29,7 @@ class Chef
       introduced "13.3"
 
       property :repo_name, String,
-        regex: [/^[^\/]+$/],
+        regex: [%r{^[^/]+$}],
         description: "An optional property to set the repository name if it differs from the resource block's name.",
         validation_message: "repo_name property cannot contain a forward slash '/'",
         name_property: true

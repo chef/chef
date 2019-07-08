@@ -67,6 +67,7 @@ class Chef
           new_values.inject(0) do |index, val|
             next_index = current_values.find_index val
             return true if next_index.nil? || next_index < index
+
             next_index
           end
           false
@@ -99,6 +100,7 @@ class Chef
       #           after we removed the element.
       def delete_element
         return false unless new_resource.delim # no delim: delete the key
+
         needs_delete = new_values.any? { |v| current_values.include?(v) }
         if !needs_delete
           logger.trace("#{new_resource} element '#{new_resource.value}' does not exist")
@@ -191,6 +193,7 @@ class Chef
 
       def env_obj(key_name)
         return @env_obj if @env_obj
+
         wmi = WmiLite::Wmi.new
         # Note that by design this query is case insensitive with regard to key_name
         environment_variables = wmi.query("select * from Win32_Environment where name = '#{key_name}'")

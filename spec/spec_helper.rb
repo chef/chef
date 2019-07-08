@@ -52,7 +52,7 @@ require "chef/knife"
 
 Dir["lib/chef/knife/**/*.rb"]
   .map { |f| f.gsub("lib/", "") }
-  .map { |f| f.gsub(%r{\.rb$}, "") }
+  .map { |f| f.gsub(/\.rb$/, "") }
   .each { |f| require f }
 
 require "chef/resource_resolver"
@@ -93,7 +93,7 @@ require "spec/support/shared/unit/mock_shellout"
 Dir["spec/support/**/*.rb"]
   .reject { |f| f =~ %r{^spec/support/platforms} }
   .reject { |f| f =~ %r{^spec/support/pedant} }
-  .map { |f| f.gsub(%r{.rb$}, "") }
+  .map { |f| f.gsub(/.rb$/, "") }
   .map { |f| f.gsub(%r{spec/}, "") }
   .each { |f| require f }
 
@@ -145,7 +145,7 @@ RSpec.configure do |config|
   config.filter_run_excluding windows_only: true unless windows?
   config.filter_run_excluding not_supported_on_windows: true if windows?
   config.filter_run_excluding not_supported_on_macos: true if mac_osx?
-  config.filter_run_excluding macos_only: true if !mac_osx?
+  config.filter_run_excluding macos_only: true unless mac_osx?
   config.filter_run_excluding not_supported_on_aix: true if aix?
   config.filter_run_excluding not_supported_on_solaris: true if solaris?
   config.filter_run_excluding not_supported_on_gce: true if gce?
@@ -159,7 +159,7 @@ RSpec.configure do |config|
   config.filter_run_excluding ruby64_only: true unless ruby_64bit?
   config.filter_run_excluding ruby32_only: true unless ruby_32bit?
   config.filter_run_excluding windows_powershell_dsc_only: true unless windows_powershell_dsc?
-  config.filter_run_excluding windows_powershell_no_dsc_only: true unless ! windows_powershell_dsc?
+  config.filter_run_excluding windows_powershell_no_dsc_only: true if windows_powershell_dsc?
   config.filter_run_excluding windows_domain_joined_only: true unless windows_domain_joined?
   config.filter_run_excluding windows_not_domain_joined_only: true if windows_domain_joined?
   # We think this line was causing rspec tests to not run on the Jenkins windows
@@ -311,14 +311,11 @@ require "thread"
 module WEBrick
   module Utils
     class TimeoutHandler
-      def initialize
-      end
+      def initialize; end
 
-      def register(*args)
-      end
+      def register(*args); end
 
-      def cancel(*args)
-      end
+      def cancel(*args); end
     end
   end
 end

@@ -56,21 +56,21 @@ class Chef
         description: "Flush the in-memory cache before or after a DNF operation that installs, upgrades, or removes a package. DNF automatically synchronizes remote metadata to a local cache. The #{Chef::Dist::CLIENT} creates a copy of the local cache, and then stores it in-memory during the #{Chef::Dist::CLIENT} run. The in-memory cache allows packages to be installed during the #{Chef::Dist::CLIENT} run without the need to continue synchronizing the remote metadata to the local cache while the #{Chef::Dist::CLIENT} run is in-progress.",
         default: { before: false, after: false },
         coerce: proc { |v|
-                  if v.is_a?(Hash)
-                    v
-                  elsif v.is_a?(Array)
-                    v.each_with_object({}) { |arg, obj| obj[arg] = true }
-                  elsif v.is_a?(TrueClass) || v.is_a?(FalseClass)
-                    { before: v, after: v }
-                  elsif v == :before
-                    { before: true, after: false }
-                  elsif v == :after
-                    { after: true, before: false }
-                  end
-                }
+          if v.is_a?(Hash)
+            v
+          elsif v.is_a?(Array)
+            v.each_with_object({}) { |arg, obj| obj[arg] = true }
+          elsif v.is_a?(TrueClass) || v.is_a?(FalseClass)
+            { before: v, after: v }
+          elsif v == :before
+            { before: true, after: false }
+          elsif v == :after
+            { after: true, before: false }
+          end
+        }
 
       def allow_downgrade(arg = nil)
-        if !arg.nil?
+        unless arg.nil?
           Chef.deprecated(:dnf_package_allow_downgrade, "the allow_downgrade property on the dnf_package provider is not used, DNF supports downgrades by default.")
         end
         false

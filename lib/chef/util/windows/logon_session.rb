@@ -51,7 +51,7 @@ class Chef
           logon_type = (authentication == :local) ? (Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NETWORK) : (Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NEW_CREDENTIALS)
           status = Chef::ReservedNames::Win32::API::Security.LogonUserW(username, domain, password, logon_type, Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT, token)
 
-          if !status
+          unless status
             last_error = FFI::LastError.error
             raise Chef::Exceptions::Win32APIError, "Logon for user `#{original_username}` failed with Win32 status #{last_error}."
           end
@@ -74,7 +74,7 @@ class Chef
         def set_user_context
           validate_session_open!
 
-          if ! session_opened
+          unless session_opened
             raise "Attempted to set the user context before opening a session."
           end
 
@@ -84,7 +84,7 @@ class Chef
 
           status = Chef::ReservedNames::Win32::API::Security.ImpersonateLoggedOnUser(token.read_ulong)
 
-          if !status
+          unless status
             last_error = FFI::LastError.error
             raise Chef::Exceptions::Win32APIError, "Attempt to impersonate user `#{original_username}` failed with Win32 status #{last_error}."
           end
@@ -98,7 +98,7 @@ class Chef
           if impersonating
             status = Chef::ReservedNames::Win32::API::Security.RevertToSelf
 
-            if !status
+            unless status
               last_error = FFI::LastError.error
               raise Chef::Exceptions::Win32APIError, "Unable to restore user context with Win32 status #{last_error}."
             end
@@ -119,7 +119,7 @@ class Chef
         attr_reader :impersonating
 
         def validate_session_open!
-          if ! session_opened
+          unless session_opened
             raise "Attempted to set the user context before opening a session."
           end
         end

@@ -56,6 +56,7 @@ class Chef
             File.executable?(filename) && !File.directory?(filename)
           end
         return false unless is_executable
+
         block ? yield(filename) : true
       end
     end

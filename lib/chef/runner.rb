@@ -89,9 +89,7 @@ class Chef
     # +run_action+ for each resource in turn.
     def converge
       # Resolve all lazy/forward references in notifications
-      run_context.resource_collection.each do |resource|
-        resource.resolve_notification_references
-      end
+      run_context.resource_collection.each(&:resolve_notification_references)
 
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
@@ -118,7 +116,7 @@ class Chef
       collected_failures.client_run_failure(error) unless error.nil?
       delayed_actions.each do |notification|
         result = run_delayed_notification(notification)
-        if result.kind_of?(Exception)
+        if result.is_a?(Exception)
           collected_failures.notification_failure(result)
         end
       end

@@ -190,7 +190,7 @@ class Chef
 
     def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:client) do |n|
           n = from_hash(n) if n.instance_of?(Hash)
           response[n.name] = n
@@ -270,6 +270,7 @@ class Chef
         # rescue API V0 if 406 and the server supports V0
         supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
         raise e unless supported_versions && supported_versions.include?(0)
+
         new_client = chef_rest_v0.put("clients/#{name}", payload)
       end
 

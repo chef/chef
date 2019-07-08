@@ -28,7 +28,7 @@ describe Chef::Knife::RoleDelete do
     @knife.name_args = [ "adam" ]
     allow(@knife).to receive(:output).and_return(true)
     allow(@knife).to receive(:confirm).and_return(true)
-    @role = Chef::Role.new()
+    @role = Chef::Role.new
     allow(@role).to receive(:destroy).and_return(true)
     allow(Chef::Role).to receive(:load).and_return(@role)
     @stdout = StringIO.new

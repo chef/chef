@@ -259,7 +259,8 @@ describe Chef::Resource::Link do
       allow(stat).to receive(:gid).and_return(501)
       allow(stat).to receive(:mode).and_return(0755)
       allow(provider.file_class).to receive(:stat).with(
-        "#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+        "#{CHEF_SPEC_DATA}/fofile-link"
+      ).and_return(stat)
 
       provider.load_current_resource
     end
@@ -267,7 +268,8 @@ describe Chef::Resource::Link do
     shared_context "delete link to directories on Windows" do
       before do
         allow(::File).to receive(:directory?).with(
-          "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+          "#{CHEF_SPEC_DATA}/fofile-link"
+        ).and_return(true)
       end
 
       it "invokes Dir.delete method to delete the link" do
@@ -280,7 +282,8 @@ describe Chef::Resource::Link do
     shared_context "delete link to directories on Linux" do
       before do
         allow(::File).to receive(:directory?).with(
-          "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+          "#{CHEF_SPEC_DATA}/fofile-link"
+        ).and_return(true)
       end
 
       it "invokes File.delete method to delete the link" do
@@ -293,7 +296,8 @@ describe Chef::Resource::Link do
     shared_context "delete link to files" do
       before do
         allow(::File).to receive(:directory?).with(
-          "#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+          "#{CHEF_SPEC_DATA}/fofile-link"
+        ).and_return(false)
       end
 
       it "invokes File.delete method to delete the link" do
@@ -306,9 +310,11 @@ describe Chef::Resource::Link do
     shared_context "soft links prerequisites" do
       before(:each) do
         allow(provider.file_class).to receive(:symlink?).with(
-          "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+          "#{CHEF_SPEC_DATA}/fofile-link"
+        ).and_return(true)
         allow(provider.file_class).to receive(:readlink).with(
-          "#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
+          "#{CHEF_SPEC_DATA}/fofile-link"
+        ).and_return("#{CHEF_SPEC_DATA}/fofile")
       end
     end
 
@@ -327,15 +333,19 @@ describe Chef::Resource::Link do
         allow(stat).to receive(:mode).and_return(0644)
 
         allow(provider.file_class).to receive(:symlink?).with(
-          "#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+          "#{CHEF_SPEC_DATA}/fofile-link"
+        ).and_return(false)
 
         allow(File).to receive(:exists?).with(
-          "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+          "#{CHEF_SPEC_DATA}/fofile-link"
+        ).and_return(true)
         allow(File).to receive(:exists?).with(
-          "#{CHEF_SPEC_DATA}/fofile").and_return(true)
+          "#{CHEF_SPEC_DATA}/fofile"
+        ).and_return(true)
 
         allow(provider.file_class).to receive(:stat).with(
-          "#{CHEF_SPEC_DATA}/fofile").and_return(stat)
+          "#{CHEF_SPEC_DATA}/fofile"
+        ).and_return(stat)
       end
     end
 
@@ -346,7 +356,8 @@ describe Chef::Resource::Link do
 
       before(:each) do
         allow(Chef::Resource::Link).to receive(:new).with(
-          provider.new_resource.name).and_return(resource_link)
+          provider.new_resource.name
+        ).and_return(resource_link)
         allow(resource_link).to receive(:verify_links_supported!)
         allow(Chef::Platform).to receive(:windows?).and_return(true)
       end

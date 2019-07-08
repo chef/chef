@@ -50,7 +50,7 @@ class Chef
 
       property :route_type, [Symbol, String],
         description: "",
-        equal_to: [:host, :net], default: :host, desired_state: false
+        equal_to: %i{host net}, default: :host, desired_state: false
     end
   end
 end

@@ -42,7 +42,7 @@ class Chef
         # JSON gem requires top level object to be a Hash or Array (otherwise
         # you get the "must contain two octets" error). Yajl doesn't impose the
         # same limitation. For compatibility, we re-impose this condition.
-        unless obj.kind_of?(Hash) || obj.kind_of?(Array)
+        unless obj.is_a?(Hash) || obj.is_a?(Array)
           raise Chef::Exceptions::JSON::ParseError, "Top level JSON object must be a Hash or Array. (actual: #{obj.class})"
         end
 

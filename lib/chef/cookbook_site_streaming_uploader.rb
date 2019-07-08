@@ -79,7 +79,7 @@ class Chef
 
         unless params.nil? || params.empty?
           params.each do |key, value|
-            if value.kind_of?(File)
+            if value.is_a?(File)
               content_file = value
               filepath = value.path
               filename = File.basename(filepath)

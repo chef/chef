@@ -51,7 +51,7 @@ describe Chef::Mixin::ShellOut do
     let(:retobj) { instance_double(Mixlib::ShellOut, "error!" => false) }
     let(:cmd) { "echo '#{rand(1000)}'" }
 
-    [ :shell_out, :shell_out! ].each do |method|
+    %i{shell_out shell_out!}.each do |method|
       describe "##{method}" do
 
         describe "when the last argument is a Hash" do
@@ -248,7 +248,7 @@ describe Chef::Mixin::ShellOut do
       let(:provider) { new_resource.provider_for_action(:install) }
 
       describe "on Chef-15", chef: ">= 15" do
-        [ :shell_out, :shell_out! ].each do |method|
+        %i{shell_out shell_out!}.each do |method|
           stubbed_method = (method == :shell_out) ? :shell_out_compacted : :shell_out_compacted!
           it "#{method} defaults to 900 seconds" do
             expect(provider).to receive(stubbed_method).with("foo", timeout: 900)
@@ -284,7 +284,7 @@ describe Chef::Mixin::ShellOut do
       let(:new_resource) { Chef::Resource::Package.new("foo") }
       let(:provider) { new_resource.provider_for_action(:install) }
 
-      [ :shell_out, :shell_out! ].each do |method|
+      %i{shell_out shell_out!}.each do |method|
         stubbed_method = (method == :shell_out) ? :shell_out_compacted : :shell_out_compacted!
         it "#{method} defaults to 900 seconds" do
           expect(provider).to receive(stubbed_method).with("foo", timeout: 900)

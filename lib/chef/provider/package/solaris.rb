@@ -83,6 +83,7 @@ class Chef
 
         def candidate_version
           return @candidate_version if @candidate_version
+
           status = shell_out("pkginfo", "-l", "-d", new_resource.source, new_resource.package_name)
           status.stdout.each_line do |line|
             case line
@@ -95,6 +96,7 @@ class Chef
           unless status.exitstatus == 0
             raise Chef::Exceptions::Package, "pkginfo -l -d #{new_resource.source} - #{status.inspect}!"
           end
+
           @candidate_version
         end
 

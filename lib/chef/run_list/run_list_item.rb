@@ -18,10 +18,10 @@
 class Chef
   class RunList
     class RunListItem
-      QUALIFIED_RECIPE             = %r{^recipe\[([^\]@]+)(@([0-9]+(\.[0-9]+){1,2}))?\]$}.freeze
-      QUALIFIED_ROLE               = %r{^role\[([^\]]+)\]$}.freeze
-      VERSIONED_UNQUALIFIED_RECIPE = %r{^([^@]+)(@([0-9]+(\.[0-9]+){1,2}))$}.freeze
-      FALSE_FRIEND                 = %r{[\[\]]}.freeze
+      QUALIFIED_RECIPE             = /^recipe\[([^\]@]+)(@([0-9]+(\.[0-9]+){1,2}))?\]$/.freeze
+      QUALIFIED_ROLE               = /^role\[([^\]]+)\]$/.freeze
+      VERSIONED_UNQUALIFIED_RECIPE = /^([^@]+)(@([0-9]+(\.[0-9]+){1,2}))$/.freeze
+      FALSE_FRIEND                 = /[\[\]]/.freeze
 
       attr_reader :name, :type, :version
 
@@ -80,7 +80,7 @@ class Chef
       end
 
       def ==(other)
-        if other.kind_of?(String)
+        if other.is_a?(String)
           to_s == other.to_s
         else
           other.respond_to?(:type) && other.respond_to?(:name) && other.respond_to?(:version) && other.type == @type && other.name == @name && other.version == @version

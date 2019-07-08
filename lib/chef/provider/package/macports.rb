@@ -93,6 +93,7 @@ class Chef
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "#{command} failed - #{status.inspect}!"
           end
+
           output
         end
       end
