@@ -28,7 +28,7 @@ class Chef
       introduced "14.0"
 
       property :class_name, String,
-        description: "The name of the handler class (can be module name-spaced).",
+        description: "The name of the handler class. This can be module name-spaced.",
         name_property: true
 
       property :source, String,
