@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.44 -->
-## [v15.1.44](https://github.com/chef/chef/tree/v15.1.44) (2019-07-08)
+<!-- latest_release 15.1.45 -->
+## [v15.1.45](https://github.com/chef/chef/tree/v15.1.45) (2019-07-08)
 
 #### Merged Pull Requests
-- fix Layout/AlignArguments [#8708](https://github.com/chef/chef/pull/8708) ([lamont-granquist](https://github.com/lamont-granquist))
+- More Chefstyle updates [#8711](https://github.com/chef/chef/pull/8711) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- More Chefstyle updates [#8711](https://github.com/chef/chef/pull/8711) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.45 -->
 - fix Layout/AlignArguments [#8708](https://github.com/chef/chef/pull/8708) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.44 -->
 - Improve generation of docs site resource pages [#8718](https://github.com/chef/chef/pull/8718) ([tas50](https://github.com/tas50)) <!-- 15.1.43 -->
 - Deprecate Ubuntu-14 [#8712](https://github.com/chef/chef/pull/8712) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.1.42 -->
