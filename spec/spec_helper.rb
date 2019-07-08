@@ -159,7 +159,7 @@ RSpec.configure do |config|
   config.filter_run_excluding ruby64_only: true unless ruby_64bit?
   config.filter_run_excluding ruby32_only: true unless ruby_32bit?
   config.filter_run_excluding windows_powershell_dsc_only: true unless windows_powershell_dsc?
-  config.filter_run_excluding windows_powershell_no_dsc_only: true unless ! windows_powershell_dsc?
+  config.filter_run_excluding windows_powershell_no_dsc_only: true if windows_powershell_dsc?
   config.filter_run_excluding windows_domain_joined_only: true unless windows_domain_joined?
   config.filter_run_excluding windows_not_domain_joined_only: true if windows_domain_joined?
   # We think this line was causing rspec tests to not run on the Jenkins windows
