@@ -195,7 +195,9 @@ class Chef
         #
         # @return [Train::Extras::CommandResult] an object containing stdout, stderr, and exit_status
         def run_command(command, &data_handler)
-          connection.run_command(command, &data_handler)
+          # windows ssh need to be pty as false.
+          opts = windows? ? { pty: false } : {}
+          connection.run_command(command, opts, &data_handler)
         end
 
         #
