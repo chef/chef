@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.45 -->
-## [v15.1.45](https://github.com/chef/chef/tree/v15.1.45) (2019-07-08)
+<!-- latest_release 15.1.46 -->
+## [v15.1.46](https://github.com/chef/chef/tree/v15.1.46) (2019-07-09)
 
 #### Merged Pull Requests
-- More Chefstyle updates [#8711](https://github.com/chef/chef/pull/8711) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add examples to the apt_repository resource [#8719](https://github.com/chef/chef/pull/8719) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add examples to the apt_repository resource [#8719](https://github.com/chef/chef/pull/8719) ([tas50](https://github.com/tas50)) <!-- 15.1.46 -->
 - More Chefstyle updates [#8711](https://github.com/chef/chef/pull/8711) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.45 -->
 - fix Layout/AlignArguments [#8708](https://github.com/chef/chef/pull/8708) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.44 -->
 - Improve generation of docs site resource pages [#8718](https://github.com/chef/chef/pull/8718) ([tas50](https://github.com/tas50)) <!-- 15.1.43 -->
