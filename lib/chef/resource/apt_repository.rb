@@ -27,6 +27,69 @@ class Chef
       description "Use the apt_repository resource to specify additional APT repositories. Adding a new repository will update the APT package cache immediately."
       introduced "12.9"
 
+      examples <<~DOC
+        Add repository with basic settings
+         ```ruby
+        apt_repository 'nginx' do
+          uri        'http://nginx.org/packages/ubuntu/'
+          components ['nginx']
+        end
+        ```
+         Enable Ubuntu multiverse repositories
+         ```ruby
+        apt_repository 'security-ubuntu-multiverse' do
+          uri          'http://security.ubuntu.com/ubuntu'
+          distribution 'trusty-security'
+          components   ['multiverse']
+          deb_src      true
+        end
+        ```
+         Add the Nginx PPA, autodetect the key and repository url
+         ```ruby
+        apt_repository 'nginx-php' do
+          uri          'ppa:nginx/stable'
+        end
+        ```
+         Add the JuJu PPA, grab the key from the keyserver, and add source repo
+         ```ruby
+        apt_repository 'juju' do
+          uri 'http://ppa.launchpad.net/juju/stable/ubuntu'
+          components ['main']
+          distribution 'trusty'
+          key 'C8068B11'
+          keyserver 'keyserver.ubuntu.com'
+          action :add
+          deb_src true
+        end
+        ```
+         Add repository that requires multiple keys to authenticate packages
+         ```ruby
+        apt_repository 'rundeck' do
+          uri 'https://dl.bintray.com/rundeck/rundeck-deb'
+          distribution '/'
+          key ['379CE192D401AB61', 'http://rundeck.org/keys/BUILD-GPG-KEY-Rundeck.org.key']
+          keyserver 'keyserver.ubuntu.com'
+          action :add
+        end
+        ```
+         Add the Cloudera Repo of CDH4 packages for Ubuntu 12.04 on AMD64
+         ```ruby
+        apt_repository 'cloudera' do
+          uri          'http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh'
+          arch         'amd64'
+          distribution 'precise-cdh4'
+          components   ['contrib']
+          key          'http://archive.cloudera.com/debian/archive.key'
+        end
+        ```
+         Remove a repository from the list
+         ```ruby
+        apt_repository 'zenoss' do
+          action :remove
+        end
+        ```
+      DOC
+
       # There's a pile of [ String, nil, FalseClass ] types in these properties.
       # This goes back to Chef 12 where String didn't default to nil and we had to do
       # it ourself, which required allowing that type as well. We've cleaned up the

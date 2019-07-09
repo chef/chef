@@ -15,6 +15,7 @@ namespace :docs_site do
     # @return String Chef Infra Client or Chef Client depending on version
     def branded_chef_client_name(version)
       return "Chef Infra Client" if Gem::Version.new(version) >= Gem::Version.new("15")
+
       "Chef Client"
     end
 
