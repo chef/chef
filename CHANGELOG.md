@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.49 -->
-## [v15.1.49](https://github.com/chef/chef/tree/v15.1.49) (2019-07-10)
+<!-- latest_release 15.1.50 -->
+## [v15.1.50](https://github.com/chef/chef/tree/v15.1.50) (2019-07-10)
 
 #### Merged Pull Requests
-- Roll back Rubygems to 3.0.3 to prevent double bundler install [#8736](https://github.com/chef/chef/pull/8736) ([tas50](https://github.com/tas50))
+- Bump openSSL to 1.0.2s [#8735](https://github.com/chef/chef/pull/8735) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump openSSL to 1.0.2s [#8735](https://github.com/chef/chef/pull/8735) ([tas50](https://github.com/tas50)) <!-- 15.1.50 -->
 - Roll back Rubygems to 3.0.3 to prevent double bundler install [#8736](https://github.com/chef/chef/pull/8736) ([tas50](https://github.com/tas50)) <!-- 15.1.49 -->
 - Remove rspec config for Travis [#8728](https://github.com/chef/chef/pull/8728) ([tas50](https://github.com/tas50)) <!-- 15.1.48 -->
 - Bump inspec-core to 4.7.3 [#8726](https://github.com/chef/chef/pull/8726) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.47 -->
