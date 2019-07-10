@@ -28,6 +28,7 @@ builder-to-testers-map:
     - el-7-s390x
   el-7-x86_64:
     - el-7-x86_64
+    - el-8-x86_64
   freebsd-10-x86_64:
     - freebsd-10-x86_64
     - freebsd-11-x86_64
