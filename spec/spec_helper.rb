@@ -140,7 +140,6 @@ RSpec.configure do |config|
 
   config.filter_run_excluding skip_appveyor: true if ENV["APPVEYOR"]
   config.filter_run_excluding appveyor_only: true unless ENV["APPVEYOR"]
-  config.filter_run_excluding skip_travis: true if ENV["TRAVIS"]
 
   config.filter_run_excluding windows_only: true unless windows?
   config.filter_run_excluding not_supported_on_windows: true if windows?
