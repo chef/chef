@@ -114,9 +114,3 @@ suites:
   - name: end-to-end
     run_list:
       - recipe[end_to_end::default]
-  - name: rspec
-    run_list:
-      - recipe[rspec]
-    lifecycle:
-      post_converge:
-        - remote: /usr/local/bin/run-chef-rspec
