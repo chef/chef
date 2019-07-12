@@ -561,7 +561,7 @@ class Chef
         end
 
         def wait_for_service
-          raise "Runit does not appear to be installed. Include runit::default before using the resource!" unless binary_exists?
+          raise "The Runit does not appear to be installed!" unless binary_exists?
 
           sleep 1 until ::FileTest.pipe?(::File.join(service_dir_name, "supervise", "ok"))
 
