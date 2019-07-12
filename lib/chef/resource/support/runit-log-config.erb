@@ -1,0 +1,24 @@
+<% if @config.log_size -%>
+s<%= @config.log_size %>
+<% end -%>
+<% if @config.log_num -%>
+n<%= @config.log_num %>
+<% end -%>
+<% if @config.log_min -%>
+N<%= @config.log_min %>
+<% end -%>
+<% if @config.log_timeout -%>
+t<%= @config.log_timeout %>
+<% end -%>
+<% if @config.log_processor -%>
+!<%= @config.log_processor %>
+<% end -%>
+<% if @config.log_socket -%>
+u<%= @config.log_socket %>
+<% end -%>
+<% if @config.log_prefix -%>
+p<%= @config.log_prefix %>
+<% end -%>
+<% if @config.log_config_append -%>
+<%= @config.log_config_append %>
+<% end -%>

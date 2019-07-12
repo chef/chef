@@ -287,8 +287,7 @@ class Chef
               owner new_resource.owner unless new_resource.owner.nil?
               group new_resource.group unless new_resource.group.nil?
               mode "0644"
-              cookbook "runit"
-              source "log-config.erb"
+              source ::File.expand_path("../support/runit-log-config.erb", __FILE__)
               variables(config: new_resource)
               notifies :run, "ruby_block[restart_log_service]", :delayed
               action :create
@@ -303,8 +302,7 @@ class Chef
                 owner new_resource.owner unless new_resource.owner.nil?
                 group new_resource.group unless new_resource.group.nil?
                 mode "0755"
-                cookbook "runit"
-                source "log-run.erb"
+                source ::File.expand_path("../support/runit-log-run.erb", __FILE__)
                 variables(config: new_resource)
                 notifies :run, "ruby_block[restart_log_service]", :delayed
                 action :create
