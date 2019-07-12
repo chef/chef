@@ -288,6 +288,7 @@ class Chef
               group new_resource.group unless new_resource.group.nil?
               mode "0644"
               source ::File.expand_path("../support/runit-log-config.erb", __FILE__)
+              local true
               variables(config: new_resource)
               notifies :run, "ruby_block[restart_log_service]", :delayed
               action :create
@@ -303,6 +304,7 @@ class Chef
                 group new_resource.group unless new_resource.group.nil?
                 mode "0755"
                 source ::File.expand_path("../support/runit-log-run.erb", __FILE__)
+                local true
                 variables(config: new_resource)
                 notifies :run, "ruby_block[restart_log_service]", :delayed
                 action :create
@@ -402,6 +404,7 @@ class Chef
               group "root"
               mode "0755"
               source ::File.expand_path("../support/runit-init.d.erb", __FILE__)
+              local true
               variables(
                 name: new_resource.service_name,
                 sv_bin: new_resource.sv_bin,
