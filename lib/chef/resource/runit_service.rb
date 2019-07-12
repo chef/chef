@@ -57,22 +57,22 @@ class Chef
         description: "Options passed as variables to templates, for compatibility with legacy runit service definition. Default is an empty hash."
 
       property :log, [TrueClass, FalseClass], default: true,
-               description: "Whether to start the service's logger with svlogd, requires a template sv-service_name-log-run.erb to configure the log's run script."
+               description: "Determines whether to start the service's logger with svlogd, which requires a template sv-service_name-log-run.erb to configure the log's run script."
 
       property :cookbook, String,
-        description: "A cookbook where templates are located instead of where the resource is used. Applies for all the templates in the enable action."
+        description: "A cookbook where the templates are located, instead of where the resource is used. Applies for all the templates in the enable action."
 
       property :check, [TrueClass, FalseClass], default: false,
-               description: "Whether the service has a check script, requires a template sv-service_name-check.erb."
+               description: "Determines whether the service has a check script, which requires a template sv-service_name-check.erb."
 
       property :start_down, [TrueClass, FalseClass], default: false,
-               description: "Set the default state of the runit service to 'down' by creating <sv_dir>/down file. Defaults to false. Services using start_down will not be notified to restart when their run script is updated."
+               description: "Sets the default state of the runit service to 'down' by creating <sv_dir>/down file. Defaults to false. Services using start_down will not be notified to restart when their run script is updated."
 
       property :delete_downfile, [TrueClass, FalseClass], default: false,
-               description: "Delete previously created <sv_dir>/down file."
+               description: "Deletes previously created <sv_dir>/down file."
 
       property :finish, [TrueClass, FalseClass], default: false,
-               description: "Whether the service has a finish script, requires a template sv-service_name-finish.erb."
+               description: "Determines whether the service has a finish script, which requires a template sv-service_name-finish.erb."
 
       property :supervisor_owner, String,
         description: "The user that should be allowed to control this service, see runsv faq.",
@@ -97,13 +97,13 @@ class Chef
                deprecated: true, skip_docs: true
 
       property :default_logger, [TrueClass, FalseClass], default: false,
-               description: "Whether a default log/run script should be set up. If true, the default content of the run script will use svlogd to write logs to /var/log/service_name."
+               description: "Determines whether a default log/run script should be set up. If true, the default content of the run script will use svlogd to write logs to /var/log/service_name."
 
       property :restart_on_update, [TrueClass, FalseClass], default: true,
-               description: "Whether the service should be restarted when the run script is updated. Defaults to true. Set to false if the service shouldn't be restarted when the run script is updated."
+               description: "Determines whether the service should be restarted when the run script is updated. Defaults to true. Set to false if the service shouldn't be restarted when the run script is updated."
 
       property :run_template_name, String, default: lazy { service_name },
-               description: "An alternate filename of the run run script to use instead of the value provided in service_name."
+               description: "An alternate filename of the run script to use instead of the value provided in service_name."
 
       property :log_template_name, String, default: lazy { service_name },
                description: "An alternate filename of the log run script to use instead of the value provided in service_name."
@@ -118,14 +118,14 @@ class Chef
                description: "A hash of control signals (see control above) and their alternate template name(s) replacing service_name."
 
       property :status_command, String, default: lazy { "#{sv_bin} status #{service_name}" },
-               description: "The command used to check the status of the service to see if it is enabled/running (if it's running, it's enabled). This hardcodes the location of the sv program to /usr/bin/sv due to the aforementioned cookbook load order."
+               description: "The command used to check the status of the service to see if it is enabled/running. (If the service is running, it is enabled.) This hardcodes the location of the sv program to /usr/bin/sv due to the aforementioned cookbook load order."
 
       property :sv_templates, [TrueClass, FalseClass], default: true, description: "If true, the :enable action will create the service directory with the appropriate templates. Default is true. Set this to false if the service has a package that provides its own service directory. See Usage examples."
 
       property :sv_timeout, Integer,
         description: "Override the default sv timeout of 7 seconds."
 
-      property :sv_verbose, [TrueClass, FalseClass], default: false, description: "Whether to enable sv verbose mode. Default is false."
+      property :sv_verbose, [TrueClass, FalseClass], default: false, description: "Determines whether to enable sv verbose mode. Default is false."
 
       property :log_dir, String,
         default: lazy { ::File.join("/var/log/", service_name) },
@@ -141,7 +141,7 @@ class Chef
         description: "The maximum number of log files that will be retained after rotation. See svlogd(8) for the default value."
 
       property :log_min, Integer,
-        description: "The minimum number of log files that will be retained after rotation (if svlogd cannot create a new file and the minimum has not been reached, it will block).",
+        description: "The minimum number of log files that will be retained after rotation. If svlogd cannot create a new file and the minimum has not been reached, it will block.",
         default_description: "No minimum"
 
       property :log_timeout, Integer,
