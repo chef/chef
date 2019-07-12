@@ -401,8 +401,7 @@ class Chef
               owner "root"
               group "root"
               mode "0755"
-              cookbook "runit"
-              source "init.d.erb"
+              source ::File.expand_path("../support/runit-init.d.erb", __FILE__)
               variables(
                 name: new_resource.service_name,
                 sv_bin: new_resource.sv_bin,

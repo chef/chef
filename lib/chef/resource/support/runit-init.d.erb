@@ -1,0 +1,92 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          <%= @name %>
+# Required-Start:
+# Required-Stop:
+# Default-Start:
+# Default-Stop:
+# Short-Description: initscript for runit-managed <%= @name %> service
+### END INIT INFO
+
+# Author: Chef Software, Inc. <cookbooks@chef.io>
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="runit-managed <%= @name %>"
+NAME=<%= @name %>
+RUNIT=<%= @sv_bin %>
+RUNIT_ARGS="<%= @sv_args %>"
+SCRIPTNAME=<%= @init_dir %>$NAME
+
+# Exit if runit is not installed
+[ -x $RUNIT ] || exit 0
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+
+case "$1" in
+  start)
+        [ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC " "$NAME"
+        $RUNIT $RUNIT_ARGS start $NAME
+        [ "$VERBOSE" != no ] && log_end_msg $?
+        ;;
+  stop)
+        [ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+        $RUNIT $RUNIT_ARGS stop $NAME
+        [ "$VERBOSE" != no ] && log_end_msg $?
+        ;;
+  status)
+        $RUNIT $RUNIT_ARGS status $NAME && exit 0 || exit $?
+        ;;
+  reload)
+        [ "$VERBOSE" != no ] && log_daemon_msg "Reloading $DESC" "$NAME"
+        $RUNIT $RUNIT_ARGS reload $NAME
+        [ "$VERBOSE" != no ] && log_end_msg $?
+        ;;
+  force-reload)
+        [ "$VERBOSE" != no ] && log_daemon_msg "Force reloading $DESC" "$NAME"
+        $RUNIT $RUNIT_ARGS force-reload $NAME
+        [ "$VERBOSE" != no ] && log_end_msg $?
+        ;;
+  force-stop)
+        [ "$VERBOSE" != no ] && log_daemon_msg "Force stopping $DESC" "$NAME"
+        $RUNIT $RUNIT_ARGS force-stop $NAME
+        [ "$VERBOSE" != no ] && log_end_msg $?
+        ;;
+  force-restart)
+        [ "$VERBOSE" != no ] && log_daemon_msg "Force restarting $DESC" "$NAME"
+        $RUNIT $RUNIT_ARGS force-restart $NAME
+        [ "$VERBOSE" != no ] && log_end_msg $?
+        ;;
+  force-shutdown)
+        [ "$VERBOSE" != no ] && log_daemon_msg "Force shutdowning $DESC" "$NAME"
+        $RUNIT $RUNIT_ARGS force-shutdown $NAME
+        [ "$VERBOSE" != no ] && log_end_msg $?
+        ;;
+  restart)
+        [ "$VERBOSE" != no ] && log_daemon_msg "Restarting $DESC" "$NAME"
+        $RUNIT $RUNIT_ARGS restart $NAME
+        [ "$VERBOSE" != no ] && log_end_msg $?
+        ;;
+  shutdown)
+        [ "$VERBOSE" != no ] && log_daemon_msg "Shutdowning $DESC" "$NAME"
+        $RUNIT $RUNIT_ARGS shutdown $NAME
+        [ "$VERBOSE" != no ] && log_end_msg $?
+        ;;
+  try-restart)
+        [ "$VERBOSE" != no ] && log_daemon_msg "Try restarting $DESC" "$NAME"
+        $RUNIT $RUNIT_ARGS try-restart $NAME
+        [ "$VERBOSE" != no ] && log_end_msg $?
+        ;;
+  *)
+        echo "Usage: $SCRIPTNAME {start|stop|status|reload|force-reload|force-restart|force-shutdown|force-stop|restart|shutdown|try-restart}" >&2
+        exit 3
+        ;;
+esac
+
+:
+
