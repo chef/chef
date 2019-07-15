@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.52 -->
-## [v15.1.52](https://github.com/chef/chef/tree/v15.1.52) (2019-07-15)
+<!-- latest_release 15.1.53 -->
+## [v15.1.53](https://github.com/chef/chef/tree/v15.1.53) (2019-07-15)
 
 #### Merged Pull Requests
-- Fix RDoc copy-pasta in Chef::Mixin::ParamsValidate#validate [#8740](https://github.com/chef/chef/pull/8740) ([RubyTuesdayDONO](https://github.com/RubyTuesdayDONO))
+- Remove the unused rspec kitchen tests [#8741](https://github.com/chef/chef/pull/8741) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the unused rspec kitchen tests [#8741](https://github.com/chef/chef/pull/8741) ([tas50](https://github.com/tas50)) <!-- 15.1.53 -->
 - Fix RDoc copy-pasta in Chef::Mixin::ParamsValidate#validate [#8740](https://github.com/chef/chef/pull/8740) ([RubyTuesdayDONO](https://github.com/RubyTuesdayDONO)) <!-- 15.1.52 -->
 - Pull in latest omnibus-software to fix Windows builds [#8739](https://github.com/chef/chef/pull/8739) ([btm](https://github.com/btm)) <!-- 15.1.51 -->
 - Bump openSSL to 1.0.2s [#8735](https://github.com/chef/chef/pull/8735) ([tas50](https://github.com/tas50)) <!-- 15.1.50 -->
