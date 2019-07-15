@@ -42,7 +42,7 @@ class Chef
       #     (`opts[:is].any? { |v| v === value }`). (See #_pv_is.)
       #   @option opts [Object,Array] :equal_to An object, or list
       #     of objects, that must be equal to the value using Ruby's `==`
-      #     operator (`opts[:is].any? { |v| v == value }`)  (See #_pv_equal_to.)
+      #     operator (`opts[:equal_to].any? { |v| v == value }`)  (See #_pv_equal_to.)
       #   @option opts [Regexp,Array<Regexp>] :regex An object, or
       #     list of objects, that must match the value with `regex.match(value)`.
       #     (See #_pv_regex)
