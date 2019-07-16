@@ -31,6 +31,9 @@ class Chef::Application::Base < Chef::Application
   include ChefConfig::Mixin::DotD
   include LicenseAcceptance::CLIFlags::MixlibCLI
 
+  # Mimic self_pipe sleep from Unicorn to capture signals safely
+  SELF_PIPE = [] # rubocop:disable Style/MutableConstant
+
   option :config_option,
     long: "--config-option OPTION=VALUE",
     description: "Override a single configuration option.",

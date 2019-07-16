@@ -24,9 +24,6 @@ require "uri" unless defined?(URI)
 
 class Chef::Application::Client < Chef::Application::Base
 
-  # Mimic self_pipe sleep from Unicorn to capture signals safely
-  SELF_PIPE = [] # rubocop:disable Style/MutableConstant
-
   option :config_file,
     short: "-c CONFIG",
     long: "--config CONFIG",
