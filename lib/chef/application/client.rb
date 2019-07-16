@@ -47,11 +47,6 @@ class Chef::Application::Client < Chef::Application::Base
     description: "Set the PID file location, for the #{Chef::Dist::CLIENT} daemon process. Defaults to /tmp/chef-client.pid.",
     proc: nil
 
-  option :once,
-    long: "--once",
-    description: "Cancel any interval or splay options, run #{Chef::Dist::CLIENT} once and exit.",
-    boolean: true
-
   option :chef_server_url,
     short: "-S CHEFSERVERURL",
     long: "--server CHEFSERVERURL",

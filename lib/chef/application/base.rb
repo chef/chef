@@ -39,6 +39,11 @@ class Chef::Application::Base < Chef::Application
       existing
     }
 
+  option :once,
+    long: "--once",
+    description: "Cancel any interval or splay options, run #{Chef::Dist::PRODUCT} once and exit.",
+    boolean: true
+
   option :formatter,
     short: "-F FORMATTER",
     long: "--format FORMATTER",
