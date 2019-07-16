@@ -48,11 +48,6 @@ class Chef::Application::Client < Chef::Application::Base
     description: "Set the PID file location, for the #{Chef::Dist::CLIENT} daemon process. Defaults to /tmp/chef-client.pid.",
     proc: nil
 
-  option :named_run_list,
-    short: "-n NAMED_RUN_LIST",
-    long: "--named-run-list NAMED_RUN_LIST",
-    description: "Use a policyfile's named run list instead of the default run list."
-
   option :runlist,
     short: "-r RunlistItem,RunlistItem...",
     long: "--runlist RunlistItem,RunlistItem...",

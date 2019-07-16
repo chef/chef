@@ -286,6 +286,11 @@ class Chef::Application::Base < Chef::Application
     description: "(#{Chef::Dist::CLIENT} only) Use cached cookbooks without overwriting local differences from the #{Chef::Dist::SERVER_PRODUCT}.",
     boolean: false
 
+  option :named_run_list,
+    short: "-n NAMED_RUN_LIST",
+    long: "--named-run-list NAMED_RUN_LIST",
+    description: "Use a policyfile's named run list instead of the default run list."
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
   RECONFIGURE_SIGNAL = "H".freeze
 
