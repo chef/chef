@@ -138,15 +138,6 @@ class Chef::Application::Client < Chef::Application::Base
     description: "Use cached cookbooks without overwriting local differences from the #{Chef::Dist::SERVER_PRODUCT}.",
     boolean: false
 
-  option :target,
-    short: "-t TARGET",
-    long: "--target TARGET",
-    description: "Target #{Chef::Dist::PRODUCT} against a remote system or device",
-    proc: lambda { |target|
-      Chef::Log.warn "-- EXPERIMENTAL -- Target mode activated, resources and dsl may change without warning -- EXPERIMENTAL --"
-      target
-    }
-
   IMMEDIATE_RUN_SIGNAL = "1".freeze
   RECONFIGURE_SIGNAL = "H".freeze
 
