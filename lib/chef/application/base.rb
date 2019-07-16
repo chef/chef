@@ -29,8 +29,7 @@ require "mixlib/archive" unless defined?(Mixlib::Archive)
 # This is a temporary class being used as a part of an effort to reduce duplication
 # between Chef::Application::Client and Chef::Application::Solo.
 #
-# If you are looking to make edits to the Client/Solo behavior please make changes here,
-# this Base class is the correct behavior.
+# If you are looking to make edits to the Client/Solo behavior please make changes here.
 #
 # If you are looking to reference or subclass this class, use Chef::Application::Client
 # instead.  This base class will be removed once the work is complete and external code
