@@ -181,6 +181,11 @@ class Chef::Application::Base < Chef::Application
     description: "Only run the bare minimum Ohai plugins #{Chef::Dist::PRODUCT} needs to function.",
     boolean: true
 
+  option :delete_entire_chef_repo,
+    long: "--delete-entire-chef-repo",
+    description: "DANGEROUS: does what it says, only useful with --recipe-url.",
+    boolean: true
+
   option :ez,
     long: "--ez",
     description: "A memorial for Ezra Zygmuntowicz.",

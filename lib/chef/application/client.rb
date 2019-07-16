@@ -128,11 +128,6 @@ class Chef::Application::Client < Chef::Application::Base
     description: "Enable FIPS mode.",
     boolean: true
 
-  option :delete_entire_chef_repo,
-    long: "--delete-entire-chef-repo",
-    description: "DANGEROUS: does what it says, only useful with --recipe-url.",
-    boolean: true
-
   option :skip_cookbook_sync,
     long: "--[no-]skip-cookbook-sync",
     description: "Use cached cookbooks without overwriting local differences from the #{Chef::Dist::SERVER_PRODUCT}.",

@@ -43,11 +43,6 @@ class Chef::Application::Solo < Chef::Application::Base
     long: "--recipe-url RECIPE_URL",
     description: "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache."
 
-  option :delete_entire_chef_repo,
-    long: "--delete-entire-chef-repo",
-    description: "DANGEROUS: does what it says, only useful with --recipe-url.",
-    boolean: true
-
   option :solo_legacy_mode,
     long: "--legacy-mode",
     description: "Run #{Chef::Dist::SOLO} in legacy mode.",
