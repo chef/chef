@@ -49,11 +49,6 @@ class Chef::Application::Solo < Chef::Application::Base
     long: "--recipe-url RECIPE_URL",
     description: "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache."
 
-  option :solo_legacy_mode,
-    long: "--legacy-mode",
-    description: "Run #{Chef::Dist::SOLO} in legacy mode.",
-    boolean: true
-
   # Get this party started
   def run(enforce_license: false)
     setup_signal_handlers

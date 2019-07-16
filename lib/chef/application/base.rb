@@ -233,6 +233,59 @@ class Chef::Application::Base < Chef::Application
     description: "Enable FIPS mode.",
     boolean: true
 
+  option :solo_legacy_mode,
+    long: "--legacy-mode",
+    description: "Run in legacy mode.",
+    boolean: true
+
+  option :chef_server_url,
+    short: "-S CHEFSERVERURL",
+    long: "--server CHEFSERVERURL",
+    description: "The #{Chef::Dist::SERVER_PRODUCT} URL.",
+    proc: nil
+
+  option :validation_key,
+    short: "-K KEY_FILE",
+    long: "--validation_key KEY_FILE",
+    description: "Set the validation key file location, used for registering new clients.",
+    proc: nil
+
+  option :client_key,
+    short: "-k KEY_FILE",
+    long: "--client_key KEY_FILE",
+    description: "Set the client key file location.",
+    proc: nil
+
+  option :enable_reporting,
+    short: "-R",
+    long: "--enable-reporting",
+    description: "(#{Chef::Dist::CLIENT} only) reporting data collection for runs.",
+    boolean: true
+
+  option :local_mode,
+    short: "-z",
+    long: "--local-mode",
+    description: "Point at local repository.",
+    boolean: true
+
+  option :chef_zero_host,
+    long: "--chef-zero-host HOST",
+    description: "Host to start #{Chef::Dist::ZERO} on."
+
+  option :chef_zero_port,
+    long: "--chef-zero-port PORT",
+    description: "Port (or port range) to start #{Chef::Dist::ZERO} on. Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
+
+  option :listen,
+    long: "--[no-]listen",
+    description: "Whether a local mode (-z) server binds to a port.",
+    boolean: false
+
+  option :skip_cookbook_sync,
+    long: "--[no-]skip-cookbook-sync",
+    description: "(#{Chef::Dist::CLIENT} only) Use cached cookbooks without overwriting local differences from the #{Chef::Dist::SERVER_PRODUCT}.",
+    boolean: false
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
   RECONFIGURE_SIGNAL = "H".freeze
 

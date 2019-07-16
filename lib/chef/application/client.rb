@@ -48,24 +48,6 @@ class Chef::Application::Client < Chef::Application::Base
     description: "Set the PID file location, for the #{Chef::Dist::CLIENT} daemon process. Defaults to /tmp/chef-client.pid.",
     proc: nil
 
-  option :chef_server_url,
-    short: "-S CHEFSERVERURL",
-    long: "--server CHEFSERVERURL",
-    description: "The #{Chef::Dist::SERVER_PRODUCT} URL.",
-    proc: nil
-
-  option :validation_key,
-    short: "-K KEY_FILE",
-    long: "--validation_key KEY_FILE",
-    description: "Set the validation key file location, used for registering new clients.",
-    proc: nil
-
-  option :client_key,
-    short: "-k KEY_FILE",
-    long: "--client_key KEY_FILE",
-    description: "Set the client key file location.",
-    proc: nil
-
   option :named_run_list,
     short: "-n NAMED_RUN_LIST",
     long: "--named-run-list NAMED_RUN_LIST",
@@ -85,36 +67,6 @@ class Chef::Application::Client < Chef::Application::Base
   option :recipe_url,
     long: "--recipe-url=RECIPE_URL",
     description: "Pull down a remote archive of recipes and unpack it to the cookbook cache. Only used in local mode."
-
-  option :enable_reporting,
-    short: "-R",
-    long: "--enable-reporting",
-    description: "Enable reporting data collection for #{Chef::Dist::PRODUCT} runs.",
-    boolean: true
-
-  option :local_mode,
-    short: "-z",
-    long: "--local-mode",
-    description: "Point #{Chef::Dist::CLIENT} at local repository.",
-    boolean: true
-
-  option :chef_zero_host,
-    long: "--chef-zero-host HOST",
-    description: "Host to start #{Chef::Dist::ZERO} on."
-
-  option :chef_zero_port,
-    long: "--chef-zero-port PORT",
-    description: "Port (or port range) to start #{Chef::Dist::ZERO} on. Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
-
-  option :listen,
-    long: "--[no-]listen",
-    description: "Wt dhether a local mode (-z) server binds to a port.",
-    boolean: false
-
-  option :skip_cookbook_sync,
-    long: "--[no-]skip-cookbook-sync",
-    description: "Use cached cookbooks without overwriting local differences from the #{Chef::Dist::SERVER_PRODUCT}.",
-    boolean: false
 
   # Reconfigure the chef client
   # Re-open the JSON attributes and load them into the node
