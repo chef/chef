@@ -138,9 +138,6 @@ class Chef::Application::Client < Chef::Application::Base
     description: "Use cached cookbooks without overwriting local differences from the #{Chef::Dist::SERVER_PRODUCT}.",
     boolean: false
 
-  IMMEDIATE_RUN_SIGNAL = "1".freeze
-  RECONFIGURE_SIGNAL = "H".freeze
-
   # Reconfigure the chef client
   # Re-open the JSON attributes and load them into the node
   def reconfigure
@@ -238,108 +235,4 @@ class Chef::Application::Client < Chef::Application::Base
     Ohai::Log.use_log_devices( Chef::Log )
   end
 
-  def setup_signal_handlers
-    super
-
-    unless Chef::Platform.windows?
-      SELF_PIPE.replace IO.pipe
-
-      trap("USR1") do
-        Chef::Log.info("SIGUSR1 received, will run now or after the current run")
-        SELF_PIPE[1].putc(IMMEDIATE_RUN_SIGNAL) # wakeup master process from select
-      end
-
-      # Override the trap setup in the parent so we can avoid running reconfigure during a run
-      trap("HUP") do
-        Chef::Log.info("SIGHUP received, will reconfigure now or after the current run")
-        SELF_PIPE[1].putc(RECONFIGURE_SIGNAL) # wakeup master process from select
-      end
-    end
-  end
-
-  # Run the chef client, optionally daemonizing or looping at intervals.
-  def run_application
-    if Chef::Config[:version]
-      puts "#{Chef::Dist::PRODUCT} version: #{::Chef::VERSION}"
-    end
-
-    if !Chef::Config[:client_fork] || Chef::Config[:once]
-      begin
-        # run immediately without interval sleep, or splay
-        run_chef_client(Chef::Config[:specific_recipes])
-      rescue SystemExit
-        raise
-      rescue Exception => e
-        Chef::Application.fatal!("#{e.class}: #{e.message}", e)
-      end
-    else
-      interval_run_chef_client
-    end
-  end
-
-  private
-
-  def interval_run_chef_client
-    if Chef::Config[:daemonize]
-      Chef::Daemon.daemonize(Chef::Dist::CLIENT)
-
-      # Start first daemonized run after configured number of seconds
-      if Chef::Config[:daemonize].is_a?(Integer)
-        sleep_then_run_chef_client(Chef::Config[:daemonize])
-      end
-    end
-
-    loop do
-      sleep_then_run_chef_client(time_to_sleep)
-      Chef::Application.exit!("Exiting", 0) unless Chef::Config[:interval]
-    end
-  end
-
-  def sleep_then_run_chef_client(sleep_sec)
-    Chef::Log.trace("Sleeping for #{sleep_sec} seconds")
-
-    # interval_sleep will return early if we received a signal (unless on windows)
-    interval_sleep(sleep_sec)
-
-    run_chef_client(Chef::Config[:specific_recipes])
-
-    reconfigure
-  rescue SystemExit => e
-    raise
-  rescue Exception => e
-    if Chef::Config[:interval]
-      Chef::Log.error("#{e.class}: #{e}")
-      Chef::Log.trace("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
-      retry
-    end
-
-    Chef::Application.fatal!("#{e.class}: #{e.message}", e)
-  end
-
-  def time_to_sleep
-    duration = 0
-    duration += rand(Chef::Config[:splay]) if Chef::Config[:splay]
-    duration += Chef::Config[:interval] if Chef::Config[:interval]
-    duration
-  end
-
-  # sleep and handle queued signals
-  def interval_sleep(sec)
-    unless SELF_PIPE.empty?
-      # mimic sleep with a timeout on IO.select, listening for signals setup in #setup_signal_handlers
-      return unless IO.select([ SELF_PIPE[0] ], nil, nil, sec)
-
-      signal = SELF_PIPE[0].getc.chr
-
-      return if signal == IMMEDIATE_RUN_SIGNAL # be explicit about this behavior
-
-      # we need to sleep again after reconfigure to avoid stampeding when logrotate runs out of cron
-      if signal == RECONFIGURE_SIGNAL
-        reconfigure
-        interval_sleep(sec)
-      end
-    else
-      sleep(sec)
-    end
-  end
 end
