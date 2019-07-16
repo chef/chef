@@ -22,6 +22,12 @@ require_relative "client"
 require "fileutils" unless defined?(FileUtils)
 require "pathname" unless defined?(Pathname)
 
+# DO NOT MAKE EDITS, see Chef::Application::Base
+#
+# Do not reference this class it will be removed in Chef-16
+#
+# @deprecated use Chef::Application::Client instead, this will be removed in Chef-16
+#
 class Chef::Application::Solo < Chef::Application::Base
 
   option :config_file,

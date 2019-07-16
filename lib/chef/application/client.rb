@@ -22,6 +22,10 @@ require_relative "../handler/error_report"
 require_relative "../workstation_config_loader"
 require "uri" unless defined?(URI)
 
+# DO NOT MAKE EDITS, see Chef::Application::Base
+#
+# External code may call / subclass or make references to this class.
+#
 class Chef::Application::Client < Chef::Application::Base
 
   option :config_file,
