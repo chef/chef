@@ -181,6 +181,11 @@ class Chef::Application::Base < Chef::Application
     description: "Only run the bare minimum Ohai plugins #{Chef::Dist::PRODUCT} needs to function.",
     boolean: true
 
+  option :ez,
+    long: "--ez",
+    description: "A memorial for Ezra Zygmuntowicz.",
+    boolean: true
+
   attr_reader :chef_client_json
 
   def setup_application
@@ -211,4 +216,15 @@ class Chef::Application::Base < Chef::Application
         "Please confirm the location of the tarball and try again."
     end
   end
+
+  def for_ezra
+    puts <<~EOH
+      For Ezra Zygmuntowicz:
+        The man who brought you Chef Solo
+        Early contributor to Chef
+        Kind hearted open source advocate
+        Rest in peace, Ezra.
+    EOH
+  end
+
 end

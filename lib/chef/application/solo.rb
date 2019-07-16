@@ -43,11 +43,6 @@ class Chef::Application::Solo < Chef::Application::Base
     long: "--recipe-url RECIPE_URL",
     description: "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache."
 
-  option :ez,
-    long: "--ez",
-    description: "A memorial for Ezra Zygmuntowicz.",
-    boolean: true
-
   option :delete_entire_chef_repo,
     long: "--delete-entire-chef-repo",
     description: "DANGEROUS: does what it says, only useful with --recipe-url.",
@@ -150,16 +145,6 @@ class Chef::Application::Solo < Chef::Application::Base
   end
 
   private
-
-  def for_ezra
-    puts <<~EOH
-      For Ezra Zygmuntowicz:
-        The man who brought you Chef Solo
-        Early contributor to Chef
-        Kind hearted open source advocate
-        Rest in peace, Ezra.
-    EOH
-  end
 
   def interval_run_chef_client
     if Chef::Config[:daemonize]
