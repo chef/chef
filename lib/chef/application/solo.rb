@@ -194,13 +194,4 @@ class Chef::Application::Solo < Chef::Application::Base
       end
     end
   end
-
-  def fetch_recipe_tarball(url, path)
-    Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
-    File.open(path, "wb") do |f|
-      open(url) do |r|
-        f.write(r.read)
-      end
-    end
-  end
 end

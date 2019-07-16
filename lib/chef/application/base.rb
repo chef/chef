@@ -191,4 +191,19 @@ class Chef::Application::Base < Chef::Application
       "\nEnable #{Chef::Dist::CLIENT} interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 
+  def fetch_recipe_tarball(url, path)
+    Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
+    if File.exist?(url)
+      FileUtils.cp(url, path)
+    elsif url =~ URI.regexp
+      File.open(path, "wb") do |f|
+        open(url) do |r|
+          f.write(r.read)
+        end
+      end
+    else
+      Chef::Application.fatal! "You specified --recipe-url but the value is neither a valid URL nor a path to a file that exists on disk." +
+        "Please confirm the location of the tarball and try again."
+    end
+  end
 end
