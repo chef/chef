@@ -75,6 +75,8 @@ class Chef::Application::Solo < Chef::Application::Base
 
     set_specific_recipes
 
+    Chef::Config[:fips] = config[:fips] if config.key? :fips
+
     Chef::Config[:solo] = true
 
     if !Chef::Config[:solo_legacy_mode]

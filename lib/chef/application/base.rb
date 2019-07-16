@@ -215,6 +215,24 @@ class Chef::Application::Base < Chef::Application
       target
     }
 
+  option :disable_config,
+    long: "--disable-config",
+    description: "Refuse to load a config file and use defaults. This is for development and not a stable API.",
+    boolean: true
+
+  if Chef::Platform.windows?
+    option :fatal_windows_admin_check,
+      short: "-A",
+      long: "--fatal-windows-admin-check",
+      description: "Fail the run when #{Chef::Dist::CLIENT} doesn't have administrator privileges on Windows.",
+      boolean: true
+  end
+
+  option :fips,
+    long: "--[no-]fips",
+    description: "Enable FIPS mode.",
+    boolean: true
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
   RECONFIGURE_SIGNAL = "H".freeze
 

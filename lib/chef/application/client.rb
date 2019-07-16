@@ -106,28 +106,10 @@ class Chef::Application::Client < Chef::Application::Base
     long: "--chef-zero-port PORT",
     description: "Port (or port range) to start #{Chef::Dist::ZERO} on. Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
 
-  option :disable_config,
-    long: "--disable-config",
-    description: "Refuse to load a config file and use defaults. This is for development and not a stable API.",
-    boolean: true
-
-  if Chef::Platform.windows?
-    option :fatal_windows_admin_check,
-      short: "-A",
-      long: "--fatal-windows-admin-check",
-      description: "Fail the run when #{Chef::Dist::CLIENT} doesn't have administrator privileges on Windows.",
-      boolean: true
-  end
-
   option :listen,
     long: "--[no-]listen",
-    description: "Whether a local mode (-z) server binds to a port.",
+    description: "Wt dhether a local mode (-z) server binds to a port.",
     boolean: false
-
-  option :fips,
-    long: "--[no-]fips",
-    description: "Enable FIPS mode.",
-    boolean: true
 
   option :skip_cookbook_sync,
     long: "--[no-]skip-cookbook-sync",
