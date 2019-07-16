@@ -115,7 +115,7 @@ class Chef::Application::Base < Chef::Application
   option :interval,
     short: "-i SECONDS",
     long: "--interval SECONDS",
-    description: "Run #{Chef::Dist::CLIENT} periodically, in seconds.",
+    description: "Run #{Chef::Dist::PRODUCT} periodically, in seconds.",
     proc: lambda { |s| s.to_i }
 
   option :json_attribs,
@@ -144,7 +144,7 @@ class Chef::Application::Base < Chef::Application
   option :client_fork,
     short: "-f",
     long: "--[no-]fork",
-    description: "Fork #{Chef::Dist::CLIENT} process."
+    description: "Fork #{Chef::Dist::PRODUCT} process."
 
   option :why_run,
     short: "-W",
@@ -190,10 +190,10 @@ class Chef::Application::Base < Chef::Application
   private
 
   def unforked_interval_error_message
-    "Unforked #{Chef::Dist::CLIENT} interval runs are disabled by default." +
+    "Unforked #{Chef::Dist::PRODUCT} interval runs are disabled by default." +
       "\nConfiguration settings:" +
       ("\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]).to_s +
-      "\nEnable #{Chef::Dist::CLIENT} interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+      "\nEnable #{Chef::Dist::PRODUCT} interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 
   def fetch_recipe_tarball(url, path)
