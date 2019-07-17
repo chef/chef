@@ -36,6 +36,7 @@ describe Chef::Resource::KernelModule do
     expect { resource.action :install }.not_to raise_error
     expect { resource.action :uninstall }.not_to raise_error
     expect { resource.action :blacklist }.not_to raise_error
+    expect { resource.action :disable }.not_to raise_error
     expect { resource.action :load }.not_to raise_error
     expect { resource.action :unload }.not_to raise_error
     expect { resource.action :delete }.to raise_error(ArgumentError)
