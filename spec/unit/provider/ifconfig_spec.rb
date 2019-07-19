@@ -94,6 +94,17 @@ describe Chef::Provider::Ifconfig do
       expect(@new_resource).not_to be_updated
     end
 
+    it "should add a bridge interface" do
+      allow(@provider).to receive(:load_current_resource)
+      @new_resource.device "br-1234"
+      command = "ifconfig br-1234 10.0.0.1 netmask 255.255.254.0 metric 1 mtu 1500"
+      expect(@provider).to receive(:shell_out_compacted!).with(*command.split(" "))
+      expect(@provider).to receive(:generate_config)
+
+      @provider.run_action(:add)
+      expect(@new_resource).to be_updated
+    end
+
     # We are not testing this case with the assumption that anyone writing the cookbook would not make a typo == lo
     # it "should add a blank command if the #{@new_resource.device} == lo" do
     # end
