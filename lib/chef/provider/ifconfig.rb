@@ -110,7 +110,7 @@ class Chef
           #       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
-            addr_regex = /^(\w+):?(\d*):?\ .+$/
+            addr_regex = /^(\w+)(-?):?(\d*):?\ .+$/
             if line =~ addr_regex
               if line.match(addr_regex).nil?
                 @int_name = "nil"
