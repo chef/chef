@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.54 -->
-## [v15.1.54](https://github.com/chef/chef/tree/v15.1.54) (2019-07-18)
+<!-- latest_release 15.1.56 -->
+## [v15.1.56](https://github.com/chef/chef/tree/v15.1.56) (2019-07-19)
 
 #### Merged Pull Requests
-- test that inspec binstub is in the omnibus artifact [#8750](https://github.com/chef/chef/pull/8750) ([lamont-granquist](https://github.com/lamont-granquist))
+- dnf_package fixes for RHEL8 [#8754](https://github.com/chef/chef/pull/8754) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- dnf_package fixes for RHEL8 [#8754](https://github.com/chef/chef/pull/8754) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.56 -->
 - test that inspec binstub is in the omnibus artifact [#8750](https://github.com/chef/chef/pull/8750) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.54 -->
 - Remove the unused rspec kitchen tests [#8741](https://github.com/chef/chef/pull/8741) ([tas50](https://github.com/tas50)) <!-- 15.1.53 -->
 - Fix RDoc copy-pasta in Chef::Mixin::ParamsValidate#validate [#8740](https://github.com/chef/chef/pull/8740) ([RubyTuesdayDONO](https://github.com/RubyTuesdayDONO)) <!-- 15.1.52 -->
