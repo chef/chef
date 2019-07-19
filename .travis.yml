@@ -15,9 +15,6 @@ before_install:
   - rm -f .bundle/config
 
 before_script:
- # force all .rspec tests into progress display to reduce line count
- - echo --color > .rspec
- - echo -fp >> .rspec
  # necessary for sudo: true tests, ingore failures on tests invoked with sudo: false
  - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers
 
@@ -34,7 +31,7 @@ env:
 
 matrix:
   include:
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -50,7 +47,7 @@ matrix:
     env:
       - AMAZON=2
       - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -66,7 +63,7 @@ matrix:
     env:
       - AMAZON=201X
       - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -82,7 +79,7 @@ matrix:
     env:
       - UBUNTU=16.04
       - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -98,7 +95,7 @@ matrix:
     env:
       - UBUNTU=18.04
       - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -114,7 +111,7 @@ matrix:
     env:
       - DEBIAN=8
       - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -130,7 +127,7 @@ matrix:
     env:
       - DEBIAN=9
       - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -146,7 +143,7 @@ matrix:
     env:
       - DEBIAN=10
       - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -162,7 +159,7 @@ matrix:
     env:
       - CENTOS=6
       - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -178,7 +175,7 @@ matrix:
     env:
       - CENTOS=7
       - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -194,7 +191,7 @@ matrix:
     env:
       - FEDORA=latest
       - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     services: docker
     gemfile: kitchen-tests/Gemfile
     before_install:
@@ -210,7 +207,7 @@ matrix:
     env:
      - OPENSUSELEAP=42
      - KITCHEN_YAML=kitchen.yml
-  - rvm: 2.5.5
+  - rvm: 2.6.3
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - rvm @global do gem uninstall bundler -a -x || true
@@ -228,9 +225,3 @@ matrix:
       - cat /tmp/out.txt
       - sudo cat /var/log/squid3/cache.log
       - sudo cat /var/log/squid3/access.log
-
-notifications:
-  on_change: true
-  on_failure: true
-  on_success: change
-  on_pull_requests: false
