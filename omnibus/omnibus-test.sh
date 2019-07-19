@@ -93,8 +93,8 @@ if [[ ! -L $USR_BIN_DIR/ohai ]] || [[ $(ls -l $USR_BIN_DIR/ohai | awk '{print$NF
   exit 1
 fi
 
-if [[ ! -L $USR_BIN_DIR/inspec ]] || [[ $(ls -l $USR_BIN_DIR/inspec | awk '{print$NF}') != "$BIN_DIR/inspec" ]]; then
-  echo "$USR_BIN_DIR/inspec symlink to $BIN_DIR/inspec was not correctly created by the pre-install script!"
+if [[ ! -x $EMBEDDED_BIN_DIR/inspec ]]; then
+  echo "$EMBEDDED_BIN_DIR/inspec does not exist!"
   exit 1
 fi
 
