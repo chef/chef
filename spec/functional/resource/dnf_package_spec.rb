@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright 2016-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -190,8 +190,8 @@ describe Chef::Resource::RpmPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
-      it "matches with a vr glob" do
-        pending "doesn't work on command line either"
+      # only works on rhel >= 8, was broken on old dnf
+      it "matches with a vr glob", :rhel_gte_8 do
         flush_cache
         dnf_package.package_name("chef_rpm")
         dnf_package.version("1.10-1*")
@@ -200,8 +200,8 @@ describe Chef::Resource::RpmPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
-      it "matches with an evr glob" do
-        pending "doesn't work on command line either"
+      # only works on rhel >= 8, was broken on old dnf
+      it "matches with an evr glob", :rhel_gte_8 do
         flush_cache
         dnf_package.package_name("chef_rpm")
         dnf_package.version("0:1.10-1*")
