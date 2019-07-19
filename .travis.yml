@@ -225,9 +225,3 @@ matrix:
       - cat /tmp/out.txt
       - sudo cat /var/log/squid3/cache.log
       - sudo cat /var/log/squid3/access.log
-
-notifications:
-  on_change: true
-  on_failure: true
-  on_success: change
-  on_pull_requests: false
