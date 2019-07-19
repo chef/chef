@@ -142,6 +142,50 @@ steps:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
+- label: "Integration Specs Fedora :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/fedora-latest
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+          - BUNDLE_GEMFILE=/workdir/Gemfile
+
+- label: "Functional Specs Fedora :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - yum install -y crontabs e2fsprogs util-linux
+    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/fedora-latest
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+
+- label: "Unit Specs Fedora :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle exec rake spec:unit
+    - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/fedora-latest
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+
 - label: "Chefstyle :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
@@ -413,7 +457,7 @@ steps:
 #       linux:
 #         privileged: true
 #         single-use: true
-# 
+#
 # - label: "Kitchen Tests openSUSE Leap: 42"
 #   commands:
 #     - scripts/bk_tests/bk_linux_exec.sh
