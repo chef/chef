@@ -112,7 +112,7 @@ class Chef
           # Permalink for addr_regex : https://rubular.com/r/JrykUpfjRnYeQD
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
-            addr_regex = /^((\w|-)+):?(\d*):?\ .+$/
+            addr_regex = /^(\w+)(-?):?(\d*):?\ .+$/
             if line =~ addr_regex
               if line.match(addr_regex).nil?
                 @int_name = "nil"
