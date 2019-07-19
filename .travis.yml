@@ -15,9 +15,6 @@ before_install:
   - rm -f .bundle/config
 
 before_script:
- # force all .rspec tests into progress display to reduce line count
- - echo --color > .rspec
- - echo -fp >> .rspec
  # necessary for sudo: true tests, ingore failures on tests invoked with sudo: false
  - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers
 
