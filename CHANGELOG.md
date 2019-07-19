@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.56 -->
-## [v15.1.56](https://github.com/chef/chef/tree/v15.1.56) (2019-07-19)
+<!-- latest_release 15.1.57 -->
+## [v15.1.57](https://github.com/chef/chef/tree/v15.1.57) (2019-07-19)
 
 #### Merged Pull Requests
-- dnf_package fixes for RHEL8 [#8754](https://github.com/chef/chef/pull/8754) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add rspec testing on Fedora in Buildkite [#8759](https://github.com/chef/chef/pull/8759) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add rspec testing on Fedora in Buildkite [#8759](https://github.com/chef/chef/pull/8759) ([tas50](https://github.com/tas50)) <!-- 15.1.57 -->
 - dnf_package fixes for RHEL8 [#8754](https://github.com/chef/chef/pull/8754) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.56 -->
 - test that inspec binstub is in the omnibus artifact [#8750](https://github.com/chef/chef/pull/8750) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.54 -->
 - Remove the unused rspec kitchen tests [#8741](https://github.com/chef/chef/pull/8741) ([tas50](https://github.com/tas50)) <!-- 15.1.53 -->
