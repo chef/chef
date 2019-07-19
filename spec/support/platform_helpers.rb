@@ -175,6 +175,14 @@ def rhel7?
   rhel? && !!(ohai[:platform_version].to_i == 7)
 end
 
+def rhel8?
+  rhel? && !!(ohai[:platform_version].to_i == 8)
+end
+
+def rhel_gte_8?
+  rhel? && !!(ohai[:platform_version].to_i >= 8)
+end
+
 def debian_family?
   !!(ohai[:platform_family] == "debian")
 end
