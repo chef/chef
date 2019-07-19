@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 968307c129ee54416f5a4d07ca8f8ca2d2b12825
+  revision: 035cc8392be8906b4c13e7dd2048d9c659fd034e
   branch: master
   specs:
-    omnibus (6.0.27)
+    omnibus (6.0.30)
       aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 34e5138a5676dcaa3146a5a45aac4651ea2950ae
+  revision: 9467dfd2f4e7a85764c487b6607db19b28654ac5
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,17 +32,17 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.169.0)
-    aws-sdk-core (3.54.0)
+    aws-partitions (1.190.0)
+    aws-sdk-core (3.59.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.21.0)
-      aws-sdk-core (~> 3, >= 3.53.0)
+    aws-sdk-kms (1.23.0)
+      aws-sdk-core (~> 3, >= 3.58.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.41.0)
-      aws-sdk-core (~> 3, >= 3.53.0)
+    aws-sdk-s3 (1.45.0)
+      aws-sdk-core (~> 3, >= 3.58.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.1.0)
@@ -206,7 +206,7 @@ GEM
     mixlib-archive (1.0.1-universal-mingw32)
       mixlib-log
     mixlib-authentication (2.1.1)
-    mixlib-cli (2.0.6)
+    mixlib-cli (2.1.1)
     mixlib-config (3.0.1)
       tomlrb
     mixlib-install (3.11.18)
@@ -270,7 +270,7 @@ GEM
     pry-stack_explorer (0.4.9.3)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (3.1.0)
+    public_suffix (3.1.1)
     rack (2.0.7)
     retryable (3.0.4)
     rspec (3.8.0)
