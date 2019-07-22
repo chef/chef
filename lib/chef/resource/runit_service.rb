@@ -191,7 +191,7 @@ class Chef
             start_command "#{new_resource.sv_bin} start #{service_dir_name}"
             stop_command "#{new_resource.sv_bin} stop #{service_dir_name}"
             restart_command "#{new_resource.sv_bin} restart #{service_dir_name}"
-            status_command "#{new_resource.sv_bin} status #{service_dir_name}"
+            status_command new_resource.status_command
             action :nothing
           end
         end
