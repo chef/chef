@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.1.58 -->
-## [v15.1.58](https://github.com/chef/chef/tree/v15.1.58) (2019-07-19)
+<!-- latest_release 15.2.0 -->
+## [v15.2.0](https://github.com/chef/chef/tree/v15.2.0) (2019-07-22)
 
 #### Merged Pull Requests
-- Implement disable for disabling kernel_modules [#8747](https://github.com/chef/chef/pull/8747) ([tomdoherty](https://github.com/tomdoherty))
+- Bump InSpec, Ohai, and appbundler to the latest [#8761](https://github.com/chef/chef/pull/8761) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump InSpec, Ohai, and appbundler to the latest [#8761](https://github.com/chef/chef/pull/8761) ([tas50](https://github.com/tas50)) <!-- 15.2.0 -->
 - Implement disable for disabling kernel_modules [#8747](https://github.com/chef/chef/pull/8747) ([tomdoherty](https://github.com/tomdoherty)) <!-- 15.1.58 -->
 - Add rspec testing on Fedora in Buildkite [#8759](https://github.com/chef/chef/pull/8759) ([tas50](https://github.com/tas50)) <!-- 15.1.57 -->
 - dnf_package fixes for RHEL8 [#8754](https://github.com/chef/chef/pull/8754) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.56 -->
