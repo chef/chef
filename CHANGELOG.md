@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.0 -->
-## [v15.2.0](https://github.com/chef/chef/tree/v15.2.0) (2019-07-22)
+<!-- latest_release 15.2.1 -->
+## [v15.2.1](https://github.com/chef/chef/tree/v15.2.1) (2019-07-23)
 
 #### Merged Pull Requests
-- Bump InSpec, Ohai, and appbundler to the latest [#8761](https://github.com/chef/chef/pull/8761) ([tas50](https://github.com/tas50))
+- Move chef-client and chef-solo shared code into a base class and remove duplication and skew [#8744](https://github.com/chef/chef/pull/8744) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Move chef-client and chef-solo shared code into a base class and remove duplication and skew [#8744](https://github.com/chef/chef/pull/8744) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.1 -->
 - Bump InSpec, Ohai, and appbundler to the latest [#8761](https://github.com/chef/chef/pull/8761) ([tas50](https://github.com/tas50)) <!-- 15.2.0 -->
 - Implement disable for disabling kernel_modules [#8747](https://github.com/chef/chef/pull/8747) ([tomdoherty](https://github.com/tomdoherty)) <!-- 15.1.58 -->
 - Add rspec testing on Fedora in Buildkite [#8759](https://github.com/chef/chef/pull/8759) ([tas50](https://github.com/tas50)) <!-- 15.1.57 -->
