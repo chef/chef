@@ -447,6 +447,7 @@ describe Chef::ResourceReporter do
         # TODO: API takes integer number of milliseconds as a string. This
         # should be an int.
         expect(@first_update_report).to have_key("duration")
+        expect(@first_update_report["duration"]).to be_kind_of(String)
         expect(@first_update_report["duration"].to_i).to be_within(100).of(0)
       end
 
@@ -585,6 +586,7 @@ describe Chef::ResourceReporter do
         # TODO: API takes integer number of milliseconds as a string. This
         # should be an int.
         expect(@first_update_report).to have_key("duration")
+        expect(@first_update_report["duration"]).to be_kind_of(String)
         expect(@first_update_report["duration"].to_i).to be_within(100).of(0)
       end
 
