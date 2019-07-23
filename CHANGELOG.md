@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.2 -->
-## [v15.2.2](https://github.com/chef/chef/tree/v15.2.2) (2019-07-23)
+<!-- latest_release 15.2.3 -->
+## [v15.2.3](https://github.com/chef/chef/tree/v15.2.3) (2019-07-23)
 
 #### Merged Pull Requests
-- Bump train-core to 2.1.19 [#8766](https://github.com/chef/chef/pull/8766) ([chef-ci](https://github.com/chef-ci))
+- Update bzip2 from 1.0.6 -&gt; 1.0.8 to resolve CVEs [#8768](https://github.com/chef/chef/pull/8768) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update bzip2 from 1.0.6 -&gt; 1.0.8 to resolve CVEs [#8768](https://github.com/chef/chef/pull/8768) ([tas50](https://github.com/tas50)) <!-- 15.2.3 -->
 - Bump train-core to 2.1.19 [#8766](https://github.com/chef/chef/pull/8766) ([chef-ci](https://github.com/chef-ci)) <!-- 15.2.2 -->
 - Move chef-client and chef-solo shared code into a base class and remove duplication and skew [#8744](https://github.com/chef/chef/pull/8744) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.1 -->
 - Bump InSpec, Ohai, and appbundler to the latest [#8761](https://github.com/chef/chef/pull/8761) ([tas50](https://github.com/tas50)) <!-- 15.2.0 -->
