@@ -33,6 +33,18 @@ class Chef
       property :options, [String, Array],
         description: "One (or more) additional options that are passed to the command."
 
+      property :list_options, String,
+        introduced: "15.3",
+        description: "One (or more) additional list options that are passed to the command."
+
+      property :user, String,
+        introduced: "15.3",
+        description: "The username to authenticate feeds."
+
+      property :password, String,
+        introduced: "15.3",
+        description: "The password to authenticate to the source."
+
       property :package_name, [String, Array],
         description: "The name of the package. Default value: the name of the resource block.",
         coerce: proc { |x| [x].flatten }
@@ -41,9 +53,11 @@ class Chef
         description: "The version of a package to be installed or upgraded.",
         coerce: proc { |x| [x].flatten }
 
+      # In the choco if we have the feature useEnhancedExitCodes turned on, then choco will provide enhanced exit codes(2: no results).
+      # Choco exit codes https://chocolatey.org/docs/commandsinfo#exit-codes
       property :returns, [Integer, Array],
         description: "The exit code(s) returned a chocolatey package that indicate success.",
-        default: [ 0 ], desired_state: false,
+        default: [ 0, 2 ], desired_state: false,
         introduced: "12.18"
     end
   end

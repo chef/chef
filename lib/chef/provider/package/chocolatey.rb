@@ -210,7 +210,7 @@ class Chef
         # @return [String] options from new_resource or empty string
         def cmd_args(include_source: true)
           cmd_args = [ new_resource.options ]
-          cmd_args.push([ "-source", new_resource.source ]) if new_resource.source && include_source
+          cmd_args += common_options(include_source: include_source)
           cmd_args
         end
 
@@ -227,8 +227,8 @@ class Chef
             available_versions =
               begin
                 cmd = [ "list", "-r", pkg ]
-                cmd.push( [ "-source", new_resource.source ] ) if new_resource.source
-                cmd.push( new_resource.options ) if new_resource.options
+                cmd += common_options
+                cmd.push( new_resource.list_options ) if new_resource.list_options
 
                 raw = parse_list_output(*cmd)
                 raw.keys.each_with_object({}) do |name, available|
@@ -271,6 +271,14 @@ class Chef
         # @return [Array] same names in lower case
         def lowercase_names(names)
           names.map(&:downcase)
+        end
+
+        def common_options(include_source: true)
+          args = []
+          args.push( [ "-source", new_resource.source ] ) if new_resource.source && include_source
+          args.push( [ "--user", new_resource.user ] ) if new_resource.user
+          args.push( [ "--password", new_resource.password ]) if new_resource.password
+          args
         end
       end
     end

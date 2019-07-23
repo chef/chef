@@ -46,7 +46,7 @@ describe Chef::Provider::Package::Chocolatey do
     allow(provider).to receive(:choco_install_path).and_return(choco_install_path)
     allow(provider).to receive(:choco_exe).and_return(choco_exe)
     local_list_obj = double(stdout: local_list_stdout)
-    allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-l", "-r", { returns: [0], timeout: timeout }).and_return(local_list_obj)
+    allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-l", "-r", { returns: [0, 2], timeout: timeout }).and_return(local_list_obj)
   end
 
   def allow_remote_list(package_names, args = nil)
@@ -61,9 +61,9 @@ describe Chef::Provider::Package::Chocolatey do
     remote_list_obj = double(stdout: remote_list_stdout)
     package_names.each do |pkg|
       if args
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-r", pkg, *args, { returns: [0], timeout: timeout }).and_return(remote_list_obj)
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-r", pkg, *args, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
       else
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-r", pkg, { returns: [0], timeout: timeout }).and_return(remote_list_obj)
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
       end
     end
   end
@@ -146,6 +146,15 @@ describe Chef::Provider::Package::Chocolatey do
       )
     end
 
+    it "installing a package that does not exist throws an error" do
+      new_resource.package_name("package-does-not-exist")
+      new_resource.returns([0])
+      allow(provider).to receive(:shell_out_compacted!)
+        .with(choco_exe, "list", "-r", "#{new_resource.package_name.first}", { returns: new_resource.returns, timeout: timeout })
+        .and_raise(Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with [0], but received '2'")
+      expect { provider.send(:available_packages) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with [0], but received '2'")
+    end
+
     it "should set the current_resource.version to nil when the package is not installed" do
       provider.load_current_resource
       expect(provider.current_resource.version).to eql([nil])
@@ -186,7 +195,7 @@ describe Chef::Provider::Package::Chocolatey do
     it "should install a single package" do
       allow_remote_list(["git"])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "git", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "git", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -197,7 +206,7 @@ describe Chef::Provider::Package::Chocolatey do
         allow_remote_list(["git"])
         new_resource.timeout(timeout)
         provider.load_current_resource
-        expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "git", { returns: [0], timeout: timeout }).and_return(double)
+        expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "git", { returns: [0, 2], timeout: timeout }).and_return(double)
         provider.run_action(:install)
         expect(new_resource).to be_updated_by_last_action
       end
@@ -226,7 +235,7 @@ describe Chef::Provider::Package::Chocolatey do
       new_resource.package_name("ConEmu")
       new_resource.version("15.10.25.1")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "--version", "15.10.25.1", "conemu", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "--version", "15.10.25.1", "conemu", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -239,7 +248,7 @@ describe Chef::Provider::Package::Chocolatey do
       new_resource.package_name(%w{chocolatey ConEmu})
       new_resource.version([nil, "15.10.25.1"])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "--version", "15.10.25.1", "conemu", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "--version", "15.10.25.1", "conemu", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -249,7 +258,7 @@ describe Chef::Provider::Package::Chocolatey do
       new_resource.package_name("conemu")
       new_resource.version("15.10.25.1")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "--version", "15.10.25.1", "conemu", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "--version", "15.10.25.1", "conemu", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -259,8 +268,8 @@ describe Chef::Provider::Package::Chocolatey do
       new_resource.package_name(%w{ConEmu git})
       new_resource.version(["15.10.25.1", nil])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "--version", "15.10.25.1", "conemu", { returns: [0], timeout: timeout }).and_return(double)
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "git", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "--version", "15.10.25.1", "conemu", { returns: [0, 2], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "git", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -269,7 +278,7 @@ describe Chef::Provider::Package::Chocolatey do
       allow_remote_list(%w{git munin-node})
       new_resource.package_name(%w{git munin-node})
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "git", "munin-node", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "git", "munin-node", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -279,17 +288,17 @@ describe Chef::Provider::Package::Chocolatey do
         allow_remote_list(["git"], ["-source", "localpackages"])
         new_resource.source("localpackages")
         provider.load_current_resource
-        expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "-source", "localpackages", "git", { returns: [0], timeout: timeout }).and_return(double)
+        expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "-source", "localpackages", "git", { returns: [0, 2], timeout: timeout }).and_return(double)
         provider.run_action(:install)
         expect(new_resource).to be_updated_by_last_action
       end
     end
 
     it "should pass options into the install command" do
-      allow_remote_list(["git"], "-force")
+      allow_remote_list(["git"])
       new_resource.options("-force")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "-force", "git", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "-force", "git", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -319,31 +328,37 @@ describe Chef::Provider::Package::Chocolatey do
     end
 
     context "private source" do
-      it "installing a package without auth options throws an error" do
-        allow_remote_list(["package-without-auth"], ["-source", "auth_source"])
-        new_resource.package_name("package-without-auth")
+      it "installing a package with valid credentials" do
+        allow_remote_list(["git"], ["-source", "auth_source", "--user", "ubuntu", "--password", "ubuntu@123"])
         new_resource.source("auth_source")
+        new_resource.user("ubuntu")
+        new_resource.password("ubuntu@123")
         provider.load_current_resource
-        expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+        expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "-source", "auth_source", "--user", "ubuntu", "--password", "ubuntu@123", "git", { returns: [0, 2], timeout: timeout }).and_return(double)
+        provider.run_action(:install)
+        expect(new_resource).to be_updated_by_last_action
       end
 
       it "installing a package with invalid credentials throws an error" do
-        allow_remote_list(["package-invalid-auth"], [ "-source", "auth_source", "-u user -p password"])
+        allow_remote_list(["package-invalid-auth"], ["-source", "auth_source", "--user", "ubuntu", "--password", "ubuntu@123"])
         new_resource.package_name("package-invalid-auth")
         new_resource.source("auth_source")
-        new_resource.options("-u user -p password")
+        new_resource.user("ubuntu")
+        new_resource.password("ubuntu@123")
         provider.load_current_resource
         expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
       end
 
-      it "installing a package with valid credentials" do
-        allow_remote_list(["git"], [ "-source", "auth_source", "-u user -p password" ])
+      it "only credentials and list options pass into the list command" do
+        allow_remote_list(["git"], ["-source", "auth_source", "--user", "ubuntu", "--password", "ubuntu@123", "--local-only"])
         new_resource.source("auth_source")
-        new_resource.options("-u user -p password")
+        new_resource.list_options("--local-only")
+        new_resource.user("ubuntu")
+        new_resource.password("ubuntu@123")
         provider.load_current_resource
-        expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "install", "-y", "-u user -p password", "-source", "auth_source", "git", { returns: [0], timeout: timeout }).and_return(double)
-        provider.run_action(:install)
-        expect(new_resource).to be_updated_by_last_action
+        expect(provider.send(:available_packages)).to eql(
+          { "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.1", "git" => "2.6.2", "munin-node" => "1.6.1.20130823" }
+        )
       end
     end
   end
@@ -352,7 +367,7 @@ describe Chef::Provider::Package::Chocolatey do
     it "should install a package that is not installed" do
       allow_remote_list(["git"])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "git", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "git", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -361,7 +376,7 @@ describe Chef::Provider::Package::Chocolatey do
       allow_remote_list(["ConEmu"])
       new_resource.package_name("ConEmu")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "conemu", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "conemu", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -370,7 +385,7 @@ describe Chef::Provider::Package::Chocolatey do
       allow_remote_list(["conemu"])
       new_resource.package_name("conemu")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "conemu", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "conemu", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -379,7 +394,7 @@ describe Chef::Provider::Package::Chocolatey do
       allow_remote_list(["chocolatey"])
       new_resource.package_name("chocolatey")
       provider.load_current_resource
-      expect(provider).not_to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "chocolatey", { returns: [0], timeout: timeout })
+      expect(provider).not_to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "chocolatey", { returns: [0, 2], timeout: timeout })
       provider.run_action(:upgrade)
       expect(new_resource).not_to be_updated_by_last_action
     end
@@ -388,7 +403,7 @@ describe Chef::Provider::Package::Chocolatey do
       allow_remote_list(["git"])
       new_resource.version("2.6.2")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "--version", "2.6.2", "git", { returns: [0], timeout: timeout })
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "--version", "2.6.2", "git", { returns: [0, 2], timeout: timeout })
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -396,7 +411,7 @@ describe Chef::Provider::Package::Chocolatey do
     it "upgrading multiple packages uses a single command" do
       allow_remote_list(%w{conemu git})
       new_resource.package_name(%w{conemu git})
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "conemu", "git", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "upgrade", "-y", "conemu", "git", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -448,7 +463,7 @@ describe Chef::Provider::Package::Chocolatey do
       allow_remote_list(["ConEmu"])
       new_resource.package_name("ConEmu")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "uninstall", "-y", "ConEmu", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "uninstall", "-y", "ConEmu", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -457,7 +472,7 @@ describe Chef::Provider::Package::Chocolatey do
       allow_remote_list(["conemu"])
       new_resource.package_name("conemu")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "uninstall", "-y", "conemu", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "uninstall", "-y", "conemu", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -467,7 +482,7 @@ describe Chef::Provider::Package::Chocolatey do
       allow_remote_list(%w{git conemu})
       new_resource.package_name(%w{git conemu})
       provider.load_current_resource
-      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "uninstall", "-y", "conemu", { returns: [0], timeout: timeout }).and_return(double)
+      expect(provider).to receive(:shell_out_compacted!).with(choco_exe, "uninstall", "-y", "conemu", { returns: [0, 2], timeout: timeout }).and_return(double)
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
