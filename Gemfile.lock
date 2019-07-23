@@ -326,7 +326,7 @@ GEM
     timers (4.3.0)
     tins (1.21.1)
     tomlrb (1.2.8)
-    train-core (2.1.13)
+    train-core (2.1.19)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 3.0)
