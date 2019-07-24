@@ -49,7 +49,7 @@ sudo rm -rf "$TMPDIR"
 mkdir -p "$TMPDIR"
 
 # Verify that we kill any orphaned test processes. Kill any orphaned rspec processes.
-ps ax | grep -E 'rspec' | grep -v grep | awk '{ print $1 }' | xargs sudo kill -s KILL || true
+sudo kill -9 $(ps ax | grep 'rspec' | grep -v grep | awk '{ print $1 }') || true
 
 PATH="/opt/$product/bin:$PATH"
 export PATH
@@ -150,6 +150,18 @@ if [[ -d /etc/sudoers.d ]]; then
 elif [[ -d /usr/local/etc/sudoers.d ]]; then
   echo "Defaults:$(id -un) !secure_path, exempt_group += $(id -gn)" | sudo tee "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
   sudo chmod 440 "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
+fi
+
+# Remove the ec2 cloud zypper repos before running functional tests
+if [[ ! $(grep s390 /etc/SuSE-release) ]] > /dev/null 2>&1; then   # Don't delete repos on s390x
+  if [[ $(grep -i suse /etc/SuSE-release /etc/os-release) ]] > /dev/null 2>&1; then
+    echo "Removing zypper repos for Amazon SLES nodes"
+    sleep 5  # Allow some time for repo setup to complete
+    for i in $(zypper lr |grep -v "Alias" |awk -F "|" '{print $2}'); do
+      sudo zypper rr $i
+    done
+    sudo rm /usr/lib/zypp/plugins/services/* || true
+  fi
 fi
 
 cd "$chef_gem"
