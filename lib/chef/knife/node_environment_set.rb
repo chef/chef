@@ -44,7 +44,7 @@ class Chef
 
         node.save
 
-        config[:environment] = "chef_environment"
+        config[:attribute] = "chef_environment"
 
         output(format_for_display(node))
       end
