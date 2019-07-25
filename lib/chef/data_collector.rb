@@ -177,14 +177,17 @@ class Chef
 
         @http ||= setup_http_client(Chef::Config[:data_collector][:server_url])
         @http.post(nil, message, headers)
-      rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,
-        Errno::ECONNREFUSED, EOFError, Net::HTTPBadResponse,
-        Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError,
-        Errno::EHOSTDOWN => e
+      rescue => e
         # Do not disable data collector reporter if additional output_locations have been specified
         events.unregister(self) unless Chef::Config[:data_collector][:output_locations]
 
-        code = e&.response&.code&.to_s || "Exception Code Empty"
+        begin
+          code = e&.response&.code&.to_s
+        rescue
+          # i really dont care
+        end
+
+        code ||= "No HTTP Code"
 
         msg = "Error while reporting run start to Data Collector. URL: #{Chef::Config[:data_collector][:server_url]} Exception: #{code} -- #{e.message} "
 
@@ -192,9 +195,13 @@ class Chef
           Chef::Log.error(msg)
           raise
         else
-          # Make the message non-scary for folks who don't have automate:
-          msg << " (This is normal if you do not have #{Chef::Dist::AUTOMATE})"
-          Chef::Log.info(msg)
+          if code == "404"
+            # Make the message non-scary for folks who don't have automate:
+            msg << " (This is normal if you do not have #{Chef::Dist::AUTOMATE})"
+            Chef::Log.debug(msg)
+          else
+            Chef::Log.warn(msg)
+          end
         end
       end
 
