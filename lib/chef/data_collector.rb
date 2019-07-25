@@ -198,7 +198,7 @@ class Chef
           if code == "404"
             # Make the message non-scary for folks who don't have automate:
             msg << " (This is normal if you do not have #{Chef::Dist::AUTOMATE})"
-            Chef::Log.info(msg)
+            Chef::Log.debug(msg)
           else
             Chef::Log.warn(msg)
           end
