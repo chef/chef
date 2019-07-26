@@ -778,6 +778,92 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  describe "#validate_bootstrap_version_options!" do
+    describe "chef-14 or lower" do
+      before do
+        stub_const("Chef::VERSION", "14.0")
+      end
+
+      context "when bootstrap version not given" do
+        it "passes the validation" do
+          knife.config[:bootstrap_version] = nil
+          expect { knife.validate_bootstrap_version_options! }.to_not raise_error
+        end
+      end
+
+      context "when bootstrap version is given" do
+        it "passes the validation for chef 14.12.0 bootstrap version" do
+          knife.config[:bootstrap_version] = "14.12.0"
+          expect { knife.validate_bootstrap_version_options! }.to_not raise_error
+        end
+
+        it "passes the validation for chef 13.12.0 bootstrap version" do
+          knife.config[:bootstrap_version] = "13.12.0"
+          expect { knife.validate_bootstrap_version_options! }.to_not raise_error
+        end
+
+        it "raise an error for latest bootstrap version" do
+          knife.config[:bootstrap_version] = "latest"
+          expect { knife.validate_bootstrap_version_options! }.to raise_error(SystemExit)
+        end
+
+        it "raise an error for chef 15.0+ bootstrap version" do
+          knife.config[:bootstrap_version] = "15.0.1"
+          expect { knife.validate_bootstrap_version_options! }.to raise_error(SystemExit)
+        end
+
+        it "raise an error for chef 15.1+ bootstrap version" do
+          knife.config[:bootstrap_version] = "15.1"
+          expect { knife.validate_bootstrap_version_options! }.to raise_error(SystemExit)
+        end
+      end
+
+      context "when prerelease option is given" do
+        it "raise an error" do
+          knife.config[:prerelease] = true
+          expect { knife.validate_bootstrap_version_options! }.to raise_error(SystemExit)
+        end
+      end
+    end
+
+    describe "chef-15+" do
+      before do
+        stub_const("Chef::VERSION", "15.0")
+      end
+
+      context "when bootstrap version not given" do
+        it "passes the validation" do
+          knife.config[:bootstrap_version] = nil
+          expect { knife.validate_bootstrap_version_options! }.to_not raise_error
+        end
+      end
+
+      context "when bootstrap version is given" do
+        it "passes the validation for chef 14.12.0 bootstrap version" do
+          knife.config[:bootstrap_version] = "14.12.0"
+          expect { knife.validate_bootstrap_version_options! }.to_not raise_error
+        end
+
+        it "passes the validation for chef 15.2 bootstrap version" do
+          knife.config[:bootstrap_version] = "15.2"
+          expect { knife.validate_bootstrap_version_options! }.to_not raise_error
+        end
+
+        it "passes the validation for chef 16.2 bootstrap version" do
+          knife.config[:bootstrap_version] = "16.2"
+          expect { knife.validate_bootstrap_version_options! }.to_not raise_error
+        end
+      end
+
+      context "when prerelease option is given" do
+        it "passes the validation" do
+          knife.config[:prerelease] = true
+          expect { knife.validate_bootstrap_version_options! }.to_not raise_error
+        end
+      end
+    end
+  end
+
   # TODO - this is the only cli option we validate the _option_ itself -
   #        so we'll know if someone accidentally deletes or renames use_sudo_password
   #        Is this worht keeping?  If so, then it seems we should expand it
