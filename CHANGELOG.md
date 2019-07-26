@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.5 -->
-## [v15.2.5](https://github.com/chef/chef/tree/v15.2.5) (2019-07-25)
+<!-- latest_release 15.2.6 -->
+## [v15.2.6](https://github.com/chef/chef/tree/v15.2.6) (2019-07-26)
 
 #### Merged Pull Requests
-- Tweak data collector exception handling [#8776](https://github.com/chef/chef/pull/8776) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix zypper test failures [#8774](https://github.com/chef/chef/pull/8774) ([jaymalasinha](https://github.com/jaymalasinha))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix zypper test failures [#8774](https://github.com/chef/chef/pull/8774) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.6 -->
 - Tweak data collector exception handling [#8776](https://github.com/chef/chef/pull/8776) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.5 -->
 - Duration field in resource report needs to be String [#8767](https://github.com/chef/chef/pull/8767) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.4 -->
 - Update bzip2 from 1.0.6 -&gt; 1.0.8 to resolve CVEs [#8768](https://github.com/chef/chef/pull/8768) ([tas50](https://github.com/tas50)) <!-- 15.2.3 -->
