@@ -74,14 +74,27 @@ class Chef
         end
 
         def load_current_resource
-          convert_group_name if new_resource.property_is_set?(:gid)
-
           @current_resource = Chef::Resource::User::MacUser.new(new_resource.username)
           current_resource.username(new_resource.username)
 
-          @user_plist = load_user
+          reload_user_plist
           if user_plist
-            reload_with_user_plist
+
+            current_resource.uid(dscl_get(user_plist, :uid)[0])
+            current_resource.gid(dscl_get(user_plist, :gid)[0])
+            current_resource.home(dscl_get(user_plist, :home)[0])
+            current_resource.shell(dscl_get(user_plist, :shell)[0])
+            current_resource.comment(dscl_get(user_plist, :comment)[0])
+
+            shadow_hash = dscl_get(user_plist, :shadow_hash)
+            if shadow_hash
+              current_resource.password(shadow_hash[0]["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*")[0])
+              current_resource.salt(shadow_hash[0]["SALTED-SHA512-PBKDF2"]["salt"].string.unpack("H*")[0])
+              current_resource.iterations(shadow_hash[0]["SALTED-SHA512-PBKDF2"]["iterations"].to_i)
+            end
+
+            current_resource.secure_token(secure_token_enabled?)
+            current_resource.admin(admin_user?)
           else
             @user_exists = false
             logger.trace("#{new_resource} user does not exist")
@@ -90,73 +103,63 @@ class Chef
           current_resource
         end
 
-        def load_user
+        def reload_user_plist
+          @admin_group_info = nil
+
           # Load the user information.
-          user_xml = run_dscl("read", "/Users/#{new_resource.username}")
+          begin
+            user_xml = run_dscl("read", "/Users/#{new_resource.username}")
+          rescue Chef::Exceptions::DsclCommandFailed
+            return nil
+          end
 
           # User doesn't exist yet so there's not info
           return nil if user_xml.nil? || user_xml == ""
 
-          user_plist = Plist.parse_xml(user_xml)
+          @user_plist = Plist.parse_xml(user_xml)
 
-          # The password infomation is stored in the ShadowHashData key in the
-          # plist. However, parsing it is a bit tricky as the value is itself
-          # another encoded binary plist. We have to extract the encoded plist,
-          # decode it from hex to a binary plist and then convert the binary
-          # into XML plist. From there we can extract the hash data.
-          #
-          # NOTE: `dscl -read` and `plutil -convert` return different values for ShadowHashData.
-          #
-          # `dscl` returns the value encoded as an octal hex string and stored as a <string>
-          # `plutil` returns the value encoded as a base64 string stored as <data>
-          #
-          #  eg:
-          #
-          # <array>
-          #   <string>77687920 63616e27 74206170 706c6520 6275696c 6420636f 6e736973 74656e74 20746f6f 6c696e67</string>
-          # </array>
-          #
-          # vs
-          #
-          # <array>
-          #   <data>AADKAAAKAA4LAA0MAAAAAAAAAAA=</data>
-          # </array>
-          #
-          shadow_hash_hex = dscl_get(user_plist, :shadow_hash)[0]
-
-          return user_plist unless shadow_hash_hex && shadow_hash_hex != ""
-
-          shadow_binary_plist = [shadow_hash_hex.delete(" ")].pack("H*")
-          shadow_xml_plist = shell_out("plutil", "-convert", "xml1", "-o", "-", "-", input: shadow_binary_plist).stdout
-          dscl_set(user_plist, :shadow_hash, Plist.parse_xml(shadow_xml_plist))
-
-          user_plist
-        rescue Chef::Exceptions::PlistUtilCommandFailed, Chef::Exceptions::DsclCommandFailed
-          nil
-        end
-
-        # Map updated user information from the user_plist onto the current resource
-        # and instance variables.
-        def reload_with_user_plist
-          current_resource.uid(dscl_get(user_plist, :uid)[0])
-          current_resource.gid(dscl_get(user_plist, :gid)[0])
-          current_resource.home(dscl_get(user_plist, :home)[0])
-          current_resource.shell(dscl_get(user_plist, :shell)[0])
-          current_resource.comment(dscl_get(user_plist, :comment)[0])
-
-          shadow_hash = dscl_get(user_plist, :shadow_hash)
-          if shadow_hash
-            current_resource.password(shadow_hash[0]["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*")[0])
-            current_resource.salt(shadow_hash[0]["SALTED-SHA512-PBKDF2"]["salt"].string.unpack("H*")[0])
-            current_resource.iterations(shadow_hash[0]["SALTED-SHA512-PBKDF2"]["iterations"].to_i)
+          begin
+            @auth_authority = dscl_get(user_plist, :auth_authority)
+            @guid = dscl_get(user_plist, :guid)
+            shadow_hash_hex = dscl_get(user_plist, :shadow_hash)[0]
+          rescue Chef::Exceptions::DsclCommandFailed
+            # It's possible that the users don't have the fields we're trying
+            # to access so we'll gracefully handle those errors.
+            return nil
           end
 
-          @auth_authority = dscl_get(user_plist, :auth_authority)
-          @guid = dscl_get(user_plist, :guid)
-          @admin_group_info = nil
+          return unless shadow_hash_hex && shadow_hash_hex != ""
 
-          current_resource.secure_token(secure_token_enabled?)
-          current_resource.admin(admin_user?)
+          begin
+            # The password infomation is stored in the ShadowHashData key in the
+            # plist. However, parsing it is a bit tricky as the value is itself
+            # another encoded binary plist. We have to extract the encoded plist,
+            # decode it from hex to a binary plist and then convert the binary
+            # into XML plist. From there we can extract the hash data.
+            #
+            # NOTE: `dscl -read` and `plutil -convert` return different values for ShadowHashData.
+            #
+            # `dscl` returns the value encoded as a hex string and stored as a <string>
+            # `plutil` returns the value encoded as a base64 string stored as <data>
+            #
+            #  eg:
+            #
+            # <array>
+            #   <string>77687920 63616e27 74206170 706c6520 6275696c 6420636f 6e736973 74656e74 20746f6f 6c696e67</string>
+            # </array>
+            #
+            # vs
+            #
+            # <array>
+            #   <data>AADKAAAKAA4LAA0MAAAAAAAAAAA=</data>
+            # </array>
+            #
+            shadow_binary_plist = [shadow_hash_hex.delete(" ")].pack("H*")
+            shadow_xml_plist = shell_out("plutil", "-convert", "xml1", "-o", "-", "-", input: shadow_binary_plist).stdout
+            dscl_set(user_plist, :shadow_hash, Plist.parse_xml(shadow_xml_plist))
+          rescue Chef::Exceptions::PlistUtilCommandFailed, Chef::Exceptions::DsclCommandFailed
+            nil
+          end
         end
 
         #
@@ -167,7 +170,7 @@ class Chef
           cmd = [-"-addUser", new_resource.username]
           cmd += ["-fullName", new_resource.comment]  if new_resource.property_is_set?(:comment)
           cmd += ["-UID", new_resource.uid]           if new_resource.property_is_set?(:uid)
-          cmd += ["-shell", new_resource.shell]       if new_resource.property_is_set?(:shell)
+          cmd += ["-shell", new_resource.shell]
           cmd += ["-home", new_resource.home]         if new_resource.property_is_set?(:home)
           cmd += ["-admin"]                           if new_resource.admin
 
@@ -187,12 +190,11 @@ class Chef
             raise Chef::Exceptions::User, "error when creating user: #{res}"
           end
 
-          # Wait for the user to be created and for dscl to flush everything
-          sleep 3
+          # Wait for the user to show up in the ds cache
+          wait_for_user
 
           # Reload with up-to-date user information
-          @user_plist = load_user
-          reload_with_user_plist
+          reload_user_plist
 
           converge_by("set password") { set_password } if new_resource.property_is_set?(:password)
 
@@ -218,9 +220,9 @@ class Chef
             declare_resource(:group, group_name) do
               members new_resource.username
               gid group_id if group_id
-              action group_action
+              action :nothing
               append true
-            end
+            end.run_action(group_action)
 
             converge_by("create primary group ID") do
               run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", new_resource.gid)
@@ -228,16 +230,10 @@ class Chef
           end
 
           converge_by("alter SecureToken") { toggle_secure_token } if diverged?(:secure_token)
-
-          @user_exists = true
         end
 
         def compare_user
-          %i{comment shell uid gid salt password admin secure_token}.each do |m|
-            return true if diverged?(m)
-          end
-
-          false
+          %i{comment shell uid gid salt password admin secure_token}.any? { |m| diverged?(m) }
         end
 
         def manage_user
@@ -270,9 +266,9 @@ class Chef
                   excluded_members new_resource.username
                 end
 
-                action :create
+                action :nothing
                 append true
-              end
+              end.run_action(:create)
 
               admins = dscl_get(admin_group_info, :group_members)
               if new_resource.admin
@@ -291,9 +287,9 @@ class Chef
           declare_resource(:group, group_name) do
             gid group_id if group_id
             members new_resource.username
-            action group_action
+            action :nothing
             append true
-          end
+          end.run_action(group_action)
 
           if diverged?(:gid)
             converge_by("alter group membership") do
@@ -348,17 +344,23 @@ class Chef
         def diverged?(prop)
           prop = prop.to_sym
 
-          if prop == :password
-            return password_diverged?
-          elsif prop == :gid
-            return user_group_diverged?
+          case prop
+          when :password
+            password_diverged?
+          when :gid
+            user_group_diverged?
+          when :secure_token
+            secure_token_diverged?
+          else
+            # Other fields are have been set on current resource so just compare
+            # them.
+            new_resource.property_is_set?(prop) && (new_resource.send(prop) != current_resource.send(prop))
           end
-
-          # Other fields are have been set on current resource so just compare
-          # them.
-          new_resource.property_is_set?(prop) && (new_resource.send(prop) != current_resource.send(prop))
         end
 
+        # Attempt to resolve the group name, gid, and the action required for
+        # associated group resource. If a group exists we'll modify it, otherwise
+        # create it.
         def user_group_info
           @user_group_info ||= begin
             if new_resource.gid.is_a?(String)
@@ -385,6 +387,10 @@ class Chef
           else
             false
           end
+        end
+
+        def secure_token_diverged?
+          new_resource.secure_token ? !secure_token_enabled? : secure_token_enabled?
         end
 
         def toggle_secure_token
@@ -426,9 +432,13 @@ class Chef
         def user_group_diverged?
           return false unless new_resource.property_is_set?(:gid)
 
-          _, group_id = user_group_info
+          group_name, group_id = user_group_info
 
-          current_resource.gid != group_id
+          if current_resource.gid.is_a?(String)
+            current_resource.gid != group_name
+          else
+            current_resource.gid != group_id.to_i
+          end
         end
 
         def password_diverged?
@@ -553,6 +563,23 @@ class Chef
           ::File.delete(import_file) if defined?(import_file) && ::File.exist?(import_file)
         end
 
+        def wait_for_user
+          timeout = Time.now + 5
+
+          loop do
+            begin
+              run_dscl("read", "/Users/#{new_resource.username}", "ShadowHashData")
+              break
+            rescue Chef::Exceptions::DsclCommandFailed => e
+              if Time.now < timeout
+                sleep 0.1
+              else
+                raise Chef::Exceptions::User, e.message
+              end
+            end
+          end
+        end
+
         def run_dsimport(*args)
           shell_out!("dsimport", *(args.compact))
         end
@@ -595,11 +622,7 @@ class Chef
           result = shell_out("plutil", "-#{args[0]}", args[1..-1])
           raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
 
-          if result.stdout.encoding == Encoding::ASCII_8BIT
-            result.stdout.encode("utf-8", "binary", undef: :replace, invalid: :replace, replace: "?")
-          else
-            result.stdout
-          end
+          result.stdout
         end
       end
     end

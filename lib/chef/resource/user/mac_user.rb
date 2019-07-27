@@ -29,11 +29,12 @@ class Chef
       # * This resource and the corresponding provider have been modified to
       #   work with default macOS TCC policies. Direct access to user binary
       #   plists are no longer permitted by default, thus we've chosen to use
-      #   use newer methods of creating, modifying and removing users.
+      #   a combination of newer utilities for managing user lifecycles and older
+      #   utilities for managing passwords.
       #
-      # * Due to the tooling required by the provider this provider is only
-      #   suitable for use on macOS >= 10.14. Support for older platforms has
-      #   been removed.
+      # * Due to tooling changes that were necessitated by the new policy
+      #   restrictions the mac_user resource is only suitable for use on macOS
+      #   >= 10.14. Support for older platforms has been removed.
       #
       # New Features:
       #
@@ -42,15 +43,20 @@ class Chef
       # * 'admin' is now a boolean property that configures a user to an admin.
       #
       # * 'admin_username' and 'admin_password' are new properties that define the
-      #   admin user credentials required for toggling SecureToken for an
-      #   exiting user.
+      #   admin user credentials required for toggling SecureToken for a user.
       #
-      #   The 'admin_username' must correspond to a system admin with SecureToken
-      #   enabled in order to toggle SecureToken.
+      #   The value of 'admin_username' must correspond to a system user that
+      #   is part of the 'admin' with SecureToken enabled in order to toggle
+      #   SecureToken.
       #
       # * 'secure_token' is a boolean property that sets the desired state
       #   for SecureToken. SecureToken token is required for FileVault full
       #   disk encryption.
+      #
+      # * 'secure_token_password' is the plaintext password required to enable
+      #   or disable secure_token for a user. If no salt is specified we assume
+      #   the 'password' property corresponds to a plaintext password and will
+      #   attempt to use it in place of secure_token_password if it not set.
       class MacUser < Chef::Resource::User
         resource_name :mac_user
 
@@ -58,26 +64,32 @@ class Chef
         provides :user, os: "darwin", platform_version: ">= 10.14"
 
         property :iterations, Integer,
-          description: "macOS platform only. The number of iterations for a password with a SALTED-SHA512-PBKDF2 shadow hash.",
+          description: "The number of iterations for a password with a SALTED-SHA512-PBKDF2 shadow hash.",
           default: 57803, desired_state: false
 
-        # Overload gid so we can set our default. NilClass is for backwards compat
-        # and 20 is the macOS "staff" group.
-        property :gid, [String, Integer, NilClass], description: "The numeric group identifier.", default: 20, coerce: ->(gid) do
+        # Overload gid to set our default gid to 20, the macOS "staff" group.
+        # We also allow a string group name here which we'll attempt to resolve
+        # or create in the provider.
+        property :gid, [Integer, String], description: "The numeric group identifier.", default: 20, coerce: ->(gid) do
           begin
-            return 20 if gid.nil?
-
-            return Etc.getgrnam(gid).gid if gid.is_a?(String)
-
-            Integer(gid)
+            Integer(gid) # Try and coerce a group id string into an integer
           rescue
-            gid
+            gid # assume we have a group name
           end
         end
 
         # Overload the password so we can set a length requirements and update the
         # description.
-        property :password, String, description: "The plain text user password", sensitive: true, callbacks: {
+        property :password, String, description: "The plain text user password", sensitive: true, coerce: ->(password) {
+          # It would be nice if this could be in callbacks but we need the context
+          # of the resource to get the salt property so we have to do it in coerce.
+          if salt && password !~ /^[[:xdigit:]]{256}$/
+            raise Chef::Exceptions::User, "Password must be a SALTED-SHA512-PBKDF2 shadow hash entropy when a shadow hash salt is given"
+          end
+
+          password
+        },
+        callbacks: {
           "Password length must be >= 4" => ->(password) { password.size >= 4 },
         }
 
