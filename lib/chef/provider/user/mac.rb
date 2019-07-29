@@ -27,7 +27,7 @@ class Chef
   class Provider
     class User
       # A macOS user provider that is compatible with default TCC restrictions
-      # in macOS >= 10.14. See resource/user/mac_user.rb for complete description
+      # in macOS 10.14. See resource/user/mac_user.rb for complete description
       # of the mac_user resource and how it differs from the dscl resource used
       # on previous platforms.
       class MacUser < Chef::Provider::User
@@ -36,20 +36,7 @@ class Chef
         provides :mac_user
         provides :user, os: "darwin", platform_version: ">= 10.14"
 
-        attr_accessor :auth_authority, :guid, :user_plist
-
-        DSCL_PROPERTY_MAP = {
-            uid: "dsAttrTypeStandard:UniqueID",
-            guid: "dsAttrTypeStandard:GeneratedUID",
-            gid: "dsAttrTypeStandard:PrimaryGroupID",
-            home: "dsAttrTypeStandard:NFSHomeDirectory",
-            shell: "dsAttrTypeStandard:UserShell",
-            comment: "dsAttrTypeStandard:RealName",
-            password: "dsAttrTypeStandard:Password",
-            auth_authority: "dsAttrTypeStandard:AuthenticationAuthority",
-            shadow_hash: "dsAttrTypeNative:ShadowHashData",
-            group_members: "dsAttrTypeStandard:GroupMembers",
-        }.freeze
+        attr_reader :user_plist, :admin_group_plist
 
         def define_resource_requirements
           super
@@ -66,16 +53,17 @@ class Chef
           @current_resource = Chef::Resource::User::MacUser.new(new_resource.username)
           current_resource.username(new_resource.username)
 
+          reload_admin_group_plist
           reload_user_plist
+
           if user_plist
+            current_resource.uid(user_plist[:uid][0])
+            current_resource.gid(user_plist[:gid][0])
+            current_resource.home(user_plist[:home][0])
+            current_resource.shell(user_plist[:shell][0])
+            current_resource.comment(user_plist[:comment][0])
 
-            current_resource.uid(dscl_get(user_plist, :uid)[0])
-            current_resource.gid(dscl_get(user_plist, :gid)[0])
-            current_resource.home(dscl_get(user_plist, :home)[0])
-            current_resource.shell(dscl_get(user_plist, :shell)[0])
-            current_resource.comment(dscl_get(user_plist, :comment)[0])
-
-            shadow_hash = dscl_get(user_plist, :shadow_hash)
+            shadow_hash = user_plist[:shadow_hash]
             if shadow_hash
               current_resource.password(shadow_hash[0]["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*")[0])
               current_resource.salt(shadow_hash[0]["SALTED-SHA512-PBKDF2"]["salt"].string.unpack("H*")[0])
@@ -92,8 +80,17 @@ class Chef
           current_resource
         end
 
+        def reload_admin_group_plist
+          @admin_group_plist = nil
+
+          admin_group_xml = run_dscl("read", "/Groups/admin")
+          return nil unless admin_group_xml && admin_group_xml != ""
+
+          @admin_group_plist = Plist.new(::Plist.parse_xml(admin_group_xml))
+        end
+
         def reload_user_plist
-          @admin_group_info = nil
+          @user_plist = nil
 
           # Load the user information.
           begin
@@ -102,50 +99,41 @@ class Chef
             return nil
           end
 
-          # User doesn't exist yet so there's not info
           return nil if user_xml.nil? || user_xml == ""
 
-          @user_plist = Plist.parse_xml(user_xml)
+          @user_plist = Plist.new(::Plist.parse_xml(user_xml))
 
-          begin
-            @auth_authority = dscl_get(user_plist, :auth_authority)
-            @guid = dscl_get(user_plist, :guid)
-            shadow_hash_hex = dscl_get(user_plist, :shadow_hash)[0]
-          rescue Chef::Exceptions::DsclCommandFailed
-            # It's possible that the users don't have the fields we're trying
-            # to access so we'll gracefully handle those errors.
-            return nil
-          end
-
+          shadow_hash_hex = user_plist[:shadow_hash][0]
           return unless shadow_hash_hex && shadow_hash_hex != ""
 
+          # The password infomation is stored in the ShadowHashData key in the
+          # plist. However, parsing it is a bit tricky as the value is itself
+          # another encoded binary plist. We have to extract the encoded plist,
+          # decode it from hex to a binary plist and then convert the binary
+          # into XML plist. From there we can extract the hash data.
+          #
+          # NOTE: `dscl -read` and `plutil -convert` return different values for
+          # ShadowHashData.
+          #
+          # `dscl` returns the value encoded as a hex string and stored as a <string>
+          # `plutil` returns the value encoded as a base64 string stored as <data>
+          #
+          #  eg:
+          #
+          # <array>
+          #   <string>77687920 63616e27 74206170 706c6520 6275696c 6420636f 6e736973 74656e74 20746f6f 6c696e67</string>
+          # </array>
+          #
+          # vs
+          #
+          # <array>
+          #   <data>AADKAAAKAA4LAA0MAAAAAAAAAAA=</data>
+          # </array>
+          #
           begin
-            # The password infomation is stored in the ShadowHashData key in the
-            # plist. However, parsing it is a bit tricky as the value is itself
-            # another encoded binary plist. We have to extract the encoded plist,
-            # decode it from hex to a binary plist and then convert the binary
-            # into XML plist. From there we can extract the hash data.
-            #
-            # NOTE: `dscl -read` and `plutil -convert` return different values for ShadowHashData.
-            #
-            # `dscl` returns the value encoded as a hex string and stored as a <string>
-            # `plutil` returns the value encoded as a base64 string stored as <data>
-            #
-            #  eg:
-            #
-            # <array>
-            #   <string>77687920 63616e27 74206170 706c6520 6275696c 6420636f 6e736973 74656e74 20746f6f 6c696e67</string>
-            # </array>
-            #
-            # vs
-            #
-            # <array>
-            #   <data>AADKAAAKAA4LAA0MAAAAAAAAAAA=</data>
-            # </array>
-            #
             shadow_binary_plist = [shadow_hash_hex.delete(" ")].pack("H*")
             shadow_xml_plist = shell_out("plutil", "-convert", "xml1", "-o", "-", "-", input: shadow_binary_plist).stdout
-            dscl_set(user_plist, :shadow_hash, Plist.parse_xml(shadow_xml_plist))
+            user_plist[:shadow_hash] = ::Plist.parse_xml(shadow_xml_plist)
           rescue Chef::Exceptions::PlistUtilCommandFailed, Chef::Exceptions::DsclCommandFailed
             nil
           end
@@ -184,8 +172,11 @@ class Chef
 
           # Reload with up-to-date user information
           reload_user_plist
+          reload_admin_group_plist
 
-          converge_by("set password") { set_password } if new_resource.property_is_set?(:password)
+          if new_resource.property_is_set?(:password)
+            converge_by("set password") { set_password }
+          end
 
           if new_resource.manage_home
             # "sydadminctl -addUser" will create the home directory if it's
@@ -218,7 +209,11 @@ class Chef
             end
           end
 
-          converge_by("alter SecureToken") { toggle_secure_token } if diverged?(:secure_token)
+          if diverged?(:secure_token)
+            converge_by("alter SecureToken") { toggle_secure_token }
+          end
+
+          reload_user_plist
         end
 
         def compare_user
@@ -230,7 +225,9 @@ class Chef
             raise Chef::Exceptions::User, "cannot modify #{prop} on macOS >= 10.14" if diverged?(prop)
           end
 
-          converge_by("alter password") { set_password } if diverged?(:password)
+          if diverged?(:password)
+            converge_by("alter password") { set_password }
+          end
 
           if diverged?(:comment)
             converge_by("alter comment") do
@@ -244,7 +241,9 @@ class Chef
             end
           end
 
-          converge_by("alter SecureToken") { toggle_secure_token } if diverged?(:secure_token)
+          if diverged?(:secure_token)
+            converge_by("alter SecureToken") { toggle_secure_token }
+          end
 
           if diverged?(:admin)
             converge_by("alter admin group membership") do
@@ -259,16 +258,16 @@ class Chef
                 append true
               end.run_action(:create)
 
-              admins = dscl_get(admin_group_info, :group_members)
+              admins = admin_group_plist[:group_members]
               if new_resource.admin
-                admins << guid[0]
+                admins << user_plist[:guid][0]
               else
-                admins.reject! { |m| m == guid[0] }
+                admins.reject! { |m| m == user_plist[:guid][0] }
               end
 
               run_dscl("create", "/Groups/admin", "GroupMembers", admins)
 
-              @admin_group_info = nil
+              reload_admin_group_plist
             end
           end
 
@@ -285,6 +284,8 @@ class Chef
               run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", new_resource.gid)
             end
           end
+
+          reload_user_plist
         end
 
         def remove_user
@@ -302,24 +303,25 @@ class Chef
             raise Chef::Exceptions::User, "error deleting user: #{res}"
           end
 
+          reload_user_plist
           @user_exists = false
         end
 
         def lock_user
           run_dscl("append", "/Users/#{new_resource.username}", "AuthenticationAuthority", ";DisabledUser;")
+          reload_user_plist
         end
 
         def unlock_user
-          auth_string = auth_authority.reject! { |tag| tag == ";DisabledUser;" }.join.strip
+          auth_string = user_plist[:auth_authority].reject! { |tag| tag == ";DisabledUser;" }.join.strip
           run_dscl("create", "/Users/#{new_resource.username}", "AuthenticationAuthority", auth_string)
+          reload_user_plist
         end
 
         def locked?
-          if auth_authority
-            auth_authority.any? { |tag| tag == ";DisabledUser;" }
-          else
-            false
-          end
+          user_plist[:auth_authority].any? { |tag| tag == ";DisabledUser;" }
+        rescue
+          false
         end
 
         def check_lock
@@ -371,11 +373,9 @@ class Chef
         end
 
         def secure_token_enabled?
-          if auth_authority
-            auth_authority.any? { |tag| tag == ";SecureToken;" }
-          else
-            false
-          end
+          user_plist[:auth_authority].any? { |tag| tag == ";SecureToken;" }
+        rescue
+          false
         end
 
         def secure_token_diverged?
@@ -464,18 +464,9 @@ class Chef
         end
 
         def admin_user?
-          return false unless admin_group_info
-
-          dscl_get(admin_group_info, :group_members).any? { |mem| mem == guid[0] }
-        end
-
-        def admin_group_info
-          @admin_group_info ||= begin
-            admin_group_xml = run_dscl("read", "/Groups/admin")
-            return nil unless admin_group_xml && admin_group_xml != ""
-
-            Plist.parse_xml(admin_group_xml)
-          end
+          admin_group_plist[:group_members].any? { |mem| mem == user_plist[:guid][0] }
+        rescue
+          false
         end
 
         def convert_to_binary(string)
@@ -499,7 +490,7 @@ class Chef
             )
           end
 
-          shadow_hash = dscl_get(user_plist, :shadow_hash)[0]
+          shadow_hash = user_plist[:shadow_hash][0]
           shadow_hash["SALTED-SHA512-PBKDF2"] = {
             "entropy" => entropy,
             "salt" => salt,
@@ -570,32 +561,14 @@ class Chef
         end
 
         def run_dsimport(*args)
-          shell_out!("dsimport", *(args.compact))
-        end
-
-        # Gets a value from user information hash using Chef attributes as keys.
-        #
-        def dscl_get(user_hash, key)
-          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
-
-          user_hash[DSCL_PROPERTY_MAP[key]]
-        end
-
-        #
-        # Sets a value in user information hash using Chef attributes as keys.
-        #
-        def dscl_set(user_hash, key, value)
-          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
-
-          user_hash[DSCL_PROPERTY_MAP[key]] = [ value ]
-          user_hash
+          shell_out!("dsimport", args)
         end
 
         def run_sysadminctl(args)
           # sysadminctl doesn't exit with a non-zero code when errors are encountered
           # and ouputs everything to STDERR instead of STDOUT and STDERR. Therefore we'll
           # return the STDERR and let the caller handle it.
-          shell_out("sysadminctl", args).stderr
+          shell_out!("sysadminctl", args).stderr
         end
 
         def run_dscl(*args)
@@ -612,6 +585,43 @@ class Chef
           raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
 
           result.stdout
+        end
+
+        class Plist
+          DSCL_PROPERTY_MAP = {
+              uid: "dsAttrTypeStandard:UniqueID",
+              guid: "dsAttrTypeStandard:GeneratedUID",
+              gid: "dsAttrTypeStandard:PrimaryGroupID",
+              home: "dsAttrTypeStandard:NFSHomeDirectory",
+              shell: "dsAttrTypeStandard:UserShell",
+              comment: "dsAttrTypeStandard:RealName",
+              password: "dsAttrTypeStandard:Password",
+              auth_authority: "dsAttrTypeStandard:AuthenticationAuthority",
+              shadow_hash: "dsAttrTypeNative:ShadowHashData",
+              group_members: "dsAttrTypeStandard:GroupMembers",
+          }.freeze
+
+          attr_accessor :plist_hash, :property_map
+
+          def initialize(plist_hash = {}, property_map = DSCL_PROPERTY_MAP)
+            @plist_hash = plist_hash
+            @property_map = property_map
+          end
+
+          def get(key)
+            return nil unless property_map.key?(key)
+
+            plist_hash[property_map[key]]
+          end
+          alias_method :[], :get
+
+          def set(key, value)
+            return nil unless property_map.key?(key)
+
+            plist_hash[property_map[key]] = [ value ]
+          end
+          alias_method :[]=, :set
+
         end
       end
     end
