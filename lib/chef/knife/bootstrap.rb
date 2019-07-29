@@ -28,6 +28,7 @@ class Chef
     class Bootstrap < Knife
       include DataBagSecretOptions
 
+      CHEF_15 ||= 15
       attr_accessor :client_builder
       attr_accessor :chef_vault_handler
 
@@ -366,6 +367,7 @@ class Chef
 
         validate_name_args!
         validate_options!
+        validate_bootstrap_version_options!
 
         $stdout.sync = true
 
@@ -429,6 +431,22 @@ class Chef
           ui.error("Policyfile options and --run-list are exclusive")
           exit 1
         end
+        true
+      end
+
+      # Ensure options are valid by checking bootstrap version values.
+      #
+      # The method call will cause the program to exit(1) if:
+      #   * Bootstrap version is greater than or equal to 15 for chef 14 or lower
+      #   * Pre-release options is passed for chef 14 or lower
+      #
+      # @return [TrueClass] If options are valid.
+      def validate_bootstrap_version_options!
+        if target_node_gt_15?
+          ui.error("You must use Chef 15 or later to bootstrap Chef 15 nodes")
+          exit 1
+        end
+
         true
       end
 
@@ -496,6 +514,20 @@ class Chef
         (!!config[:policy_name] ^ config[:policy_group])
       end
 
+      # True if the bootstrap version is greater than or equal to 15 or latest.
+      def bootstrap_version_gt_15?
+        !!config[:bootstrap_version] &&
+          (config[:bootstrap_version] == "latest" ||
+           config[:bootstrap_version].split(".").first.to_i >= CHEF_15)
+      end
+
+      # Consider only if current chef version less than 15.
+      # True if both bootstrap node version greater than or equal to 15 or pre-release is set.
+      def target_node_gt_15?
+        if Chef::VERSION.split(".").first.to_i < CHEF_15
+          config[:prerelease] || bootstrap_version_gt_15?
+        end
+      end
     end
   end
 end
