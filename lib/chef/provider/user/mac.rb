@@ -60,17 +60,6 @@ class Chef
               a.failure_message(Chef::Exceptions::User, "Cannot find binary '#{bin}' on the system for #{new_resource}!")
             end
           end
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion do
-              if new_resource.property_is_set?(:salt)
-                new_resource.property_is_set?(:iterations) && new_resource.password =~ /^[[:xdigit:]]{256}$/
-              else
-                true
-              end
-            end
-            a.failure_message(Chef::Exceptions::User, "Password must be a SALTED-SHA512-PBKDF2 shadow hash entropy when a shadow hash salt is given")
-          end
         end
 
         def load_current_resource
