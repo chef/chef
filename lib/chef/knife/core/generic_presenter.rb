@@ -191,11 +191,11 @@ class Chef
             data =
               if data.is_a?(Array)
                 data[attr.to_i]
+              elsif data.respond_to?(:[], false) && data.key?(attr)
+                data[attr]
               elsif data.respond_to?(attr.to_sym, false)
                 # handles -a chef_environment and other things that hang of the node and aren't really attributes
                 data.public_send(attr.to_sym)
-              elsif data.respond_to?(:[], false) && data.key?(attr)
-                data[attr]
               else
                 nil
               end
