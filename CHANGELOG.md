@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.8 -->
-## [v15.2.8](https://github.com/chef/chef/tree/v15.2.8) (2019-07-31)
+<!-- latest_release 15.2.9 -->
+## [v15.2.9](https://github.com/chef/chef/tree/v15.2.9) (2019-07-31)
 
 #### Merged Pull Requests
-- Enable Kitchen dockken tests with BK linux executor [#8783](https://github.com/chef/chef/pull/8783) ([jaymalasinha](https://github.com/jaymalasinha))
+- Bump mixlib-shellout to 3.0.7 [#8784](https://github.com/chef/chef/pull/8784) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump mixlib-shellout to 3.0.7 [#8784](https://github.com/chef/chef/pull/8784) ([chef-ci](https://github.com/chef-ci)) <!-- 15.2.9 -->
 - Enable Kitchen dockken tests with BK linux executor [#8783](https://github.com/chef/chef/pull/8783) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.8 -->
 - Jsinha/add rhel8 [#8742](https://github.com/chef/chef/pull/8742) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.7 -->
 - Fix zypper test failures [#8774](https://github.com/chef/chef/pull/8774) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.6 -->
