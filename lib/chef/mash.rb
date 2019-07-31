@@ -117,7 +117,7 @@ class Mash < Hash
   #
   # @return [Mash] The updated mash.
   def update(other_hash)
-    other_hash.each_pair { |key, value| regular_writer(convert_key(key), convert_value(value)) }
+    other_hash.each_pair do |key, value| regular_writer(convert_key(key), convert_value(value)) end
     self
   end
 
@@ -183,7 +183,7 @@ class Mash < Hash
   # @return [Hash] The mash as a Hash with symbolized keys.
   def symbolize_keys
     h = Hash.new(default)
-    each { |key, val| h[key.to_sym] = val }
+    each do |key, val| h[key.to_sym] = val end
     h
   end
 

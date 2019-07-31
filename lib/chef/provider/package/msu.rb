@@ -89,12 +89,12 @@ class Chef
         end
 
         def source_resource
-          @source_resource ||= declare_resource(:remote_file, new_resource.name) do
+          @source_resource ||= declare_resource(:remote_file, new_resource.name) {
             path default_download_cache_path
             source new_resource.source
             checksum new_resource.checksum
             backup false
-          end
+          }
         end
 
         def default_download_cache_path

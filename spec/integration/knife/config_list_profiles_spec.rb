@@ -37,7 +37,7 @@ describe "knife config list-profiles", :workstation do
     old_home = ENV["HOME"]
     old_wd = Dir.pwd
     # Clear these out because they are cached permanently.
-    ChefConfig::PathHelper.class_exec { remove_class_variable(:@@home_dir) }
+    ChefConfig::PathHelper.class_exec do remove_class_variable(:@@home_dir) end
     Chef::Knife::ConfigListProfiles.reset_config_loader!
     begin
       ex.run
@@ -67,13 +67,13 @@ describe "knife config list-profiles", :workstation do
   end
 
   context "with an empty credentials file" do
-    before { file(".chef/credentials", "") }
+    before do file(".chef/credentials", "") end
     subject { knife_list_profiles.stderr }
     it { is_expected.to eq "FATAL: No profiles found, #{path_to(".chef/credentials")} does not exist or is empty\n" }
   end
 
   context "with a simple default profile" do
-    before { file(".chef/credentials", <<~EOH) }
+    before do file(".chef/credentials", <<~EOH) end
       [default]
       client_name = "testuser"
       client_key = "testkey.pem"
@@ -87,7 +87,7 @@ describe "knife config list-profiles", :workstation do
   end
 
   context "with multiple profiles" do
-    before { file(".chef/credentials", <<~EOH) }
+    before do file(".chef/credentials", <<~EOH) end
       [default]
       client_name = "testuser"
       client_key = "testkey.pem"
@@ -114,7 +114,7 @@ describe "knife config list-profiles", :workstation do
 
   context "with a non-default active profile" do
     let(:cmd_args) { %w{--profile prod} }
-    before { file(".chef/credentials", <<~EOH) }
+    before do file(".chef/credentials", <<~EOH) end
       [default]
       client_name = "testuser"
       client_key = "testkey.pem"
@@ -140,7 +140,7 @@ describe "knife config list-profiles", :workstation do
   end
 
   context "with a minimal profile" do
-    before { file(".chef/credentials", <<~EOH) }
+    before do file(".chef/credentials", <<~EOH) end
       [default]
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
@@ -149,7 +149,7 @@ describe "knife config list-profiles", :workstation do
 
   context "with -i" do
     let(:cmd_args) { %w{-i} }
-    before { file(".chef/credentials", <<~EOH) }
+    before do file(".chef/credentials", <<~EOH) end
       [default]
       chef_server_url = "https://example.com/organizations/testorg"
     EOH
@@ -162,7 +162,7 @@ describe "knife config list-profiles", :workstation do
 
   context "with --format=json" do
     let(:cmd_args) { %w{--format=json node_name} }
-    before { file(".chef/credentials", <<~EOH) }
+    before do file(".chef/credentials", <<~EOH) end
       [default]
       client_name = "testuser"
       client_key = "testkey.pem"

@@ -178,21 +178,21 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is at the top level" do
-          before { cwd "." }
+          before do cwd "." end
           it "knife list --local -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
         end
 
         context "when cwd is inside the data_bags directory" do
-          before { cwd "data_bags" }
+          before do cwd "data_bags" end
           it "knife list --local -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
         end
 
         context "when cwd is inside chef_repo2" do
-          before { cwd "chef_repo2" }
+          before do cwd "chef_repo2" end
           it "knife list --local -Rfp lists everything" do
             knife("list --local -Rfp").should_succeed <<~EOM
               clients/
@@ -216,7 +216,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside data_bags2" do
-          before { cwd "data_bags2" }
+          before do cwd "data_bags2" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag2/
@@ -237,7 +237,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is at the top level" do
-          before { cwd "." }
+          before do cwd "." end
           it "knife list --local -Rfp lists everything" do
             knife("list --local -Rfp").should_succeed <<~EOM
               clients/
@@ -261,21 +261,21 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside the data_bags directory" do
-          before { cwd "data_bags" }
+          before do cwd "data_bags" end
           it "knife list --local -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
         end
 
         context "when cwd is inside chef_repo2" do
-          before { cwd "chef_repo2" }
+          before do cwd "chef_repo2" end
           it "knife list -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
         end
 
         context "when cwd is inside data_bags2" do
-          before { cwd "data_bags2" }
+          before do cwd "data_bags2" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag2/
@@ -294,21 +294,21 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is at the top level" do
-          before { cwd "." }
+          before do cwd "." end
           it "knife list --local -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
         end
 
         context "when cwd is inside the data_bags directory" do
-          before { cwd "data_bags" }
+          before do cwd "data_bags" end
           it "knife list --local -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
         end
 
         context "when cwd is inside chef_repo2" do
-          before { cwd "chef_repo2" }
+          before do cwd "chef_repo2" end
           it "knife list --local -Rfp lists everything" do
             knife("list --local -Rfp").should_succeed <<~EOM
               clients/
@@ -332,7 +332,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside chef_repo2/data_bags" do
-          before { cwd "chef_repo2/data_bags" }
+          before do cwd "chef_repo2/data_bags" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag3/
@@ -514,14 +514,14 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is at the top level" do
-          before { cwd "." }
+          before do cwd "." end
           it "knife list --local -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
         end
 
         context "when cwd is inside the data_bags directory" do
-          before { cwd "data_bags" }
+          before do cwd "data_bags" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag/
@@ -533,7 +533,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside chef_repo2" do
-          before { cwd "chef_repo2" }
+          before do cwd "chef_repo2" end
           it "knife list --local -Rfp lists everything" do
             knife("list --local -Rfp").should_succeed <<~EOM
               clients/
@@ -566,7 +566,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside data_bags2" do
-          before { cwd "data_bags2" }
+          before do cwd "data_bags2" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag/
@@ -590,7 +590,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is at the top level" do
-          before { cwd "." }
+          before do cwd "." end
           it "knife list --local -Rfp lists everything" do
             knife("list --local -Rfp").should_succeed <<~EOM
               clients/
@@ -623,7 +623,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside the data_bags directory" do
-          before { cwd "data_bags" }
+          before do cwd "data_bags" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag/
@@ -635,7 +635,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside chef_repo2" do
-          before { cwd "chef_repo2" }
+          before do cwd "chef_repo2" end
           it "knife list --local -Rfp lists everything" do
             knife("list --local -Rfp").should_succeed <<~EOM
               clients/
@@ -668,7 +668,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside chef_repo2/data_bags" do
-          before { cwd "chef_repo2/data_bags" }
+          before do cwd "chef_repo2/data_bags" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag/
@@ -690,21 +690,21 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is at the top level" do
-          before { cwd "." }
+          before do cwd "." end
           it "knife list --local -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
         end
 
         context "when cwd is inside the data_bags directory" do
-          before { cwd "data_bags" }
+          before do cwd "data_bags" end
           it "knife list --local -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
         end
 
         context "when cwd is inside chef_repo2" do
-          before { cwd "chef_repo2" }
+          before do cwd "chef_repo2" end
           it "knife list --local -Rfp lists everything" do
             knife("list --local -Rfp").should_succeed <<~EOM
               clients/
@@ -728,7 +728,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside chef_repo2/data_bags" do
-          before { cwd "chef_repo2/data_bags" }
+          before do cwd "chef_repo2/data_bags" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag3/
@@ -751,7 +751,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is at the top level" do
-          before { cwd "." }
+          before do cwd "." end
           it "knife list --local -Rfp lists everything" do
             knife("list --local -Rfp").should_succeed <<~EOM
               clients/
@@ -784,7 +784,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside the data_bags directory" do
-          before { cwd "data_bags" }
+          before do cwd "data_bags" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag/
@@ -796,7 +796,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside chef_repo2" do
-          before { cwd "chef_repo2" }
+          before do cwd "chef_repo2" end
           it "knife list --local -Rfp lists everything" do
             knife("list --local -Rfp").should_succeed <<~EOM
               clients/
@@ -829,7 +829,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside chef_repo2/data_bags" do
-          before { cwd "chef_repo2/data_bags" }
+          before do cwd "chef_repo2/data_bags" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag/
@@ -851,14 +851,14 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is at the top level" do
-          before { cwd "." }
+          before do cwd "." end
           it "knife list --local -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
         end
 
         context "when cwd is inside the data_bags directory" do
-          before { cwd "data_bags" }
+          before do cwd "data_bags" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag/
@@ -868,7 +868,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside chef_repo2" do
-          before { cwd "chef_repo2" }
+          before do cwd "chef_repo2" end
           it "knife list --local -Rfp lists everything" do
             knife("list --local -Rfp").should_succeed <<~EOM
               clients/
@@ -892,7 +892,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside chef_repo2/data_bags" do
-          before { cwd "chef_repo2/data_bags" }
+          before do cwd "chef_repo2/data_bags" end
           it "knife list --local -Rfp fails" do
             knife("list --local -Rfp").should_fail(error_rel_path_outside_repo)
           end
@@ -926,7 +926,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         context "when cwd is inside the data_bags directory" do
-          before { cwd "data_bags" }
+          before do cwd "data_bags" end
           it "knife list --local -Rfp lists data bags" do
             knife("list --local -Rfp").should_succeed <<~EOM
               bag/

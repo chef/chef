@@ -79,7 +79,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       end
 
       context "for an interactive task" do
-        before { resource.interactive_enabled true }
+        before do resource.interactive_enabled true end
         it "does not require a password" do
           expect { resource.after_created }.to_not raise_error
         end
@@ -94,7 +94,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       end
 
       context "for a non-interactive task" do
-        before { resource.interactive_enabled false }
+        before do resource.interactive_enabled false end
         it "does not require a password" do
           expect { resource.after_created }.to_not raise_error
         end
@@ -115,7 +115,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         resource.user "bob"
       end
       context "for an interactive task" do
-        before { resource.interactive_enabled true }
+        before do resource.interactive_enabled true end
         it "does not require a password" do
           expect { resource.after_created }.to_not raise_error
         end
@@ -126,7 +126,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       end
 
       context "for a non-interactive task" do
-        before { resource.interactive_enabled false }
+        before do resource.interactive_enabled false end
         it "require a password" do
           expect { resource.after_created }.to raise_error(ArgumentError, %q{Please provide a password or check if this task needs to be interactive! Valid passwordless users are: 'SYSTEM', 'NT AUTHORITY\SYSTEM', 'LOCAL SERVICE', 'NT AUTHORITY\LOCAL SERVICE', 'NETWORK SERVICE', 'NT AUTHORITY\NETWORK SERVICE', 'ADMINISTRATORS', 'BUILTIN\ADMINISTRATORS', 'USERS', 'BUILTIN\USERS', 'GUESTS', 'BUILTIN\GUESTS'})
         end

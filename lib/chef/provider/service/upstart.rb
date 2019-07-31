@@ -90,13 +90,13 @@ class Chef
                              "Could not determine upstart state for service"
                            end
             end
-            a.assertion { @command_success }
+            a.assertion do @command_success end
             # no failure here, just document the assumptions made.
             a.whyrun "#{whyrun_msg} Assuming service installed and not running."
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @config_file_found }
+            a.assertion do @config_file_found end
             # no failure here, just document the assumptions made.
             a.whyrun "Could not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}. Assuming service is disabled."
           end

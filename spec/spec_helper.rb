@@ -53,7 +53,7 @@ require "chef/knife"
 Dir["lib/chef/knife/**/*.rb"]
   .map { |f| f.gsub("lib/", "") }
   .map { |f| f.gsub(/\.rb$/, "") }
-  .each { |f| require f }
+  .each do |f| require f end
 
 require "chef/resource_resolver"
 require "chef/provider_resolver"
@@ -95,7 +95,7 @@ Dir["spec/support/**/*.rb"]
   .reject { |f| f =~ %r{^spec/support/pedant} }
   .map { |f| f.gsub(/.rb$/, "") }
   .map { |f| f.gsub(%r{spec/}, "") }
-  .each { |f| require f }
+  .each do |f| require f end
 
 OHAI_SYSTEM = Ohai::System.new
 OHAI_SYSTEM.all_plugins(["platform", "hostname", "languages/powershell"])
@@ -271,11 +271,11 @@ RSpec.configure do |config|
   if Process.euid == 0 && Process.uid == 0
     config.after(:each) do
       if Process.uid != 0
-        RSpec.configure { |c| c.fail_fast = true }
+        RSpec.configure do |c| c.fail_fast = true end
         raise "rspec was invoked as root, but the last test dropped real uid to #{Process.uid}"
       end
       if Process.euid != 0
-        RSpec.configure { |c| c.fail_fast = true }
+        RSpec.configure do |c| c.fail_fast = true end
         raise "rspec was invoked as root, but the last test dropped effective uid to #{Process.euid}"
       end
     end

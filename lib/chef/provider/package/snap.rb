@@ -42,7 +42,7 @@ class Chef
 
         def define_resource_requirements
           requirements.assert(:install, :upgrade, :remove, :purge) do |a|
-            a.assertion { !new_resource.source || ::File.exist?(new_resource.source) }
+            a.assertion do !new_resource.source || ::File.exist?(new_resource.source) end
             a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
             a.whyrun "assuming #{new_resource.source} would have previously been created"
           end
@@ -238,14 +238,14 @@ class Chef
         #   @param path [String] Path to the package on disk
         #   @param content_length [Integer] byte size of the snap file
         def generate_multipart_form_data(snap_name, action, options, path, content_length)
-          snap_options = options.map do |k, v|
+          snap_options = options.map { |k, v|
             <<~SNAP_OPTION
               Content-Disposition: form-data; name="#{k}"
 
               #{v}
               --#{snap_name}
             SNAP_OPTION
-          end
+          }
 
           multipart_form_data = <<~SNAP_S
             Host:

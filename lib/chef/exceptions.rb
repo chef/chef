@@ -491,13 +491,13 @@ class Chef
       attr_reader :resources_found
       def initialize(resources_found)
         @resources_found = resources_found
-        matches_info = @resources_found.each do |r|
+        matches_info = @resources_found.each { |r|
           if r["Module"].nil?
             "Resource #{r["Name"]} was found in #{r["Module"]["Name"]}"
           else
             "Resource #{r["Name"]} is a binary resource"
           end
-        end
+        }
         super "Found multiple resources matching #{matches_info[0]["Module"]["Name"]}:\n#{(matches_info.map { |f| f["Module"]["Version"] }).uniq.join("\n")}"
       end
     end

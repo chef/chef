@@ -187,9 +187,9 @@ describe Chef::Resource::AptPackage, metadata do
         end
 
         it "raises a reasonable error for action :install" do
-          expect do
+          expect {
             package_resource.run_action(:install)
-          end.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
+          }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
         end
 
       end

@@ -158,11 +158,11 @@ describe Chef::Knife::CookbookUpload do
         knife.config[:depends] = true
         allow(knife).to receive(:cookbook_names).and_return(%w{test_cookbook1 test_cookbook2 test_cookbook3})
         expect(knife).to receive(:upload).exactly(3).times
-        expect do
+        expect {
           Timeout.timeout(5) do
             knife.run
           end
-        end.not_to raise_error
+        }.not_to raise_error
       end
     end
 

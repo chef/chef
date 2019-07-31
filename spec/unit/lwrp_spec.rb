@@ -229,9 +229,9 @@ describe "LWRP" do
       end
 
       it "allows to user to user the resource_name" do
-        expect do
+        expect {
           klass.resource_name(:foo)
-        end.to_not raise_error
+        }.to_not raise_error
       end
 
       it "returns the set value for the resource" do

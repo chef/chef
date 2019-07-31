@@ -56,7 +56,7 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should allow you to check what kind_of? thing an argument is with kind_of" do
-    expect do
+    expect {
       @vo.validate(
         { one: "string" },
         {
@@ -65,9 +65,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.not_to raise_error
+    }.not_to raise_error
 
-    expect do
+    expect {
       @vo.validate(
         { one: "string" },
         {
@@ -76,11 +76,11 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should allow you to specify an argument is required with required" do
-    expect do
+    expect {
       @vo.validate(
         { one: "string" },
         {
@@ -89,9 +89,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.not_to raise_error
+    }.not_to raise_error
 
-    expect do
+    expect {
       @vo.validate(
         { two: "string" },
         {
@@ -100,9 +100,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
 
-    expect do
+    expect {
       @vo.validate(
         { two: "string" },
         {
@@ -111,11 +111,11 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.not_to raise_error
+    }.not_to raise_error
   end
 
   it "should allow you to specify whether an object has a method with respond_to" do
-    expect do
+    expect {
       @vo.validate(
         { one: @vo },
         {
@@ -124,9 +124,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.not_to raise_error
+    }.not_to raise_error
 
-    expect do
+    expect {
       @vo.validate(
         { one: @vo },
         {
@@ -135,11 +135,11 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should allow you to specify whether an object has all the given methods with respond_to and an array" do
-    expect do
+    expect {
       @vo.validate(
         { one: @vo },
         {
@@ -148,9 +148,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.not_to raise_error
+    }.not_to raise_error
 
-    expect do
+    expect {
       @vo.validate(
         { one: @vo },
         {
@@ -159,7 +159,7 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should let you set a default value with default => value" do
@@ -173,7 +173,7 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should let you check regular expressions" do
-    expect do
+    expect {
       @vo.validate(
         { one: "is good" },
         {
@@ -182,9 +182,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.not_to raise_error
+    }.not_to raise_error
 
-    expect do
+    expect {
       @vo.validate(
         { one: "is good" },
         {
@@ -193,11 +193,11 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should let you specify your own callbacks" do
-    expect do
+    expect {
       @vo.validate(
         { one: "is good" },
         {
@@ -210,9 +210,9 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.not_to raise_error
+    }.not_to raise_error
 
-    expect do
+    expect {
       @vo.validate(
         { one: "is bad" },
         {
@@ -225,12 +225,12 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should let you combine checks" do
     args = { one: "is good", two: "is bad" }
-    expect do
+    expect {
       @vo.validate(
         args,
         {
@@ -252,9 +252,9 @@ describe Chef::Mixin::ParamsValidate do
           three: { default: "neato mosquito" },
         }
       )
-    end.not_to raise_error
+    }.not_to raise_error
     expect(args[:three]).to eq("neato mosquito")
-    expect do
+    expect {
       @vo.validate(
         args,
         {
@@ -276,11 +276,11 @@ describe Chef::Mixin::ParamsValidate do
           three: { default: "neato mosquito" },
         }
       )
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should raise an ArgumentError if the validation map has an unknown check" do
-    expect do
+    expect {
       @vo.validate(
         { one: "two" },
         {
@@ -289,17 +289,17 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should accept keys that are strings in the options" do
-    expect do
+    expect {
       @vo.validate({ "one" => "two" }, { one: { regex: /^two$/ } })
-    end.not_to raise_error
+    }.not_to raise_error
   end
 
   it "should allow an array to kind_of" do
-    expect do
+    expect {
       @vo.validate(
         { one: "string" },
         {
@@ -308,8 +308,8 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.not_to raise_error
-    expect do
+    }.not_to raise_error
+    expect {
       @vo.validate(
         { one: ["string"] },
         {
@@ -318,8 +318,8 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.not_to raise_error
-    expect do
+    }.not_to raise_error
+    expect {
       @vo.validate(
         { one: {} },
         {
@@ -328,29 +328,29 @@ describe Chef::Mixin::ParamsValidate do
           },
         }
       )
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "asserts that a value returns false from a predicate method" do
-    expect do
+    expect {
       @vo.validate({ not_blank: "should pass" },
         { not_blank: { cannot_be: %i{nil empty} } })
-    end.not_to raise_error
-    expect do
+    }.not_to raise_error
+    expect {
       @vo.validate({ not_blank: "" },
         { not_blank: { cannot_be: %i{nil empty} } })
-    end.to raise_error(Chef::Exceptions::ValidationFailed)
+    }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "allows a custom validation message" do
-    expect do
+    expect {
       @vo.validate({ not_blank: "should pass" },
         { not_blank: { cannot_be: %i{nil empty}, validation_message: "my validation message" } })
-    end.not_to raise_error
-    expect do
+    }.not_to raise_error
+    expect {
       @vo.validate({ not_blank: "" },
         { not_blank: { cannot_be: %i{nil empty}, validation_message: "my validation message" } })
-    end.to raise_error(Chef::Exceptions::ValidationFailed, "my validation message")
+    }.to raise_error(Chef::Exceptions::ValidationFailed, "my validation message")
   end
 
   it "should set and return a value, then return the same value" do
@@ -366,15 +366,15 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should raise an ArgumentError when argument is nil and required is true" do
-    expect do
+    expect {
       @vo.set_or_return(:test, nil, { required: true })
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should not raise an error when argument is nil and required is false" do
-    expect do
+    expect {
       @vo.set_or_return(:test, nil, { required: false })
-    end.not_to raise_error
+    }.not_to raise_error
   end
 
   it "should set and return @name, then return @name for foo when argument is nil" do
@@ -391,9 +391,9 @@ describe Chef::Mixin::ParamsValidate do
   it "should raise an error when delayed evaluated attribute is not valid" do
     value = Chef::DelayedEvaluator.new { "test" }
     @vo.set_or_return(:test, value, { kind_of: Numeric })
-    expect do
+    expect {
       @vo.set_or_return(:test, nil, { kind_of: Numeric })
-    end.to raise_error(Chef::Exceptions::ValidationFailed)
+    }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "should create DelayedEvaluator instance when #lazy is used" do

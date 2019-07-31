@@ -133,7 +133,7 @@ describe Chef::Resource::Scm do
 
   describe "when it has a timeout property" do
     let(:ten_seconds) { 10 }
-    before { resource.timeout(ten_seconds) }
+    before do resource.timeout(ten_seconds) end
     it "stores this timeout" do
       expect(resource.timeout).to eq(ten_seconds)
     end
@@ -165,7 +165,7 @@ describe Chef::Resource::Scm do
 
   describe "when it has a environment property" do
     let(:test_environment) { { "CHEF_ENV" => "/tmp" } }
-    before { resource.environment(test_environment) }
+    before do resource.environment(test_environment) end
     it "stores this environment" do
       expect(resource.environment).to eq(test_environment)
     end

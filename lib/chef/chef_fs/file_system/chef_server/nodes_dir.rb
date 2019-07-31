@@ -28,9 +28,9 @@ class Chef
         class NodesDir < RestListDir
           # Identical to RestListDir.children, except supports environments
           def children
-            @children ||= root.get_json(env_api_path).keys.sort.map do |key|
+            @children ||= root.get_json(env_api_path).keys.sort.map { |key|
               make_child_entry(key, true)
-            end
+            }
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout retrieving children: #{e}")
           rescue Net::HTTPClientException => e

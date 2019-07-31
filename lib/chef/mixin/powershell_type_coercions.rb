@@ -49,16 +49,16 @@ class Chef
       private
 
       def translate_hash(x)
-        translated = x.inject([]) do |memo, (k, v)|
+        translated = x.inject([]) { |memo, (k, v)|
           memo << "#{k}=#{translate_type(v)}"
-        end
+        }
         "@{#{translated.join(";")}}"
       end
 
       def translate_array(x)
-        translated = x.map do |v|
+        translated = x.map { |v|
           translate_type(v)
-        end
+        }
         "@(#{translated.join(",")})"
       end
 

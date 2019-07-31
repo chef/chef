@@ -45,14 +45,14 @@ class Chef
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
             update_rcd = "/usr/sbin/update-rc.d"
-            a.assertion { ::File.exists? update_rcd }
+            a.assertion do ::File.exists? update_rcd end
             a.failure_message Chef::Exceptions::Service, "#{update_rcd} does not exist!"
             # no whyrun recovery - this is a base system component of debian
             # distros and must be present
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @got_priority == true }
+            a.assertion do @got_priority == true end
             a.failure_message Chef::Exceptions::Service, "Unable to determine priority for service"
             # This can happen if the service is not yet installed,so we'll fake it.
             a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.",

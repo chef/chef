@@ -84,18 +84,18 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:create, :modify, :manage, :lock, :unlock) do |a|
-          a.assertion { @group_name_resolved }
+          a.assertion do @group_name_resolved end
           a.failure_message Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{new_resource.gid}"
           a.whyrun "group name #{new_resource.gid} does not exist.  This will cause group assignment to fail.  Assuming this group will have been created previously."
         end
         requirements.assert(:all_actions) do |a|
-          a.assertion { @shadow_lib_ok }
+          a.assertion do @shadow_lib_ok end
           a.failure_message Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
           a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." \
             "Note that user update converge may report false-positive on the basis of mismatched password. "
         end
         requirements.assert(:modify, :lock, :unlock) do |a|
-          a.assertion { @user_exists }
+          a.assertion do @user_exists end
           a.failure_message(Chef::Exceptions::User, "Cannot modify user #{new_resource.username} - does not exist!")
           a.whyrun("Assuming user #{new_resource.username} would have been created")
         end

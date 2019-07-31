@@ -48,7 +48,7 @@ class Chef
           # Make sure the parent dir exists, or else fail.
           # for why run, print a message explaining the potential error.
           parent_directory = ::File.dirname(new_resource.destination)
-          a.assertion { ::File.directory?(parent_directory) }
+          a.assertion do ::File.directory?(parent_directory) end
           a.failure_message(Chef::Exceptions::MissingParentDirectory,
             "Cannot clone #{new_resource} to #{new_resource.destination}, the enclosing directory #{parent_directory} does not exist")
           a.whyrun("Directory #{parent_directory} does not exist, assuming it would have been created")
@@ -166,13 +166,13 @@ class Chef
       end
 
       def extract_revision_info(svn_info)
-        repo_attrs = svn_info.lines.inject({}) do |attrs, line|
+        repo_attrs = svn_info.lines.inject({}) { |attrs, line|
           if line =~ SVN_INFO_PATTERN
             property, value = $1, $2
             attrs[property] = value
           end
           attrs
-        end
+        }
         rev = (repo_attrs["Last Changed Rev"] || repo_attrs["Revision"])
         rev.strip! if rev
         raise "Could not parse `svn info` data: #{svn_info}" if repo_attrs.empty?

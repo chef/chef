@@ -40,9 +40,9 @@ describe Chef::Util::Powershell::Cmdlet do
 
     %w{! @ # $ % ^ & * & * ( ) - = + \{ \} . ? < > \\ /}.each do |sym|
       it "raises an Argument error if it configuration name contains #{sym}" do
-        expect do
+        expect {
           @cmdlet.send(:validate_switch_name!, "Hello#{sym}")
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
     end
   end
@@ -68,15 +68,15 @@ describe Chef::Util::Powershell::Cmdlet do
 
   describe "#command_switches_string" do
     it "raises an ArgumentError if the key is not a symbol" do
-      expect do
+      expect {
         @cmdlet.send(:command_switches_string, { "foo" => "bar" })
-      end.to raise_error(ArgumentError)
+      }.to raise_error(ArgumentError)
     end
 
     it "does not allow invalid switch names" do
-      expect do
+      expect {
         @cmdlet.send(:command_switches_string, { foo!: "bar" })
-      end.to raise_error(ArgumentError)
+      }.to raise_error(ArgumentError)
     end
 
     it "ignores switches with a false value" do

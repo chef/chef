@@ -65,9 +65,9 @@ class Chef
           http = Chef::HTTP::Simple.new(uri, http_client_opts)
           orig_tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
           if want_progress?
-            tempfile = http.streaming_request_with_progress(uri, headers, orig_tempfile) do |size, total|
+            tempfile = http.streaming_request_with_progress(uri, headers, orig_tempfile) { |size, total|
               events.resource_update_progress(new_resource, size, total, progress_interval)
-            end
+            }
           else
             tempfile = http.streaming_request(uri, headers, orig_tempfile)
           end

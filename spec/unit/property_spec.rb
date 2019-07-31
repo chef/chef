@@ -493,7 +493,7 @@ describe "Chef::Resource.property" do
         expect(resource.state_for_resource_reporter).to eq({})
       end
       it "when x is set to nil, it returns nil" do
-        resource.instance_eval { @x = nil }
+        resource.instance_eval do @x = nil end
         expect(resource.x).to be_nil
       end
 
@@ -1083,18 +1083,18 @@ describe "Chef::Resource.property" do
 
   context "property_type" do
     it "property_types validate their defaults" do
-      expect do
+      expect {
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
           property_type(is: %i{a b}, default: :c)
         end
-      end.to raise_error(Chef::Exceptions::ValidationFailed)
-      expect do
+      }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect {
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
           property_type(is: %i{a b}, default: :b)
         end
-      end.not_to raise_error
+      }.not_to raise_error
     end
 
     context "With property_type ABType (is: [:a, :b]) and CDType (is: [:c, :d])" do
@@ -1161,7 +1161,7 @@ describe "Chef::Resource.property" do
     with_property ":real, Integer" do
       it "should set the real property and emit a deprecation message" do
         expect(Chef).to receive(:deprecated).with(:property, "we don't like the deprecated property no more")
-        resource_class.class_eval { deprecated_property_alias :deprecated, :real, "we don't like the deprecated property no more" }
+        resource_class.class_eval do deprecated_property_alias :deprecated, :real, "we don't like the deprecated property no more" end
         resource.deprecated 10
         expect(resource.real).to eq 10
       end

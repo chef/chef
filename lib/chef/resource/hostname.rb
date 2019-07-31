@@ -49,7 +49,7 @@ class Chef
       action_class do
         def append_replacing_matching_lines(path, regex, string)
           text = IO.read(path).split("\n")
-          text.reject! { |s| s =~ regex }
+          text.reject! do |s| s =~ regex end
           text += [ string ]
           file path do
             content text.join("\n") + "\n"
@@ -91,7 +91,7 @@ class Chef
           # set the hostname via /bin/hostname
           declare_resource(:execute, "set hostname to #{new_resource.hostname}") do
             command "/bin/hostname #{new_resource.hostname}"
-            not_if { shell_out!("hostname").stdout.chomp == new_resource.hostname }
+            not_if do shell_out!("hostname").stdout.chomp == new_resource.hostname end
             notifies :reload, "ohai[reload hostname]"
           end
 
@@ -111,18 +111,18 @@ class Chef
             # darwin
             declare_resource(:execute, "set HostName via scutil") do
               command "/usr/sbin/scutil --set HostName #{new_resource.hostname}"
-              not_if { shell_out!("/usr/sbin/scutil --get HostName").stdout.chomp == new_resource.hostname }
+              not_if do shell_out!("/usr/sbin/scutil --get HostName").stdout.chomp == new_resource.hostname end
               notifies :reload, "ohai[reload hostname]"
             end
             declare_resource(:execute, "set ComputerName via scutil") do
               command "/usr/sbin/scutil --set ComputerName  #{new_resource.hostname}"
-              not_if { shell_out!("/usr/sbin/scutil --get ComputerName").stdout.chomp == new_resource.hostname }
+              not_if do shell_out!("/usr/sbin/scutil --get ComputerName").stdout.chomp == new_resource.hostname end
               notifies :reload, "ohai[reload hostname]"
             end
             shortname = new_resource.hostname[/[^\.]*/]
             declare_resource(:execute, "set LocalHostName via scutil") do
               command "/usr/sbin/scutil --set LocalHostName #{shortname}"
-              not_if { shell_out!("/usr/sbin/scutil --get LocalHostName").stdout.chomp == shortname }
+              not_if do shell_out!("/usr/sbin/scutil --get LocalHostName").stdout.chomp == shortname end
               notifies :reload, "ohai[reload hostname]"
             end
           when node["os"] == "linux"

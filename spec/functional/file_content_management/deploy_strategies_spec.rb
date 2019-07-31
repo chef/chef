@@ -72,9 +72,9 @@ shared_examples_for "a content deploy strategy" do
     end
 
     let(:parent_inheritable_aces) do
-      inheritable_aces = parent_security_descriptor.dacl.select do |ace|
+      inheritable_aces = parent_security_descriptor.dacl.select { |ace|
         ace_inherits?(ace)
-      end
+      }
     end
 
     it "touches the file to create it (Windows)", :windows_only do
@@ -91,9 +91,9 @@ shared_examples_for "a content deploy strategy" do
       # On certain windows systems like 2003 and Azure VMs there are some default
       # ACEs that are not inherited from parents. So filter out the parents before
       # comparing the aces
-      self_aces = security_descriptor.dacl.select do |ace|
+      self_aces = security_descriptor.dacl.select { |ace|
         ace_inherits?(ace)
-      end
+      }
 
       self_aces.each_with_index do |ace, index|
         expect(ace.mask).to eq(parent_aces[index].mask)
@@ -109,7 +109,7 @@ shared_examples_for "a content deploy strategy" do
 
     let(:staging_file_path) do
       path = File.join(staging_dir, "cp-deploy-strategy-staging-file.txt")
-      File.open(path, "w+", 0600) { |f| f.print(staging_file_content) }
+      File.open(path, "w+", 0600) do |f| f.print(staging_file_content) end
       path
     end
 

@@ -20,7 +20,7 @@ class Chef
         def properties(include_superclass = true)
           if include_superclass
             result = {}
-            ancestors.reverse_each { |c| result.merge!(c.properties(false)) if c.respond_to?(:properties) }
+            ancestors.reverse_each do |c| result.merge!(c.properties(false)) if c.respond_to?(:properties) end
             result
           else
             @properties ||= {}

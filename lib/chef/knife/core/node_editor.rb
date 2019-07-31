@@ -67,9 +67,9 @@ class Chef
           policy_name
           policy_group
           run_list
-        }.reject do |key|
+        }.reject { |key|
           pristine_copy[key] == updated_copy[key]
-        end
+        }
 
         updated_properties.any? && updated_properties
       end

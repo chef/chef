@@ -94,7 +94,7 @@ class Chef
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
         begin
-          Array(resource.action).each { |action| run_action(resource, action) }
+          Array(resource.action).each do |action| run_action(resource, action) end
         ensure
           resource.executed_by_runner = true
         end

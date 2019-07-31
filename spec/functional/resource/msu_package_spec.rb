@@ -40,7 +40,7 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
   end
 
   context "installing package" do
-    after { remove_package }
+    after do remove_package end
 
     it "installs the package successfully" do
       subject.run_action(:install)

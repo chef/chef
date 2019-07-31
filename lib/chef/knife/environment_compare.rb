@@ -94,19 +94,19 @@ class Chef
 
       def cookbook_list(constraints)
         result = {}
-        constraints.each_value { |cb| result.merge!(cb) }
+        constraints.each_value do |cb| result.merge!(cb) end
         result
       end
 
       def matrix_output(cookbooks, constraints)
         rows = [ "" ]
         environments = []
-        constraints.each_key { |e| environments << e.to_s }
+        constraints.each_key do |e| environments << e.to_s end
         columns = environments.count + 1
-        environments.each { |env| rows << ui.color(env, :bold) }
+        environments.each do |env| rows << ui.color(env, :bold) end
         cookbooks.each_key do |c|
           total = []
-          environments.each { |n| total << constraints[n][c] }
+          environments.each do |n| total << constraints[n][c] end
           if total.uniq.count == 1
             next if config[:mismatch]
 

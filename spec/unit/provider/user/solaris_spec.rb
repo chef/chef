@@ -81,7 +81,7 @@ describe Chef::Provider::User::Solaris do
 
   describe "#create_user" do
     context "with a system user" do
-      before { new_resource.system(true) }
+      before do new_resource.system(true) end
       it "should not pass -r" do
         expect(provider).to receive(:shell_out_compacted!).with( "useradd", "adam")
         provider.create_user
@@ -89,7 +89,7 @@ describe Chef::Provider::User::Solaris do
     end
 
     context "with manage_home" do
-      before { new_resource.manage_home(true) }
+      before do new_resource.manage_home(true) end
       it "should not pass -r" do
         expect(provider).to receive(:shell_out_compacted!).with( "useradd", "-m", "adam")
         provider.create_user

@@ -280,13 +280,13 @@ class Chef
           properties_str = if new_resource.sensitive
                              specified_properties.join(", ")
                            else
-                             specified_properties.map do |property|
+                             specified_properties.map { |property|
                                "#{property}=" << if new_resource.class.properties[property].sensitive?
                                                    "(suppressed sensitive property)"
                                                  else
                                                    new_resource.send(property).inspect
                                                  end
-                             end.join(", ")
+                             }.join(", ")
                            end
           logger.debug("Skipping update of #{new_resource}: has not changed any of the specified properties #{properties_str}.")
           return false
@@ -308,7 +308,7 @@ class Chef
         # The resource doesn't exist. Mark that we are *creating* this, and
         # write down any properties we are setting.
         property_size = properties.map(&:size).max
-        created = properties.map do |property|
+        created = properties.map { |property|
           default = " (default value)" unless new_resource.property_is_set?(property)
           properties_str = if new_resource.sensitive || new_resource.class.properties[property].sensitive?
                              "(suppressed sensitive property)"
@@ -316,7 +316,7 @@ class Chef
                              new_resource.send(property).inspect
                            end
           "  set #{property.to_s.ljust(property_size)} to #{properties_str}#{default}"
-        end
+        }
 
         converge_by([ "create #{new_resource.identity}" ] + created, &converge_block)
       end
@@ -357,8 +357,8 @@ class Chef
         provider_class = self
         @included_resource_dsl_module = Module.new do
           extend Forwardable
-          define_singleton_method(:to_s) { "forwarder module for #{provider_class}" }
-          define_singleton_method(:inspect) { to_s }
+          define_singleton_method(:to_s) do "forwarder module for #{provider_class}" end
+          define_singleton_method(:inspect) do to_s end
           # this magic, stated simply, is that any instance method declared directly on
           # the resource we are building, will be accessible from the action_class(provider)
           # instance.  methods declared on Chef::Resource and properties are not inherited.

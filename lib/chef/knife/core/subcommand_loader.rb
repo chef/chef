@@ -83,7 +83,7 @@ class Chef
       def load_commands
         return true if @loaded
 
-        subcommand_files.each { |subcommand| Kernel.load subcommand }
+        subcommand_files.each do |subcommand| Kernel.load subcommand end
         @loaded = true
       end
 

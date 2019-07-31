@@ -37,7 +37,7 @@ class Chef
           aces_size = aces.inject(0) { |sum, ace| sum + ace.size }
           acl_size = align_dword(Chef::ReservedNames::Win32::API::Security::ACLStruct.size + aces_size) # What the heck is 94???
           acl = Chef::ReservedNames::Win32::Security.initialize_acl(acl_size)
-          aces.each { |ace| Chef::ReservedNames::Win32::Security.add_ace(acl, ace) }
+          aces.each do |ace| Chef::ReservedNames::Win32::Security.add_ace(acl, ace) end
           acl
         end
 

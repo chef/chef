@@ -23,7 +23,7 @@ class Chef
   class Resource
     class WindowsTask < Chef::Resource
       resource_name :windows_task
-      provides(:windows_task) { true }
+      provides(:windows_task) do true end
 
       description "Use the windows_task resource to create, delete or run a Windows scheduled task. Requires Windows Server 2008 or later due to API usage."
       introduced "13.0"
@@ -196,7 +196,7 @@ class Chef
         # returns true if frequency_modifer has values First, second, third, fourth, last, lastday
       def frequency_modifier_includes_days_of_weeks?(frequency_modifier)
         frequency_modifier = frequency_modifier.to_s.split(",")
-        frequency_modifier.map! { |value| value.strip.upcase }
+        frequency_modifier.map! do |value| value.strip.upcase end
         (frequency_modifier - VALID_WEEKS).empty?
       end
 
@@ -300,7 +300,7 @@ class Chef
             # Following error will be raise if day is set as 1-31 and frequency is selected as :weekly since those values are valid with only frequency :monthly
             raise ArgumentError, "day values 1-31 or last is only valid with frequency :monthly" if frequency == :weekly
           else
-            days.map! { |day| day.to_s.strip.downcase }
+            days.map! do |day| day.to_s.strip.downcase end
             unless (days - VALID_WEEK_DAYS).empty?
               raise ArgumentError, "day property invalid. Only valid values are: #{VALID_WEEK_DAYS.map(&:upcase).join(", ")}. Multiple values must be separated by a comma."
             end
@@ -313,7 +313,7 @@ class Chef
 
         if months.is_a?(String)
           months = months.split(",")
-          months.map! { |month| month.strip.upcase }
+          months.map! do |month| month.strip.upcase end
           unless (months - VALID_MONTHS).empty?
             raise ArgumentError, "months property invalid. Only valid values are: #{VALID_MONTHS.join(", ")}. Multiple values must be separated by a comma."
           end
@@ -322,7 +322,7 @@ class Chef
 
         # This method returns true if day has values from 1-31 which is a days of moths and used with frequency :monthly
       def days_includes_days_of_months?(days)
-        days.map! { |day| day.to_s.strip.downcase }
+        days.map! do |day| day.to_s.strip.downcase end
         (days - VALID_DAYS_OF_MONTH).empty?
       end
 

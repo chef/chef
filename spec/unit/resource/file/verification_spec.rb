@@ -88,16 +88,16 @@ describe Chef::Resource::File::Verification do
 
       it "raises an error when \%{file} is used" do
         test_command = platform_specific_verify_command("file")
-        expect do
+        expect {
           Chef::Resource::File::Verification.new(parent_resource, test_command, {}).verify(temp_path)
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
 
       it "does not raise an error when \%{file} is not used" do
         test_command = platform_specific_verify_command("path")
-        expect do
+        expect {
           Chef::Resource::File::Verification.new(parent_resource, test_command, {}).verify(temp_path)
-        end.to_not raise_error
+        }.to_not raise_error
       end
 
       it "substitutes \%{path} with the path" do

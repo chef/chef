@@ -179,12 +179,12 @@ class Chef
       method = :GET
       method, url, processed_headers, data = apply_request_middleware(method, url, headers, data)
 
-      response, rest_request, return_value = send_http_request(method, url, processed_headers, data) do |http_response|
+      response, rest_request, return_value = send_http_request(method, url, processed_headers, data) { |http_response|
         if http_response.is_a?(Net::HTTPSuccess)
           tempfile = stream_to_tempfile(url, http_response, tempfile, &progress_block)
         end
         apply_stream_complete_middleware(http_response, rest_request, return_value)
-      end
+      }
       return nil if response.is_a?(Net::HTTPRedirection)
 
       unless response.is_a?(Net::HTTPSuccess)
@@ -226,12 +226,12 @@ class Chef
       method = :GET
       method, url, processed_headers, data = apply_request_middleware(method, url, headers, data)
 
-      response, rest_request, return_value = send_http_request(method, url, processed_headers, data) do |http_response|
+      response, rest_request, return_value = send_http_request(method, url, processed_headers, data) { |http_response|
         if http_response.is_a?(Net::HTTPSuccess)
           tempfile = stream_to_tempfile(url, http_response, tempfile)
         end
         apply_stream_complete_middleware(http_response, rest_request, return_value)
-      end
+      }
 
       return nil if response.is_a?(Net::HTTPRedirection)
 

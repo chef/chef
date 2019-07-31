@@ -67,9 +67,9 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
 
       it "converges the resource if it is not converged" do
         new_resource.run_action(:run)
-        contents = File.open(tmp_file_name, "rb:bom|UTF-16LE") do |f|
+        contents = File.open(tmp_file_name, "rb:bom|UTF-16LE") { |f|
           f.read.encode("UTF-8")
-        end
+        }
         expect(contents).to eq(test_text)
         expect(new_resource).to be_updated
       end

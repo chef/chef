@@ -8,8 +8,8 @@ describe "Recipe DSL methods" do
     attr_accessor :current_index
   end
 
-  before(:all) { Namer.current_index = 1 }
-  before { Namer.current_index += 1 }
+  before(:all) do Namer.current_index = 1 end
+  before do Namer.current_index += 1 end
 
   context "with resource 'base_thingy' declared as BaseThingy" do
     before(:each) do
@@ -50,18 +50,18 @@ describe "Recipe DSL methods" do
     end
 
     it "creates base_thingy when you call base_thingy in a recipe" do
-      recipe = converge do
+      recipe = converge {
         base_thingy("blah") {}
-      end
+      }
       expect(recipe.logged_warnings).to eq ""
       expect(BaseThingy.created_name).to eq "blah"
       expect(BaseThingy.created_resource).to eq BaseThingy
     end
 
     it "errors when you call base_thingy do ... end in a recipe" do
-      expect_converge do
+      expect_converge {
         base_thingy { ; }
-      end.to raise_error(Chef::Exceptions::ValidationFailed)
+      }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     context "nameless resources" do
@@ -75,9 +75,9 @@ describe "Recipe DSL methods" do
       end
 
       it "does not error when not given a name" do
-        recipe = converge do
+        recipe = converge {
           nameless_thingy {}
-        end
+        }
         expect(recipe.logged_warnings).to eq ""
         expect(BaseThingy.created_name).to eq ""
         expect(BaseThingy.created_resource).to eq NamelessThingy
@@ -98,9 +98,9 @@ describe "Recipe DSL methods" do
         end
 
         it "bar_thingy does not work" do
-          expect_converge do
+          expect_converge {
             bar_thingy("blah") {}
-          end.to raise_error(NoMethodError)
+          }.to raise_error(NoMethodError)
         end
       end
 
@@ -114,9 +114,9 @@ describe "Recipe DSL methods" do
         end
 
         it "no_name_thingy does not work" do
-          expect_converge do
+          expect_converge {
             no_name_thingy("blah") {}
-          end.to raise_error(NoMethodError)
+          }.to raise_error(NoMethodError)
         end
       end
 
@@ -130,15 +130,15 @@ describe "Recipe DSL methods" do
         end
 
         it "another_no_name_thingy does not work" do
-          expect_converge do
+          expect_converge {
             another_no_name_thingy("blah") {}
-          end.to raise_error(NoMethodError)
+          }.to raise_error(NoMethodError)
         end
 
         it "another_thingy_name works" do
-          recipe = converge do
+          recipe = converge {
             another_thingy_name("blah") {}
-          end
+          }
           expect(recipe.logged_warnings).to eq ""
           expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy)
         end
@@ -155,21 +155,21 @@ describe "Recipe DSL methods" do
         end
 
         it "another_no_name_thingy does not work" do
-          expect_converge do
+          expect_converge {
             another_no_name_thingy2("blah") {}
-          end.to raise_error(NoMethodError)
+          }.to raise_error(NoMethodError)
         end
 
         it "another_thingy_name2 does not work" do
-          expect_converge do
+          expect_converge {
             another_thingy_name2("blah") {}
-          end.to raise_error(NoMethodError)
+          }.to raise_error(NoMethodError)
         end
 
         it "yet_another_thingy_name3 works" do
-          recipe = converge do
+          recipe = converge {
             another_thingy_name3("blah") {}
-          end
+          }
           expect(recipe.logged_warnings).to eq ""
           expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy2)
         end
@@ -187,19 +187,19 @@ describe "Recipe DSL methods" do
           end
 
           it "and os = linux, another_no_name_thingy3 does not work" do
-            expect_converge do
+            expect_converge {
               # TODO this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "linux"
               another_no_name_thingy3("blah") {}
-            end.to raise_error(Chef::Exceptions::NoSuchResourceType)
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
           end
 
           it "and os = blarghle, another_no_name_thingy3 works" do
-            recipe = converge do
+            recipe = converge {
               # TODO this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "blarghle"
               another_no_name_thingy3("blah") {}
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy3)
           end
@@ -217,29 +217,29 @@ describe "Recipe DSL methods" do
           end
 
           it "and os = linux, another_no_name_thingy4 does not work" do
-            expect_converge do
+            expect_converge {
               # TODO this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "linux"
               another_no_name_thingy4("blah") {}
-            end.to raise_error(Chef::Exceptions::NoSuchResourceType)
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
           end
 
           it "and os = blarghle, another_no_name_thingy4 works" do
-            recipe = converge do
+            recipe = converge {
               # TODO this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "blarghle"
               another_no_name_thingy4("blah") {}
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy4)
           end
 
           it "and platform_family = foo, another_no_name_thingy4 works" do
-            recipe = converge do
+            recipe = converge {
               # TODO this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:platform_family] = "foo"
               another_no_name_thingy4("blah") {}
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy4)
           end
@@ -256,27 +256,27 @@ describe "Recipe DSL methods" do
           end
 
           it "and os = linux, another_no_name_thingy5 does not work" do
-            expect_converge do
+            expect_converge {
               # this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "linux"
               another_no_name_thingy5("blah") {}
-            end.to raise_error(Chef::Exceptions::NoSuchResourceType)
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
           end
 
           it "and os = blarghle, another_no_name_thingy5 works" do
-            recipe = converge do
+            recipe = converge {
               # this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "blarghle"
               another_no_name_thingy5("blah") {}
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy5)
           end
 
           it "the new resource name can be used in a recipe" do
-            recipe = converge do
+            recipe = converge {
               another_thingy_name_for_another_no_name_thingy5("blah") {}
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy5)
           end
@@ -293,27 +293,27 @@ describe "Recipe DSL methods" do
           end
 
           it "and os = linux, another_no_name_thingy6 does not work" do
-            expect_converge do
+            expect_converge {
               # this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "linux"
               another_no_name_thingy6("blah") {}
-            end.to raise_error(Chef::Exceptions::NoSuchResourceType)
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
           end
 
           it "and os = blarghle, another_no_name_thingy6 works" do
-            recipe = converge do
+            recipe = converge {
               # this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "blarghle"
               another_no_name_thingy6("blah") {}
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy6)
           end
 
           it "the new resource name can be used in a recipe" do
-            recipe = converge do
+            recipe = converge {
               another_thingy_name_for_another_no_name_thingy6("blah") {}
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy6)
           end
@@ -330,29 +330,29 @@ describe "Recipe DSL methods" do
           end
 
           it "and os = linux, another_thingy_name_for_another_no_name_thingy7 does not work" do
-            expect_converge do
+            expect_converge {
               # this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "linux"
               another_thingy_name_for_another_no_name_thingy7("blah") {}
-            end.to raise_error(Chef::Exceptions::NoSuchResourceType)
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
           end
 
           it "and os = blarghle, another_thingy_name_for_another_no_name_thingy7 works" do
-            recipe = converge do
+            recipe = converge {
               # this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "blarghle"
               another_thingy_name_for_another_no_name_thingy7("blah") {}
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy7)
           end
 
           it "the old resource name does not work" do
-            expect_converge do
+            expect_converge {
               # this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "linux"
               another_no_name_thingy_7("blah") {}
-            end.to raise_error(NoMethodError)
+            }.to raise_error(NoMethodError)
           end
         end
 
@@ -368,29 +368,29 @@ describe "Recipe DSL methods" do
           end
 
           it "and os = linux, another_thingy_name_for_another_no_name_thingy8 does not work" do
-            expect_converge do
+            expect_converge {
               # this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "linux"
               another_thingy_name_for_another_no_name_thingy8("blah") {}
-            end.to raise_error(Chef::Exceptions::NoSuchResourceType)
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
           end
 
           it "and os = blarghle, another_thingy_name_for_another_no_name_thingy8 works" do
-            recipe = converge do
+            recipe = converge {
               # this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "blarghle"
               another_thingy_name_for_another_no_name_thingy8("blah") {}
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy8)
           end
 
           it "the old resource name does not work" do
-            expect_converge do
+            expect_converge {
               # this is an ugly way to test, make Cheffish expose node attrs
               run_context.node.automatic[:os] = "linux"
               another_thingy_name8("blah") {}
-            end.to raise_error(NoMethodError)
+            }.to raise_error(NoMethodError)
           end
         end
       end
@@ -407,15 +407,15 @@ describe "Recipe DSL methods" do
         end
 
         it "my_supplier does not work in a recipe" do
-          expect_converge do
+          expect_converge {
             my_supplier("blah") {}
-          end.to raise_error(NoMethodError)
+          }.to raise_error(NoMethodError)
         end
 
         it "hemlock works in a recipe" do
-          expect_recipe do
+          expect_recipe {
             hemlock("blah") {}
-          end.to emit_no_warnings_or_errors
+          }.to emit_no_warnings_or_errors
           expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::MySupplier
         end
       end
@@ -430,9 +430,9 @@ describe "Recipe DSL methods" do
         end
 
         it "thingy3 works in a recipe" do
-          expect_recipe do
+          expect_recipe {
             thingy3("blah") {}
-          end.to emit_no_warnings_or_errors
+          }.to emit_no_warnings_or_errors
           expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy3
         end
 
@@ -446,16 +446,16 @@ describe "Recipe DSL methods" do
           end
 
           it "thingy3 works in a recipe and yields Thingy4 (the last one)" do
-            recipe = converge do
+            recipe = converge {
               thingy3("blah") {}
-            end
+            }
             expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy4
           end
 
           it "thingy4 does not work in a recipe" do
-            expect_converge do
+            expect_converge {
               thingy4("blah") {}
-            end.to raise_error(NoMethodError)
+            }.to raise_error(NoMethodError)
           end
 
           it "resource_matching_short_name returns Thingy4" do
@@ -477,9 +477,9 @@ describe "Recipe DSL methods" do
         end
 
         it "thingy5 works in a recipe" do
-          expect_recipe do
+          expect_recipe {
             thingy5("blah") {}
-          end.to emit_no_warnings_or_errors
+          }.to emit_no_warnings_or_errors
           expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy5
         end
 
@@ -494,16 +494,16 @@ describe "Recipe DSL methods" do
           end
 
           it "thingy6 works in a recipe and yields Thingy6" do
-            recipe = converge do
+            recipe = converge {
               thingy6("blah") {}
-            end
+            }
             expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy6
           end
 
           it "thingy5 works in a recipe and yields Foo::Thingy6 (the last one)" do
-            recipe = converge do
+            recipe = converge {
               thingy5("blah") {}
-            end
+            }
             expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy6
           end
 
@@ -521,9 +521,9 @@ describe "Recipe DSL methods" do
             end
 
             it "thingy5reverse works in a recipe and yields AThingy5 (the alphabetical one)" do
-              recipe = converge do
+              recipe = converge {
                 thingy5reverse("blah") {}
-              end
+              }
               expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::AThingy5
             end
           end
@@ -540,9 +540,9 @@ describe "Recipe DSL methods" do
             end
 
             it "thingy5_2 works in a recipe and yields the ZRecipeDSLSpaceNamespace one (the last one)" do
-              recipe = converge do
+              recipe = converge {
                 thingy5_2("blah") {}
-              end
+              }
               expect(BaseThingy.created_resource).to eq ZRecipeDSLSpecNamespace::Thingy5
             end
           end
@@ -559,9 +559,9 @@ describe "Recipe DSL methods" do
             end
 
             it "thingy5_2reverse works in a recipe and yields the ARecipeDSLSpaceNamespace one (the alphabetical one)" do
-              recipe = converge do
+              recipe = converge {
                 thingy5_2reverse("blah") {}
-              end
+              }
               expect(BaseThingy.created_resource).to eq ARecipeDSLSpecNamespace::Thingy5
             end
           end
@@ -577,9 +577,9 @@ describe "Recipe DSL methods" do
           end
 
           it "thingy3 works in a recipe" do
-            expect_recipe do
+            expect_recipe {
               thingy3("blah") {}
-            end.to emit_no_warnings_or_errors
+            }.to emit_no_warnings_or_errors
             expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy3
           end
 
@@ -593,16 +593,16 @@ describe "Recipe DSL methods" do
             end
 
             it "thingy3 works in a recipe and yields Thingy4 (the last one)" do
-              recipe = converge do
+              recipe = converge {
                 thingy3("blah") {}
-              end
+              }
               expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy4
             end
 
             it "thingy4 does not work in a recipe" do
-              expect_converge do
+              expect_converge {
                 thingy4("blah") {}
-              end.to raise_error(NoMethodError)
+              }.to raise_error(NoMethodError)
             end
 
             it "resource_matching_short_name returns Thingy4" do
@@ -620,16 +620,16 @@ describe "Recipe DSL methods" do
             end
 
             it "thingy3 works in a recipe and yields Thingy4 (the last one)" do
-              recipe = converge do
+              recipe = converge {
                 thingy3("blah") {}
-              end
+              }
               expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy4
             end
 
             it "thingy4 does not work in a recipe" do
-              expect_converge do
+              expect_converge {
                 thingy4("blah") {}
-              end.to raise_error(NoMethodError)
+              }.to raise_error(NoMethodError)
             end
 
             it "resource_matching_short_name returns Thingy4" do
@@ -660,16 +660,16 @@ describe "Recipe DSL methods" do
           end
 
           it "thingy7 works in a recipe and yields Thingy7" do
-            recipe = converge do
+            recipe = converge {
               thingy7("blah") {}
-            end
+            }
             expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy7
           end
 
           it "thingy8 works in a recipe and yields Thingy7 (last)" do
-            recipe = converge do
+            recipe = converge {
               thingy8("blah") {}
-            end
+            }
             expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy8
           end
 
@@ -691,23 +691,23 @@ describe "Recipe DSL methods" do
         end
 
         it "thingy12 works in a recipe and yields Thingy12" do
-          expect_recipe do
+          expect_recipe {
             thingy12("blah") {}
-          end.to emit_no_warnings_or_errors
+          }.to emit_no_warnings_or_errors
           expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy12
         end
 
         it "twizzle works in a recipe and yields Thingy12" do
-          expect_recipe do
+          expect_recipe {
             twizzle("blah") {}
-          end.to emit_no_warnings_or_errors
+          }.to emit_no_warnings_or_errors
           expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy12
         end
 
         it "twizzle2 works in a recipe and yields Thingy12" do
-          expect_recipe do
+          expect_recipe {
             twizzle2("blah") {}
-          end.to emit_no_warnings_or_errors
+          }.to emit_no_warnings_or_errors
           expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy12
         end
       end
@@ -750,11 +750,11 @@ describe "Recipe DSL methods" do
         it "A run with platform 'x' reports that my_super_thingy is not supported" do
           r = Cheffish::ChefRun.new(chef_config)
           r.client.run_context.node.automatic["platform"] = "x"
-          expect do
+          expect {
             r.compile_recipe do
               my_super_thingy("blah") {}
             end
-          end.to raise_error(Chef::Exceptions::NoSuchResourceType)
+          }.to raise_error(Chef::Exceptions::NoSuchResourceType)
         end
       end
 
@@ -804,7 +804,7 @@ describe "Recipe DSL methods" do
         result.resource_name two_classes_one_dsl
         result
       end
-      before { resource_class } # pull on it so it gets defined before the recipe runs
+      before do resource_class end # pull on it so it gets defined before the recipe runs
 
       context "and another resource named 'A' with resource_name :two_classes_one_dsl" do
         let(:resource_class_a) do
@@ -820,13 +820,13 @@ describe "Recipe DSL methods" do
           result.resource_name two_classes_one_dsl
           result
         end
-        before { resource_class_a } # pull on it so it gets defined before the recipe runs
+        before do resource_class_a end # pull on it so it gets defined before the recipe runs
 
         it "two_classes_one_dsl resolves to A (alphabetically earliest)" do
           temp_two_classes_one_dsl = two_classes_one_dsl
-          recipe = converge do
+          recipe = converge {
             instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-          end
+          }
           expect(recipe.logged_warnings).to eq ""
           expect(BaseThingy.created_resource).to eq resource_class_a
         end
@@ -850,13 +850,13 @@ describe "Recipe DSL methods" do
           result.resource_name two_classes_one_dsl
           result
         end
-        before { resource_class_z } # pull on it so it gets defined before the recipe runs
+        before do resource_class_z end # pull on it so it gets defined before the recipe runs
 
         it "two_classes_one_dsl resolves to Z (last)" do
           temp_two_classes_one_dsl = two_classes_one_dsl
-          recipe = converge do
+          recipe = converge {
             instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-          end
+          }
           expect(recipe.logged_warnings).to eq ""
           expect(BaseThingy.created_resource).to eq resource_class_z
         end
@@ -872,9 +872,9 @@ describe "Recipe DSL methods" do
 
           it "two_classes_one_dsl resolves to Z (respects the priority array)" do
             temp_two_classes_one_dsl = two_classes_one_dsl
-            recipe = converge do
+            recipe = converge {
               instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq resource_class_z
           end
@@ -890,9 +890,9 @@ describe "Recipe DSL methods" do
 
             it "two_classes_one_dsl resolves to B (picks the next thing in the priority array)" do
               temp_two_classes_one_dsl = two_classes_one_dsl
-              recipe = converge do
+              recipe = converge {
                 instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-              end
+              }
               expect(recipe.logged_warnings).to eq ""
               expect(BaseThingy.created_resource).to eq resource_class
             end
@@ -911,9 +911,9 @@ describe "Recipe DSL methods" do
 
           it "two_classes_one_dsl resolves to Z (respects the most recent priority array)" do
             temp_two_classes_one_dsl = two_classes_one_dsl
-            recipe = converge do
+            recipe = converge {
               instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq resource_class_z
           end
@@ -929,9 +929,9 @@ describe "Recipe DSL methods" do
 
             it "two_classes_one_dsl resolves to B (picks the first match from the other priority array)" do
               temp_two_classes_one_dsl = two_classes_one_dsl
-              recipe = converge do
+              recipe = converge {
                 instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-              end
+              }
               expect(recipe.logged_warnings).to eq ""
               expect(BaseThingy.created_resource).to eq resource_class
             end
@@ -954,9 +954,9 @@ describe "Recipe DSL methods" do
 
             it "two_classes_one_dsl resolves to B (picks the first match outside the priority array)" do
               temp_two_classes_one_dsl = two_classes_one_dsl
-              recipe = converge do
+              recipe = converge {
                 instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-              end
+              }
               expect(recipe.logged_warnings).to eq ""
               expect(BaseThingy.created_resource).to eq resource_class
             end
@@ -987,7 +987,7 @@ describe "Recipe DSL methods" do
           result.provides two_classes_one_dsl
           result
         end
-        before { provider_class } # pull on it so it gets defined before the recipe runs
+        before do provider_class end # pull on it so it gets defined before the recipe runs
 
         context "and another provider named 'A'" do
           let(:provider_class_a) do
@@ -1003,25 +1003,25 @@ describe "Recipe DSL methods" do
             result
           end
           context "which provides :two_classes_one_dsl" do
-            before { provider_class_a.provides two_classes_one_dsl }
+            before do provider_class_a.provides two_classes_one_dsl end
 
             it "two_classes_one_dsl resolves to A (alphabetically earliest)" do
               temp_two_classes_one_dsl = two_classes_one_dsl
-              recipe = converge do
+              recipe = converge {
                 instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-              end
+              }
               expect(recipe.logged_warnings).to eq ""
               expect(BaseThingy.created_provider).to eq provider_class_a
             end
           end
           context "which provides(:two_classes_one_dsl) { false }" do
-            before { provider_class_a.provides(two_classes_one_dsl) { false } }
+            before do provider_class_a.provides(two_classes_one_dsl) { false } end
 
             it "two_classes_one_dsl resolves to B (since A declined)" do
               temp_two_classes_one_dsl = two_classes_one_dsl
-              recipe = converge do
+              recipe = converge {
                 instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-              end
+              }
               expect(recipe.logged_warnings).to eq ""
               expect(BaseThingy.created_provider).to eq provider_class
             end
@@ -1041,28 +1041,28 @@ describe "Recipe DSL methods" do
             end
             result
           end
-          before { provider_class_z } # pull on it so it gets defined before the recipe runs
+          before do provider_class_z end # pull on it so it gets defined before the recipe runs
 
           context "which provides :two_classes_one_dsl" do
-            before { provider_class_z.provides two_classes_one_dsl }
+            before do provider_class_z.provides two_classes_one_dsl end
 
             it "two_classes_one_dsl resolves to Z (last)" do
               temp_two_classes_one_dsl = two_classes_one_dsl
-              recipe = converge do
+              recipe = converge {
                 instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-              end
+              }
               expect(recipe.logged_warnings).to eq ""
               expect(BaseThingy.created_provider).to eq provider_class_z
             end
 
             context "with a priority array [ Z, B ]" do
-              before { Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class_z, provider_class ] }
+              before do Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class_z, provider_class ] end
 
               it "two_classes_one_dsl resolves to Z (respects the priority map)" do
                 temp_two_classes_one_dsl = two_classes_one_dsl
-                recipe = converge do
+                recipe = converge {
                   instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-                end
+                }
                 expect(recipe.logged_warnings).to eq ""
                 expect(BaseThingy.created_provider).to eq provider_class_z
               end
@@ -1070,30 +1070,30 @@ describe "Recipe DSL methods" do
           end
 
           context "which provides(:two_classes_one_dsl) { false }" do
-            before { provider_class_z.provides(two_classes_one_dsl) { false } }
+            before do provider_class_z.provides(two_classes_one_dsl) { false } end
 
             context "with a priority array [ Z, B ]" do
-              before { Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class_z, provider_class ] }
+              before do Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class_z, provider_class ] end
 
               it "two_classes_one_dsl resolves to B (the next one in the priority map)" do
                 temp_two_classes_one_dsl = two_classes_one_dsl
-                recipe = converge do
+                recipe = converge {
                   instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-                end
+                }
                 expect(recipe.logged_warnings).to eq ""
                 expect(BaseThingy.created_provider).to eq provider_class
               end
             end
 
             context "with priority arrays [ B ] and [ Z ]" do
-              before { Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class_z ] }
-              before { Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class ] }
+              before do Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class_z ] end
+              before do Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class ] end
 
               it "two_classes_one_dsl resolves to B (the one in the next priority map)" do
                 temp_two_classes_one_dsl = two_classes_one_dsl
-                recipe = converge do
+                recipe = converge {
                   instance_eval("#{temp_two_classes_one_dsl} 'blah'")
-                end
+                }
                 expect(recipe.logged_warnings).to eq ""
                 expect(BaseThingy.created_provider).to eq provider_class
               end
@@ -1117,26 +1117,26 @@ describe "Recipe DSL methods" do
           result.provides two_classes_one_dsl, os: "blarghle"
           result
         end
-        before { resource_class_blarghle } # pull on it so it gets defined before the recipe runs
+        before do resource_class_blarghle end # pull on it so it gets defined before the recipe runs
 
         it "on os = blarghle, two_classes_one_dsl resolves to Blarghle" do
           temp_two_classes_one_dsl = two_classes_one_dsl
-          recipe = converge do
+          recipe = converge {
             # this is an ugly way to test, make Cheffish expose node attrs
             run_context.node.automatic[:os] = "blarghle"
             instance_eval("#{temp_two_classes_one_dsl} 'blah' do; end")
-          end
+          }
           expect(recipe.logged_warnings).to eq ""
           expect(BaseThingy.created_resource).to eq resource_class_blarghle
         end
 
         it "on os = linux, two_classes_one_dsl resolves to B" do
           temp_two_classes_one_dsl = two_classes_one_dsl
-          recipe = converge do
+          recipe = converge {
             # this is an ugly way to test, make Cheffish expose node attrs
             run_context.node.automatic[:os] = "linux"
             instance_eval("#{temp_two_classes_one_dsl} 'blah' do; end")
-          end
+          }
           expect(recipe.logged_warnings).to eq ""
           expect(BaseThingy.created_resource).to eq resource_class
         end
@@ -1174,9 +1174,9 @@ describe "Recipe DSL methods" do
 
           it "my_resource returns the resource and calls provides?, but does not emit a warning" do
             dsl_name = my_resource
-            recipe = converge do
+            recipe = converge {
               instance_eval("#{dsl_name} 'foo'")
-            end
+            }
             expect(recipe.logged_warnings).to eq ""
             expect(BaseThingy.created_resource).to eq resource_class
             expect(resource_class.called_provides).to be_truthy
@@ -1216,9 +1216,9 @@ describe "Recipe DSL methods" do
 
               it "my_resource runs the provider and does not emit a warning" do
                 temp_my_resource = my_resource
-                recipe = converge do
+                recipe = converge {
                   instance_eval("#{temp_my_resource} 'foo'")
-                end
+                }
                 expect(recipe.logged_warnings).to eq ""
                 expect(BaseThingy.created_provider).to eq provider_class
               end
@@ -1246,9 +1246,9 @@ describe "Recipe DSL methods" do
 
                 it "my_resource runs the first provider" do
                   temp_my_resource = my_resource
-                  recipe = converge do
+                  recipe = converge {
                     instance_eval("#{temp_my_resource} 'foo'")
-                  end
+                  }
                   expect(recipe.logged_warnings).to eq ""
                   expect(BaseThingy.created_provider).to eq provider_class
                 end
@@ -1263,9 +1263,9 @@ describe "Recipe DSL methods" do
               # TODO no warning? ick
               it "my_resource runs the provider anyway" do
                 temp_my_resource = my_resource
-                recipe = converge do
+                recipe = converge {
                   instance_eval("#{temp_my_resource} 'foo'")
-                end
+                }
                 expect(recipe.logged_warnings).to eq ""
                 expect(BaseThingy.created_provider).to eq provider_class
               end
@@ -1291,13 +1291,13 @@ describe "Recipe DSL methods" do
                     end
                   end
                 end
-                before { provider_class2 } # make sure the provider class shows up
+                before do provider_class2 end # make sure the provider class shows up
 
                 it "my_resource runs the other provider" do
                   temp_my_resource = my_resource
-                  recipe = converge do
+                  recipe = converge {
                     instance_eval("#{temp_my_resource} 'foo'")
-                  end
+                  }
                   expect(recipe.logged_warnings).to eq ""
                   expect(BaseThingy.created_provider).to eq provider_class2
                 end
@@ -1317,17 +1317,17 @@ describe "Recipe DSL methods" do
       end
 
       it "utf-8 dsl names work" do
-        recipe = converge do
+        recipe = converge {
           Straße("blah") {}
-        end
+        }
         expect(recipe.logged_warnings).to eq ""
         expect(BaseThingy.created_resource).to eq(UTF8Thingy)
       end
     end
   end
 
-  before(:all) { Namer.current_index = 0 }
-  before { Namer.current_index += 1 }
+  before(:all) do Namer.current_index = 0 end
+  before do Namer.current_index += 1 end
 
   context "with an LWRP that declares actions" do
     let(:resource_class) do

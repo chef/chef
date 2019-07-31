@@ -60,9 +60,9 @@ class Chef
         end
 
         def missing_roles_explained
-          run_list_expansion.missing_roles_with_including_role.map do |role, includer|
+          run_list_expansion.missing_roles_with_including_role.map { |role, includer|
             "* #{role} included by '#{includer}'"
-          end.join("\n")
+          }.join("\n")
         end
 
         def run_list_expansion

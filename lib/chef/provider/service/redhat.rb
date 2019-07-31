@@ -56,12 +56,12 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             chkconfig_file = "/sbin/chkconfig"
-            a.assertion { ::File.exists? chkconfig_file  }
+            a.assertion do ::File.exists? chkconfig_file end
             a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} does not exist!"
           end
 
           requirements.assert(:enable) do |a|
-            a.assertion { !@service_missing }
+            a.assertion do !@service_missing end
             a.failure_message Chef::Exceptions::Service, "#{new_resource}: Service is not known to chkconfig."
             a.whyrun "Assuming service would be enabled. The init script is not presently installed."
           end

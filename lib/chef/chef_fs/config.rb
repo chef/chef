@@ -45,7 +45,7 @@ class Chef
         "policies" => "policy",
         "policy_groups" => "policy_group",
       }.freeze
-      INFLECTIONS.each { |k, v| k.freeze; v.freeze }
+      INFLECTIONS.each do |k, v| k.freeze; v.freeze end
       INFLECTIONS.freeze
 
       # ChefFS supports three modes of operation: "static", "everything", and

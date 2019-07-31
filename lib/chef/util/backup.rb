@@ -81,9 +81,9 @@ class Chef
       def unsorted_backup_files
         # If you replace this with Dir[], you will probably break Windows.
         fn = Regexp.escape(::File.basename(path))
-        Dir.entries(::File.dirname(backup_path)).select do |f|
+        Dir.entries(::File.dirname(backup_path)).select { |f|
           !!(f =~ /\A#{fn}.chef-[0-9.]*\B/)
-        end.map { |f| ::File.join(::File.dirname(backup_path), f) }
+        }.map { |f| ::File.join(::File.dirname(backup_path), f) }
       end
 
       def sorted_backup_files

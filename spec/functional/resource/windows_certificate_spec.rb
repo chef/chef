@@ -93,7 +93,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
     end
   end
 
-  after { cleanup(store) }
+  after do cleanup(store) end
 
   subject(:win_certificate) do
     new_resource.store_name = store
@@ -453,7 +453,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only, :appveyor_only do
         win_certificate.source = cer_path
         win_certificate.run_action(:create)
       end
-      before { win_certificate.source = tests_thumbprint }
+      before do win_certificate.source = tests_thumbprint end
       it "Initial check if certificate is present" do
         expect(no_of_certificates).to eq(1)
       end

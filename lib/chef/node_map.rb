@@ -142,9 +142,9 @@ class Chef
     def list(node, key, canonical: nil)
       return [] unless map.key?(key)
 
-      map[key].select do |matcher|
+      map[key].select { |matcher|
         node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
-      end.map { |matcher| matcher[:klass] }
+      }.map { |matcher| matcher[:klass] }
     end
 
     # Remove a class from all its matchers in the node_map, will remove mappings completely if its the last matcher left
@@ -180,7 +180,7 @@ class Chef
     def delete_canonical(key, klass)
       remaining = map[key]
       if remaining
-        remaining.delete_if { |matcher| matcher[:canonical] && Array(matcher[:klass]) == Array(klass) }
+        remaining.delete_if do |matcher| matcher[:canonical] && Array(matcher[:klass]) == Array(klass) end
         if remaining.empty?
           map.delete(key)
           remaining = nil

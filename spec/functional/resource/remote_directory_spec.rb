@@ -136,8 +136,8 @@ describe Chef::Resource::RemoteDirectory do
         FileUtils.mkdir_p(File.join(path, "remotesubdir"))
         modified_file = File.join(path, "remote_dir_file1.txt")
         modified_subdir_file = File.join(path, "remotesubdir", "remote_subdir_file1.txt")
-        File.open(modified_file, "a") { |f| f.puts "santa is real" }
-        File.open(modified_subdir_file, "a") { |f| f.puts "so is rudolph" }
+        File.open(modified_file, "a") do |f| f.puts "santa is real" end
+        File.open(modified_subdir_file, "a") do |f| f.puts "so is rudolph" end
         modified_file_checksum = sha256_checksum(modified_file)
         modified_subdir_file_checksum = sha256_checksum(modified_subdir_file)
 

@@ -641,7 +641,7 @@ describe "knife delete", :workstation do
       end
 
       context "and cwd is at the top level" do
-        before { cwd "." }
+        before do cwd "." end
         it "knife delete fails" do
           knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", stdout: /USAGE/
           knife("list -Rf /").should_succeed <<~EOM
@@ -854,7 +854,7 @@ describe "knife delete", :workstation do
       end
 
       context "and cwd is at the top level" do
-        before { cwd "." }
+        before do cwd "." end
         it "knife delete fails" do
           knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", stdout: /USAGE/
           knife("list -Rf /").should_succeed <<~EOM
@@ -928,7 +928,7 @@ describe "knife delete", :workstation do
     end
 
     when_the_chef_server "has a later version for the cookbook, and no current version" do
-      before { cookbook "x", "1.0.1", { "onlyin1.0.1.rb" => "hi" } }
+      before do cookbook "x", "1.0.1", { "onlyin1.0.1.rb" => "hi" } end
 
       it "knife delete --both /cookbooks/x deletes the server and client version of the cookbook" do
         knife("delete --both -r /cookbooks/x").should_succeed "Deleted /cookbooks/x\n"
@@ -938,7 +938,7 @@ describe "knife delete", :workstation do
     end
 
     when_the_chef_server "has an earlier version for the cookbook, and no current version" do
-      before { cookbook "x", "0.9.9", { "onlyin0.9.9.rb" => "hi" } }
+      before do cookbook "x", "0.9.9", { "onlyin0.9.9.rb" => "hi" } end
 
       it "knife delete --both /cookbooks/x deletes the server and client version of the cookbook" do
         knife("delete --both -r /cookbooks/x").should_succeed "Deleted /cookbooks/x\n"

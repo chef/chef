@@ -86,7 +86,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
 
     it "should create exactly one crontab entry" do
-      5.times { new_resource.run_action(:create) }
+      5.times do new_resource.run_action(:create) end
       cron_should_exists(new_resource.name, new_resource.command)
     end
   end

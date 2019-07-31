@@ -502,14 +502,14 @@ class Chef
         bootstrap_files = []
         bootstrap_files << File.join(File.dirname(__FILE__), "bootstrap/templates", "#{template}.erb")
         bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Chef::Knife.chef_config_dir
-        Chef::Util::PathHelper.home(".chef", "bootstrap", "#{template}.erb") { |p| bootstrap_files << p }
+        Chef::Util::PathHelper.home(".chef", "bootstrap", "#{template}.erb") do |p| bootstrap_files << p end
         bootstrap_files << Gem.find_files(File.join("chef", "knife", "bootstrap", "#{template}.erb"))
         bootstrap_files.flatten!
 
-        template_file = Array(bootstrap_files).find do |bootstrap_template|
+        template_file = Array(bootstrap_files).find { |bootstrap_template|
           Chef::Log.trace("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
           File.exists?(bootstrap_template)
-        end
+        }
 
         unless template_file
           ui.info("Can not find bootstrap definition for #{template}")
@@ -604,9 +604,9 @@ class Chef
       def perform_bootstrap(remote_bootstrap_script_path)
         ui.info("Bootstrapping #{ui.color(server_name, :bold)}")
         cmd = bootstrap_command(remote_bootstrap_script_path)
-        r = connection.run_command(cmd) do |data|
+        r = connection.run_command(cmd) { |data|
           ui.msg("#{ui.color(" [#{connection.hostname}]", :cyan)} #{data}")
-        end
+        }
         if r.exit_status != 0
           ui.error("The following error occurred on #{server_name}:")
           ui.error(r.stderr)
@@ -644,9 +644,9 @@ class Chef
             raise
           else
             ui.warn("Failed to authenticate #{opts[:user]} to #{server_name} - trying password auth")
-            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}.") do |q|
+            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}.") { |q|
               q.echo = false
-            end
+            }
           end
 
           opts.merge! force_ssh_password_opts(password)

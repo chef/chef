@@ -21,7 +21,7 @@ class Chef
   class Resource
     class WindowsPagefile < Chef::Resource
       resource_name :windows_pagefile
-      provides(:windows_pagefile) { true }
+      provides(:windows_pagefile) do true end
 
       description "Use the windows_pagefile resource to configure pagefile settings on Windows."
       introduced "14.0"

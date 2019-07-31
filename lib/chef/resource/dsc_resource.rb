@@ -34,14 +34,14 @@ class Chef
       # to dump the actual ivars
       class ToTextHash < Hash
         def to_text
-          descriptions = map do |(property, obj)|
+          descriptions = map { |(property, obj)|
             obj_text = if obj.respond_to?(:to_text)
                          obj.to_text
                        else
                          obj.inspect
                        end
             "#{property}=>#{obj_text}"
-          end
+          }
           "{#{descriptions.join(", ")}}"
         end
       end

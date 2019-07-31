@@ -149,7 +149,7 @@ shared_examples_for "a file with the wrong content" do
       end
 
       context "when set" do
-        before { resource.sensitive(true) }
+        before do resource.sensitive(true) end
 
         it "should be set on the resource" do
           expect(resource.sensitive).to(be_truthy)
@@ -917,7 +917,7 @@ shared_examples_for "a configured file resource" do
 
   context "when the target file has the wrong content" do
     before(:each) do
-      File.open(path, "wb") { |f| f.print "This is so wrong!!!" }
+      File.open(path, "wb") do |f| f.print "This is so wrong!!!" end
       now = Time.now.to_i
       File.utime(now - 9000, now - 9000, path)
 
@@ -944,7 +944,7 @@ shared_examples_for "a configured file resource" do
 
   context "when the target file has the correct content" do
     before(:each) do
-      File.open(path, "wb") { |f| f.print expected_content }
+      File.open(path, "wb") do |f| f.print expected_content end
       now = Time.now.to_i
       File.utime(now - 9000, now - 9000, path)
 
@@ -981,7 +981,7 @@ shared_examples_for "a configured file resource" do
     end
 
     before do
-      File.open(path, "wb") { |f| f.print expected_content }
+      File.open(path, "wb") do |f| f.print expected_content end
       now = Time.now.to_i
       File.utime(now - 9000, now - 9000, path)
 

@@ -68,7 +68,7 @@ class Chef
             execute "tzdata-update" do
               command "/usr/sbin/tzdata-update"
               action :nothing
-              only_if { ::File.executable?("/usr/sbin/tzdata-update") }
+              only_if do ::File.executable?("/usr/sbin/tzdata-update") end
               subscribes :run, "file[/etc/sysconfig/clock]", :immediately
             end
 

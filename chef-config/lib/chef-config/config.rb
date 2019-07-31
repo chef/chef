@@ -98,7 +98,7 @@ module ChefConfig
 
     def self.apply_extra_config_options(extra_config_options)
       if extra_config_options
-        extra_parsed_options = extra_config_options.inject({}) do |memo, option|
+        extra_parsed_options = extra_config_options.inject({}) { |memo, option|
           # Sanity check value.
           if option.empty? || !option.include?("=")
             raise UnparsableConfigOption, "Unparsable config option #{option.inspect}"
@@ -111,7 +111,7 @@ module ChefConfig
           # runs a simple parse on the string for some common types.
           memo[key.to_sym] = YAML.safe_load(value)
           memo
-        end
+        }
         merge!(extra_parsed_options)
       end
     end
@@ -153,7 +153,7 @@ module ChefConfig
     # So while this is basically identical to what method_missing would do, we pull
     # it up here and get a real method written so that things get dispatched
     # properly.
-    configurable(:daemonize).writes_value { |v| v }
+    configurable(:daemonize).writes_value do |v| v end
 
     # The root where all local chef object data is stored.  cookbooks, data bags,
     # environments are all assumed to be in separate directories under this.
@@ -203,23 +203,23 @@ module ChefConfig
 
     # Location of acls on disk. String or array of strings.
     # Defaults to <chef_repo_path>/acls.
-    default(:acl_path) { derive_path_from_chef_repo_path("acls") }
+    default(:acl_path) do derive_path_from_chef_repo_path("acls") end
 
     # Location of clients on disk. String or array of strings.
     # Defaults to <chef_repo_path>/clients.
-    default(:client_path) { derive_path_from_chef_repo_path("clients") }
+    default(:client_path) do derive_path_from_chef_repo_path("clients") end
 
     # Location of client keys on disk. String or array of strings.
     # Defaults to <chef_repo_path>/client_keys.
-    default(:client_key_path) { derive_path_from_chef_repo_path("client_keys") }
+    default(:client_key_path) do derive_path_from_chef_repo_path("client_keys") end
 
     # Location of containers on disk. String or array of strings.
     # Defaults to <chef_repo_path>/containers.
-    default(:container_path) { derive_path_from_chef_repo_path("containers") }
+    default(:container_path) do derive_path_from_chef_repo_path("containers") end
 
     # Location of cookbook_artifacts on disk. String or array of strings.
     # Defaults to <chef_repo_path>/cookbook_artifacts.
-    default(:cookbook_artifact_path) { derive_path_from_chef_repo_path("cookbook_artifacts") }
+    default(:cookbook_artifact_path) do derive_path_from_chef_repo_path("cookbook_artifacts") end
 
     # Location of cookbooks on disk. String or array of strings.
     # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
@@ -235,39 +235,39 @@ module ChefConfig
 
     # Location of data bags on disk. String or array of strings.
     # Defaults to <chef_repo_path>/data_bags.
-    default(:data_bag_path) { derive_path_from_chef_repo_path("data_bags") }
+    default(:data_bag_path) do derive_path_from_chef_repo_path("data_bags") end
 
     # Location of environments on disk. String or array of strings.
     # Defaults to <chef_repo_path>/environments.
-    default(:environment_path) { derive_path_from_chef_repo_path("environments") }
+    default(:environment_path) do derive_path_from_chef_repo_path("environments") end
 
     # Location of groups on disk. String or array of strings.
     # Defaults to <chef_repo_path>/groups.
-    default(:group_path) { derive_path_from_chef_repo_path("groups") }
+    default(:group_path) do derive_path_from_chef_repo_path("groups") end
 
     # Location of nodes on disk. String or array of strings.
     # Defaults to <chef_repo_path>/nodes.
-    default(:node_path) { derive_path_from_chef_repo_path("nodes") }
+    default(:node_path) do derive_path_from_chef_repo_path("nodes") end
 
     # Location of policies on disk. String or array of strings.
     # Defaults to <chef_repo_path>/policies.
-    default(:policy_path) { derive_path_from_chef_repo_path("policies") }
+    default(:policy_path) do derive_path_from_chef_repo_path("policies") end
 
     # Location of policy_groups on disk. String or array of strings.
     # Defaults to <chef_repo_path>/policy_groups.
-    default(:policy_group_path) { derive_path_from_chef_repo_path("policy_groups") }
+    default(:policy_group_path) do derive_path_from_chef_repo_path("policy_groups") end
 
     # Location of roles on disk. String or array of strings.
     # Defaults to <chef_repo_path>/roles.
-    default(:role_path) { derive_path_from_chef_repo_path("roles") }
+    default(:role_path) do derive_path_from_chef_repo_path("roles") end
 
     # Location of users on disk. String or array of strings.
     # Defaults to <chef_repo_path>/users.
-    default(:user_path) { derive_path_from_chef_repo_path("users") }
+    default(:user_path) do derive_path_from_chef_repo_path("users") end
 
     # Location of policies on disk. String or array of strings.
     # Defaults to <chef_repo_path>/policies.
-    default(:policy_path) { derive_path_from_chef_repo_path("policies") }
+    default(:policy_path) do derive_path_from_chef_repo_path("policies") end
 
     # Turn on "path sanity" by default.
     default :enforce_path_sanity, false
@@ -312,20 +312,20 @@ module ChefConfig
     end
 
     # Where cookbook files are stored on the server (by content checksum)
-    default(:checksum_path) { PathHelper.join(cache_path, "checksums") }
+    default(:checksum_path) do PathHelper.join(cache_path, "checksums") end
 
     # Where chef's cache files should be stored
-    default(:file_cache_path) { PathHelper.join(cache_path, "cache") }
+    default(:file_cache_path) do PathHelper.join(cache_path, "cache") end
 
     # Where backups of chef-managed files should go
-    default(:file_backup_path) { PathHelper.join(cache_path, "backup") }
+    default(:file_backup_path) do PathHelper.join(cache_path, "backup") end
 
     # The chef-client (or solo) lockfile.
     #
     # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
-    default(:lockfile) { PathHelper.join(file_cache_path, "chef-client-running.pid") }
+    default(:lockfile) do PathHelper.join(file_cache_path, "chef-client-running.pid") end
 
     ## Daemonization Settings ##
     # What user should Chef run as?
@@ -419,7 +419,7 @@ module ChefConfig
 
     config_context :chef_zero do
       config_strict_mode true
-      default(:enabled) { ChefConfig::Config.local_mode }
+      default(:enabled) do ChefConfig::Config.local_mode end
       default :host, "localhost"
       default :port, 8889.upto(9999) # Will try ports from 8889-9999 until one works
 
@@ -509,7 +509,7 @@ module ChefConfig
 
     # When consuming Ohai plugins from cookbook segments, we place those plugins in this directory.
     # Subsequent chef client runs will wipe and re-populate the directory to ensure cleanliness
-    default(:ohai_segment_plugin_path) { PathHelper.join(config_dir, "ohai", "cookbook_plugins") }
+    default(:ohai_segment_plugin_path) do PathHelper.join(config_dir, "ohai", "cookbook_plugins") end
 
     ###
     # Policyfile Settings
@@ -572,7 +572,7 @@ module ChefConfig
     # regardless of the :ssl_verify_mode setting. This is set to `true` when
     # running in local-mode.
     # NOTE: This is a workaround until verify_peer is enabled by default.
-    default(:verify_api_cert) { ChefConfig::Config.local_mode }
+    default(:verify_api_cert) do ChefConfig::Config.local_mode end
 
     # Path to the default CA bundle files.
     default :ssl_ca_path, nil
@@ -589,17 +589,17 @@ module ChefConfig
     # certificates in this directory will be added to whatever CA bundle ruby
     # is using. Use this to add self-signed certs for your Chef Server or local
     # HTTP file servers.
-    default(:trusted_certs_dir) { PathHelper.join(config_dir, "trusted_certs") }
+    default(:trusted_certs_dir) do PathHelper.join(config_dir, "trusted_certs") end
 
     # A directory that contains additional configuration scripts to load for chef-client
-    default(:client_d_dir) { PathHelper.join(config_dir, "client.d") }
+    default(:client_d_dir) do PathHelper.join(config_dir, "client.d") end
 
     # A directory that contains additional configuration scripts to load for solo
-    default(:solo_d_dir) { PathHelper.join(config_dir, "solo.d") }
+    default(:solo_d_dir) do PathHelper.join(config_dir, "solo.d") end
 
     # A directory that contains additional configuration scripts to load for
     # the workstation config
-    default(:config_d_dir) { PathHelper.join(config_dir, "config.d") }
+    default(:config_d_dir) do PathHelper.join(config_dir, "config.d") end
 
     # Where should chef-solo download recipes from?
     default :recipe_url, nil
@@ -702,7 +702,7 @@ module ChefConfig
     # The `validation_key` is never used if the `client_key` exists.
     #
     # If chef-zero is enabled, this defaults to nil (no authentication).
-    default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/validation.pem") }
+    default(:validation_key) do chef_zero.enabled ? nil : platform_specific_path("/etc/chef/validation.pem") end
     default :validation_client_name do
       # If the URL is set and looks like a normal Chef Server URL, extract the
       # org name and use that as part of the default.
@@ -723,7 +723,7 @@ module ChefConfig
     #
     # The default value is `true`. Set to `false` to disable client-side key
     # generation (server generates client keys).
-    default(:local_key_generation) { true }
+    default(:local_key_generation) do true end
 
     # Zypper package provider gpg checks. Set to false to disable package
     # gpg signature checking globally.  This will warn you that it is a
@@ -749,11 +749,11 @@ module ChefConfig
     # the new (and preferred) configuration setting. If not set, knife will
     # fall back to using cache_options[:path], which is deprecated but exists in
     # many client configs generated by pre-Chef-11 bootstrappers.
-    default(:syntax_check_cache_path) { cache_options[:path] }
+    default(:syntax_check_cache_path) do cache_options[:path] end
 
     # Deprecated:
     # Move this to the default value of syntax_cache_path when this is removed.
-    default(:cache_options) { { path: PathHelper.join(config_dir, "syntaxcache") } }
+    default(:cache_options) do { path: PathHelper.join(config_dir, "syntaxcache") } end
 
     # Whether errors should be raised for deprecation warnings. When set to
     # `false` (the default setting), a warning is emitted but code using
@@ -863,7 +863,7 @@ module ChefConfig
     end
 
     # returns a platform specific path to the user home dir if set, otherwise default to current directory.
-    default( :user_home ) { PathHelper.home || Dir.pwd }
+    default( :user_home ) do PathHelper.home || Dir.pwd end
 
     # Enable file permission fixup for selinux. Fixup will be done
     # only if selinux is enabled in the system.

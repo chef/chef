@@ -53,26 +53,26 @@ describe Chef::ResourceDefinition do
   end
 
   it "should accept a new definition with a symbol for a name" do
-    expect do
+    expect {
       defn.define :smoke do
       end
-    end.not_to raise_error
-    expect do
+    }.not_to raise_error
+    expect {
       defn.define "george washington" do
       end
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
     expect(defn.name).to eql(:smoke)
   end
 
   it "should accept a new definition with a hash" do
-    expect do
+    expect {
       defn.define :smoke, cigar: "cuban", cigarette: "marlboro" do
       end
-    end.not_to raise_error
+    }.not_to raise_error
   end
 
   it "should expose the prototype hash params in the params hash" do
-    defn.define(:smoke, cigar: "cuban", cigarette: "marlboro") {}
+    defn.define(:smoke, cigar: "cuban", cigarette: "marlboro") do end
     expect(defn.params[:cigar]).to eql("cuban")
     expect(defn.params[:cigarette]).to eql("marlboro")
   end
@@ -91,16 +91,16 @@ describe Chef::ResourceDefinition do
   end
 
   it "should raise an exception if prototype_params is not a hash" do
-    expect do
+    expect {
       defn.define :monkey, [] do
       end
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should raise an exception if define is called without a block" do
-    expect do
+    expect {
       defn.define :monkey
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should load a description from a file" do

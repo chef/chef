@@ -159,9 +159,9 @@ describe Chef::Provider::Execute do
       opts.delete(:live_stream)
       new_resource.sensitive true
       expect(provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-      expect do
+      expect {
         provider.run_action(:run)
-      end.to raise_error(Mixlib::ShellOut::ShellCommandFailed, /suppressed for sensitive resource/)
+      }.to raise_error(Mixlib::ShellOut::ShellCommandFailed, /suppressed for sensitive resource/)
     end
 
     describe "streaming output" do

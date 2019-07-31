@@ -118,9 +118,9 @@ describe Chef::HTTP::Simple do
     end
 
     it "Logs the request and response and bodies for 400 response" do
-      expect do
+      expect {
         http_client.get("http://localhost:9000/bad_request")
-      end.to raise_error(Net::HTTPClientException)
+      }.to raise_error(Net::HTTPClientException)
       expect(@debug_log).to match(/400/)
       expect(@debug_log).to match(/HTTP Request Header Data/)
       expect(@debug_log).to match(/HTTP Status and Header Data/)
@@ -131,9 +131,9 @@ describe Chef::HTTP::Simple do
     end
 
     it "Logs the request and response and bodies for 400 POST response" do
-      expect do
+      expect {
         http_client.post("http://localhost:9000/bad_request", "hithere")
-      end.to raise_error(Net::HTTPClientException)
+      }.to raise_error(Net::HTTPClientException)
       expect(@debug_log).to match(/400/)
       expect(@debug_log).to match(/HTTP Request Header Data/)
       expect(@debug_log).to match(/HTTP Status and Header Data/)

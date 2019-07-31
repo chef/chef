@@ -214,7 +214,7 @@ class Chef
       def invalid_erb_file(erb_file, error_message)
         file_relative_path = erb_file[/^#{Regexp.escape(cookbook_path + File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Erb template #{file_relative_path} has a syntax error:")
-        error_message.each_line { |l| Chef::Log.fatal(l.chomp) }
+        error_message.each_line do |l| Chef::Log.fatal(l.chomp) end
         nil
       end
 
@@ -249,7 +249,7 @@ class Chef
       def invalid_ruby_file(ruby_file, error_message)
         file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_path + File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Cookbook file #{file_relative_path} has a ruby syntax error:")
-        error_message.each_line { |l| Chef::Log.fatal(l.chomp) }
+        error_message.each_line do |l| Chef::Log.fatal(l.chomp) end
         false
       end
 

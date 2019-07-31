@@ -35,7 +35,7 @@ describe Chef::Resource::WindowsPath, :windows_only do
   end
 
   describe "adding path" do
-    after { remove_path }
+    after do remove_path end
 
     it "appends the user given path in the Environment variable Path" do
       subject.run_action(:add)
@@ -44,7 +44,7 @@ describe Chef::Resource::WindowsPath, :windows_only do
   end
 
   describe "removing path" do
-    before { add_path }
+    before do add_path end
 
     it "removes the user given path from the Environment variable Path" do
       subject.run_action(:remove)

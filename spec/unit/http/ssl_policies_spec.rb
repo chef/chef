@@ -85,7 +85,7 @@ describe "HTTP SSL Policy" do
     end
 
     describe "when configured with a client certificate" do
-      before { @url = URI.parse("https://chef.example.com:4443/") }
+      before do @url = URI.parse("https://chef.example.com:4443/") end
 
       it "raises ConfigurationError if the certificate file doesn't exist" do
         Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"

@@ -48,7 +48,7 @@ class Chef
 
           def children
             if @children.nil?
-              @children = ENTITY_TYPES.map do |entity_type|
+              @children = ENTITY_TYPES.map { |entity_type|
                 # All three of these can be versioned (NAME-VERSION), but only have
                 # one ACL that covers them all (NAME.json).
                 case entity_type
@@ -59,7 +59,7 @@ class Chef
                 else
                   AclDir.new(entity_type, self)
                 end
-              end
+              }
               @children << AclEntry.new("organization.json", self, true) # the org acl is retrieved as GET /organizations/ORGNAME/ANYTHINGATALL/_acl
             end
             @children

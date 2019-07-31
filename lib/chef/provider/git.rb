@@ -44,14 +44,14 @@ class Chef
         # Parent directory of the target must exist.
         requirements.assert(:checkout, :sync) do |a|
           dirname = ::File.dirname(cwd)
-          a.assertion { ::File.directory?(dirname) }
+          a.assertion do ::File.directory?(dirname) end
           a.whyrun("Directory #{dirname} does not exist, this run will fail unless it has been previously created. Assuming it would have been created.")
           a.failure_message(Chef::Exceptions::MissingParentDirectory,
             "Cannot clone #{new_resource} to #{cwd}, the enclosing directory #{dirname} does not exist")
         end
 
         requirements.assert(:all_actions) do |a|
-          a.assertion { !(new_resource.revision =~ %r{^origin/}) }
+          a.assertion do !(new_resource.revision =~ %r{^origin/}) end
           a.failure_message Chef::Exceptions::InvalidRemoteGitReference,
             "Deploying remote branches is not supported. " +
             "Specify the remote branch as a local branch for " +
@@ -63,7 +63,7 @@ class Chef
           # this can't be recovered from in why-run mode, because nothing that
           # we do in the course of a run is likely to create a valid target_revision
           # if we can't resolve it up front.
-          a.assertion { !target_revision.nil? }
+          a.assertion do !target_revision.nil? end
           a.failure_message Chef::Exceptions::UnresolvableGitReference,
             "Unable to parse SHA reference for '#{new_resource.revision}' in repository '#{new_resource.repository}'. " +
             "Verify your (case-sensitive) repository URL and revision.\n" +

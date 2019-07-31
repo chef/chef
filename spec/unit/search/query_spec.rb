@@ -207,13 +207,13 @@ describe Chef::Search::Query do
 
     it "calls a block for each object in the response" do
       @call_me = double("blocky")
-      response["rows"].each { |r| expect(@call_me).to receive(:do).with(Chef::Node.from_hash(r)) }
+      response["rows"].each do |r| expect(@call_me).to receive(:do).with(Chef::Node.from_hash(r)) end
       query.search(:node) { |r| @call_me.do(r) }
     end
 
     it "pages through the responses" do
       @call_me = double("blocky")
-      response["rows"].each { |r| expect(@call_me).to receive(:do).with(Chef::Node.from_hash(r)) }
+      response["rows"].each do |r| expect(@call_me).to receive(:do).with(Chef::Node.from_hash(r)) end
       query.search(:node, "*:*", start: 0, rows: 4) { |r| @call_me.do(r) }
     end
 

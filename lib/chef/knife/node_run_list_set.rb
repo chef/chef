@@ -36,9 +36,9 @@ class Chef
           exit 1
         elsif @name_args.size > 2
           # Check for nested lists and create a single plain one
-          entries = @name_args[1..-1].map do |entry|
+          entries = @name_args[1..-1].map { |entry|
             entry.split(",").map(&:strip)
-          end.flatten
+          }.flatten
         else
           # Convert to array and remove the extra spaces
           entries = @name_args[1].split(",").map(&:strip)

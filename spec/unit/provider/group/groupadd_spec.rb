@@ -85,7 +85,7 @@ describe Chef::Provider::Group::Groupadd do
       end
 
       context "on Solaris" do
-        before { node.automatic["platform"] = "solaris2" }
+        before do node.automatic["platform"] = "solaris2" end
         it "should not set groupadd -r if system is true" do
           new_resource.system(true)
           expect(provider.groupadd_options).to eql([])

@@ -151,7 +151,7 @@ describe Chef::PolicyBuilder::Policyfile do
     end
 
     context "chef-solo" do
-      before { Chef::Config[:solo_legacy_mode] = true }
+      before do Chef::Config[:solo_legacy_mode] = true end
 
       it "errors on create" do
         expect { initialize_pb }.to raise_error(err_namespace::UnsupportedFeature)
@@ -175,7 +175,7 @@ describe Chef::PolicyBuilder::Policyfile do
     end
 
     context "when an environment is configured" do
-      before { Chef::Config[:environment] = "blurch" }
+      before do Chef::Config[:environment] = "blurch" end
 
       it "errors when an environment is configured" do
         expect { initialize_pb }.to raise_error(err_namespace::UnsupportedFeature)

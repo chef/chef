@@ -30,7 +30,7 @@ class Chef
 
         def from_hash(hash)
           response = Mash.new(hash)
-          response[:all_files] = COOKBOOK_SEGMENTS.inject([]) do |memo, segment|
+          response[:all_files] = COOKBOOK_SEGMENTS.inject([]) { |memo, segment|
             next memo if hash[segment].nil? || hash[segment].empty?
 
             hash[segment].each do |file|
@@ -39,7 +39,7 @@ class Chef
             end
             response.delete(segment)
             memo
-          end
+          }
           response
         end
 

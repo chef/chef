@@ -138,12 +138,12 @@ describe Chef::Provider::Launchd do
 
       describe "start_calendar_interval is passed" do
         it "should allow array of Hashes" do
-          allowed = (1..2).collect do |num|
+          allowed = (1..2).collect { |num|
             {
               "Hour" => 10 + num,
               "Weekday" => num,
             }
-          end
+          }
           new_resource.program "/Library/scripts/call_mom.sh"
           new_resource.time_out 300
           new_resource.start_calendar_interval allowed
@@ -171,17 +171,17 @@ describe Chef::Provider::Launchd do
         it "should not allow invalid ShowCalendarInterval keys" do
           new_resource.program "/Library/scripts/call_mom.sh"
           new_resource.time_out 300
-          expect do
+          expect {
             new_resource.start_calendar_interval "Hourly" => 1
-          end.to raise_error(/Hourly are invalid/)
+          }.to raise_error(/Hourly are invalid/)
         end
 
         it "should not allow non-integer values" do
           new_resource.program "/Library/scripts/call_mom.sh"
           new_resource.time_out 300
-          expect do
+          expect {
             new_resource.start_calendar_interval "Weekday" => "1-2"
-          end.to raise_error(/Invalid value.*\(1-2\)/)
+          }.to raise_error(/Invalid value.*\(1-2\)/)
         end
       end
 

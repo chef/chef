@@ -115,7 +115,7 @@ class Chef
         end
 
         def command_switches_string(switches)
-          command_switches = switches.map do |switch_name, switch_value|
+          command_switches = switches.map { |switch_name, switch_value|
             if switch_name.class != Symbol
               raise ArgumentError, "Invalid type `#{switch_name} `for PowerShell switch '#{switch_name}'. The switch must be specified as a Symbol'"
             end
@@ -140,7 +140,7 @@ class Chef
             end
 
             switch_present ? ["-#{switch_name.to_s.downcase}", switch_argument].join(" ").strip : ""
-          end
+          }
 
           command_switches.join(" ")
         end

@@ -112,7 +112,7 @@ class Chef
         # Make sure the parent directory exists, otherwise fail.  For why-run assume it would have been created.
         requirements.assert(:create, :create_if_missing, :touch) do |a|
           parent_directory = ::File.dirname(new_resource.path)
-          a.assertion { ::File.directory?(parent_directory) }
+          a.assertion do ::File.directory?(parent_directory) end
           a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does not exist.")
           a.whyrun("Assuming directory #{parent_directory} would have been created")
         end
@@ -120,14 +120,14 @@ class Chef
         # Make sure the file is deletable if it exists, otherwise fail.
         if ::File.exist?(new_resource.path)
           requirements.assert(:delete) do |a|
-            a.assertion { ::File.writable?(new_resource.path) }
+            a.assertion do ::File.writable?(new_resource.path) end
             a.failure_message(Chef::Exceptions::InsufficientPermissions, "File #{new_resource.path} exists but is not writable so it cannot be deleted")
           end
         end
 
         error, reason, whyrun_message = inspect_existing_fs_entry
         requirements.assert(:create) do |a|
-          a.assertion { error.nil? }
+          a.assertion do error.nil? end
           a.failure_message(error, reason)
           a.whyrun(whyrun_message)
           # Subsequent attempts to read the fs entry at the path (e.g., for

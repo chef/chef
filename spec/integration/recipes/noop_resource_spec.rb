@@ -13,11 +13,11 @@ describe "Resources with a no-op provider" do
     end
 
     it "does not blow up a run with a noop'd resource" do
-      recipe = converge do
+      recipe = converge {
         hi_there "blah" do
           action :update
         end
-      end
+      }
       expect(recipe.logged_warnings).to eq ""
     end
   end

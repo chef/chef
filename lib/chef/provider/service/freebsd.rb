@@ -60,20 +60,20 @@ class Chef
           shared_resource_requirements
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { init_command }
+            a.assertion do init_command end
             a.failure_message Chef::Exceptions::Service, "#{new_resource}: unable to locate the rc.d script"
             a.whyrun("Assuming rc.d script will be installed by a previous action.")
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { enabled_state_found }
+            a.assertion do enabled_state_found end
             # for consistentcy with original behavior, this will not fail in non-whyrun mode;
             # rather it will silently set enabled state=>false
             a.whyrun "Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled."
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { !service_enable_variable_name.nil? }
+            a.assertion do !service_enable_variable_name.nil? end
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
@@ -179,7 +179,7 @@ class Chef
         def set_service_enable(value)
           lines = read_rc_conf
           # Remove line that set the old value
-          lines.delete_if { |line| line =~ /^\#?\s*#{Regexp.escape(service_enable_variable_name)}=/ }
+          lines.delete_if do |line| line =~ /^\#?\s*#{Regexp.escape(service_enable_variable_name)}=/ end
           # And append the line that sets the new value at the end
           lines << "#{service_enable_variable_name}=\"#{value}\""
           write_rc_conf(lines)

@@ -38,12 +38,12 @@ describe Chef::Resource::WhyrunSafeRubyBlock do
   describe "when testing the resource" do
     let(:new_resource) do
       r = Chef::Resource::WhyrunSafeRubyBlock.new("reload all", run_context)
-      r.block { $evil_global_evil_laugh = :mwahahaha }
+      r.block do $evil_global_evil_laugh = :mwahahaha end
       r
     end
 
     it "updates the evil laugh, even in why-run mode" do
-      Array(new_resource.action).each { |action| new_resource.run_action(action) }
+      Array(new_resource.action).each do |action| new_resource.run_action(action) end
       expect($evil_global_evil_laugh).to eq(:mwahahaha)
       expect(new_resource).to be_updated
     end

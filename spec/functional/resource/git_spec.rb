@@ -76,7 +76,7 @@ describe Chef::Resource::Git, requires_git: true do
     Chef::Log.level = :warn # silence git command live streams
     @old_file_cache_path = Chef::Config[:file_cache_path]
     shell_out!("git clone \"#{git_bundle_repo}\" example", cwd: origin_repo_dir)
-    File.open("#{origin_repo}/.git/config", "a+") { |f| f.print(git_user_config) }
+    File.open("#{origin_repo}/.git/config", "a+") do |f| f.print(git_user_config) end
     Chef::Config[:file_cache_path] = file_cache_path
   end
 

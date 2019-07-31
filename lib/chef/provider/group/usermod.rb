@@ -33,19 +33,19 @@ class Chef
           super
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exist?("/usr/sbin/usermod") }
+            a.assertion do ::File.exist?("/usr/sbin/usermod") end
             a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/sbin/usermod for #{new_resource}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end
 
           requirements.assert(:modify, :manage) do |a|
-            a.assertion { new_resource.members.empty? || new_resource.append }
+            a.assertion do new_resource.members.empty? || new_resource.append end
             a.failure_message Chef::Exceptions::Group, "setting group members directly is not supported by #{self}, must set append true in group"
             # No whyrun alternative - this action is simply not supported.
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { new_resource.excluded_members.empty? }
+            a.assertion do new_resource.excluded_members.empty? end
             a.failure_message Chef::Exceptions::Group, "excluded_members is not supported by #{self}"
             # No whyrun alternative - this action is simply not supported.
           end

@@ -72,9 +72,9 @@ class Chef
           #
           def children
               # Grab the names of the children, append json, and make child entries
-            @children ||= root.get_json(api_path).keys.sort.map do |key|
+            @children ||= root.get_json(api_path).keys.sort.map { |key|
               make_child_entry(key, true)
-            end
+            }
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout retrieving children: #{e}")
           rescue Net::HTTPClientException => e

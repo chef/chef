@@ -59,9 +59,9 @@ class Chef
           #
           # Skipped will always be false as it can only be true when two expanded
           # roles contain the same recipe.
-          expanded_run_list = recipes.map do |r|
+          expanded_run_list = recipes.map { |r|
             { type: "recipe", name: r, skipped: false, version: nil }
-          end
+          }
           data_collector_hash = {}
           data_collector_hash[:id] = "_policy_node"
           data_collector_hash[:run_list] = expanded_run_list
@@ -259,10 +259,10 @@ class Chef
       # a RunListExpansion object, to satisfy the API contract of
       # #expand_run_list
       def run_list_expansion_ish
-        recipes = run_list.map do |recipe_spec|
+        recipes = run_list.map { |recipe_spec|
           cookbook, recipe = parse_recipe_spec(recipe_spec)
           "#{cookbook}::#{recipe}"
-        end
+        }
         RunListExpansionIsh.new(recipes, [])
       end
 
@@ -341,9 +341,9 @@ class Chef
           errors << "Policyfile is missing cookbook_locks element"
         end
         if run_list.is_a?(Array)
-          run_list_errors = run_list.select do |maybe_recipe_spec|
+          run_list_errors = run_list.select { |maybe_recipe_spec|
             validate_recipe_spec(maybe_recipe_spec)
-          end
+          }
           errors += run_list_errors
         else
           errors << "Policyfile run_list is malformed, must be an array of `recipe[cb_name::recipe_name]` items: #{policy["run_list"]}"
@@ -459,10 +459,10 @@ class Chef
         @cookbook_to_sync ||= begin
           events.cookbook_resolution_start(run_list_with_versions_for_display)
 
-          cookbook_versions_by_name = cookbook_locks.inject({}) do |cb_map, (name, lock_data)|
+          cookbook_versions_by_name = cookbook_locks.inject({}) { |cb_map, (name, lock_data)|
             cb_map[name] = manifest_for(name, lock_data)
             cb_map
-          end
+          }
           events.cookbook_resolution_complete(cookbook_versions_by_name)
 
           cookbook_versions_by_name

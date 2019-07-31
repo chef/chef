@@ -225,7 +225,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       end
 
       context "uninstall entries is empty" do
-        before { allow(Chef::Provider::Package::Windows::RegistryUninstallEntry).to receive(:find_entries).and_return([]) }
+        before do allow(Chef::Provider::Package::Windows::RegistryUninstallEntry).to receive(:find_entries).and_return([]) end
 
         it "returns nil" do
           expect(provider.installer_type).to eql(nil)
@@ -326,7 +326,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     end
 
     context "no version given or discovered but package is installed" do
-      before { allow(provider).to receive(:current_version_array).and_return(["5.5.5"]) }
+      before do allow(provider).to receive(:current_version_array).and_return(["5.5.5"]) end
 
       it "does not install" do
         expect(provider).not_to receive(:install_package)
@@ -335,7 +335,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     end
 
     context "a version is given and none is installed" do
-      before { new_resource.version("5.5.5") }
+      before do new_resource.version("5.5.5") end
 
       it "installs given version" do
         expect(provider).to receive(:install_package).with("blah", "5.5.5")

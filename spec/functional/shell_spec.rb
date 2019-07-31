@@ -105,11 +105,11 @@ describe Shell do
     end
 
     it "sets the log_level from the command line" do
-      output, exitstatus = run_chef_shell_with("-lfatal") do |out, keyboard|
+      output, exitstatus = run_chef_shell_with("-lfatal") { |out, keyboard|
         show_log_level_code = %q[puts "===#{Chef::Log.level}==="]
         keyboard.puts(show_log_level_code)
         read_until(out, show_log_level_code)
-      end
+      }
       expect(output).to include("===fatal===")
       expect(exitstatus).to eq(0)
     end
@@ -122,22 +122,22 @@ describe Shell do
       end
 
       it "should be able to use the API" do
-        output, exitstatus = run_chef_shell_with("-s") do |out, keyboard|
+        output, exitstatus = run_chef_shell_with("-s") { |out, keyboard|
           simple_api_get = "api.get('data')"
           keyboard.puts(simple_api_get)
           read_until(out, simple_api_get)
-        end
+        }
         expect(output).to include("{}")
         expect(exitstatus).to eq(0)
       end
     end
 
     it "sets the override_runlist from the command line" do
-      output, exitstatus = run_chef_shell_with("-o 'override::foo,override::bar'") do |out, keyboard|
+      output, exitstatus = run_chef_shell_with("-o 'override::foo,override::bar'") { |out, keyboard|
         show_recipes_code = %q[puts "#{node["recipes"].inspect}"]
         keyboard.puts(show_recipes_code)
         read_until(out, show_recipes_code)
-      end
+      }
       expect(output).to include(%q{["override::foo", "override::bar"]})
       expect(exitstatus).to eq(0)
     end

@@ -24,7 +24,7 @@ class Chef
   class Resource
     class HomebrewCask < Chef::Resource
       resource_name :homebrew_cask
-      provides(:homebrew_cask) { true }
+      provides(:homebrew_cask) do true end
 
       description "Use the homebrew_cask resource to install binaries distributed via the Homebrew package manager."
       introduced "14.0"

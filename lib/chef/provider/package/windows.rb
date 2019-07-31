@@ -36,13 +36,13 @@ class Chef
 
         def define_resource_requirements
           requirements.assert(:install) do |a|
-            a.assertion { new_resource.source || msi? }
+            a.assertion do new_resource.source || msi? end
             a.failure_message Chef::Exceptions::NoWindowsPackageSource, "Source for package #{new_resource.package_name} must be specified in the resource's source property for package to be installed because the package_name property is used to test for the package installation state for this package type."
           end
 
           unless uri_scheme?(new_resource.source)
             requirements.assert(:install) do |a|
-              a.assertion { ::File.exist?(new_resource.source) }
+              a.assertion do ::File.exist?(new_resource.source) end
               a.failure_message Chef::Exceptions::Package, "Source for package #{new_resource.package_name} does not exist"
               a.whyrun "Assuming source file #{new_resource.source} would have been created."
             end

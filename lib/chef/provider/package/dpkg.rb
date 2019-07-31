@@ -38,12 +38,12 @@ class Chef
           super
 
           requirements.assert(:install, :upgrade) do |a|
-            a.assertion { !resolved_source_array.compact.empty? }
+            a.assertion do !resolved_source_array.compact.empty? end
             a.failure_message Chef::Exceptions::Package, "#{new_resource} the source property is required for action :install or :upgrade"
           end
 
           requirements.assert(:install, :upgrade) do |a|
-            a.assertion { source_files_exist? }
+            a.assertion do source_files_exist? end
             a.failure_message Chef::Exceptions::Package, "#{new_resource} source file(s) do not exist: #{missing_sources}"
             a.whyrun "Assuming they would have been previously created."
           end
@@ -176,11 +176,11 @@ class Chef
         def name_pkginfo
           @name_pkginfo ||=
             begin
-              pkginfos = resolved_source_array.map do |src|
+              pkginfos = resolved_source_array.map { |src|
                 logger.trace("#{new_resource} checking #{src} dpkg status")
                 status = shell_out!("dpkg-deb", "-W", src)
                 status.stdout
-              end
+              }
               Hash[*package_name_array.zip(pkginfos).flatten]
             end
         end

@@ -47,7 +47,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
   describe "when explaining an error converging a resource" do
     before do
-      @resource = package("non-existing-package") do
+      @resource = package("non-existing-package") {
 
         only_if do
           true
@@ -55,7 +55,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
         not_if("/bin/false")
         action :upgrade
-      end
+      }
 
       @trace = [
         "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'",
@@ -89,9 +89,9 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @context = Chef::Mixin::Template::TemplateContext.new({})
         @context[:chef] = "cool"
 
-        @resource = template("/tmp/foo.txt") do
+        @resource = template("/tmp/foo.txt") {
           mode "0644"
-        end
+        }
 
         @error = begin
                    @context.render_template_from_string("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno")

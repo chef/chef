@@ -38,7 +38,7 @@ class Chef
         end
 
         current_profile = self.class.config_loader.credentials_profile(config[:profile])
-        profiles = credentials_data.keys.map do |profile|
+        profiles = credentials_data.keys.map { |profile|
           if config[:ignore_knife_rb]
             # Don't do any fancy loading nonsense, just the raw data.
             profile_data = credentials_data[profile]
@@ -64,7 +64,7 @@ class Chef
               server_url: Chef::Config[:chef_server_url],
             }
           end
-        end
+        }
 
         # Try to reset the config.
         unless config[:ignore_knife_rb]
@@ -90,9 +90,9 @@ class Chef
           profile[:client_key] = profile[:client_key].to_s.gsub(/^#{Regexp.escape(Dir.home)}/, "~") if profile[:client_key]
         end
         # Render the data to a 2D array that will be used for the table.
-        table_data = [["", "Profile", "Client", "Key", "Server"]] + profiles.map do |profile|
+        table_data = [["", "Profile", "Client", "Key", "Server"]] + profiles.map { |profile|
           [profile[:active] ? "*" : ""] + profile.values_at(:profile, :client_name, :client_key, :server_url).map(&:to_s)
-        end
+        }
         # Compute column widths.
         column_widths = Array.new(table_data.first.length) do |i|
           table_data.map { |row| row[i].length + padding }.max

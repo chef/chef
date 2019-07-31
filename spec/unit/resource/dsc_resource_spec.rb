@@ -77,9 +77,9 @@ describe Chef::Resource::DscResource do
       end
 
       it "raises a TypeError if property_name is not a symbol" do
-        expect do
+        expect {
           dsc_test_resource.property("Foo", dsc_test_property_value)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
 
       context "when using DelayedEvaluators" do

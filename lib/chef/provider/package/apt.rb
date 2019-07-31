@@ -45,7 +45,7 @@ class Chef
           super
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { !new_resource.source }
+            a.assertion do !new_resource.source end
             a.failure_message(Chef::Exceptions::Package, "apt package provider cannot handle source property. Use dpkg provider instead")
           end
         end
@@ -89,9 +89,9 @@ class Chef
         end
 
         def install_package(name, version)
-          package_name = name.zip(version).map do |n, v|
+          package_name = name.zip(version).map { |n, v|
             package_data[n][:virtual] ? n : "#{n}=#{v}"
-          end
+          }
           dgrade = "--allow-downgrades" if supports_allow_downgrade? && allow_downgrade
           run_noninteractive("apt-get", "-q", "-y", dgrade, config_file_options, default_release_options, options, "install", package_name)
         end
@@ -101,16 +101,16 @@ class Chef
         end
 
         def remove_package(name, version)
-          package_name = name.map do |n|
+          package_name = name.map { |n|
             package_data[n][:virtual] ? resolve_virtual_package_name(n) : n
-          end
+          }
           run_noninteractive("apt-get", "-q", "-y", options, "remove", package_name)
         end
 
         def purge_package(name, version)
-          package_name = name.map do |n|
+          package_name = name.map { |n|
             package_data[n][:virtual] ? resolve_virtual_package_name(n) : n
-          end
+          }
           run_noninteractive("apt-get", "-q", "-y", options, "purge", package_name)
         end
 

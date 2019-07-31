@@ -314,7 +314,7 @@ describe "knife list", :workstation do
     context "symlink tests" do
       when_the_repository "is empty" do
         context "when cwd is at the top of the repository" do
-          before { cwd "." }
+          before do cwd "." end
 
           it "knife list -Rfp returns everything" do
             knife("list -Rfp").should_succeed <<~EOM
@@ -357,9 +357,9 @@ describe "knife list", :workstation do
       end
 
       when_the_repository "has a cookbooks directory" do
-        before { directory "cookbooks" }
+        before do directory "cookbooks" end
         context "when cwd is in cookbooks/" do
-          before { cwd "cookbooks" }
+          before do cwd "cookbooks" end
 
           it "knife list -Rfp / returns everything" do
             knife("list -Rfp /").should_succeed <<~EOM
@@ -451,10 +451,10 @@ describe "knife list", :workstation do
       end
 
       when_the_repository "has a cookbooks/cookbook2 directory" do
-        before { directory "cookbooks/cookbook2" }
+        before do directory "cookbooks/cookbook2" end
 
         context "when cwd is in cookbooks/cookbook2" do
-          before { cwd "cookbooks/cookbook2" }
+          before do cwd "cookbooks/cookbook2" end
 
           it "knife list -Rfp returns cookbooks" do
             knife("list -Rfp").should_succeed <<~EOM
@@ -473,7 +473,7 @@ describe "knife list", :workstation do
         end
 
         context "when cwd is in cookbooks/" do
-          before { cwd "cookbooks" }
+          before do cwd "cookbooks" end
 
           it "knife list -Rfp returns cookbooks" do
             knife("list -Rfp").should_succeed <<~EOM
@@ -488,7 +488,7 @@ describe "knife list", :workstation do
         end
 
         context "when cwd is in symlinked/" do
-          before { cwd "symlinked" }
+          before do cwd "symlinked" end
 
           it "knife list -Rfp returns cookbooks" do
             knife("list -Rfp").should_succeed <<~EOM
@@ -510,7 +510,7 @@ describe "knife list", :workstation do
         end
 
         context "when cwd is in real_cookbooks/" do
-          before { cwd "real_cookbooks" }
+          before do cwd "real_cookbooks" end
 
           it "knife list -Rfp returns cookbooks" do
             knife("list -Rfp").should_succeed <<~EOM
@@ -525,7 +525,7 @@ describe "knife list", :workstation do
         end
 
         context "when cwd is in cookbooks/" do
-          before { cwd "cookbooks" }
+          before do cwd "cookbooks" end
 
           it "knife list -Rfp returns cookbooks" do
             knife("list -Rfp").should_succeed <<~EOM

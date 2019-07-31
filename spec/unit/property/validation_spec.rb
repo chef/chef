@@ -84,7 +84,7 @@ describe "Chef::Resource.property validation" do
       end
       success_values.each do |v|
         it "value #{v.inspect} is valid" do
-          resource.instance_eval { @x = "default" }
+          resource.instance_eval do @x = "default" end
           expect(resource.x v).to eq v
           expect(resource.x).to eq v
         end
@@ -92,7 +92,7 @@ describe "Chef::Resource.property validation" do
       failure_values.each do |v|
         it "value #{v.inspect} is invalid" do
           expect { resource.x v }.to raise_error Chef::Exceptions::ValidationFailed
-          resource.instance_eval { @x = "default" }
+          resource.instance_eval do @x = "default" end
           expect { resource.x v }.to raise_error Chef::Exceptions::ValidationFailed
         end
       end
@@ -102,7 +102,7 @@ describe "Chef::Resource.property validation" do
       end
       unless tags.include?(:nillable)
         it "changing x to nil does a set" do
-          resource.instance_eval { @x = "default" }
+          resource.instance_eval do @x = "default" end
           expect(resource.x nil).to eq nil
           expect(resource.x).to eq nil
         end
@@ -115,7 +115,7 @@ describe "Chef::Resource.property validation" do
           expect(resource.x).to be_nil
         end
         it "changing x to nil does a set" do
-          resource.instance_eval { @x = "default" }
+          resource.instance_eval do @x = "default" end
           expect(resource.x nil).to eq nil
           expect(resource.x).to eq nil
         end
@@ -123,7 +123,7 @@ describe "Chef::Resource.property validation" do
     elsif tags.include?(:nillable)
       with_property ":x, #{validation}, nillable: true" do
         it "changing x to nil with nillable true overwrites defaults and just works" do
-          resource.instance_eval { @x = "default" }
+          resource.instance_eval do @x = "default" end
           expect { resource.x nil }.not_to raise_error
           expect(resource.x nil).to eq nil
           expect(resource.x).to eq nil

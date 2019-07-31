@@ -414,7 +414,7 @@ class Chef
         value = _pv_opts_lookup(opts, key)
         to_be = [ to_be ].flatten(1)
         errors = []
-        passed = to_be.any? do |tb|
+        passed = to_be.any? { |tb|
           case tb
           when Proc
             raise Exceptions::CannotValidateStaticallyError, "is: proc { } must be evaluated once for each resource" if self == Chef::Mixin::ParamsValidate
@@ -434,7 +434,7 @@ class Chef
           else
             tb === value
           end
-        end
+        }
         if passed
           true
         else

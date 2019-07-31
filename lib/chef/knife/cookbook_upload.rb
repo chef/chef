@@ -217,9 +217,9 @@ class Chef
         # MUST!! dup the cookbook version object--it memoizes its
         # manifest object, but the manifest becomes invalid when you
         # regenerate the metadata
-        broken_files = cookbook.dup.manifest_records_by_path.select do |path, info|
+        broken_files = cookbook.dup.manifest_records_by_path.select { |path, info|
           info[CHECKSUM].nil? || info[CHECKSUM] !~ MATCH_CHECKSUM
-        end
+        }
         unless broken_files.empty?
           broken_filenames = Array(broken_files).map { |path, info| path }
           ui.error "The cookbook #{cookbook.name} has one or more broken files"
@@ -232,9 +232,9 @@ class Chef
       def check_for_dependencies!(cookbook)
         # for all dependencies, check if the version is on the server, or
         # the version is in the cookbooks being uploaded. If not, exit and warn the user.
-        missing_dependencies = cookbook.metadata.dependencies.reject do |cookbook_name, version|
+        missing_dependencies = cookbook.metadata.dependencies.reject { |cookbook_name, version|
           check_server_side_cookbooks(cookbook_name, version) || check_uploading_cookbooks(cookbook_name, version)
-        end
+        }
 
         unless missing_dependencies.empty?
           missing_cookbook_names = missing_dependencies.map { |cookbook_name, version| "'#{cookbook_name}' version '#{version}'" }

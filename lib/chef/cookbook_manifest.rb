@@ -192,7 +192,7 @@ class Chef
 
     def by_parent_directory
       @by_parent_directory ||=
-        manifest[:all_files].inject({}) do |memo, file|
+        manifest[:all_files].inject({}) { |memo, file|
           parts = file[:name].split("/")
           parent = if parts.length == 1
                      "root_files"
@@ -203,7 +203,7 @@ class Chef
           memo[parent] ||= []
           memo[parent] << file
           memo
-        end
+        }
     end
 
     def root_files

@@ -134,7 +134,7 @@ describe Chef::RunList do
       @run_list << "foo"
       @run_list << "bar"
       seen = []
-      @run_list.each { |r| seen << r }
+      @run_list.each do |r| seen << r end
       expect(seen).to be_include("recipe[foo]")
       expect(seen).to be_include("recipe[bar]")
     end
@@ -143,7 +143,7 @@ describe Chef::RunList do
   describe "each_index" do
     it "should yield each members index to your block" do
       to_add = [ "recipe[foo]", "recipe[bar]", "recipe[baz]" ]
-      to_add.each { |i| @run_list << i }
+      to_add.each do |i| @run_list << i end
       @run_list.each_index { |i| expect(@run_list[i]).to eq(to_add[i]) }
     end
   end
@@ -160,7 +160,7 @@ describe Chef::RunList do
       @run_list << "chromeo"
       list = %w{camp chairs snakes clowns}
       @run_list.reset!(list)
-      list.each { |i| expect(@run_list).to be_include(i) }
+      list.each do |i| expect(@run_list).to be_include(i) end
       expect(@run_list.include?("chromeo")).to eq(false)
     end
   end

@@ -98,11 +98,11 @@ describe Chef::ResourceCollection do
     it "should allow you to iterate over every resource in the collection" do
       load_up_resources
       results = []
-      expect do
+      expect {
         rc.each do |r|
           results << r.name
         end
-      end.not_to raise_error
+      }.not_to raise_error
       results.each_index do |i|
         case i
         when 0
@@ -120,11 +120,11 @@ describe Chef::ResourceCollection do
     it "should allow you to iterate over every resource by index" do
       load_up_resources
       results = []
-      expect do
+      expect {
         rc.each_index do |i|
           results << rc[i].name
         end
-      end.not_to raise_error
+      }.not_to raise_error
       results.each_index do |i|
         case i
         when 0
@@ -270,15 +270,15 @@ describe Chef::ResourceCollection do
     end
 
     it "rejects a malformed query string" do
-      expect do
+      expect {
         rc.validate_lookup_spec!("resource_type[missing-end-bracket")
-      end.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
+      }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
     end
 
     it "rejects an argument that is not a String, Hash, or Chef::Resource" do
-      expect do
+      expect {
         rc.validate_lookup_spec!(Object.new)
-      end.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
+      }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
     end
 
   end

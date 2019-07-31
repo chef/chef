@@ -85,9 +85,9 @@ class Chef
       end
 
       def available_versions
-        @available_versions ||= rest.get("cookbooks/#{@cookbook_name}").map do |name, url_and_version|
+        @available_versions ||= rest.get("cookbooks/#{@cookbook_name}").map { |name, url_and_version|
           url_and_version["versions"].map { |url_by_version| url_by_version["version"] }
-        end.flatten
+        }.flatten
       rescue Net::HTTPClientException => e
         if e.to_s =~ /^404/
           ui.error("Cannot find a cookbook named #{@cookbook_name} to delete.")
@@ -112,13 +112,13 @@ class Chef
           ui.error("No versions specified, exiting")
           exit(1)
         end
-        versions = responses.map do |response|
+        versions = responses.map { |response|
           if version = valid_responses[response]
             version
           else
             ui.error("#{response} is not a valid choice, skipping it")
           end
-        end
+        }
         versions.compact
       end
 

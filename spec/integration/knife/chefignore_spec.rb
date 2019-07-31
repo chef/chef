@@ -84,7 +84,7 @@ describe "chefignore tests", :workstation do
     end
 
     context "and has a chefignore with filenames" do
-      before { file "cookbooks/chefignore", "x.json\n" }
+      before do file "cookbooks/chefignore", "x.json\n" end
 
       it "matching files and directories get ignored in all cookbooks" do
         knife("list --local -Rfp /").should_succeed <<~EOM

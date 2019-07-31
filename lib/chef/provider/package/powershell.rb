@@ -41,7 +41,7 @@ class Chef
           end
 
           requirements.assert(:install) do |a|
-            a.assertion { candidates_exist_for_all_uninstalled? }
+            a.assertion do candidates_exist_for_all_uninstalled? end
             a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
             a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
           end

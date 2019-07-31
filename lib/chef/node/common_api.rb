@@ -35,7 +35,7 @@ class Chef
         value = block_given? ? yield : args.pop
         last = args.pop
         prev_memo = prev_key = nil
-        chain = args.inject(self) do |memo, key|
+        chain = args.inject(self) { |memo, key|
           unless valid_container?(memo, key)
             prev_memo[prev_key] = {}
             memo = prev_memo[prev_key]
@@ -43,7 +43,7 @@ class Chef
           prev_memo = memo
           prev_key = key
           memo[key]
-        end
+        }
         unless valid_container?(chain, last)
           prev_memo[prev_key] = {}
           chain = prev_memo[prev_key]
@@ -57,11 +57,11 @@ class Chef
       def write!(*args, &block)
         value = block_given? ? yield : args.pop
         last = args.pop
-        obj = args.inject(self) do |memo, key|
+        obj = args.inject(self) { |memo, key|
           raise Chef::Exceptions::AttributeTypeMismatch unless valid_container?(memo, key)
 
           memo[key]
-        end
+        }
         raise Chef::Exceptions::AttributeTypeMismatch unless valid_container?(obj, last)
 
         obj[last] = value

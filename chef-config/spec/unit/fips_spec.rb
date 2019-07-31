@@ -104,7 +104,7 @@ RSpec.describe "ChefConfig.fips?" do
     context "on 32 bit ruby" do
       let(:arch) { Win32::Registry::KEY_READ | 0x100 }
 
-      before { stub_const("::RbConfig::CONFIG", { "target_cpu" => "i386" } ) }
+      before do stub_const("::RbConfig::CONFIG", { "target_cpu" => "i386" } ) end
 
       it_behaves_like "fips_detection"
     end
@@ -112,7 +112,7 @@ RSpec.describe "ChefConfig.fips?" do
     context "on 64 bit ruby" do
       let(:arch) { Win32::Registry::KEY_READ | 0x200 }
 
-      before { stub_const("::RbConfig::CONFIG", { "target_cpu" => "x86_64" } ) }
+      before do stub_const("::RbConfig::CONFIG", { "target_cpu" => "x86_64" } ) end
 
       it_behaves_like "fips_detection"
     end
@@ -120,7 +120,7 @@ RSpec.describe "ChefConfig.fips?" do
     context "on unknown ruby" do
       let(:arch) { Win32::Registry::KEY_READ }
 
-      before { stub_const("::RbConfig::CONFIG", { "target_cpu" => nil } ) }
+      before do stub_const("::RbConfig::CONFIG", { "target_cpu" => nil } ) end
 
       it_behaves_like "fips_detection"
     end

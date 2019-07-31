@@ -294,7 +294,7 @@ describe Chef::Provider::Git do
     end
     context "with a timeout set" do
       let (:seconds) { 10 }
-      before { @resource.timeout(seconds) }
+      before do @resource.timeout(seconds) end
       it "clones a repo with amended git options" do
         expect(@provider).to receive(:shell_out!).with(expected_cmd, default_options.merge(timeout: seconds))
         @provider.clone
@@ -314,7 +314,7 @@ describe Chef::Provider::Git do
       before do
         @resource.environment(override_home)
       end
-      before { @resource.environment(override_home) }
+      before do @resource.environment(override_home) end
       it "clones a repo with amended git options with specific home" do
         expect(@provider).to receive(:shell_out!).with(expected_cmd, overrided_options)
         @provider.clone
@@ -350,7 +350,7 @@ describe Chef::Provider::Git do
       before do
         @resource.environment(override_home)
       end
-      before { @resource.environment(override_home) }
+      before do @resource.environment(override_home) end
       it "clones a repo with amended git options with specific home" do
         expect(@provider).to receive(:shell_out!).with(expected_cmd, hash_including(overrided_options))
         @provider.clone

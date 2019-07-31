@@ -31,7 +31,7 @@ describe "knife common options", :workstation do
   let(:local_listen_warning) { /\Awarn:.*local.*listen.*$/im }
 
   when_the_repository "has a node" do
-    before { file "nodes/x.json", {} }
+    before do file "nodes/x.json", {} end
 
     context "When chef_zero.enabled is true" do
       before(:each) do
@@ -48,7 +48,7 @@ describe "knife common options", :workstation do
       end
 
       context "And chef_zero.port is 9999" do
-        before(:each) { Chef::Config.chef_zero.port = 9999 }
+        before(:each) do Chef::Config.chef_zero.port = 9999 end
 
         it "knife raw /nodes/x should retrieve the node" do
           knife("raw --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )
@@ -58,7 +58,7 @@ describe "knife common options", :workstation do
 
       # 0.0.0.0 is not a valid address to bind to on windows.
       context "And chef_zero.host is 0.0.0.0", :unix_only do
-        before(:each) { Chef::Config.chef_zero.host = "0.0.0.0" }
+        before(:each) do Chef::Config.chef_zero.host = "0.0.0.0" end
 
         it "knife raw /nodes/x should retrieve the role" do
           knife("raw --listen /nodes/x").should_succeed( /"name": "x"/, stderr: local_listen_warning )

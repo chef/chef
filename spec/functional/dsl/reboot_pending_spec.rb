@@ -36,9 +36,9 @@ describe Chef::DSL::RebootPending, :windows_only do
     let(:reg_key) { nil }
     let(:original_set) { false }
 
-    before(:all) { @any_flag = {} }
+    before(:all) do @any_flag = {} end
 
-    after { @any_flag[reg_key] = original_set }
+    after do @any_flag[reg_key] = original_set end
 
     describe 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations' do
       let(:reg_key) { 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager' }

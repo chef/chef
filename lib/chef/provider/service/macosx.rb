@@ -36,7 +36,7 @@ class Chef
                          /Library/LaunchDaemons
                          /System/Library/LaunchAgents
                          /System/Library/LaunchDaemons }
-          Chef::Util::PathHelper.home("Library", "LaunchAgents") { |p| locations << p }
+          Chef::Util::PathHelper.home("Library", "LaunchAgents") do |p| locations << p end
           locations
         end
 
@@ -79,24 +79,24 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @plist_size < 2 }
+            a.assertion do @plist_size < 2 end
             a.failure_message Chef::Exceptions::Service, "Several plist files match service name. Please use full service name."
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?(@plist.to_s) }
+            a.assertion do ::File.exists?(@plist.to_s) end
             a.failure_message Chef::Exceptions::Service,
               "Could not find plist for #{@new_resource}"
           end
 
           requirements.assert(:enable, :disable) do |a|
-            a.assertion { !@service_label.to_s.empty? }
+            a.assertion do !@service_label.to_s.empty? end
             a.failure_message Chef::Exceptions::Service,
               "Could not find service's label in plist file '#{@plist}'!"
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @plist_size > 0 }
+            a.assertion do @plist_size > 0 end
             # No failure here in original code - so we also will not
             # fail. Instead warn that the service is potentially missing
             a.whyrun "Assuming that the service would have been previously installed and is currently disabled." do
@@ -235,13 +235,13 @@ class Chef
         end
 
         def find_service_plist
-          plists = PLIST_DIRS.inject([]) do |results, dir|
+          plists = PLIST_DIRS.inject([]) { |results, dir|
             edir = ::File.expand_path(dir)
             entries = Dir.glob(
               "#{edir}/*#{Chef::Util::PathHelper.escape_glob_dir(@current_resource.service_name)}*.plist"
             )
             entries.any? ? results << entries : results
-          end
+          }
           plists.flatten!
           @plist_size = plists.size
           plists.first

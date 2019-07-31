@@ -34,8 +34,8 @@ describe Chef::RunLock do
     let(:lockfile) { "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
 
     # make sure to start with a clean slate.
-    before(:each) { log_event("rm -rf before"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
-    after(:each) { log_event("rm -rf after"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
+    before(:each) do log_event("rm -rf before"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) end
+    after(:each) do log_event("rm -rf after"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) end
 
     def log_event(message, time = Time.now.strftime("%H:%M:%S.%L"))
       events << [ message, time ]
@@ -85,7 +85,7 @@ describe Chef::RunLock do
 
     context "when the lockfile does not already exist" do
       context "when a client creates the lockfile but has not yet acquired the lock" do
-        before { p1.run_to("created lock") }
+        before do p1.run_to("created lock") end
         shared_context "second client gets the lock" do
           it "the lockfile is created" do
             log_event("lockfile exists? #{File.exist?(lockfile)}")
@@ -106,7 +106,7 @@ describe Chef::RunLock do
           end
 
           context "and a second client gets the lock" do
-            before { p2.run_to("acquired lock") }
+            before do p2.run_to("acquired lock") end
             it "the first client does not get the lock until the second finishes" do
               p1.run_to("acquired lock") do
                 p2.run_to_completion
@@ -128,13 +128,13 @@ describe Chef::RunLock do
         end
 
         context "and the second client has created the lockfile but not yet acquired the lock" do
-          before { p2.run_to("created lock") }
+          before do p2.run_to("created lock") end
           include_context "second client gets the lock"
         end
       end
 
       context "when a client acquires the lock but has not yet saved the pid" do
-        before { p1.run_to("acquired lock") }
+        before do p1.run_to("acquired lock") end
 
         it "the lockfile is created" do
           log_event("lockfile exists? #{File.exist?(lockfile)}")
@@ -182,7 +182,7 @@ describe Chef::RunLock do
       end
 
       context "when a client acquires the lock and saves the pid" do
-        before { p1.run_to("saved pid") }
+        before do p1.run_to("saved pid") end
 
         it "the lockfile is created" do
           expect(File.exist?(lockfile)).to be_truthy
@@ -229,7 +229,7 @@ describe Chef::RunLock do
       end
 
       context "when a client acquires a lock and exits normally" do
-        before { p1.run_to_completion }
+        before do p1.run_to_completion end
 
         it "the lockfile remains" do
           expect(File.exist?(lockfile)).to be_truthy
@@ -258,20 +258,20 @@ describe Chef::RunLock do
       run_lock = Chef::RunLock.new(lockfile)
       from_tests, to_fork = IO.pipe
       from_fork, to_tests = IO.pipe
-      p1 = fork do
+      p1 = fork {
         expect(run_lock.test).to eq(true)
         to_tests.puts "lock acquired"
         # Wait for the test to tell us we can exit before exiting
         from_tests.readline
         exit! 0
-      end
+      }
 
       wait_on_lock(from_fork)
 
-      p2 = fork do
+      p2 = fork {
         expect(run_lock.test).to eq(false)
         exit! 0
-      end
+      }
 
       pid, exit_status = Process.waitpid2(p2)
       expect(exit_status).to eq(0)
@@ -284,13 +284,13 @@ describe Chef::RunLock do
       run_lock = Chef::RunLock.new(lockfile)
       from_tests, to_fork = IO.pipe
       from_fork, to_tests = IO.pipe
-      p1 = fork do
+      p1 = fork {
         run_lock.acquire
         to_tests.puts "lock acquired"
         # Wait for the test to tell us we can exit before exiting
         from_tests.readline
         exit! 0
-      end
+      }
 
       wait_on_lock(from_fork)
       expect(run_lock.test).to eq(false)
@@ -437,7 +437,7 @@ describe Chef::RunLock do
 
     def start
       example.log_event("#{name}.start")
-      @pid = fork do
+      @pid = fork {
         begin
           Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
             run_lock = TestRunLock.new(example.lockfile)
@@ -453,7 +453,7 @@ describe Chef::RunLock do
           fire_event($!.message.lines.join(" // "))
           raise
         end
-      end
+      }
       example.log_event("#{name}.start forked (pid #{pid})")
     end
 

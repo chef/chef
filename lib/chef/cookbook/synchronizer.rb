@@ -122,7 +122,7 @@ class Chef
                []
              end
 
-      @files ||= cookbooks.inject([]) do |memo, cookbook|
+      @files ||= cookbooks.inject([]) { |memo, cookbook|
         cookbook.each_file do |manifest_record|
           part = manifest_record[:name].split("/")[0]
           if lazy.include?(part)
@@ -134,7 +134,7 @@ class Chef
           end
         end
         memo
-      end
+      }
     end
 
     def files_by_cookbook

@@ -43,8 +43,8 @@ describe Chef::Resource::RhsmErrataLevel do
   end
 
   it "raises an exception if invalid errata_level is passed" do
-    expect do
+    expect {
       resource.errata_level "FOO"
-    end.to raise_error(Chef::Exceptions::ValidationFailed)
+    }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 end

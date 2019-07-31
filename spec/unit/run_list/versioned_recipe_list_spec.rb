@@ -33,7 +33,7 @@ describe Chef::RunList::VersionedRecipeList do
   let(:recipes) { [] }
 
   before do
-    recipes.each { |r| list << r }
+    recipes.each do |r| list << r end
     versioned_recipes.each { |r| list.add_recipe r[:name], r[:version] }
   end
 

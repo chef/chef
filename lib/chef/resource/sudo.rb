@@ -25,7 +25,7 @@ class Chef
   class Resource
     class Sudo < Chef::Resource
       resource_name :sudo
-      provides(:sudo) { true }
+      provides(:sudo) do true end
 
       description "Use the sudo resource to add or remove individual sudo entries using sudoers.d files."\
                   " Sudo version 1.7.2 or newer is required to use the sudo resource, as it relies on the"\
@@ -148,10 +148,10 @@ class Chef
         validate_properties
 
         if docker? # don't even put this into resource collection unless we're in docker
-          declare_resource(:package, "sudo") do
+          declare_resource(:package, "sudo") {
             action :nothing
             not_if "which sudo"
-          end.run_action(:install)
+          }.run_action(:install)
         end
 
         target = "#{new_resource.config_prefix}/sudoers.d/"

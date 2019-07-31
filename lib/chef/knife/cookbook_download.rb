@@ -112,7 +112,7 @@ class Chef
         @available_versions ||= begin
           versions = Chef::CookbookVersion.available_versions(@cookbook_name)
           unless versions.nil?
-            versions.map! { |version| Chef::Version.new(version) }
+            versions.map! do |version| Chef::Version.new(version) end
             versions.sort!
           end
           versions

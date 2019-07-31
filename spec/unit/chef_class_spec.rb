@@ -99,18 +99,18 @@ describe "Chef class" do
     end
 
     it "raise error if unknown event type is passed" do
-      expect do
+      expect {
         Chef.event_handler do
           on :yolo do
           end
         end
-      end.to raise_error(Chef::Exceptions::InvalidEventType)
+      }.to raise_error(Chef::Exceptions::InvalidEventType)
     end
   end
 
   describe "Deprecation system" do
     context "with treat_deprecation_warnings_as_errors false" do
-      before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
+      before do Chef::Config[:treat_deprecation_warnings_as_errors] = false end
 
       it "displays a simple deprecation warning" do
         expect(Chef::Log).to receive(:warn).with(%r{spec/unit/chef_class_spec\.rb.*?I'm a little teapot.*?Please see}m)
@@ -229,7 +229,7 @@ describe "Chef class" do
 
     context "with treat_deprecation_warnings_as_errors true" do
       # This is already turned on globally for Chef's unit tests, but just for clarity do it here too.
-      before { Chef::Config[:treat_deprecation_warnings_as_errors] = true }
+      before do Chef::Config[:treat_deprecation_warnings_as_errors] = true end
 
       it "displays a simple deprecation error" do
         expect(Chef::Log).to receive(:error).with(%r{spec/unit/chef_class_spec\.rb.*?I'm a little teapot.*?Please see}m)

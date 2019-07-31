@@ -163,11 +163,11 @@ class Chef
           def root_dir
             existing_paths = root_paths.select { |path| File.exists?(path) }
             if existing_paths.size > 0
-              MultiplexedDir.new(existing_paths.map do |path|
+              MultiplexedDir.new(existing_paths.map { |path|
                 dir = FileSystemEntry.new(name, parent, path)
                 dir.write_pretty_json = !!write_pretty_json
                 dir
-              end)
+              })
             end
           end
 

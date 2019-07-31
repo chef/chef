@@ -13,9 +13,9 @@ describe "Resource.load_current_value" do
     attr_writer :incrementing_value
   end
 
-  before(:all) { Namer.current_index = 1 }
-  before { Namer.current_index += 1 }
-  before { Namer.incrementing_value = 0 }
+  before(:all) do Namer.current_index = 1 end
+  before do Namer.current_index += 1 end
+  before do Namer.incrementing_value = 0 end
 
   let(:resource_name) { :"load_current_value_dsl#{Namer.current_index}" }
   let(:resource_class) do
@@ -40,7 +40,7 @@ describe "Resource.load_current_value" do
   end
 
   # Pull on resource_class to initialize it
-  before { resource_class }
+  before do resource_class end
 
   context "with a resource with load_current_value" do
     before :each do
@@ -57,9 +57,9 @@ describe "Resource.load_current_value" do
         e = self
         r = nil
         converge do
-          r = public_send(e.resource_name, "blah") do
+          r = public_send(e.resource_name, "blah") {
             x "desired"
-          end
+          }
         end
         r
       end
@@ -131,15 +131,15 @@ describe "Resource.load_current_value" do
     end
 
     # Pull on subresource_class to initialize it
-    before { subresource_class }
+    before do subresource_class end
 
     let(:subresource) do
       e = self
       r = nil
       converge do
-        r = public_send(e.subresource_name, "blah") do
+        r = public_send(e.subresource_name, "blah") {
           x "desired"
-        end
+        }
       end
       r
     end

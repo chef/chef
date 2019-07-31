@@ -44,7 +44,7 @@ describe TinyServer::API do
 
   it "creates a route for a request with a block" do
     block_called = false
-    @api.get("/bar/baz", 200) { block_called = true; "hello barbaz" }
+    @api.get("/bar/baz", 200) do block_called = true; "hello barbaz" end
     response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => "http://localhost:1974/bar/baz")
     expect(response).to eq([200, { "Content-Type" => "application/json" }, [ "hello barbaz" ]])
     expect(block_called).to be_truthy

@@ -140,9 +140,9 @@ class Chef
       end
 
       def self.diff(pattern, old_root, new_root, recurse_depth, get_content)
-        Chef::ChefFS::Parallelizer.parallelize(Chef::ChefFS::FileSystem.list_pairs(pattern, old_root, new_root)) do |old_entry, new_entry|
+        Chef::ChefFS::Parallelizer.parallelize(Chef::ChefFS::FileSystem.list_pairs(pattern, old_root, new_root)) { |old_entry, new_entry|
           diff_entries(old_entry, new_entry, recurse_depth, get_content)
-        end.flatten(1)
+        }.flatten(1)
       end
 
       # Diff two known entries (could be files or dirs)
@@ -153,9 +153,9 @@ class Chef
             if recurse_depth == 0
               [ [ :common_subdirectories, old_entry, new_entry ] ]
             else
-              Chef::ChefFS::Parallelizer.parallelize(Chef::ChefFS::FileSystem.child_pairs(old_entry, new_entry)) do |old_child, new_child|
+              Chef::ChefFS::Parallelizer.parallelize(Chef::ChefFS::FileSystem.child_pairs(old_entry, new_entry)) { |old_child, new_child|
                 Chef::ChefFS::CommandLine.diff_entries(old_child, new_child, recurse_depth ? recurse_depth - 1 : nil, get_content)
-              end.flatten(1)
+              }.flatten(1)
             end
 
           # If old is a directory and new is a file
@@ -255,7 +255,7 @@ class Chef
             json_object.map { |o| sort_keys(o) }
           elsif json_object.is_a?(Hash)
             new_hash = {}
-            json_object.keys.sort.each { |key| new_hash[key] = sort_keys(json_object[key]) }
+            json_object.keys.sort.each do |key| new_hash[key] = sort_keys(json_object[key]) end
             new_hash
           else
             json_object

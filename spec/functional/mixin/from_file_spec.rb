@@ -70,9 +70,9 @@ describe Chef::Mixin::FromFile do
 
     it "should fail on invalid data" do
       datum = TestData.new
-      expect do
+      expect {
         datum.from_file(INVALID_DATA)
-      end.to raise_error(NoMethodError)
+      }.to raise_error(NoMethodError)
     end
 
     it "should fail on nonexistant data" do

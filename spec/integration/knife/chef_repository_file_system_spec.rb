@@ -42,7 +42,7 @@ describe "General chef_repo file system checks", :workstation do
     end
 
     when_the_repository "has an empty data_bags directory" do
-      before { directory "data_bags" }
+      before do directory "data_bags" end
 
       it "knife list --local / returns it" do
         knife("list --local /").should_succeed "/data_bags\n"
@@ -50,7 +50,7 @@ describe "General chef_repo file system checks", :workstation do
     end
 
     when_the_repository "has an empty cookbook directory" do
-      before { directory "cookbooks/cookbook1" }
+      before do directory "cookbooks/cookbook1" end
 
       it "knife list --local -Rfp / does not return it" do
         knife("list --local -Rfp /").should_succeed(<<~EOM, stderr: "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
@@ -60,7 +60,7 @@ describe "General chef_repo file system checks", :workstation do
     end
 
     when_the_repository "has only empty cookbook subdirectories" do
-      before { directory "cookbooks/cookbook1/recipes" }
+      before do directory "cookbooks/cookbook1/recipes" end
 
       it "knife list --local -Rfp / does not return it" do
         knife("list --local -Rfp /").should_succeed(<<~EOM, stderr: "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
@@ -87,7 +87,7 @@ describe "General chef_repo file system checks", :workstation do
     end
 
     when_the_repository "has only empty cookbook sub-sub-directories" do
-      before { directory "cookbooks/cookbook1/templates/default" }
+      before do directory "cookbooks/cookbook1/templates/default" end
 
       it "knife list --local -Rfp / does not return it" do
         knife("list --local -Rfp /").should_succeed(<<~EOM, stderr: "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
@@ -159,7 +159,7 @@ describe "General chef_repo file system checks", :workstation do
     end
 
     when_the_repository "has a file in cookbooks/" do
-      before { file "cookbooks/file", "" }
+      before do file "cookbooks/file", "" end
       it "does not show up in list -Rfp" do
         knife("list --local -Rfp /").should_succeed <<~EOM
           /cookbooks/
@@ -168,7 +168,7 @@ describe "General chef_repo file system checks", :workstation do
     end
 
     when_the_repository "has a file in data_bags/" do
-      before { file "data_bags/file", "" }
+      before do file "data_bags/file", "" end
       it "does not show up in list -Rfp" do
         knife("list --local -Rfp /").should_succeed <<~EOM
           /data_bags/

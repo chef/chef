@@ -29,7 +29,7 @@ describe Chef::Resource::Execute do
 
   describe "when guard is ruby block" do
     it "guard can still run" do
-      resource.only_if { true }
+      resource.only_if do true end
       resource.run_action(:run)
       expect(resource).to be_updated_by_last_action
     end

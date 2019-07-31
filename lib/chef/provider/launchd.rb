@@ -164,7 +164,7 @@ class Chef
           :create, :create_if_missing, :delete, :enable, :disable
         ) do |a|
           type = new_resource.type
-          a.assertion { %w{daemon agent}.include?(type.to_s) }
+          a.assertion do %w{daemon agent}.include?(type.to_s) end
           error_msg = "type must be daemon or agent."
           a.failure_message Chef::Exceptions::ValidationFailed, error_msg
         end

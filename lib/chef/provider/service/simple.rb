@@ -43,7 +43,7 @@ class Chef
         def shared_resource_requirements
           super
           requirements.assert(:all_actions) do |a|
-            a.assertion { @status_load_success }
+            a.assertion do @status_load_success end
             a.whyrun ["Service status not available. Assuming a prior action would have installed the service.", "Assuming status of not running."]
           end
         end
@@ -52,21 +52,21 @@ class Chef
           # FIXME? need reload from service.rb
           shared_resource_requirements
           requirements.assert(:start) do |a|
-            a.assertion { @new_resource.start_command }
+            a.assertion do @new_resource.start_command end
             a.failure_message Chef::Exceptions::Service, "#{self} requires that start_command be set"
           end
           requirements.assert(:stop) do |a|
-            a.assertion { @new_resource.stop_command }
+            a.assertion do @new_resource.stop_command end
             a.failure_message Chef::Exceptions::Service, "#{self} requires that stop_command be set"
           end
 
           requirements.assert(:restart) do |a|
-            a.assertion { @new_resource.restart_command || ( @new_resource.start_command && @new_resource.stop_command ) }
+            a.assertion do @new_resource.restart_command || ( @new_resource.start_command && @new_resource.stop_command ) end
             a.failure_message Chef::Exceptions::Service, "#{self} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
           end
 
           requirements.assert(:reload) do |a|
-            a.assertion { @new_resource.reload_command }
+            a.assertion do @new_resource.reload_command end
             a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} requires a reload_command be set in order to perform a reload"
           end
 
@@ -78,7 +78,7 @@ class Chef
             a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this node's 'command.ps' attribute"
           end
           requirements.assert(:all_actions) do |a|
-            a.assertion { !@ps_command_failed }
+            a.assertion do !@ps_command_failed end
             a.failure_message Chef::Exceptions::Service, "Command #{ps_cmd} failed to execute, cannot determine service current status"
           end
         end

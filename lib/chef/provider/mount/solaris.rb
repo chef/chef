@@ -53,21 +53,21 @@ class Chef
 
         def define_resource_requirements
           requirements.assert(:mount, :remount) do |a|
-            a.assertion { !device_should_exist? || ::File.exist?(device) }
+            a.assertion do !device_should_exist? || ::File.exist?(device) end
             a.failure_message(Chef::Exceptions::Mount, "Device #{device} does not exist")
             a.whyrun("Assuming device #{device} would have been created")
           end
 
           unless fsck_device == "-"
             requirements.assert(:mount, :remount) do |a|
-              a.assertion { ::File.exist?(fsck_device) }
+              a.assertion do ::File.exist?(fsck_device) end
               a.failure_message(Chef::Exceptions::Mount, "Device #{fsck_device} does not exist")
               a.whyrun("Assuming device #{fsck_device} would have been created")
             end
           end
 
           requirements.assert(:mount, :remount) do |a|
-            a.assertion { ::File.exist?(mount_point) }
+            a.assertion do ::File.exist?(mount_point) end
             a.failure_message(Chef::Exceptions::Mount, "Mount point #{mount_point} does not exist")
             a.whyrun("Assuming mount point #{mount_point} would have been created")
           end

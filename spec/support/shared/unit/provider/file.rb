@@ -415,7 +415,7 @@ shared_examples_for Chef::Provider::File do
 
   context "define_resource_requirements" do
     context "when the enclosing directory does not exist" do
-      before { setup_missing_enclosing_directory }
+      before do setup_missing_enclosing_directory end
 
       %i{create create_if_missing touch}.each do |action|
         context "action #{action}" do
@@ -433,7 +433,7 @@ shared_examples_for Chef::Provider::File do
     end
 
     context "when the file exists but is not deletable" do
-      before { setup_unwritable_file }
+      before do setup_unwritable_file end
 
       it "action delete raises InsufficientPermissions" do
         expect { provider.run_action(:delete) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
@@ -458,7 +458,7 @@ shared_examples_for Chef::Provider::File do
     end
 
     context "do_validate_content" do
-      before { setup_normal_file }
+      before do setup_normal_file end
 
       let(:tempfile) do
         t = double("Tempfile", path: "/tmp/foo-bar-baz", closed?: true)
@@ -492,7 +492,7 @@ shared_examples_for Chef::Provider::File do
 
     context "do_create_file" do
       context "when the file exists" do
-        before { setup_normal_file }
+        before do setup_normal_file end
         it "should not create the file" do
           provider.load_current_resource
           expect(provider.deployment_strategy).not_to receive(:create).with(resource_path)
@@ -501,7 +501,7 @@ shared_examples_for Chef::Provider::File do
         end
       end
       context "when the file does not exist" do
-        before { setup_missing_file }
+        before do setup_missing_file end
         it "should create the file" do
           provider.load_current_resource
           expect(provider.deployment_strategy).to receive(:create).with(resource_path)
@@ -540,7 +540,7 @@ shared_examples_for Chef::Provider::File do
             expect(provider.deployment_strategy).to receive(:deploy).with(tempfile_path, normalized_path)
           end
           context "when the file was created" do
-            before { expect(provider).to receive(:needs_creating?).at_least(:once).and_return(true) }
+            before do expect(provider).to receive(:needs_creating?).at_least(:once).and_return(true) end
             it "does not backup the file" do
               expect(provider).not_to receive(:do_backup)
               provider.send(:do_contents_changes)
@@ -693,8 +693,8 @@ shared_examples_for Chef::Provider::File do
     end
 
     context "in why run mode" do
-      before { Chef::Config[:why_run] = true }
-      after { Chef::Config[:why_run] = false }
+      before do Chef::Config[:why_run] = true end
+      after do Chef::Config[:why_run] = false end
 
       it "does not modify new_resource" do
         setup_missing_file
@@ -708,7 +708,7 @@ shared_examples_for Chef::Provider::File do
     context "when the file exists" do
       context "when the file is writable" do
         context "when the file is not a symlink" do
-          before { setup_normal_file }
+          before do setup_normal_file end
           it "should backup and delete the file and be updated by the last action" do
             expect(provider).to receive(:do_backup).at_least(:once).and_return(true)
             expect(File).to receive(:delete).with(resource_path).and_return(true)
@@ -717,7 +717,7 @@ shared_examples_for Chef::Provider::File do
           end
         end
         context "when the file is a symlink" do
-          before { setup_symlink }
+          before do setup_symlink end
           it "should not backup the symlink" do
             expect(provider).not_to receive(:do_backup)
             expect(File).to receive(:delete).with(resource_path).and_return(true)
@@ -727,7 +727,7 @@ shared_examples_for Chef::Provider::File do
         end
       end
       context "when the file is not writable" do
-        before { setup_unwritable_file }
+        before do setup_unwritable_file end
         it "should not try to backup or delete the file, and should not be updated by last action" do
           expect(provider).not_to receive(:do_backup)
           expect(File).not_to receive(:delete)
@@ -738,7 +738,7 @@ shared_examples_for Chef::Provider::File do
     end
 
     context "when the file does not exist" do
-      before { setup_missing_file }
+      before do setup_missing_file end
 
       it "should not try to backup or delete the file, and should not be updated by last action" do
         expect(provider).not_to receive(:do_backup)
@@ -751,7 +751,7 @@ shared_examples_for Chef::Provider::File do
 
   context "action touch" do
     context "when the file does not exist" do
-      before { setup_missing_file }
+      before do setup_missing_file end
       it "should update the atime/mtime on action_touch" do
         expect(File).to receive(:utime).once
         expect(provider).to receive(:action_create)
@@ -760,7 +760,7 @@ shared_examples_for Chef::Provider::File do
       end
     end
     context "when the file exists" do
-      before { setup_normal_file }
+      before do setup_normal_file end
       it "should update the atime/mtime on action_touch" do
         expect(File).to receive(:utime).once
         expect(provider).to receive(:action_create)
@@ -772,7 +772,7 @@ shared_examples_for Chef::Provider::File do
 
   context "action create_if_missing" do
     context "when the file does not exist" do
-      before { setup_missing_file }
+      before do setup_missing_file end
       it "should call action_create" do
         expect(provider).to receive(:action_create)
         provider.run_action(:create_if_missing)
@@ -780,7 +780,7 @@ shared_examples_for Chef::Provider::File do
     end
 
     context "when the file exists" do
-      before { setup_normal_file }
+      before do setup_normal_file end
       it "should not call action_create" do
         expect(provider).not_to receive(:action_create)
         provider.run_action(:create_if_missing)

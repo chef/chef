@@ -57,7 +57,7 @@ class Chef
         end
 
         def enable_service
-          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f) }
+          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each do |f| ::File.delete(f) end
 
           if @new_resource.priority.is_a? Integer
             create_symlink(2, "S", @new_resource.priority)
@@ -72,7 +72,7 @@ class Chef
         end
 
         def disable_service
-          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f) }
+          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each do |f| ::File.delete(f) end
 
           if @new_resource.priority.is_a? Integer
             create_symlink(2, "K", 100 - @new_resource.priority)

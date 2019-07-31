@@ -45,7 +45,7 @@ describe "knife config get", :workstation do
     old_wd = Dir.pwd
     ChefConfig::PathHelper.per_tool_home_environment = "KNIFE_HOME"
     # Clear these out because they are cached permanently.
-    ChefConfig::PathHelper.class_exec { remove_class_variable(:@@home_dir) }
+    ChefConfig::PathHelper.class_exec do remove_class_variable(:@@home_dir) end
     Chef::Knife::ConfigGet.reset_config_loader!
     begin
       ex.run
@@ -69,14 +69,14 @@ describe "knife config get", :workstation do
   end
 
   context "with a global knife.rb" do
-    before { file(".chef/knife.rb", "node_name 'one'\n") }
+    before do file(".chef/knife.rb", "node_name 'one'\n") end
 
     it { is_expected.to match(%r{^Loading from configuration file .*/#{File.basename(path_to("."))}/.chef/knife.rb$}) }
     it { is_expected.to match(/^node_name:\s+one$/) }
   end
 
   context "with a repo knife.rb" do
-    before { file("repo/.chef/knife.rb", "node_name 'two'\n") }
+    before do file("repo/.chef/knife.rb", "node_name 'two'\n") end
 
     it { is_expected.to match(%r{^Loading from configuration file .*/#{File.basename(path_to("."))}/repo/.chef/knife.rb$}) }
     it { is_expected.to match(/^node_name:\s+two$/) }
@@ -93,7 +93,7 @@ describe "knife config get", :workstation do
   end
 
   context "with a credentials file" do
-    before { file(".chef/credentials", "[default]\nclient_name = \"three\"\n") }
+    before do file(".chef/credentials", "[default]\nclient_name = \"three\"\n") end
 
     it { is_expected.to match(%r{^Loading from credentials file .*/#{File.basename(path_to("."))}/.chef/credentials$}) }
     it { is_expected.to match(/^node_name:\s+three$/) }
@@ -134,49 +134,49 @@ describe "knife config get", :workstation do
 
   context "with single argument" do
     let(:cmd_args) { %w{node_name} }
-    before { file(".chef/credentials", "[default]\nclient_name = \"three\"\n") }
+    before do file(".chef/credentials", "[default]\nclient_name = \"three\"\n") end
 
     it { is_expected.to match(/^node_name:\s+three\Z/) }
   end
 
   context "with two arguments" do
     let(:cmd_args) { %w{node_name client_key} }
-    before { file(".chef/credentials", "[default]\nclient_name = \"three\"\nclient_key = \"three.pem\"") }
+    before do file(".chef/credentials", "[default]\nclient_name = \"three\"\nclient_key = \"three.pem\"") end
 
     it { is_expected.to match(%r{^client_key:\s+\S*/.chef/three.pem\nnode_name:\s+three\Z}) }
   end
 
   context "with a dotted argument" do
     let(:cmd_args) { %w{knife.ssh_user} }
-    before { file(".chef/credentials", "[default]\nclient_name = \"three\"\n[default.knife]\nssh_user = \"foo\"\n") }
+    before do file(".chef/credentials", "[default]\nclient_name = \"three\"\n[default.knife]\nssh_user = \"foo\"\n") end
 
     it { is_expected.to match(/^knife.ssh_user:\s+foo\Z/) }
   end
 
   context "with regex argument" do
     let(:cmd_args) { %w{/name/} }
-    before { file(".chef/credentials", "[default]\nclient_name = \"three\"\n") }
+    before do file(".chef/credentials", "[default]\nclient_name = \"three\"\n") end
 
     it { is_expected.to match(/^node_name:\s+three\Z/) }
   end
 
   context "with --all" do
     let(:cmd_args) { %w{-a /key_contents/} }
-    before { file(".chef/credentials", "[default]\nclient_name = \"three\"\n") }
+    before do file(".chef/credentials", "[default]\nclient_name = \"three\"\n") end
 
     it { is_expected.to match(/^client_key_contents:\s+\nvalidation_key_contents:\s+\Z/) }
   end
 
   context "with --raw" do
     let(:cmd_args) { %w{-r node_name} }
-    before { file(".chef/credentials", "[default]\nclient_name = \"three\"\n") }
+    before do file(".chef/credentials", "[default]\nclient_name = \"three\"\n") end
 
     it { is_expected.to eq("three\n") }
   end
 
   context "with --format=json" do
     let(:cmd_args) { %w{--format=json node_name} }
-    before { file(".chef/credentials", "[default]\nclient_name = \"three\"\n") }
+    before do file(".chef/credentials", "[default]\nclient_name = \"three\"\n") end
 
     it { expect(JSON.parse(subject)).to eq({ "node_name" => "three" }) }
   end

@@ -255,7 +255,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
         tempfile.path
       end
 
-      after { File.unlink(explicit_config_location) if File.exist?(explicit_config_location) }
+      after do File.unlink(explicit_config_location) if File.exist?(explicit_config_location) end
 
       context "and is valid" do
 

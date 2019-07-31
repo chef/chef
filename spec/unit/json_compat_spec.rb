@@ -20,7 +20,7 @@ require File.expand_path("../../spec_helper", __FILE__)
 require "chef/json_compat"
 
 describe Chef::JSONCompat do
-  before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
+  before do Chef::Config[:treat_deprecation_warnings_as_errors] = false end
 
   describe "#parse with JSON containing comments" do
     let(:json) { %Q{{\n/* comment */\n// comment 2\n"json_class": "Chef::Role"}} }
@@ -57,9 +57,9 @@ describe Chef::JSONCompat do
       end
 
       it "should has 'test' as a 252 nested value" do
-        v = 252.times.inject(hash) do |memo, _|
+        v = 252.times.inject(hash) { |memo, _|
           memo["key"]
-        end
+        }
         expect(v).to eq("test")
       end
     end

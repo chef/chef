@@ -51,11 +51,11 @@ class Chef
         end
 
         def source_resource
-          @source_resource ||= declare_resource(:remote_file, new_resource.name) do
+          @source_resource ||= declare_resource(:remote_file, new_resource.name) {
             path default_download_cache_path
             source new_resource.source
             backup false
-          end
+          }
         end
 
         def default_download_cache_path
@@ -90,12 +90,12 @@ class Chef
           package = new_cab_identity
           # Search for just the package name to catch a different version being installed
           logger.trace("#{new_resource} searching for installed package #{package["name"]}")
-          existing_package_identities = installed_packages.map do |p|
+          existing_package_identities = installed_packages.map { |p|
             split_package_identity(p["package_identity"])
-          end
-          found_packages = existing_package_identities.select do |existing_package_ident|
+          }
+          found_packages = existing_package_identities.select { |existing_package_ident|
             existing_package_ident["name"] == package["name"]
-          end
+          }
           if found_packages.empty?
             nil
           elsif found_packages.length == 1

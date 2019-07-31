@@ -55,7 +55,7 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:modify) do |a|
-          a.assertion { @group_exists }
+          a.assertion do @group_exists end
           a.failure_message(Chef::Exceptions::Group, "Cannot modify #{new_resource} - group does not exist!")
           a.whyrun("Group #{new_resource} does not exist. Unless it would have been created earlier in this run, this attempt to modify it would fail.")
         end
@@ -65,7 +65,7 @@ class Chef
           # user names in the members and exclude_members properties.
           if !new_resource.members.nil? && !new_resource.excluded_members.nil?
             common_members = new_resource.members & new_resource.excluded_members
-            a.assertion { common_members.empty? }
+            a.assertion do common_members.empty? end
             a.failure_message(Chef::Exceptions::ConflictingMembersInGroup, "Attempting to both add and remove users from a group: '#{common_members.join(", ")}'")
             # No why-run alternative
           end

@@ -21,7 +21,7 @@ class Chef
   class Resource
     class OhaiHint < Chef::Resource
       resource_name :ohai_hint
-      provides(:ohai_hint) { true }
+      provides(:ohai_hint) do true end
 
       description "Use the ohai_hint resource to aid in configuration detection by passing hint data to Ohai."
       introduced "14.0"

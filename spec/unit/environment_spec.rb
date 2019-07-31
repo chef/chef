@@ -296,9 +296,9 @@ describe Chef::Environment do
       end
 
       it "should raise an exception" do
-        expect do
+        expect {
           Chef::Environment.validate_cookbook_version("= 1.2.3.4")
-        end.to raise_error Chef::Exceptions::IllegalVersionConstraint,
+        }.to raise_error Chef::Exceptions::IllegalVersionConstraint,
           /Environment cookbook version constraints not allowed in .*/
       end
     end
@@ -452,9 +452,9 @@ describe Chef::Environment do
       it "should raise an error if the configured environment_path is invalid" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(false)
 
-        expect do
+        expect {
           Chef::Environment.load("foo")
-        end.to raise_error Chef::Exceptions::InvalidEnvironmentPath, "Environment path '/var/chef/environments' is invalid"
+        }.to raise_error Chef::Exceptions::InvalidEnvironmentPath, "Environment path '/var/chef/environments' is invalid"
       end
 
       it "should raise an error if the file does not exist" do
@@ -462,9 +462,9 @@ describe Chef::Environment do
         expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(false)
         expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(false)
 
-        expect do
+        expect {
           Chef::Environment.load("foo")
-        end.to raise_error Chef::Exceptions::EnvironmentNotFound, "Environment 'foo' could not be loaded from disk"
+        }.to raise_error Chef::Exceptions::EnvironmentNotFound, "Environment 'foo' could not be loaded from disk"
       end
     end
   end

@@ -83,7 +83,7 @@ namespace :docs_site do
     # which needs to be "true" and "false"
     # @return String
     def friendly_types_list(arr)
-      fixed_arr = Array(arr).map do |x|
+      fixed_arr = Array(arr).map { |x|
         case x
         when "TrueClass"
           "true"
@@ -92,7 +92,7 @@ namespace :docs_site do
         else
           x
         end
-      end
+      }
       fixed_arr.compact.join(", ")
     end
 

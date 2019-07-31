@@ -33,7 +33,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   end
 
   context "installing a package" do
-    after { remove_package }
+    after do remove_package end
 
     it "installs the latest version" do
       subject.run_action(:install)
@@ -78,7 +78,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   end
 
   context "upgrading a package" do
-    after { remove_package }
+    after do remove_package end
 
     it "upgrades to a specific version" do
       subject.version "1.0"

@@ -24,7 +24,7 @@ class Chef
       include Chef::Mixin::OpenSSLHelper
 
       resource_name :openssl_rsa_public_key
-      provides(:openssl_rsa_public_key) { true }
+      provides(:openssl_rsa_public_key) do true end
 
       description "Use the openssl_rsa_public_key resource to generate RSA public key files for a given RSA private key."
       introduced "14.0"

@@ -77,10 +77,10 @@ describe Chef::CookbookUploader do
     end
 
     let(:sandbox_response) do
-      sandbox_checksums = cksums_not_on_remote.inject({}) do |cksum_map, cksum|
+      sandbox_checksums = cksums_not_on_remote.inject({}) { |cksum_map, cksum|
         cksum_map[cksum] = { "needs_upload" => true, "url" => url_for(cksum) }
         cksum_map
-      end
+      }
       { "checksums" => sandbox_checksums, "uri" => sandbox_commit_uri }
     end
 

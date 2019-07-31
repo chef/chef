@@ -47,27 +47,27 @@ describe Chef::Recipe do
   describe "method_missing" do
     describe "resources" do
       it "should load a two word (zen_master) resource" do
-        expect do
+        expect {
           recipe.zen_master "monkey" do
             peace true
           end
-        end.not_to raise_error
+        }.not_to raise_error
       end
 
       it "should load a one word (cat) resource" do
-        expect do
+        expect {
           recipe.cat "loulou" do
             pretty_kitty true
           end
-        end.not_to raise_error
+        }.not_to raise_error
       end
 
       it "should load a four word (one_two_three_four) resource" do
-        expect do
+        expect {
           recipe.one_two_three_four "numbers" do
             i_can_count true
           end
-        end.not_to raise_error
+        }.not_to raise_error
       end
 
       it "should throw an error if you access a resource that we can't find" do
@@ -75,9 +75,9 @@ describe Chef::Recipe do
       end
 
       it "should allow regular errors (not NameErrors) to pass unchanged" do
-        expect do
+        expect {
           recipe.cat("felix") { raise ArgumentError, "You Suck" }
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
 
       it "should add our zen_master to the collection" do
@@ -299,18 +299,18 @@ describe Chef::Recipe do
     describe "when attempting to create a resource of an invalid type" do
 
       it "gives a sane error message when using method_missing" do
-        expect do
+        expect {
           recipe.no_such_resource("foo")
-        end.to raise_error(NoMethodError, /undefined method `no_such_resource' for cookbook: hjk, recipe: test :Chef::Recipe/)
+        }.to raise_error(NoMethodError, /undefined method `no_such_resource' for cookbook: hjk, recipe: test :Chef::Recipe/)
       end
 
       it "gives a sane error message when using method_missing 'bare'" do
-        expect do
+        expect {
           recipe.instance_eval do
             # Giving an argument will change this from NameError to NoMethodError
             no_such_resource
           end
-        end.to raise_error(NameError, /undefined local variable or method `no_such_resource' for cookbook: hjk, recipe: test :Chef::Recipe/)
+        }.to raise_error(NameError, /undefined local variable or method `no_such_resource' for cookbook: hjk, recipe: test :Chef::Recipe/)
       end
 
       it "gives a sane error message when using build_resource" do
@@ -326,11 +326,11 @@ describe Chef::Recipe do
     describe "when creating a resource that contains an error in the attributes block" do
 
       it "does not obfuscate the error source" do
-        expect do
+        expect {
           recipe.zen_master("klopp") do
             this_method_doesnt_exist
           end
-        end.to raise_error(NoMethodError, "undefined method `this_method_doesnt_exist' for Chef::Resource::ZenMaster")
+        }.to raise_error(NoMethodError, "undefined method `this_method_doesnt_exist' for Chef::Resource::ZenMaster")
 
       end
 

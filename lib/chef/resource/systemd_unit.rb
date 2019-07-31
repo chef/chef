@@ -23,7 +23,7 @@ require "iniparse"
 class Chef
   class Resource
     class SystemdUnit < Chef::Resource
-      resource_name(:systemd_unit) { true }
+      resource_name(:systemd_unit) do true end
 
       description "Use the systemd_unit resource to create, manage, and run systemd units."
       introduced "12.11"
@@ -67,7 +67,7 @@ class Chef
       def to_ini
         case content
         when Hash
-          IniParse.gen do |doc|
+          IniParse.gen { |doc|
             content.each_pair do |sect, opts|
               doc.section(sect) do |section|
                 opts.each_pair do |opt, val|
@@ -77,7 +77,7 @@ class Chef
                 end
               end
             end
-          end.to_s
+          }.to_s
         else
           content.to_s
         end

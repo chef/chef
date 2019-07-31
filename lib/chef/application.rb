@@ -323,7 +323,7 @@ class Chef
 
     def fork_chef_client
       logger.info "Forking #{Chef::Dist::PRODUCT} instance to converge..."
-      pid = fork do
+      pid = fork {
         # Want to allow forked processes to finish converging when
         # TERM singal is received (exit gracefully)
         trap("TERM") do
@@ -342,7 +342,7 @@ class Chef
         else
           exit 0
         end
-      end
+      }
       logger.trace "Fork successful. Waiting for new chef pid: #{pid}"
       result = Process.waitpid2(pid)
       handle_child_exit(result)
@@ -367,7 +367,7 @@ class Chef
     rescue Exception => error
       logger.fatal("Configuration error #{error.class}: #{error.message}")
       filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
-      filtered_trace.each { |line| logger.fatal("  " + line ) }
+      filtered_trace.each do |line| logger.fatal("  " + line ) end
       Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", error)
     end
 

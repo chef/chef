@@ -487,9 +487,9 @@ class Chef
       end
 
       def inspect
-        "#<#{self.class} " << (COMPONENTS + %i{@merged_attributes @properties}).map do |iv|
+        "#<#{self.class} " << (COMPONENTS + %i{@merged_attributes @properties}).map { |iv|
           "#{iv}=#{instance_variable_get(iv).inspect}"
-        end.join(", ") << ">"
+        }.join(", ") << ">"
       end
 
       private
@@ -546,9 +546,9 @@ class Chef
           apply_path(@automatic, path),
         ]
 
-        ret = components.inject(NIL) do |merged, component|
+        ret = components.inject(NIL) { |merged, component|
           hash_only_merge!(merged, component)
-        end
+        }
         ret == NIL ? nil : ret
       end
 
@@ -559,10 +559,10 @@ class Chef
       # @param path [Array] Array of args to method chain to descend into the node object
       # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
       def merge_defaults(path)
-        ret = DEFAULT_COMPONENTS.inject(NIL) do |merged, component_ivar|
+        ret = DEFAULT_COMPONENTS.inject(NIL) { |merged, component_ivar|
           component_value = apply_path(instance_variable_get(component_ivar), path)
           deep_merge!(merged, component_value)
-        end
+        }
         ret
       end
 
@@ -573,10 +573,10 @@ class Chef
       # @param path [Array] Array of args to method chain to descend into the node object
       # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
       def merge_overrides(path)
-        ret = OVERRIDE_COMPONENTS.inject(NIL) do |merged, component_ivar|
+        ret = OVERRIDE_COMPONENTS.inject(NIL) { |merged, component_ivar|
           component_value = apply_path(instance_variable_get(component_ivar), path)
           deep_merge!(merged, component_value)
-        end
+        }
         ret
       end
 

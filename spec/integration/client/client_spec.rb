@@ -48,7 +48,7 @@ describe "chef-client" do
   let(:chef_solo) { "bundle exec #{Chef::Dist::SOLOEXEC} --legacy-mode --minimal-ohai" }
 
   when_the_repository "has a cookbook with a no-op recipe" do
-    before { file "cookbooks/x/recipes/default.rb", "" }
+    before do file "cookbooks/x/recipes/default.rb", "" end
 
     it "should complete with success" do
       file "config/client.rb", <<~EOM
@@ -93,7 +93,7 @@ describe "chef-client" do
     end
 
     context "and a config file under .chef/knife.rb" do
-      before { file ".chef/knife.rb", "xxx.xxx" }
+      before do file ".chef/knife.rb", "xxx.xxx" end
 
       it "should load .chef/knife.rb when -z is specified" do
         result = shell_out("#{chef_client} -z -o 'x::default'", cwd: path_to(""))

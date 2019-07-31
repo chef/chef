@@ -40,7 +40,7 @@ class Chef
       def run
         if config[:with_uri]
           cookbooks = {}
-          get_cookbook_list.each { |k, v| cookbooks[k] = v["cookbook"] }
+          get_cookbook_list.each do |k, v| cookbooks[k] = v["cookbook"] end
           ui.output(format_for_display(cookbooks))
         else
           ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))

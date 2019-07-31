@@ -56,9 +56,9 @@ class Chef
         def versions
           @versions ||=
             begin
-              raw_versions = package_name_array.map do |package_name|
+              raw_versions = package_name_array.map { |package_name|
                 get_versions(package_name)
-              end
+              }
               Hash[*package_name_array.zip(raw_versions).flatten]
             end
         end

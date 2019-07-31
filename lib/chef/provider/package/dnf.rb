@@ -73,7 +73,7 @@ class Chef
 
         def define_resource_requirements
           requirements.assert(:install, :upgrade, :remove, :purge) do |a|
-            a.assertion { !new_resource.source || ::File.exist?(new_resource.source) }
+            a.assertion do !new_resource.source || ::File.exist?(new_resource.source) end
             a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
             a.whyrun "assuming #{new_resource.source} would have previously been created"
           end

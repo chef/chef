@@ -58,7 +58,7 @@ class Chef
       # subclasses should override this if they do implement user services
       def user_services_requirements
         requirements.assert(:all_actions) do |a|
-          a.assertion { new_resource.user.nil? }
+          a.assertion do new_resource.user.nil? end
           a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} does not support user services"
         end
       end
@@ -69,7 +69,7 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:reload) do |a|
-          a.assertion { supports[:reload] || new_resource.reload_command }
+          a.assertion do supports[:reload] || new_resource.reload_command end
           a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} does not support :reload"
           # if a service is not declared to support reload, that won't
           # typically change during the course of a run - so no whyrun

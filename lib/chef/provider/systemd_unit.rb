@@ -51,7 +51,7 @@ class Chef
         super
 
         requirements.assert(:create) do |a|
-          a.assertion { IniParse.parse(new_resource.to_ini) }
+          a.assertion do IniParse.parse(new_resource.to_ini) end
           a.failure_message "Unit content is not valid INI text"
         end
       end

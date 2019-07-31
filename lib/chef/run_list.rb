@@ -77,7 +77,7 @@ class Chef
 
         other_run_list_items = other.dup
 
-        other_run_list_items.map! { |item| coerce_to_run_list_item(item) }
+        other_run_list_items.map! do |item| coerce_to_run_list_item(item) end
         other_run_list_items == @run_list_items
       end
     end
@@ -133,7 +133,7 @@ class Chef
     end
 
     def remove(item)
-      @run_list_items.delete_if { |i| i == item }
+      @run_list_items.delete_if do |i| i == item end
       self
     end
     alias :delete :remove

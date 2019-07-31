@@ -81,19 +81,19 @@ class Chef
           files = []
 
           if check_load_path
-            files = $LOAD_PATH.map do |load_path|
+            files = $LOAD_PATH.map { |load_path|
               Dir["#{File.expand_path glob, Chef::Util::PathHelper.escape_glob_dir(load_path)}#{Gem.suffix_pattern}"]
-            end.flatten.select { |file| File.file? file.untaint }
+            }.flatten.select { |file| File.file? file.untaint }
           end
 
-          gem_files = latest_gem_specs.map do |spec|
+          gem_files = latest_gem_specs.map { |spec|
             # Gem::Specification#matches_for_glob wasn't added until RubyGems 1.8
             if spec.respond_to? :matches_for_glob
               spec.matches_for_glob("#{glob}#{Gem.suffix_pattern}")
             else
               check_spec_for_glob(spec, glob)
             end
-          end.flatten
+          }.flatten
 
           files.concat gem_files
           files.uniq! if check_load_path

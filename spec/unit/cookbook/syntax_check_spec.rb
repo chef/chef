@@ -208,7 +208,7 @@ describe Chef::Cookbook::SyntaxCheck do
 
     describe "and the files have been syntax checked previously" do
       before do
-        syntax_check.untested_ruby_files.each { |f| syntax_check.validated(f) }
+        syntax_check.untested_ruby_files.each do |f| syntax_check.validated(f) end
         syntax_check.untested_template_files.each { |f| syntax_check.validated(f) }
       end
 

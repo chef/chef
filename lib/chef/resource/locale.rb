@@ -81,13 +81,13 @@ class Chef
         #
         def define_resource_requirements
           requirements.assert(:all_actions) do |a|
-            a.assertion { LOCALE_PLATFORM_FAMILIES.include?(node[:platform_family]) }
+            a.assertion do LOCALE_PLATFORM_FAMILIES.include?(node[:platform_family]) end
             a.failure_message(Chef::Exceptions::ProviderNotFound, "The locale resource is not supported on platform family: #{node[:platform_family]}")
           end
 
           requirements.assert(:all_actions) do |a|
             # RHEL/CentOS type platforms don't have locale-gen
-            a.assertion { shell_out("locale-gen") }
+            a.assertion do shell_out("locale-gen") end
             a.failure_message(Chef::Exceptions::ProviderNotFound, "The locale resource requires the locale-gen tool")
           end
         end

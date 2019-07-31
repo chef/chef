@@ -82,7 +82,7 @@ class Chef
       end
 
       def to_a
-        Array.new(map do |v|
+        Array.new(map { |v|
           case v
           when ImmutableArray
             v.to_a
@@ -91,7 +91,7 @@ class Chef
           else
             safe_dup(v)
           end
-        end)
+        })
       end
 
       alias_method :to_array, :to_a

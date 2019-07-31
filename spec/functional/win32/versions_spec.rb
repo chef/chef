@@ -59,7 +59,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
   context "Win32 version object" do
     it "should have have one method for each marketing version" do
       versions = 0
-      for_each_windows_version { versions += 1 }
+      for_each_windows_version do versions += 1 end
       expect(versions).to be > 0
       expect(versions).to eq(Chef::ReservedNames::Win32::Version::WIN_VERSIONS.length)
     end

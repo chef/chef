@@ -44,7 +44,7 @@ class Chef::Knife::Exec < Chef::Knife
 
     # Default script paths are chef-repo/.chef/scripts and ~/.chef/scripts
     config[:script_path] << File.join(Chef::Knife.chef_config_dir, "scripts") if Chef::Knife.chef_config_dir
-    Chef::Util::PathHelper.home(".chef", "scripts") { |p| config[:script_path] << p }
+    Chef::Util::PathHelper.home(".chef", "scripts") do |p| config[:script_path] << p end
 
     scripts = Array(name_args)
     context = Object.new

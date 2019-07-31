@@ -134,7 +134,7 @@ describe "knife diff", :workstation do
           end
 
           context "when cwd is the data_bags directory" do
-            before { cwd "data_bags" }
+            before do cwd "data_bags" end
             it "knife diff reports different data bags" do
               knife("diff --name-status").should_succeed <<~EOM
                 A\tx/z.json
@@ -240,13 +240,13 @@ describe "knife diff", :workstation do
         end
 
         when_the_chef_server "has an empty environment" do
-          before { environment "x", {} }
+          before do environment "x", {} end
           it "knife diff returns no differences" do
             knife("diff /environments/x.json").should_succeed ""
           end
         end
         when_the_chef_server "has an environment with a different value" do
-          before { environment "x", { "description" => "hi" } }
+          before do environment "x", { "description" => "hi" } end
           it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
@@ -305,9 +305,9 @@ describe "knife diff", :workstation do
     end
 
     when_the_chef_server "has an environment" do
-      before { environment "x", {} }
+      before do environment "x", {} end
       when_the_repository "has an environment with bad JSON" do
-        before { file "environments/x.json", "{" }
+        before do file "environments/x.json", "{" end
         it "knife diff reports an error and does a textual diff" do
           error_text = "WARN: Parse error reading #{path_to("environments/x.json")} as JSON: parse error: premature EOF"
           error_match = Regexp.new(Regexp.escape(error_text))
@@ -430,7 +430,7 @@ describe "knife diff", :workstation do
           end
 
           context "when cwd is the data_bags directory" do
-            before { cwd "data_bags" }
+            before do cwd "data_bags" end
             it "knife diff reports different data bags" do
               knife("diff --name-status").should_succeed <<~EOM
                 A\tx/z.json
@@ -524,15 +524,15 @@ describe "knife diff", :workstation do
 
     context "json diff tests" do
       when_the_repository "has an empty environment file" do
-        before { file "environments/x.json", {} }
+        before do file "environments/x.json", {} end
         when_the_chef_server "has an empty environment" do
-          before { environment "x", {} }
+          before do environment "x", {} end
           it "knife diff returns no differences" do
             knife("diff /environments/x.json").should_succeed ""
           end
         end
         when_the_chef_server "has an environment with a different value" do
-          before { environment "x", { "description" => "hi" } }
+          before do environment "x", { "description" => "hi" } end
           it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
@@ -559,7 +559,7 @@ describe "knife diff", :workstation do
           end
         end
         when_the_chef_server "has an environment with no value" do
-          before { environment "x", {} }
+          before do environment "x", {} end
           it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
@@ -588,9 +588,9 @@ describe "knife diff", :workstation do
     end
 
     when_the_chef_server "has an environment" do
-      before { environment "x", {} }
+      before do environment "x", {} end
       when_the_repository "has an environment with bad JSON" do
-        before { file "environments/x.json", "{" }
+        before do file "environments/x.json", "{" end
         it "knife diff reports an error and does a textual diff" do
           error_text = "WARN: Parse error reading #{path_to("environments/x.json")} as JSON: parse error: premature EOF"
           error_match = Regexp.new(Regexp.escape(error_text))

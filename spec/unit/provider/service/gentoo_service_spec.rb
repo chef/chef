@@ -124,7 +124,7 @@ describe Chef::Provider::Service::Gentoo do
   end
 
   describe "action_methods" do
-    before(:each) { allow(@provider).to receive(:load_current_resource).and_return(@current_resource) }
+    before(:each) do allow(@provider).to receive(:load_current_resource).and_return(@current_resource) end
 
     describe Chef::Provider::Service::Gentoo, "enable_service" do
       it "should call rc-update add *service* default" do

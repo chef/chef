@@ -30,8 +30,8 @@ class Chef
           status = shell_out(shellcmd)
           stdout_result = ""
           stderr_result = ""
-          status.stdout.each_line { |line| stdout_result << line }
-          status.stderr.each_line { |line| stderr_result << line }
+          status.stdout.each_line do |line| stdout_result << line end
+          status.stderr.each_line do |line| stderr_result << line end
           [shellcmd.flatten.compact.join(" "), status, stdout_result, stderr_result]
         end
 
@@ -142,7 +142,7 @@ class Chef
         def define_resource_requirements
           super
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exist?("/usr/bin/dscl") }
+            a.assertion do ::File.exist?("/usr/bin/dscl") end
             a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/bin/dscl for #{new_resource.name}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end

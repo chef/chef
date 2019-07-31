@@ -25,9 +25,9 @@ describe "Recipe DSL methods" do
       end
 
       it "provider_thingy 'blah' runs the provider and warns" do
-        recipe = converge do
+        recipe = converge {
           provider_thingy("blah") {}
-        end
+        }
         expect(recipe.logged_warnings).to match /hello from Chef::Provider::ProviderThingy/
         expect(recipe.logged_warnings).to match /you must use 'provides' to provide DSL/i
       end

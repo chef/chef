@@ -474,13 +474,13 @@ class Chef
 
         new_window_cmds = lambda do
           if session.servers_for.size > 1
-            [""] + session.servers_for[1..-1].map do |server|
+            [""] + session.servers_for[1..-1].map { |server|
               if config[:tmux_split]
                 "split-window #{ssh_dest.call(server)}; tmux select-layout tiled"
               else
                 "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
               end
-            end
+            }
           else
             []
           end.join(" \\; ")

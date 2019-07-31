@@ -156,7 +156,7 @@ describe "knife show", :workstation do
   end
 
   when_the_repository "has an environment with bad JSON" do
-    before { file "environments/x.json", "{" }
+    before do file "environments/x.json", "{" end
     it "knife show succeeds" do
       knife("show --local /environments/x.json").should_succeed <<~EOM
         /environments/x.json:

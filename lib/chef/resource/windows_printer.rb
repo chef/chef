@@ -25,7 +25,7 @@ class Chef
       require "resolv"
 
       resource_name :windows_printer
-      provides(:windows_printer) { true }
+      provides(:windows_printer) do true end
 
       description "Use the windows_printer resource to setup Windows printers. Note that this doesn't currently install a printer driver. You must already have the driver installed on the system."
       introduced "14.0"

@@ -26,7 +26,7 @@ describe Chef::Util::ThreadedJobQueue do
     expect(job).to receive(:arity).at_least(:once).and_return(1)
     expect(job).to receive(:call).exactly(5).times.with(an_instance_of(Mutex))
 
-    5.times { queue << job }
+    5.times do queue << job end
     queue.process
   end
 
@@ -35,7 +35,7 @@ describe Chef::Util::ThreadedJobQueue do
     expect(job).to receive(:arity).at_least(:once).and_return(0)
     expect(job).to receive(:call).exactly(5).times.with(no_args)
 
-    5.times { queue << job }
+    5.times do queue << job end
     queue.process
   end
 

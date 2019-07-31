@@ -52,9 +52,9 @@ class Chef
         private
 
         def add_resource(new_r)
-          count = resources.count do |r|
+          count = resources.count { |r|
             r["ResourceType"].casecmp(new_r["ResourceType"]) == 0
-          end
+          }
           if count == 0
             resources << new_r
           end
@@ -71,14 +71,14 @@ class Chef
         end
 
         def find_resources(name, module_name, rs)
-          found = rs.find_all do |r|
+          found = rs.find_all { |r|
             name_matches = r["Name"].casecmp(name) == 0
             if name_matches
               module_name.nil? || (r["Module"] && r["Module"]["Name"].casecmp(module_name) == 0)
             else
               false
             end
-          end
+          }
         end
 
         # Returns a list of dsc resources

@@ -32,12 +32,12 @@ class Chef
           super
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @package_source_exists }
+            a.assertion do @package_source_exists end
             a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
             a.whyrun "Assuming package #{new_resource.package_name} would have been made available."
           end
           requirements.assert(:all_actions) do |a|
-            a.assertion { !@rpm_status.nil? && (@rpm_status.exitstatus == 0 || @rpm_status.exitstatus == 1) }
+            a.assertion do !@rpm_status.nil? && (@rpm_status.exitstatus == 0 || @rpm_status.exitstatus == 1) end
             a.failure_message Chef::Exceptions::Package, "Unable to determine current version due to RPM failure. Detail: #{@rpm_status.inspect}"
             a.whyrun "Assuming current version would have been determined for package #{new_resource.package_name}."
           end

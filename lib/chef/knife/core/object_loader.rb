@@ -80,7 +80,7 @@ class Chef
         def find_all_object_dirs(path)
           path = File.join(Chef::Util::PathHelper.escape_glob_dir(File.expand_path(path)), "*")
           objects = Dir.glob(path)
-          objects.delete_if { |o| !File.directory?(o) }
+          objects.delete_if do |o| !File.directory?(o) end
           objects.map { |o| File.basename(o) }
         end
 

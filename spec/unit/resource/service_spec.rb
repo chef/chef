@@ -61,9 +61,9 @@ describe Chef::Resource::Service do
   end
 
   it "does not accept a regexp for the service pattern" do
-    expect do
+    expect {
       resource.pattern /.*/
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "accepts a String for the user property" do
@@ -88,9 +88,9 @@ describe Chef::Resource::Service do
   end
 
   it "does not accept a regexp for the init_command property" do
-    expect do
+    expect {
       resource.init_command /.*/
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "accepts an array for options property" do
@@ -109,9 +109,9 @@ describe Chef::Resource::Service do
   end
 
   it "does not accept a boolean for options property" do
-    expect do
+    expect {
       resource.options true
-    end.to raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   %w{restart_command start_command stop_command status_command reload_command}.each do |prop|

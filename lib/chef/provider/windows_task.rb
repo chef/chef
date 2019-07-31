@@ -308,13 +308,13 @@ class Chef
 
         def frequency_modifier_contains_last_week?(frequency_modifier)
           frequency_modifier = frequency_modifier.to_s.split(",")
-          frequency_modifier.map! { |value| value.strip.upcase }
+          frequency_modifier.map! do |value| value.strip.upcase end
           frequency_modifier.include?("LAST")
         end
 
         def day_includes_last_or_lastday?(day)
           day = day.to_s.split(",")
-          day.map! { |value| value.strip.upcase }
+          day.map! do |value| value.strip.upcase end
           day.include?("LAST") || day.include?("LASTDAY")
         end
 
@@ -435,7 +435,7 @@ class Chef
           weeks_of_month = []
           if new_resource.frequency_modifier
             weeks = new_resource.frequency_modifier.split(",")
-            weeks.map! { |week| week.to_s.strip.upcase }
+            weeks.map! do |week| week.to_s.strip.upcase end
             weeks.delete("LAST") if weeks.include?("LAST")
             weeks_of_month = get_binary_values_from_constants(weeks, WEEKS_OF_MONTH)
           end
@@ -447,7 +447,7 @@ class Chef
           days_of_month = []
           if new_resource.day
             days = new_resource.day.to_s.split(",")
-            days.map! { |day| day.to_s.strip.upcase }
+            days.map! do |day| day.to_s.strip.upcase end
             days.delete("LAST") if days.include?("LAST")
             days.delete("LASTDAY") if days.include?("LASTDAY")
             if days - (1..31).to_a
@@ -467,7 +467,7 @@ class Chef
             # this line of code is just to support backward compatibility of wild card *
             new_resource.day = "mon, tue, wed, thu, fri, sat, sun" if new_resource.day == "*" && new_resource.frequency == :weekly
             days = new_resource.day.to_s.split(",")
-            days.map! { |day| day.to_s.strip.upcase }
+            days.map! do |day| day.to_s.strip.upcase end
             weeks_days = get_binary_values_from_constants(days, DAYS_OF_WEEK)
           else
             # following condition will make the frequency :weekly idempotent if start_day is not provided by user setting day as the current_resource day
@@ -490,7 +490,7 @@ class Chef
             # this line of code is just to support backward compatibility of wild card *
             new_resource.months = "jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec" if new_resource.months == "*" && new_resource.frequency == :monthly
             months = new_resource.months.split(",")
-            months.map! { |month| month.to_s.strip.upcase }
+            months.map! do |month| month.to_s.strip.upcase end
             months_of_year = get_binary_values_from_constants(months, MONTHS)
           else
             MONTHS.each do |key, value|

@@ -359,10 +359,10 @@ describe Chef::Runner do
       first_resource.action = :buy
 
       only_if_called_times = 0
-      first_resource.only_if { only_if_called_times += 1; true }
+      first_resource.only_if do only_if_called_times += 1; true end
 
       not_if_called_times = 0
-      first_resource.not_if { not_if_called_times += 1; false }
+      first_resource.not_if do not_if_called_times += 1; false end
 
       second_resource = Chef::Resource::Cat.new("carmel", run_context)
       run_context.resource_collection << second_resource
@@ -387,7 +387,7 @@ describe Chef::Runner do
       end
       second_resource = Chef::Resource::RubyBlock.new("myblock", run_context)
       run_context.resource_collection << second_resource
-      second_resource.block { lazy_resources.call }
+      second_resource.block do lazy_resources.call end
 
       runner.converge
 

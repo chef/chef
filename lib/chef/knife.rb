@@ -301,16 +301,16 @@ class Chef
       # Mixlib::CLI ignores the embedded name_args
       @name_args = parse_options(argv)
       @name_args.delete(command_name_words.join("-"))
-      @name_args.reject! { |name_arg| command_name_words.delete(name_arg) }
+      @name_args.reject! do |name_arg| command_name_words.delete(name_arg) end
 
       # knife node run_list add requires that we have extra logic to handle
       # the case that command name words could be joined by an underscore :/
       command_name_joined = command_name_words.join("_")
-      @name_args.reject! { |name_arg| command_name_joined == name_arg }
+      @name_args.reject! do |name_arg| command_name_joined == name_arg end
 
       # Similar handling for hyphens.
       command_name_joined = command_name_words.join("-")
-      @name_args.reject! { |name_arg| command_name_joined == name_arg }
+      @name_args.reject! do |name_arg| command_name_joined == name_arg end
 
       if config[:help]
         msg opt_parser

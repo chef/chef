@@ -192,7 +192,7 @@ class Chef::EncryptedDataBagItem
         expected_bytes = expected_hmac.bytes.to_a
         candidate_hmac_bytes = Base64.decode64(@encrypted_data["hmac"]).bytes.to_a
         valid = expected_bytes.size ^ candidate_hmac_bytes.size
-        expected_bytes.zip(candidate_hmac_bytes) { |x, y| valid |= x ^ y.to_i }
+        expected_bytes.zip(candidate_hmac_bytes) do |x, y| valid |= x ^ y.to_i end
         valid == 0
       end
     end

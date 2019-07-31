@@ -281,7 +281,7 @@ describe Chef::Resource::Link do
           # Writing to one hardlinked file should cause both
           # to have the new value.
           expect(IO.read(to)).to eq(IO.read(target_file))
-          File.open(to, "w") { |file| file.write("wowzers") }
+          File.open(to, "w") do |file| file.write("wowzers") end
           expect(IO.read(target_file)).to eq("wowzers")
         end
         it "marks the resource updated" do
@@ -306,7 +306,7 @@ describe Chef::Resource::Link do
           # Writing to one hardlinked file should cause both
           # to have the new value.
           expect(IO.read(to)).to eq(IO.read(target_file))
-          File.open(to, "w") { |file| file.write("wowzers") }
+          File.open(to, "w") do |file| file.write("wowzers") end
           expect(IO.read(target_file)).to eq("wowzers")
         end
         it "does not mark the resource updated" do
@@ -355,7 +355,7 @@ describe Chef::Resource::Link do
             before(:each) do
               resource.owner(test_user)
               @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
-              File.open(@other_target, "w") { |file| file.write("eek") }
+              File.open(@other_target, "w") do |file| file.write("eek") end
               symlink(@other_target, target_file)
               chown(target_file, test_user)
               expect(symlink?(target_file)).to be_truthy
@@ -465,7 +465,7 @@ describe Chef::Resource::Link do
         context "to a file that exists" do
           before(:each) do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
-            File.open(@other_target, "w") { |file| file.write("eek") }
+            File.open(@other_target, "w") do |file| file.write("eek") end
             symlink(@other_target, to)
             expect(symlink?(to)).to be_truthy
             expect(readlink(to)).to eq(canonicalize(@other_target))
@@ -646,7 +646,7 @@ describe Chef::Resource::Link do
         context "to a real file" do
           before(:each) do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
-            File.open(@other_target, "w") { |file| file.write("eek") }
+            File.open(@other_target, "w") do |file| file.write("eek") end
             symlink(@other_target, to)
             expect(symlink?(to)).to be_truthy
             expect(readlink(to)).to eq(canonicalize(@other_target))

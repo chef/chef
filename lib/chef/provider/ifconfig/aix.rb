@@ -85,7 +85,7 @@ class Chef
         def hex_to_dec_netmask(netmask)
           # example '0xffff0000' -> '255.255.0.0'
           dec = netmask[2..3].to_i(16).to_s(10)
-          [4, 6, 8].each { |n| dec = dec + "." + netmask[n..n + 1].to_i(16).to_s(10) }
+          [4, 6, 8].each do |n| dec = dec + "." + netmask[n..n + 1].to_i(16).to_s(10) end
           dec
         end
 

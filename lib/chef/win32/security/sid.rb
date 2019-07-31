@@ -248,16 +248,16 @@ class Chef
 
         SERVICE_ACCOUNT_USERS = [self.LocalSystem,
                                  self.NtLocal,
-                                 self.NtNetwork].flat_map do |user_type|
+                                 self.NtNetwork].flat_map { |user_type|
                                    [user_type.account_simple_name.upcase,
                                     user_type.account_name.upcase]
-                                 end.freeze
+                                 }.freeze
 
         BUILT_IN_GROUPS = [self.BuiltinAdministrators,
-                           self.BuiltinUsers, self.Guests].flat_map do |user_type|
+                           self.BuiltinUsers, self.Guests].flat_map { |user_type|
                              [user_type.account_simple_name.upcase,
                               user_type.account_name.upcase]
-                           end.freeze
+                           }.freeze
 
         SYSTEM_USER = SERVICE_ACCOUNT_USERS + BUILT_IN_GROUPS
 

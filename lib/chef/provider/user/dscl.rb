@@ -61,12 +61,12 @@ class Chef
           super
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exist?("/usr/bin/dscl") }
+            a.assertion do ::File.exist?("/usr/bin/dscl") end
             a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/dscl' on the system for #{new_resource}!")
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exist?("/usr/bin/plutil") }
+            a.assertion do ::File.exist?("/usr/bin/plutil") end
             a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/plutil' on the system for #{new_resource}!")
           end
 

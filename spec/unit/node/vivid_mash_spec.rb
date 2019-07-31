@@ -226,7 +226,7 @@ describe Chef::Node::VividMash do
 
     it "writes with a block" do
       expect(root).to receive(:reset_cache).at_least(:once).with("one")
-      vivid.write("one", "five") { "six" }
+      vivid.write("one", "five") do "six" end
       expect(vivid["one"]["five"]).to eql("six")
     end
   end
@@ -282,7 +282,7 @@ describe Chef::Node::VividMash do
 
     it "writes with a block" do
       expect(root).to receive(:reset_cache).at_least(:once).with("one")
-      vivid.write!("one", "five") { "six" }
+      vivid.write!("one", "five") do "six" end
       expect(vivid["one"]["five"]).to eql("six")
     end
   end
@@ -406,14 +406,14 @@ describe Chef::Node::AttrArray do
 
   context "#collect!" do
     it "converts Hashes" do
-      array.collect! { |x| { "zero" => "zero2" } }
+      array.collect! do |x| { "zero" => "zero2" } end
       expect(array[1].class).to eql(Chef::Node::VividMash)
     end
   end
 
   context "#map!" do
     it "converts Hashes" do
-      array.map! { |x| { "zero" => "zero2" } }
+      array.map! do |x| { "zero" => "zero2" } end
       expect(array[1].class).to eql(Chef::Node::VividMash)
     end
   end

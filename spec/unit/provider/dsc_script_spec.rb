@@ -156,16 +156,16 @@ describe Chef::Provider::DscScript do
         it "raises an exception for powershell version '#{version}'" do
           node.automatic[:languages][:powershell][:version] = version
 
-          expect do
+          expect {
             provider.run_action(:run)
-          end.to raise_error(Chef::Exceptions::ProviderNotFound)
+          }.to raise_error(Chef::Exceptions::ProviderNotFound)
         end
       end
 
       it "raises an exception if PowerShell is not present" do
-        expect do
+        expect {
           provider.run_action(:run)
-        end.to raise_error(Chef::Exceptions::ProviderNotFound)
+        }.to raise_error(Chef::Exceptions::ProviderNotFound)
       end
 
     end

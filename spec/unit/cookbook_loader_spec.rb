@@ -40,7 +40,7 @@ describe Chef::CookbookLoader do
       cookbook_paths |= Dir[File.join(repo_path, "*")]
     end
 
-    cookbook_paths.delete_if { |path| File.basename(path) == "chefignore" }
+    cookbook_paths.delete_if do |path| File.basename(path) == "chefignore" end
 
     cookbook_paths.each do |cookbook_path|
       expect(Chef::Cookbook::CookbookVersionLoader).to receive(:new)
@@ -112,30 +112,30 @@ describe Chef::CookbookLoader do
       end
 
       it "should load different attribute files from deeper paths" do
-        expect(full_paths_for_part(:openldap, "attributes").detect do |f|
+        expect(full_paths_for_part(:openldap, "attributes").detect { |f|
           f =~ %r{cookbooks/openldap/attributes/smokey.rb}
-        end).not_to eql(nil)
+        }).not_to eql(nil)
       end
 
       it "should load definition files from deeper paths" do
-        expect(full_paths_for_part(:openldap, "definitions").detect do |f|
+        expect(full_paths_for_part(:openldap, "definitions").detect { |f|
           f =~ %r{cookbooks/openldap/definitions/server.rb}
-        end).not_to eql(nil)
+        }).not_to eql(nil)
       end
 
       it "should load recipe files from deeper paths" do
-        expect(full_paths_for_part(:openldap, "recipes").detect do |f|
+        expect(full_paths_for_part(:openldap, "recipes").detect { |f|
           f =~ %r{cookbooks/openldap/recipes/one.rb}
-        end).not_to eql(nil)
+        }).not_to eql(nil)
       end
 
       it "should find files that start with a ." do
-        expect(full_paths_for_part(:openldap, "files").detect do |f|
+        expect(full_paths_for_part(:openldap, "files").detect { |f|
           f =~ /\.dotfile$/
-        end).to match(/\.dotfile$/)
-        expect(full_paths_for_part(:openldap, "files").detect do |f|
+        }).to match(/\.dotfile$/)
+        expect(full_paths_for_part(:openldap, "files").detect { |f|
           f =~ %r{\.ssh/id_rsa$}
-        end).to match(%r{\.ssh/id_rsa$})
+        }).to match(%r{\.ssh/id_rsa$})
       end
 
       it "should load the metadata for the cookbook" do

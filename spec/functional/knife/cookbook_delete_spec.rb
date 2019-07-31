@@ -70,7 +70,7 @@ describe Chef::Knife::CookbookDelete do
       allow(knife.ui).to receive(:stdout).and_return(stdout)
 
       cb100_deleted = false
-      api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) { cb100_deleted = true; "[\"true\"]" }
+      api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) do cb100_deleted = true; "[\"true\"]" end
 
       knife.run
 
@@ -86,7 +86,7 @@ describe Chef::Knife::CookbookDelete do
       allow(knife.ui).to receive(:stdout).and_return(stdout)
 
       cb100_deleted = false
-      api.delete("/cookbooks/obsolete-cookbook/1.0.0?purge=true", 200) { cb100_deleted = true; "[\"true\"]" }
+      api.delete("/cookbooks/obsolete-cookbook/1.0.0?purge=true", 200) do cb100_deleted = true; "[\"true\"]" end
 
       knife.run
 
@@ -111,9 +111,9 @@ describe Chef::Knife::CookbookDelete do
       knife.config[:all] = true
       knife.config[:yes] = true
       cb100_deleted = cb110_deleted = cb120_deleted = nil
-      api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) { cb100_deleted = true; "[\"true\"]" }
-      api.delete("/cookbooks/obsolete-cookbook/1.1.0", 200) { cb110_deleted = true; "[\"true\"]" }
-      api.delete("/cookbooks/obsolete-cookbook/1.2.0", 200) { cb120_deleted = true; "[\"true\"]" }
+      api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) do cb100_deleted = true; "[\"true\"]" end
+      api.delete("/cookbooks/obsolete-cookbook/1.1.0", 200) do cb110_deleted = true; "[\"true\"]" end
+      api.delete("/cookbooks/obsolete-cookbook/1.2.0", 200) do cb120_deleted = true; "[\"true\"]" end
       knife.run
 
       expect(cb100_deleted).to be_truthy
@@ -123,7 +123,7 @@ describe Chef::Knife::CookbookDelete do
 
     it "asks which version to delete and deletes that when not given the -a flag" do
       cb100_deleted = cb110_deleted = cb120_deleted = nil
-      api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) { cb100_deleted = true; "[\"true\"]" }
+      api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) do cb100_deleted = true; "[\"true\"]" end
       stdin, stdout = StringIO.new, StringIO.new
       allow(knife.ui).to receive(:stdin).and_return(stdin)
       allow(knife.ui).to receive(:stdout).and_return(stdout)
@@ -136,9 +136,9 @@ describe Chef::Knife::CookbookDelete do
 
     it "deletes all versions of the cookbook when not given the -a flag and the user chooses to delete all" do
       cb100_deleted = cb110_deleted = cb120_deleted = nil
-      api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) { cb100_deleted = true; "[\"true\"]" }
-      api.delete("/cookbooks/obsolete-cookbook/1.1.0", 200) { cb110_deleted = true; "[\"true\"]" }
-      api.delete("/cookbooks/obsolete-cookbook/1.2.0", 200) { cb120_deleted = true; "[\"true\"]" }
+      api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) do cb100_deleted = true; "[\"true\"]" end
+      api.delete("/cookbooks/obsolete-cookbook/1.1.0", 200) do cb110_deleted = true; "[\"true\"]" end
+      api.delete("/cookbooks/obsolete-cookbook/1.2.0", 200) do cb120_deleted = true; "[\"true\"]" end
 
       stdin, stdout = StringIO.new("4\n"), StringIO.new
       allow(knife.ui).to receive(:stdin).and_return(stdin)

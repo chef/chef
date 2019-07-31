@@ -28,12 +28,12 @@ class Chef
         # NOTE: unnecessarily duplicates function of path_sanity
         extra_path ||= [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
         paths = env_path.split(File::PATH_SEPARATOR) + Array(extra_path)
-        cmds.map do |cmd|
-          paths.map do |path|
+        cmds.map { |cmd|
+          paths.map { |path|
             filename = Chef.path_to(File.join(path, cmd))
             filename if valid_executable?(filename, &block)
-          end.compact
-        end.flatten
+          }.compact
+        }.flatten
       end
 
       private

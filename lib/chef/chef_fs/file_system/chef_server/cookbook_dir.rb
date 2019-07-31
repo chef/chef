@@ -62,7 +62,7 @@ class Chef
             # we need to make sure we don't rethrow the exception.  (child(name)
             # is not supposed to fail.)
 
-            children.find { |child| child.name == name }
+            children.find do |child| child.name == name end
           rescue Chef::ChefFS::FileSystem::NotFoundError
             nil
           end

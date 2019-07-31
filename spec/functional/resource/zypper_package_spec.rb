@@ -64,7 +64,7 @@ describe Chef::Resource::ZypperPackage, :requires_root, :suse_only do
   end
 
   context "installing a package" do
-    after { remove_package }
+    after do remove_package end
     it "installs the latest version" do
       zypper_package.run_action(:install)
       expect(zypper_package.updated_by_last_action?).to be true

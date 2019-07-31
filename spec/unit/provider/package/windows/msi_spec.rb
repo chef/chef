@@ -147,7 +147,7 @@ describe Chef::Provider::Package::Windows::MSI do
       end
 
       context "custom options includes /Q" do
-        before { new_resource.options("/Q") }
+        before do new_resource.options("/Q") end
 
         it "does not duplicate quiet switch" do
           expect(provider).to receive(:shell_out!).with(%r{msiexec /x {guid} /Q}, kind_of(Hash))
@@ -156,7 +156,7 @@ describe Chef::Provider::Package::Windows::MSI do
       end
 
       context "custom options includes /qn" do
-        before { new_resource.options("/qn") }
+        before do new_resource.options("/qn") end
 
         it "does not duplicate quiet switch" do
           expect(provider).to receive(:shell_out!).with(%r{msiexec /x {guid} /qn}, kind_of(Hash))

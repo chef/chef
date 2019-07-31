@@ -36,10 +36,10 @@ describe Chef::Knife::NodeBulkDelete do
 
   describe "when creating the list of nodes" do
     it "fetches the node list" do
-      expected = @nodes.inject({}) do |inflatedish, (name, uri)|
+      expected = @nodes.inject({}) { |inflatedish, (name, uri)|
         inflatedish[name] = Chef::Node.new.tap { |n| n.name(name) }
         inflatedish
-      end
+      }
       expect(Chef::Node).to receive(:list).and_return(@nodes)
       # I hate not having == defined for anything :(
       actual = @knife.all_nodes
@@ -50,13 +50,13 @@ describe Chef::Knife::NodeBulkDelete do
 
   describe "run" do
     before do
-      @inflatedish_list = @nodes.keys.inject({}) do |nodes_by_name, name|
+      @inflatedish_list = @nodes.keys.inject({}) { |nodes_by_name, name|
         node = Chef::Node.new
         node.name(name)
         allow(node).to receive(:destroy).and_return(true)
         nodes_by_name[name] = node
         nodes_by_name
-      end
+      }
       allow(@knife).to receive(:all_nodes).and_return(@inflatedish_list)
     end
 

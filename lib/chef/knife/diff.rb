@@ -64,9 +64,9 @@ class Chef
         error = false
         begin
           patterns.each do |pattern|
-            found_error = Chef::ChefFS::CommandLine.diff_print(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, output_mode, proc { |entry| format_path(entry) }, config[:diff_filter], ui ) do |diff|
+            found_error = Chef::ChefFS::CommandLine.diff_print(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, output_mode, proc { |entry| format_path(entry) }, config[:diff_filter], ui ) { |diff|
               stdout.print diff
-            end
+            }
             error = true if found_error
           end
         rescue Chef::ChefFS::FileSystem::OperationFailedError => e

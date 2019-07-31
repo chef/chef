@@ -55,9 +55,9 @@ class Chef
       def get_values(key_path)
         hive, key = get_hive_and_key(key_path)
         key_exists!(key_path)
-        values = hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
+        values = hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) { |reg|
           reg.map { |name, type, data| { name: name, type: get_name_from_type(type), data: data } }
-        end
+        }
       end
 
       def set_value(key_path, value)

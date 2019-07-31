@@ -33,7 +33,7 @@ class Chef
       # Until #1773 is resolved, you need to manually specify the windows_service resource
       # to use action :configure_startup and properties startup_type
 
-      provides(:windows_service) { true }
+      provides(:windows_service) do true end
       provides :service, os: "windows"
 
       description "Use the windows_service resource to create, delete, or manage a service on the Microsoft Windows platform."

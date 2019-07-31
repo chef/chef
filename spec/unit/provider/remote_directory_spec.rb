@@ -125,7 +125,7 @@ describe Chef::Provider::RemoteDirectory do
       @resource.path(@destination_dir)
     end
 
-    after { FileUtils.rm_rf(@destination_dir) }
+    after do FileUtils.rm_rf(@destination_dir) end
 
     # CHEF-3552
     it "creates the toplevel directory without error " do
@@ -149,8 +149,8 @@ describe Chef::Provider::RemoteDirectory do
         @resource.overwrite(true)
         @provider.run_action(:create)
 
-        File.open(@destination_dir + "/remote_dir_file1.txt", "a") { |f| f.puts "blah blah blah" }
-        File.open(@destination_dir + "/remotesubdir/remote_subdir_file1.txt", "a") { |f| f.puts "blah blah blah" }
+        File.open(@destination_dir + "/remote_dir_file1.txt", "a") do |f| f.puts "blah blah blah" end
+        File.open(@destination_dir + "/remotesubdir/remote_subdir_file1.txt", "a") do |f| f.puts "blah blah blah" end
         file1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + "/remote_dir_file1.txt"))
         subdirfile1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + "/remotesubdir/remote_subdir_file1.txt"))
 
@@ -162,7 +162,7 @@ describe Chef::Provider::RemoteDirectory do
     end
 
     describe "with purging enabled" do
-      before { @resource.purge(true) }
+      before do @resource.purge(true) end
 
       it "removes existing files if purge is true" do
         @provider.run_action(:create)
@@ -217,13 +217,13 @@ describe Chef::Provider::RemoteDirectory do
     end
 
     describe "with overwrite disabled" do
-      before { @resource.purge(false) }
-      before { @resource.overwrite(false) }
+      before do @resource.purge(false) end
+      before do @resource.overwrite(false) end
 
       it "leaves modifications alone" do
         @provider.run_action(:create)
-        ::File.open(@destination_dir + "/remote_dir_file1.txt", "a") { |f| f.puts "blah blah blah" }
-        ::File.open(@destination_dir + "/remotesubdir/remote_subdir_file1.txt", "a") { |f| f.puts "blah blah blah" }
+        ::File.open(@destination_dir + "/remote_dir_file1.txt", "a") do |f| f.puts "blah blah blah" end
+        ::File.open(@destination_dir + "/remotesubdir/remote_subdir_file1.txt", "a") do |f| f.puts "blah blah blah" end
         file1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + "/remote_dir_file1.txt"))
         subdirfile1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + "/remotesubdir/remote_subdir_file1.txt"))
         @provider.run_action(:create)

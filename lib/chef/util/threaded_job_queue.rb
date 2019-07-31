@@ -45,15 +45,15 @@ class Chef
       end
 
       def process(concurrency = 10)
-        workers = (1..concurrency).map do
+        workers = (1..concurrency).map {
           Thread.new do
             loop do
               fn = @queue.pop
               fn.arity == 1 ? fn.call(@lock) : fn.call
             end
           end
-        end
-        workers.each { |worker| self << Thread.method(:exit) }
+        }
+        workers.each do |worker| self << Thread.method(:exit) end
         workers.each(&:join)
       end
     end

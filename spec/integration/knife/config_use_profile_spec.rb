@@ -42,7 +42,7 @@ describe "knife config use-profile", :workstation do
     old_wd = Dir.pwd
     ChefConfig::PathHelper.per_tool_home_environment = "KNIFE_HOME"
     # Clear these out because they are cached permanently.
-    ChefConfig::PathHelper.class_exec { remove_class_variable(:@@home_dir) }
+    ChefConfig::PathHelper.class_exec do remove_class_variable(:@@home_dir) end
     Chef::Knife::ConfigUseProfile.reset_config_loader!
     begin
       ex.run
@@ -80,7 +80,7 @@ describe "knife config use-profile", :workstation do
 
   context "with $CHEF_HOME" do
     let(:cmd_args) { %w{staging} }
-    before { ENV["CHEF_HOME"] = path_to("chefhome"); file("chefhome/tmp", "") }
+    before do ENV["CHEF_HOME"] = path_to("chefhome"); file("chefhome/tmp", "") end
     it do
       is_expected.to eq "Set default profile to staging\n"
       expect(File.read(path_to("chefhome/.chef/context"))).to eq "staging\n"
@@ -90,7 +90,7 @@ describe "knife config use-profile", :workstation do
 
   context "with $KNIFE_HOME" do
     let(:cmd_args) { %w{development} }
-    before { ENV["KNIFE_HOME"] = path_to("knifehome"); file("knifehome/tmp", "") }
+    before do ENV["KNIFE_HOME"] = path_to("knifehome"); file("knifehome/tmp", "") end
     it do
       is_expected.to eq "Set default profile to development\n"
       expect(File.read(path_to("knifehome/.chef/context"))).to eq "development\n"

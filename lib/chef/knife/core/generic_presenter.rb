@@ -214,10 +214,10 @@ class Chef
               collected
             end
           else
-            versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
+            versions_by_cookbook = item.inject({}) { |collected, ( cookbook, versions )|
               collected[cookbook] = versions["versions"].map { |v| v["version"] }
               collected
-            end
+            }
             key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map(&:size).max + 2
             versions_by_cookbook.sort.map do |cookbook, versions|
               "#{cookbook.ljust(key_length)} #{versions.join("  ")}"

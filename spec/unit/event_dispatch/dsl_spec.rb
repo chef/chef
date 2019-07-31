@@ -35,18 +35,18 @@ describe Chef::EventDispatch::DSL do
   subject { described_class.new("test") }
 
   it "set handler name" do
-    subject.on(:run_started) {}
+    subject.on(:run_started) do  end
     expect(events.subscribers.first.name).to eq("test")
   end
 
   it "raise error when invalid event type is supplied" do
-    expect do
+    expect {
       subject.on(:foo_bar) {}
-    end.to raise_error(Chef::Exceptions::InvalidEventType)
+    }.to raise_error(Chef::Exceptions::InvalidEventType)
   end
 
   it "register user hooks against valid event type" do
-    subject.on(:run_failed) { "testhook" }
+    subject.on(:run_failed) do "testhook" end
     expect(events.subscribers.first.run_failed).to eq("testhook")
   end
 
@@ -61,7 +61,7 @@ describe Chef::EventDispatch::DSL do
       end
     end
     resource = Chef::Resource::RubyBlock.new("foo", run_context)
-    resource.block {}
+    resource.block do end
     resource.run_action(:run)
     expect(calls).to eq(%i{started updated})
   end
@@ -76,7 +76,7 @@ describe Chef::EventDispatch::DSL do
       end
     end
     resource = Chef::Resource::RubyBlock.new("foo", run_context)
-    resource.block {}
+    resource.block do end
     resource.run_action(:run)
     expect(events.subscribers.first.instance_variable_get(:@ivar)).to eq([1, 2])
   end

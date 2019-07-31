@@ -56,7 +56,7 @@ class Chef
           role.run_list_for(environment).each do |entry|
             nlist << entry
           end
-          entries.each { |e| nlist << e }
+          entries.each do |e| nlist << e end
           role.env_run_lists_add(environment => nlist)
         end
       end
@@ -68,9 +68,9 @@ class Chef
 
         if @name_args.size > 1
           # Check for nested lists and create a single plain one
-          entries = @name_args[1..-1].map do |entry|
+          entries = @name_args[1..-1].map { |entry|
             entry.split(",").map(&:strip)
-          end.flatten
+          }.flatten
         else
           # Convert to array and remove the extra spaces
           entries = @name_args[1].split(",").map(&:strip)

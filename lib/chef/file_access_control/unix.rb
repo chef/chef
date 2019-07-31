@@ -129,7 +129,7 @@ class Chef
         end
       rescue ArgumentError
         provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
-          a.assertion { false }
+          a.assertion do false end
           a.failure_message(Chef::Exceptions::GroupIDNotFound, "cannot determine group id for '#{resource.group}', does the group exist on this system?")
           a.whyrun("Assuming group #{resource.group} would have been created")
         end
@@ -278,7 +278,7 @@ class Chef
         end
       rescue ArgumentError
         provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
-          a.assertion { false }
+          a.assertion do false end
           a.failure_message(Chef::Exceptions::UserIDNotFound, "cannot determine user id for '#{resource.owner}', does the user exist on this system?")
           a.whyrun("Assuming user #{resource.owner} would have been created")
         end

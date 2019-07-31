@@ -57,7 +57,7 @@ describe "chef-client" do
 
       context "with a recipe" do
         context "which throws an error" do
-          before { file "cookbooks/x/recipes/default.rb", "raise 'BOOM'" }
+          before do file "cookbooks/x/recipes/default.rb", "raise 'BOOM'" end
 
           it "exits with GENERIC_FAILURE, 1" do
             setup_client_rb
@@ -66,7 +66,7 @@ describe "chef-client" do
         end
 
         context "with a recipe which calls Chef::Application.fatal with a non-RFC exit code" do
-          before { file "cookbooks/x/recipes/default.rb", "Chef::Application.fatal!('BOOM', 123)" }
+          before do file "cookbooks/x/recipes/default.rb", "Chef::Application.fatal!('BOOM', 123)" end
 
           it "exits with the GENERIC_FAILURE exit code, 1" do
             setup_client_rb
@@ -75,7 +75,7 @@ describe "chef-client" do
         end
 
         context "with a recipe which calls Chef::Application.exit with a non-RFC exit code" do
-          before { file "cookbooks/x/recipes/default.rb", "Chef::Application.exit!('BOOM', 231)" }
+          before do file "cookbooks/x/recipes/default.rb", "Chef::Application.exit!('BOOM', 231)" end
 
           it "exits with the GENERIC_FAILURE exit code, 1" do
             setup_client_rb

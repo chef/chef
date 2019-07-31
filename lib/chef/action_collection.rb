@@ -104,14 +104,14 @@ class Chef
     # @return [Chef::ActionCollection]
     #
     def filtered_collection(max_nesting: nil, up_to_date: true, skipped: true, updated: true, failed: true, unprocessed: true)
-      subrecords = action_records.select do |rec|
+      subrecords = action_records.select { |rec|
         ( max_nesting.nil? || rec.nesting_level <= max_nesting ) &&
           ( rec.status == :up_to_date && up_to_date ||
             rec.status == :skipped && skipped ||
             rec.status == :updated && updated ||
             rec.status == :failed && failed ||
             rec.status == :unprocessed && unprocessed )
-      end
+      }
       self.class.new(events, run_context, subrecords)
     end
 

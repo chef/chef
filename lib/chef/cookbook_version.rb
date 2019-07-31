@@ -249,13 +249,13 @@ class Chef
           error_message << error_locations.join("\n")
           existing_files = segment_filenames(segment)
           # Strip the root_dir prefix off all files for readability
-          pretty_existing_files = existing_files.map do |path|
+          pretty_existing_files = existing_files.map { |path|
             if root_dir
               path[root_dir.length + 1..-1]
             else
               path
             end
-          end
+          }
           # Show the files that the cookbook does have. If the user made a typo,
           # hopefully they'll see it here.
           unless pretty_existing_files.empty?
@@ -280,7 +280,7 @@ class Chef
     def relative_filenames_in_preferred_directory(node, segment, dirname)
       preferences = preferences_for_path(node, segment, dirname)
       filenames_by_pref = {}
-      preferences.each { |pref| filenames_by_pref[pref] = [] }
+      preferences.each do |pref| filenames_by_pref[pref] = [] end
 
       files_for(segment).each do |manifest_record|
         manifest_record_path = manifest_record[:path]
@@ -320,7 +320,7 @@ class Chef
     def preferred_manifest_records_for_directory(node, segment, dirname)
       preferences = preferences_for_path(node, segment, dirname)
       records_by_pref = {}
-      preferences.each { |pref| records_by_pref[pref] = [] }
+      preferences.each do |pref| records_by_pref[pref] = [] end
 
       files_for(segment).each do |manifest_record|
         manifest_record_path = manifest_record[:path]

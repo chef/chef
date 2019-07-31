@@ -52,7 +52,7 @@ describe Chef::Provider::HttpRequest do
     describe "action_get" do
 
       it "should inflate a message block at runtime" do
-        @new_resource.message { "return" }
+        @new_resource.message do "return" end
         expect(@http).to receive(:get).with("http://www.opscode.com/", {})
         @provider.run_action(:get)
         expect(@new_resource).to be_updated
@@ -88,7 +88,7 @@ describe Chef::Provider::HttpRequest do
       end
 
       it "should inflate a message block at runtime" do
-        @new_resource.message { "return" }
+        @new_resource.message do "return" end
         expect(@http).to receive(:post).with("http://www.opscode.com/", "return", {})
         @provider.run_action(:post)
         expect(@new_resource).to be_updated
@@ -111,7 +111,7 @@ describe Chef::Provider::HttpRequest do
       end
 
       it "should inflate a message block at runtime" do
-        @new_resource.message { "return" }
+        @new_resource.message do "return" end
         expect(@http).to receive(:head).with("http://www.opscode.com/", {}).and_return(nil)
         @provider.run_action(:head)
         expect(@new_resource).to be_updated

@@ -58,7 +58,7 @@ class Chef
           # and not a package specific alternate source like other providers
           # so we want to assert candidates exist for the alternate source
           requirements.assert(:upgrade, :install) do |a|
-            a.assertion { candidates_exist_for_all_uninstalled? }
+            a.assertion do candidates_exist_for_all_uninstalled? end
             a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
             a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
           end

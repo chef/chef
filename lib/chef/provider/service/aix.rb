@@ -75,7 +75,7 @@ class Chef
         def shared_resource_requirements
           super
           requirements.assert(:all_actions) do |a|
-            a.assertion { @status_load_success }
+            a.assertion do @status_load_success end
             a.whyrun ["Service status not available. Assuming a prior action would have installed the service.", "Assuming status of not running."]
           end
         end

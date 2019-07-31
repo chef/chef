@@ -103,14 +103,14 @@ module ResourceActionSpec
       end
 
       it "the action cannot access private methods" do
-        expect do
+        expect {
           converge(<<-EOM, __FILE__, __LINE__ + 1)
             #{resource_dsl} "hi" do
               foo "foo!"
               action :access_private_method
             end
           EOM
-        end.to raise_error(NameError)
+        }.to raise_error(NameError)
         expect(ActionJackson.ran_action).to eq :access_private_method
       end
 
@@ -249,7 +249,7 @@ module ResourceActionSpec
       end
 
       it "Can retrieve ancestors of action class without crashing" do
-        converge { action_jackson "hi" }
+        converge do action_jackson "hi" end
         expect { ActionJackson.action_class.ancestors.join(",") }.not_to raise_error
       end
 
@@ -371,9 +371,9 @@ module ResourceActionSpec
 
     context "With a resource with a UTF-8 action" do
       it "Running the action works" do
-        expect_recipe do
+        expect_recipe {
           weird_action_jackson "hi"
-        end.to be_up_to_date
+        }.to be_up_to_date
         expect(WeirdActionJackson.action_was).to eq :Straße
       end
     end
@@ -398,11 +398,11 @@ module ResourceActionSpec
       end
 
       it "Setting group to nil in an action does not emit a warning about it being defined in two places" do
-        expect_recipe do
+        expect_recipe {
           resource_action_spec_set_group_to_nil "hi" do
             action :set_group_to_nil
           end
-        end.to emit_no_warnings_or_errors
+        }.to emit_no_warnings_or_errors
       end
     end
 
@@ -444,9 +444,9 @@ module ResourceActionSpec
 
       it "the methods are available to the action" do
         r = nil
-        expect_recipe do
+        expect_recipe {
           r = declares_action_class_methods "hi"
-        end.to emit_no_warnings_or_errors
+        }.to emit_no_warnings_or_errors
         expect(r.x).to eq(4)
       end
 
@@ -467,9 +467,9 @@ module ResourceActionSpec
 
         it "the methods are available to the action" do
           r = nil
-          expect_recipe do
+          expect_recipe {
             r = declares_action_class_methods_too "hi"
-          end.to emit_no_warnings_or_errors
+          }.to emit_no_warnings_or_errors
           expect(r.x).to eq(8)
         end
       end
@@ -492,9 +492,9 @@ module ResourceActionSpec
 
         it "the methods are available to the action" do
           r = nil
-          expect_recipe do
+          expect_recipe {
             r = declares_action_class_methods_too "hi"
-          end.to emit_no_warnings_or_errors
+          }.to emit_no_warnings_or_errors
           expect(r.x).to eq(8)
         end
       end

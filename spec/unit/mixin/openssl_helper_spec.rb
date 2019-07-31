@@ -32,9 +32,9 @@ describe Chef::Mixin::OpenSSLHelper do
   describe "#get_key_filename" do
     context "When the input is not a string" do
       it "Throws a TypeError" do
-        expect do
+        expect {
           instance.get_key_filename(33)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
@@ -89,11 +89,11 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When the dhparam.pem file does exist, but does not contain a valid dhparam key" do
       it "Throws an OpenSSL::PKey::DHError exception" do
-        expect do
+        expect {
           @dhparam_file.puts("I_am_not_a_key_I_am_a_free_man")
           @dhparam_file.close
           instance.dhparam_pem_valid?(@dhparam_file.path)
-        end.to raise_error(::OpenSSL::PKey::DHError)
+        }.to raise_error(::OpenSSL::PKey::DHError)
       end
     end
 
@@ -225,17 +225,17 @@ describe Chef::Mixin::OpenSSLHelper do
   describe "#gen_dhparam" do
     context "When given an invalid key length" do
       it "Throws an ArgumentError" do
-        expect do
+        expect {
           instance.gen_dhparam(2046, 2)
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
     end
 
     context "When given an invalid generator id" do
       it "Throws a TypeError" do
-        expect do
+        expect {
           instance.gen_dhparam(2048, "bob")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
@@ -249,9 +249,9 @@ describe Chef::Mixin::OpenSSLHelper do
   describe "#gen_rsa_priv_key" do
     context "When given an invalid key length" do
       it "Throws an ArgumentError" do
-        expect do
+        expect {
           instance.gen_rsa_priv_key(4093)
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
     end
 
@@ -269,33 +269,33 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When given anything other than an RSA key object to encrypt" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.encrypt_rsa_key("abcd", "efgh", "des3")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When given anything other than a string as the passphrase" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.encrypt_rsa_key(@rsa_key, 1234, "des3")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When given anything other than a string as the cipher" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.encrypt_rsa_key(@rsa_key, "1234", 1234)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When given an invalid cipher string" do
       it "Raises an ArgumentError" do
-        expect do
+        expect {
           instance.encrypt_rsa_key(@rsa_key, "1234", "des3_bogus")
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
     end
 
@@ -311,15 +311,15 @@ describe Chef::Mixin::OpenSSLHelper do
   describe "#gen_ec_priv_key" do
     context "When given an invalid curve" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_ec_priv_key(2048)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
 
       it "Throws an ArgumentError" do
-        expect do
+        expect {
           instance.gen_ec_priv_key("primeFromTheFuture")
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
     end
 
@@ -337,33 +337,33 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When given anything other than an EC key object to encrypt" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.encrypt_ec_key("abcd", "efgh", "des3")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When given anything other than a string as the passphrase" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.encrypt_ec_key(@ec_key, 1234, "des3")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When given anything other than a string as the cipher" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.encrypt_ec_key(@ec_key, "1234", 1234)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When given an invalid cipher string" do
       it "Raises an ArgumentError" do
-        expect do
+        expect {
           instance.encrypt_ec_key(@ec_key, "1234", "des3_bogus")
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
     end
 
@@ -385,17 +385,17 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When given anything other than an RSA/EC key object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_x509_request(@subject, "abc")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When given anything other than an X509 Name object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_x509_request("abc", @key)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
@@ -419,35 +419,35 @@ describe Chef::Mixin::OpenSSLHelper do
   describe "#gen_x509_extensions" do
     context "When given anything other than an Ruby Hash object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_x509_extensions("abc")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When a misformatted ruby Hash is given" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_x509_extensions("pouet" => "plop")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
 
       it "Raises a ArgumentError" do
-        expect do
+        expect {
           instance.gen_x509_extensions("pouet" => { "values" => [ "keyCertSign" ], "wrong_key" => true })
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
 
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_x509_extensions("keyUsage" => { "values" => "keyCertSign", "critical" => true })
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
 
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_x509_extensions("keyUsage" => { "values" => [ "keyCertSign" ], "critical" => "yes" })
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
@@ -496,33 +496,33 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When the request given is anything other then a Ruby OpenSSL::X509::Request" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           @instance.gen_x509_cert("abc", @x509_extension, @info_without_issuer, @rsa_key)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When the extension given is anything other then a Ruby Array" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           @instance.gen_x509_cert(@rsa_request, "abc", @info_without_issuer, @rsa_key)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When the info given is anything other then a Ruby Hash" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           @instance.gen_x509_cert(@rsa_request, @x509_extension, "abc", @rsa_key)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When the key given is anything other then a Ruby OpenSSL::Pkey::EC or OpenSSL::Pkey::RSA object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           @instance.gen_x509_cert(@rsa_request, @x509_extension, @info_without_issuer, "abc")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
@@ -550,9 +550,9 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When the CRL given is anything other then a Ruby OpenSSL::X509::CRL object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.get_next_crl_number("abc")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
@@ -572,17 +572,17 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When the CRL given is anything other then a Ruby OpenSSL::X509::CRL object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.serial_revoked?("abc", "C7BCB6602A2E4251EF4E2827A228CB52BC0CEA2F")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When the serial given is anything other then a Ruby String or Integer object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.serial_revoked?(@crl, [])
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
@@ -621,37 +621,37 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When the CA private key given is anything other then a Ruby OpenSSL::PKey::EC object or a OpenSSL::PKey::RSA object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_x509_crl("abc", @info)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When the info given is anything other then a Ruby Hash" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_x509_crl(@ca_key, "abc")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When a misformatted info Ruby Hash is given" do
       it "Raises a ArgumentError" do
-        expect do
+        expect {
           instance.gen_x509_crl(@ca_key, "abc" => "def", "validity" => 8)
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
 
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_x509_crl(@ca_key, "issuer" => "abc", "validity" => 8)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
 
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.gen_x509_crl(@ca_key, "issuer" => @ca_cert, "validity" => "abc")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
@@ -693,45 +693,45 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When the CRL given is anything other then a Ruby OpenSSL::X509::CRL object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.renew_x509_crl("abc", @ca_key, @info)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When the CA private key given is anything other then a Ruby OpenSSL::PKey::EC object or a OpenSSL::PKey::RSA object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.renew_x509_crl(@crl, "abc", @info)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When the info given is anything other then a Ruby Hash" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.renew_x509_crl(@crl, @ca_key, "abc")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When a misformatted info Ruby Hash is given" do
       it "Raises a ArgumentError" do
-        expect do
+        expect {
           instance.renew_x509_crl(@crl, @ca_key, "abc" => "def", "validity" => 8)
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
 
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.renew_x509_crl(@crl, @ca_key, "issuer" => "abc", "validity" => 8)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
 
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.renew_x509_crl(@crl, @ca_key, "issuer" => @ca_cert, "validity" => "abc")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
@@ -775,73 +775,73 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When the revoke_info given is anything other then a Ruby Hash" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.revoke_x509_crl("abc", @crl, @ca_key, @info)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When the CRL given is anything other then a Ruby OpenSSL::X509::CRL object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.revoke_x509_crl(@revoke_info, "abc", @ca_key, @info)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When the CA private key given is anything other then a Ruby OpenSSL::PKey::EC object or a OpenSSL::PKey::RSA object" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.revoke_x509_crl(@revoke_info, @crl, "abc", @info)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When the info given is anything other then a Ruby Hash" do
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.revoke_x509_crl(@revoke_info, @crl, @ca_key, "abc")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When a misformatted revoke_info Ruby Hash is given" do
       it "Raises a ArgumentError" do
-        expect do
+        expect {
           instance.revoke_x509_crl({ "abc" => "def", "ghi" => "jkl" }, @crl, @ca_key, @info)
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
 
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.revoke_x509_crl({ "serial" => [], "reason" => 0 }, @crl, @ca_key, @info)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
 
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.revoke_x509_crl({ "serial" => 1, "reason" => "abc" }, @crl, @ca_key, @info)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 
     context "When a misformatted info Ruby Hash is given" do
       it "Raises a ArgumentError" do
-        expect do
+        expect {
           instance.revoke_x509_crl(@revoke_info, @crl, @ca_key, "abc" => "def", "validity" => 8)
-        end.to raise_error(ArgumentError)
+        }.to raise_error(ArgumentError)
       end
 
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.revoke_x509_crl(@revoke_info, @crl, @ca_key, "issuer" => "abc", "validity" => 8)
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
 
       it "Raises a TypeError" do
-        expect do
+        expect {
           instance.revoke_x509_crl(@revoke_info, @crl, @ca_key, "issuer" => @ca_cert, "validity" => "abc")
-        end.to raise_error(TypeError)
+        }.to raise_error(TypeError)
       end
     end
 

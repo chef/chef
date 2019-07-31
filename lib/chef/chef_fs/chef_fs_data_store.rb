@@ -541,12 +541,12 @@ class Chef
 
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 2
           if chef_fs.versioned_cookbooks || path[0] == "cookbook_artifacts"
-            result = with_entry([ path[0] ]) do |entry|
+            result = with_entry([ path[0] ]) { |entry|
               # list /cookbooks/name = filter /cookbooks/name-version down to name
               entry.children.map { |child| split_name_version(child.name) }
                 .select { |name, version| name == path[1] }
                 .map { |name, version| version }
-            end
+            }
             if result.empty?
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
@@ -559,7 +559,7 @@ class Chef
           end
 
         else
-          result = with_entry(path) do |entry|
+          result = with_entry(path) { |entry|
             begin
               entry.children.map { |c| zero_filename(c) }.sort
             rescue Chef::ChefFS::FileSystem::NotFoundError => e
@@ -570,7 +570,7 @@ class Chef
                 raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
               end
             end
-          end
+          }
 
           # Older versions of chef-zero do not understand policies and cookbook_artifacts,
           # don't give that stuff to them

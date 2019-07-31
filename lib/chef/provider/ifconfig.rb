@@ -152,7 +152,7 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:all_actions) do |a|
-          a.assertion { @status.exitstatus == 0 }
+          a.assertion do @status.exitstatus == 0 end
           a.failure_message Chef::Exceptions::Ifconfig, "ifconfig failed - #{@status.inspect}!"
           # no whyrun - if the base ifconfig used in load_current_resource fails
           # there's no reasonable action that could have been taken in the course of

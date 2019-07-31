@@ -102,17 +102,17 @@ describe Chef::Version do
     end
 
     it "should sort an array of versions" do
-      a = %w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1}.map do |s|
+      a = %w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1}.map { |s|
         Chef::Version.new(s)
-      end
+      }
       got = a.sort.map(&:to_s)
       expect(got).to eq(%w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1})
     end
 
     it "should sort an array of versions, part 2" do
-      a = %w{9.8.7 1.0.0 1.2.3 4.4.6 4.5.6 0.8.6 4.5.5 5.9.8 3.5.7}.map do |s|
+      a = %w{9.8.7 1.0.0 1.2.3 4.4.6 4.5.6 0.8.6 4.5.5 5.9.8 3.5.7}.map { |s|
         Chef::Version.new(s)
-      end
+      }
       got = a.sort.map(&:to_s)
       expect(got).to eq(%w{0.8.6 1.0.0 1.2.3 3.5.7 4.4.6 4.5.5 4.5.6 5.9.8 9.8.7})
     end

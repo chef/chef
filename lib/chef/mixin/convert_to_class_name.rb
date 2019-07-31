@@ -43,7 +43,7 @@ class Chef
       def convert_to_snake_case(str, namespace = nil)
         str = str.dup
         str.sub!(/^#{namespace}(\:\:)?/, "") if namespace
-        str.gsub!(/[A-Z]/) { |s| "_" + s }
+        str.gsub!(/[A-Z]/) do |s| "_" + s end
         str.downcase!
         str.sub!(/^\_/, "")
         str
@@ -109,12 +109,12 @@ class Chef
 
             # Go down the ancestors to check if it is owned directly. The check
             # stops when we reach Object or the end of ancestors tree.
-            constant = constant.ancestors.inject do |const, ancestor|
+            constant = constant.ancestors.inject { |const, ancestor|
               break const    if ancestor == Object
               break ancestor if ancestor.const_defined?(name, false)
 
               const
-            end
+            }
 
             # owner is in Object, so raise
             constant.const_get(name, false)

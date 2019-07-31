@@ -67,7 +67,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   def define_resource_requirements
     shared_resource_requirements
     requirements.assert(:all_actions) do |a|
-      a.assertion { status_check_success }
+      a.assertion do status_check_success end
       # We won't stop in any case, but in whyrun warn and tell what we're doing.
       a.whyrun ["Failed to determine status of #{new_resource}, using command #{new_resource.status_command}.",
         "Assuming service would have been installed and is disabled"]

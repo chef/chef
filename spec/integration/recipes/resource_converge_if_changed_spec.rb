@@ -13,9 +13,9 @@ describe "Resource::ActionClass#converge_if_changed" do
     attr_writer :incrementing_value
   end
 
-  before(:all) { Namer.current_index = 1 }
-  before { Namer.current_index += 1 }
-  before { Namer.incrementing_value = 0 }
+  before(:all) do Namer.current_index = 1 end
+  before do Namer.current_index += 1 end
+  before do Namer.incrementing_value = 0 end
 
   context "when the resource has identity, state, control, and sensitive properties" do
     let(:resource_name) { :"converge_if_changed_dsl#{Namer.current_index}" }

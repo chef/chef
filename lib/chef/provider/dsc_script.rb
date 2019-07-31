@@ -52,9 +52,9 @@ class Chef
       def load_current_resource
         if supports_dsc?
           @dsc_resources_info = run_configuration(:test)
-          @resource_converged = @dsc_resources_info.all? do |resource|
+          @resource_converged = @dsc_resources_info.all? { |resource|
             !resource.changes_state?
-          end
+          }
         end
       end
 
@@ -65,7 +65,7 @@ class Chef
             powershell_info_str,
             "PowerShell 4.0 or higher was not detected on your system and is required to use the dsc_script resource.",
           ]
-          a.assertion { supports_dsc? }
+          a.assertion do supports_dsc? end
           a.failure_message Chef::Exceptions::ProviderNotFound, err.join(" ")
           a.whyrun err + ["Assuming a previous resource installs PowerShell 4.0 or higher."]
           a.block_action!
@@ -157,7 +157,7 @@ class Chef
 
       def generate_description
         ["converge DSC configuration '#{configuration_friendly_name}'"] +
-          @dsc_resources_info.map do |resource|
+          @dsc_resources_info.map { |resource|
             if resource.changes_state?
               # We ignore the last log message because it only contains the time it took, which looks weird
               cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, "").strip }
@@ -170,7 +170,7 @@ class Chef
               # This is needed because a dsc script can have resources that are both converged and not
               "converge DSC resource #{resource.name} by doing nothing because it is already converged"
             end
-          end
+          }
       end
 
       def powershell_info_str

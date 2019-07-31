@@ -129,19 +129,19 @@ describe Chef::Resource::Template do
     end
 
     it "collects helper method bodies as blocks" do
-      resource.helper(:example_1) { "example_1" }
-      resource.helper(:example_2) { "example_2" }
+      resource.helper(:example_1) do "example_1" end
+      resource.helper(:example_2) do "example_2" end
       expect(resource.inline_helper_blocks[:example_1].call).to eq("example_1")
       expect(resource.inline_helper_blocks[:example_2].call).to eq("example_2")
     end
 
     it "compiles helper methods into a module" do
-      resource.helper(:example_1) { "example_1" }
-      resource.helper(:example_2) { "example_2" }
+      resource.helper(:example_1) do "example_1" end
+      resource.helper(:example_2) do "example_2" end
       modules = resource.helper_modules
       expect(modules.size).to eq(1)
       o = Object.new
-      modules.each { |m| o.extend(m) }
+      modules.each do |m| o.extend(m) end
       expect(o.example_1).to eq("example_1")
       expect(o.example_2).to eq("example_2")
     end
@@ -150,7 +150,7 @@ describe Chef::Resource::Template do
       resource.helper(:shout, &:upcase)
       modules = resource.helper_modules
       o = Object.new
-      modules.each { |m| o.extend(m) }
+      modules.each do |m| o.extend(m) end
       expect(o.shout("shout")).to eq("SHOUT")
     end
 
@@ -181,7 +181,7 @@ describe Chef::Resource::Template do
       modules = resource.helper_modules
       expect(modules.size).to eq(1)
       o = Object.new
-      modules.each { |m| o.extend(m) }
+      modules.each do |m| o.extend(m) end
       expect(o.example_1).to eq("example_1")
     end
 
@@ -209,11 +209,11 @@ describe Chef::Resource::Template do
           "inline_module"
         end
       end
-      resource.helper(:inline_method) { "inline_method" }
+      resource.helper(:inline_method) do "inline_method" end
       expect(resource.helper_modules.size).to eq(3)
 
       o = Object.new
-      resource.helper_modules.each { |m| o.extend(m) }
+      resource.helper_modules.each do |m| o.extend(m) end
       expect(o.static_example).to eq("static_example")
       expect(o.inline_module).to eq("inline_module")
       expect(o.inline_method).to eq("inline_method")

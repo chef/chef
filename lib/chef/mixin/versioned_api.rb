@@ -44,12 +44,12 @@ class Chef
       end
 
       def get_class_for(type)
-        versioned_interfaces.select do |klass|
+        versioned_interfaces.select { |klass|
           version = klass.send(:minimum_api_version)
           # min and max versions will be nil if we've not made a request to the server yet,
           # in which case we'll just start with the highest version and see what happens
           ServerAPIVersions.instance.min_server_version.nil? || (version >= ServerAPIVersions.instance.min_server_version && version <= ServerAPIVersions.instance.send(type))
-        end
+        }
           .sort { |a, b| a.send(:minimum_api_version) <=> b.send(:minimum_api_version) }
           .last
       end

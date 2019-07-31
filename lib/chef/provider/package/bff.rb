@@ -33,11 +33,11 @@ class Chef
         def define_resource_requirements
           super
           requirements.assert(:install) do |a|
-            a.assertion { new_resource.source }
+            a.assertion do new_resource.source end
             a.failure_message Chef::Exceptions::Package, "Source for package #{new_resource.package_name} required for action install"
           end
           requirements.assert(:all_actions) do |a|
-            a.assertion { !new_resource.source || package_source_found? }
+            a.assertion do !new_resource.source || package_source_found? end
             a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
             a.whyrun "would assume #{new_resource.source} would be have previously been made available"
           end

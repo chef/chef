@@ -32,7 +32,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
   end
 
   describe "action :create" do
-    after { delete_task }
+    after do delete_task end
     context "when command is with arguments" do
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
@@ -1340,7 +1340,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
   context "task_name with parent folder" do
     describe "task_name with path '\\foo\\chef-client-functional-test' " do
       let(:task_name) { "\\foo\\chef-client-functional-test" }
-      after { delete_task }
+      after do delete_task end
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
         new_resource.command task_name
@@ -1366,7 +1366,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
     describe "task_name with path '\\foo\\bar\\chef-client-functional-test' " do
       let(:task_name) { "\\foo\\bar\\chef-client-functional-test" }
-      after { delete_task }
+      after do delete_task end
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
         new_resource.command task_name
@@ -1392,7 +1392,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
   end
 
   describe "priority" do
-    after { delete_task }
+    after do delete_task end
     subject do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
       new_resource.command task_name
@@ -1494,7 +1494,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
   end
 
   describe "Examples of idempotent checks for each frequency" do
-    after { delete_task }
+    after do delete_task end
     context "For frequency :once" do
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
@@ -1853,7 +1853,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
   end
 
   describe "action :run" do
-    after { delete_task }
+    after do delete_task end
 
     subject do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
@@ -1873,7 +1873,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
   end
 
   describe "action :end", :volatile do
-    after { delete_task }
+    after do delete_task end
 
     subject do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
@@ -1894,7 +1894,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
   describe "action :enable" do
     let(:task_name) { "chef-client-functional-test-enable" }
-    after { delete_task }
+    after do delete_task end
 
     subject do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
@@ -1917,7 +1917,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
   describe "action :disable" do
     let(:task_name) { "chef-client-functional-test-disable" }
-    after { delete_task }
+    after do delete_task end
 
     subject do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
@@ -1936,7 +1936,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
   end
 
   describe "action :change" do
-    after { delete_task }
+    after do delete_task end
     subject do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
       new_resource.command task_name

@@ -87,7 +87,7 @@ describe Chef::Provider::Package::Windows::Exe do
   end
 
   describe "package_version" do
-    before { new_resource.version(nil) }
+    before do new_resource.version(nil) end
 
     context "source file does not exist" do
       before do

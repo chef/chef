@@ -51,7 +51,7 @@ describe Chef::Decorator::LazyArray do
 
   it "if we loop over the elements and do nothing then its not lazy" do
     # we don't know how many elements there are unless we evaluate the proc
-    decorator.each { |i| }
+    decorator.each do |i| end
     expect(@foo).to equal(1)
     expect(@bar).to equal(2)
   end

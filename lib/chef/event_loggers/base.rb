@@ -36,9 +36,9 @@ class Chef
     end
 
     def self.available_event_loggers
-      event_loggers_by_name.select do |key, val|
+      event_loggers_by_name.select { |key, val|
         val.available?
-      end.keys
+      }.keys
     end
 
     def self.new(name)

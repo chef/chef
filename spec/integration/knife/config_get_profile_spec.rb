@@ -41,7 +41,7 @@ describe "knife config get-profile", :workstation do
     old_wd = Dir.pwd
     ChefConfig::PathHelper.per_tool_home_environment = "KNIFE_HOME"
     # Clear these out because they are cached permanently.
-    ChefConfig::PathHelper.class_exec { remove_class_variable(:@@home_dir) }
+    ChefConfig::PathHelper.class_exec do remove_class_variable(:@@home_dir) end
     Chef::Knife::ConfigGetProfile.reset_config_loader!
     begin
       ex.run
@@ -88,7 +88,7 @@ describe "knife config get-profile", :workstation do
   end
 
   context "with a context file" do
-    before { file(".chef/context", "development\n") }
+    before do file(".chef/context", "development\n") end
     it { is_expected.to eq "development\n" }
   end
 

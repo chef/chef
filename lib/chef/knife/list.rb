@@ -65,7 +65,7 @@ class Chef
         patterns = name_args.length == 0 ? [""] : name_args
 
         # Get the top-level matches
-        all_results = parallelize(pattern_args_from(patterns)) do |pattern|
+        all_results = parallelize(pattern_args_from(patterns)) { |pattern|
           pattern_results = Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern).to_a
 
           if pattern_results.first && !pattern_results.first.exists? && pattern.exact_path
@@ -73,13 +73,13 @@ class Chef
             self.exit_code = 1
           end
           pattern_results
-        end.flatten(1).to_a
+        }.flatten(1).to_a
 
         # Process directories
         if !config[:bare_directories]
-          dir_results = parallelize(all_results.select(&:dir?)) do |result|
+          dir_results = parallelize(all_results.select(&:dir?)) { |result|
             add_dir_result(result)
-          end.flatten(1)
+          }.flatten(1)
 
         else
           dir_results = []

@@ -117,11 +117,11 @@ class Chef
       # @return [Array] an array of fingerprints
       def extract_fingerprints_from_cmd(*cmd)
         so = shell_out(*cmd)
-        so.stdout.split(/\n/).map do |t|
+        so.stdout.split(/\n/).map { |t|
           if z = t.match(/^fpr:+([0-9A-F]+):/)
             z[1].split.join
           end
-        end.compact
+        }.compact
       end
 
       # validate the key against the apt keystore to see if that version is expired
@@ -201,7 +201,7 @@ class Chef
         key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
         cached_keyfile = ::File.join(Chef::Config[:file_cache_path], key_name)
         tmp_dir = Dir.mktmpdir(".gpg")
-        at_exit { FileUtils.remove_entry(tmp_dir) }
+        at_exit do FileUtils.remove_entry(tmp_dir) end
 
         declare_resource(key_type(key), cached_keyfile) do
           source key
@@ -216,7 +216,7 @@ class Chef
           default_env true
           sensitive new_resource.sensitive
           action :run
-          not_if { no_new_keys?(cached_keyfile) }
+          not_if do no_new_keys?(cached_keyfile) end
           notifies :run, "execute[apt-cache gencaches]", :immediately
         end
       end
@@ -252,9 +252,9 @@ class Chef
           default_env true
           sensitive new_resource.sensitive
           not_if do
-            present = extract_fingerprints_from_cmd(*LIST_APT_KEY_FINGERPRINTS).any? do |fp|
+            present = extract_fingerprints_from_cmd(*LIST_APT_KEY_FINGERPRINTS).any? { |fp|
               fp.end_with? key.upcase
-            end
+            }
             present && key_is_valid?(key.upcase)
           end
           notifies :run, "execute[apt-cache gencaches]", :immediately

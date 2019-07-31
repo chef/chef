@@ -91,10 +91,10 @@ describe Chef::ProviderResolver do
         let(:platform_family)  { platform_family }
         let(:platform_version) { platform_version }
 
-        define_singleton_method(:os) { os }
-        define_singleton_method(:platform) { platform }
-        define_singleton_method(:platform_family) { platform_family }
-        define_singleton_method(:platform_version) { platform_version }
+        define_singleton_method(:os) do os end
+        define_singleton_method(:platform) do platform end
+        define_singleton_method(:platform_family) do platform_family end
+        define_singleton_method(:platform_version) do platform_version end
 
         instance_eval(&block)
       end

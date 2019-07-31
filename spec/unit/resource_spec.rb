@@ -242,9 +242,9 @@ describe Chef::Resource do
 
     it "should raise an exception if told to act in other than :delay or :immediate(ly)" do
       run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
-      expect do
+      expect {
         resource.notifies :reload, run_context.resource_collection.find(zen_master: "coffee"), :someday
-      end.to raise_error(ArgumentError)
+      }.to raise_error(ArgumentError)
     end
 
     it "should allow multiple notified resources appear in the actions hash" do
@@ -673,7 +673,7 @@ describe Chef::Resource do
 
     it "runs runs an only_if when one is given" do
       snitch_variable = nil
-      resource.only_if { snitch_variable = true }
+      resource.only_if do snitch_variable = true end
       expect(resource.only_if.first.positivity).to eq(:only_if)
       # Chef::Mixin::Command.should_receive(:only_if).with(true, {}).and_return(false)
       resource.run_action(:purr)
@@ -682,8 +682,8 @@ describe Chef::Resource do
 
     it "runs multiple only_if conditionals" do
       snitch_var1, snitch_var2 = nil, nil
-      resource.only_if { snitch_var1 = 1 }
-      resource.only_if { snitch_var2 = 2 }
+      resource.only_if do snitch_var1 = 1 end
+      resource.only_if do snitch_var2 = 2 end
       resource.run_action(:purr)
       expect(snitch_var1).to eq(1)
       expect(snitch_var2).to eq(2)
@@ -704,7 +704,7 @@ describe Chef::Resource do
 
     it "runs not_if as a block when it is a ruby block" do
       expect_any_instance_of(Chef::Resource::Conditional).to receive(:evaluate_block).at_least(1).times
-      resource.not_if { puts "foo" }
+      resource.not_if do puts "foo" end
       resource.run_action(:purr)
     end
 
@@ -721,8 +721,8 @@ describe Chef::Resource do
 
     it "accepts multiple not_if conditionals" do
       snitch_var1, snitch_var2 = true, true
-      resource.not_if { snitch_var1 = nil }
-      resource.not_if { snitch_var2 = false }
+      resource.not_if do snitch_var1 = nil end
+      resource.not_if do snitch_var2 = false end
       resource.run_action(:purr)
       expect(snitch_var1).to be_nil
       expect(snitch_var2).to be_falsey
@@ -766,62 +766,62 @@ describe Chef::Resource do
     end
 
     it "should return false when only_if is met" do
-      resource.only_if { true }
+      resource.only_if do true end
       expect(resource.should_skip?(:purr)).to be_falsey
     end
 
     it "should return true when only_if is not met" do
-      resource.only_if { false }
+      resource.only_if do false end
       expect(resource.should_skip?(:purr)).to be_truthy
     end
 
     it "should return true when not_if is met" do
-      resource.not_if { true }
+      resource.not_if do true end
       expect(resource.should_skip?(:purr)).to be_truthy
     end
 
     it "should return false when not_if is not met" do
-      resource.not_if { false }
+      resource.not_if do false end
       expect(resource.should_skip?(:purr)).to be_falsey
     end
 
     it "should return true when only_if is met but also not_if is met" do
-      resource.only_if { true }
-      resource.not_if { true }
+      resource.only_if do true end
+      resource.not_if do true end
       expect(resource.should_skip?(:purr)).to be_truthy
     end
 
     it "should return false when only_if is met and also not_if is not met" do
-      resource.only_if { true }
-      resource.not_if { false }
+      resource.only_if do true end
+      resource.not_if do false end
       expect(resource.should_skip?(:purr)).to be_falsey
     end
 
     it "should return true when one of multiple only_if's is not met" do
-      resource.only_if { true }
-      resource.only_if { false }
-      resource.only_if { true }
+      resource.only_if do true end
+      resource.only_if do false end
+      resource.only_if do true end
       expect(resource.should_skip?(:purr)).to be_truthy
     end
 
     it "should return true when one of multiple not_if's is met" do
-      resource.not_if { false }
-      resource.not_if { true }
-      resource.not_if { false }
+      resource.not_if do false end
+      resource.not_if do true end
+      resource.not_if do false end
       expect(resource.should_skip?(:purr)).to be_truthy
     end
 
     it "should return false when all of multiple only_if's are met" do
-      resource.only_if { true }
-      resource.only_if { true }
-      resource.only_if { true }
+      resource.only_if do true end
+      resource.only_if do true end
+      resource.only_if do true end
       expect(resource.should_skip?(:purr)).to be_falsey
     end
 
     it "should return false when all of multiple not_if's are not met" do
-      resource.not_if { false }
-      resource.not_if { false }
-      resource.not_if { false }
+      resource.not_if do false end
+      resource.not_if do false end
+      resource.not_if do false end
       expect(resource.should_skip?(:purr)).to be_falsey
     end
 
@@ -830,8 +830,8 @@ describe Chef::Resource do
     end
 
     it "should return true when action is :nothing ignoring only_if/not_if conditionals" do
-      resource.only_if { true }
-      resource.not_if { false }
+      resource.only_if do true end
+      resource.not_if do false end
       expect(resource.should_skip?(:nothing)).to be_truthy
     end
 
@@ -857,8 +857,8 @@ describe Chef::Resource do
 
     it "should not run only_if/not_if conditionals (CHEF-972)" do
       snitch_var1 = 0
-      resource1.only_if { snitch_var1 = 1 }
-      resource1.not_if { snitch_var1 = 2 }
+      resource1.only_if do snitch_var1 = 1 end
+      resource1.not_if do snitch_var1 = 2 end
       resource1.run_action(:nothing)
       expect(snitch_var1).to eq(0)
     end
@@ -869,8 +869,8 @@ describe Chef::Resource do
 
       Chef::Provider::SnakeOil.provides :cat
 
-      resource1.only_if { snitch_var1 = 1 }
-      resource1.not_if { snitch_var2 = 2 }
+      resource1.only_if do snitch_var1 = 1 end
+      resource1.not_if do snitch_var2 = 2 end
       resource2 = Chef::Resource::Cat.new("coffee", run_context)
       resource2.notifies :purr, resource1
       resource2.action = :purr
@@ -1021,9 +1021,9 @@ describe Chef::Resource do
       describe "with a syntax error in the resource spec" do
 
         it "raises an exception immmediately" do
-          expect do
+          expect {
             resource.notifies(:run, "typo[missing-closing-bracket")
-          end.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
+          }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
         end
       end
     end
@@ -1108,27 +1108,27 @@ describe Chef::Resource do
     end
 
     context "with a symbol action" do
-      before { resource.action(:one) }
+      before do resource.action(:one) end
       it { is_expected.to eq [:one] }
     end
 
     context "with a string action" do
-      before { resource.action("two") }
+      before do resource.action("two") end
       it { is_expected.to eq [:two] }
     end
 
     context "with an array action" do
-      before { resource.action(%i{two one}) }
+      before do resource.action(%i{two one}) end
       it { is_expected.to eq %i{two one} }
     end
 
     context "with an assignment" do
-      before { resource.action = :one }
+      before do resource.action = :one end
       it { is_expected.to eq [:one] }
     end
 
     context "with an array assignment" do
-      before { resource.action = %i{two one} }
+      before do resource.action = %i{two one} end
       it { is_expected.to eq %i{two one} }
     end
 

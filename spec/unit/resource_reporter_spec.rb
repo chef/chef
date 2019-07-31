@@ -716,9 +716,9 @@ describe Chef::ResourceReporter do
 
       it "fails the run and prints an message about the error" do
         expect(Chef::Log).to receive(:error).with(/500/)
-        expect do
+        expect {
           resource_reporter.run_started(run_status)
-        end.to raise_error(Net::HTTPClientException)
+        }.to raise_error(Net::HTTPClientException)
       end
     end
 
@@ -801,9 +801,9 @@ describe Chef::ResourceReporter do
       it "should raise if an unkwown error happens" do
         allow(rest_client).to receive(:raw_request).and_raise(Exception.new)
 
-        expect do
+        expect {
           resource_reporter.post_reporting_data
-        end.to raise_error(Exception)
+        }.to raise_error(Exception)
       end
     end
   end

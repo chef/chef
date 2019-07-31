@@ -31,7 +31,7 @@ class Chef
 
         def to_h(manifest)
           result = manifest.manifest.dup
-          result["all_files"].map! { |file| file.delete("full_path"); file }
+          result["all_files"].map! do |file| file.delete("full_path"); file end
           result["frozen?"] = manifest.frozen_version?
           result["chef_type"] = "cookbook_version"
           result.to_hash

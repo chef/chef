@@ -89,7 +89,7 @@ class Chef
       #
       # @return [Array] Array of strings with fully-qualified and unexpanded recipe names
       def with_duplicate_names
-        map do |recipe_name|
+        map { |recipe_name|
           if recipe_name.end_with?("::default")
             [ recipe_name.sub(/::default$/, ""), recipe_name ]
           elsif recipe_name.include?("::")
@@ -97,7 +97,7 @@ class Chef
           else
             [ recipe_name, "#{recipe_name}::default" ]
           end
-        end.flatten
+        }.flatten
       end
     end
   end

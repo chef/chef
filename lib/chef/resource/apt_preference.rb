@@ -23,7 +23,7 @@ class Chef
     # @since 13.3
     class AptPreference < Chef::Resource
       resource_name :apt_preference
-      provides(:apt_preference) { true }
+      provides(:apt_preference) do true end
 
       description "The apt_preference resource allows for the creation of APT preference files. Preference files are used to control which package versions and sources are prioritized during installation."
       introduced "13.3"

@@ -59,36 +59,36 @@ describe Chef::ResourceCollection do
 
   describe "#edit_resource!" do
     it "raises if nothing is found" do
-      expect do
+      expect {
         recipe.edit_resource!(:zen_master, "monkey") do
           something true
         end
-      end.to raise_error(Chef::Exceptions::ResourceNotFound)
+      }.to raise_error(Chef::Exceptions::ResourceNotFound)
     end
 
     it "raises if nothing is found and no block is given" do
-      expect do
+      expect {
         recipe.edit_resource!(:zen_master, "monkey")
-      end.to raise_error(Chef::Exceptions::ResourceNotFound)
+      }.to raise_error(Chef::Exceptions::ResourceNotFound)
     end
 
     it "edits the resource if it finds one" do
-      resource = recipe.declare_resource(:zen_master, "monkey") do
+      resource = recipe.declare_resource(:zen_master, "monkey") {
         something false
-      end
+      }
       expect(
-        recipe.edit_resource!(:zen_master, "monkey") do
+        recipe.edit_resource!(:zen_master, "monkey") {
           something true
-        end
+        }
       ).to eql(resource)
       expect(run_context.resource_collection.all_resources.size).to eql(1)
       expect(run_context.resource_collection.first.something).to be true
     end
 
     it "acts like find_resource! if not given a block and the resource exists" do
-      resource = recipe.declare_resource(:zen_master, "monkey") do
+      resource = recipe.declare_resource(:zen_master, "monkey") {
         something false
-      end
+      }
       expect(
         recipe.edit_resource!(:zen_master, "monkey")
       ).to eql(resource)
@@ -99,9 +99,9 @@ describe Chef::ResourceCollection do
 
   describe "#edit_resource" do
     it "inserts a resource if nothing is found" do
-      resource = recipe.edit_resource(:zen_master, "monkey") do
+      resource = recipe.edit_resource(:zen_master, "monkey") {
         something true
-      end
+      }
       expect(run_context.resource_collection.all_resources.size).to eql(1)
       expect(run_context.resource_collection.first).to eql(resource)
       expect(run_context.resource_collection.first.something).to be true
@@ -114,22 +114,22 @@ describe Chef::ResourceCollection do
     end
 
     it "edits the resource if it finds one" do
-      resource = recipe.declare_resource(:zen_master, "monkey") do
+      resource = recipe.declare_resource(:zen_master, "monkey") {
         something false
-      end
+      }
       expect(
-        recipe.edit_resource(:zen_master, "monkey") do
+        recipe.edit_resource(:zen_master, "monkey") {
           something true
-        end
+        }
       ).to eql(resource)
       expect(run_context.resource_collection.all_resources.size).to eql(1)
       expect(run_context.resource_collection.first.something).to be true
     end
 
     it "acts like find_resource if not given a block and the resource exists" do
-      resource = recipe.declare_resource(:zen_master, "monkey") do
+      resource = recipe.declare_resource(:zen_master, "monkey") {
         something false
-      end
+      }
       expect(
         recipe.edit_resource(:zen_master, "monkey")
       ).to eql(resource)
@@ -140,26 +140,26 @@ describe Chef::ResourceCollection do
 
   describe "#find_resource!" do
     it "raises if nothing is found" do
-      expect do
+      expect {
         recipe.find_resource!(:zen_master, "monkey")
-      end.to raise_error(Chef::Exceptions::ResourceNotFound)
+      }.to raise_error(Chef::Exceptions::ResourceNotFound)
     end
 
     it "raises if given a block" do
-      resource = recipe.declare_resource(:zen_master, "monkey") do
+      resource = recipe.declare_resource(:zen_master, "monkey") {
         something false
-      end
-      expect do
+      }
+      expect {
         recipe.find_resource!(:zen_master, "monkey") do
           something false
         end
-      end.to raise_error(ArgumentError)
+      }.to raise_error(ArgumentError)
     end
 
     it "returns the resource if it finds one" do
-      resource = recipe.declare_resource(:zen_master, "monkey") do
+      resource = recipe.declare_resource(:zen_master, "monkey") {
         something false
-      end
+      }
       expect(
         recipe.find_resource!(:zen_master, "monkey")
       ).to eql(resource)
@@ -175,9 +175,9 @@ describe Chef::ResourceCollection do
     end
 
     it "returns the resource if it finds one" do
-      resource = recipe.declare_resource(:zen_master, "monkey") do
+      resource = recipe.declare_resource(:zen_master, "monkey") {
         something false
-      end
+      }
       expect(
         recipe.find_resource(:zen_master, "monkey")
       ).to eql(resource)
@@ -188,22 +188,22 @@ describe Chef::ResourceCollection do
 
   describe "#find_resource with block" do
     it "inserts a resource if nothing is found" do
-      resource = recipe.find_resource(:zen_master, "monkey") do
+      resource = recipe.find_resource(:zen_master, "monkey") {
         something true
-      end
+      }
       expect(run_context.resource_collection.all_resources.size).to eql(1)
       expect(run_context.resource_collection.first).to eql(resource)
       expect(run_context.resource_collection.first.something).to be true
     end
 
     it "returns the resource if it finds one" do
-      resource = recipe.declare_resource(:zen_master, "monkey") do
+      resource = recipe.declare_resource(:zen_master, "monkey") {
         something false
-      end
+      }
       expect(
-        recipe.find_resource(:zen_master, "monkey") do
+        recipe.find_resource(:zen_master, "monkey") {
           something true
-        end
+        }
       ).to eql(resource)
       expect(run_context.resource_collection.all_resources.size).to eql(1)
       expect(run_context.resource_collection.first.something).to be false
@@ -218,9 +218,9 @@ describe Chef::ResourceCollection do
     end
 
     it "deletes and returns the resource if it finds one" do
-      resource = recipe.declare_resource(:zen_master, "monkey") do
+      resource = recipe.declare_resource(:zen_master, "monkey") {
         something false
-      end
+      }
       expect(
         recipe.delete_resource(:zen_master, "monkey")
       ).to eql(resource)
@@ -230,15 +230,15 @@ describe Chef::ResourceCollection do
 
   describe "#delete_resource!" do
     it "raises if nothing is found" do
-      expect do
+      expect {
         recipe.delete_resource!(:zen_master, "monkey")
-      end.to raise_error(Chef::Exceptions::ResourceNotFound)
+      }.to raise_error(Chef::Exceptions::ResourceNotFound)
     end
 
     it "deletes and returns the resource if it finds one" do
-      resource = recipe.declare_resource(:zen_master, "monkey") do
+      resource = recipe.declare_resource(:zen_master, "monkey") {
         something false
-      end
+      }
       expect(
         recipe.delete_resource!(:zen_master, "monkey")
       ).to eql(resource)
@@ -300,15 +300,15 @@ describe Chef::ResourceCollection do
     end
 
     it "our tests have correct separation" do
-      child_resource = child_recipe.declare_resource(:zen_master, "child") do
+      child_resource = child_recipe.declare_resource(:zen_master, "child") {
         something false
-      end
-      parent_resource = parent_recipe.declare_resource(:zen_master, "parent") do
+      }
+      parent_resource = parent_recipe.declare_resource(:zen_master, "parent") {
         something false
-      end
-      root_resource = recipe.declare_resource(:zen_master, "root") do
+      }
+      root_resource = recipe.declare_resource(:zen_master, "root") {
         something false
-      end
+      }
       expect(run_context.resource_collection.first).to eql(root_resource)
       expect(run_context.resource_collection.first.to_s).to eql("zen_master[root]")
       expect(run_context.resource_collection.all_resources.size).to eql(1)
@@ -364,9 +364,9 @@ describe Chef::ResourceCollection do
 
     it "with_run_context returns the return value of the block" do
       child_recipe.instance_eval do
-        ret = with_run_context(:root) do
+        ret = with_run_context(:root) {
           "return value"
-        end
+        }
         raise "failed" unless ret == "return value"
       end
     end

@@ -21,7 +21,7 @@ class Chef
   class Resource
     class RhsmErrataLevel < Chef::Resource
       resource_name :rhsm_errata_level
-      provides(:rhsm_errata_level) { true }
+      provides(:rhsm_errata_level) do true end
 
       description "Use the rhsm_errata_level resource to install all packages of a specified errata level from the Red Hat Subscription Manager. For example, you can ensure that all packages associated with errata marked at a 'Critical' security level are installed."
       introduced "14.0"

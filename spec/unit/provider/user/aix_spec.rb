@@ -58,7 +58,7 @@ describe Chef::Provider::User::Aix do
 
   describe "#create_user" do
     context "with a system user" do
-      before { new_resource.system(true) }
+      before do new_resource.system(true) end
       it "should add the user to the system group" do
         expect(provider).to receive(:shell_out_compacted!).with("useradd", "-g", "system", "adam")
         provider.create_user

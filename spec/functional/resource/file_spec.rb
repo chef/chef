@@ -140,7 +140,7 @@ describe Chef::Resource::File do
 
     context "and the target file exists and has the correct content" do
       before(:each) do
-        File.open(path, "w") { |f| f.print expected_content }
+        File.open(path, "w") do |f| f.print expected_content end
 
         @expected_checksum = sha256_checksum(path)
 

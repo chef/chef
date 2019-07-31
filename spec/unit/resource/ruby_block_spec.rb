@@ -41,9 +41,9 @@ describe Chef::Resource::RubyBlock do
   end
 
   it "accepts a ruby block/proc/.. for the 'block' parameter" do
-    expect(resource.block do
+    expect(resource.block {
       "foo"
-    end.call).to eql("foo")
+    }.call).to eql("foo")
   end
 
   describe "when it has been initialized with block code" do

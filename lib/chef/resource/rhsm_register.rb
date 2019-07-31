@@ -22,7 +22,7 @@ class Chef
   class Resource
     class RhsmRegister < Chef::Resource
       resource_name :rhsm_register
-      provides(:rhsm_register) { true }
+      provides(:rhsm_register) do true end
 
       description "Use the rhsm_register resource to register a node with the Red Hat Subscription Manager"\
                   " or a local Red Hat Satellite server."
@@ -105,7 +105,7 @@ class Chef
           command "subscription-manager unregister"
           default_env true
           action :run
-          only_if { registered_with_rhsm? }
+          only_if do registered_with_rhsm? end
           notifies :run, "execute[Clean RHSM Config]", :immediately
         end
 

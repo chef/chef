@@ -57,13 +57,13 @@ shared_examples_for "a Windows script resource" do
 
     describe "when the guard is given a ruby block" do
       it "should evaluate the guard if the guard_interpreter is set to its default value" do
-        @resource.only_if { true }
+        @resource.only_if do true end
         expect(@resource.should_skip?(:run)).to eq(nil)
       end
 
       it "should raise an exception if the guard_interpreter is overridden from its default value" do
         @resource.guard_interpreter :bash
-        @resource.only_if { true }
+        @resource.only_if do true end
         expect { @resource.should_skip?(:run) }.to raise_error(ArgumentError)
       end
     end

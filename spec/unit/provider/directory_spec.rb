@@ -150,8 +150,8 @@ describe Chef::Provider::Directory do
       end
 
       context "in why run mode" do
-        before { Chef::Config[:why_run] = true }
-        after { Chef::Config[:why_run] = false }
+        before do Chef::Config[:why_run] = true end
+        after do Chef::Config[:why_run] = false end
 
         it "does not modify new_resource" do
           expect(directory).not_to receive(:load_resource_attributes_from_file).with(new_resource)

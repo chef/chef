@@ -321,9 +321,9 @@ class Chef
     # @return [Hash<Symbol,Object>]
     #
     def validation_options
-      @validation_options ||= options.reject do |k, v|
+      @validation_options ||= options.reject { |k, v|
         %i{declared_in name instance_variable_name desired_state identity default name_property coerce required nillable sensitive description introduced deprecated default_description skip_docs}.include?(k)
-      end
+      }
     end
 
     #

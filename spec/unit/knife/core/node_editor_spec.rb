@@ -44,10 +44,10 @@ describe Chef::Knife::NodeEditor do
   describe "#view" do
     it "returns a Hash with only the name, chef_environment, normal, " +
       "policy_name, policy_group, and run_list properties" do
-        expected = node_data.select do |key,|
+        expected = node_data.select { |key,|
           %w{ name chef_environment normal
               policy_name policy_group run_list }.include?(key)
-        end
+        }
 
         expect(subject.view).to eq(expected)
       end

@@ -22,7 +22,7 @@ class Chef
   class Resource
     class WindowsFeature < Chef::Resource
       resource_name :windows_feature
-      provides(:windows_feature) { true }
+      provides(:windows_feature) do true end
 
       description "Use the windows_feature resource to add, remove or entirely delete Windows features and roles. This resource calls the 'windows_feature_dism' or 'windows_feature_powershell' resources depending on the specified installation method and defaults to dism, which is available on both Workstation and Server editions of Windows."
       introduced "14.0"

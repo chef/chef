@@ -32,15 +32,15 @@ describe "Notifications" do
   end
 
   it "should subscribe from one resource to another" do
-    log_resource = recipe.declare_resource(:log, "subscribed-log") do
+    log_resource = recipe.declare_resource(:log, "subscribed-log") {
       message "This is a log message"
       action :nothing
       subscribes :write, "package[vim]", :immediately
-    end
+    }
 
-    package_resource = recipe.declare_resource(:package, "vim") do
+    package_resource = recipe.declare_resource(:package, "vim") {
       action :install
-    end
+    }
 
     expect(log_resource).to receive(:run_action).with(:nothing, nil, nil).and_call_original
 
@@ -53,15 +53,15 @@ describe "Notifications" do
   end
 
   it "should notify from one resource to another immediately" do
-    log_resource = recipe.declare_resource(:log, "log") do
+    log_resource = recipe.declare_resource(:log, "log") {
       message "This is a log message"
       action :write
       notifies :install, "package[vim]", :immediately
-    end
+    }
 
-    package_resource = recipe.declare_resource(:package, "vim") do
+    package_resource = recipe.declare_resource(:package, "vim") {
       action :nothing
-    end
+    }
 
     expect(log_resource).to receive(:run_action).with(:write, nil, nil).and_call_original
     update_action(log_resource)
@@ -74,16 +74,16 @@ describe "Notifications" do
   end
 
   it "should notify from one resource to another before" do
-    log_resource = recipe.declare_resource(:log, "log") do
+    log_resource = recipe.declare_resource(:log, "log") {
       message "This is a log message"
       action :write
       notifies :install, "package[vim]", :before
-    end
+    }
     update_action(log_resource, 2)
 
-    package_resource = recipe.declare_resource(:package, "vim") do
+    package_resource = recipe.declare_resource(:package, "vim") {
       action :nothing
-    end
+    }
 
     actions = []
     [ log_resource, package_resource ].each do |resource|
@@ -110,15 +110,15 @@ describe "Notifications" do
   end
 
   it "should not notify from one resource to another before if the resource is not updated" do
-    log_resource = recipe.declare_resource(:log, "log") do
+    log_resource = recipe.declare_resource(:log, "log") {
       message "This is a log message"
       action :write
       notifies :install, "package[vim]", :before
-    end
+    }
 
-    package_resource = recipe.declare_resource(:package, "vim") do
+    package_resource = recipe.declare_resource(:package, "vim") {
       action :nothing
-    end
+    }
 
     actions = []
     [ log_resource, package_resource ].each do |resource|
@@ -144,15 +144,15 @@ describe "Notifications" do
   end
 
   it "should notify from one resource to another delayed" do
-    log_resource = recipe.declare_resource(:log, "log") do
+    log_resource = recipe.declare_resource(:log, "log") {
       message "This is a log message"
       action :write
       notifies :install, "package[vim]", :delayed
-    end
+    }
 
-    package_resource = recipe.declare_resource(:package, "vim") do
+    package_resource = recipe.declare_resource(:package, "vim") {
       action :nothing
-    end
+    }
 
     expect(log_resource).to receive(:run_action).with(:write, nil, nil).and_call_original
     update_action(log_resource)
@@ -169,21 +169,21 @@ describe "Notifications" do
     it "subscribes to a resource defined in a ruby block" do
       r = recipe
       t = self
-      ruby_block = recipe.declare_resource(:ruby_block, "rblock") do
+      ruby_block = recipe.declare_resource(:ruby_block, "rblock") {
         block do
-          log_resource = r.declare_resource(:log, "log") do
+          log_resource = r.declare_resource(:log, "log") {
             message "This is a log message"
             action :write
-          end
+          }
           t.expect(log_resource).to t.receive(:run_action).with(:write, nil, nil).and_call_original
           t.update_action(log_resource)
         end
-      end
+      }
 
-      package_resource = recipe.declare_resource(:package, "vim") do
+      package_resource = recipe.declare_resource(:package, "vim") {
         action :nothing
         subscribes :install, "log[log]", :delayed
-      end
+      }
 
       # RubyBlock needs to be able to run for our lazy examples to work - and it alone cannot affect the system
       expect(ruby_block).to receive(:provider_for_action).and_call_original
@@ -198,21 +198,21 @@ describe "Notifications" do
     it "notifies from inside a ruby_block to a resource defined outside" do
       r = recipe
       t = self
-      ruby_block = recipe.declare_resource(:ruby_block, "rblock") do
+      ruby_block = recipe.declare_resource(:ruby_block, "rblock") {
         block do
-          log_resource = r.declare_resource(:log, "log") do
+          log_resource = r.declare_resource(:log, "log") {
             message "This is a log message"
             action :write
             notifies :install, "package[vim]", :immediately
-          end
+          }
           t.expect(log_resource).to t.receive(:run_action).with(:write, nil, nil).and_call_original
           t.update_action(log_resource)
         end
-      end
+      }
 
-      package_resource = recipe.declare_resource(:package, "vim") do
+      package_resource = recipe.declare_resource(:package, "vim") {
         action :nothing
-      end
+      }
 
       # RubyBlock needs to be able to run for our lazy examples to work - and it alone cannot affect the system
       expect(ruby_block).to receive(:provider_for_action).and_call_original

@@ -27,7 +27,7 @@ describe "redirection", :workstation do
   include_context "default config options"
 
   when_the_chef_server "has a role" do
-    before { role "x", {} }
+    before do role "x", {} end
 
     context "and another server redirects to it with 302" do
       before :each do

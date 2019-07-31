@@ -193,9 +193,9 @@ class Chef
     def prepare_run_data
       run_data = {}
       run_data["action"] = "end"
-      run_data["resources"] = updated_resources.map do |action_record|
+      run_data["resources"] = updated_resources.map { |action_record|
         for_json(action_record)
-      end
+      }
       run_data["status"] = @status
       run_data["run_list"] = Chef::JSONCompat.to_json(@run_status.node.run_list)
       run_data["total_res_count"] = total_res_count.to_s

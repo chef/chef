@@ -136,16 +136,16 @@ describe Chef::RunContext do
 
     it "raises an error when attempting to include_recipe from a cookbook not reachable by run list or dependencies" do
       expect(node).to receive(:loaded_recipe).with(:ancient, "aliens")
-      expect do
+      expect {
         run_context.include_recipe("ancient::aliens")
       # In CHEF-5120, this becomes a Chef::Exceptions::MissingCookbookDependency error:
-      end.to raise_error(Chef::Exceptions::CookbookNotFound)
+      }.to raise_error(Chef::Exceptions::CookbookNotFound)
     end
 
     it "raises an error on a recipe with a leading :: with no current_cookbook" do
-      expect do
+      expect {
         run_context.include_recipe("::aliens")
-      end.to raise_error(RuntimeError)
+      }.to raise_error(RuntimeError)
     end
   end
 
@@ -165,9 +165,9 @@ describe Chef::RunContext do
     end
 
     it "errors when querying for a template in a not-available cookbook" do
-      expect do
+      expect {
         run_context.has_template_in_cookbook?("no-such-cookbook", "foo.erb")
-      end.to raise_error(Chef::Exceptions::CookbookNotFound)
+      }.to raise_error(Chef::Exceptions::CookbookNotFound)
     end
 
     it "queries whether a given cookbook has a specific cookbook_file" do
@@ -176,9 +176,9 @@ describe Chef::RunContext do
     end
 
     it "errors when querying for a cookbook_file in a not-available cookbook" do
-      expect do
+      expect {
         run_context.has_cookbook_file_in_cookbook?("no-such-cookbook", "foo.txt")
-      end.to raise_error(Chef::Exceptions::CookbookNotFound)
+      }.to raise_error(Chef::Exceptions::CookbookNotFound)
     end
   end
 

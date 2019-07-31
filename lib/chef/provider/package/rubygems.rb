@@ -100,7 +100,7 @@ class Chef
               # Filter down to only to only stubs we actually want. The name
               # filter is needed in case of things like `foo-*.gemspec` also
               # matching a gem named `foo-bar`.
-              stubs.select! { |stub| stub.name == gem_dep.name && gem_dep.requirement.satisfied_by?(stub.version) }
+              stubs.select! do |stub| stub.name == gem_dep.name && gem_dep.requirement.satisfied_by?(stub.version) end
               # This isn't sorting before returning beacuse the only code that
               # uses this method calls `max_by` so it doesn't need to be sorted.
               stubs
@@ -151,11 +151,11 @@ class Chef
           def candidate_version_from_file(gem_dependency, source)
             spec = spec_from_file(source)
             if spec.satisfies_requirement?(gem_dependency)
-              logger.trace { "found candidate gem version #{spec.version} from local gem package #{source}" }
+              logger.trace do "found candidate gem version #{spec.version} from local gem package #{source}" end
               spec.version
             else
               # This is probably going to end badly...
-              logger.warn { "gem package #{source} does not satisfy the requirements #{gem_dependency}" }
+              logger.warn do "gem package #{source} does not satisfy the requirements #{gem_dependency}" end
               nil
             end
           end
@@ -196,11 +196,11 @@ class Chef
 
             version = spec && spec.version
             if version
-              logger.trace { "found gem #{spec.name} version #{version} for platform #{spec.platform} from #{source}" }
+              logger.trace do "found gem #{spec.name} version #{version} for platform #{spec.platform} from #{source}" end
               version
             else
               source_list = sources.compact.empty? ? "[#{Gem.sources.to_a.join(", ")}]" : "[#{sources.join(", ")}]"
-              logger.warn { "failed to find gem #{gem_dependency} from #{source_list}" }
+              logger.warn do "failed to find gem #{gem_dependency} from #{source_list}" end
               nil
             end
           end
@@ -459,16 +459,16 @@ class Chef
           # is the current version
           if !matching_installed_versions.empty?
             gemspec = matching_installed_versions.max_by(&:version)
-            logger.trace { "#{new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}" }
+            logger.trace do "#{new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}" end
             gemspec
             # If no version matching the requirements exists, the latest installed
             # version is the current version.
           elsif !all_installed_versions.empty?
             gemspec = all_installed_versions.max_by(&:version)
-            logger.trace { "#{new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
+            logger.trace do "#{new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" end
             gemspec
           else
-            logger.trace { "#{new_resource} no installed version found for #{gem_dependency}" }
+            logger.trace do "#{new_resource} no installed version found for #{gem_dependency}" end
             nil
           end
         end
@@ -500,7 +500,7 @@ class Chef
 
         def cleanup_after_converge
           if @cleanup_gem_env
-            logger.trace { "#{new_resource} resetting gem environment to default" }
+            logger.trace do "#{new_resource} resetting gem environment to default" end
             Gem.clear_paths
           end
         end

@@ -110,7 +110,7 @@ class Chef
             @values["default"] = value
           else
             assert_valid_platform_values!(platforms, value)
-            Array(platforms).each { |platform| @values[platform.to_s] = normalize_keys(value) }
+            Array(platforms).each do |platform| @values[platform.to_s] = normalize_keys(value) end
             value
           end
         end
@@ -211,7 +211,7 @@ class Chef
           if platform_family.to_s == "default"
             @values["default"] = value
           else
-            Array(platform_family).each { |family| @values[family.to_s] = value }
+            Array(platform_family).each do |family| @values[family.to_s] = value end
             value
           end
         end

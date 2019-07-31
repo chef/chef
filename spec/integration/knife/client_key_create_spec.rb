@@ -56,7 +56,7 @@ describe "knife client key create", :workstation do
     it "reads the public key from a file" do
       Dir.mktmpdir do |tgt|
         key = OpenSSL::PKey::RSA.generate(1024)
-        File.open("#{tgt}/public.pem", "w") { |pub| pub.write(key.public_key.to_pem) }
+        File.open("#{tgt}/public.pem", "w") do |pub| pub.write(key.public_key.to_pem) end
         knife("client key create -p #{tgt}/public.pem -k new bah").should_succeed stderr: /^#{out}/
       end
     end

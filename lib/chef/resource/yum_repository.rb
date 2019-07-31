@@ -22,7 +22,7 @@ class Chef
   class Resource
     class YumRepository < Chef::Resource
       resource_name :yum_repository
-      provides(:yum_repository) { true }
+      provides(:yum_repository) do true end
 
       description "Use the yum_repository resource to manage a Yum repository configuration"\
                   " file located at /etc/yum.repos.d/repositoryid.repo on the local machine."\

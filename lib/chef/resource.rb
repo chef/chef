@@ -666,9 +666,9 @@ class Chef
 
     def inspect
       ivars = instance_variables.map(&:to_sym) - FORBIDDEN_IVARS
-      ivars.inject("<#{self}") do |str, ivar|
+      ivars.inject("<#{self}") { |str, ivar|
         str << " #{ivar}: #{instance_variable_get(ivar).inspect}"
-      end << ">"
+      } << ">"
     end
 
     # as_json does most of the to_json heavy lifted. It exists here in case activesupport

@@ -397,9 +397,9 @@ class Chef
       # @return [Array<Array<String>]] Simple object representation of version constraints (for json)
       def gem_requirements_to_array(*deps)
         deps.map do |dep|
-          dep.requirement.requirements.map do |op, version|
+          dep.requirement.requirements.map { |op, version|
             "#{op} #{version}"
-          end.sort
+          }.sort
         end
       end
 

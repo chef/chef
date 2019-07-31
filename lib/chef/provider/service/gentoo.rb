@@ -32,13 +32,13 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     super
 
     @current_resource.enabled(
-      Dir.glob("/etc/runlevels/**/#{Chef::Util::PathHelper.escape_glob_dir(@current_resource.service_name)}").any? do |file|
+      Dir.glob("/etc/runlevels/**/#{Chef::Util::PathHelper.escape_glob_dir(@current_resource.service_name)}").any? { |file|
         @found_script = true
         exists = ::File.exists? file
         readable = ::File.readable? file
         logger.trace "#{@new_resource} exists: #{exists}, readable: #{readable}"
         exists && readable
-      end
+      }
     )
     logger.trace "#{@new_resource} enabled: #{@current_resource.enabled}"
 
@@ -47,14 +47,14 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
 
   def define_resource_requirements
     requirements.assert(:all_actions) do |a|
-      a.assertion { ::File.exists?("/sbin/rc-update") }
+      a.assertion do ::File.exists?("/sbin/rc-update") end
       a.failure_message Chef::Exceptions::Service, "/sbin/rc-update does not exist"
       # no whyrun recovery -t his is a core component whose presence is
       # unlikely to be affected by what we do in the course of a chef run
     end
 
     requirements.assert(:all_actions) do |a|
-      a.assertion { @found_script }
+      a.assertion do @found_script end
       # No failure, just informational output from whyrun
       a.whyrun "Could not find service #{@new_resource.service_name} under any runlevel"
     end

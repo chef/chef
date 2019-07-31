@@ -25,7 +25,7 @@ describe "knife deps", :workstation do
 
   context "local" do
     when_the_repository "has a role with no run_list" do
-      before { file "roles/starring.json", {} }
+      before do file "roles/starring.json", {} end
       it "knife deps reports no dependencies" do
         knife("deps /roles/starring.json").should_succeed "/roles/starring.json\n"
       end
@@ -70,7 +70,7 @@ describe "knife deps", :workstation do
     end
 
     when_the_repository "has a node with no environment or run_list" do
-      before { file "nodes/mort.json", {} }
+      before do file "nodes/mort.json", {} end
       it "knife deps reports just the node" do
         knife("deps /nodes/mort.json").should_succeed "/nodes/mort.json\n"
       end
@@ -123,13 +123,13 @@ depends "kettle"'
       end
     end
     when_the_repository "has a data bag" do
-      before { file "data_bags/bag/item.json", {} }
+      before do file "data_bags/bag/item.json", {} end
       it "knife deps reports just the data bag" do
         knife("deps /data_bags/bag/item.json").should_succeed "/data_bags/bag/item.json\n"
       end
     end
     when_the_repository "has an environment" do
-      before { file "environments/desert.json", {} }
+      before do file "environments/desert.json", {} end
       it "knife deps reports just the environment" do
         knife("deps /environments/desert.json").should_succeed "/environments/desert.json\n"
       end
@@ -344,13 +344,13 @@ depends "foo"'
         end
       end
       when_the_repository "has a data bag" do
-        before { file "data_bags/bag/item.json", "" }
+        before do file "data_bags/bag/item.json", "" end
         it "knife deps /data_bags/bag shows no dependencies" do
           knife("deps /data_bags/bag").should_succeed("/data_bags/bag\n")
         end
       end
       when_the_repository "has a cookbook" do
-        before { file "cookbooks/blah/metadata.rb", 'name "blah"' }
+        before do file "cookbooks/blah/metadata.rb", 'name "blah"' end
         it "knife deps on a cookbook file shows no dependencies" do
           knife("deps /cookbooks/blah/metadata.rb").should_succeed(
             "/cookbooks/blah/metadata.rb\n"
@@ -364,7 +364,7 @@ depends "foo"'
     include_context "default config options"
 
     when_the_chef_server "has a role with no run_list" do
-      before { role "starring", {} }
+      before do role "starring", {} end
       it "knife deps reports no dependencies" do
         knife("deps --remote /roles/starring.json").should_succeed "/roles/starring.json\n"
       end
@@ -405,7 +405,7 @@ depends "foo"'
     end
 
     when_the_chef_server "has a node with no environment or run_list" do
-      before { node "mort", {} }
+      before do node "mort", {} end
       it "knife deps reports just the node" do
         knife("deps --remote /nodes/mort.json").should_succeed "/nodes/mort.json\n"
       end
@@ -454,13 +454,13 @@ depends "kettle"', "recipes" => { "default.rb" => "" } }
       end
     end
     when_the_chef_server "has a data bag" do
-      before { data_bag "bag", { "item" => {} } }
+      before do data_bag "bag", { "item" => {} } end
       it "knife deps reports just the data bag" do
         knife("deps --remote /data_bags/bag/item.json").should_succeed "/data_bags/bag/item.json\n"
       end
     end
     when_the_chef_server "has an environment" do
-      before { environment "desert", {} }
+      before do environment "desert", {} end
       it "knife deps reports just the environment" do
         knife("deps --remote /environments/desert.json").should_succeed "/environments/desert.json\n"
       end
@@ -678,7 +678,7 @@ depends "self"' }
         end
       end
       when_the_chef_server "has a data bag" do
-        before { data_bag "bag", { "item" => {} } }
+        before do data_bag "bag", { "item" => {} } end
         it "knife deps /data_bags/bag shows no dependencies" do
           knife("deps --remote /data_bags/bag").should_succeed("/data_bags/bag\n")
         end

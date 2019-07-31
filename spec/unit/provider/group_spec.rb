@@ -119,7 +119,7 @@ describe Chef::Provider::User do
     end
 
     it "should return true if the append is true and excluded_members include an existing user" do
-      @new_resource.members.each { |m| @new_resource.excluded_members << m }
+      @new_resource.members.each do |m| @new_resource.excluded_members << m end
       @new_resource.members.clear
       @new_resource.append(true)
       expect(@provider.compare_group).to be_truthy

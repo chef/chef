@@ -541,9 +541,9 @@ describe Chef::Knife::UI do
 
     shared_examples_for "confirm with negative answer" do
       it "confirm should exit 3" do
-        expect do
+        expect {
           run_confirm
-        end.to raise_error(SystemExit) { |e| expect(e.status).to eq(3) }
+        }.to raise_error(SystemExit) { |e| expect(e.status).to eq(3) }
       end
 
       it "confirm_without_exit should return false" do

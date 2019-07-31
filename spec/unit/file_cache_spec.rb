@@ -57,7 +57,7 @@ describe Chef::FileCache do
   describe "when loading cached files" do
     it "finds and reads the cached file" do
       FileUtils.mkdir_p(File.join(@file_cache_path, "whiz"))
-      File.open(File.join(@file_cache_path, "whiz", "bang"), "w") { |f| f.print("borkborkbork") }
+      File.open(File.join(@file_cache_path, "whiz", "bang"), "w") do |f| f.print("borkborkbork") end
       expect(Chef::FileCache.load("whiz/bang")).to eq("borkborkbork")
     end
 

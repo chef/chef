@@ -25,7 +25,7 @@ describe Chef::Provider::WhyrunSafeRubyBlock, "initialize" do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::WhyrunSafeRubyBlock.new("bloc party")
-    @new_resource.block { $evil_global_evil_laugh = :mwahahaha }
+    @new_resource.block do $evil_global_evil_laugh = :mwahahaha end
     @provider = Chef::Provider::WhyrunSafeRubyBlock.new(@new_resource, @run_context)
   end
 

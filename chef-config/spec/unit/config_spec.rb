@@ -297,7 +297,7 @@ RSpec.describe ChefConfig::Config do
           end
 
           context "when local mode is enabled" do
-            before { ChefConfig::Config[:local_mode] = true }
+            before do ChefConfig::Config[:local_mode] = true end
 
             it "returns nil" do
               expect(ChefConfig::Config.client_key).to be_nil
@@ -521,7 +521,7 @@ RSpec.describe ChefConfig::Config do
 
           context "when local mode is enabled" do
 
-            before { ChefConfig::Config[:local_mode] = true }
+            before do ChefConfig::Config[:local_mode] = true end
 
             it "defaults to 'hosted_everything'" do
               expect(ChefConfig::Config[:repo_mode]).to eq("hosted_everything")
@@ -529,7 +529,7 @@ RSpec.describe ChefConfig::Config do
 
             context "and osc_compat is enabled" do
 
-              before { ChefConfig::Config.chef_zero.osc_compat = true }
+              before do ChefConfig::Config.chef_zero.osc_compat = true end
 
               it "defaults to 'everything'" do
                 expect(ChefConfig::Config[:repo_mode]).to eq("everything")
@@ -541,7 +541,7 @@ RSpec.describe ChefConfig::Config do
 
             context "and the chef_server_url is multi-tenant" do
 
-              before { ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/example" }
+              before do ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/example" end
 
               it "defaults to 'hosted_everything'" do
                 expect(ChefConfig::Config[:repo_mode]).to eq("hosted_everything")
@@ -551,7 +551,7 @@ RSpec.describe ChefConfig::Config do
 
             context "and the chef_server_url is not multi-tenant" do
 
-              before { ChefConfig::Config[:chef_server_url] = "https://chef.example/" }
+              before do ChefConfig::Config[:chef_server_url] = "https://chef.example/" end
 
               it "defaults to 'everything'" do
                 expect(ChefConfig::Config[:repo_mode]).to eq("everything")
@@ -564,7 +564,7 @@ RSpec.describe ChefConfig::Config do
 
           context "when cookbook_path is set to a single path" do
 
-            before { ChefConfig::Config[:cookbook_path] = "/home/anne/repo/cookbooks" }
+            before do ChefConfig::Config[:cookbook_path] = "/home/anne/repo/cookbooks" end
 
             it "is set to a path one directory up from the cookbook_path" do
               expected = File.expand_path("/home/anne/repo")
@@ -605,7 +605,7 @@ RSpec.describe ChefConfig::Config do
 
           context "when cookbook_path is not set" do
 
-            before { ChefConfig::Config[:cookbook_path] = nil }
+            before do ChefConfig::Config[:cookbook_path] = nil end
 
             it "is set to the cache_path" do
               expect(ChefConfig::Config[:chef_repo_path]).to eq(ChefConfig::Config[:cache_path])
@@ -1285,7 +1285,7 @@ RSpec.describe ChefConfig::Config do
 
   describe "validation_client_name" do
     context "with a normal server URL" do
-      before { ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/myorg" }
+      before do ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/myorg" end
 
       it "sets the validation client to myorg-validator" do
         expect(ChefConfig::Config[:validation_client_name]).to eq "myorg-validator"
@@ -1293,7 +1293,7 @@ RSpec.describe ChefConfig::Config do
     end
 
     context "with an unusual server URL" do
-      before { ChefConfig::Config[:chef_server_url] = "https://chef.example/myorg" }
+      before do ChefConfig::Config[:chef_server_url] = "https://chef.example/myorg" end
 
       it "sets the validation client to chef-validator" do
         expect(ChefConfig::Config[:validation_client_name]).to eq "chef-validator"

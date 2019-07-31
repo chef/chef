@@ -51,9 +51,9 @@ describe "Chef::Win32::Security", :windows_only do
     end
 
     it "has_admin_privileges? returns false" do
-      has_admin_privileges = with_user_context(user, password, domain, :local) do
+      has_admin_privileges = with_user_context(user, password, domain, :local) {
         Chef::ReservedNames::Win32::Security.has_admin_privileges?
-      end
+      }
       expect(has_admin_privileges).to eq(false)
     end
   end

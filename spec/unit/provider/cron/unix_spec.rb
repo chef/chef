@@ -96,9 +96,9 @@ describe Chef::Provider::Cron::Unix do
       let (:exitstatus) { 2 }
 
       it "should raise an exception if another error occurs" do
-        expect do
+        expect {
           provider.send(:read_crontab)
-        end.to raise_error(Chef::Exceptions::Cron, "Error determining state of #{new_resource.name}, exit: 2")
+        }.to raise_error(Chef::Exceptions::Cron, "Error determining state of #{new_resource.name}, exit: 2")
       end
 
       it "logs the crontab output to debug" do
@@ -135,9 +135,9 @@ describe Chef::Provider::Cron::Unix do
     context "when writing the crontab fails" do
       let(:exitstatus) { 1 }
       it "should raise an exception if the command returns non-zero" do
-        expect do
+        expect {
           provider.send(:write_crontab, "Foo")
-        end.to raise_error(Chef::Exceptions::Cron, /Error updating state of #{new_resource.name}, exit: 1/)
+        }.to raise_error(Chef::Exceptions::Cron, /Error updating state of #{new_resource.name}, exit: 1/)
       end
     end
   end

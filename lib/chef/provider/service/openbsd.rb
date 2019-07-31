@@ -59,19 +59,19 @@ class Chef
           shared_resource_requirements
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { init_command }
+            a.assertion do init_command end
             a.failure_message Chef::Exceptions::Service, "#{new_resource}: unable to locate the rc.d script"
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { enabled_state_found }
+            a.assertion do enabled_state_found end
             # for consistency with original behavior, this will not fail in non-whyrun mode;
             # rather it will silently set enabled state=>false
             a.whyrun "Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled."
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { init_command && !builtin_service_enable_variable_name.nil? }
+            a.assertion do init_command && !builtin_service_enable_variable_name.nil? end
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end

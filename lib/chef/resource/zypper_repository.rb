@@ -22,8 +22,8 @@ class Chef
   class Resource
     class ZypperRepository < Chef::Resource
       resource_name :zypper_repository
-      provides(:zypper_repository) { true }
-      provides(:zypper_repo) { true }
+      provides(:zypper_repository) do true end
+      provides(:zypper_repo) do true end
 
       description "Use the zypper_repository resource to create Zypper package repositories on SUSE Enterprise Linux and openSUSE systems. This resource maintains full compatibility with the zypper_repository resource in the existing zypper cookbook."
       introduced "13.3"

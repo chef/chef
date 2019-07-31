@@ -23,7 +23,7 @@ class Chef
       require_relative "../util/path_helper"
 
       resource_name :windows_font
-      provides(:windows_font) { true }
+      provides(:windows_font) do true end
 
       description "Use the windows_font resource to install font files on Windows. By default, the font is sourced from the cookbook using the resource, but a URI source can be specified as well."
       introduced "14.0"
@@ -53,17 +53,17 @@ class Chef
         def retrieve_cookbook_font
           font_file = new_resource.font_name
           if new_resource.source
-            declare_resource(:remote_file, font_file) do
+            declare_resource(:remote_file, font_file) {
               action :nothing
               source source_uri
               path Chef::Util::PathHelper.join(ENV["TEMP"], font_file)
-            end.run_action(:create)
+            }.run_action(:create)
           else
-            declare_resource(:cookbook_file, font_file) do
+            declare_resource(:cookbook_file, font_file) {
               action    :nothing
               cookbook  cookbook_name.to_s unless cookbook_name.nil?
               path      Chef::Util::PathHelper.join(ENV["TEMP"], font_file)
-            end.run_action(:create)
+            }.run_action(:create)
           end
         end
 

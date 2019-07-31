@@ -194,9 +194,9 @@ describe Chef::Provider::Cron do
           # Chef Name: foo[bar] (baz)
           21 */4 * * * some_prog 1234567
         CRONTAB
-        expect do
+        expect {
           @provider.load_current_resource
-        end.not_to raise_error
+        }.not_to raise_error
       end
     end
 
@@ -799,9 +799,9 @@ describe Chef::Provider::Cron do
           it "should throw an error" do
             @new_resource.shell "/bash"
             @new_resource.environment "SHELL" => "/bash"
-            expect do
+            expect {
               @provider.run_action(:create)
-            end.to raise_error(Chef::Exceptions::Cron, /cronhole some stuff: the 'SHELL' property is set and environment property also contains the 'SHELL' variable. Remove the variable from the environment property./)
+            }.to raise_error(Chef::Exceptions::Cron, /cronhole some stuff: the 'SHELL' property is set and environment property also contains the 'SHELL' variable. Remove the variable from the environment property./)
           end
         end
 
@@ -1034,9 +1034,9 @@ describe Chef::Provider::Cron do
     it "should raise an exception if the command returns non-zero" do
       @status = double("Status", exitstatus: 1)
       allow(@provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-      expect do
+      expect {
         @provider.send(:write_crontab, "Foo")
-      end.to raise_error(Chef::Exceptions::Cron)
+      }.to raise_error(Chef::Exceptions::Cron)
     end
   end
 

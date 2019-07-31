@@ -46,7 +46,7 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:run) do |a|
-          a.assertion { supports_dsc_invoke_resource? }
+          a.assertion do supports_dsc_invoke_resource? end
           err = ["You must have PowerShell version >= 5.0.10018.0 to use dsc_resource."]
           a.failure_message Chef::Exceptions::ProviderNotFound,
             err
@@ -54,7 +54,7 @@ class Chef
           a.block_action!
         end
         requirements.assert(:run) do |a|
-          a.assertion { supports_refresh_mode_enabled? || dsc_refresh_mode_disabled? }
+          a.assertion do supports_refresh_mode_enabled? || dsc_refresh_mode_disabled? end
           err = ["The LCM must have its RefreshMode set to Disabled for" \
                  " PowerShell versions before 5.0.10586.0."]
           a.failure_message Chef::Exceptions::ProviderNotFound, err.join(" ")
@@ -62,7 +62,7 @@ class Chef
           a.block_action!
         end
         requirements.assert(:run) do |a|
-          a.assertion { module_usage_valid? }
+          a.assertion do module_usage_valid? end
           err = ["module_name must be supplied along with module_version."]
           a.failure_message Chef::Exceptions::DSCModuleNameMissing,
             err

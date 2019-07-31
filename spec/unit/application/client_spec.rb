@@ -392,10 +392,10 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
       end
 
       it "sleeps for the amount of time passed" do
-        pid = fork do
+        pid = fork {
           expect(@app).to receive(:interval_sleep).with(wait_secs)
           @app.run_application
-        end
+        }
         _pid, result = Process.waitpid2(pid)
 
         expect(result.exitstatus).to eq 0
@@ -523,18 +523,18 @@ describe Chef::Application::Client, "run_application", :unix_only do
       end
 
       it "should exit hard with exitstatus 3", :volatile do
-        pid = fork do
+        pid = fork {
           @app.run_application
-        end
+        }
         Process.kill("TERM", pid)
         _pid, result = Process.waitpid2(pid)
         expect(result.exitstatus).to eq(3)
       end
 
       it "should allow child to finish converging" do
-        pid = fork do
+        pid = fork {
           @app.run_application
-        end
+        }
         expect(@pipe[0].gets).to eq("started\n")
         Process.kill("TERM", pid)
         Process.wait(pid)
@@ -551,9 +551,9 @@ describe Chef::Application::Client, "run_application", :unix_only do
       end
 
       it "should exit gracefully when sent during converge" do
-        pid = fork do
+        pid = fork {
           @app.run_application
-        end
+        }
         expect(@pipe[0].gets).to eq("started\n")
         Process.kill("TERM", pid)
         _pid, result = Process.waitpid2(pid)
@@ -563,10 +563,10 @@ describe Chef::Application::Client, "run_application", :unix_only do
       end
 
       it "should exit hard when sent before converge" do
-        pid = fork do
+        pid = fork {
           sleep 3
           @app.run_application
-        end
+        }
         Process.kill("TERM", pid)
         _pid, result = Process.waitpid2(pid)
         expect(result.exitstatus).to eq(3)
@@ -585,9 +585,9 @@ describe Chef::Application::Client, "run_application", :unix_only do
     it "shouldn't sleep when sent USR1" do
       allow(@app).to receive(:interval_sleep).and_return true
       allow(@app).to receive(:interval_sleep).with(0).and_call_original
-      pid = fork do
+      pid = fork {
         @app.run_application
-      end
+      }
       _pid, result = Process.waitpid2(pid)
       expect(result.exitstatus).to eq(0)
     end

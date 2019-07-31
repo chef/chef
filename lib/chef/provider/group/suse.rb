@@ -32,7 +32,7 @@ class Chef
         def define_resource_requirements
           super
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exist?("/usr/sbin/groupmod") }
+            a.assertion do ::File.exist?("/usr/sbin/groupmod") end
             a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/sbin/groupmod for #{new_resource.name}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end
@@ -40,7 +40,7 @@ class Chef
           requirements.assert(:create, :manage, :modify) do |a|
             a.assertion do
               begin
-                to_add(new_resource.members).all? { |member| Etc.getpwnam(member) }
+                to_add(new_resource.members).all? do |member| Etc.getpwnam(member) end
               rescue
                 false
               end

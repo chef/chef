@@ -105,7 +105,7 @@ class Chef
 
         # validate an output_location file
         def validate_file!(file)
-          open(file, "a") {}
+          open(file, "a") do  end
         rescue Errno::ENOENT
           raise Chef::Exceptions::ConfigurationError,
             "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is a non existent file path."

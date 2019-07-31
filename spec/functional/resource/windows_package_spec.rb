@@ -70,7 +70,7 @@ describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
       subject { Chef::Resource::WindowsPackage.new(pkg_name, run_context) }
 
       context "multiple versions and a version given to remove" do
-        before { subject.version("8.0.56336") }
+        before do subject.version("8.0.56336") end
 
         it "removes specified version" do
           subject.run_action(:remove)
@@ -121,7 +121,7 @@ describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
   end
 
   describe "package version and installer type" do
-    after { subject.run_action(:remove) }
+    after do subject.run_action(:remove) end
 
     context "null soft" do
       let(:pkg_name) { "Ultra Defragmenter" }
