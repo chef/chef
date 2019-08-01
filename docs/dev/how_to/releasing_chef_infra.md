@@ -51,7 +51,7 @@ Also, make sure to announce the build on any social media platforms that you occ
 
 ### Update homebrew Content
 
-Many of our users consume Chef via Homebrew using our casks. Make sure to update those here: https://github.com/chef/homebrew-chef
+Many of our users consume Chef via Homebrew using our casks. Expeditor will create a pull request to update the Chef Homebrew cask, which will need to be merged here: https://github.com/chef/homebrew-chef
 
 ### Update Chocolatey Packages
 

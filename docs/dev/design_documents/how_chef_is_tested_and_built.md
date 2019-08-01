@@ -15,9 +15,8 @@ We can't just merge any old change, so we run various checks against your submit
     - Unit, functional, and integration tests on all supported Ruby releases. These run on Ubuntu, CentOS and openSUSE so we can make sure our functional / integration tests run on the platforms where user's consume Chef Infra.
     - Chefstyle Ruby linting
     - Unit tests from chef-sugar, chef-zero, cheffish, chefspec, and knife-windows against the chef code in your PR
-  - **Travis**:
-  We run full Test Kitchen integration tests that covers common Chef usage on various different Linux Distros in Travis-CI. Those integration tests run using the kitchen-dokken plugin and the dokken-images Docker containers, which do their best to replicate a real Linux system. You can see the exactly what we test here: https://github.com/chef/chef/blob/master/kitchen-tests/cookbooks/end_to_end/recipes/default.rb
-  - **Appveyor**: Buildkite & Travis do a great job of testing PRs against Linux hosts, but many rspec tests require a Windows system to run, and for this, we test in Appveyor. In Appveyor, we run our unit, integration, and functional specs against our supported Ruby releases, but this time, we do it on Windows.
+    - Full Test Kitchen integration tests that covers common Chef usage on various different Linux Distros. Those integration tests run using the kitchen-dokken plugin and the dokken-images Docker containers, which do their best to replicate a real Linux system. You can see the exactly what we test here: https://github.com/chef/chef/blob/master/kitchen-tests/cookbooks/end_to_end/recipes/default.rb
+  - **Appveyor**: Buildkite does a great job of testing PRs against Linux hosts, but many rspec tests require a Windows system to run, and for this, we test in Appveyor. In Appveyor, we run our unit, integration, and functional specs against our supported Ruby releases, but this time, we do it on Windows.
 
 ## PR is Reviewed and Merged
 
@@ -29,12 +28,12 @@ Your PR will be reviewed for Chef and Ruby correctness, overall design, and like
 
 Every commit that we merge into Chef Infra should be ready to release. In order to ensure that's possible, each merged PR increments the patch version of the application and is noted in the changelog. This is performed automatically by our Expeditor tool. If you'd like to avoid one or both of these steps, there are Expeditor GitHub issue labels that can be applied to skip either.
 
-## Jenkins Build / Test
+## Buildkite Build / Test Pipeline
 
-Once the version has been incremented, Expeditor will begin a build matrix in our internal Jenkins CI cluster. In Jenkins, we build omnibus-based system packages of Chef Infra for multiple platforms, distros, and architectures. Each of the platforms we build are those which will eventually be available on our downloads site if this build is successful and later promoted. Upon completion, builds are promoted to the `unstable` channel and are available to any system supporting our Omnitruck API (Test Kitchen, mixlib-install, etc).
+Once the version has been incremented, Expeditor will begin a build matrix in our internal Buildkite pipeline. In Buiildkitie, we build omnibus-based system packages of Chef Infra for multiple platforms, distros, and architectures. Each of the platforms we build are those which will eventually be available on our downloads site if this build is successful and later promoted. Upon completion, builds are promoted to the `unstable` channel and are available to any system supporting our Omnitruck API (Test Kitchen, mixlib-install, etc).
 
-Once the builds complete, Jenkins will move to the test phase where each of these builds will be verified on all the platforms that Chef officially supports. For many build artifacts, this means the artifact tests on multiple versions of the same platform. For example, Chef is built on Windows 2012 R2, yet tests are run on 2008, 2012, 2012 R2, and 2016 to ensure full compatibility. In total, this phase includes nearly three dozen test nodes. Assuming all tests pass, the build will be promoted to the `current` channel, which is available on the downloads site, in addition to being available via the Omnitruck API.
+Once the builds complete, Buildkite will move to the test phase where each of these builds will be verified on all the platforms that Chef officially supports. For many build artifacts, this means the artifact tests on multiple versions of the same platform. For example, Chef is built on Windows 2012 R2, yet tests are run on 2008, 2012, 2012 R2, and 2016 to ensure full compatibility. In total, this phase includes nearly three dozen test nodes. Assuming all tests pass, the build will be promoted to the `current` channel, which is available on the downloads site, in addition to being available via the Omnitruck API.
 
 ## Releasing Chef
 
-Once a build has been blessed by our Jenkins gauntlet and everyone has agreed that we are ready to release, an artifact can be promoted from current to stable channels. For the complete release process see [Releasing Chef Infra Client](../how_to/releasing_chef_infra.md)
+Once a build has been blessed by our Buildkite gauntlet and everyone has agreed that we are ready to release, an artifact can be promoted from current to stable channels. For the complete release process see [Releasing Chef Infra Client](../how_to/releasing_chef_infra.md)

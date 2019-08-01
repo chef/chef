@@ -1,6 +1,6 @@
-# End-To-End Testing for Chef Client
+# End-To-End Testing for Chef Infra Client
 
-Here we seek to provide end-to-end testing of Chef Client through cookbooks which exercise many of the available resources, providers, and common patterns. The cookbooks here are designed to ensure certain capabilities remain functional with updates to the client code base.
+Here we seek to provide end-to-end testing of Chef Infra Client through cookbooks which exercise many of the available resources, providers, and common patterns. The cookbooks here are designed to ensure certain capabilities remain functional with updates to the client code base.
 
 ## Getting started
 
@@ -25,7 +25,7 @@ end-to-end-amazonlinux    Dokken  Dokken       Inspec    Dokken     <Not Created
 
 ## Testing
 
-We use Test Kitchen to build instances, test client code, and destroy instances. If you are unfamiliar with Test Kitchen, we recommend checking out the [tutorial](http://kitchen.ci/) along with the `kitchen-dokken` [driver documentation](https://github.com/someara/kitchen-dokken). Test Kitchen is configured to manipulate instances using [Docker](https://www.docker.com/) when testing locally, and when testing, pull requests on [Travis CI](https://travis-ci.com/).
+We use Test Kitchen to build instances, test client code, and destroy instances. If you are unfamiliar with Test Kitchen, we recommend checking out the [tutorial](http://kitchen.ci/) along with the `kitchen-dokken` [driver documentation](https://github.com/someara/kitchen-dokken). Test Kitchen is configured to manipulate instances using [Docker](https://www.docker.com/) when testing locally, and when testing, pull requests on [Buildkite](https://buildkite.com/chef-oss/chef-chef-master-verify).
 
 ### Commands
 
@@ -66,7 +66,7 @@ The branch you choose must be accessible on GitHub. You cannot use a local commi
 
 ### Testing pull requests
 
-These end-to-end tests are also configured to run on Travis-CI with Docker containers when you submit a pull request to `chef/chef`. Kitchen is configured to pull chef client source code from the branch it is testing. There is no need to modify `kitchen.yml` unless you are contributing tests.
+These end-to-end tests are also configured to run on Buildkite with Docker containers when you submit a pull request to `chef/chef`. Kitchen is configured to pull chef client source code from the branch it is testing. There is no need to modify `kitchen.yml` unless you are contributing tests.
 
 ## Contributing
 
