@@ -108,9 +108,11 @@ class Chef
           #       RX errors 0  dropped 0  overruns 0  frame 0
           #       TX packets 1244218  bytes 977339327 (932.0 MiB)
           #       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+          #
+          # Permalink for addr_regex : https://rubular.com/r/JrykUpfjRnYeQD
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
-            addr_regex = /^(\w+):?(\d*):?\ .+$/
+            addr_regex = /^((\w|-)+):?(\d*):?\ .+$/
             if line =~ addr_regex
               if line.match(addr_regex).nil?
                 @int_name = "nil"
