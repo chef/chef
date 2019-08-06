@@ -18,6 +18,7 @@
 require "train"
 require "tempfile" unless defined?(Tempfile)
 require "uri" unless defined?(URI)
+require "securerandom" unless defined?(SecureRandom)
 
 class Chef
   class Knife
@@ -32,7 +33,7 @@ class Chef
           $tmp.FullName
         EOM
 
-        MKTEMP_NIX_COMMAND ||= "bash -c 'd=$(mktemp -d ${TMPDIR:-/tmp}/chef_XXXXXX); echo $d'".freeze
+        DEFAULT_REMOTE_TEMP ||= "/tmp".freeze
 
         def initialize(host_url, default_protocol, opts)
           @host_url = host_url
@@ -114,22 +115,24 @@ class Chef
         #
         # @return [String] the temporary path created on the remote host.
         def temp_dir
-          cmd = windows? ? MKTEMP_WIN_COMMAND : MKTEMP_NIX_COMMAND
           @tmpdir ||= begin
-                        res = run_command!(cmd)
-                        # Since pty is enabled in the connection, stderr to be merged into stdout.
-                        # So, there are cases where unnecessary multi-line output
-                        # is included before the result of mktemp.
-                        dir = res.stdout.split.last
-                        unless windows?
-                          # Ensure that dir has the correct owner.  We are possibly
-                          # running with sudo right now - so this directory would be owned by root.
-                          # File upload is performed over SCP as the current logged-in user,
-                          # so we'll set ownership to ensure that works.
-                          run_command!("chown #{config[:user]} '#{dir}'")
-                        end
-                        dir
-                      end
+            if windows?
+              run_command!(MKTEMP_WIN_COMMAND).stdout.split.last
+            else
+              # Get a 6 chars string using secure random
+              # eg. /tmp/chef_XXXXXX.
+              # Use mkdir to create TEMP dir to get rid of mktemp
+              dir = "#{DEFAULT_REMOTE_TEMP}/chef_#{SecureRandom.alphanumeric(6)}"
+              cmd = "mkdir -p %s" % dir
+              # Ensure that dir has the correct owner.  We are possibly
+              # running with sudo right now - so this directory would be owned by root.
+              # File upload is performed over SCP as the current logged-in user,
+              # so we'll set ownership to ensure that works.
+              cmd += " && chown #{config[:user]} '#{dir}'"
+              run_command!(cmd)
+              dir
+            end
+          end
         end
 
         #
