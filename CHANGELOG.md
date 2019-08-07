@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.12 -->
-## [v15.2.12](https://github.com/chef/chef/tree/v15.2.12) (2019-08-05)
+<!-- latest_release 15.2.13 -->
+## [v15.2.13](https://github.com/chef/chef/tree/v15.2.13) (2019-08-07)
 
 #### Merged Pull Requests
-- Cleanup of habitat/plan.sh for chef-infra-client [#8789](https://github.com/chef/chef/pull/8789) ([afiune](https://github.com/afiune))
+- Stop building Chef Infra Client on SLES 11 [#8796](https://github.com/chef/chef/pull/8796) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Stop building Chef Infra Client on SLES 11 [#8796](https://github.com/chef/chef/pull/8796) ([tas50](https://github.com/tas50)) <!-- 15.2.13 -->
 - Cleanup of habitat/plan.sh for chef-infra-client [#8789](https://github.com/chef/chef/pull/8789) ([afiune](https://github.com/afiune)) <!-- 15.2.12 -->
 - Bump inspec-core-bin to 4.10.4 and Ohai to 15.2.4 [#8788](https://github.com/chef/chef/pull/8788) ([chef-ci](https://github.com/chef-ci)) <!-- 15.2.11 -->
 - Remove Travis / Jenkins config / docs [#8786](https://github.com/chef/chef/pull/8786) ([tas50](https://github.com/tas50)) <!-- 15.2.10 -->
