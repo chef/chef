@@ -347,7 +347,7 @@ class Chef
     #   `get`, the non-lazy, coerced, validated value will always be returned.
     #
     def call(resource, value = NOT_PASSED)
-      if value == NOT_PASSED
+      if NOT_PASSED == value
         get(resource)
       else
         set(resource, value)
