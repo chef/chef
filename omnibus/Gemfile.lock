@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 035cc8392be8906b4c13e7dd2048d9c659fd034e
+  revision: 33bddeefb10afe23a57ea72807625881ab01990f
   branch: master
   specs:
-    omnibus (6.0.30)
+    omnibus (6.1.0)
       aws-sdk-s3 (~> 1)
       chef-sugar (>= 3.3)
       cleanroom (~> 1.0)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 5a7c68f463b2b2cf553730ba146d5f512089d501
+  revision: 501b5e51a26f4fc8a31c458252c361fdd0767efd
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -30,19 +30,20 @@ GEM
   specs:
     addressable (2.6.0)
       public_suffix (>= 2.0.2, < 4.0)
+    artifactory (3.0.5)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.175.0)
-    aws-sdk-core (3.55.0)
+    aws-partitions (1.196.0)
+    aws-sdk-core (3.62.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.21.0)
-      aws-sdk-core (~> 3, >= 3.53.0)
+    aws-sdk-kms (1.24.0)
+      aws-sdk-core (~> 3, >= 3.61.1)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.42.0)
-      aws-sdk-core (~> 3, >= 3.53.0)
+    aws-sdk-s3 (1.46.0)
+      aws-sdk-core (~> 3, >= 3.61.1)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.1.0)
@@ -64,11 +65,11 @@ GEM
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.3)
-    chef (15.0.300)
+    chef (15.1.36)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 15.0.300)
+      chef-config (= 15.1.36)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -81,7 +82,7 @@ GEM
       license-acceptance (~> 1.0, >= 1.0.5)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (~> 2.1)
-      mixlib-cli (>= 1.7, < 3.0)
+      mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 2.4, < 4.0)
       net-sftp (~> 2.1, >= 2.1.2)
@@ -94,11 +95,11 @@ GEM
       train-core (~> 2.0, >= 2.0.12)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (15.0.300-universal-mingw32)
+    chef (15.1.36-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 15.0.300)
+      chef-config (= 15.1.36)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -112,7 +113,7 @@ GEM
       license-acceptance (~> 1.0, >= 1.0.5)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (~> 2.1)
-      mixlib-cli (>= 1.7, < 3.0)
+      mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 2.4, < 4.0)
       net-sftp (~> 2.1, >= 2.1.2)
@@ -136,7 +137,7 @@ GEM
       win32-service (>= 2.1.2, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
-    chef-config (15.0.300)
+    chef-config (15.1.36)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
@@ -154,14 +155,14 @@ GEM
     concurrent-ruby (1.1.5)
     diff-lcs (1.3)
     ed25519 (1.2.4)
-    equatable (0.5.0)
+    equatable (0.6.1)
     erubis (2.7.0)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     ffi (1.11.1)
     ffi (1.11.1-x64-mingw32)
     ffi (1.11.1-x86-mingw32)
-    ffi-libarchive (0.4.6)
+    ffi-libarchive (0.4.10)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
       ffi
@@ -233,7 +234,7 @@ GEM
     nori (2.6.0)
     octokit (4.14.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (15.1.3)
+    ohai (15.1.5)
       chef-config (>= 12.8, < 16)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -245,9 +246,9 @@ GEM
       plist (~> 3.1)
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
-    pastel (0.7.2)
-      equatable (~> 0.5.0)
-      tty-color (~> 0.4.0)
+    pastel (0.7.3)
+      equatable (~> 0.6)
+      tty-color (~> 0.5)
     pedump (0.5.2)
       awesome_print
       iostruct (>= 0.0.4)
@@ -257,7 +258,7 @@ GEM
     plist (3.5.0)
     progressbar (1.10.1)
     proxifier (1.0.3)
-    public_suffix (3.1.0)
+    public_suffix (3.1.1)
     rack (2.0.7)
     retryable (3.0.4)
     ruby-progressbar (1.10.1)
@@ -295,7 +296,7 @@ GEM
     toml-rb (1.1.2)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.2.8)
-    train-core (2.1.7)
+    train-core (2.1.19)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 3.0)
@@ -306,7 +307,7 @@ GEM
       pastel (~> 0.7.2)
       strings (~> 0.1.5)
       tty-cursor (~> 0.7)
-    tty-color (0.4.3)
+    tty-color (0.5.0)
     tty-cursor (0.7.0)
     tty-prompt (0.19.0)
       necromancer (~> 0.5.0)
@@ -371,6 +372,7 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  artifactory
   berkshelf (>= 7.0)
   kitchen-vagrant (>= 1.3.1)
   ohai

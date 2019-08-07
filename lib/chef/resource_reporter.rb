@@ -35,7 +35,7 @@ class Chef
       as_hash["id"]       = new_resource.identity.to_s
       as_hash["after"]    = new_resource.state_for_resource_reporter
       as_hash["before"]   = current_resource ? current_resource.state_for_resource_reporter : {}
-      as_hash["duration"] = ( action_record.elapsed_time * 1000 ).to_i
+      as_hash["duration"] = ( action_record.elapsed_time * 1000 ).to_i.to_s
       as_hash["delta"]    = new_resource.diff if new_resource.respond_to?("diff")
       as_hash["delta"]    = "" if as_hash["delta"].nil?
 

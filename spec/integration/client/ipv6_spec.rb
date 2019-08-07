@@ -63,7 +63,7 @@ describe "chef-client" do
   let(:basic_config_file) do
     <<~END_CLIENT_RB
       chef_server_url "http://[::1]:8900"
-      validation_key '#{path_to('config/validator.pem')}'
+      validation_key '#{path_to("config/validator.pem")}'
       cache_path '#{cache_path}'
       client_key '#{cache_path}/client.pem'
     END_CLIENT_RB
@@ -75,7 +75,7 @@ describe "chef-client" do
 
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
 
-  let(:chef_client_cmd) { %Q{bundle exec chef-client --minimal-ohai -c "#{path_to('config/client.rb')}" -lwarn} }
+  let(:chef_client_cmd) { %Q{bundle exec chef-client --minimal-ohai -c "#{path_to("config/client.rb")}" -lwarn} }
 
   after do
     FileUtils.rm_rf(cache_path)

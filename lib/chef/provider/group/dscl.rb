@@ -40,6 +40,7 @@ class Chef
           return "" if ( args.first =~ /^delete/ ) && ( result[1].exitstatus != 0 )
           raise(Chef::Exceptions::Group, "dscl error: #{result.inspect}") unless result[1].exitstatus == 0
           raise(Chef::Exceptions::Group, "dscl error: #{result.inspect}") if result[2] =~ /No such key: /
+
           result[2]
         end
 
@@ -88,6 +89,7 @@ class Chef
 
         def gid_used?(gid)
           return false unless gid
+
           search_gids = safe_dscl("search", "/Groups", "PrimaryGroupID", gid.to_s)
 
           # dscl -search should not return anything if the gid doesn't exist,
@@ -99,13 +101,14 @@ class Chef
         def set_gid
           new_resource.gid(get_free_gid) if [nil, ""].include? new_resource.gid
           raise(Chef::Exceptions::Group, "gid is already in use") if gid_used?(new_resource.gid)
+
           safe_dscl("create", "/Groups/#{new_resource.group_name}", "PrimaryGroupID", new_resource.gid)
         end
 
         def set_members
           # First reset the memberships if the append is not set
           unless new_resource.append
-            logger.trace("#{new_resource} removing group members #{current_resource.members.join(' ')}") unless current_resource.members.empty?
+            logger.trace("#{new_resource} removing group members #{current_resource.members.join(" ")}") unless current_resource.members.empty?
             safe_dscl("create", "/Groups/#{new_resource.group_name}", "GroupMembers", "") # clear guid list
             safe_dscl("create", "/Groups/#{new_resource.group_name}", "GroupMembership", "") # clear user list
             current_resource.members([ ])
@@ -118,7 +121,7 @@ class Chef
               members_to_be_added << member unless current_resource.members.include?(member)
             end
             unless members_to_be_added.empty?
-              logger.trace("#{new_resource} setting group members #{members_to_be_added.join(', ')}")
+              logger.trace("#{new_resource} setting group members #{members_to_be_added.join(", ")}")
               safe_dscl("append", "/Groups/#{new_resource.group_name}", "GroupMembership", *members_to_be_added)
             end
           end
@@ -130,7 +133,7 @@ class Chef
               members_to_be_removed << member if current_resource.members.include?(member)
             end
             unless members_to_be_removed.empty?
-              logger.trace("#{new_resource} removing group members #{members_to_be_removed.join(', ')}")
+              logger.trace("#{new_resource} removing group members #{members_to_be_removed.join(", ")}")
               safe_dscl("delete", "/Groups/#{new_resource.group_name}", "GroupMembership", *members_to_be_removed)
             end
           end

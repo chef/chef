@@ -98,7 +98,7 @@ class Chef
       end
 
       def normalize_item_paths(args)
-        paths = Array.new
+        paths = []
         args.each do |path|
           if File.directory?(path)
             paths.concat(Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path), "*.json")))

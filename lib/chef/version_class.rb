@@ -33,7 +33,7 @@ class Chef
     end
 
     def <=>(other)
-      [:major, :minor, :patch].each do |method|
+      %i{major minor patch}.each do |method|
         version = send(method)
         begin
           ans = (version <=> other.send(method))

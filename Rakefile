@@ -20,6 +20,7 @@
 require_relative "tasks/rspec"
 require_relative "tasks/dependencies"
 require_relative "tasks/announce"
+require_relative "tasks/docs"
 
 ENV["CHEF_LICENSE"] = "accept-no-persist"
 

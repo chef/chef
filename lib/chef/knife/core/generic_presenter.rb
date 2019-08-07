@@ -201,13 +201,13 @@ class Chef
               end
           end
           # necessary (?) for coercing objects (the run_list object?) to hashes
-          ( !data.kind_of?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
+          ( !data.is_a?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
         end
 
         def format_cookbook_list_for_display(item)
           if config[:with_uri]
             item.inject({}) do |collected, (cookbook, versions)|
-              collected[cookbook] = Hash.new
+              collected[cookbook] = {}
               versions["versions"].each do |ver|
                 collected[cookbook][ver["version"]] = ver["url"]
               end
@@ -218,9 +218,9 @@ class Chef
               collected[cookbook] = versions["versions"].map { |v| v["version"] }
               collected
             end
-            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map { |name| name.size }.max + 2
+            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map(&:size).max + 2
             versions_by_cookbook.sort.map do |cookbook, versions|
-              "#{cookbook.ljust(key_length)} #{versions.join('  ')}"
+              "#{cookbook.ljust(key_length)} #{versions.join("  ")}"
             end
           end
         end

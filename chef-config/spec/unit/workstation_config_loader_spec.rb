@@ -375,7 +375,8 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
       before do
         ChefConfig::Config[:config_d_dir] = tempdir
         allow(config_loader).to receive(:path_exists?).with(
-          an_instance_of(String)).and_return(false)
+          an_instance_of(String)
+        ).and_return(false)
       end
 
       after do
@@ -516,7 +517,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
             -----BEGIN RSA PRIVATE KEY-----
             foo
           EOH
-)
+                                                              )
         end
       end
 

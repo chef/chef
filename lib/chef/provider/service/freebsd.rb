@@ -118,7 +118,7 @@ class Chef
         private
 
         def read_rc_conf
-          ::File.open("/etc/rc.conf", "r") { |file| file.readlines }
+          ::File.open("/etc/rc.conf", "r", &:readlines)
         end
 
         def write_rc_conf(lines)

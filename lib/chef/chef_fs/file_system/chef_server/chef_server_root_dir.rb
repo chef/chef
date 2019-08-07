@@ -186,7 +186,7 @@ class Chef
                   RestListDir.new("users", self, nil, Chef::ChefFS::DataHandler::UserDataHandler.new),
                 ]
               end
-              result.sort_by { |child| child.name }
+              result.sort_by(&:name)
             end
           end
         end

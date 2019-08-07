@@ -72,7 +72,7 @@ class Mash < Hash
     super
     # Handle nested values
     each do |k, v|
-      if v.kind_of?(Mash) || v.is_a?(Array)
+      if v.is_a?(Mash) || v.is_a?(Array)
         self[k] = v.dup
       end
     end
@@ -210,7 +210,7 @@ class Mash < Hash
   #
   # @api private
   def convert_key(key)
-    key.kind_of?(Symbol) ? key.to_s : key
+    key.is_a?(Symbol) ? key.to_s : key
   end
 
   # @param value<Object> The value to convert.

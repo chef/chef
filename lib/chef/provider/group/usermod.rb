@@ -59,6 +59,7 @@ class Chef
           unless new_resource.action.include?(:create)
             raise Chef::Exceptions::UnsupportedAction, "Setting members directly is not supported by #{self}"
           end
+
           members.each do |member|
             add_member(member)
           end

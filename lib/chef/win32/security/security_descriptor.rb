@@ -41,7 +41,8 @@ class Chef
         end
 
         def dacl
-          raise "DACL not present" if !dacl_present?
+          raise "DACL not present" unless dacl_present?
+
           present, acl, defaulted = Chef::ReservedNames::Win32::Security.get_security_descriptor_dacl(self)
           acl
         end
@@ -65,7 +66,8 @@ class Chef
         end
 
         def sacl
-          raise "SACL not present" if !sacl_present?
+          raise "SACL not present" unless sacl_present?
+
           Security.with_privileges("SeSecurityPrivilege") do
             present, acl, defaulted = Chef::ReservedNames::Win32::Security.get_security_descriptor_sacl(self)
             acl

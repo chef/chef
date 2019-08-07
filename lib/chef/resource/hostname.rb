@@ -27,24 +27,24 @@ class Chef
       introduced "14.0"
 
       property :hostname, String,
-               description: "An optional property to set the hostname if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the hostname if it differs from the resource block's name.",
+        name_property: true
 
       property :compile_time, [ TrueClass, FalseClass ],
-               description: "Determines whether or not the resource shoul be run at compile time.",
-               default: true, desired_state: false
+        description: "Determines whether or not the resource should be run at compile time.",
+        default: true, desired_state: false
 
       property :ipaddress, String,
-               description: "The IP address to use when configuring the hosts file.",
-               default: lazy { node["ipaddress"] }, default_description: "The node's IP address as determined by Ohai."
+        description: "The IP address to use when configuring the hosts file.",
+        default: lazy { node["ipaddress"] }, default_description: "The node's IP address as determined by Ohai."
 
       property :aliases, [ Array, nil ],
-               description: "An array of hostname aliases to use when configuring the hosts file.",
-               default: nil
+        description: "An array of hostname aliases to use when configuring the hosts file.",
+        default: nil
 
       property :windows_reboot, [ TrueClass, FalseClass ],
-               description: "Determines whether or not Windows should be reboot after changing the hostname, as this is required for the change to take effect.",
-               default: true
+        description: "Determines whether or not Windows should be reboot after changing the hostname, as this is required for the change to take effect.",
+        default: true
 
       action_class do
         def append_replacing_matching_lines(path, regex, string)
@@ -203,7 +203,7 @@ class Chef
             declare_resource(:execute, "svccfg -s system/identity:node setprop config/nodename=\'#{new_resource.hostname}\'") do
               notifies :run, "execute[svcadm refresh]", :immediately
               notifies :run, "execute[svcadm restart]", :immediately
-              not_if { shell_out!("svccfg -s system/identity:node listprop config/nodename").stdout.chomp =~ /config\/nodename\s+astring\s+#{new_resource.hostname}/ }
+              not_if { shell_out!("svccfg -s system/identity:node listprop config/nodename").stdout.chomp =~ %r{config/nodename\s+astring\s+#{new_resource.hostname}} }
             end
             declare_resource(:execute, "svcadm refresh") do
               command "svcadm refresh system/identity:node"

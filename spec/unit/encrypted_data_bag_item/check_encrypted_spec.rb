@@ -47,7 +47,8 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
             "a1" => [1, 2, 3],
             "a2" => { "b1" => true },
         },
-    } end
+    }
+    end
 
     let(:version) { 1 }
     let(:encoded_data) do

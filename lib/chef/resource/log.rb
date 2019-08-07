@@ -39,12 +39,12 @@ class Chef
                   " of the log resource.)"
 
       property :message, String,
-               name_property: true, identity: true,
-               description: "The message to be added to a log file. If not specified we'll use the resource's name instead."
+        name_property: true, identity: true,
+        description: "The message to be added to a log file. If not specified we'll use the resource's name instead."
 
       property :level, Symbol,
-               equal_to: [ :debug, :info, :warn, :error, :fatal ], default: :info,
-               description: "The logging level to display this message at."
+        equal_to: %i{debug info warn error fatal}, default: :info,
+        description: "The logging level to display this message at."
 
       allowed_actions :write
       default_action :write

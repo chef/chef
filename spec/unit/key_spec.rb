@@ -66,7 +66,7 @@ describe Chef::Key do
 
     context "when you feed it anything but a string" do
       it "should raise an ArgumentError" do
-        expect { key.send(field, Hash.new) }.to raise_error(ArgumentError)
+        expect { key.send(field, {}) }.to raise_error(ArgumentError)
       end
     end
   end
@@ -406,9 +406,9 @@ describe Chef::Key do
 
           it "creates a new key via the API with the fingerprint as the name" do
             expect(rest).to receive(:post).with(url,
-                                                     { "name" => "12:3e:33:73:0b:f4:ec:72:dc:f0:4c:51:62:27:08:76:96:24:f4:4a",
-                                                       "public_key" => key.public_key,
-                                                       "expiration_date" => key.expiration_date }).and_return({})
+              { "name" => "12:3e:33:73:0b:f4:ec:72:dc:f0:4c:51:62:27:08:76:96:24:f4:4a",
+                "public_key" => key.public_key,
+                "expiration_date" => key.expiration_date }).and_return({})
             key.create
           end
         end
@@ -424,9 +424,9 @@ describe Chef::Key do
           context "when create_key is false" do
             it "creates a new key via the API" do
               expect(rest).to receive(:post).with(url,
-                                                       { "name" => key.name,
-                                                         "public_key" => key.public_key,
-                                                         "expiration_date" => key.expiration_date }).and_return({})
+                { "name" => key.name,
+                  "public_key" => key.public_key,
+                  "expiration_date" => key.expiration_date }).and_return({})
               key.create
             end
           end

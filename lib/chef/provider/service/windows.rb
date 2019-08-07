@@ -103,7 +103,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
               if ex.errno == ERROR_SERVICE_LOGON_FAILED
                 logger.error ex.message
                 raise Chef::Exceptions::Service,
-                "Service #{@new_resource} did not start due to a logon failure (error #{ERROR_SERVICE_LOGON_FAILED}): possibly the specified user '#{@new_resource.run_as_user}' does not have the 'log on as a service' privilege, or the password is incorrect."
+                  "Service #{@new_resource} did not start due to a logon failure (error #{ERROR_SERVICE_LOGON_FAILED}): possibly the specified user '#{@new_resource.run_as_user}' does not have the 'log on as a service' privilege, or the password is incorrect."
               else
                 raise ex
               end
@@ -209,10 +209,10 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     end
 
     converge_if_changed :service_type, :startup_type, :error_control,
-                        :binary_path_name, :load_order_group, :dependencies,
-                        :run_as_user, :display_name, :description do
-      Win32::Service.configure(windows_service_config(:configure))
-    end
+      :binary_path_name, :load_order_group, :dependencies,
+      :run_as_user, :display_name, :description do
+        Win32::Service.configure(windows_service_config(:configure))
+      end
 
     converge_delayed_start
   end
@@ -307,7 +307,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   # remove characters that make for broken or wonky filenames.
   def clean_username_for_path(username)
-    username.gsub(/[\/\\. ]+/, "_")
+    username.gsub(%r{[/\\. ]+}, "_")
   end
 
   def canonicalize_username(username)
@@ -330,6 +330,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     loop do
       break if current_state == desired_state
       raise Timeout::Error if ( retries += 1 ) > resource_timeout
+
       sleep 1
     end
   end

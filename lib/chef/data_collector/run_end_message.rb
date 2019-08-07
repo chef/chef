@@ -85,12 +85,14 @@ class Chef
         # @return [Integer] the number of resources successfully updated in the chef-client run
         def updated_resource_count(action_collection)
           return 0 if action_collection.nil?
+
           action_collection.filtered_collection(up_to_date: false, skipped: false, unprocessed: false, failed: false).count
         end
 
         # @return [Array<Chef::ActionCollection::ActionRecord>] list of all action_records for all resources
         def action_records(action_collection)
           return [] if action_collection.nil?
+
           action_collection.action_records
         end
 

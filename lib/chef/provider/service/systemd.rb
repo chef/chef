@@ -62,8 +62,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   end
 
   # systemd supports user services just fine
-  def user_services_requirements
-  end
+  def user_services_requirements; end
 
   def define_resource_requirements
     shared_resource_requirements
@@ -78,6 +77,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   def get_systemctl_options_args
     if new_resource.user
       raise NotImplementedError, "#{new_resource} does not support the user property on a target_mode host (yet)" if Chef::Config.target_mode?
+
       uid = Etc.getpwnam(new_resource.user).uid
       options = {
         environment: {

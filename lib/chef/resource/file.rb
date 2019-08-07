@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,14 +55,14 @@ class Chef
       property :path, String, name_property: true, identity: true,
                description: "The full path to the file, including the file name and its extension. For example: /files/file.txt. Default value: the name of the resource block. Microsoft Windows: A path that begins with a forward slash (/) will point to the root of the current working directory of the #{Chef::Dist::CLIENT} process. This path can vary from system to system. Therefore, using a path that begins with a forward slash (/) is not recommended."
 
-      property :atomic_update, [ TrueClass, FalseClass ], desired_state: false, default: lazy { |r| r.docker? && r.special_docker_files?(r.path) ? false : Chef::Config[:file_atomic_update] },
+      property :atomic_update, [ TrueClass, FalseClass ], desired_state: false, default: lazy { docker? && special_docker_files?(path) ? false : Chef::Config[:file_atomic_update] },
                description: "Perform atomic file updates on a per-resource basis. Set to true for atomic file updates. Set to false for non-atomic file updates. This setting overrides file_atomic_update, which is a global setting found in the client.rb file."
 
       property :backup, [ Integer, FalseClass ], desired_state: false, default: 5,
                description: "The number of backups to be kept in /var/chef/backup (for UNIX- and Linux-based platforms) or C:/chef/backup (for the Microsoft Windows platform). Set to false to prevent backups from being kept."
 
       property :checksum, [ /^[a-zA-Z0-9]{64}$/, nil ],
-               description: "The SHA-256 checksum of the file. Use to ensure that a specific file is used. If the checksum does not match, the file is not used."
+        description: "The SHA-256 checksum of the file. Use to ensure that a specific file is used. If the checksum does not match, the file is not used."
 
       property :content, [ String, nil ], desired_state: false,
                description: "A string that is written to the file. The contents of this property replace any previous content when this property has something other than the default value. The default behavior will not modify content."
@@ -78,7 +78,7 @@ class Chef
       property :verifications, Array, default: lazy { [] }
 
       def verify(command = nil, opts = {}, &block)
-        if ! (command.nil? || [String, Symbol].include?(command.class))
+        unless command.nil? || [String, Symbol].include?(command.class)
           raise ArgumentError, "verify requires either a string, symbol, or a block"
         end
 

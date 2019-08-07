@@ -139,7 +139,7 @@ class Chef
         expand_run_list
 
         Chef::Log.info("Run List is [#{node.run_list}]")
-        Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
+        Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(", ")}]")
 
         events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
         events.run_list_expanded(@run_list_expansion)
@@ -184,7 +184,7 @@ class Chef
         begin
           events.cookbook_resolution_start(@expanded_run_list_with_versions)
           cookbook_hash = api_service.post("environments/#{node.chef_environment}/cookbook_versions",
-                                           { run_list: @expanded_run_list_with_versions })
+            { run_list: @expanded_run_list_with_versions })
 
           cookbook_hash = cookbook_hash.inject({}) do |memo, (key, value)|
             memo[key] = Chef::CookbookVersion.from_hash(value)
@@ -235,7 +235,7 @@ class Chef
       def runlist_override_sanity_check!
         # Convert to array and remove whitespace
         if override_runlist.is_a?(String)
-          @override_runlist = override_runlist.split(",").map { |e| e.strip }
+          @override_runlist = override_runlist.split(",").map(&:strip)
         end
         @override_runlist = [override_runlist].flatten.compact
         override_runlist.map! do |item|
@@ -249,7 +249,7 @@ class Chef
 
       def api_service
         @api_service ||= Chef::ServerAPI.new(config[:chef_server_url],
-                                             { version_class: Chef::CookbookManifestVersions })
+          { version_class: Chef::CookbookManifestVersions })
       end
 
       def config

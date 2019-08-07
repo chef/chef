@@ -38,7 +38,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   def add(args)
     if args.class == String
       remote = args
-      args = Hash.new
+      args = {}
       args[:remote] = remote
     end
     args[:local] ||= use_name
@@ -66,7 +66,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def device
-    get_info()[:remote]
+    get_info[:remote]
   end
 
   def delete

@@ -143,14 +143,15 @@ class Chef
           # "{\"error\":[\"{\\\"non_existent_cookbooks\\\":[\\\"nope\\\"],\\\"cookbooks_with_no_versions\\\":[],\\\"message\\\":\\\"Run list contains invalid items: no such cookbook nope.\\\"}\"]}"
 
           wrapped_error_message = attempt_json_parse(exception.response.body)
-          unless wrapped_error_message.kind_of?(Hash) && wrapped_error_message.key?("error")
+          unless wrapped_error_message.is_a?(Hash) && wrapped_error_message.key?("error")
             return wrapped_error_message.to_s
           end
 
           error_description = Array(wrapped_error_message["error"]).first
-          if error_description.kind_of?(Hash)
+          if error_description.is_a?(Hash)
             return error_description
           end
+
           attempt_json_parse(error_description)
         end
 

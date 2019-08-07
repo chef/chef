@@ -29,8 +29,8 @@ class Chef
       property :name, String, default: ""
 
       property :compile_time, [TrueClass, FalseClass],
-               description: "Install the build essential packages at compile time.",
-               default: false, desired_state: false
+        description: "Install the build essential packages at compile time.",
+        default: false, desired_state: false
 
       action :install do
 
@@ -79,7 +79,7 @@ class Chef
           # Per OmniOS documentation, the gcc bin dir isn't in the default
           # $PATH, so add it to the running process environment
           # http://omnios.omniti.com/wiki.php/DevEnv
-          ENV["PATH"] = "#{ENV['PATH']}:/opt/gcc-4.7.2/bin"
+          ENV["PATH"] = "#{ENV["PATH"]}:/opt/gcc-4.7.2/bin"
         when "solaris2"
           package "autoconf"
           package "automake"
@@ -110,7 +110,7 @@ class Chef
           package %w{ gcc48 gcc48-c++ } if node["platform_version"].to_i < 12
         else
           Chef::Log.warn <<-EOH
-        The build_essential resource does not currently support the '#{node['platform_family']}'
+        The build_essential resource does not currently support the '#{node["platform_family"]}'
         platform family. Skipping...
           EOH
         end
@@ -134,6 +134,7 @@ class Chef
       # @return [void]
       def after_created
         return unless compile_time
+
         Array(action).each do |action|
           run_action(action)
         end

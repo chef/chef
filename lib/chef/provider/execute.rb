@@ -121,7 +121,7 @@ class Chef
 
       def sentinel_file
         Pathname.new(Chef::Util::PathHelper.cleanpath(
-           ( cwd && creates_relative? ) ? ::File.join(cwd, creates) : creates
+          ( cwd && creates_relative? ) ? ::File.join(cwd, creates) : creates
         ))
       end
 

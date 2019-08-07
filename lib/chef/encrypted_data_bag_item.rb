@@ -130,11 +130,12 @@ class Chef::EncryptedDataBagItem
 
   def self.load_secret(path = nil)
     path ||= Chef::Config[:encrypted_data_bag_secret]
-    if !path
-      raise ArgumentError, "No secret specified and no secret found at #{Chef::Config.platform_specific_path(Chef::Dist::CONF_DIR + '/encrypted_data_bag_secret')}"
+    unless path
+      raise ArgumentError, "No secret specified and no secret found at #{Chef::Config.platform_specific_path(Chef::Dist::CONF_DIR + "/encrypted_data_bag_secret")}"
     end
+
     secret = case path
-             when /^\w+:\/\//
+             when %r{^\w+://}
                # We have a remote key
                begin
                  Kernel.open(path).read.strip
@@ -144,14 +145,16 @@ class Chef::EncryptedDataBagItem
                  raise ArgumentError, "Remote key not found at '#{path}'"
                end
              else
-               if !File.exist?(path)
+               unless File.exist?(path)
                  raise Errno::ENOENT, "file not found '#{path}'"
                end
+
                IO.read(path).strip
              end
     if secret.size < 1
       raise ArgumentError, "invalid zero length secret in '#{path}'"
     end
+
     secret
   end
 

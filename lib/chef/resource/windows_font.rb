@@ -29,12 +29,12 @@ class Chef
       introduced "14.0"
 
       property :font_name, String,
-               description: "An optional property to set the name of the font to install if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the name of the font to install if it differs from the resource block's name.",
+        name_property: true
 
       property :source, String,
-               description: "A local filesystem path or URI that is used to source the font file.",
-               coerce: proc { |x| x =~ /^.:.*/ ? x.tr('\\', "/").gsub("//", "/") : x }
+        description: "A local filesystem path or URI that is used to source the font file.",
+        coerce: proc { |x| x =~ /^.:.*/ ? x.tr('\\', "/").gsub("//", "/") : x }
 
       action :install do
         description "Install a font to the system fonts directory."

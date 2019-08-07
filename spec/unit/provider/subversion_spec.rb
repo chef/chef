@@ -277,7 +277,8 @@ describe Chef::Provider::Subversion do
       allow(ChefConfig).to receive(:windows?) { false }
       expect(@provider).to receive(:svn_binary).and_return("svn")
       expect(@provider.export_command).to eql(
-        "svn export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+        "svn export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+      )
     end
 
     it "selects an svn binary with an exe extension on windows" do
@@ -285,21 +286,24 @@ describe Chef::Provider::Subversion do
       allow(ChefConfig).to receive(:windows?) { true }
       expect(@provider).to receive(:svn_binary).and_return("svn.exe")
       expect(@provider.export_command).to eql(
-        "svn.exe export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+        "svn.exe export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+      )
     end
 
     it "uses a custom svn binary as part of the svn command" do
       @resource.svn_binary "teapot"
       expect(@provider).to receive(:svn_binary).and_return("teapot")
       expect(@provider.export_command).to eql(
-        "teapot export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+        "teapot export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+      )
     end
 
     it "wraps custom svn binary with quotes if it contains whitespace" do
       @resource.svn_binary "c:/program files (x86)/subversion/svn.exe"
       expect(@provider).to receive(:svn_binary).and_return("c:/program files (x86)/subversion/svn.exe")
       expect(@provider.export_command).to eql(
-        '"c:/program files (x86)/subversion/svn.exe" export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir')
+        '"c:/program files (x86)/subversion/svn.exe" export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir'
+      )
     end
 
   end

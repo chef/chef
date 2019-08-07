@@ -41,6 +41,7 @@ class Chef
         roles_to_delete = {}
         all_roles.each do |name, role|
           next unless name =~ matcher
+
           roles_to_delete[role.name] = role
         end
 

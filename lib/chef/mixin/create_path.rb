@@ -29,11 +29,11 @@ class Chef
       # === Returns
       # The created file_path.
       def create_path(file_path)
-        unless file_path.kind_of?(String) || file_path.kind_of?(Array)
+        unless file_path.is_a?(String) || file_path.is_a?(Array)
           raise ArgumentError, "file_path must be a string or an array!"
         end
 
-        if file_path.kind_of?(String)
+        if file_path.is_a?(String)
           file_path = File.expand_path(file_path).split(File::SEPARATOR)
           file_path.shift if file_path[0] == ""
           # Check if path starts with a separator or drive letter (Windows)

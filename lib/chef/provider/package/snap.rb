@@ -154,6 +154,7 @@ class Chef
           if response["type"] == "error"
             raise "status: #{response["status"]}, kind: #{response["result"]["kind"]}, message: #{response["result"]["message"]}"
           end
+
           response["change"]
         end
 
@@ -177,6 +178,7 @@ class Chef
             end
             n += 1
             raise "Snap operating timed out after #{n} seconds." if n == 300
+
             sleep(1)
           end
         end
@@ -188,7 +190,7 @@ class Chef
         def get_snap_version_from_source(path)
           body = {
               "context-id" => "get_snap_version_from_source_#{path}",
-              "args" => ["info", path,],
+              "args" => ["info", path],
           }.to_json
 
           # json = call_snap_api('POST', '/v2/snapctl', body)
@@ -319,6 +321,7 @@ class Chef
           unless [200, 404].include? json["status-code"]
             raise Chef::Exceptions::Package, json["result"], caller
           end
+
           json["result"]
         end
 
@@ -338,6 +341,7 @@ class Chef
           unless [200, 404].include? json["status-code"]
             raise Chef::Exceptions::Package, json["result"], caller
           end
+
           json["result"]
         end
 

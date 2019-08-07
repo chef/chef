@@ -23,7 +23,7 @@ class Chef
   class Knife
     class Bootstrap < Knife
       class TrainConnector
-        SSH_CONFIG_OVERRIDE_KEYS ||= [:user, :port, :proxy].freeze
+        SSH_CONFIG_OVERRIDE_KEYS ||= %i{user port proxy}.freeze
 
         MKTEMP_WIN_COMMAND ||= <<~EOM.freeze
           $parent = [System.IO.Path]::GetTempPath();
@@ -117,7 +117,10 @@ class Chef
           cmd = windows? ? MKTEMP_WIN_COMMAND : MKTEMP_NIX_COMMAND
           @tmpdir ||= begin
                         res = run_command!(cmd)
-                        dir = res.stdout.chomp.strip
+                        # Since pty is enabled in the connection, stderr to be merged into stdout.
+                        # So, there are cases where unnecessary multi-line output
+                        # is included before the result of mktemp.
+                        dir = res.stdout.split.last
                         unless windows?
                           # Ensure that dir has the correct owner.  We are possibly
                           # running with sudo right now - so this directory would be owned by root.
@@ -210,6 +213,7 @@ class Chef
           if result.exit_status != 0
             raise RemoteExecutionFailed.new(hostname, command, result)
           end
+
           result
         end
 
@@ -244,6 +248,7 @@ class Chef
         # Return a hash of winrm options based on configuration already built.
         def opts_inferred_from_winrm(config, opts_in)
           return {} unless config[:backend] == "winrm"
+
           opts_out = {}
 
           if opts_in[:ssl]
@@ -293,6 +298,7 @@ class Chef
         # itself - causing SSH config data to be ignored
         def missing_opts_from_ssh_config(config, opts_in)
           return {} unless config[:backend] == "ssh"
+
           host_cfg = ssh_config_for_host(config[:host])
           opts_out = {}
           opts_in.each do |key, _value|

@@ -108,13 +108,13 @@ class Chef
               end
             end
 
-            line_parts = Array.new
+            line_parts = []
 
             if node["ohai_time"]
               hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
-              hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
-              minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
-              seconds_text = "#{seconds} second#{seconds == 1 ? ' ' : 's'}"
+              hours_text   = "#{hours} hour#{hours == 1 ? " " : "s"}"
+              minutes_text = "#{minutes} minute#{minutes == 1 ? " " : "s"}"
+              seconds_text = "#{seconds} second#{seconds == 1 ? " " : "s"}"
               if hours > 24
                 color = :red
                 text = hours_text
@@ -140,7 +140,7 @@ class Chef
             if node["platform"]
               platform = node["platform"].dup
               if node["platform_version"]
-                platform << " #{node['platform_version']}"
+                platform << " #{node["platform_version"]}"
               end
               line_parts << platform
             end

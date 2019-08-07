@@ -231,33 +231,33 @@ class Chef
         end
 
         def self.None
-          SID.from_account("#{::ENV['COMPUTERNAME']}\\None")
+          SID.from_account("#{::ENV["COMPUTERNAME"]}\\None")
         end
 
         def self.Administrator
-          SID.from_account("#{::ENV['COMPUTERNAME']}\\#{SID.admin_account_name}")
+          SID.from_account("#{::ENV["COMPUTERNAME"]}\\#{SID.admin_account_name}")
         end
 
         def self.Guest
-          SID.from_account("#{::ENV['COMPUTERNAME']}\\Guest")
+          SID.from_account("#{::ENV["COMPUTERNAME"]}\\Guest")
         end
 
         def self.current_user
-          SID.from_account("#{::ENV['USERDOMAIN']}\\#{::ENV['USERNAME']}")
+          SID.from_account("#{::ENV["USERDOMAIN"]}\\#{::ENV["USERNAME"]}")
         end
 
         SERVICE_ACCOUNT_USERS = [self.LocalSystem,
                                  self.NtLocal,
                                  self.NtNetwork].flat_map do |user_type|
-          [user_type.account_simple_name.upcase,
-           user_type.account_name.upcase]
-        end.freeze
+                                   [user_type.account_simple_name.upcase,
+                                    user_type.account_name.upcase]
+                                 end.freeze
 
         BUILT_IN_GROUPS = [self.BuiltinAdministrators,
                            self.BuiltinUsers, self.Guests].flat_map do |user_type|
-          [user_type.account_simple_name.upcase,
-           user_type.account_name.upcase]
-        end.freeze
+                             [user_type.account_simple_name.upcase,
+                              user_type.account_name.upcase]
+                           end.freeze
 
         SYSTEM_USER = SERVICE_ACCOUNT_USERS + BUILT_IN_GROUPS
 
@@ -338,6 +338,7 @@ class Chef
             end
 
             raise "Can not determine the administrator account name." if admin_account_name.nil?
+
             admin_account_name
           end
         end

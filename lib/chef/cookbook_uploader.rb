@@ -68,7 +68,7 @@ class Chef
       new_sandbox["checksums"].each do |checksum, info|
         if info["needs_upload"] == true
           checksums_to_upload << checksum
-          Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
+          Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info["url"]}")
           queue << uploader_function_for(checksum_files[checksum], checksum, info["url"], checksums_to_upload)
         else
           Chef::Log.trace("#{checksum_files[checksum]} has not changed")
@@ -120,7 +120,7 @@ class Chef
         # but we need the base64 encoding for the content-md5
         # header
         checksum64 = Base64.encode64([checksum].pack("H*")).strip
-        file_contents = File.open(file, "rb") { |f| f.read }
+        file_contents = File.open(file, "rb", &:read)
 
         # Custom headers. 'content-type' disables JSON serialization of the request body.
         headers = { "content-type" => "application/x-binary", "content-md5" => checksum64, "accept" => "application/json" }

@@ -110,7 +110,7 @@ class Chef
             when /#{search_device}\s+#{Regexp.escape(@new_resource.mount_point)}/
               mounted = true
               logger.trace("Special device #{device_logstring} mounted as #{@new_resource.mount_point}")
-            when /^[\/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+/
+            when %r{^[/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+}
               mounted = false
               logger.trace("Found conflicting mount point #{@new_resource.mount_point} in /etc/fstab")
             end
@@ -123,7 +123,7 @@ class Chef
             mountable?
             command = [ "mount", "-v", @new_resource.fstype ]
 
-            if !(@new_resource.options.nil? || @new_resource.options.empty?)
+            unless @new_resource.options.nil? || @new_resource.options.empty?
               command << "-o"
               command << @new_resource.options.join(",")
             end
@@ -146,7 +146,7 @@ class Chef
 
         def remount_command
           if !(@new_resource.options.nil? || @new_resource.options.empty?)
-            [ "mount", "-o", "remount,#{@new_resource.options.join(',')}", @new_resource.device, @new_resource.mount_point ]
+            [ "mount", "-o", "remount,#{@new_resource.options.join(",")}", @new_resource.device, @new_resource.mount_point ]
           else
             [ "mount", "-o", "remount", @new_resource.device, @new_resource.mount_point ]
           end
@@ -174,7 +174,7 @@ class Chef
             end
             fstab.puts("\tvfs\t\t= #{@new_resource.fstype}")
             fstab.puts("\tmount\t\t= false")
-            fstab.puts "\toptions\t\t= #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
+            fstab.puts "\toptions\t\t= #{@new_resource.options.join(",")}" unless @new_resource.options.nil? || @new_resource.options.empty?
             logger.trace("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
         end
@@ -196,14 +196,14 @@ class Chef
             found_device = false
             ::File.open("/etc/filesystems", "r").each_line do |line|
               case line
-              when /^\/.+:\s*$/
+              when %r{^/.+:\s*$}
                 if line =~ /#{Regexp.escape(@new_resource.mount_point)}+:/
                   found_device = true
                 else
                   found_device = false
                 end
               end
-              if !found_device
+              unless found_device
                 contents << line
               end
             end

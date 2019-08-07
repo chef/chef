@@ -869,7 +869,7 @@ describe Chef::ProviderResolver do
     def self.create_provider_tests(providers, test, expected, filter)
       expected = expected.merge(providers.select { |key, value| key.is_a?(Symbol) })
       providers.each do |key, value|
-        if !key.is_a?(Symbol)
+        unless key.is_a?(Symbol)
           next_test = test.merge({ filter => key })
           next_filter =
             case filter
@@ -888,7 +888,7 @@ describe Chef::ProviderResolver do
         end
       end
       # If there is no filter, we're as deep as we need to go
-      if !filter
+      unless filter
         on_platform test.delete(:platform), test do
           expect_providers(expected)
         end

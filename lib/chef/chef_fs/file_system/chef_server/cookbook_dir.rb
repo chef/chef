@@ -69,6 +69,7 @@ class Chef
 
           def can_have_child?(name, is_dir)
             return name != "root_files" if is_dir
+
             true
           end
 
@@ -84,7 +85,7 @@ class Chef
                   parts[0, parts.length - 1].each do |part|
                     old_container = container
                     container = old_container.children.find { |child| part == child.name }
-                    if !container
+                    unless container
                       container = CookbookSubdir.new(part, old_container, false, true)
                       old_container.add_child(container)
                     end
@@ -93,7 +94,7 @@ class Chef
                   container.add_child(CookbookFile.new(parts[parts.length - 1], container, file))
                 end
               end
-              @children = @children.sort_by { |c| c.name }
+              @children = @children.sort_by(&:name)
             end
             @children
           end
@@ -116,7 +117,8 @@ class Chef
                 end
               end
             else
-              raise NotFoundError.new(self) if !exists?
+              raise NotFoundError.new(self) unless exists?
+
               raise MustDeleteRecursivelyError.new(self, "#{path_for_printing} must be deleted recursively")
             end
           end
@@ -131,12 +133,13 @@ class Chef
           end
 
           def compare_to(other)
-            if !other.dir?
+            unless other.dir?
               return [ !exists?, nil, nil ]
             end
+
             are_same = true
             Chef::ChefFS::CommandLine.diff_entries(self, other, nil, :name_only).each do |type, old_entry, new_entry|
-              if [ :directory_to_file, :file_to_directory, :deleted, :added, :modified ].include?(type)
+              if %i{directory_to_file file_to_directory deleted added modified}.include?(type)
                 are_same = false
               end
             end

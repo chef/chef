@@ -30,8 +30,7 @@ ObjectTestHarness = Proc.new do
   end
 
   desc "rspecin'"
-  def rspec_method
-  end
+  def rspec_method; end
 end
 
 class TestJobManager

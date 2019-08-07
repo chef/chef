@@ -27,29 +27,21 @@ class Chef
   # probably expected a real logger and not this "fake" one.
   class NullLogger
 
-    def fatal(message, &block)
-    end
+    def fatal(message, &block); end
 
-    def error(message, &block)
-    end
+    def error(message, &block); end
 
-    def warn(message, &block)
-    end
+    def warn(message, &block); end
 
-    def info(message, &block)
-    end
+    def info(message, &block); end
 
-    def debug(message, &block)
-    end
+    def debug(message, &block); end
 
-    def trace(message, &block)
-    end
+    def trace(message, &block); end
 
-    def add(severity, message = nil, progname = nil)
-    end
+    def add(severity, message = nil, progname = nil); end
 
-    def <<(message)
-    end
+    def <<(message); end
 
     def fatal?
       false

@@ -53,13 +53,13 @@ class Chef
       #
       # @return [void]
       def resolve_resource_reference(resource_collection)
-        return resource if resource.kind_of?(Chef::Resource) && notifying_resource.kind_of?(Chef::Resource)
+        return resource if resource.is_a?(Chef::Resource) && notifying_resource.is_a?(Chef::Resource)
 
-        if not(resource.kind_of?(Chef::Resource))
+        unless resource.is_a?(Chef::Resource)
           fix_resource_reference(resource_collection)
         end
 
-        if not(notifying_resource.kind_of?(Chef::Resource))
+        unless notifying_resource.is_a?(Chef::Resource)
           fix_notifier_reference(resource_collection)
         end
       end
@@ -131,6 +131,7 @@ class Chef
 
       def ==(other)
         return false unless other.is_a?(self.class)
+
         other.resource == resource && other.action == action && other.notifying_resource == notifying_resource
       end
 

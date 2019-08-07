@@ -58,6 +58,7 @@ class Chef
       def for_reporting
         # caller needs to ensure that new files aren't posted to resource reporting
         return nil if @diff.nil?
+
         @diff.join("\\n")
       end
 
@@ -89,8 +90,8 @@ class Chef
         diff_str = ""
         file_length_difference = 0
 
-        old_data = IO.readlines(old_file).map { |e| e.chomp }
-        new_data = IO.readlines(new_file).map { |e| e.chomp }
+        old_data = IO.readlines(old_file).map(&:chomp)
+        new_data = IO.readlines(new_file).map(&:chomp)
         diff_data = ::Diff::LCS.diff(old_data, new_data)
 
         return diff_str if old_data.empty? && new_data.empty?
@@ -111,6 +112,7 @@ class Chef
             file_length_difference = hunk.file_length_difference
             next unless old_hunk
             next if hunk.merge(old_hunk)
+
             diff_str << old_hunk.diff(:unified) << "\n"
           ensure
             old_hunk = hunk
@@ -170,6 +172,7 @@ class Chef
             return buff !~ /\A[\s[:print:]]*\z/m
           rescue ArgumentError => e
             return true if e.message =~ /invalid byte sequence/
+
             raise
           end
         end

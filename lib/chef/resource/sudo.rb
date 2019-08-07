@@ -37,77 +37,77 @@ class Chef
       # acording to the sudo man pages sudo will ignore files in an include dir that have a `.` or `~`
       # We convert either to `__`
       property :filename, String,
-               description: "The name of the sudoers.d file if it differs from the name of the resource block",
-               name_property: true,
-               coerce: proc { |x| x.gsub(/[\.~]/, "__") }
+        description: "The name of the sudoers.d file if it differs from the name of the resource block",
+        name_property: true,
+        coerce: proc { |x| x.gsub(/[\.~]/, "__") }
 
       property :users, [String, Array],
-               description: "User(s) to provide sudo privileges to. This property accepts either an array or a comma separated list.",
-               default: lazy { [] },
-               coerce: proc { |x| x.is_a?(Array) ? x : x.split(/\s*,\s*/) }
+        description: "User(s) to provide sudo privileges to. This property accepts either an array or a comma separated list.",
+        default: lazy { [] },
+        coerce: proc { |x| x.is_a?(Array) ? x : x.split(/\s*,\s*/) }
 
       property :groups, [String, Array],
-               description: "Group(s) to provide sudo privileges to. This property accepts either an array or a comma separated list. Leading % on group names is optional.",
-               default: lazy { [] },
-               coerce: proc { |x| coerce_groups(x) }
+        description: "Group(s) to provide sudo privileges to. This property accepts either an array or a comma separated list. Leading % on group names is optional.",
+        default: lazy { [] },
+        coerce: proc { |x| coerce_groups(x) }
 
       property :commands, Array,
-               description: "An array of commands this sudoer can execute.",
-               default: ["ALL"]
+        description: "An array of commands this sudoer can execute.",
+        default: ["ALL"]
 
       property :host, String,
-               description: "The host to set in the sudo configuration.",
-               default: "ALL"
+        description: "The host to set in the sudo configuration.",
+        default: "ALL"
 
       property :runas, String,
-               description: "User that the command(s) can be run as.",
-               default: "ALL"
+        description: "User that the command(s) can be run as.",
+        default: "ALL"
 
       property :nopasswd, [TrueClass, FalseClass],
-               description: "Allow sudo to be run without specifying a password.",
-               default: false
+        description: "Allow sudo to be run without specifying a password.",
+        default: false
 
       property :noexec, [TrueClass, FalseClass],
-               description: "Prevent commands from shelling out.",
-               default: false
+        description: "Prevent commands from shelling out.",
+        default: false
 
       property :template, String,
-               description: "The name of the erb template in your cookbook, if you wish to supply your own template."
+        description: "The name of the erb template in your cookbook, if you wish to supply your own template."
 
       property :variables, [Hash, nil],
-               description: "The variables to pass to the custom template. This property is ignored if not using a custom template.",
-               default: nil
+        description: "The variables to pass to the custom template. This property is ignored if not using a custom template.",
+        default: nil
 
       property :defaults, Array,
-               description: "An array of defaults for the user/group.",
-               default: lazy { [] }
+        description: "An array of defaults for the user/group.",
+        default: lazy { [] }
 
       property :command_aliases, Array,
-               description: "Command aliases that can be used as allowed commands later in the configuration.",
-               default: lazy { [] }
+        description: "Command aliases that can be used as allowed commands later in the configuration.",
+        default: lazy { [] }
 
       property :setenv, [TrueClass, FalseClass],
-               description: "Determines whether or not to permit preservation of the environment with 'sudo -E'.",
-               default: false
+        description: "Determines whether or not to permit preservation of the environment with 'sudo -E'.",
+        default: false
 
       property :env_keep_add, Array,
-               description: "An array of strings to add to env_keep.",
-               default: lazy { [] }
+        description: "An array of strings to add to env_keep.",
+        default: lazy { [] }
 
       property :env_keep_subtract, Array,
-               description: "An array of strings to remove from env_keep.",
-               default: lazy { [] }
+        description: "An array of strings to remove from env_keep.",
+        default: lazy { [] }
 
       property :visudo_path, String,
-               deprecated: true
+        deprecated: true
 
       property :visudo_binary, String,
-               description: "The path to visudo for configuration verification.",
-               default: "/usr/sbin/visudo"
+        description: "The path to visudo for configuration verification.",
+        default: "/usr/sbin/visudo"
 
       property :config_prefix, String,
-               description: "The directory that contains the sudoers configuration file.",
-               default: lazy { platform_config_prefix }, default_description: "Prefix values based on the node's platform"
+        description: "The directory that contains the sudoers configuration file.",
+        default: lazy { platform_config_prefix }, default_description: "Prefix values based on the node's platform"
 
       # handle legacy cookbook property
       def after_created
@@ -222,6 +222,7 @@ class Chef
 
         def visudo_present?
           return true if ::File.exist?(new_resource.visudo_binary)
+
           Chef::Log.warn("The visudo binary cannot be found at '#{new_resource.visudo_binary}'. Skipping sudoer file validation. If visudo is on this system you can specify the path using the 'visudo_binary' property.")
         end
       end

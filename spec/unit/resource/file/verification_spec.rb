@@ -128,8 +128,7 @@ describe Chef::Resource::File::Verification do
       before(:each) do
         class Chef::Resource::File::Verification::Turtle < Chef::Resource::File::Verification
           provides :cats
-          def verify(path, opts)
-          end
+          def verify(path, opts); end
         end
         allow(Chef::Resource::File::Verification::Turtle).to receive(:new).and_return(registered_verification)
       end

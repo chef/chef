@@ -163,6 +163,15 @@ describe Chef::Knife::Bootstrap::TrainConnector do
         expect(subject.temp_dir).to eq "/a/path"
       end
 
+      context "with noise in stderr" do
+        it "uses the *nix command to create the temp dir and sets ownership to logged-in user" do
+          expected_command = Chef::Knife::Bootstrap::TrainConnector::MKTEMP_NIX_COMMAND
+          expect(subject).to receive(:run_command!).with(expected_command)
+            .and_return double("result", stdout: "sudo: unable to resolve host hostname.localhost\r\n" + "/a/path\r\n")
+          expect(subject).to receive(:run_command!).with("chown user1 '/a/path'")
+          expect(subject.temp_dir).to eq "/a/path"
+        end
+      end
     end
   end
   context "#upload_file_content!" do

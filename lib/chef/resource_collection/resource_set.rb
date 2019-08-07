@@ -36,7 +36,7 @@ class Chef
       NAMELESS_RESOURCE_MATCH = /^([^\[\]\s]+)$/.freeze
 
       def initialize
-        @resources_by_key = Hash.new
+        @resources_by_key = {}
       end
 
       def keys
@@ -53,22 +53,26 @@ class Chef
 
       def lookup(key)
         raise ArgumentError, "Must pass a Chef::Resource or String to lookup" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+
         key = key.to_s
         res = @resources_by_key[key]
         unless res
           raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
         end
+
         res
       end
 
       def delete(key)
         raise ArgumentError, "Must pass a Chef::Resource or String to delete" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+
         key = key.to_s
         res = @resources_by_key.delete(key)
 
         if res == @resources_by_key.default
           raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
         end
+
         res
       end
 
@@ -85,7 +89,7 @@ class Chef
       # Raises an ArgumentError if you feed it bad lookup information
       # Raises a Runtime Error if it can't find the resources you are looking for.
       def find(*args)
-        results = Array.new
+        results = []
         args.each do |arg|
           case arg
             when Hash
@@ -127,16 +131,16 @@ class Chef
             true
           when String
             raise Chef::Exceptions::InvalidResourceSpecification,
-                  "The string `#{query_object}' is not valid for resource collection lookup. Correct syntax is `resource_type[resource_name]'"
+              "The string `#{query_object}' is not valid for resource collection lookup. Correct syntax is `resource_type[resource_name]'"
           else
             raise Chef::Exceptions::InvalidResourceSpecification,
-                  "The object `#{query_object.inspect}' is not valid for resource collection lookup. " +
+              "The object `#{query_object.inspect}' is not valid for resource collection lookup. " +
               "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
         end
       end
 
       def self.from_hash(o)
-        collection = new()
+        collection = new
         rl = o["instance_vars"]["@resources_by_key"]
         resources = rl.merge(rl) { |k, r| Chef::Resource.from_hash(r) }
         collection.instance_variable_set(:@resources_by_key, resources)
@@ -150,9 +154,9 @@ class Chef
       end
 
       def find_resource_by_hash(arg)
-        results = Array.new
+        results = []
         arg.each do |resource_type, name_list|
-          instance_names = name_list.kind_of?(Array) ? name_list : [ name_list ]
+          instance_names = name_list.is_a?(Array) ? name_list : [ name_list ]
           instance_names.each do |instance_name|
             results << lookup(create_key(resource_type, instance_name))
           end
@@ -170,7 +174,7 @@ class Chef
         rescue Chef::Exceptions::ResourceNotFound => e
           if arg =~ MULTIPLE_RESOURCE_MATCH
             begin
-              results = Array.new
+              results = []
               resource_type = $1
               arg =~ /^.+\[(.+)\]$/
               resource_list = $1

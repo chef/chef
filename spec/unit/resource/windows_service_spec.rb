@@ -48,7 +48,7 @@ describe Chef::Resource::WindowsService, "initialize" do
     expect { resource.action :unmask }.not_to raise_error
   end
 
-  [:automatic, :manual, :disabled].each do |type|
+  %i{automatic manual disabled}.each do |type|
     it "supports setting startup_type property to #{type.inspect}" do
       resource.startup_type type
       expect(resource.startup_type).to eql(type)
@@ -69,7 +69,7 @@ describe Chef::Resource::WindowsService, "initialize" do
     end
   end
 
-  [:automatic, :manual, :disabled].each do |type|
+  %i{automatic manual disabled}.each do |type|
     it "supports setting startup_type property to #{type.inspect}" do
       resource.startup_type type
       expect(resource.startup_type).to eql(type)
@@ -84,11 +84,11 @@ describe Chef::Resource::WindowsService, "initialize" do
   # Properties that are Strings
   %i{description service_name binary_path_name load_order_group dependencies
      run_as_user run_as_password display_name}.each do |prop|
-    it "support setting #{prop} property with a String" do
-      resource.send("#{prop}=", "some value")
-      expect(resource.send(prop)).to eq("some value")
-    end
-  end
+       it "support setting #{prop} property with a String" do
+         resource.send("#{prop}=", "some value")
+         expect(resource.send(prop)).to eq("some value")
+       end
+     end
 
   # Properties that are Integers
   %i{desired_access error_control service_type}.each do |prop|

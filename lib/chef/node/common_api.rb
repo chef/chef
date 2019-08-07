@@ -36,7 +36,7 @@ class Chef
         last = args.pop
         prev_memo = prev_key = nil
         chain = args.inject(self) do |memo, key|
-          if !valid_container?(memo, key)
+          unless valid_container?(memo, key)
             prev_memo[prev_key] = {}
             memo = prev_memo[prev_key]
           end
@@ -44,7 +44,7 @@ class Chef
           prev_key = key
           memo[key]
         end
-        if !valid_container?(chain, last)
+        unless valid_container?(chain, last)
           prev_memo[prev_key] = {}
           chain = prev_memo[prev_key]
         end
@@ -59,9 +59,11 @@ class Chef
         last = args.pop
         obj = args.inject(self) do |memo, key|
           raise Chef::Exceptions::AttributeTypeMismatch unless valid_container?(memo, key)
+
           memo[key]
         end
         raise Chef::Exceptions::AttributeTypeMismatch unless valid_container?(obj, last)
+
         obj[last] = value
       end
 
@@ -71,6 +73,7 @@ class Chef
       def exist?(*path)
         path.inject(self) do |memo, key|
           return false unless valid_container?(memo, key)
+
           if memo.is_a?(Hash)
             if memo.key?(key)
               memo[key]
@@ -98,6 +101,7 @@ class Chef
       # non-autovivifying reader that throws an exception if the attribute does not exist
       def read!(*path)
         raise Chef::Exceptions::NoSuchAttribute unless exist?(*path)
+
         path.inject(self) do |memo, key|
           memo[key]
         end
@@ -108,11 +112,13 @@ class Chef
       def unlink(*path, last)
         hash = path.empty? ? self : read(*path)
         return nil unless hash.is_a?(Hash) || hash.is_a?(Array)
+
         hash.delete(last)
       end
 
       def unlink!(*path)
         raise Chef::Exceptions::NoSuchAttribute unless exist?(*path)
+
         unlink(*path)
       end
 

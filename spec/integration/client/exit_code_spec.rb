@@ -30,12 +30,12 @@ describe "chef-client" do
     def setup_client_rb
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
     end
 
     def run_chef_client_and_expect_exit_code(exit_code)
-      shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'",
+      shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'",
         cwd: chef_dir,
         returns: [exit_code])
     end

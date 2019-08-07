@@ -94,7 +94,7 @@ class Chef::EncryptedDataBagItem
             plaintext << openssl_decryptor.final
           rescue OpenSSL::Cipher::CipherError => e
             # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
-            raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{(@key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : ''}"
+            raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{(@key.length < 255 && @key.include?("/")) ? "You may need to use --secret-file rather than --secret." : ""}"
           end
       end
 
@@ -147,7 +147,7 @@ class Chef::EncryptedDataBagItem
             plaintext << openssl_decryptor.final
           rescue OpenSSL::Cipher::CipherError => e
             # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
-            raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{( @key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : ''}"
+            raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{( @key.length < 255 && @key.include?("/")) ? "You may need to use --secret-file rather than --secret." : ""}"
           end
       end
 
@@ -188,6 +188,7 @@ class Chef::EncryptedDataBagItem
 
       def candidate_hmac_matches?(expected_hmac)
         return false unless @encrypted_data["hmac"]
+
         expected_bytes = expected_hmac.bytes.to_a
         candidate_hmac_bytes = Base64.decode64(@encrypted_data["hmac"]).bytes.to_a
         valid = expected_bytes.size ^ candidate_hmac_bytes.size
@@ -213,6 +214,7 @@ class Chef::EncryptedDataBagItem
         if auth_tag_b64.nil?
           raise DecryptionFailure, "Error decrypting data bag value: invalid authentication tag. Most likely the data is corrupted"
         end
+
         Base64.decode64(auth_tag_b64)
       end
 

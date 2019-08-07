@@ -120,6 +120,7 @@ class Chef
     #
     def get(node, key, canonical: nil)
       return nil unless map.key?(key)
+
       map[key].map do |matcher|
         return matcher[:klass] if node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
       end
@@ -140,6 +141,7 @@ class Chef
     #
     def list(node, key, canonical: nil)
       return [] unless map.key?(key)
+
       map[key].select do |matcher|
         node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
       end.map { |matcher| matcher[:klass] }
@@ -155,6 +157,7 @@ class Chef
     # @return [Hash] deleted entries in the same format as the @map
     def delete_class(klass)
       raise "please use a Class type for the klass argument" unless klass.is_a?(Class)
+
       deleted = {}
       map.each do |key, matchers|
         deleted_matchers = []
@@ -224,7 +227,8 @@ class Chef
     def matches_black_white_list?(node, filters, attribute)
       # It's super common for the filter to be nil.  Catch that so we don't
       # spend any time here.
-      return true if !filters[attribute]
+      return true unless filters[attribute]
+
       filter_values = Array(filters[attribute])
       value = node[attribute]
 
@@ -241,7 +245,8 @@ class Chef
     def matches_version_list?(node, filters, attribute)
       # It's super common for the filter to be nil.  Catch that so we don't
       # spend any time here.
-      return true if !filters[attribute]
+      return true unless filters[attribute]
+
       filter_values = Array(filters[attribute])
       value = node[attribute]
 
@@ -257,6 +262,7 @@ class Chef
     #
     def matches_target_mode?(filters)
       return true unless Chef::Config.target_mode?
+
       !!filters[:target_mode]
     end
 
@@ -270,16 +276,19 @@ class Chef
 
     def block_matches?(node, block)
       return true if block.nil?
+
       block.call node
     end
 
     def node_matches?(node, matcher)
-      return true if !node
+      return true unless node
+
       filters_match?(node, matcher) && block_matches?(node, matcher[:block])
     end
 
     def canonical_matches?(canonical, matcher)
       return true if canonical.nil?
+
       !!canonical == !!matcher[:canonical]
     end
 
@@ -289,16 +298,22 @@ class Chef
     def compare_matchers(key, new_matcher, matcher)
       cmp = compare_matcher_properties(new_matcher[:block], matcher[:block])
       return cmp if cmp != 0
+
       cmp = compare_matcher_properties(new_matcher[:platform_version], matcher[:platform_version])
       return cmp if cmp != 0
+
       cmp = compare_matcher_properties(new_matcher[:platform], matcher[:platform])
       return cmp if cmp != 0
+
       cmp = compare_matcher_properties(new_matcher[:platform_family], matcher[:platform_family])
       return cmp if cmp != 0
+
       cmp = compare_matcher_properties(new_matcher[:os], matcher[:os])
       return cmp if cmp != 0
+
       cmp = compare_matcher_properties(new_matcher[:override], matcher[:override])
       return cmp if cmp != 0
+
       # If all things are identical, return 0
       0
     end

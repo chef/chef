@@ -4,7 +4,7 @@
 #
 # NOTE: You MUST update omnibus-software when adding new versions of
 # software here: bundle exec rake dependencies:update_omnibus_gemfile_lock
-override :rubygems, version: "3.0.3"
+override :rubygems, version: "3.0.3" # rubygems ships its own bundler which may differ from bundler defined below and then we get double bundler which results in performance issues / CLI warnings. Make sure these versions match before bumping either.
 override :bundler, version: "1.17.2" # currently pinned to what ships in Ruby to prevent double bundler
 override "nokogiri", version: "1.10.2"
 override "libffi", version: "3.2.1"
@@ -22,7 +22,7 @@ override "ruby-windows-devkit-bash", version: "3.1.23-4-msys-1.0.18"
 override "util-macros", version: "1.19.0"
 override "xproto", version: "7.0.28"
 override "zlib", version: "1.2.11"
-override "openssl", version: "1.0.2r"
+override "openssl", version: "1.0.2s"
 
 # we build both a chef and ohai omnibus-software defintion which create the
 # chef-client and ohai binstubs. Out of the box the ohai definition uses whatever
@@ -30,4 +30,4 @@ override "openssl", version: "1.0.2r"
 # definition. This pin will ensure that ohai and chef-client commands use the
 # same (released) version of ohai.
 gemfile_lock = File.join(File.expand_path(File.dirname(__FILE__)), "Gemfile.lock")
-override "ohai", version: "#{::File.readlines(gemfile_lock).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1}" # rubocop: disable Layout/SpaceInsideStringInterpolation
+override "ohai", version: "#{::File.readlines(gemfile_lock).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; "v" + $1}" # rubocop: disable Layout/SpaceInsideStringInterpolation

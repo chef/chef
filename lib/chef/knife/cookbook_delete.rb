@@ -106,7 +106,7 @@ class Chef
         end
         valid_responses[(available_versions.size + 1).to_s] = :all
         question << "#{available_versions.size + 1}. All versions\n\n"
-        responses = ask_question(question).split(",").map { |response| response.strip }
+        responses = ask_question(question).split(",").map(&:strip)
 
         if responses.empty?
           ui.error("No versions specified, exiting")

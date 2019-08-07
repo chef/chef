@@ -231,9 +231,7 @@ class Chef
     end
 
     def self.load_deps
-      dependency_loaders.each do |dep_loader|
-        dep_loader.call
-      end
+      dependency_loaders.each(&:call)
     end
 
     OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack azure google linode push vcenter lpar}.freeze
@@ -244,6 +242,7 @@ class Chef
         msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
         subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
           next if category =~ /deprecated/i
+
           msg "** #{category.upcase} COMMANDS **"
           commands.sort.each do |command|
             subcommand_loader.load_command(command)
@@ -264,7 +263,7 @@ class Chef
       # user could not be resolved to a subcommand.
       # @api private
       def subcommand_not_found!(args)
-        ui.fatal("Cannot find subcommand for: '#{args.join(' ')}'")
+        ui.fatal("Cannot find subcommand for: '#{args.join(" ")}'")
 
         # Mention rehash when the subcommands cache(plugin_manifest.json) is used
         if subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::HashedCommandLoader)
@@ -386,6 +385,7 @@ class Chef
       return :cli if @original_config.include? key
       return :config if config_file_settings.key? key
       return :cli_default if default_config.include? key
+
       nil
     end
 
@@ -476,6 +476,7 @@ class Chef
       end
     rescue Exception => e
       raise if raise_exception || ( Chef::Config[:verbosity] && Chef::Config[:verbosity] >= 2 )
+
       humanize_exception(e)
       exit 100
     end
@@ -640,7 +641,7 @@ class Chef
     end
 
     def maybe_setup_fips
-      if !config[:fips].nil?
+      unless config[:fips].nil?
         Chef::Config[:fips] = config[:fips]
       end
       Chef::Config.init_openssl

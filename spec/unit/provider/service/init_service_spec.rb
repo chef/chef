@@ -165,12 +165,12 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
     it "should call the start command if one is specified" do
       @new_resource.start_command("/etc/init.d/chef startyousillysally")
       expect(@provider).to receive(:shell_out!).with("/etc/init.d/chef startyousillysally", default_env: false)
-      @provider.start_service()
+      @provider.start_service
     end
 
     it "should call '/etc/init.d/service_name start' if no start command is specified" do
       expect(@provider).to receive(:shell_out!).with("/etc/init.d/#{@new_resource.service_name} start", default_env: false)
-      @provider.start_service()
+      @provider.start_service
     end
   end
 
@@ -178,12 +178,12 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/etc/init.d/chef itoldyoutostop")
       expect(@provider).to receive(:shell_out!).with("/etc/init.d/chef itoldyoutostop", default_env: false)
-      @provider.stop_service()
+      @provider.stop_service
     end
 
     it "should call '/etc/init.d/service_name stop' if no stop command is specified" do
       expect(@provider).to receive(:shell_out!).with("/etc/init.d/#{@new_resource.service_name} stop", default_env: false)
-      @provider.stop_service()
+      @provider.stop_service
     end
   end
 
@@ -191,20 +191,20 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
     it "should call 'restart' on the service_name if the resource supports it" do
       @new_resource.supports({ restart: true })
       expect(@provider).to receive(:shell_out!).with("/etc/init.d/#{@new_resource.service_name} restart", default_env: false)
-      @provider.restart_service()
+      @provider.restart_service
     end
 
     it "should call the restart_command if one has been specified" do
       @new_resource.restart_command("/etc/init.d/chef restartinafire")
       expect(@provider).to receive(:shell_out!).with("/etc/init.d/#{@new_resource.service_name} restartinafire", default_env: false)
-      @provider.restart_service()
+      @provider.restart_service
     end
 
     it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do
       expect(@provider).to receive(:stop_service)
       expect(@provider).to receive(:sleep).with(1)
       expect(@provider).to receive(:start_service)
-      @provider.restart_service()
+      @provider.restart_service
     end
   end
 
@@ -212,13 +212,13 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
     it "should call 'reload' on the service if it supports it" do
       @new_resource.supports({ reload: true })
       expect(@provider).to receive(:shell_out!).with("/etc/init.d/chef reload", default_env: false)
-      @provider.reload_service()
+      @provider.reload_service
     end
 
     it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
       @new_resource.reload_command("/etc/init.d/chef lollerpants")
       expect(@provider).to receive(:shell_out!).with("/etc/init.d/chef lollerpants", default_env: false)
-      @provider.reload_service()
+      @provider.reload_service
     end
   end
 

@@ -24,7 +24,7 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
   include_context "using Win32::Service"
 
   let(:username) { "service_spec_user" }
-  let(:qualified_username) { "#{ENV['COMPUTERNAME']}\\#{username}" }
+  let(:qualified_username) { "#{ENV["COMPUTERNAME"]}\\#{username}" }
   let(:password) { "1a2b3c4X!&narf" }
 
   let(:user_resource) do
@@ -36,7 +36,7 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
   end
 
   let(:global_service_file_path) do
-    "#{ENV['WINDIR']}\\temp\\#{File.basename(test_service[:service_file_path])}"
+    "#{ENV["WINDIR"]}\\temp\\#{File.basename(test_service[:service_file_path])}"
   end
 
   let(:service_params) do
@@ -59,7 +59,7 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
 
   let(:service_resource) do
     r = Chef::Resource::WindowsService.new(service_params[:service_name], run_context)
-    [:run_as_user, :run_as_password].each { |prop| r.send(prop, service_params[prop]) }
+    %i{run_as_user run_as_password}.each { |prop| r.send(prop, service_params[prop]) }
     r
   end
 

@@ -54,6 +54,7 @@ class Chef
 
         def set_members(members)
           return if members.empty?
+
           shell_out!("chgrpmem", "-m", "=", members.join(","), new_resource.group_name)
         end
 
@@ -65,6 +66,7 @@ class Chef
           opts = []
           { gid: "id" }.sort_by { |a| a[0] }.each do |field, option|
             next unless current_resource.send(field) != new_resource.send(field)
+
             if new_resource.send(field)
               logger.trace("#{new_resource} setting #{field} to #{new_resource.send(field)}")
               opts << "#{option}=#{new_resource.send(field)}"

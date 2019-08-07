@@ -151,7 +151,7 @@ class Chef
       end
 
       def to_h
-        h = Hash.new
+        h = {}
         each_pair do |k, v|
           h[k] =
             case v

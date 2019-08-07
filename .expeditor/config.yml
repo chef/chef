@@ -26,11 +26,14 @@ pipelines:
   - verify:
       public: true
   - habitat/build
-  - omnibus/release
+  - omnibus/release:
+      env:
+        - BUILD_OPTIONS: -l debug
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
       env:
         - ADHOC: true
+        - BUILD_OPTIONS: -l debug
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -72,7 +75,7 @@ merge_actions:
         - "Expeditor: Skip Habitat"
         - "Expeditor: Skip All"
       only_if: built_in:bump_version
-  - built_in:trigger_omnibus_release_build:
+  - trigger_pipeline:omnibus/release:
       ignore_labels:
         - "Expeditor: Skip Omnibus"
         - "Expeditor: Skip All"
@@ -85,13 +88,13 @@ subscriptions:
   - workload: artifact_published:current:chef:{{version_constraint}}
     actions:
       - built_in:tag_docker_image
-      # - built_in:promote_habitat_packages Disable until we fix our hab package
+      - built_in:promote_habitat_packages
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
       - bash:.expeditor/update_dockerfile.sh
       - built_in:tag_docker_image
-      # - built_in:promote_habitat_packages Disable until we fix our hab package
+      - built_in:promote_habitat_packages
       - built_in:publish_rubygems
       - built_in:notify_chefio_slack_channels
   - workload: ruby_gem_published:mixlib-archive-*
@@ -143,5 +146,8 @@ subscriptions:
     actions:
       - bash:.expeditor/update_dep.sh
   - workload: ruby_gem_published:license-acceptance-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ffi-libarchive-*
     actions:
       - bash:.expeditor/update_dep.sh

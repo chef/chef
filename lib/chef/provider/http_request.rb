@@ -120,7 +120,7 @@ class Chef
       private
 
       def check_message(message)
-        if message.kind_of?(Proc)
+        if message.is_a?(Proc)
           message.call
         else
           message

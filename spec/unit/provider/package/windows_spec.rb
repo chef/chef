@@ -436,7 +436,8 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
       it "raises the checksum mismatch exception" do
         expect { provider.send(:validate_content!) }.to raise_error(
-          Chef::Exceptions::ChecksumMismatch)
+          Chef::Exceptions::ChecksumMismatch
+        )
       end
     end
   end

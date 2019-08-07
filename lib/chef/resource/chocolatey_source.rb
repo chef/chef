@@ -19,20 +19,30 @@ class Chef
     class ChocolateySource < Chef::Resource
       resource_name :chocolatey_source
 
-      description "Use the chocolatey_source resource to add or remove Chocolatey sources."
+      description "Use the chocolatey_source resource to add, remove, enable, or disable Chocolatey sources."
       introduced "14.3"
 
       property :source_name, String, name_property: true,
                description: "An optional property to set the source name if it differs from the resource block's name."
 
       property :source, String,
-               description: "The source URL."
+        description: "The source URL."
 
       property :bypass_proxy, [TrueClass, FalseClass], default: false,
                description: "Whether or not to bypass the system's proxy settings to access the source."
 
+      property :admin_only, [TrueClass, FalseClass], default: false,
+               description: "Whether or not to set the source to be accessible to only admins.",
+               introduced: "15.1"
+
+      property :allow_self_service, [TrueClass, FalseClass], default: false,
+               description: "Whether or not to set the source to be used for self service.",
+               introduced: "15.1"
+
       property :priority, Integer, default: 0,
                description: "The priority level of the source."
+
+      property :disabled, [TrueClass, FalseClass], default: false, desired_state: false, skip_docs: true
 
       load_current_value do
         element = fetch_source_element(source_name)
@@ -41,7 +51,10 @@ class Chef
         source_name element["id"]
         source element["value"]
         bypass_proxy element["bypassProxy"] == "true"
+        admin_only element["adminOnly"] == "true"
+        allow_self_service element["selfService"] == "true"
         priority element["priority"].to_i
+        disabled element["disabled"] == "true"
       end
 
       # @param [String] id the source name
@@ -49,7 +62,7 @@ class Chef
       def fetch_source_element(id)
         require "rexml/document" unless defined?(REXML::Document)
 
-        config_file = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\config\\chocolatey.config"
+        config_file = "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\config\\chocolatey.config"
         raise "Could not find the Chocolatey config at #{config_file}!" unless ::File.exist?(config_file)
 
         config_contents = REXML::Document.new(::File.read(config_file))
@@ -77,14 +90,36 @@ class Chef
         end
       end
 
+      action :disable do
+        description "Disables a Chocolatey source."
+
+        if current_resource.disabled != true
+          converge_by("disable Chocolatey source '#{new_resource.source_name}'") do
+            shell_out!(choco_cmd("disable"))
+          end
+        end
+      end
+
+      action :enable do
+        description "Enables a Chocolatey source."
+
+        if current_resource.disabled == true
+          converge_by("enable Chocolatey source '#{new_resource.source_name}'") do
+            shell_out!(choco_cmd("enable"))
+          end
+        end
+      end
+
       action_class do
         # @param [String] action the name of the action to perform
         # @return [String] the choco source command string
         def choco_cmd(action)
-          cmd = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\bin\\choco source #{action} -n \"#{new_resource.source_name}\""
+          cmd = "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco source #{action} -n \"#{new_resource.source_name}\""
           if action == "add"
             cmd << " -s #{new_resource.source} --priority=#{new_resource.priority}"
             cmd << " --bypassproxy" if new_resource.bypass_proxy
+            cmd << " --allowselfservice" if new_resource.allow_self_service
+            cmd << " --adminonly" if new_resource.admin_only
           end
           cmd
         end

@@ -13,20 +13,20 @@ class Chef
     class KernelModule < Chef::Resource
       resource_name :kernel_module
 
-      description "Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, install, and uninstall modules."
+      description "Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, disable, install, and uninstall modules."
       introduced "14.3"
 
       property :modname, String,
-               description: "An optional property to set the kernel module name if it differs from the resource block's name.",
-               name_property: true, identity: true
+        description: "An optional property to set the kernel module name if it differs from the resource block's name.",
+        name_property: true, identity: true
 
       property :load_dir, String,
-               description: "The directory to load modules from.",
-               default: "/etc/modules-load.d"
+        description: "The directory to load modules from.",
+        default: "/etc/modules-load.d"
 
       property :unload_dir, String,
-               description: "The modprobe.d directory.",
-               default: "/etc/modprobe.d"
+        description: "The modprobe.d directory.",
+        default: "/etc/modprobe.d"
 
       action :install do
         description "Load kernel module, and ensure it loads on reboot."
@@ -79,6 +79,24 @@ class Chef
 
         file "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf" do
           content "blacklist #{new_resource.modname}"
+          notifies :run, "execute[update initramfs]", :delayed
+        end
+
+        with_run_context :root do
+          find_resource(:execute, "update initramfs") do
+            command initramfs_command
+            action :nothing
+          end
+        end
+
+        new_resource.run_action(:unload)
+      end
+
+      action :disable do
+        description "Disable a kernel module."
+
+        file "#{new_resource.unload_dir}/disable_#{new_resource.modname}.conf" do
+          content "install #{new_resource.modname} /bin/false"
           notifies :run, "execute[update initramfs]", :delayed
         end
 

@@ -63,7 +63,7 @@ module ChefConfig
       trailing_slashes = /[#{path_separator_regex}]+$/
       leading_slashes = /^[#{path_separator_regex}]+/
 
-      args.flatten.inject() do |joined_path, component|
+      args.flatten.inject do |joined_path, component|
         joined_path = joined_path.sub(trailing_slashes, "")
         component = component.sub(leading_slashes, "")
         joined_path + "#{path_separator}#{component}"

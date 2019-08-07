@@ -32,7 +32,7 @@ class Chef
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
         end
 
-        UPSTART_STATE_FORMAT = /\S+ \(?(start|stop)?\)? ?[\/ ](\w+)/.freeze
+        UPSTART_STATE_FORMAT = %r{\S+ \(?(start|stop)?\)? ?[/ ](\w+)}.freeze
 
         # Returns true if the configs for the service name has upstart variable
         def self.supports?(resource, action)
@@ -51,6 +51,7 @@ class Chef
         def initialize(new_resource, run_context)
           # TODO: re-evaluate if this is needed after integrating cookbook fix
           raise ArgumentError, "run_context cannot be nil" unless run_context
+
           super
 
           run_context.node
@@ -82,7 +83,7 @@ class Chef
           # Do not call super, only call shared requirements
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
-            if !@command_success
+            unless @command_success
               whyrun_msg = if @new_resource.status_command
                              "Provided status command #{@new_resource.status_command} failed."
                            else

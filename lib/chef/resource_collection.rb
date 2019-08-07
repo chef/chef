@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,9 +87,9 @@ class Chef
     # Read-only methods are simple to delegate - doing that below
 
     resource_list_methods = Enumerable.instance_methods +
-      [:iterator, :all_resources, :[], :each, :execute_each_resource, :each_index, :empty?] -
+      %i{iterator all_resources [] each execute_each_resource each_index empty?} -
       [:find] # find overridden below
-    resource_set_methods = [:resources, :keys, :validate_lookup_spec!]
+    resource_set_methods = %i{resources keys validate_lookup_spec!}
 
     def_delegators :resource_list, *resource_list_methods
     def_delegators :resource_set, *resource_set_methods
@@ -119,7 +119,7 @@ class Chef
     end
 
     def self.from_hash(o)
-      collection = new()
+      collection = new
       { "@resource_list" => "ResourceList", "@resource_set" => "ResourceSet" }.each_pair do |name, klass|
         obj = Chef::ResourceCollection.const_get(klass).from_hash(o["instance_vars"].delete(name))
         collection.instance_variable_set(name.to_sym, obj)
@@ -134,6 +134,7 @@ class Chef
       rc.resource_collection.resource_set.lookup(key)
     rescue Chef::Exceptions::ResourceNotFound
       raise if rc.parent_run_context.nil?
+
       lookup_recursive(rc.parent_run_context, key)
     end
 
@@ -141,6 +142,7 @@ class Chef
       rc.resource_collection.resource_set.find(*args)
     rescue Chef::Exceptions::ResourceNotFound
       raise if rc.parent_run_context.nil?
+
       find_recursive(rc.parent_run_context, *args)
     end
   end

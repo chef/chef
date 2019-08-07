@@ -77,6 +77,7 @@ class Chef
           if c.nil?
             raise Chef::Exceptions::VerificationNotFound.new "No file verification for #{name} found."
           end
+
           c
         end
 
@@ -113,6 +114,7 @@ class Chef
           if @command.include?("%{file}")
             raise ArgumentError, "The %{file} expansion for verify commands has been removed. Please use %{path} instead."
           end
+
           command = @command % { path: path }
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
           interpreter.evaluate

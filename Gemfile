@@ -45,7 +45,7 @@ end
 
 # Everything except AIX
 group(:ruby_prof) do
-  gem "ruby-prof"
+  gem "ruby-prof", "< 0.18" # 0.18 includes a x64-mingw32 gem, which doesn't load correctly. See https://github.com/ruby-prof/ruby-prof/issues/255
 end
 
 # Everything except AIX and Windows

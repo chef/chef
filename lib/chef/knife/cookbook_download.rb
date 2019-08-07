@@ -33,21 +33,21 @@ class Chef
       banner "knife cookbook download COOKBOOK [VERSION] (options)"
 
       option :latest,
-       short: "-N",
-       long: "--latest",
-       description: "The version of the cookbook to download.",
-       boolean: true
+        short: "-N",
+        long: "--latest",
+        description: "The version of the cookbook to download.",
+        boolean: true
 
       option :download_directory,
-       short: "-d DOWNLOAD_DIRECTORY",
-       long: "--dir DOWNLOAD_DIRECTORY",
-       description: "The directory to download the cookbook into.",
-       default: Dir.pwd
+        short: "-d DOWNLOAD_DIRECTORY",
+        long: "--dir DOWNLOAD_DIRECTORY",
+        description: "The directory to download the cookbook into.",
+        default: Dir.pwd
 
       option :force,
-       short: "-f",
-       long: "--force",
-       description: "Force download over the download directory if it exists."
+        short: "-f",
+        long: "--force",
+        description: "Force download over the download directory if it exists."
 
       # TODO: tim/cw: 5-23-2010: need to implement knife-side
       # specificity for downloads - need to implement --platform and
@@ -87,7 +87,7 @@ class Chef
           ui.info("Downloading #{segment}")
           files.each do |segment_file|
             dest = File.join(basedir, segment_file["path"].gsub("/", File::SEPARATOR))
-            Chef::Log.trace("Downloading #{segment_file['path']} to #{dest}")
+            Chef::Log.trace("Downloading #{segment_file["path"]} to #{dest}")
             FileUtils.mkdir_p(File.dirname(dest))
             tempfile = rest.streaming_request(segment_file["url"])
             FileUtils.mv(tempfile.path, dest)

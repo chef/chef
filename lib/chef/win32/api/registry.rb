@@ -36,14 +36,14 @@ class Chef
         #   _In_       REGSAM  samDesired,
         #   _Reserved_ DWORD   Reserved
         # );
-        safe_attach_function :RegDeleteKeyExW, [ :HKEY, :LPCTSTR, :LONG, :DWORD ], :LONG
-        safe_attach_function :RegDeleteKeyExA, [ :HKEY, :LPCTSTR, :LONG, :DWORD ], :LONG
+        safe_attach_function :RegDeleteKeyExW, %i{HKEY LPCTSTR LONG DWORD}, :LONG
+        safe_attach_function :RegDeleteKeyExA, %i{HKEY LPCTSTR LONG DWORD}, :LONG
 
         # LONG WINAPI RegDeleteValue(
         #   _In_     HKEY    hKey,
         #   _In_opt_ LPCTSTR lpValueName
         # );
-        safe_attach_function :RegDeleteValueW, [ :HKEY, :LPCTSTR ], :LONG
+        safe_attach_function :RegDeleteValueW, %i{HKEY LPCTSTR}, :LONG
 
       end
     end

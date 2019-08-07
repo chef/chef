@@ -60,6 +60,7 @@ class Chef
         rescue Net::HTTPFatalError => e
           # HTTPFatalError implies 5xx.
           raise if retries <= 0
+
           retries -= 1
           Chef::Log.warn("Failed to register new client, #{retries} tries remaining")
           Chef::Log.warn("Response: HTTP #{e.response.code} - #{e}")
@@ -71,7 +72,7 @@ class Chef
 
       def assert_destination_writable!
         abs_path = File.expand_path(destination)
-        if !File.exists?(File.dirname(abs_path))
+        unless File.exists?(File.dirname(abs_path))
           begin
             FileUtils.mkdir_p(File.dirname(abs_path))
           rescue Errno::EACCES
@@ -97,6 +98,7 @@ class Chef
         # If create fails because the client exists, attempt to update. This
         # requires admin privileges.
         raise unless e.response.code == "409"
+
         update
       end
 
@@ -156,12 +158,11 @@ class Chef
 
       def http_api
         @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url],
-                                          {
-                                            api_version: "0",
-                                            client_name: Chef::Config[:validation_client_name],
-                                            signing_key_filename: Chef::Config[:validation_key],
-                                          }
-                                         )
+          {
+            api_version: "0",
+            client_name: Chef::Config[:validation_client_name],
+            signing_key_filename: Chef::Config[:validation_key],
+          })
       end
 
       # Whether or not to generate keys locally and post the public key to the

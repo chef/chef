@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::NodePolicySet do
   let(:node) do
-    node = Chef::Node.new()
+    node = Chef::Node.new
     node.name("adam")
     node.run_list = ["role[base]"]
     node

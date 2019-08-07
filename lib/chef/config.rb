@@ -74,7 +74,7 @@ class Chef
     # by redefining the config_attr_writer to not warn for these options.
     #
     # REMOVEME once the warnings for these configurables are removed from Ohai.
-    [ :log_level, :log_location ].each do |option|
+    %i{log_level log_location}.each do |option|
       config_attr_writer option do |value|
         value
       end

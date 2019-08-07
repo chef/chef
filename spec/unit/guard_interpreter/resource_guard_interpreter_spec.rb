@@ -22,7 +22,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
   let(:node) do
     node = Chef::Node.new
 
-    node.default["kernel"] = Hash.new
+    node.default["kernel"] = {}
     node.default["kernel"][:machine] = :x86_64.to_s
     node.automatic[:os] = "windows"
     node

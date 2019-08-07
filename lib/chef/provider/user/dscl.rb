@@ -128,7 +128,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
                 # Convert the salt from Base64 encoding to hex before consuming them
                 current_resource.salt(shadow_hash["SALTED-SHA512-PBKDF2"]["salt"].string.unpack("H*").first)
               else
-                raise(Chef::Exceptions::User, "Unknown shadow_hash format: #{shadow_hash.keys.join(' ')}")
+                raise(Chef::Exceptions::User, "Unknown shadow_hash format: #{shadow_hash.keys.join(" ")}")
               end
             end
 
@@ -230,6 +230,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         #
         def uid_used?(uid)
           return false unless uid
+
           users_uids = run_dscl("list", "/Users", "uid").split("\n")
           uid_map = users_uids.each_with_object({}) do |tuid, tmap|
             x = tuid.split
@@ -290,7 +291,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         end
 
         def validate_home_dir_specification!
-          unless new_resource.home =~ /^\//
+          unless new_resource.home =~ %r{^/}
             raise(Chef::Exceptions::InvalidHomeDirectory, "invalid path spec for User: '#{new_resource.username}', home directory: '#{new_resource.home}'")
           end
         end
@@ -343,7 +344,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
           # Shadow info is saved as binary plist. Convert the info to binary plist.
           shadow_info_binary = StringIO.new
           shell_out("plutil", "-convert", "binary1", "-o", "-", "-",
-                            input: shadow_info.to_plist, live_stream: shadow_info_binary)
+            input: shadow_info.to_plist, live_stream: shadow_info_binary)
 
           if user_info.nil?
             # User is  just created. read_user_info() will read the fresh information
@@ -562,6 +563,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         #
         def dscl_set(user_hash, key, value)
           raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
+
           user_hash[DSCL_PROPERTY_MAP[key]] = [ value ]
           user_hash
         end
@@ -571,6 +573,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         #
         def dscl_get(user_hash, key)
           raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
+
           # DSCL values are set as arrays
           value = user_hash[DSCL_PROPERTY_MAP[key]]
           value.nil? ? value : value.first
@@ -585,12 +588,14 @@ in 'password', with the associated 'salt' and 'iterations'.")
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if result.stdout =~ /No such key: /
+
           result.stdout
         end
 
         def run_plutil(*args)
           result = shell_out("plutil", "-#{args[0]}", args[1..-1])
           raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
+
           if result.stdout.encoding == Encoding::ASCII_8BIT
             result.stdout.encode("utf-8", "binary", undef: :replace, invalid: :replace, replace: "?")
           else

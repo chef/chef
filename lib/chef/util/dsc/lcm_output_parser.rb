@@ -80,7 +80,7 @@ class Chef
 
           def self.test_dsc_parser(lcm_output)
             lcm_output ||= ""
-            current_resource = Hash.new
+            current_resource = {}
 
             resources = []
             lcm_output.lines.each do |line|
@@ -110,7 +110,7 @@ class Chef
 
           def self.what_if_parser(lcm_output)
             lcm_output ||= ""
-            current_resource = Hash.new
+            current_resource = {}
 
             resources = []
             lcm_output.lines.each do |line|

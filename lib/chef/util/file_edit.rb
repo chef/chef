@@ -30,6 +30,7 @@ class Chef
 
       def initialize(filepath)
         raise ArgumentError, "File '#{filepath}' does not exist" unless File.exist?(filepath)
+
         @editor = Editor.new(File.open(filepath, &:readlines))
         @original_pathname = filepath
         @file_edited = false

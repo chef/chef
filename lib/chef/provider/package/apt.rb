@@ -84,9 +84,7 @@ class Chef
           @locked_packages ||=
             begin
               locked = shell_out!("apt-mark", "showhold")
-              locked.stdout.each_line.map do |line|
-                line.strip
-              end
+              locked.stdout.each_line.map(&:strip)
             end
         end
 
@@ -134,6 +132,7 @@ class Chef
         # @return [Boolean] if apt-get supports --allow-downgrades
         def supports_allow_downgrade?
           return @supports_allow_downgrade unless @supports_allow_downgrade.nil?
+
           @supports_allow_downgrade = ( version_compare(apt_version, "1.1.0") >= 0 )
         end
 
@@ -194,6 +193,7 @@ class Chef
           showpkg = run_noninteractive("apt-cache", "showpkg", pkg).stdout
           partitions = showpkg.rpartition(/Reverse Provides: ?#{$/}/)
           return nil if partitions[0] == "" && partitions[1] == "" # not found in output
+
           set = partitions[2].lines.each_with_object(Set.new) do |line, acc|
             # there may be multiple reverse provides for a single package
             acc.add(line.split[0])
@@ -201,6 +201,7 @@ class Chef
           if set.size > 1
             raise Chef::Exceptions::Package, "#{new_resource.package_name} is a virtual package provided by multiple packages, you must explicitly select one"
           end
+
           set.to_a.first
         end
 

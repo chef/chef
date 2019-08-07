@@ -115,6 +115,7 @@ class Chef
         # +default_action+ and other DSL-y methods when extending LWRP::Base.
         def from_superclass(m, default = nil)
           return default if superclass == Chef::Resource::LWRPBase
+
           superclass.respond_to?(m) ? superclass.send(m) : default
         end
       end

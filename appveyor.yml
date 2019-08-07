@@ -41,9 +41,8 @@ install:
   - echo %PATH%
   - appveyor DownloadFile http://curl.haxx.se/ca/cacert.pem -FileName C:\cacert.pem
   - set SSL_CERT_FILE=C:\cacert.pem
-  - SET BUNDLE_WITHOUT=server:docgen:pry:integration:ci
   - bundle config --local path vendor/bundle # use the cache we define above
-  - bundle install || bundle install || bundle install
+  - bundle install --jobs=3 --retry=3 --without omnibus_package docgen chefstyle
   - SET SPEC_OPTS=--format progress
   - SET CHEF_LICENSE="accept-no-persist"
 

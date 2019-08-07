@@ -29,18 +29,18 @@ class Chef
       extend Forwardable
       provides :launchd, os: "darwin"
 
-      def_delegators :new_resource, *[
-        :backup,
-        :cookbook,
-        :group,
-        :label,
-        :mode,
-        :owner,
-        :path,
-        :source,
-        :session_type,
-        :type,
-      ]
+      def_delegators :new_resource, *%i{
+        backup
+        cookbook
+        group
+        label
+        mode
+        owner
+        path
+        source
+        session_type
+        type
+      }
 
       def load_current_resource
         current_resource = Chef::Resource::Launchd.new(new_resource.name)
@@ -90,6 +90,7 @@ class Chef
 
       def manage_plist(action)
         return unless manage_agent?(action)
+
         if source
           res = cookbook_file_resource
         else
@@ -102,6 +103,7 @@ class Chef
 
       def manage_service(action)
         return unless manage_agent?(action)
+
         res = service_resource
         res.run_action(action)
         new_resource.updated_by_last_action(true) if res.updated?
@@ -112,7 +114,7 @@ class Chef
         console_user = Etc.getpwuid(::File.stat("/dev/console").uid).name
         root = console_user == "root"
         agent = type == "agent"
-        invalid_action = [:delete, :disable, :enable, :restart].include?(action)
+        invalid_action = %i{delete disable enable restart}.include?(action)
         lltstype = ""
         if new_resource.limit_load_to_session_type
           lltstype = new_resource.limit_load_to_session_type
@@ -179,6 +181,7 @@ class Chef
 
       def gen_hash
         return nil unless new_resource.program || new_resource.program_arguments
+
         {
           "label" => "Label",
           "program" => "Program",

@@ -31,35 +31,35 @@ class Chef
       introduced "14.0"
 
       property :domain_name, String,
-               description: "The FQDN of the Active Directory domain to join if it differs from the resource block's name.",
-               validation_message: "The 'domain_name' property must be a FQDN.",
-               regex: /.\../, # anything.anything
-               name_property: true
+        description: "The FQDN of the Active Directory domain to join if it differs from the resource block's name.",
+        validation_message: "The 'domain_name' property must be a FQDN.",
+        regex: /.\../, # anything.anything
+        name_property: true
 
       property :domain_user, String,
-               description: "The domain user that will be used to join the domain.",
-               required: true
+        description: "The domain user that will be used to join the domain.",
+        required: true
 
       property :domain_password, String,
-               description: "The password for the domain user. Note that this resource is set to hide sensitive information by default. ",
-               required: true
+        description: "The password for the domain user. Note that this resource is set to hide sensitive information by default. ",
+        required: true
 
       property :ou_path, String,
-               description: "The path to the Organizational Unit where the host will be placed."
+        description: "The path to the Organizational Unit where the host will be placed."
 
       property :reboot, Symbol,
-               equal_to: [:immediate, :delayed, :never, :request_reboot, :reboot_now],
-               validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the #{Chef::Dist::PRODUCT} run completes), and :never (Don't reboot)",
-               description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the #{Chef::Dist::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
-               default: :immediate
+        equal_to: %i{immediate delayed never request_reboot reboot_now},
+        validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the #{Chef::Dist::PRODUCT} run completes), and :never (Don't reboot)",
+        description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the #{Chef::Dist::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
+        default: :immediate
 
       property :new_hostname, String,
-               description: "Specifies a new hostname for the computer in the new domain.",
-               introduced: "14.5"
+        description: "Specifies a new hostname for the computer in the new domain.",
+        introduced: "14.5"
 
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
-               default: true, desired_state: false
+        default: true, desired_state: false
 
       action :join do
         description "Join the Active Directory domain."
@@ -96,6 +96,7 @@ class Chef
         def on_domain?
           node_domain = powershell_out!("(Get-WmiObject Win32_ComputerSystem).Domain")
           raise "Failed to check if the system is joined to the domain #{new_resource.domain_name}: #{node_domain.stderr}}" if node_domain.error?
+
           node_domain.stdout.downcase.strip == new_resource.domain_name.downcase
         end
 

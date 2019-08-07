@@ -90,7 +90,7 @@ class Chef
         end
 
         def locally_qualified_name(account_name)
-          account_name.include?("\\") ? account_name : "#{ENV['COMPUTERNAME']}\\#{account_name}"
+          account_name.include?("\\") ? account_name : "#{ENV["COMPUTERNAME"]}\\#{account_name}"
         end
 
         def validate_member!(member)

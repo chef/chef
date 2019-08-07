@@ -52,7 +52,7 @@ class Chef
     # TODO: is it too clever to be defining new() on a module like this?
     def self.new(name, out, err)
       formatter_class = by_name(name.to_s)
-      raise UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(', ')})" unless formatter_class
+      raise UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(", ")})" unless formatter_class
 
       formatter_class.new(out, err)
     end
@@ -146,8 +146,7 @@ class Chef
       # Formatters::Base can implement #file_loaded to do the same thing for
       # every kind of file that Chef loads from a recipe instead of
       # implementing all the per-filetype callbacks.
-      def file_loaded(path)
-      end
+      def file_loaded(path); end
 
       # Generic callback for any attribute/library/lwrp/recipe file throwing an
       # exception when loaded. Default behavior is to use CompileErrorInspector
@@ -222,7 +221,7 @@ class Chef
       end
 
       def is_structured_deprecation?(deprecation)
-        deprecation.kind_of?(Chef::Deprecated::Base)
+        deprecation.is_a?(Chef::Deprecated::Base)
       end
 
       def is_formatter?

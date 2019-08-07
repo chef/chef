@@ -19,7 +19,7 @@
 require "spec_helper"
 
 describe Chef::ResourceCollection::ResourceList do
-  let(:resource_list) { Chef::ResourceCollection::ResourceList.new() }
+  let(:resource_list) { Chef::ResourceCollection::ResourceList.new }
   let(:resource) { Chef::Resource::ZenMaster.new("makoto") }
   let(:second_resource) { Chef::Resource::ZenMaster.new("hattori") }
 

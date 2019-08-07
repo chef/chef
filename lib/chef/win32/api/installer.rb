@@ -44,7 +44,7 @@ UINT MsiOpenPackage(
   _Out_  MSIHANDLE *hProduct
 );
 =end
-        safe_attach_function :msi_open_package, :MsiOpenPackageExA, [ :string, :int, :pointer ], :int
+        safe_attach_function :msi_open_package, :MsiOpenPackageExA, %i{string int pointer}, :int
 
 =begin
 UINT MsiGetProductProperty(
@@ -54,7 +54,7 @@ UINT MsiGetProductProperty(
   _Inout_  DWORD *pcchValueBuf
 );
 =end
-        safe_attach_function :msi_get_product_property, :MsiGetProductPropertyA, [ :pointer, :pointer, :pointer, :pointer ], :int
+        safe_attach_function :msi_get_product_property, :MsiGetProductPropertyA, %i{pointer pointer pointer pointer}, :int
 
 =begin
 UINT MsiGetProductInfo(
@@ -64,7 +64,7 @@ UINT MsiGetProductInfo(
   _Inout_  DWORD *pcchValueBuf
 );
 =end
-        safe_attach_function :msi_get_product_info, :MsiGetProductInfoA, [ :pointer, :pointer, :pointer, :pointer ], :int
+        safe_attach_function :msi_get_product_info, :MsiGetProductInfoA, %i{pointer pointer pointer pointer}, :int
 
 =begin
 UINT MsiCloseHandle(

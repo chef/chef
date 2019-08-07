@@ -42,7 +42,7 @@ class Chef
                        end
             "#{property}=>#{obj_text}"
           end
-          "{#{descriptions.join(', ')}}"
+          "{#{descriptions.join(", ")}}"
         end
       end
 
@@ -73,11 +73,11 @@ class Chef
       end
 
       property :module_version, String,
-               introduced: "12.21",
-               description: "The version number of the module to use. PowerShell 5.0.10018.0 (or higher) supports having multiple versions of a module installed. This should be specified along with the module_name."
+        introduced: "12.21",
+        description: "The version number of the module to use. PowerShell 5.0.10018.0 (or higher) supports having multiple versions of a module installed. This should be specified along with the module_name."
 
       def property(property_name, value = nil)
-        if not property_name.is_a?(Symbol)
+        unless property_name.is_a?(Symbol)
           raise TypeError, "A property name of type Symbol must be specified, '#{property_name}' of type #{property_name.class} was given"
         end
 
@@ -99,13 +99,13 @@ class Chef
       # If the set method of the DSC resource indicate that a reboot
       # is necessary, reboot_action provides the mechanism for a reboot to
       # be requested.
-      property :reboot_action, Symbol, default: :nothing, equal_to: [:nothing, :reboot_now, :request_reboot],
+      property :reboot_action, Symbol, default: :nothing, equal_to: %i{nothing reboot_now request_reboot},
                 introduced: "12.6",
                 description: "Use to request an immediate reboot or to queue a reboot using the :reboot_now (immediate reboot) or :request_reboot (queued reboot) actions built into the reboot resource."
 
       property :timeout, Integer,
-               introduced: "12.6",
-               description: "The amount of time (in seconds) a command is to wait before timing out."
+        introduced: "12.6",
+        description: "The amount of time (in seconds) a command is to wait before timing out."
 
       private
 

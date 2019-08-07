@@ -46,7 +46,7 @@ class Chef
       option :config_file,
         short: "-c CONFIG",
         long: "--config CONFIG",
-        default: "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
+        default: "#{ENV["SYSTEMDRIVE"]}/chef/client.rb",
         description: "The configuration file to use for #{Chef::Dist::PRODUCT} runs."
 
       option :log_location,
@@ -78,10 +78,10 @@ class Chef
 
         raise ArgumentError, "Service definition is not provided" if service_options.nil?
 
-        required_options = [:service_name, :service_display_name, :service_description, :service_file_path]
+        required_options = %i{service_name service_display_name service_description service_file_path}
 
         required_options.each do |req_option|
-          if !service_options.key?(req_option)
+          unless service_options.key?(req_option)
             raise ArgumentError, "Service definition doesn't contain required option #{req_option}"
           end
         end

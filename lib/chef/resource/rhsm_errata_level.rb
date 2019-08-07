@@ -27,10 +27,10 @@ class Chef
       introduced "14.0"
 
       property :errata_level, String,
-               coerce: proc { |x| x.downcase },
-               equal_to: %w{critical moderate important low},
-               description: "An optional property for specifying the errata level of packages to install if it differs from the resource block's name.",
-               name_property: true
+        coerce: proc { |x| x.downcase },
+        equal_to: %w{critical moderate important low},
+        description: "An optional property for specifying the errata level of packages to install if it differs from the resource block's name.",
+        name_property: true
 
       action :install do
         description "Install all packages of the specified errata level."

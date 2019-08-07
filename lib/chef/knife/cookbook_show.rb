@@ -31,19 +31,19 @@ class Chef
       banner "knife cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"
 
       option :fqdn,
-       short: "-f FQDN",
-       long: "--fqdn FQDN",
-       description: "The FQDN of the host to see the file for."
+        short: "-f FQDN",
+        long: "--fqdn FQDN",
+        description: "The FQDN of the host to see the file for."
 
       option :platform,
-       short: "-p PLATFORM",
-       long: "--platform PLATFORM",
-       description: "The platform to see the file for."
+        short: "-p PLATFORM",
+        long: "--platform PLATFORM",
+        description: "The platform to see the file for."
 
       option :platform_version,
-       short: "-V VERSION",
-       long: "--platform-version VERSION",
-       description: "The platform version to see the file for."
+        short: "-V VERSION",
+        long: "--platform-version VERSION",
+        description: "The platform version to see the file for."
 
       option :with_uri,
         short: "-w",
@@ -57,7 +57,7 @@ class Chef
 
         case @name_args.length
         when 4 # We are showing a specific file
-          node = Hash.new
+          node = {}
           node[:fqdn] = config[:fqdn] if config.key?(:fqdn)
           node[:platform] = config[:platform] if config.key?(:platform)
           node[:platform_version] = config[:platform_version] if config.key?(:platform_version)

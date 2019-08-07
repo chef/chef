@@ -177,7 +177,7 @@ BOOL WINAPI GetProductInfo(
   __out  PDWORD pdwReturnedProductType
 );
 =end
-        safe_attach_function :GetProductInfo, [:DWORD, :DWORD, :DWORD, :DWORD, :PDWORD], :BOOL
+        safe_attach_function :GetProductInfo, %i{DWORD DWORD DWORD DWORD PDWORD}, :BOOL
 
 =begin
 int WINAPI GetSystemMetrics(
@@ -192,8 +192,8 @@ UINT WINAPI GetSystemWow64Directory(
   _In_  UINT   uSize
 );
 =end
-        safe_attach_function :GetSystemWow64DirectoryW, [:LPTSTR, :UINT], :UINT
-        safe_attach_function :GetSystemWow64DirectoryA, [:LPTSTR, :UINT], :UINT
+        safe_attach_function :GetSystemWow64DirectoryW, %i{LPTSTR UINT}, :UINT
+        safe_attach_function :GetSystemWow64DirectoryA, %i{LPTSTR UINT}, :UINT
 
 =begin
 BOOL WINAPI Wow64DisableWow64FsRedirection(
@@ -220,8 +220,8 @@ LRESULT WINAPI SendMessageTimeout(
   _Out_opt_  PDWORD_PTR lpdwResult
 );
 =end
-        safe_attach_function :SendMessageTimeoutW, [:HWND, :UINT, :WPARAM, :LPARAM, :UINT, :UINT, :PDWORD_PTR], :LRESULT
-        safe_attach_function :SendMessageTimeoutA, [:HWND, :UINT, :WPARAM, :LPARAM, :UINT, :UINT, :PDWORD_PTR], :LRESULT
+        safe_attach_function :SendMessageTimeoutW, %i{HWND UINT WPARAM LPARAM UINT UINT PDWORD_PTR}, :LRESULT
+        safe_attach_function :SendMessageTimeoutA, %i{HWND UINT WPARAM LPARAM UINT UINT PDWORD_PTR}, :LRESULT
 
 =begin
 DWORD WINAPI ExpandEnvironmentStrings(
@@ -230,8 +230,8 @@ DWORD WINAPI ExpandEnvironmentStrings(
   _In_       DWORD nSize
 );
 =end
-        safe_attach_function :ExpandEnvironmentStringsW, [:pointer, :pointer, :DWORD], :DWORD
-        safe_attach_function :ExpandEnvironmentStringsA, [:pointer, :pointer, :DWORD], :DWORD
+        safe_attach_function :ExpandEnvironmentStringsW, %i{pointer pointer DWORD}, :DWORD
+        safe_attach_function :ExpandEnvironmentStringsA, %i{pointer pointer DWORD}, :DWORD
       end
     end
   end

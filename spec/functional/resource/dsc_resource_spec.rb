@@ -46,7 +46,8 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
       it "raises an exception if the resource is not found" do
         new_resource.resource "thisdoesnotexist"
         expect { new_resource.run_action(:run) }.to raise_error(
-                                            Chef::Exceptions::ResourceNotFound)
+          Chef::Exceptions::ResourceNotFound
+        )
       end
     end
 

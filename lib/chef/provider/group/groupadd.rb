@@ -111,6 +111,7 @@ class Chef
           { gid: "-g" }.sort_by { |a| a[0] }.each do |field, option|
             next unless current_resource.send(field) != new_resource.send(field)
             next unless new_resource.send(field)
+
             opts << option
             opts << new_resource.send(field)
             logger.trace("#{new_resource} set #{field} to #{new_resource.send(field)}")

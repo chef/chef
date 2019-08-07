@@ -30,7 +30,7 @@ describe Chef::Knife::NodeFromFile do
     @knife.name_args = [ "adam.rb" ]
     allow(@knife).to receive(:output).and_return(true)
     allow(@knife).to receive(:confirm).and_return(true)
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     allow(@node).to receive(:save)
     allow(@knife.loader).to receive(:load_from).and_return(@node)
     @stdout = StringIO.new

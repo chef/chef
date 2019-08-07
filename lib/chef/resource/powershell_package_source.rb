@@ -27,31 +27,31 @@ class Chef
       introduced "14.3"
 
       property :source_name, String,
-               description: "The name of the package source.",
-               name_property: true
+        description: "The name of the package source.",
+        name_property: true
 
       property :url, String,
-               description: "The url to the package source.",
-               required: true
+        description: "The url to the package source.",
+        required: true
 
       property :trusted, [TrueClass, FalseClass],
-               description: "Whether or not to trust packages from this source.",
-               default: false
+        description: "Whether or not to trust packages from this source.",
+        default: false
 
       property :provider_name, String,
-               equal_to: %w{ Programs msi NuGet msu PowerShellGet psl chocolatey },
-               validation_message: "The following providers are supported: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' or 'chocolatey'",
-               description: "The package management provider for the source. It supports the following providers: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' and 'chocolatey'.",
-               default: "NuGet"
+        equal_to: %w{ Programs msi NuGet msu PowerShellGet psl chocolatey },
+        validation_message: "The following providers are supported: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' or 'chocolatey'",
+        description: "The package management provider for the source. It supports the following providers: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' and 'chocolatey'.",
+        default: "NuGet"
 
       property :publish_location, String,
-               description: "The url where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'."
+        description: "The url where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'."
 
       property :script_source_location, String,
-               description: "The url where scripts are located for this source. Only valid if the provider is 'PowerShellGet'."
+        description: "The url where scripts are located for this source. Only valid if the provider is 'PowerShellGet'."
 
       property :script_publish_location, String,
-               description: "The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'."
+        description: "The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'."
 
       load_current_value do
         cmd = load_resource_state_script(source_name)

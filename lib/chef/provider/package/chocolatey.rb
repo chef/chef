@@ -59,8 +59,8 @@ class Chef
           # so we want to assert candidates exist for the alternate source
           requirements.assert(:upgrade, :install) do |a|
             a.assertion { candidates_exist_for_all_uninstalled? }
-            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(', ')}")
-            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(', ')} would have been configured")
+            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
+            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
           end
         end
 
@@ -154,6 +154,7 @@ class Chef
               # run before choco.exe gets called from #load_current_resource.
               exe_path = ::File.join(choco_install_path.to_s, "bin", "choco.exe")
               raise Chef::Exceptions::MissingLibrary, CHOCO_MISSING_MSG unless ::File.exist?(exe_path)
+
               exe_path
             end
         end
@@ -230,6 +231,7 @@ class Chef
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
           return @available_packages if @available_packages
+
           @available_packages = {}
           package_name_array.each do |pkg|
             available_versions =
@@ -266,6 +268,7 @@ class Chef
           hash = {}
           choco_command(*args).stdout.each_line do |line|
             next if line.start_with?("Chocolatey v")
+
             name, version = line.split("|")
             hash[name.downcase] = version&.chomp
           end

@@ -35,8 +35,8 @@ class Chef
         CRYPTPROTECT_AUDIT         = 0x10
 
         class CRYPT_INTEGER_BLOB < FFI::Struct
-          layout :cbData, :DWORD,   # Count, in bytes, of data
-                 :pbData, :pointer  # Pointer to data buffer
+          layout :cbData, :DWORD, # Count, in bytes, of data
+            :pbData, :pointer # Pointer to data buffer
           def initialize(str = nil)
             super(nil)
             if str
@@ -47,15 +47,15 @@ class Chef
 
         end
 
-        safe_attach_function :CryptProtectData, [
-          :PDATA_BLOB,
-          :LPCWSTR,
-          :PDATA_BLOB,
-          :pointer,
-          :PCRYPTPROTECT_PROMPTSTRUCT,
-          :DWORD,
-          :PDATA_BLOB,
-        ], :BOOL
+        safe_attach_function :CryptProtectData, %i{
+          PDATA_BLOB
+          LPCWSTR
+          PDATA_BLOB
+          pointer
+          PCRYPTPROTECT_PROMPTSTRUCT
+          DWORD
+          PDATA_BLOB
+        }, :BOOL
 
       end
     end

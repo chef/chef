@@ -185,7 +185,7 @@ class Chef
       @logger = logger || Chef::Log.with_child
       @cookbook_collection = cookbook_collection
       self.node = node if node
-      @definitions = Hash.new
+      @definitions = {}
       @loaded_recipes_hash = {}
       @loaded_attributes_hash = {}
       @reboot_info = {}
@@ -313,7 +313,7 @@ class Chef
     # @see DSL::IncludeRecipe#include_recipe
     #
     def include_recipe(*recipe_names, current_cookbook: nil)
-      result_recipes = Array.new
+      result_recipes = []
       recipe_names.flatten.each do |recipe_name|
         if result = load_recipe(recipe_name, current_cookbook: current_cookbook)
           result_recipes << result
@@ -373,7 +373,7 @@ class Chef
     # @raise [Chef::Exceptions::RecipeNotFound] If the file does not exist.
     #
     def load_recipe_file(recipe_file)
-      if !File.exist?(recipe_file)
+      unless File.exist?(recipe_file)
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe file #{recipe_file}"
       end
 
@@ -705,12 +705,12 @@ class Chef
         resource_collection=
         runner
         runner=
-      }.map { |x| x.to_sym }
+      }.map(&:to_sym)
 
       # Verify that we didn't miss any methods
       unless @__skip_method_checking # hook specifically for compat_resource
         missing_methods = superclass.instance_methods(false) - instance_methods(false) - CHILD_STATE
-        if !missing_methods.empty?
+        unless missing_methods.empty?
           raise "ERROR: not all methods of RunContext accounted for in ChildRunContext! All methods must be marked as child methods with CHILD_STATE or delegated to the parent_run_context. Missing #{missing_methods.join(", ")}."
         end
       end

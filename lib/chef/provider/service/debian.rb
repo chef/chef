@@ -26,8 +26,8 @@ class Chef
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:debian)
         end
 
-        UPDATE_RC_D_ENABLED_MATCHES = /\/rc[\dS].d\/S|not installed/i.freeze
-        UPDATE_RC_D_PRIORITIES = /\/rc([\dS]).d\/([SK])(\d\d)/i.freeze
+        UPDATE_RC_D_ENABLED_MATCHES = %r{/rc[\dS].d/S|not installed}i.freeze
+        UPDATE_RC_D_PRIORITIES = %r{/rc([\dS]).d/([SK])(\d\d)}i.freeze
 
         def self.supports?(resource, action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
@@ -58,21 +58,22 @@ class Chef
             a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.",
                       "Assigning temporary priorities to continue.",
                       "If this service is not properly installed prior to this point, this will fail."] do
-              temp_priorities = { "6" => [:stop, "20"],
-                                  "0" => [:stop, "20"],
-                                  "1" => [:stop, "20"],
-                                  "2" => [:start, "20"],
-                                  "3" => [:start, "20"],
-                                  "4" => [:start, "20"],
-                                  "5" => [:start, "20"] }
-              current_resource.priority(temp_priorities)
-            end
+                        temp_priorities = { "6" => [:stop, "20"],
+                                            "0" => [:stop, "20"],
+                                            "1" => [:stop, "20"],
+                                            "2" => [:start, "20"],
+                                            "3" => [:start, "20"],
+                                            "4" => [:start, "20"],
+                                            "5" => [:start, "20"] }
+                        current_resource.priority(temp_priorities)
+                      end
           end
         end
 
         # returns a list of levels that the service should be stopped or started on
         def parse_init_file(path)
           return [] unless ::File.exist?(path)
+
           in_info = false
           ::File.readlines(path).each_with_object([]) do |line, acc|
             if line =~ /^### BEGIN INIT INFO/

@@ -75,7 +75,7 @@ class Chef
       # (see EventDispatch::Base#run_start)
       #
       def run_start(chef_version, run_status)
-        events.unregister(self) unless should_be_enabled?
+        events.unregister(self) unless Chef::DataCollector::ConfigValidation.should_be_enabled?
         @run_status = run_status
       end
 
@@ -174,16 +174,20 @@ class Chef
       #
       def send_to_data_collector(message)
         return unless Chef::Config[:data_collector][:server_url]
+
         @http ||= setup_http_client(Chef::Config[:data_collector][:server_url])
         @http.post(nil, message, headers)
-      rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,
-        Errno::ECONNREFUSED, EOFError, Net::HTTPBadResponse,
-        Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError,
-        Errno::EHOSTDOWN => e
+      rescue => e
         # Do not disable data collector reporter if additional output_locations have been specified
         events.unregister(self) unless Chef::Config[:data_collector][:output_locations]
 
-        code = e&.response&.code&.to_s || "Exception Code Empty"
+        begin
+          code = e&.response&.code&.to_s
+        rescue
+          # i really dont care
+        end
+
+        code ||= "No HTTP Code"
 
         msg = "Error while reporting run start to Data Collector. URL: #{Chef::Config[:data_collector][:server_url]} Exception: #{code} -- #{e.message} "
 
@@ -191,9 +195,13 @@ class Chef
           Chef::Log.error(msg)
           raise
         else
-          # Make the message non-scary for folks who don't have automate:
-          msg << " (This is normal if you do not have #{Chef::Dist::AUTOMATE})"
-          Chef::Log.info(msg)
+          if code == "404"
+            # Make the message non-scary for folks who don't have automate:
+            msg << " (This is normal if you do not have #{Chef::Dist::AUTOMATE})"
+            Chef::Log.debug(msg)
+          else
+            Chef::Log.warn(msg)
+          end
         end
       end
 
@@ -277,48 +285,6 @@ class Chef
 
         headers
       end
-
-      # Main logic controlling the data collector being enabled or disabled:
-      #
-      # * disabled in why-run mode
-      # * disabled when `Chef::Config[:data_collector][:mode]` excludes the solo-vs-client mode
-      # * disabled if there is no server_url or no output_locations to log to
-      # * enabled if there is a configured output_location even without a token
-      # * disabled in solo mode if the user did not configure the auth token
-      #
-      # @return [Boolean] true if the data collector should be enabled
-      #
-      def should_be_enabled?
-        running_mode = ( Chef::Config[:solo_legacy_mode] || Chef::Config[:local_mode] ) ? :solo : :client
-        want_mode = Chef::Config[:data_collector][:mode]
-
-        case
-        when Chef::Config[:why_run]
-          Chef::Log.trace("data collector is disabled for why run mode")
-          return false
-        when (want_mode != :both) && running_mode != want_mode
-          Chef::Log.trace("data collector is configured to only run in #{Chef::Config[:data_collector][:mode]} modes, disabling it")
-          return false
-        when !(Chef::Config[:data_collector][:server_url] || Chef::Config[:data_collector][:output_locations])
-          Chef::Log.trace("Neither data collector URL or output locations have been configured, disabling data collector")
-          return false
-        when running_mode == :client && Chef::Config[:data_collector][:token]
-          Chef::Log.warn("Data collector token authentication is not recommended for client-server mode. " \
-                         "Please upgrade #{Chef::Dist::SERVER_PRODUCT} to 12.11 or later and remove the token from your config file " \
-                         "to use key based authentication instead")
-          return true
-        when Chef::Config[:data_collector][:output_locations] && Chef::Config[:data_collector][:output_locations][:files] && !Chef::Config[:data_collector][:output_locations][:files].empty?
-          # we can run fine to a file without a token, even in solo mode.
-          return true
-        when running_mode == :solo && !Chef::Config[:data_collector][:token]
-          # we are in solo mode and are not logging to a file, so must have a token
-          Chef::Log.trace("Data collector token must be configured to use #{Chef::Dist::AUTOMATE} data collector with #{Chef::Dist::SOLO}")
-          return false
-        else
-          return true
-        end
-      end
-
     end
   end
 end

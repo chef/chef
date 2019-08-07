@@ -36,7 +36,7 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::Subversion.new(new_resource.name)
 
-        unless [:export, :force_export].include?(Array(new_resource.action).first)
+        unless %i{export force_export}.include?(Array(new_resource.action).first)
           if current_revision = find_current_revision
             current_resource.revision current_revision
           end
@@ -137,6 +137,7 @@ class Chef
 
       def find_current_revision
         return nil unless ::File.exist?(::File.join(new_resource.destination, ".svn"))
+
         command = scm(:info)
         svn_info = shell_out!(command, run_options(cwd: cwd, returns: [0, 1])).stdout
 
@@ -175,6 +176,7 @@ class Chef
         rev = (repo_attrs["Last Changed Rev"] || repo_attrs["Revision"])
         rev.strip! if rev
         raise "Could not parse `svn info` data: #{svn_info}" if repo_attrs.empty?
+
         logger.trace "#{new_resource} resolved revision #{new_resource.revision} to #{rev}"
         rev
       end
@@ -185,6 +187,7 @@ class Chef
       # and will respond appropriately.
       def authentication
         return "" unless new_resource.svn_username
+
         result = "--username #{new_resource.svn_username} "
         result << "--password #{new_resource.svn_password} "
         result

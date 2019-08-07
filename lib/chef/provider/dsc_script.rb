@@ -41,7 +41,7 @@ class Chef
       end
 
       def action_run
-        if ! @resource_converged
+        unless @resource_converged
           converge_by(generate_description) do
             run_configuration(:set)
             logger.info("DSC resource configuration completed successfully")
@@ -162,7 +162,7 @@ class Chef
               # We ignore the last log message because it only contains the time it took, which looks weird
               cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, "").strip }
               unless cleaned_messages.empty?
-                "converge DSC resource #{resource.name} by #{cleaned_messages.find_all { |c| c != '' }.join("\n")}"
+                "converge DSC resource #{resource.name} by #{cleaned_messages.find_all { |c| c != "" }.join("\n")}"
               else
                 "converge DSC resource #{resource.name}"
               end

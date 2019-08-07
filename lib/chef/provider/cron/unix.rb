@@ -42,6 +42,7 @@ class Chef
             raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status}"
           end
           return nil if status > 0
+
           crontab.stdout.chomp << "\n"
         end
 

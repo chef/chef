@@ -28,25 +28,25 @@ class Chef
       end
 
       option :file,
-             short: "-f FILE",
-             long: "--file FILE",
-             description: "Write the private key to a file if the #{Chef::Dist::SERVER_PRODUCT} generated one."
+        short: "-f FILE",
+        long: "--file FILE",
+        description: "Write the private key to a file if the #{Chef::Dist::SERVER_PRODUCT} generated one."
 
       option :validator,
-             long: "--validator",
-             description: "Create the client as a validator.",
-             boolean: true
+        long: "--validator",
+        description: "Create the client as a validator.",
+        boolean: true
 
       option :public_key,
-             short: "-p FILE",
-             long: "--public-key",
-             description: "Set the initial default key for the client from a file on disk (cannot pass with --prevent-keygen)."
+        short: "-p FILE",
+        long: "--public-key",
+        description: "Set the initial default key for the client from a file on disk (cannot pass with --prevent-keygen)."
 
       option :prevent_keygen,
-             short: "-k",
-             long: "--prevent-keygen",
-             description: "Prevent #{Chef::Dist::SERVER_PRODUCT} from generating a default key pair for you. Cannot be passed with --public-key.",
-             boolean: true
+        short: "-k",
+        long: "--prevent-keygen",
+        description: "Prevent #{Chef::Dist::SERVER_PRODUCT} from generating a default key pair for you. Cannot be passed with --public-key.",
+        boolean: true
 
       banner "knife client create CLIENTNAME (options)"
 

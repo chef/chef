@@ -77,7 +77,7 @@ begin
       t.pattern = FileList["spec/unit/node_spec.rb", "spec/unit/role_spec.rb"]
     end
 
-    [:unit, :functional, :integration, :stress].each do |sub|
+    %i{unit functional integration stress}.each do |sub|
       desc "Run the specs under spec/#{sub}"
       RSpec::Core::RakeTask.new(sub) do |t|
         t.rspec_opts = %w{--profile}

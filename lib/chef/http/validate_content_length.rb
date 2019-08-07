@@ -41,8 +41,7 @@ class Chef
         end
       end
 
-      def initialize(opts = {})
-      end
+      def initialize(opts = {}); end
 
       def handle_request(method, url, headers = {}, data = false)
         [method, url, headers, data]
@@ -74,6 +73,7 @@ class Chef
 
       def response_content_length(response)
         return nil if response["content-length"].nil?
+
         if response["content-length"].is_a?(Array)
           response["content-length"].first.to_i
         else

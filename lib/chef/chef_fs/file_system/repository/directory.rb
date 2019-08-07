@@ -71,6 +71,7 @@ class Chef
 
           def children
             return FileSystemCache.instance.children(file_path) if FileSystemCache.instance.exist?(file_path)
+
             children = dir_ls.sort
               .map { |child_name| make_child_entry(child_name) }
               .select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?) }
@@ -84,6 +85,7 @@ class Chef
             if child.exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
+
             FileSystemCache.instance.delete!(child.file_path)
             if file_contents
               child.write(file_contents)
@@ -122,6 +124,7 @@ class Chef
             if exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
             end
+
             begin
               FileSystemCache.instance.delete!(file_path)
               Dir.mkdir(file_path)
@@ -136,9 +139,10 @@ class Chef
 
           def delete(recurse)
             if exists?
-              if !recurse
+              unless recurse
                 raise MustDeleteRecursivelyError.new(self, $!)
               end
+
               FileUtils.rm_r(file_path)
               FileSystemCache.instance.delete!(file_path)
             else

@@ -22,7 +22,7 @@ describe Chef::Resource::Batch do
   let(:node) { Chef::Node.new }
 
   before(:each) do
-    node.default["kernel"] = Hash.new
+    node.default["kernel"] = {}
     node.default["kernel"][:machine] = :x86_64.to_s
     node.automatic[:os] = "windows"
 

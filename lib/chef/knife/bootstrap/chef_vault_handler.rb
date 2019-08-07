@@ -145,6 +145,7 @@ class Chef
               if Gem::Version.new(ChefVault::VERSION) < Gem::Version.new("2.6.0")
                 raise error_message
               end
+
               true
             rescue LoadError
               raise error_message

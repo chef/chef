@@ -29,43 +29,43 @@ class Chef
       introduced "14.3"
 
       property :host, String,
-               description: "The host to add to the known hosts file.",
-               name_property: true
+        description: "The host to add to the known hosts file.",
+        name_property: true
 
       property :key, String,
-               description: "An optional key for the host. If not provided this will be automatically determined."
+        description: "An optional key for the host. If not provided this will be automatically determined."
 
       property :key_type, String,
-               description: "The type of key to store.",
-               default: "rsa"
+        description: "The type of key to store.",
+        default: "rsa"
 
       property :port, Integer,
-               description: "The server port that the ssh-keyscan command will use to gather the public key.",
-               default: 22
+        description: "The server port that the ssh-keyscan command will use to gather the public key.",
+        default: 22
 
       property :timeout, Integer,
-               description: "The timeout in seconds for ssh-keyscan.",
-               default: 30
+        description: "The timeout in seconds for ssh-keyscan.",
+        default: 30
 
       property :mode, String,
-               description: "The file mode for the ssh_known_hosts file.",
-               default: "0644"
+        description: "The file mode for the ssh_known_hosts file.",
+        default: "0644"
 
       property :owner, [String, Integer],
-               description: "The file owner for the ssh_known_hosts file.",
-               default: "root"
+        description: "The file owner for the ssh_known_hosts file.",
+        default: "root"
 
       property :group, [String, Integer],
-               description: "The file group for the ssh_known_hosts file.",
-               default: lazy { node["root_group"] }
+        description: "The file group for the ssh_known_hosts file.",
+        default: lazy { node["root_group"] }
 
       property :hash_entries, [TrueClass, FalseClass],
-               description: "Hash the hostname and addresses in the ssh_known_hosts file for privacy.",
-               default: false
+        description: "Hash the hostname and addresses in the ssh_known_hosts file for privacy.",
+        default: false
 
       property :file_location, String,
-               description: "The location of the ssh known hosts file. Change this to set a known host file for a particular user.",
-               default: "/etc/ssh/ssh_known_hosts"
+        description: "The location of the ssh known hosts file. Change this to set a known host file for a particular user.",
+        default: "/etc/ssh/ssh_known_hosts"
 
       action :create do
         description "Create an entry in the ssh_known_hosts file."

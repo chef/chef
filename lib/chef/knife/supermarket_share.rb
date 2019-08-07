@@ -113,7 +113,8 @@ class Chef
         data = noauth_rest.get("#{config[:supermarket_site]}/api/v1/cookbooks/#{@name_args[0]}")
         data["category"]
       rescue => e
-        return "Other" if e.kind_of?(Net::HTTPClientException) && e.response.code == "404"
+        return "Other" if e.is_a?(Net::HTTPClientException) && e.response.code == "404"
+
         ui.fatal("Unable to reach Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
         Chef::Log.trace("\n#{e.backtrace.join("\n")}")
         exit(1)
@@ -149,7 +150,7 @@ class Chef
       end
 
       def tar_cmd
-        if !@tar_cmd
+        unless @tar_cmd
           @tar_cmd = "tar"
           begin
             # Unix and Mac only - prefer gnutar

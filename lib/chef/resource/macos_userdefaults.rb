@@ -29,37 +29,37 @@ class Chef
       introduced "14.0"
 
       property :domain, String,
-               description: "The domain that the user defaults belong to.",
-               required: true
+        description: "The domain that the user defaults belong to.",
+        required: true
 
       property :global, [TrueClass, FalseClass],
-               description: "Determines whether or not the domain is global.",
-               default: false
+        description: "Determines whether or not the domain is global.",
+        default: false
 
       property :key, String,
-               description: "The preference key."
+        description: "The preference key."
 
       property :value, [Integer, Float, String, TrueClass, FalseClass, Hash, Array],
-               description: "The value of the key.",
-               required: true
+        description: "The value of the key.",
+        required: true
 
       property :type, String,
-               description: "The value type of the preference key.",
-               default: ""
+        description: "The value type of the preference key.",
+        default: ""
 
       property :user, String,
-               description: "The system user that the default will be applied to."
+        description: "The system user that the default will be applied to."
 
       property :sudo, [TrueClass, FalseClass],
-               description: "Set to true if the setting you wish to modify requires privileged access.",
-               default: false,
-               desired_state: false
+        description: "Set to true if the setting you wish to modify requires privileged access.",
+        default: false,
+        desired_state: false
 
       # @todo this should get refactored away: https://github.com/chef/chef/issues/7622
       property :is_set, [TrueClass, FalseClass],
-               default: false,
-               desired_state: false,
-               skip_docs: true
+        default: false,
+        desired_state: false,
+        skip_docs: true
 
        # coerce various ways of representing a boolean into either 0 (false) or 1 (true)
        # which is what the defaults CLI expects. Why? Well defaults itself accepts a few
@@ -67,6 +67,7 @@ class Chef
       def coerce_booleans(val)
         return 1 if [true, "TRUE", "1", "true", "YES", "yes"].include?(val)
         return 0 if [false, "FALSE", "0", "false", "NO", "no"].include?(val)
+
         val
       end
 

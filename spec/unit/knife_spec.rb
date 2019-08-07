@@ -35,9 +35,9 @@ describe Chef::Knife do
 
   let(:config_loader) do
     instance_double("WorkstationConfigLoader",
-                    load: nil, no_config_found?: false,
-                    config_location: config_location,
-                    chef_config_dir: "/etc/chef")
+      load: nil, no_config_found?: false,
+      config_location: config_location,
+      chef_config_dir: "/etc/chef")
   end
 
   before(:each) do
@@ -55,7 +55,7 @@ describe Chef::Knife do
     allow(knife.ui).to receive(:print)
     allow(Chef::Log).to receive(:init)
     allow(Chef::Log).to receive(:level)
-    [:debug, :info, :warn, :error, :crit].each do |level_sym|
+    %i{debug info warn error crit}.each do |level_sym|
       allow(Chef::Log).to receive(level_sym)
     end
     allow(Chef::Knife).to receive(:puts)
@@ -166,7 +166,8 @@ describe Chef::Knife do
         "X-Chef-Version" => Chef::VERSION,
         "Host" => "api.opscode.piab",
         "X-REMOTE-REQUEST-ID" => request_id,
-    } end
+    }
+    end
 
     let(:request_id) { "1234" }
 
@@ -205,7 +206,7 @@ describe Chef::Knife do
         KnifeSpecs.send :remove_const, :TestYourself
       end
       Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
-      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
+      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.is_a?(Class) }
     end
 
     it "confirms that the headers include X-Remote-Request-Id" do
@@ -220,7 +221,7 @@ describe Chef::Knife do
         KnifeSpecs.send :remove_const, :TestYourself
       end
       Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
-      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
+      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.is_a?(Class) }
     end
 
     it "merges the global knife CLI options" do
@@ -285,8 +286,8 @@ describe Chef::Knife do
 
       before do
         KnifeSpecs::TestYourself.option(:opt_with_default,
-                                        short: "-D VALUE",
-                                        default: "default-value")
+          short: "-D VALUE",
+          default: "default-value")
       end
       # This supports a use case used by plugins, where the pattern
       # seems to follow:
@@ -308,8 +309,8 @@ describe Chef::Knife do
     describe "merging configuration options" do
       before do
         KnifeSpecs::TestYourself.option(:opt_with_default,
-                                        short: "-D VALUE",
-                                        default: "default-value")
+          short: "-D VALUE",
+          default: "default-value")
       end
 
       it "sets the default log_location to STDERR for Chef::Log warnings" do
@@ -468,8 +469,8 @@ describe Chef::Knife do
       allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("403 Forbidden", response))
       allow(knife).to receive(:username).and_return("sadpanda")
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action})
-      expect(stderr.string).to match(%r{Response:  y u no administrator})
+      expect(stderr.string).to match(/ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action/)
+      expect(stderr.string).to match(/Response:  y u no administrator/)
     end
 
     context "when proxy servers are set" do
@@ -488,9 +489,9 @@ describe Chef::Knife do
         allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("403 Forbidden", response))
         allow(knife).to receive(:username).and_return("sadpanda")
         knife.run_with_pretty_exceptions
-        expect(stderr.string).to match(%r{ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action})
-        expect(stderr.string).to match(%r{ERROR: There are proxy servers configured, your server url may need to be added to NO_PROXY.})
-        expect(stderr.string).to match(%r{Response:  y u no administrator})
+        expect(stderr.string).to match(/ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action/)
+        expect(stderr.string).to match(/ERROR: There are proxy servers configured, your server url may need to be added to NO_PROXY./)
+        expect(stderr.string).to match(/Response:  y u no administrator/)
       end
     end
 
@@ -500,8 +501,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u search wrong"))
       allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("400 Bad Request", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: The data in your request was invalid})
-      expect(stderr.string).to match(%r{Response: y u search wrong})
+      expect(stderr.string).to match(/ERROR: The data in your request was invalid/)
+      expect(stderr.string).to match(/Response: y u search wrong/)
     end
 
     it "formats 404s nicely" do
@@ -510,8 +511,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "nothing to see here"))
       allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("404 Not Found", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: The object you are looking for could not be found})
-      expect(stderr.string).to match(%r{Response: nothing to see here})
+      expect(stderr.string).to match(/ERROR: The object you are looking for could not be found/)
+      expect(stderr.string).to match(/Response: nothing to see here/)
     end
 
     it "formats 406s (non-supported API version error) nicely" do
@@ -536,8 +537,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "sad trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("500 Internal Server Error", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: internal server error})
-      expect(stderr.string).to match(%r{Response: sad trombone})
+      expect(stderr.string).to match(/ERROR: internal server error/)
+      expect(stderr.string).to match(/Response: sad trombone/)
     end
 
     it "formats 502s nicely" do
@@ -546,8 +547,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "sadder trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("502 Bad Gateway", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: bad gateway})
-      expect(stderr.string).to match(%r{Response: sadder trombone})
+      expect(stderr.string).to match(/ERROR: bad gateway/)
+      expect(stderr.string).to match(/Response: sadder trombone/)
     end
 
     it "formats 503s nicely" do
@@ -556,8 +557,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "saddest trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("503 Service Unavailable", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: Service temporarily unavailable})
-      expect(stderr.string).to match(%r{Response: saddest trombone})
+      expect(stderr.string).to match(/ERROR: Service temporarily unavailable/)
+      expect(stderr.string).to match(/Response: saddest trombone/)
     end
 
     it "formats other HTTP errors nicely" do
@@ -566,16 +567,16 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "nobugfixtillyoubuy"))
       allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("402 Payment Required", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: Payment Required})
-      expect(stderr.string).to match(%r{Response: nobugfixtillyoubuy})
+      expect(stderr.string).to match(/ERROR: Payment Required/)
+      expect(stderr.string).to match(/Response: nobugfixtillyoubuy/)
     end
 
     it "formats NameError and NoMethodError nicely" do
       allow(knife).to receive(:run).and_raise(NameError.new("Undefined constant FUUU"))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: .* encountered an unexpected error})
-      expect(stderr.string).to match(%r{This may be a bug in the 'knife' .* command or plugin})
-      expect(stderr.string).to match(%r{Exception: NameError: Undefined constant FUUU})
+      expect(stderr.string).to match(/ERROR: .* encountered an unexpected error/)
+      expect(stderr.string).to match(/This may be a bug in the 'knife' .* command or plugin/)
+      expect(stderr.string).to match(/Exception: NameError: Undefined constant FUUU/)
     end
 
     it "formats missing private key errors nicely" do
@@ -583,7 +584,7 @@ describe Chef::Knife do
       allow(knife).to receive(:api_key).and_return("/home/root/.chef/no-key-here.pem")
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: Your private key could not be loaded from /home/root/.chef/no-key-here.pem})
-      expect(stderr.string).to match(%r{Check your configuration file and ensure that your private key is readable})
+      expect(stderr.string).to match(/Check your configuration file and ensure that your private key is readable/)
     end
 
     it "formats connection refused errors nicely" do
@@ -592,8 +593,8 @@ describe Chef::Knife do
       # Errno::ECONNREFUSED message differs by platform
       # *nix = Errno::ECONNREFUSED: Connection refused
       # win32: Errno::ECONNREFUSED: No connection could be made because the target machine actively refused it.
-      expect(stderr.string).to match(%r{ERROR: Network Error: .* - y u no shut up})
-      expect(stderr.string).to match(%r{Check your .* configuration and network settings})
+      expect(stderr.string).to match(/ERROR: Network Error: .* - y u no shut up/)
+      expect(stderr.string).to match(/Check your .* configuration and network settings/)
     end
 
     it "formats SSL errors nicely and suggests to use `knife ssl check` and `knife ssl fetch`" do

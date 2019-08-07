@@ -77,7 +77,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
           <<~END_CLIENT_RB
             chef_server_url "http://[::1]:8900"
             syntax_check_cache_path '#{cache_path}'
-            client_key '#{path_to('config/knifeuser.pem')}'
+            client_key '#{path_to("config/knifeuser.pem")}'
             node_name 'whoisthisis'
             cookbook_path '#{CHEF_SPEC_DATA}/cookbooks'
           END_CLIENT_RB

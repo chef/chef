@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,23 +48,23 @@ class Chef
       end
 
       property :command, [ String, Array ],
-               name_property: true, identity: true,
-               description: "An optional property to set the command to be executed if it differs from the resource block's name."
+        name_property: true, identity: true,
+        description: "An optional property to set the command to be executed if it differs from the resource block's name."
 
       property :umask, [ String, Integer ],
-               description: "The file mode creation mask, or umask."
+        description: "The file mode creation mask, or umask."
 
       property :creates, String,
-               description: "Prevent a command from creating a file when that file already exists."
+        description: "Prevent a command from creating a file when that file already exists."
 
       property :cwd, String,
-               description: "The current working directory from which the command will be run."
+        description: "The current working directory from which the command will be run."
 
       property :environment, Hash,
-               description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'})."
+        description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'})."
 
       property :group, [ String, Integer ],
-               description: "The group name or group ID that must be changed before running a command."
+        description: "The group name or group ID that must be changed before running a command."
 
       property :live_stream, [ TrueClass, FalseClass ], default: false,
                description: "Send the output of the command run by this execute resource block to the #{Chef::Dist::CLIENT} event stream."
@@ -78,14 +78,14 @@ class Chef
                description: "The return value for a command. This may be an array of accepted values. An exception is raised when the return value(s) do not match."
 
       property :timeout, [ Integer, Float ],
-               description: "The amount of time (in seconds) a command is to wait before timing out."
+        description: "The amount of time (in seconds) a command is to wait before timing out."
 
       property :user, [ String, Integer ],
-               description: "The user name of the user identity with which to launch the new process. The user name may optionally be specifed with a domain, i.e. domainuser or user@my.dns.domain.com via Universal Principal Name (UPN)format. It can also be specified without a domain simply as user if the domain is instead specified using the domain property. On Windows only, if this property is specified, the password property must be specified."
+        description: "The user name of the user identity with which to launch the new process. The user name may optionally be specifed with a domain, i.e. domainuser or user@my.dns.domain.com via Universal Principal Name (UPN)format. It can also be specified without a domain simply as user if the domain is instead specified using the domain property. On Windows only, if this property is specified, the password property must be specified."
 
       property :domain, String,
-               introduced: "12.21",
-               description: "Windows only: The domain of the user user specified by the user property. If not specified, the user name and password specified by the user and password properties will be used to resolve that user against the domain in which the system running #{Chef::Dist::PRODUCT} is joined, or if that system is not joined to a domain it will resolve the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the user property."
+        introduced: "12.21",
+        description: "Windows only: The domain of the user user specified by the user property. If not specified, the user name and password specified by the user and password properties will be used to resolve that user against the domain in which the system running #{Chef::Dist::PRODUCT} is joined, or if that system is not joined to a domain it will resolve the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the user property."
 
       property :password, String, sensitive: true,
                introduced: "12.21",
@@ -93,8 +93,8 @@ class Chef
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [ TrueClass, FalseClass ],
-               description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
-               default: lazy { |r| r.password ? true : false }, default_description: "True if the password property is set. False otherwise."
+        description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
+        default: lazy { password ? true : false }, default_description: "True if the password property is set. False otherwise."
 
       property :elevated, [ TrueClass, FalseClass ], default: false,
                description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running #{Chef::Dist::CLIENT} needs the “Replace a process level token” and “Adjust Memory Quotas for a process” permissions. The user that is running the command needs the “Log on as a batch job” permission.\nBecause this requires a login, the user and password properties are required.",

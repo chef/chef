@@ -38,7 +38,7 @@ class Chef
         if Kernel.block_given? || args.length >= 4
           Chef::Search::Query.new.search(*args, &block)
         else
-          results = Array.new
+          results = []
           Chef::Search::Query.new.search(*args) do |o|
             results << o
           end

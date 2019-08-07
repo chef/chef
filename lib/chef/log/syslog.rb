@@ -36,11 +36,11 @@ class Chef
       def initialize(program_name = "#{Chef::Dist::CLIENT}", facility = ::Syslog::LOG_DAEMON, logopts = nil)
         super
         return if defined? ::Logger::Syslog::SYSLOG
+
         ::Logger::Syslog.const_set :SYSLOG, SYSLOG
       end
 
-      def close
-      end
+      def close; end
     end
   end
 end

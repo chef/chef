@@ -905,8 +905,8 @@ DWORD WINAPI FormatMessage(
   __in_opt  va_list *Arguments
 );
 =end
-        safe_attach_function :FormatMessageA, [:DWORD, :HANDLE, :DWORD, :DWORD, :LPTSTR, :DWORD, :varargs], :DWORD
-        safe_attach_function :FormatMessageW, [:DWORD, :HANDLE, :DWORD, :DWORD, :LPWSTR, :DWORD, :varargs], :DWORD
+        safe_attach_function :FormatMessageA, %i{DWORD HANDLE DWORD DWORD LPTSTR DWORD varargs}, :DWORD
+        safe_attach_function :FormatMessageW, %i{DWORD HANDLE DWORD DWORD LPWSTR DWORD varargs}, :DWORD
 
 =begin
 DWORD WINAPI GetLastError(void);
@@ -918,7 +918,7 @@ void WINAPI SetLastError(
 );
 =end
         safe_attach_function :SetLastError, [:DWORD], :void
-        safe_attach_function :SetLastErrorEx, [:DWORD, :DWORD], :void
+        safe_attach_function :SetLastErrorEx, %i{DWORD DWORD}, :void
 =begin
 UINT WINAPI GetErrorMode(void);s
 =end
@@ -938,7 +938,7 @@ HMODULE WINAPI LoadLibraryEx(
   _In_       DWORD   dwFlags
 );
 =end
-        safe_attach_function :LoadLibraryExW, [:LPCTSTR, :HANDLE, :DWORD], :HANDLE
+        safe_attach_function :LoadLibraryExW, %i{LPCTSTR HANDLE DWORD}, :HANDLE
 
 =begin
 https://msdn.microsoft.com/en-us/library/windows/desktop/ms683152(v=vs.85).aspx

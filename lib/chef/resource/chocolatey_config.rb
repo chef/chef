@@ -26,7 +26,7 @@ class Chef
                description: "An optional property to set the config key name if it differs from the resource block's name."
 
       property :value, String,
-               description: "The value to set."
+        description: "The value to set."
 
       load_current_value do
         current_val = fetch_config_element(config_key)
@@ -40,7 +40,7 @@ class Chef
       # @return [String] the element's value field
       def fetch_config_element(id)
         require "rexml/document" unless defined?(REXML::Document)
-        config_file = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\config\\chocolatey.config"
+        config_file = "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\config\\chocolatey.config"
         raise "Could not find the Chocolatey config at #{config_file}!" unless ::File.exist?(config_file)
 
         contents = REXML::Document.new(::File.read(config_file))
@@ -72,7 +72,7 @@ class Chef
         # @param [String] action the name of the action to perform
         # @return [String] the choco config command string
         def choco_cmd(action)
-          cmd = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\bin\\choco config #{action} --name #{new_resource.config_key}"
+          cmd = "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco config #{action} --name #{new_resource.config_key}"
           cmd << " --value #{new_resource.value}" if action == "set"
           cmd
         end

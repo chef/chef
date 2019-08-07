@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,13 +34,13 @@ class Chef
       default_action :install
 
       property :source, String,
-               description: "The local file path or URL for the MSU package.",
-               coerce: (proc do |s|
-                 unless s.nil?
-                   uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
-                 end
-               end),
-               default: lazy { |r| r.package_name }
+        description: "The local file path or URL for the MSU package.",
+        coerce: (proc do |s|
+          unless s.nil?
+            uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
+          end
+        end),
+        default: lazy { package_name }
 
       property :checksum, String, desired_state: false,
                description: "SHA-256 digest used to verify the checksum of the downloaded MSU package."

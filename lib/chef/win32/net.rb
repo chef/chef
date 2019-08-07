@@ -224,7 +224,8 @@ class Chef
         buf = FFI::MemoryPointer.new(LOCALGROUP_MEMBERS_INFO_3, members.size)
         Array.new(members.size) do |i|
           member_info = LOCALGROUP_MEMBERS_INFO_3.new(
-            buf + i * LOCALGROUP_MEMBERS_INFO_3.size)
+            buf + i * LOCALGROUP_MEMBERS_INFO_3.size
+          )
           member_info[:lgrmi3_domainandname] = FFI::MemoryPointer.from_string(wstring(members[i]))
           member_info
         end
@@ -236,7 +237,8 @@ class Chef
 
         lgrmi3s = members_to_lgrmi3(members)
         rc = NetLocalGroupAddMembers(
-          server_name, group_name, 3, lgrmi3s[0], members.size)
+          server_name, group_name, 3, lgrmi3s[0], members.size
+        )
 
         if rc != NERR_Success
           Chef::ReservedNames::Win32::Error.raise!(nil, rc)
@@ -249,7 +251,8 @@ class Chef
 
         lgrmi3s = members_to_lgrmi3(members)
         rc = NetLocalGroupSetMembers(
-          server_name, group_name, 3, lgrmi3s[0], members.size)
+          server_name, group_name, 3, lgrmi3s[0], members.size
+        )
 
         if rc != NERR_Success
           Chef::ReservedNames::Win32::Error.raise!(nil, rc)
@@ -262,7 +265,8 @@ class Chef
 
         lgrmi3s = members_to_lgrmi3(members)
         rc = NetLocalGroupDelMembers(
-          server_name, group_name, 3, lgrmi3s[0], members.size)
+          server_name, group_name, 3, lgrmi3s[0], members.size
+        )
 
         if rc != NERR_Success
           Chef::ReservedNames::Win32::Error.raise!(nil, rc)

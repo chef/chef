@@ -88,7 +88,7 @@ class Chef
           # Work around the fact that CookbookUploader doesn't understand chef_repo_path (yet)
           def with_actual_cookbooks_dir(actual_cookbook_path)
             old_cookbook_path = Chef::Config.cookbook_path
-            Chef::Config.cookbook_path = actual_cookbook_path if !Chef::Config.cookbook_path
+            Chef::Config.cookbook_path = actual_cookbook_path unless Chef::Config.cookbook_path
 
             yield
           ensure

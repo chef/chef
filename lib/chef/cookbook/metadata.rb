@@ -53,10 +53,10 @@ class Chef
       OHAI_VERSIONS          = "ohai_versions".freeze
       GEMS                   = "gems".freeze
 
-      COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
-                            :maintainer_email, :license, :platforms, :dependencies,
-                            :providing, :recipes, :version, :source_url, :issues_url,
-                            :privacy, :chef_versions, :ohai_versions, :gems ].freeze
+      COMPARISON_FIELDS = %i{name description long_description maintainer
+                            maintainer_email license platforms dependencies
+                            providing recipes version source_url issues_url
+                            privacy chef_versions ohai_versions gems}.freeze
 
       VERSION_CONSTRAINTS = { depends: DEPENDENCIES,
                               provides: PROVIDING,
@@ -286,6 +286,7 @@ class Chef
           constraint = validate_version_constraint(:depends, cookbook, version)
           @dependencies[cookbook] = constraint.to_s
         end
+
         @dependencies[cookbook]
       end
 
@@ -444,7 +445,7 @@ class Chef
       end
 
       def self.from_hash(o)
-        cm = new()
+        cm = new
         cm.from_hash(o)
         cm
       end
@@ -477,7 +478,7 @@ class Chef
 
       def self.validate_json(json_str)
         o = Chef::JSONCompat.from_json(json_str)
-        metadata = new()
+        metadata = new
         VERSION_CONSTRAINTS.each do |dependency_type, hash_key|
           if dependency_group = o[hash_key]
             dependency_group.each do |cb_name, constraints|
@@ -583,6 +584,7 @@ class Chef
       def gem_dep_matches?(what, version, *deps)
         # always match if we have no chef_version at all
         return true unless deps.length > 0
+
         # match if we match any of the chef_version lines
         deps.any? { |dep| dep.match?(what, version) }
       end
@@ -604,7 +606,7 @@ class Chef
             specify more than one version constraint for a particular cookbook.
             Consult https://docs.chef.io/config_rb_metadata.html for the updated syntax.
 
-            Called by: #{caller_name} '#{dep_name}', #{version_constraints.map { |vc| vc.inspect }.join(", ")}
+            Called by: #{caller_name} '#{dep_name}', #{version_constraints.map(&:inspect).join(", ")}
             Called from:
             #{caller[0...5].map { |line| "  " + line }.join("\n")}
           OBSOLETED
@@ -637,7 +639,7 @@ class Chef
       # === Parameters
       # arry<Array>:: An array to be validated
       def validate_string_array(arry)
-        if arry.kind_of?(Array)
+        if arry.is_a?(Array)
           arry.each do |choice|
             validate( { choice: choice }, { choice: { kind_of: String } } )
           end
@@ -650,7 +652,7 @@ class Chef
       # === Parameters
       # opts<Hash>:: The options hash
       def validate_choice_array(opts)
-        if opts[:choice].kind_of?(Array)
+        if opts[:choice].is_a?(Array)
           case opts[:type]
           when "string"
             validator = [ String ]

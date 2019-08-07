@@ -40,6 +40,7 @@ class Chef
         # They could provide us a user name or a UID
         if provided_user
           return provided_user if provided_user.is_a? Integer
+
           return Etc.getpwnam(provided_user).uid
         end
 
@@ -67,7 +68,7 @@ class Chef
           owner = ::File.stat(brew_path).uid
         else
           raise Chef::Exceptions::CannotDetermineHomebrewOwner,
-                'Could not find the "brew" executable in /usr/local/bin or anywhere on the path.'
+            'Could not find the "brew" executable in /usr/local/bin or anywhere on the path.'
         end
 
         Chef::Log.debug "Found Homebrew owner #{Etc.getpwuid(owner).name}; executing `brew` commands as them"

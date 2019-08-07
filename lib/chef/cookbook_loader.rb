@@ -176,6 +176,7 @@ class Chef
             if mash.key?(cookbook_name)
               raise Chef::Exceptions::CookbookMergingError, "Cookbook merging is no longer supported, the cookbook named #{cookbook_name} can only appear once in the cookbook_path"
             end
+
             mash[cookbook_name] = loader
           end
           mash

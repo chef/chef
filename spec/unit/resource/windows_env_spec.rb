@@ -47,7 +47,7 @@ describe Chef::Resource::WindowsEnv do
   end
 
   it "does not accept a Hash for the env value via 'to'" do
-    expect { resource.value Hash.new }.to raise_error(ArgumentError)
+    expect { resource.value({}) }.to raise_error(ArgumentError)
   end
 
   it "allows you to set an env value via 'to'" do

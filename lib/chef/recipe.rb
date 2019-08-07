@@ -47,6 +47,7 @@ class Chef
         [ $1.to_sym, $2 ]
       when /^::(.+)/
         raise "current_cookbook is nil, cannot resolve #{recipe_name}" if current_cookbook.nil?
+
         [ current_cookbook.to_sym, $1 ]
       else
         [ recipe_name.to_sym, "default" ]
@@ -58,7 +59,7 @@ class Chef
       @recipe_name = recipe_name
       @run_context = run_context
       # TODO: 5/19/2010 cw/tim: determine whether this can be removed
-      @params = Hash.new
+      @params = {}
     end
 
     # Used in DSL mixins

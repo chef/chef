@@ -45,6 +45,7 @@ class Chef
 
         def ==(other)
           return false if length != other.length
+
           0.upto(length - 1) do |i|
             return false if self[i] != other[i]
           end
@@ -88,7 +89,7 @@ class Chef
         end
 
         def to_s
-          "[#{collect { |ace| ace.to_s }.join(", ")}]"
+          "[#{collect(&:to_s).join(", ")}]"
         end
 
         def self.align_dword(size)

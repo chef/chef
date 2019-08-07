@@ -172,6 +172,7 @@ class Chef
 
     def files_for(part)
       return root_files if part.to_s == "root_files"
+
       manifest[:all_files].select do |file|
         seg = file[:name].split("/")[0]
         part.to_s == seg
@@ -179,11 +180,12 @@ class Chef
     end
 
     def each_file(excluded_parts: [], &block)
-      excluded_parts = Array(excluded_parts).map { |p| p.to_s }
+      excluded_parts = Array(excluded_parts).map(&:to_s)
 
       manifest[:all_files].each do |file|
         seg = file[:name].split("/")[0]
         next if excluded_parts.include?(seg)
+
         yield file if block_given?
       end
     end
@@ -221,7 +223,7 @@ class Chef
     # See #preferred_manifest_record for a description an individual manifest record.
     def generate_manifest
       manifest = Mash.new({
-        all_files: Array.new,
+        all_files: [],
       })
       @checksums = {}
 
