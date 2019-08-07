@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.16 -->
-## [v15.2.16](https://github.com/chef/chef/tree/v15.2.16) (2019-08-07)
+<!-- latest_release 15.2.17 -->
+## [v15.2.17](https://github.com/chef/chef/tree/v15.2.17) (2019-08-07)
 
 #### Merged Pull Requests
-- fix knife node environment set output [#8772](https://github.com/chef/chef/pull/8772) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Chef-15: Make temp dir using mkdir instead of mktemp [#8795](https://github.com/chef/chef/pull/8795) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Chef-15: Make temp dir using mkdir instead of mktemp [#8795](https://github.com/chef/chef/pull/8795) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.2.17 -->
 - fix knife node environment set output [#8772](https://github.com/chef/chef/pull/8772) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.2.16 -->
 - Fix for rhsm_repo disable does not support wildcard [#8794](https://github.com/chef/chef/pull/8794) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.2.15 -->
 - zypper_package upgrade action not working [#8462](https://github.com/chef/chef/pull/8462) ([foobarbam](https://github.com/foobarbam)) <!-- 15.2.14 -->
