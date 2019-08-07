@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.13.12 -->
+## [v14.13.12](https://github.com/chef/chef/tree/v14.13.12) (2019-08-07)
+
+#### Merged Pull Requests
+- Chef-14: fix zypper_package upgrade provider and unit tests to verify [#8799](https://github.com/chef/chef/pull/8799) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.13.11 -->
+### Changes since 14.13.11 release
+
+#### Merged Pull Requests
+- Chef-14: fix zypper_package upgrade provider and unit tests to verify [#8799](https://github.com/chef/chef/pull/8799) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.13.12 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
