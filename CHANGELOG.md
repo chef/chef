@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.17 -->
-## [v15.2.17](https://github.com/chef/chef/tree/v15.2.17) (2019-08-07)
+<!-- latest_release 15.2.18 -->
+## [v15.2.18](https://github.com/chef/chef/tree/v15.2.18) (2019-08-07)
 
 #### Merged Pull Requests
-- Chef-15: Make temp dir using mkdir instead of mktemp [#8795](https://github.com/chef/chef/pull/8795) ([vsingh-msys](https://github.com/vsingh-msys))
+- Property: Reorder comparison with NOT_PASSED. [#8781](https://github.com/chef/chef/pull/8781) ([ab](https://github.com/ab))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Property: Reorder comparison with NOT_PASSED. [#8781](https://github.com/chef/chef/pull/8781) ([ab](https://github.com/ab)) <!-- 15.2.18 -->
 - Chef-15: Make temp dir using mkdir instead of mktemp [#8795](https://github.com/chef/chef/pull/8795) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.2.17 -->
 - fix knife node environment set output [#8772](https://github.com/chef/chef/pull/8772) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.2.16 -->
 - Fix for rhsm_repo disable does not support wildcard [#8794](https://github.com/chef/chef/pull/8794) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.2.15 -->
