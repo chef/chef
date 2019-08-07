@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.14 -->
-## [v15.2.14](https://github.com/chef/chef/tree/v15.2.14) (2019-08-07)
+<!-- latest_release 15.2.15 -->
+## [v15.2.15](https://github.com/chef/chef/tree/v15.2.15) (2019-08-07)
 
 #### Merged Pull Requests
-- zypper_package upgrade action not working [#8462](https://github.com/chef/chef/pull/8462) ([foobarbam](https://github.com/foobarbam))
+- Fix for rhsm_repo disable does not support wildcard [#8794](https://github.com/chef/chef/pull/8794) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix for rhsm_repo disable does not support wildcard [#8794](https://github.com/chef/chef/pull/8794) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.2.15 -->
 - zypper_package upgrade action not working [#8462](https://github.com/chef/chef/pull/8462) ([foobarbam](https://github.com/foobarbam)) <!-- 15.2.14 -->
 - Stop building Chef Infra Client on SLES 11 [#8796](https://github.com/chef/chef/pull/8796) ([tas50](https://github.com/tas50)) <!-- 15.2.13 -->
 - Cleanup of habitat/plan.sh for chef-infra-client [#8789](https://github.com/chef/chef/pull/8789) ([afiune](https://github.com/afiune)) <!-- 15.2.12 -->
