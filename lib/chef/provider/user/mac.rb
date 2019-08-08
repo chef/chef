@@ -38,17 +38,6 @@ class Chef
 
         attr_reader :user_plist, :admin_group_plist
 
-        def define_resource_requirements
-          super
-
-          %w{dscl sysadminctl plutil dsimport}.each do |bin|
-            requirements.assert(:all_actions) do |a|
-              a.assertion { which(bin) }
-              a.failure_message(Chef::Exceptions::User, "Cannot find binary '#{bin}' on the system for #{new_resource}!")
-            end
-          end
-        end
-
         def load_current_resource
           @current_resource = Chef::Resource::User::MacUser.new(new_resource.username)
           current_resource.username(new_resource.username)
@@ -159,12 +148,14 @@ class Chef
             cmd += ["-adminPassword", new_resource.admin_password]
           end
 
-          # sysadminctl doesn't exit with a non-zero exit code if it encounters
-          # a problem. We'll check stderr and make sure we see that it finished
-          # correctly.
-          res = run_sysadminctl(cmd)
-          unless res.downcase =~ /creating user/
-            raise Chef::Exceptions::User, "error when creating user: #{res}"
+          converge_by "create user" do
+            # sysadminctl doesn't exit with a non-zero exit code if it encounters
+            # a problem. We'll check stderr and make sure we see that it finished
+            # correctly.
+            res = run_sysadminctl(cmd)
+            unless res.downcase =~ /creating user/
+              raise Chef::Exceptions::User, "error when creating user: #{res}"
+            end
           end
 
           # Wait for the user to show up in the ds cache
@@ -266,9 +257,9 @@ class Chef
               end
 
               run_dscl("create", "/Groups/admin", "GroupMembers", admins)
-
-              reload_admin_group_plist
             end
+
+            reload_admin_group_plist
           end
 
           group_name, group_id, group_action = user_group_info
@@ -297,10 +288,12 @@ class Chef
           end
 
           # sysadminctl doesn't exit with a non-zero exit code if it encounters
-          # a problem. We'll check stdout and make sure we see that it finished
-          res = run_sysadminctl(cmd)
-          unless res.downcase =~ /deleting record|not found/
-            raise Chef::Exceptions::User, "error deleting user: #{res}"
+          # a problem. We'll check stderr and make sure we see that it finished
+          converge_by "remove user" do
+            res = run_sysadminctl(cmd)
+            unless res.downcase =~ /deleting record|not found/
+              raise Chef::Exceptions::User, "error deleting user: #{res}"
+            end
           end
 
           reload_user_plist
@@ -308,13 +301,19 @@ class Chef
         end
 
         def lock_user
-          run_dscl("append", "/Users/#{new_resource.username}", "AuthenticationAuthority", ";DisabledUser;")
+          converge_by "lock user" do
+            run_dscl("append", "/Users/#{new_resource.username}", "AuthenticationAuthority", ";DisabledUser;")
+          end
+
           reload_user_plist
         end
 
         def unlock_user
           auth_string = user_plist[:auth_authority].reject! { |tag| tag == ";DisabledUser;" }.join.strip
-          run_dscl("create", "/Users/#{new_resource.username}", "AuthenticationAuthority", auth_string)
+          converge_by "unlock user" do
+            run_dscl("create", "/Users/#{new_resource.username}", "AuthenticationAuthority", auth_string)
+          end
+
           reload_user_plist
         end
 
@@ -401,7 +400,7 @@ class Chef
           cmd += ["-adminPassword", new_resource.admin_password]
 
           # sysadminctl doesn't exit with a non-zero exit code if it encounters
-          # a problem. We'll check stdout and make sure we see that it finished
+          # a problem. We'll check stderr and make sure we see that it finished
           res = run_sysadminctl(cmd)
           unless res.downcase =~ /done/
             raise Chef::Exceptions::User, "error when modifying SecureToken: #{res}"
@@ -412,7 +411,7 @@ class Chef
           # takes the liberty of _rehashing_ the password with a random salt and
           # iterations count and saves it back into the user ShadowHashData.
           #
-          # Therefore, if we're configuring a user based upon an existing shadow
+          # Therefore, if we're configuring a user based upon existing shadow
           # hash data we'll have to set the password again so that future runs
           # of the client don't show password drift.
           set_password if new_resource.property_is_set?(:salt)
