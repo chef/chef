@@ -126,8 +126,8 @@ class Chef
         if current_resource
           converge_if_changed :rule_name, :local_address, :local_port, :remote_address, :remote_port, :description,
             :direction, :protocol, :firewall_action, :profile, :program, :service, :interface_type, :enabled do
-              cmd = firewall_command("Set")
-              powershell_out!(cmd)
+            cmd = firewall_command("Set")
+            powershell_out!(cmd)
           end
           converge_if_changed :group do
             powershell_out!("Remove-NetFirewallRule -Name '#{new_resource.rule_name}'")
