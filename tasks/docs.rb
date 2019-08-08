@@ -322,7 +322,7 @@ The <%= @name %> resource has the following properties:
    **Ruby Type:** <%= friendly_types_list(p['is']) %><% unless pretty_default(p['default']).nil? %> | **Default Value:** ``<%= pretty_default(p['default']) %>``<% end %><% if p['required'] %> | ``REQUIRED``<% end %><% if p['deprecated'] %> | ``DEPRECATED``<% end %><% if p['name_property'] %> | **Default Value:** ``The resource block's name``<% end %>
 
 <% unless p['description'].nil? %>   <%= p['description'].strip %><% end %>
-<% unless p['introduced'].nil? -%>\n\n   *New in <%= branded_chef_client_name(@introduced) %> <%= p['introduced'] -%>.*\n<% end -%>
+<% unless p['introduced'].nil? -%>\n\n   *New in <%= branded_chef_client_name(p['introduced']) %> <%= p['introduced'] -%>.*\n<% end -%>
 <% end %>
 <% if @properties.empty? %>This resource does not have any properties.\n<% end -%>
 <%= boilerplate_content %>
