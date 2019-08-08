@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.19 -->
-## [v15.2.19](https://github.com/chef/chef/tree/v15.2.19) (2019-08-08)
+<!-- latest_release 15.2.20 -->
+## [v15.2.20](https://github.com/chef/chef/tree/v15.2.20) (2019-08-08)
 
 #### Merged Pull Requests
-- Consistently use NOT_PASSED over alternatives [#8800](https://github.com/chef/chef/pull/8800) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump ohai to 15.2.5 [#8803](https://github.com/chef/chef/pull/8803) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.1.36 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ohai to 15.2.5 [#8803](https://github.com/chef/chef/pull/8803) ([chef-ci](https://github.com/chef-ci)) <!-- 15.2.20 -->
 - Consistently use NOT_PASSED over alternatives [#8800](https://github.com/chef/chef/pull/8800) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.19 -->
 - Property: Reorder comparison with NOT_PASSED. [#8781](https://github.com/chef/chef/pull/8781) ([ab](https://github.com/ab)) <!-- 15.2.18 -->
 - Chef-15: Make temp dir using mkdir instead of mktemp [#8795](https://github.com/chef/chef/pull/8795) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.2.17 -->
