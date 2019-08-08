@@ -111,7 +111,7 @@ class Chef
         }
 
       property :hour, [Integer, String],
-        description: "The hour at which the cron entry should run (0 - 23).",
+        description: "The hour at which the cron entry is to run (0 - 23).",
         default: "*", callbacks: {
           "should be a valid hour spec" => ->(spec) { validate_numeric(spec, 0, 23) },
         }
