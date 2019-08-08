@@ -32,19 +32,19 @@ Chef Infra Client 15.2 now includes native packages for RHEL 8 with all builds n
 
 ### SLES 11 EOL
 
-Packages will no longer be built for SUSE Linux Enterprise Server (SLES) 11 as SLES 11 exited the 'General Support' phase March 31st 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for a OS release.
+Packages will no longer be built for SUSE Linux Enterprise Server (SLES) 11 as SLES 11 exited the 'General Support' phase on March 31, 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
 
 ### Ubuntu 14.04 EOL
 
-Packages will no longer be built for Ubuntu 14.04 as Canonical ended maintenace updates April 30, 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for a OS release.
+Packages will no longer be built for Ubuntu 14.04 as Canonical ended maintenance updates on April 30, 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
 
 ## Ohai 15.2
 
 Ohai has been updated to 15.2 with the following changes:
   - Improved detection of Openstack including proper detection of Windows nodes running on Openstack when fetching metadata. Thanks [@jjustice6](https://github.com/jjustice6).
-  - A new `other_versions` field has been added to the Packages plugin when the node is using RPM. This allows you to see all versions packages like the Linux kernel, not just the latest. Thanks [@jjustice6](https://github.com/jjustice6).
+  - A new `other_versions` field has been added to the Packages plugin when the node is using RPM. This allows you to see all versions of the Packages plugin, like the Linux kernel, not just the latest version. Thanks [@jjustice6](https://github.com/jjustice6).
   - The Linux Network plugin has been improved to not mark interfaces down if `stp_state` is marked as down. Thanks [@josephmilla](https://github.com/josephmilla).
-  - Arch running on Arm processors is now detected as the `arm` platform. Thanks [@BackSlasher](https://github.com/BackSlasher).
+  - Arch running on ARM processors is now detected as the `arm` platform. Thanks [@BackSlasher](https://github.com/BackSlasher).
 
 ## Chef InSpec 4.10.4
 
@@ -52,7 +52,7 @@ Chef InSpec has been updated from 4.6.4 to 4.10.4 with the following changes:
 
 - Fix handling multiple triggers in the `windows_task` resource
 - Fix exceptions when resources are used with incompatible transports
-- Un-deprecate the `be_running` matcher on `service` resource
+- Un-deprecate the `be_running` matcher on the `service` resource
 - Add resource `sys_info.manufacturer` and `sys_info.model`
 - Add `ip6tables` resource
 
