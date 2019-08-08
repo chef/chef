@@ -1,5 +1,67 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Infra Client 15.2
+
+## Updated Resources
+
+### dnf_package
+
+The `dnf_package` resource has been updated to fully support RHEL 8.
+
+### kernel_module
+
+The `kernel_module` now supports a `:disable` action. Thanks [@tomdoherty](https://github.com/tomdoherty).
+
+### rhsm_repo
+
+The `rhsm_repo` resource has been updated to support passing a repo name of `*` in the `:disable` action. Thanks for reporting this issue [@erinn](https://github.com/erinn).
+
+### windows_task
+
+The `windows_task` resource has been updated to allow the `day` property to accept an `Integer` value.
+
+### zypper_package
+
+The `zypper_package` package has been updated to properly upgrade packages if necessary based on the versin specified in the resource block. Thanks [@foobarbam](https://github.com/foobarbam) for this fix.
+
+## Platform Support Updates
+
+### RHEL 8 Support Added
+
+Chef Infra Client 15.2 now includes native packages for RHEL 8 with all builds now validated on RHEL 8 hosts.
+
+### SLES 11 EOL
+
+Packages will no longer be built for SUSE Linux Enterprise Server (SLES) 11 as SLES 11 exited the 'General Support' phase March 31st 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for a OS release.
+
+### Ubuntu 14.04 EOL
+
+Packages will no longer be built for Ubuntu 14.04 as Canonical ended maintenace updates April 30, 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for a OS release.
+
+## Ohai 15.2
+
+Ohai has been updated to 15.2 with the following changes:
+  - Improved detection of Openstack including proper detection of Windows nodes running on Openstack when fetching metadata. Thanks [@jjustice6](https://github.com/jjustice6).
+  - A new `other_versions` field has been added to the Packages plugin when the node is using RPM. This allows you to see all versions packages like the Linux kernel, not just the latest. Thanks [@jjustice6](https://github.com/jjustice6).
+  - The Linux Network plugin has been improved to not mark interfaces down if `stp_state` is marked as down. Thanks [@josephmilla](https://github.com/josephmilla).
+  - Arch running on Arm processors is now detected as the `arm` platform. Thanks [@BackSlasher](https://github.com/BackSlasher).
+
+## Chef InSpec 4.10.4
+
+Chef InSpec has been updated from 4.6.4 to 4.10.4 with the following changes:
+
+- Fix handling multiple triggers in the `windows_task` resource
+- Fix exceptions when resources are used with incompatible transports
+- Un-deprecate the `be_running` matcher on `service` resource
+- Add resource `sys_info.manufacturer` and `sys_info.model`
+- Add `ip6tables` resource
+
+## Security Updates
+
+### bzip2
+
+bzip2 has been updated from 1.0.6 to 1.0.8 to resolve [CVE-2016-3189](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-3189) and [CVE-2019-12900](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12900).
+
 # Chef Infra Client 15.1
 
 ## New Resources
