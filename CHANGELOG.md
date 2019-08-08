@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.2.21 -->
+## [v15.2.21](https://github.com/chef/chef/tree/v15.2.21) (2019-08-08)
+
+#### Merged Pull Requests
+- Improve the auto-generated docs [#8806](https://github.com/chef/chef/pull/8806) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.2.20 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Improve the auto-generated docs [#8806](https://github.com/chef/chef/pull/8806) ([tas50](https://github.com/tas50)) <!-- 15.2.21 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
