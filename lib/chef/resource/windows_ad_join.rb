@@ -31,7 +31,7 @@ class Chef
       introduced "14.0"
 
       property :domain_name, String,
-        description: "The FQDN of the Active Directory domain to join if it differs from the resource block's name.",
+        description: "An optional property to set the FQDN of the Active Directory domain to join if it differs from the resource block's name.",
         validation_message: "The 'domain_name' property must be a FQDN.",
         regex: /.\../, # anything.anything
         name_property: true

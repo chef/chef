@@ -156,6 +156,7 @@ namespace :docs_site do
 
         Notifications
         -----------------------------------------------------
+
         ``notifies``
           **Ruby Type:** Symbol, 'Chef::Resource[String]'
 
@@ -167,13 +168,13 @@ namespace :docs_site do
 
         .. tag resources_common_notification_timers
 
-        A timer specifies the point during the Chef Infra Client run at which a notification is run. The following timers are available:
+        A timer specifies the point during a Chef Infra Client run at which a notification is run. The following timers are available:
 
         ``:before``
            Specifies that the action on a notified resource should be run before processing the resource block in which the notification is located.
 
         ``:delayed``
-           Default. Specifies that a notification should be queued up, and then executed at the end of the Chef Infra Client run.
+           Default. Specifies that a notification should be queued up, and then executed at the end of a Chef Infra Client run.
 
         ``:immediate``, ``:immediately``
            Specifies that a notification should be run immediately, per resource notified.
@@ -216,13 +217,13 @@ namespace :docs_site do
 
         .. tag resources_common_notification_timers
 
-        A timer specifies the point during the Chef Infra Client run at which a notification is run. The following timers are available:
+        A timer specifies the point during a Chef Infra Client run at which a notification is run. The following timers are available:
 
         ``:before``
            Specifies that the action on a notified resource should be run before processing the resource block in which the notification is located.
 
         ``:delayed``
-           Default. Specifies that a notification should be queued up, and then executed at the end of the Chef Infra Client run.
+           Default. Specifies that a notification should be queued up, and then executed at the end of a Chef Infra Client run.
 
         ``:immediate``, ``:immediately``
            Specifies that a notification should be run immediately, per resource notified.
@@ -244,17 +245,20 @@ namespace :docs_site do
 
         .. tag resources_common_guards
 
-        A guard property can be used to evaluate the state of a node during the execution phase of the Chef Infra Client run. Based on the results of this evaluation, a guard property is then used to tell the Chef Infra Client if it should continue executing a resource. A guard property accepts either a string value or a Ruby block value:
+        A guard property can be used to evaluate the state of a node during the execution phase of a Chef Infra Client run. Based on the results of this evaluation, a guard property is then used to tell Chef Infra Client if it should continue executing a resource. A guard property accepts either a string value or a Ruby block value:
 
         * A string is executed as a shell command. If the command returns ``0``, the guard is applied. If the command returns any other value, then the guard property is not applied. String guards in a **powershell_script** run Windows PowerShell commands and may return ``true`` in addition to ``0``.
         * A block is executed as Ruby code that must return either ``true`` or ``false``. If the block returns ``true``, the guard property is applied. If the block returns ``false``, the guard property is not applied.
 
-        A guard property is useful for ensuring that a resource is idempotent by allowing that resource to test for the desired state as it is being executed, and then if the desired state is present, for the Chef Infra Client to do nothing.
+        A guard property is useful for ensuring that a resource is idempotent by allowing that resource to test for the desired state as it is being executed, and then if the desired state is present, for Chef Infra Client to do nothing.
 
         .. end_tag
+
+        **Properties**
+
         .. tag resources_common_guards_properties
 
-        The following properties can be used to define a guard that is evaluated during the execution phase of the Chef Infra Client run:
+        The following properties can be used to define a guard that is evaluated during the execution phase of a Chef Infra Client run:
 
         ``not_if``
           Prevent a resource from executing when the condition returns ``true``.
@@ -305,7 +309,7 @@ The <%= @name %> resource has the following actions:
 ``:nothing``
    .. tag resources_common_actions_nothing
 
-   This resource block does not act unless notified by another resource to take action. Once notified, this resource block either runs immediately or is queued up to run at the end of the Chef Infra Client run.
+   This resource block does not act unless notified by another resource to take action. Once notified, this resource block either runs immediately or is queued up to run at the end of a Chef Infra Client run.
 
    .. end_tag
 
@@ -317,8 +321,8 @@ The <%= @name %> resource has the following properties:
 ``<%= p['name'] %>``
    **Ruby Type:** <%= friendly_types_list(p['is']) %><% unless pretty_default(p['default']).nil? %> | **Default Value:** ``<%= pretty_default(p['default']) %>``<% end %><% if p['required'] %> | ``REQUIRED``<% end %><% if p['deprecated'] %> | ``DEPRECATED``<% end %><% if p['name_property'] %> | **Default Value:** ``The resource block's name``<% end %>
 
-   <%= p['description'] %>
-<% unless p['introduced'].nil? -%>\n   *New in <%= branded_chef_client_name(@introduced) %> <%= p['introduced'] -%>.*<% end -%>
+<% unless p['description'].nil? %>   <%= p['description'].strip %><% end %>
+<% unless p['introduced'].nil? -%>\n\n   *New in <%= branded_chef_client_name(@introduced) %> <%= p['introduced'] -%>.*\n<% end -%>
 <% end %>
 <% if @properties.empty? %>This resource does not have any properties.\n<% end -%>
 <%= boilerplate_content %>
