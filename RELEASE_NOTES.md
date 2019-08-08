@@ -42,7 +42,7 @@ Packages will no longer be built for Ubuntu 14.04 as Canonical ended maintenance
 
 Ohai has been updated to 15.2 with the following changes:
   - Improved detection of Openstack including proper detection of Windows nodes running on Openstack when fetching metadata. Thanks [@jjustice6](https://github.com/jjustice6).
-  - A new `other_versions` field has been added to the Packages plugin when the node is using RPM. This allows you to see all versions of the Packages plugin, like the Linux kernel, not just the latest version. Thanks [@jjustice6](https://github.com/jjustice6).
+  - A new `other_versions` field has been added to the Packages plugin when the node is using RPM. This allows you to see all installed versions of packages, not just the latest version. Thanks [@jjustice6](https://github.com/jjustice6).
   - The Linux Network plugin has been improved to not mark interfaces down if `stp_state` is marked as down. Thanks [@josephmilla](https://github.com/josephmilla).
   - Arch running on ARM processors is now detected as the `arm` platform. Thanks [@BackSlasher](https://github.com/BackSlasher).
 
