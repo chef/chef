@@ -20,8 +20,8 @@
 
 require "forwardable" unless defined?(Forwardable)
 require "securerandom" unless defined?(SecureRandom)
+require_relative "constants"
 require_relative "config"
-require_relative "nil_argument"
 require_relative "mixin/params_validate"
 require_relative "mixin/from_file"
 require_relative "mixin/deep_merge"
@@ -65,8 +65,6 @@ class Chef
     include Chef::DSL::Universal
 
     include Chef::Mixin::ParamsValidate
-
-    NULL_ARG = Object.new
 
     # Create a new Chef::Node object.
     def initialize(chef_server_rest: nil, logger: nil)
@@ -152,8 +150,8 @@ class Chef
     #
     # @param arg [String] the new policy_name value
     # @return [String] the current policy_name, or the one you just set
-    def policy_name(arg = NULL_ARG)
-      return @policy_name if arg.equal?(NULL_ARG)
+    def policy_name(arg = NOT_PASSED)
+      return @policy_name if arg.equal?(NOT_PASSED)
 
       validate({ policy_name: arg }, { policy_name: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_name = arg
@@ -175,8 +173,8 @@ class Chef
     #
     # @param arg [String] the new policy_group value
     # @return [String] the current policy_group, or the one you just set
-    def policy_group(arg = NULL_ARG)
-      return @policy_group if arg.equal?(NULL_ARG)
+    def policy_group(arg = NOT_PASSED)
+      return @policy_group if arg.equal?(NOT_PASSED)
 
       validate({ policy_group: arg }, { policy_group: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_group = arg
