@@ -38,7 +38,8 @@ class Chef
         description: "The description to assign to the firewall rule."
 
       property :group, String,
-        description: "Specifies that only matching firewall rules of the indicated group association are copied."
+        description: "Specifies that only matching firewall rules of the indicated group association are copied.",
+        introduced: "15.2"
 
       property :local_address, String,
         description: "The local address the firewall rule applies to."
