@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: fb94876443711aeea2ad0eecfb9be1abfd60844d
+  revision: 56f2187784bf8b6840efc73adb2e35ef5f3862a7
   branch: master
   specs:
     chefstyle (0.13.2)
@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 1f6037c2320120a465e8fc977675f0a0e4ad6ddd
+  revision: f76c5f583736a5731e2fb6e92c21dc8419655d95
   branch: master
   specs:
-    ohai (15.2.4)
+    ohai (15.2.5)
       chef-config (>= 12.8, < 16)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -27,11 +27,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (15.2.12)
+    chef (15.2.22)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 15.2.12)
+      chef-config (= 15.2.22)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -57,11 +57,11 @@ PATH
       train-core (~> 2.0, >= 2.0.12)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (15.2.12-universal-mingw32)
+    chef (15.2.22-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 15.2.12)
+      chef-config (= 15.2.22)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -103,13 +103,13 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (15.2.12)
-      chef (= 15.2.12)
+    chef-bin (15.2.22)
+      chef (= 15.2.22)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (15.2.12)
+    chef-config (15.2.22)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)

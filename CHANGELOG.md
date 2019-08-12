@@ -1,51 +1,66 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.12 -->
-## [v15.2.12](https://github.com/chef/chef/tree/v15.2.12) (2019-08-05)
+<!-- latest_release 15.2.22 -->
+## [v15.2.22](https://github.com/chef/chef/tree/v15.2.22) (2019-08-09)
 
 #### Merged Pull Requests
-- Cleanup of habitat/plan.sh for chef-infra-client [#8789](https://github.com/chef/chef/pull/8789) ([afiune](https://github.com/afiune))
+- Update the link to our release cadence information [#8807](https://github.com/chef/chef/pull/8807) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup since=15.1.36 -->
+<!-- release_rollup since=15.2.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- Cleanup of habitat/plan.sh for chef-infra-client [#8789](https://github.com/chef/chef/pull/8789) ([afiune](https://github.com/afiune)) <!-- 15.2.12 -->
-- Bump inspec-core-bin to 4.10.4 and Ohai to 15.2.4 [#8788](https://github.com/chef/chef/pull/8788) ([chef-ci](https://github.com/chef-ci)) <!-- 15.2.11 -->
-- Remove Travis / Jenkins config / docs [#8786](https://github.com/chef/chef/pull/8786) ([tas50](https://github.com/tas50)) <!-- 15.2.10 -->
-- Bump mixlib-shellout to 3.0.7 [#8784](https://github.com/chef/chef/pull/8784) ([chef-ci](https://github.com/chef-ci)) <!-- 15.2.9 -->
-- Enable Kitchen dockken tests with BK linux executor [#8783](https://github.com/chef/chef/pull/8783) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.8 -->
-- Jsinha/add rhel8 [#8742](https://github.com/chef/chef/pull/8742) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.7 -->
-- Fix zypper test failures [#8774](https://github.com/chef/chef/pull/8774) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.6 -->
-- Tweak data collector exception handling [#8776](https://github.com/chef/chef/pull/8776) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.5 -->
-- Duration field in resource report needs to be String [#8767](https://github.com/chef/chef/pull/8767) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.4 -->
-- Update bzip2 from 1.0.6 -&gt; 1.0.8 to resolve CVEs [#8768](https://github.com/chef/chef/pull/8768) ([tas50](https://github.com/tas50)) <!-- 15.2.3 -->
-- Bump train-core to 2.1.19 [#8766](https://github.com/chef/chef/pull/8766) ([chef-ci](https://github.com/chef-ci)) <!-- 15.2.2 -->
-- Move chef-client and chef-solo shared code into a base class and remove duplication and skew [#8744](https://github.com/chef/chef/pull/8744) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.1 -->
-- Bump InSpec, Ohai, and appbundler to the latest [#8761](https://github.com/chef/chef/pull/8761) ([tas50](https://github.com/tas50)) <!-- 15.2.0 -->
-- Implement disable for disabling kernel_modules [#8747](https://github.com/chef/chef/pull/8747) ([tomdoherty](https://github.com/tomdoherty)) <!-- 15.1.58 -->
-- Add rspec testing on Fedora in Buildkite [#8759](https://github.com/chef/chef/pull/8759) ([tas50](https://github.com/tas50)) <!-- 15.1.57 -->
-- dnf_package fixes for RHEL8 [#8754](https://github.com/chef/chef/pull/8754) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.56 -->
-- test that inspec binstub is in the omnibus artifact [#8750](https://github.com/chef/chef/pull/8750) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.54 -->
-- Remove the unused rspec kitchen tests [#8741](https://github.com/chef/chef/pull/8741) ([tas50](https://github.com/tas50)) <!-- 15.1.53 -->
-- Fix RDoc copy-pasta in Chef::Mixin::ParamsValidate#validate [#8740](https://github.com/chef/chef/pull/8740) ([RubyTuesdayDONO](https://github.com/RubyTuesdayDONO)) <!-- 15.1.52 -->
-- Pull in latest omnibus-software to fix Windows builds [#8739](https://github.com/chef/chef/pull/8739) ([btm](https://github.com/btm)) <!-- 15.1.51 -->
-- Bump openSSL to 1.0.2s [#8735](https://github.com/chef/chef/pull/8735) ([tas50](https://github.com/tas50)) <!-- 15.1.50 -->
-- Roll back Rubygems to 3.0.3 to prevent double bundler install [#8736](https://github.com/chef/chef/pull/8736) ([tas50](https://github.com/tas50)) <!-- 15.1.49 -->
-- Remove rspec config for Travis [#8728](https://github.com/chef/chef/pull/8728) ([tas50](https://github.com/tas50)) <!-- 15.1.48 -->
-- Bump inspec-core to 4.7.3 [#8726](https://github.com/chef/chef/pull/8726) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.47 -->
-- Add examples to the apt_repository resource [#8719](https://github.com/chef/chef/pull/8719) ([tas50](https://github.com/tas50)) <!-- 15.1.46 -->
-- More Chefstyle updates [#8711](https://github.com/chef/chef/pull/8711) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.45 -->
-- fix Layout/AlignArguments [#8708](https://github.com/chef/chef/pull/8708) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.44 -->
-- Improve generation of docs site resource pages [#8718](https://github.com/chef/chef/pull/8718) ([tas50](https://github.com/tas50)) <!-- 15.1.43 -->
-- Deprecate Ubuntu-14 [#8712](https://github.com/chef/chef/pull/8712) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.1.42 -->
-- fixes for chefstyle bump [#8707](https://github.com/chef/chef/pull/8707) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.1.40 -->
-- update bldr config with new hab package name [#8706](https://github.com/chef/chef/pull/8706) ([robbkidd](https://github.com/robbkidd)) <!-- 15.1.39 -->
-- windows_task: Fix for :day option is not accepting integer value [#8705](https://github.com/chef/chef/pull/8705) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.1.38 -->
-- Bump inspec-core to 4.6.9 [#8701](https://github.com/chef/chef/pull/8701) ([chef-ci](https://github.com/chef-ci)) <!-- 15.1.37 -->
+- Update the link to our release cadence information [#8807](https://github.com/chef/chef/pull/8807) ([tas50](https://github.com/tas50)) <!-- 15.2.22 -->
+- Improve the auto-generated docs [#8806](https://github.com/chef/chef/pull/8806) ([tas50](https://github.com/tas50)) <!-- 15.2.21 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.2.20](https://github.com/chef/chef/tree/v15.2.20) (2019-08-08)
+
+#### Merged Pull Requests
+- Bump inspec-core to 4.6.9 [#8701](https://github.com/chef/chef/pull/8701) ([chef-ci](https://github.com/chef-ci))
+- windows_task: Fix for :day option is not accepting integer value [#8705](https://github.com/chef/chef/pull/8705) ([vsingh-msys](https://github.com/vsingh-msys))
+- update bldr config with new hab package name [#8706](https://github.com/chef/chef/pull/8706) ([robbkidd](https://github.com/robbkidd))
+- fixes for chefstyle bump [#8707](https://github.com/chef/chef/pull/8707) ([lamont-granquist](https://github.com/lamont-granquist))
+- Deprecate Ubuntu-14 [#8712](https://github.com/chef/chef/pull/8712) ([jaymalasinha](https://github.com/jaymalasinha))
+- Improve generation of docs site resource pages [#8718](https://github.com/chef/chef/pull/8718) ([tas50](https://github.com/tas50))
+- fix Layout/AlignArguments [#8708](https://github.com/chef/chef/pull/8708) ([lamont-granquist](https://github.com/lamont-granquist))
+- More Chefstyle updates [#8711](https://github.com/chef/chef/pull/8711) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add examples to the apt_repository resource [#8719](https://github.com/chef/chef/pull/8719) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 4.7.3 [#8726](https://github.com/chef/chef/pull/8726) ([chef-ci](https://github.com/chef-ci))
+- Remove rspec config for Travis [#8728](https://github.com/chef/chef/pull/8728) ([tas50](https://github.com/tas50))
+- Roll back Rubygems to 3.0.3 to prevent double bundler install [#8736](https://github.com/chef/chef/pull/8736) ([tas50](https://github.com/tas50))
+- Bump openSSL to 1.0.2s [#8735](https://github.com/chef/chef/pull/8735) ([tas50](https://github.com/tas50))
+- Pull in latest omnibus-software to fix Windows builds [#8739](https://github.com/chef/chef/pull/8739) ([btm](https://github.com/btm))
+- Fix RDoc copy-pasta in Chef::Mixin::ParamsValidate#validate [#8740](https://github.com/chef/chef/pull/8740) ([RubyTuesdayDONO](https://github.com/RubyTuesdayDONO))
+- Remove the unused rspec kitchen tests [#8741](https://github.com/chef/chef/pull/8741) ([tas50](https://github.com/tas50))
+- test that inspec binstub is in the omnibus artifact [#8750](https://github.com/chef/chef/pull/8750) ([lamont-granquist](https://github.com/lamont-granquist))
+- dnf_package fixes for RHEL8 [#8754](https://github.com/chef/chef/pull/8754) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add rspec testing on Fedora in Buildkite [#8759](https://github.com/chef/chef/pull/8759) ([tas50](https://github.com/tas50))
+- Implement disable for disabling kernel_modules [#8747](https://github.com/chef/chef/pull/8747) ([tomdoherty](https://github.com/tomdoherty))
+- Bump InSpec, Ohai, and appbundler to the latest [#8761](https://github.com/chef/chef/pull/8761) ([tas50](https://github.com/tas50))
+- Move chef-client and chef-solo shared code into a base class and remove duplication and skew [#8744](https://github.com/chef/chef/pull/8744) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump train-core to 2.1.19 [#8766](https://github.com/chef/chef/pull/8766) ([chef-ci](https://github.com/chef-ci))
+- Update bzip2 from 1.0.6 -&gt; 1.0.8 to resolve CVEs [#8768](https://github.com/chef/chef/pull/8768) ([tas50](https://github.com/tas50))
+- Duration field in resource report needs to be String [#8767](https://github.com/chef/chef/pull/8767) ([lamont-granquist](https://github.com/lamont-granquist))
+- Tweak data collector exception handling [#8776](https://github.com/chef/chef/pull/8776) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix zypper test failures [#8774](https://github.com/chef/chef/pull/8774) ([jaymalasinha](https://github.com/jaymalasinha))
+- Jsinha/add rhel8 [#8742](https://github.com/chef/chef/pull/8742) ([jaymalasinha](https://github.com/jaymalasinha))
+- Enable Kitchen dockken tests with BK linux executor [#8783](https://github.com/chef/chef/pull/8783) ([jaymalasinha](https://github.com/jaymalasinha))
+- Bump mixlib-shellout to 3.0.7 [#8784](https://github.com/chef/chef/pull/8784) ([chef-ci](https://github.com/chef-ci))
+- Remove Travis / Jenkins config / docs [#8786](https://github.com/chef/chef/pull/8786) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.10.4 and Ohai to 15.2.4 [#8788](https://github.com/chef/chef/pull/8788) ([chef-ci](https://github.com/chef-ci))
+- Cleanup of habitat/plan.sh for chef-infra-client [#8789](https://github.com/chef/chef/pull/8789) ([afiune](https://github.com/afiune))
+- Stop building Chef Infra Client on SLES 11 [#8796](https://github.com/chef/chef/pull/8796) ([tas50](https://github.com/tas50))
+- zypper_package upgrade action not working [#8462](https://github.com/chef/chef/pull/8462) ([foobarbam](https://github.com/foobarbam))
+- Fix for rhsm_repo disable does not support wildcard [#8794](https://github.com/chef/chef/pull/8794) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- fix knife node environment set output [#8772](https://github.com/chef/chef/pull/8772) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Chef-15: Make temp dir using mkdir instead of mktemp [#8795](https://github.com/chef/chef/pull/8795) ([vsingh-msys](https://github.com/vsingh-msys))
+- Property: Reorder comparison with NOT_PASSED. [#8781](https://github.com/chef/chef/pull/8781) ([ab](https://github.com/ab))
+- Consistently use NOT_PASSED over alternatives [#8800](https://github.com/chef/chef/pull/8800) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump ohai to 15.2.5 [#8803](https://github.com/chef/chef/pull/8803) ([chef-ci](https://github.com/chef-ci))
+<!-- latest_stable_release -->
+
 ## [v15.1.36](https://github.com/chef/chef/tree/v15.1.36) (2019-07-01)
 
 #### Merged Pull Requests
@@ -111,7 +126,6 @@
 - Rename the habitat package to chef-infra-client [#8698](https://github.com/chef/chef/pull/8698) ([tas50](https://github.com/tas50))
 - Bump train-core to 2.1.13 [#8699](https://github.com/chef/chef/pull/8699) ([chef-ci](https://github.com/chef-ci))
 - Pass yum_package options to underlying python helper [#8687](https://github.com/chef/chef/pull/8687) ([Annih](https://github.com/Annih))
-<!-- latest_stable_release -->
 
 ## [v15.0.300](https://github.com/chef/chef/tree/v15.0.300) (2019-05-16)
 

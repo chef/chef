@@ -152,18 +152,6 @@ elif [[ -d /usr/local/etc/sudoers.d ]]; then
   sudo chmod 440 "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
 fi
 
-# Remove the ec2 cloud zypper repos before running functional tests
-if [[ ! $(grep s390 /etc/SuSE-release) ]] > /dev/null 2>&1; then   # Don't delete repos on s390x
-  if [[ $(grep -i suse /etc/SuSE-release /etc/os-release) ]] > /dev/null 2>&1; then
-    echo "Removing zypper repos for Amazon SLES nodes"
-    sleep 5  # Allow some time for repo setup to complete
-    for i in $(zypper lr |grep -v "Alias" |awk -F "|" '{print $2}'); do
-      sudo zypper rr $i
-    done
-    sudo rm /usr/lib/zypp/plugins/services/* || true
-  fi
-fi
-
 cd "$chef_gem"
 sudo -E bundle install
 sudo -E bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation spec/functional
