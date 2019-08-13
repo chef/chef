@@ -134,7 +134,6 @@ class Chef
       end
 
       if run_context.resource_collection.unified_mode
-        puts "HERE WE ARE!"
         run_context.resource_collection.each { |r| r.resolve_notification_references(true) }
       end
 
