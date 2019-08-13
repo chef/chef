@@ -28,9 +28,9 @@ builder-to-testers-map:
     - el-7-s390x
   el-7-x86_64:
     - el-7-x86_64
-  freebsd-10-amd64:
-    - freebsd-10-amd64
+  freebsd-11-amd64:
     - freebsd-11-amd64
+    - freebsd-12-amd64
   mac_os_x-10.12-x86_64:
     - mac_os_x-10.12-x86_64
     - mac_os_x-10.13-x86_64
