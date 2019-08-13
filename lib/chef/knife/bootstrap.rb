@@ -22,6 +22,7 @@ require "erubis"
 require "chef/knife/bootstrap/chef_vault_handler"
 require "chef/knife/bootstrap/client_builder"
 require "chef/util/path_helper"
+require_relative "../version_string"
 
 class Chef
   class Knife
@@ -517,7 +518,7 @@ class Chef
       def bootstrap_version_gte_15?
         config[:prerelease] ||
           (!!config[:bootstrap_version] &&
-           (config[:bootstrap_version] == "latest" || config[:bootstrap_version].to_i >= 15))
+           (config[:bootstrap_version] == "latest" || Chef::VersionString.new(config[:bootstrap_version]) >= 15.0))
       end
     end
   end
