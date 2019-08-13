@@ -443,7 +443,7 @@ class Chef
       # @return [TrueClass] If options are valid.
       def validate_bootstrap_version_options!
         if Chef::VERSION.to_i < 15 && bootstrap_version_gte_15?
-          ui.error("You must use Chef 15 or later to bootstrap Chef 15 nodes")
+          ui.error("You must use Chef Infra Client 15 or later to bootstrap Chef Infra Client 15 nodes")
           exit 1
         end
 
