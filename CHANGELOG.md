@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.13.13 -->
-## [v14.13.13](https://github.com/chef/chef/tree/v14.13.13) (2019-08-13)
+<!-- latest_release 14.13.14 -->
+## [v14.13.14](https://github.com/chef/chef/tree/v14.13.14) (2019-08-13)
 
 #### Merged Pull Requests
-- Stop building Chef Infra Client 14.x on FreeBSD 10 [#8810](https://github.com/chef/chef/pull/8810) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Chef-14: Raise an error on Chef 14 when trying to bootstrap Chef 15 [#8782](https://github.com/chef/chef/pull/8782) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.13.11 -->
 ### Changes since 14.13.11 release
 
 #### Merged Pull Requests
+- Chef-14: Raise an error on Chef 14 when trying to bootstrap Chef 15 [#8782](https://github.com/chef/chef/pull/8782) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 14.13.14 -->
 - Stop building Chef Infra Client 14.x on FreeBSD 10 [#8810](https://github.com/chef/chef/pull/8810) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 14.13.13 -->
 - Chef-14: fix zypper_package upgrade provider and unit tests to verify [#8799](https://github.com/chef/chef/pull/8799) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.13.12 -->
 <!-- release_rollup -->
