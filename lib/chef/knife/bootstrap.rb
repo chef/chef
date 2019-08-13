@@ -22,6 +22,7 @@ require "erubis"
 require "chef/knife/bootstrap/chef_vault_handler"
 require "chef/knife/bootstrap/client_builder"
 require "chef/util/path_helper"
+require_relative "../version_string"
 
 class Chef
   class Knife
@@ -366,6 +367,7 @@ class Chef
 
         validate_name_args!
         validate_options!
+        validate_bootstrap_version_options!
 
         $stdout.sync = true
 
@@ -429,6 +431,22 @@ class Chef
           ui.error("Policyfile options and --run-list are exclusive")
           exit 1
         end
+        true
+      end
+
+      # Ensure options are valid by checking bootstrap version values.
+      #
+      # The method call will cause the program to exit(1) if:
+      #   * Bootstrap version is greater than or equal to 15 for chef 14 or lower
+      #   * Pre-release options is passed for chef 14 or lower
+      #
+      # @return [TrueClass] If options are valid.
+      def validate_bootstrap_version_options!
+        if Chef::VERSION.to_i < 15 && bootstrap_version_gte_15?
+          ui.error("You must use Chef Infra Client 15 or later to bootstrap Chef Infra Client 15 nodes")
+          exit 1
+        end
+
         true
       end
 
@@ -496,6 +514,12 @@ class Chef
         (!!config[:policy_name] ^ config[:policy_group])
       end
 
+      # True if the bootstrap version is greater than or equal to 15 or latest.
+      def bootstrap_version_gte_15?
+        config[:prerelease] ||
+          (!!config[:bootstrap_version] &&
+           (config[:bootstrap_version] == "latest" || Chef::VersionString.new(config[:bootstrap_version]) >= 15.0))
+      end
     end
   end
 end
