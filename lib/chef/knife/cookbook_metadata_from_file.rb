@@ -28,7 +28,7 @@ class Chef
         require "chef/cookbook/metadata"
       end
 
-      banner "knife cookbook metadata from FILE (options)"
+      banner "knife cookbook metadata from file FILE (options)"
 
       def run
         file = @name_args[0]
