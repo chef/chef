@@ -1,6 +1,6 @@
 # Chef
 [![Code Climate](https://codeclimate.com/github/chef/chef.svg)](https://codeclimate.com/github/chef/chef)
-[![Build Status Master](https://travis-ci.org/chef/chef.svg?branch=master)](https://travis-ci.org/chef/chef)
+[![Build status](https://badge.buildkite.com/f798a31e86518429573be35b496b313f4aee72dbb17e946eda.svg?branch=chef-14)](https://buildkite.com/chef-oss/chef-chef-chef-14-verify)
 [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
 [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
 [![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef-rfc/blob/master/rfc086-chef-oss-project-policies.md#cadence-release)
