@@ -5,7 +5,7 @@
 # NOTE: You MUST update omnibus-software when adding new versions of
 # software here: bundle exec rake dependencies:update_omnibus_gemfile_lock
 override :rubygems, version: "2.7.9"
-override :bundler, version: "1.17.3"
+override :bundler, version: "1.16.6"
 override "nokogiri", version: "1.10.2"
 override "libffi", version: "3.2.1"
 override "libiconv", version: "1.15"

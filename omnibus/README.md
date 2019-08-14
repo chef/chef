@@ -67,7 +67,7 @@ The default build environment requires Test Kitchen and VirtualBox for local dev
 Once you have tweaked your `kitchen.yml` (or `kitchen.local.yml`) to your liking, you can bring up an individual build environment using the `kitchen` command.
 
 ```shell
-$ bundle exec kitchen converge chef-ubuntu-1404
+$ bundle exec kitchen converge chef-ubuntu-1604
 ```
 
 Additional settings are required if using the kitchen-vagrant driver with the Hyper-V provider:
@@ -87,7 +87,7 @@ $ bundle exec kitchen login <PROJECT>-ubuntu-1204
 ```
 
 ```shell
-$ kitchen login chef-ubuntu-1404
+$ kitchen login chef-ubuntu-1604
 [vagrant@ubuntu...] $ source load-omnibus-toolchain.sh
 [vagrant@ubuntu...] $ cd chef/omnibus
 [vagrant@ubuntu...] $ bundle install --without development # Don't install dev tools!
