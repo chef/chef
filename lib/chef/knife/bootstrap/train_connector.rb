@@ -128,7 +128,9 @@ class Chef
               # running with sudo right now - so this directory would be owned by root.
               # File upload is performed over SCP as the current logged-in user,
               # so we'll set ownership to ensure that works.
-              cmd += " && sudo chown #{config[:user]} '#{dir}'"
+              ownership = config[:sudo] ? "sudo chown" : "chown"
+              cmd += " && #{ownership} #{config[:user]} '#{dir}'"
+
               run_command!(cmd)
               dir
             end
