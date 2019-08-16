@@ -2,13 +2,11 @@ require_relative "base"
 
 class Chef
   module EventDispatch
-
     # == EventDispatch::Dispatcher
     # The Dispatcher handles receiving event data from the sources
     # (Chef::Client, Resources and Providers, etc.) and publishing the data to
     # the registered subscribers.
     class Dispatcher < Base
-
       attr_reader :subscribers
       attr_reader :event_list
 
@@ -27,7 +25,7 @@ class Chef
       end
 
       def enqueue(method_name, *args)
-        event_list << [ method_name, *args ]
+        event_list << [method_name, *args]
         process_events_until_done unless @in_call
       end
 
@@ -81,9 +79,13 @@ class Chef
       # empty, rather than iterating over the list.
       #
       def process_events_until_done
-        call_subscribers(*event_list.shift) until event_list.empty?
-      end
+        until event_list.empty?
+          event = event_list.shift
+          next if event[0].nil?
 
+          call_subscribers(*event)
+        end
+      end
     end
   end
 end

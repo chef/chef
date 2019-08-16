@@ -29,3 +29,12 @@ Lint/IneffectiveAccessModifier:
   Enabled: false
 Lint/ShadowedException:
   Enabled: false
+Layout/AlignHash:
+  Enabled: true
+  EnforcedLastArgumentHashStyle: ignore_implicit
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
