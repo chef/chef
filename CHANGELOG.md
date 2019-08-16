@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.25 -->
-## [v15.2.25](https://github.com/chef/chef/tree/v15.2.25) (2019-08-15)
+<!-- latest_release 15.2.26 -->
+## [v15.2.26](https://github.com/chef/chef/tree/v15.2.26) (2019-08-16)
 
 #### Merged Pull Requests
-- Update omnibus build deps to the latest [#8823](https://github.com/chef/chef/pull/8823) ([tas50](https://github.com/tas50))
+- Add unified_mode for resources [#8668](https://github.com/chef/chef/pull/8668) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.2.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add unified_mode for resources [#8668](https://github.com/chef/chef/pull/8668) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.26 -->
 - Update omnibus build deps to the latest [#8823](https://github.com/chef/chef/pull/8823) ([tas50](https://github.com/tas50)) <!-- 15.2.25 -->
 - Begin signing MSI&#39;s with renewed Windows Signing Cert [#8813](https://github.com/chef/chef/pull/8813) ([schisamo](https://github.com/schisamo)) <!-- 15.2.24 -->
 - Updated knife cookbook metadata from file command banner [#8812](https://github.com/chef/chef/pull/8812) ([samshinde](https://github.com/samshinde)) <!-- 15.2.23 -->
