@@ -92,7 +92,7 @@ module ChefConfig
           # raise an error.
           return if profile == "default"
 
-          raise ChefConfig::ConfigurationError, "Profile #{profile} doesn't exist. Please add it to #{credentials_file}."
+          raise ChefConfig::ConfigurationError, "Profile #{profile} doesn't exist. Please add it to #{credentials_file_path}."
         end
         apply_credentials(config[profile], profile)
       end
