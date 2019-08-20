@@ -282,11 +282,20 @@ describe Chef::Knife::Core::BootstrapContext do
   end
 
   describe "#version_to_install" do
-    context "when bootstrap_version is provided" do
+    context "when bootstrap_version is provided in config.rb" do
       let(:chef_config) { { knife: { bootstrap_version: "awesome" } } }
 
-      it "returns bootstrap_version" do
+      it "returns bootstrap_version from config.rb" do
         expect(bootstrap_context.version_to_install).to eq "awesome"
+      end
+    end
+
+    context "when bootstrap_version is provided on the command line" do
+      let(:chef_config) { { knife: { bootstrap_version: "awesome" } } }
+      let(:config) { { bootstrap_version: "more_awesome" } }
+
+      it "returns bootstrap_version from the command line, not config.rb" do
+        expect(bootstrap_context.version_to_install).to eq "more_awesome"
       end
     end
 

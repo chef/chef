@@ -195,6 +195,7 @@ class Chef
         #
         # @return [String] download version string
         def version_to_install
+          return @config[:bootstrap_version] if @config[:bootstrap_version]
           return knife_config[:bootstrap_version] if knife_config[:bootstrap_version]
 
           if @config[:channel] == "stable"
