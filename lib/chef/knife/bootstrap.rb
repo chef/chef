@@ -670,17 +670,15 @@ class Chef
       end
 
       def do_connect(conn_options)
-        begin
-          @connection = TrainConnector.new(host_descriptor, connection_protocol, conn_options)
-          connection.connect!
-        rescue Train::UserError => e
-          if !conn_options.key?(:pty) && e.message =~ /Sudo requires a TTY/
-            ui.warn("#{e.message} - trying with pty request")
-            conn_options[:pty] = true # ensure we can talk to systems with requiretty set true in sshd config
-            retry
-          else
-            raise
-          end
+        @connection = TrainConnector.new(host_descriptor, connection_protocol, conn_options)
+        connection.connect!
+      rescue Train::UserError => e
+        if !conn_options.key?(:pty) && e.message =~ /Sudo requires a TTY/
+          ui.warn("#{e.message} - trying with pty request")
+          conn_options[:pty] = true # ensure we can talk to systems with requiretty set true in sshd config
+          retry
+        else
+          raise
         end
       end
 
