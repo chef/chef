@@ -116,12 +116,12 @@ class Chef
             if line =~ addr_regex
               if line.match(addr_regex).nil?
                 @int_name = "nil"
-              elsif line.match(addr_regex)[2] == ""
+              elsif line.match(addr_regex)[3] == ""
                 @int_name = line.match(addr_regex)[1]
                 @interfaces[@int_name] = Hash.new
                 @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
               else
-                @int_name = "#{line.match(addr_regex)[1]}:#{line.match(addr_regex)[2]}"
+                @int_name = "#{line.match(addr_regex)[1]}:#{line.match(addr_regex)[3]}"
                 @interfaces[@int_name] = Hash.new
                 @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
               end
