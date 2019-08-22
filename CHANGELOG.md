@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.13.16 -->
-## [v14.13.16](https://github.com/chef/chef/tree/v14.13.16) (2019-08-21)
+<!-- latest_release 14.14.0 -->
+## [v14.14.0](https://github.com/chef/chef/tree/v14.14.0) (2019-08-22)
 
 #### Merged Pull Requests
-- Add AIX 7.2 platform [#8833](https://github.com/chef/chef/pull/8833) ([jaymalasinha](https://github.com/jaymalasinha))
+- Update Chef 14 deps to the latest [#8824](https://github.com/chef/chef/pull/8824) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.13.11 -->
 ### Changes since 14.13.11 release
 
 #### Merged Pull Requests
+- Update Chef 14 deps to the latest [#8824](https://github.com/chef/chef/pull/8824) ([tas50](https://github.com/tas50)) <!-- 14.14.0 -->
 - Add AIX 7.2 platform [#8833](https://github.com/chef/chef/pull/8833) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.13.16 -->
 - Deprecate Ubuntu 14 + SLES 11 [#8818](https://github.com/chef/chef/pull/8818) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.13.15 -->
 - Chef-14: Raise an error on Chef 14 when trying to bootstrap Chef 15 [#8782](https://github.com/chef/chef/pull/8782) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 14.13.14 -->
