@@ -347,6 +347,13 @@ describe Chef::Knife do
         expect(knife_command.config_source(:opt_with_default)).to eq(:cli)
       end
 
+      it "allows an option proc to set a value in Chef::Config" do
+        allow(config_loader).to receive(:load) { Chef::Config[:knife][:with_proc] = "from config file" }
+        knife_command = Chef::Knife.run(%w{test yourself --with-proc from-cli})
+        expect(Chef::Config[:knife][:with_proc]).to eq("from-cli")
+        expect(knife_command.config[:with_proc]).to eq("from-cli")
+      end
+
       it "merges `listen` config to Chef::Config" do
         knife_command = Chef::Knife.run(%w{test yourself --no-listen}, Chef::Application::Knife.options)
         expect(Chef::Config[:listen]).to be(false)

@@ -217,8 +217,8 @@ class Chef
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options = options.merge!(subcommand_class.options)
       subcommand_class.load_deps
-      instance = subcommand_class.new(args)
-      instance.configure_chef
+      instance = subcommand_class.new(args.dup)
+      instance.configure_chef(args)
       instance.run_with_pretty_exceptions
     end
 
@@ -299,7 +299,7 @@ class Chef
       command_name_words = self.class.snake_case_name.split("_")
 
       # Mixlib::CLI ignores the embedded name_args
-      @name_args = parse_options(argv)
+      @name_args = opt_parser.parse!(argv)
       @name_args.delete(command_name_words.join("-"))
       @name_args.reject! { |name_arg| command_name_words.delete(name_arg) }
 
@@ -434,11 +434,16 @@ class Chef
       Chef::Log.level(Chef::Config[:log_level] || :error)
     end
 
-    def configure_chef
+    def configure_chef(args = {})
       # knife needs to send logger output to STDERR by default
       Chef::Config[:log_location] = STDERR
       config_loader = self.class.load_config(config[:config_file], config[:profile])
       config[:config_file] = config_loader.config_location
+
+      # Parse the options after the config file is loaded but before
+      # merge_configs happens. This allows the pattern of setting
+      # Chef::Config[:knife] values in options :procs
+      parse_options(args)
 
       # For CLI options like `--config-option key=value`. These have to get
       # parsed and applied separately.

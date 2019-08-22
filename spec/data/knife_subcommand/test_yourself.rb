@@ -11,6 +11,8 @@ module KnifeSpecs
 
     option :scro, :short => '-s SCRO', :long => '--scro SCRO', :description => 'a configurable setting'
 
+    option :with_proc, :long => '--with-proc VALUE', proc: Proc.new { |v| Chef::Config[:knife][:with_proc] = v }
+
     attr_reader :ran
 
     def run
