@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.28 -->
-## [v15.2.28](https://github.com/chef/chef/tree/v15.2.28) (2019-08-21)
+<!-- latest_release 15.2.29 -->
+## [v15.2.29](https://github.com/chef/chef/tree/v15.2.29) (2019-08-23)
 
 #### Merged Pull Requests
-- Add AIX 7.2 platform [#8832](https://github.com/chef/chef/pull/8832) ([jaymalasinha](https://github.com/jaymalasinha))
+- ifconfig: fix regex matching interface name with hyphen [#8756](https://github.com/chef/chef/pull/8756) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.2.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- ifconfig: fix regex matching interface name with hyphen [#8756](https://github.com/chef/chef/pull/8756) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.2.29 -->
 - Add AIX 7.2 platform [#8832](https://github.com/chef/chef/pull/8832) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.28 -->
 - Fix crash when showing error about missing profile [#8828](https://github.com/chef/chef/pull/8828) ([andrewdotn](https://github.com/andrewdotn)) <!-- 15.2.27 -->
 - Add unified_mode for resources [#8668](https://github.com/chef/chef/pull/8668) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.26 -->
