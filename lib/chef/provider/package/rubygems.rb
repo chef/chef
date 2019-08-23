@@ -604,7 +604,8 @@ class Chef
         end
 
         def needs_nodocument?
-          Gem::Requirement.new(">= 3.0.0.beta1").satisfied_by?(Gem::Version.new(gem_env.rubygems_version))
+          rubygem_version = shell_out!("#{gem_binary_path} --version").stdout.chomp
+          Gem::Requirement.new(">= 3.0.0.beta1").satisfied_by?(Gem::Version.new(rubygem_version))
         end
 
         def opts

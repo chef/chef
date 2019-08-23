@@ -709,7 +709,7 @@ describe Chef::Provider::Package::Rubygems do
           it "unmockening needs_nodocument?" do
             expected = "gem install rspec-core -q --no-document -v \"#{target_version}\" --source=https://www.rubygems.org #{options}"
             expect(provider).to receive(:needs_nodocument?).and_call_original
-            stub_const("Gem::VERSION", "3.0.0")
+            expect(provider).to receive(:shell_out_compacted!).with("gem --version", { timeout: 900 }).and_return(instance_double(Mixlib::ShellOut, stdout: "3.0.0\n"))
             expect(provider).to receive(:shell_out_compacted!).with(expected, env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
@@ -718,7 +718,7 @@ describe Chef::Provider::Package::Rubygems do
           it "when the rubygems_version is old it uses the old flags" do
             expected = "gem install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://www.rubygems.org #{options}"
             expect(provider).to receive(:needs_nodocument?).and_call_original
-            stub_const("Gem::VERSION", "2.8.0")
+            expect(provider).to receive(:shell_out_compacted!).with("gem --version", { timeout: 900 }).and_return(instance_double(Mixlib::ShellOut, stdout: "2.8.0\n"))
             expect(provider).to receive(:shell_out_compacted!).with(expected, env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
@@ -875,7 +875,7 @@ describe Chef::Provider::Package::Rubygems do
 
         it "unmockening needs_nodocument?" do
           expect(provider).to receive(:needs_nodocument?).and_call_original
-          expect(provider.gem_env).to receive(:shell_out!).with("#{gem_binary} --version").and_return(instance_double(Mixlib::ShellOut, stdout: "3.0.0\n"))
+          expect(provider).to receive(:shell_out_compacted!).with("#{gem_binary} --version", { timeout: 900 }).and_return(instance_double(Mixlib::ShellOut, stdout: "3.0.0\n"))
           expect(provider).to receive(:shell_out_compacted!).with("#{gem_binary} install rspec-core -q --no-document -v \"#{target_version}\" --source=https://www.rubygems.org", env: nil, timeout: 900)
           provider.run_action(:install)
           expect(new_resource).to be_updated_by_last_action
@@ -883,7 +883,7 @@ describe Chef::Provider::Package::Rubygems do
 
         it "when the rubygems_version is old it uses the old flags" do
           expect(provider).to receive(:needs_nodocument?).and_call_original
-          expect(provider.gem_env).to receive(:shell_out!).with("#{gem_binary} --version").and_return(instance_double(Mixlib::ShellOut, stdout: "2.8.0\n"))
+          expect(provider).to receive(:shell_out_compacted!).with("#{gem_binary} --version", { timeout: 900 }).and_return(instance_double(Mixlib::ShellOut, stdout: "2.8.0\n"))
           expect(provider).to receive(:shell_out_compacted!).with("#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://www.rubygems.org", env: nil, timeout: 900)
           provider.run_action(:install)
           expect(new_resource).to be_updated_by_last_action
