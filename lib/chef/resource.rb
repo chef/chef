@@ -181,7 +181,7 @@ class Chef
           { action: { kind_of: Symbol, equal_to: allowed_actions } }
         )
         # the resource effectively sends a delayed notification to itself
-        run_context.add_delayed_action(Notification.new(self, action, self))
+        run_context.add_delayed_action(Notification.new(self, action, self, run_context.unified_mode))
       end
     end
 
@@ -973,6 +973,16 @@ class Chef
       resource_name automatic_name
     end
 
+    # If the resource's action should run in separated compile/converge mode.
+    #
+    # @param flag [Boolean] value to set unified_mode to
+    # @return [Boolean] unified_mode value
+    def self.unified_mode(flag = nil)
+      @unified_mode = Chef::Config[:resource_unified_mode_default] if @unified_mode.nil?
+      @unified_mode = flag unless flag.nil?
+      !!@unified_mode
+    end
+
     #
     # The list of allowed actions for the resource.
     #
@@ -1026,7 +1036,6 @@ class Chef
       default_action action_name
     end
 
-    #
     # Define an action on this resource.
     #
     # The action is defined as a *recipe* block that will be compiled and then
@@ -1064,7 +1073,6 @@ class Chef
       default_action action if Array(default_action) == [:nothing]
     end
 
-    #
     # Define a method to load up this resource's properties with the current
     # actual values.
     #
@@ -1075,7 +1083,6 @@ class Chef
       define_method(:load_current_value!, &load_block)
     end
 
-    #
     # Call this in `load_current_value` to indicate that the value does not
     # exist and that `current_resource` should therefore be `nil`.
     #
@@ -1085,7 +1092,6 @@ class Chef
       raise Chef::Exceptions::CurrentValueDoesNotExist
     end
 
-    #
     # Get the current actual value of this resource.
     #
     # This does not cache--a new value will be returned each time.
@@ -1141,7 +1147,6 @@ class Chef
       end
     end
 
-    #
     # Ensure the action class actually gets created. This is called
     # when the user does `action :x do ... end`.
     #
@@ -1196,22 +1201,27 @@ class Chef
     # @return [Chef::RunContext] The run context for this Resource.  This is
     # where the context for the current Chef run is stored, including the node
     # and the resource collection.
+    #
     attr_accessor :run_context
 
     # @return [Mixlib::Log::Child] The logger for this resources. This is a child
     # of the run context's logger, if one exists.
+    #
     attr_reader :logger
 
     # @return [String] The cookbook this resource was declared in.
+    #
     attr_accessor :cookbook_name
 
     # @return [String] The recipe this resource was declared in.
+    #
     attr_accessor :recipe_name
 
     # @return [Chef::Provider] The provider this resource was declared in (if
     #   it was declared in an LWRP).  When you call methods that do not exist
     #   on this Resource, Chef will try to call the method on the provider
     #   as well before giving up.
+    #
     attr_accessor :enclosing_provider
 
     # @return [String] The source line where this resource was declared.
@@ -1219,6 +1229,7 @@ class Chef
     #   of these formats:
     #     /some/path/to/file.rb:80:in `wombat_tears'
     #     C:/some/path/to/file.rb:80 in 1`wombat_tears'
+    #
     attr_accessor :source_line
 
     # @return [String] The actual name that was used to create this resource.
@@ -1227,37 +1238,40 @@ class Chef
     #   user will expect to see the thing they wrote, not the type that was
     #   returned.  May be `nil`, in which case callers should read #resource_name.
     #   See #declared_key.
+    #
     attr_accessor :declared_type
 
-    #
     # Iterates over all immediate and delayed notifications, calling
     # resolve_resource_reference on each in turn, causing them to
     # resolve lazy/forward references.
-    def resolve_notification_references
+    #
+    def resolve_notification_references(always_raise = false)
       run_context.before_notifications(self).each do |n|
-        n.resolve_resource_reference(run_context.resource_collection)
+        n.resolve_resource_reference(run_context.resource_collection, true)
       end
+
       run_context.immediate_notifications(self).each do |n|
-        n.resolve_resource_reference(run_context.resource_collection)
+        n.resolve_resource_reference(run_context.resource_collection, always_raise)
       end
+
       run_context.delayed_notifications(self).each do |n|
-        n.resolve_resource_reference(run_context.resource_collection)
+        n.resolve_resource_reference(run_context.resource_collection, always_raise)
       end
     end
 
     # Helper for #notifies
     def notifies_before(action, resource_spec)
-      run_context.notifies_before(Notification.new(resource_spec, action, self))
+      run_context.notifies_before(Notification.new(resource_spec, action, self, run_context.unified_mode))
     end
 
     # Helper for #notifies
     def notifies_immediately(action, resource_spec)
-      run_context.notifies_immediately(Notification.new(resource_spec, action, self))
+      run_context.notifies_immediately(Notification.new(resource_spec, action, self, run_context.unified_mode))
     end
 
     # Helper for #notifies
     def notifies_delayed(action, resource_spec)
-      run_context.notifies_delayed(Notification.new(resource_spec, action, self))
+      run_context.notifies_delayed(Notification.new(resource_spec, action, self, run_context.unified_mode))
     end
 
     class << self
@@ -1306,7 +1320,6 @@ class Chef
       end
     end
 
-    #
     # This API can be used for backcompat to do:
     #
     # chef_version_for_provides "< 14.0" if defined?(:chef_version_for_provides)
@@ -1328,7 +1341,6 @@ class Chef
       @chef_version_for_provides = constraint
     end
 
-    #
     # Mark this resource as providing particular DSL.
     #
     # Resources have an automatic DSL based on their resource_name, equivalent to
@@ -1456,7 +1468,6 @@ class Chef
       @default_description
     end
 
-    #
     # The cookbook in which this Resource was defined (if any).
     #
     # @return Chef::CookbookVersion The cookbook in which this Resource was defined.
@@ -1482,7 +1493,6 @@ class Chef
       provider
     end
 
-    #
     # Preface an exception message with generic Resource information.
     #
     # @param e [StandardError] An exception with `e.message`
@@ -1537,7 +1547,6 @@ class Chef
       klass
     end
 
-    #
     # Returns the class with the given resource_name.
     #
     # NOTE: Chef::Resource.resource_matching_short_name(:package) returns
