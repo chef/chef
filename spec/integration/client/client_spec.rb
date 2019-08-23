@@ -384,7 +384,7 @@ describe "chef-client" do
       EOM
     end
 
-    it "should fail the chef client run" do
+    it "should have a cookbook attribute" do
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       result.error!
       expect(result.stdout).to include('COOKBOOKS: {"x"=>{"version"=>"0.0.1"}}')
