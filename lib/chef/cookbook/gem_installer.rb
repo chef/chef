@@ -66,8 +66,13 @@ class Chef
                 tf.close
                 Chef::Log.trace("generated Gemfile contents:")
                 Chef::Log.trace(IO.read(tf.path))
-                so = shell_out!("bundle install", cwd: dir, env: { "PATH" => path_with_prepended_ruby_bin })
-                Chef::Log.info(so.stdout)
+                # Skip installation only if Chef::Config[:skip_gem_metadata_installation] option is true
+                unless Chef::Config[:skip_gem_metadata_installation]
+                  # Add additional options to bundle install
+                  cmd = [ "bundle", "install", Chef::Config[:gem_installer_bundler_options] ]
+                  so = shell_out!(cmd, cwd: dir, env: { "PATH" => path_with_prepended_ruby_bin })
+                  Chef::Log.info(so.stdout)
+                end
               end
             end
             Gem.clear_paths
