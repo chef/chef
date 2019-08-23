@@ -109,18 +109,20 @@ class Chef
           #       RX errors 0  dropped 0  overruns 0  frame 0
           #       TX packets 1244218  bytes 977339327 (932.0 MiB)
           #       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+          #
+          # Permalink for addr_regex : https://rubular.com/r/JrykUpfjRnYeQD
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
-            addr_regex = /^(\w+):?(\d*):?\ .+$/
+            addr_regex = /^((\w|-)+):?(\d*):?\ .+$/
             if line =~ addr_regex
               if line.match(addr_regex).nil?
                 @int_name = "nil"
-              elsif line.match(addr_regex)[2] == ""
+              elsif line.match(addr_regex)[3] == ""
                 @int_name = line.match(addr_regex)[1]
                 @interfaces[@int_name] = {}
                 @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
               else
-                @int_name = "#{line.match(addr_regex)[1]}:#{line.match(addr_regex)[2]}"
+                @int_name = "#{line.match(addr_regex)[1]}:#{line.match(addr_regex)[3]}"
                 @interfaces[@int_name] = {}
                 @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
               end
