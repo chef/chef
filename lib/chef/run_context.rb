@@ -66,7 +66,7 @@ class Chef
     #
     # @return [Chef::CookbookCollection]
     #
-    attr_accessor :cookbook_collection
+    attr_reader :cookbook_collection
 
     #
     # Resource Definitions for this run. Populated when the files in
@@ -188,11 +188,11 @@ class Chef
     # @param events [EventDispatch::Dispatcher] The event dispatcher for this
     #   run.
     #
-    def initialize(node = nil, cookbook_collection = {}, events = nil, logger = nil)
+    def initialize(node = nil, cookbook_collection = nil, events = nil, logger = nil)
       @events = events
       @logger = logger || Chef::Log.with_child
-      @cookbook_collection = cookbook_collection
       self.node = node if node
+      self.cookbook_collection = cookbook_collection if cookbook_collection
       @definitions = {}
       @loaded_recipes_hash = {}
       @loaded_attributes_hash = {}
@@ -205,6 +205,10 @@ class Chef
     def node=(node)
       @node = node
       node.run_context = self
+    end
+
+    def cookbook_collection=(cookbook_collection)
+      @cookbook_collection = cookbook_collection
       node.set_cookbook_attribute
     end
 
