@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,18 +64,13 @@ describe Chef::Application::Solo do
           end
 
           it "should terminate with message" do
-            expect(Chef::Application).to receive(:fatal!).with(
-              /Unforked .* interval runs are disabled by default\.
-Configuration settings:
-  interval  = 600 seconds
-Enable .* interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options\./
-            )
+            expect(Chef::Application).to receive(:fatal!).with(/interval runs are disabled/)
             app.reconfigure
           end
         end
       end
 
-      describe "when in daemonized mode and no interval has been set" do
+      describe "when in daemonized mode and no interval has been set", :unix_only do
         before do
           Chef::Config[:daemonize] = true
         end
