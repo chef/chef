@@ -63,6 +63,8 @@ class Chef
         provides :mac_user
         provides :user, os: "darwin", platform_version: ">= 10.14"
 
+        introduced "15.3"
+
         property :iterations, Integer,
           description: "The number of iterations for a password with a SALTED-SHA512-PBKDF2 shadow hash.",
           default: 57803, desired_state: false
