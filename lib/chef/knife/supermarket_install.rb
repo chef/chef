@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Webber (<cwebber@chef.io>)
-# Copyright:: Copyright (c) 2014-2019 Chef Software, Inc.
+# Copyright:: Copyright (c) 2014-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,6 +66,12 @@ class Chef
         default: "https://supermarket.chef.io",
         proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 
+      option :no_vendor,
+         long: "--no-vendor",
+         description: "Do not commit cookbook to a git vendor branch",
+         boolean: true,
+         default: false
+
       attr_reader :cookbook_name
       attr_reader :vendor_path
 
@@ -74,6 +80,12 @@ class Chef
           Chef::Config[:cookbook_path] = config[:cookbook_path]
         else
           config[:cookbook_path] = Chef::Config[:cookbook_path]
+        end
+
+        # Deprecation warning for vendor installs.
+        unless config[:no_vendor]
+          Chef.deprecated(:supermarket_install_vendor, "Using knife supermarket install with vendor branching is deprecated. " \
+            "Please pass --no-vendor or add `knife[:no_vendor] = true` to your knife configuration.")
         end
 
         @cookbook_name = parse_name_args!
@@ -86,10 +98,12 @@ class Chef
         # cookbook_path = File.join(vendor_path, name_args[0])
         upstream_file = File.join(@install_path, "#{@cookbook_name}.tar.gz")
 
-        @repo.sanity_check
-        unless config[:use_current_branch]
-          @repo.reset_to_default_state
-          @repo.prepare_to_import(@cookbook_name)
+        unless config[:no_vendor]
+          @repo.sanity_check
+          unless config[:use_current_branch]
+            @repo.reset_to_default_state
+            @repo.prepare_to_import(@cookbook_name)
+          end
         end
 
         downloader = download_cookbook_to(upstream_file)
@@ -101,14 +115,16 @@ class Chef
         ui.info("Removing downloaded tarball")
         File.unlink(upstream_file)
 
-        if @repo.finalize_updates_to(@cookbook_name, downloader.version)
-          unless config[:use_current_branch]
-            @repo.reset_to_default_state
-          end
-          @repo.merge_updates_from(@cookbook_name, downloader.version)
-        else
-          unless config[:use_current_branch]
-            @repo.reset_to_default_state
+        unless config[:no_vendor]
+          if @repo.finalize_updates_to(@cookbook_name, downloader.version)
+            unless config[:use_current_branch]
+              @repo.reset_to_default_state
+            end
+            @repo.merge_updates_from(@cookbook_name, downloader.version)
+          else
+            unless config[:use_current_branch]
+              @repo.reset_to_default_state
+            end
           end
         end
 
