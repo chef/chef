@@ -340,6 +340,13 @@ class Chef::Application::Base < Chef::Application
 
   private
 
+  def windows_interval_error_message
+    "Windows #{Chef::Dist::PRODUCT} interval runs are not supported in #{Chef::Dist::PRODUCT} 15 and later." +
+      "\nConfiguration settings:" +
+      ("\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]).to_s +
+      "\nPlease manage #{Chef::Dist::PRODUCT} as a scheduled task instead."
+  end
+
   def unforked_interval_error_message
     "Unforked #{Chef::Dist::PRODUCT} interval runs are disabled by default." +
       "\nConfiguration settings:" +

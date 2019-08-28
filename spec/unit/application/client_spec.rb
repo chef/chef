@@ -1,6 +1,6 @@
 
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,7 +85,6 @@ describe Chef::Application::Client, "reconfigure" do
 
     allow(app).to receive(:trap)
     allow(app).to receive(:configure_logging).and_return(true)
-    Chef::Config[:interval] = 10
 
     Chef::Config[:once] = false
 
@@ -162,7 +161,7 @@ describe Chef::Application::Client, "reconfigure" do
         it_behaves_like "sets the configuration", "--no-fork", client_fork: false
       end
 
-      context "with an interval" do
+      context "with an interval", :unix_only do
         it_behaves_like "sets the configuration", "--interval 1800", client_fork: true
       end
 
@@ -322,7 +321,7 @@ describe Chef::Application::Client, "reconfigure" do
       Chef::Config[:splay] = nil
     end
 
-    it "should terminal with message when interval is given" do
+    it "should terminate with message when interval is given" do
       Chef::Config[:interval] = 600
       allow(ChefConfig).to receive(:windows?).and_return(false)
       expect(Chef::Application).to receive(:fatal!).with(
@@ -340,8 +339,8 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
         allow(ChefConfig).to receive(:windows?).and_return(true)
       end
 
-      it "should not terminate" do
-        expect(Chef::Application).not_to receive(:fatal!)
+      it "should terminate" do
+        expect(Chef::Application).to receive(:fatal!)
         app.reconfigure
       end
     end

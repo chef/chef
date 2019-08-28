@@ -128,8 +128,12 @@ class Chef::Application::Client < Chef::Application::Base
       Chef::Config[:client_fork] = !!Chef::Config[:interval]
     end
 
-    if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?
-      Chef::Application.fatal!(unforked_interval_error_message)
+    if Chef::Config[:interval]
+      if Chef::Platform.windows?
+        Chef::Application.fatal!(windows_interval_error_message)
+      elsif !Chef::Config[:client_fork]
+        Chef::Application.fatal!(unforked_interval_error_message)
+      end
     end
 
     if Chef::Config[:json_attribs]

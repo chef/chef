@@ -102,7 +102,13 @@ class Chef::Application::Solo < Chef::Application::Base
       Chef::Config[:client_fork] = !!Chef::Config[:interval]
     end
 
-    Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
+    if Chef::Config[:interval]
+      if Chef::Platform.windows?
+        Chef::Application.fatal!(windows_interval_error_message)
+      elsif !Chef::Config[:client_fork]
+        Chef::Application.fatal!(unforked_interval_error_message)
+      end
+    end
 
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ %r{/cookbooks/*$} }
