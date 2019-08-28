@@ -87,8 +87,6 @@ class Chef
     # after the run_context has been set on the node, go through the cookbook_collection
     # and setup the node[:cookbooks] attribute so that it is published in the node object
     def set_cookbook_attribute
-      return unless run_context.cookbook_collection
-
       run_context.cookbook_collection.each do |cookbook_name, cookbook|
         automatic_attrs[:cookbooks][cookbook_name][:version] = cookbook.version
       end
