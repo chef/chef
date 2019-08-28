@@ -1844,6 +1844,20 @@ describe Chef::Knife::Bootstrap do
         e
       end
 
+      let(:expected_error_password_prompt) do
+        e = Train::ClientError.new
+        message = "Your SSH Agent has no keys added, and you have not specified a password or a key file"
+        allow(e).to receive(:message).and_return(message)
+        e
+      end
+
+      let(:expected_error_password_prompt_winrm) do
+        e = RuntimeError.new
+        message = "password is a required option"
+        allow(e).to receive(:message).and_return(message)
+        e
+      end
+
       context "and password auth was used" do
         before do
           allow(connection).to receive(:password_auth?).and_return true
@@ -1859,19 +1873,41 @@ describe Chef::Knife::Bootstrap do
         before do
           allow(connection).to receive(:password_auth?).and_return false
           allow(connection).to receive(:user).and_return "testuser"
+          allow(knife).to receive(:connection_protocol).and_return connection_protocol
         end
 
-        it "warns, prompts for password, then reconnects with a password-enabled configuration using the new password" do
-          question_mock = double("question")
-          expect(knife).to receive(:do_connect).and_raise(expected_error)
-          expect(knife.ui).to receive(:warn).with(/Failed to auth.*/)
-          expect(knife.ui).to receive(:ask).and_yield(question_mock).and_return("newpassword")
-          # Ensure that we set echo off to prevent showing password on the screen
-          expect(question_mock).to receive(:echo=).with false
-          expect(knife).to receive(:do_connect) do |opts|
-            expect(opts[:password]).to eq "newpassword"
+        context "when using ssh" do
+          let(:connection_protocol) { "ssh" }
+
+          it "warns, prompts for password, then reconnects with a password-enabled configuration using the new password" do
+            question_mock = double("question")
+            expect(knife).to receive(:do_connect).and_raise(expected_error_password_prompt)
+            expect(knife.ui).to receive(:warn).with(/Failed to auth.*/)
+            expect(knife.ui).to receive(:ask).and_yield(question_mock).and_return("newpassword")
+            # Ensure that we set echo off to prevent showing password on the screen
+            expect(question_mock).to receive(:echo=).with false
+            expect(knife).to receive(:do_connect) do |opts|
+              expect(opts[:password]).to eq "newpassword"
+            end
+            knife.connect!
           end
-          knife.connect!
+        end
+
+        context "when using winrm" do
+          let(:connection_protocol) { "winrm" }
+
+          it "warns, prompts for password, then reconnects with a password-enabled configuration using the new password for" do
+            question_mock = double("question")
+            expect(knife).to receive(:do_connect).and_raise(expected_error_password_prompt_winrm)
+            expect(knife.ui).to receive(:warn).with(/Failed to auth.*/)
+            expect(knife.ui).to receive(:ask).and_yield(question_mock).and_return("newpassword")
+            # Ensure that we set echo off to prevent showing password on the screen
+            expect(question_mock).to receive(:echo=).with false
+            expect(knife).to receive(:do_connect) do |opts|
+              expect(opts[:password]).to eq "newpassword"
+            end
+            knife.connect!
+          end
         end
       end
     end

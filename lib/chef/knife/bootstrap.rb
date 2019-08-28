@@ -616,7 +616,7 @@ class Chef
 
       def connect!
         ui.info("Connecting to #{ui.color(server_name, :bold)}")
-        opts = connection_opts.dup
+        opts ||= connection_opts.dup
         do_connect(opts)
       rescue Train::Error => e
         # We handle these by message text only because train only loads the
@@ -638,8 +638,10 @@ class Chef
           EOM
           # FIXME: this should save the key to known_hosts but doesn't appear to be
           config[:ssh_verify_host_key] = :accept_new
-          do_connect(connection_opts(reset: true))
-        elsif ssh? && e.cause && e.cause.class == Net::SSH::AuthenticationFailed
+          conn_opts = connection_opts(reset: true)
+          opts.merge! conn_opts
+          retry
+        elsif (ssh? && e.cause && e.cause.class == Net::SSH::AuthenticationFailed) || (ssh? && e.class == Train::ClientError && e.reason == :no_ssh_password_or_key_available)
           if connection.password_auth?
             raise
           else
@@ -650,7 +652,23 @@ class Chef
           end
 
           opts.merge! force_ssh_password_opts(password)
-          do_connect(opts)
+          retry
+        else
+          raise
+        end
+      rescue RuntimeError => e
+        if winrm? && e.message == "password is a required option"
+          if connection.password_auth?
+            raise
+          else
+            ui.warn("Failed to authenticate #{opts[:user]} to #{server_name} - trying password auth")
+            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}.") do |q|
+              q.echo = false
+            end
+          end
+
+          opts.merge! force_winrm_password_opts(password)
+          retry
         else
           raise
         end
@@ -1013,6 +1031,12 @@ class Chef
           keys_only: false,
           key_files: [],
           auth_methods: %i{password keyboard_interactive},
+        }
+      end
+
+      def force_winrm_password_opts(password)
+        {
+          password: password,
         }
       end
 
