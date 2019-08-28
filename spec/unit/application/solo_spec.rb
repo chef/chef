@@ -64,7 +64,7 @@ describe Chef::Application::Solo do
           end
 
           it "should terminate with message" do
-            expect(Chef::Application).to receive(:fatal!).with(/interval runs are disabled/)
+            expect(Chef::Application).to receive(:fatal!).with(/interval runs are (disabled|not supported)/)
             app.reconfigure
           end
         end
