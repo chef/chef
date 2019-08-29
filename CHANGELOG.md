@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.31 -->
-## [v15.2.31](https://github.com/chef/chef/tree/v15.2.31) (2019-08-28)
+<!-- latest_release 15.2.32 -->
+## [v15.2.32](https://github.com/chef/chef/tree/v15.2.32) (2019-08-29)
 
 #### Merged Pull Requests
-- Fix node[:cookbooks] attribute [#8846](https://github.com/chef/chef/pull/8846) ([lamont-granquist](https://github.com/lamont-granquist))
+- remove app_server_support spec file [#8852](https://github.com/chef/chef/pull/8852) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.2.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- remove app_server_support spec file [#8852](https://github.com/chef/chef/pull/8852) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.32 -->
 - Fix node[:cookbooks] attribute [#8846](https://github.com/chef/chef/pull/8846) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.31 -->
 - Fail on interval runs on windows as interval runs on Windows don&#39;t entirely work [#6777](https://github.com/chef/chef/pull/6777) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.30 -->
 - ifconfig: fix regex matching interface name with hyphen [#8756](https://github.com/chef/chef/pull/8756) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.2.29 -->
