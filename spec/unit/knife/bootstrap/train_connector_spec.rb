@@ -172,7 +172,7 @@ describe Chef::Knife::Bootstrap::TrainConnector do
         end
 
         it "without sudo privilege" do
-          expected_command = "mkdir -p #{dir} && chown user1 '#{dir}'"
+          expected_command = "mkdir -p #{dir}"
           expect(subject).to receive(:run_command!).with(expected_command)
             .and_return double("result", stdout: "\r\n")
           expect(subject.temp_dir).to eq(dir)
@@ -180,8 +180,8 @@ describe Chef::Knife::Bootstrap::TrainConnector do
       end
 
       context "with noise in stderr" do
-        it "uses the *nix command to create the temp dir and sets ownership to logged-in user" do
-          expected_command = "mkdir -p #{dir} && chown user1 '#{dir}'"
+        it "uses the *nix command to create the temp dir" do
+          expected_command = "mkdir -p #{dir}"
           expect(subject).to receive(:run_command!).with(expected_command)
             .and_return double("result", stdout: "sudo: unable to resolve host hostname.localhost\r\n" + "#{dir}\r\n")
           expect(subject.temp_dir).to eq(dir)
