@@ -2001,7 +2001,7 @@ describe Chef::Knife::Bootstrap do
 
     context "when sshd confgiured with requiretty" do
       let(:pty_err_msg) { "Sudo requires a TTY. Please see the README on how to configure sudo to allow for non-interactive usage." }
-      let(:expected_error) { Train::UserError.new(pty_err_msg) }
+      let(:expected_error) { Train::UserError.new(pty_err_msg, :sudo_no_tty) }
       before do
         allow(connection).to receive(:connect!).and_raise(expected_error)
       end
