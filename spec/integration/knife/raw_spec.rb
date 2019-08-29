@@ -19,11 +19,11 @@ require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 require "chef/knife/raw"
 require "chef/knife/show"
+require "tiny_server"
 
 describe "knife raw", :workstation do
   include IntegrationSupport
   include KnifeSupport
-  include AppServerSupport
 
   include_context "default config options"
 
@@ -185,19 +185,29 @@ describe "knife raw", :workstation do
     end
 
     context "When a server returns raw json" do
-      before :each do
-        Chef::Config.chef_server_url = "http://localhost:9018"
-        app = lambda do |env|
-          [200, { "Content-Type" => "application/json" }, ['{ "x": "y", "a": "b" }'] ]
+      def start_tiny_server(server_opts = {})
+        @server = TinyServer::Manager.new(server_opts)
+        @server.start
+        @api = TinyServer::API.instance
+        @api.clear
+
+        @api.get("/blah", 200, nil, { "Content-Type" => "application/json" }) do
+          '{ "x": "y", "a": "b" }'
         end
-        @raw_server_thread = start_app_server(app, 9018)
+      end
+
+      def stop_tiny_server
+        @server.stop
+        @server = @api = nil
+      end
+
+      before :each do
+        Chef::Config.chef_server_url = "http://localhost:9000"
+        start_tiny_server
       end
 
       after :each do
-        if @raw_server_thread
-          @raw_server_thread.kill
-          @raw_server_thread.join(30)
-        end
+        stop_tiny_server
       end
 
       it "knife raw /blah returns the prettified json" do
@@ -217,19 +227,29 @@ describe "knife raw", :workstation do
     end
 
     context "When a server returns text" do
-      before :each do
-        Chef::Config.chef_server_url = "http://localhost:9018"
-        app = lambda do |env|
-          [200, { "Content-Type" => "text" }, ['{ "x": "y", "a": "b" }'] ]
+      def start_tiny_server(server_opts = {})
+        @server = TinyServer::Manager.new(server_opts)
+        @server.start
+        @api = TinyServer::API.instance
+        @api.clear
+
+        @api.get("/blah", 200, nil, { "Content-Type" => "text" }) do
+          '{ "x": "y", "a": "b" }'
         end
-        @raw_server_thread = start_app_server(app, 9018)
+      end
+
+      def stop_tiny_server
+        @server.stop
+        @server = @api = nil
+      end
+
+      before :each do
+        Chef::Config.chef_server_url = "http://localhost:9000"
+        start_tiny_server
       end
 
       after :each do
-        if @raw_server_thread
-          @raw_server_thread.kill
-          @raw_server_thread.join(30)
-        end
+        stop_tiny_server
       end
 
       it "knife raw /blah returns the raw text" do

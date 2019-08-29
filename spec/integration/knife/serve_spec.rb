@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,6 @@ require "chef/server_api"
 describe "knife serve", :workstation do
   include IntegrationSupport
   include KnifeSupport
-  include AppServerSupport
 
   def with_knife_serve
     exception = nil
