@@ -123,13 +123,13 @@ class Chef
               # eg. /tmp/chef_XXXXXX.
               # Use mkdir to create TEMP dir to get rid of mktemp
               dir = "#{DEFAULT_REMOTE_TEMP}/chef_#{SecureRandom.alphanumeric(6)}"
-              cmd = "mkdir -p %s" % dir
+              run_command!("mkdir -p '#{dir}'")
               # Ensure that dir has the correct owner.  We are possibly
               # running with sudo right now - so this directory would be owned by root.
               # File upload is performed over SCP as the current logged-in user,
               # so we'll set ownership to ensure that works.
-              cmd += " && sudo chown #{config[:user]} '#{dir}'"
-              run_command!(cmd)
+              run_command!("chown #{config[:user]} '#{dir}'") if config[:sudo]
+
               dir
             end
           end
