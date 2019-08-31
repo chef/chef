@@ -28,8 +28,8 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.6.0)
-      public_suffix (>= 2.0.2, < 4.0)
+    addressable (2.7.0)
+      public_suffix (>= 2.0.2, < 5.0)
     artifactory (3.0.5)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
@@ -42,7 +42,7 @@ GEM
     aws-sdk-kms (1.24.0)
       aws-sdk-core (~> 3, >= 3.61.1)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.47.0)
+    aws-sdk-s3 (1.48.0)
       aws-sdk-core (~> 3, >= 3.61.1)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
@@ -258,7 +258,7 @@ GEM
     plist (3.5.0)
     progressbar (1.10.1)
     proxifier (1.0.3)
-    public_suffix (3.1.1)
+    public_suffix (4.0.1)
     rack (2.0.7)
     retryable (3.0.4)
     ruby-progressbar (1.10.1)
