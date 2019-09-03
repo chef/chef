@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.2.35 -->
-## [v15.2.35](https://github.com/chef/chef/tree/v15.2.35) (2019-08-29)
+<!-- latest_release 15.3.0 -->
+## [v15.3.0](https://github.com/chef/chef/tree/v15.3.0) (2019-09-03)
 
 #### Merged Pull Requests
-- Deprecate macOS 10.12 and add macOS 10.15 support [#8850](https://github.com/chef/chef/pull/8850) ([jaymalasinha](https://github.com/jaymalasinha))
+- Update InSpec to 4.16 and addressable to 2.7.0 [#8857](https://github.com/chef/chef/pull/8857) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.2.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update InSpec to 4.16 and addressable to 2.7.0 [#8857](https://github.com/chef/chef/pull/8857) ([tas50](https://github.com/tas50)) <!-- 15.3.0 -->
 - Deprecate macOS 10.12 and add macOS 10.15 support [#8850](https://github.com/chef/chef/pull/8850) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.35 -->
 - Bootstrap: Only use sudo when changing ownership if --sudo is passed [#8815](https://github.com/chef/chef/pull/8815) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.2.34 -->
 - Update InSpec to 4.12 and Train to 3.0 [#8854](https://github.com/chef/chef/pull/8854) ([tas50](https://github.com/tas50)) <!-- 15.2.33 -->

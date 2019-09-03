@@ -27,11 +27,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (15.2.35)
+    chef (15.3.0)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 15.2.35)
+      chef-config (= 15.3.0)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -58,11 +58,11 @@ PATH
       train-winrm
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (15.2.35-universal-mingw32)
+    chef (15.3.0-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 15.2.35)
+      chef-config (= 15.3.0)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -105,13 +105,13 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (15.2.35)
-      chef (= 15.2.35)
+    chef-bin (15.3.0)
+      chef (= 15.3.0)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (15.2.35)
+    chef-config (15.3.0)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
@@ -319,7 +319,7 @@ GEM
       unicode-display_width (~> 1.5)
       unicode_utils (~> 1.4)
     strings-ansi (0.1.0)
-    structured_warnings (0.3.0)
+    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
     term-ansicolor (1.7.1)
