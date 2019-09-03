@@ -30,6 +30,7 @@ function Invoke-Begin {
 function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
+    Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
     Set-RuntimeEnv -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
     Set-RuntimeEnv LANG "en_US.UTF-8"
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
