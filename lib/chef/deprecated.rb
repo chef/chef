@@ -196,7 +196,7 @@ class Chef
       target 19
     end
 
-    class CookbookInstallVendor < Base
+    class SupermarketInstallVendor < Base
       target 20
     end
 

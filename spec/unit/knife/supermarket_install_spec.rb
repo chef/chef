@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2011-2018, Chef Software, Inc.
+# Copyright:: Copyright 2011-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +39,7 @@ describe Chef::Knife::SupermarketInstall do
   end
 
   before(:each) do
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
     require "chef/knife/core/cookbook_scm_repo"
 
     allow(knife.ui).to receive(:stdout).and_return(stdout)
