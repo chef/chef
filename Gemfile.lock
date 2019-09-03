@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 56f2187784bf8b6840efc73adb2e35ef5f3862a7
+  revision: 6c2d8583fd345c09c7931e2f8c0ed33a48925c40
   branch: master
   specs:
-    chefstyle (0.13.2)
+    chefstyle (0.13.3)
       rubocop (= 0.72.0)
 
 GIT
@@ -121,8 +121,8 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.6.0)
-      public_suffix (>= 2.0.2, < 4.0)
+    addressable (2.7.0)
+      public_suffix (>= 2.0.2, < 5.0)
     appbundler (0.13.1)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -177,7 +177,7 @@ GEM
     htmlentities (4.3.4)
     httpclient (2.8.3)
     iniparse (1.4.4)
-    inspec-core (4.12.0)
+    inspec-core (4.16.0)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       faraday_middleware (~> 0.12.2)
@@ -202,8 +202,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.12.0)
-      inspec-core (= 4.12.0)
+    inspec-core-bin (4.16.0)
+      inspec-core (= 4.16.0)
     ipaddress (0.8.3)
     iso8601 (0.12.1)
     jaro_winkler (1.5.3)
@@ -249,7 +249,7 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.17.0)
-    parser (2.6.3.0)
+    parser (2.6.4.0)
       ast (~> 2.4.0)
     parslet (1.8.2)
     pastel (0.7.3)
@@ -269,7 +269,7 @@ GEM
     pry-stack_explorer (0.4.9.3)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (3.1.1)
+    public_suffix (4.0.1)
     rack (2.0.7)
     rainbow (3.0.0)
     rake (12.3.2)
