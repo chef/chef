@@ -134,11 +134,11 @@ class Chef
 
         def create_user
           cmd = [-"-addUser", new_resource.username]
-          cmd += ["-fullName", new_resource.comment]  if new_resource.property_is_set?(:comment)
-          cmd += ["-UID", new_resource.uid]           if new_resource.property_is_set?(:uid)
+          cmd += ["-fullName", new_resource.comment] if new_resource.property_is_set?(:comment)
+          cmd += ["-UID", new_resource.uid]          if new_resource.property_is_set?(:uid)
           cmd += ["-shell", new_resource.shell]
-          cmd += ["-home", new_resource.home]         if new_resource.property_is_set?(:home)
-          cmd += ["-admin"]                           if new_resource.admin
+          cmd += ["-home", new_resource.home]
+          cmd += ["-admin"] if new_resource.admin
 
           # We can technically create a new user without the admin credentials
           # but without them the user cannot enable SecureToken, thus they cannot
