@@ -194,37 +194,39 @@ steps:
 
 - label: "Integration Specs Windows :ruby: 2.6"
   commands:
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
-    - bundle exec rake spec:integration
+    - /workdir/scripts/bk_tests/bk_win_integration.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
         environment:
+          - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
+        shell: ["powershell", "-Command"]
 
 - label: "Functional Specs Windows :ruby: 2.6"
   commands:
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
-    - bundle exec rake spec:functional
+    - /workdir/scripts/bk_tests/bk_win_functional.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
         environment:
+          - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
+        shell: ["powershell", "-Command"]
 
 - label: "Unit Specs Windows :ruby: 2.6"
   commands:
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
-    - bundle exec rake spec:unit
-    - bundle exec rake component_specs
+    - /workdir/scripts/bk_tests/bk_win_unit.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
         environment:
+          - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
+        shell: ["powershell", "-Command"]
 
 - label: "Chefstyle :ruby: 2.6"
   commands:
