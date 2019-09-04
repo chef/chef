@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 75f8868a794508d6b567162f13924c9d21ce5dfa
+  revision: b851a32e09a384cad768a6d44df267ffe920cfc2
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -33,8 +33,8 @@ GEM
     artifactory (3.0.5)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.207.0)
-    aws-sdk-core (3.65.1)
+    aws-partitions (1.208.0)
+    aws-sdk-core (3.66.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.1)
@@ -207,7 +207,7 @@ GEM
     mixlib-cli (2.1.1)
     mixlib-config (3.0.1)
       tomlrb
-    mixlib-install (3.11.18)
+    mixlib-install (3.11.21)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -276,7 +276,7 @@ GEM
       unicode-display_width (~> 1.5)
       unicode_utils (~> 1.4)
     strings-ansi (0.1.0)
-    structured_warnings (0.3.0)
+    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
     test-kitchen (2.3.1)
