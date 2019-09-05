@@ -256,10 +256,6 @@ module ChefConfig
     # Defaults to <chef_repo_path>/users.
     default(:user_path) { derive_path_from_chef_repo_path("users") }
 
-    # Location of policies on disk. String or array of strings.
-    # Defaults to <chef_repo_path>/policies.
-    default(:policy_path) { derive_path_from_chef_repo_path("policies") }
-
     # Turn on "path sanity" by default.
     default :enforce_path_sanity, false
 
