@@ -1,6 +1,6 @@
 #--
 # Author:: Lamont Granquist <lamont@chef.io>
-# Copyright:: Copyright 2010-2017, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ class Chef
         paths = env_path.split(File::PATH_SEPARATOR) + Array(extra_path)
         cmds.map do |cmd|
           paths.map do |path|
-            filename = Chef.path_to(File.join(path, cmd))
+            filename = File.join(path, cmd)
             filename if valid_executable?(filename, &block)
           end.compact
         end.flatten

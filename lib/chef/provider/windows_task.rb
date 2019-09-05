@@ -22,7 +22,7 @@ require "iso8601"
 require "chef/mixin/powershell_out"
 require "chef/provider"
 require "chef/util/path_helper"
-require "win32/taskscheduler" if Chef::Platform.windows?
+require "win32/taskscheduler" if ChefHelpers.windows?
 
 class Chef
   class Provider
@@ -30,7 +30,7 @@ class Chef
       include Chef::Mixin::ShellOut
       include Chef::Mixin::PowershellOut
 
-      if Chef::Platform.windows?
+      if ChefHelpers.windows?
         include Win32
 
         provides :windows_task

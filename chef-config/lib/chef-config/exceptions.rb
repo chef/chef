@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "chef-config/windows"
+require "chef-helpers"
 require "chef-config/logger"
 
 module ChefConfig

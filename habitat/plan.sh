@@ -56,6 +56,10 @@ do_build() {
 
   bundle config --local silence_root_warning 1
 
+  pushd chef-helpers > /dev/null
+  _bundle_install "${pkg_prefix}/bundle"
+  popd > /dev/null
+
   pushd chef-config > /dev/null
   _bundle_install "${pkg_prefix}/bundle"
   popd > /dev/null

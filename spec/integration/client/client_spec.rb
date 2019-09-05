@@ -62,7 +62,7 @@ EOM
       shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
     end
 
-    it "should complete successfully with no other environment variables", skip: (Chef::Platform.windows?) do
+    it "should complete successfully with no other environment variables", skip: (ChefHelpers.windows?) do
       file "config/client.rb", <<~EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"

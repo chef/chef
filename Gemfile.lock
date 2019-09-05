@@ -13,6 +13,7 @@ PATH
       addressable
       bundler (>= 1.10)
       chef-config (= 14.4.56)
+      chef-helpers (= 14.4.56)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -44,6 +45,7 @@ PATH
       addressable
       bundler (>= 1.10)
       chef-config (= 14.4.56)
+      chef-helpers (= 14.4.56)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -88,10 +90,16 @@ PATH
   specs:
     chef-config (14.4.56)
       addressable
+      chef-helpers (= 14.4.56)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
       mixlib-shellout (~> 2.0)
       tomlrb (~> 1.2)
+
+PATH
+  remote: chef-helpers
+  specs:
+    chef-helpers (14.4.56)
 
 GEM
   remote: https://rubygems.org/
@@ -101,7 +109,7 @@ GEM
       mixlib-cli (~> 1.4)
       mixlib-shellout (~> 2.0)
     ast (2.4.0)
-    backports (3.11.3)
+    backports (3.11.4)
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
@@ -175,7 +183,7 @@ GEM
       addressable (~> 2.3)
     libyajl2 (1.2.0)
     method_source (0.9.0)
-    mixlib-archive (0.4.13)
+    mixlib-archive (0.4.16)
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
@@ -356,6 +364,7 @@ DEPENDENCIES
   appbundler
   chef!
   chef-config!
+  chef-helpers!
   chef-vault
   cheffish (~> 14)
   chefstyle!
@@ -377,4 +386,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.16.4
+   1.16.1

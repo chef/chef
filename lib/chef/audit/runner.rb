@@ -146,7 +146,7 @@ class Chef
 
       # Set up the backend for Specinfra/Serverspec.  :exec is the local system; on Windows, it is :cmd
       def configure_specinfra
-        if Chef::Platform.windows?
+        if ChefHelpers.windows?
           Specinfra.configuration.backend = :cmd
           Specinfra.configuration.os = { family: "windows" }
         else

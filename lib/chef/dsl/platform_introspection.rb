@@ -16,13 +16,15 @@
 # limitations under the License.
 #
 
+require 'chef-helpers'
+
 class Chef
   module DSL
-
     # == Chef::DSL::PlatformIntrospection
     # Provides the DSL for platform-dependent switch logic, such as
     # #value_for_platform.
     module PlatformIntrospection
+      include ChefHelpers
 
       # Implementation class for determining platform dependent values
       class PlatformDependentValue
@@ -243,27 +245,16 @@ class Chef
         end
       end
 
-      # Shamelessly stolen from https://github.com/sethvargo/chef-sugar/blob/master/lib/chef/sugar/docker.rb
-      # Given a node object, returns whether the node is a docker container.
-      #
-      # === Parameters
-      # node:: [Chef::Node] The node to check.
-      #
-      # === Returns
-      # true:: if the current node is a docker container
-      # false:: if the current node is not a docker container
-      def docker?(node = run_context.nil? ? nil : run_context.node)
-        # Using "File.exist?('/.dockerinit') || File.exist?('/.dockerenv')" makes Travis sad,
-        # and that makes us sad too.
-        !!(node && node[:virtualization] && node[:virtualization][:systems] &&
-           node[:virtualization][:systems][:docker] && node[:virtualization][:systems][:docker] == "guest")
-      end
-
       # a simple helper to determine if we're on a windows release pre-2012 / 8
       # @return [Boolean] Is the system older than Windows 8 / 2012
       def older_than_win_2012_or_8?(node = run_context.nil? ? nil : run_context.node)
         node["platform_version"].to_f < 6.2
       end
+
+      # ^^^^^^ NOTE: PLEASE DO NOT CONTINUE TO ADD THESE KINDS OF PLATFORM_VERSION APIS WITHOUT ^^^^^^^
+      # ^^^^^^ GOING THROUGH THE COMMUNITY RFC PROCESS AND ADDRESS THE EXISTING CHEF-SUGAR ONES ^^^^^^^
+      # ^^^^^^ DO "THE HARD RIGHT THING" AND ADDRESS THE BROADER PROBLEM AND FIX IT ALL.        ^^^^^^^
+
     end
   end
 end

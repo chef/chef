@@ -53,7 +53,7 @@ require "chef/platform"
 class Chef
   module ChefFS
     def self.windows?
-      Chef::Platform.windows?
+      ChefHelpers.windows?
     end
   end
 end

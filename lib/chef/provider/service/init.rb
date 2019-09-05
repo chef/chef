@@ -29,7 +29,7 @@ class Chef
         provides :service, os: "!windows"
 
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
+          service_script_exist?(:initd, resource.service_name)
         end
 
         def initialize(new_resource, run_context)

@@ -22,7 +22,7 @@
 #
 
 require "chef/platform/query_helpers"
-if Chef::Platform.windows?
+if ChefHelpers.windows?
   require "chef/win32/security"
 end
 

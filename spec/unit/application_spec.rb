@@ -270,7 +270,7 @@ describe Chef::Application do
           end
         end
 
-        if Chef::Platform.windows?
+        if ChefHelpers.windows?
           it_behaves_like "sets log_location", :win_evt, Chef::Log::WinEvt
           it_behaves_like "sets log_location", "win_evt", Chef::Log::WinEvt
         else

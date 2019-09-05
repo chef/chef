@@ -25,9 +25,11 @@ require_relative "tasks/announce"
 
 # hack the chef-config install to run before the traditional install task
 task :super_install do
-  chef_config_path = ::File.join(::File.dirname(__FILE__), "chef-config")
-  Dir.chdir(chef_config_path)
-  sh("rake install")
+  %w{chef-helpers chef-config}.each do |gem|
+    path = ::File.join(::File.dirname(__FILE__), gem)
+    Dir.chdir(path)
+    sh("rake install")
+  end
 end
 
 task install: :super_install

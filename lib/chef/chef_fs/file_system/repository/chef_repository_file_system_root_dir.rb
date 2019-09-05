@@ -44,7 +44,7 @@ require "chef/chef_fs/data_handler/role_data_handler"
 require "chef/chef_fs/data_handler/user_data_handler"
 require "chef/chef_fs/data_handler/group_data_handler"
 require "chef/chef_fs/data_handler/container_data_handler"
-require "chef/win32/security" if Chef::Platform.windows?
+require "chef/win32/security" if ChefHelpers.windows?
 
 class Chef
   module ChefFS
@@ -111,7 +111,7 @@ class Chef
               child_paths[name].each do |path|
                 begin
                   Dir.mkdir(path, 0700)
-                  if Chef::Platform.windows?
+                  if ChefHelpers.windows?
                     all_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_ALL
                     administrators = Chef::ReservedNames::Win32::Security::SID.Administrators
                     owner = Chef::ReservedNames::Win32::Security::SID.default_security_object_owner

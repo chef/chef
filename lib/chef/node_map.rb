@@ -240,6 +240,11 @@ EOH
 
     private
 
+    def platform_family_query_helper?(node, m)
+      method = "#{m}?".to_sym
+      ChefHelpers::PlatformFamily.respond_to?(method) && ChefHelpers::PlatformFamily.send(method, node)
+    end
+
     #
     # Succeeds if:
     # - no negative matches (!value)
@@ -255,11 +260,19 @@ EOH
       # Split the blacklist and whitelist
       blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?("!") }
 
-      # If any blacklist value matches, we don't match
-      return false if blacklist.any? { |v| v[1..-1] == value }
+      if attribute == :platform_family
+        # If any blacklist value matches, we don't match
+        return false if blacklist.any? { |v| v[1..-1] == value || platform_family_query_helper?(node, v[1..-1]) }
 
-      # If the whitelist is empty, or anything matches, we match.
-      whitelist.empty? || whitelist.any? { |v| v == :all || v == value }
+        # If the whitelist is empty, or anything matches, we match.
+        whitelist.empty? || whitelist.any? { |v| v == :all || v == value || platform_family_query_helper?(node, v) }
+      else
+        # If any blacklist value matches, we don't match
+        return false if blacklist.any? { |v| v[1..-1] == value }
+
+        # If the whitelist is empty, or anything matches, we match.
+        whitelist.empty? || whitelist.any? { |v| v == :all || v == value }
+      end
     end
 
     def matches_version_list?(node, filters, attribute)

@@ -113,7 +113,7 @@ class Chef::Application::Client < Chef::Application
     description: "Group to set privilege to",
     proc: nil
 
-  unless Chef::Platform.windows?
+  unless ChefHelpers.windows?
     option :daemonize,
       short: "-d [WAIT]",
       long: "--daemonize [WAIT]",
@@ -264,7 +264,7 @@ class Chef::Application::Client < Chef::Application
     description: "Set maximum duration to wait for another client run to finish, default is indefinitely.",
     proc: lambda { |s| s.to_i }
 
-  if Chef::Platform.windows?
+  if ChefHelpers.windows?
     option :fatal_windows_admin_check,
       short: "-A",
       long: "--fatal-windows-admin-check",
@@ -366,7 +366,7 @@ class Chef::Application::Client < Chef::Application
       Chef::Config[:client_fork] = !!Chef::Config[:interval]
     end
 
-    if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?
+    if !Chef::Config[:client_fork] && Chef::Config[:interval] && !ChefHelpers.windows?
       Chef::Application.fatal!(unforked_interval_error_message)
     end
 
@@ -412,7 +412,7 @@ class Chef::Application::Client < Chef::Application
   def setup_signal_handlers
     super
 
-    unless Chef::Platform.windows?
+    unless ChefHelpers.windows?
       SELF_PIPE.replace IO.pipe
 
       trap("USR1") do

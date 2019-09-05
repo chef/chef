@@ -440,7 +440,7 @@ class Chef
       unless respond_to?(:run)
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
-      enforce_path_sanity
+      ENV['PATH'] = ChefHelpers::PathSanity.sanitized_path if Chef::Config[:enforce_path_sanity]
       maybe_setup_fips
       Chef::LocalMode.with_server_connectivity do
         run

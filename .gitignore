@@ -61,3 +61,9 @@ nodes/
 # chef-config
 chef-config/.bundle
 chef-config/Gemfile.lock
+chef-config/pkg/*
+
+# chef-helpers
+chef-helpers/.bundle
+chef-helpers/Gemfile.lock
+chef-helpers/pkg/*

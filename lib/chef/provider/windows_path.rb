@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/mixin/windows_env_helper" if Chef::Platform.windows?
+require "chef/mixin/windows_env_helper" if ChefHelpers.windows?
 require "chef/mixin/wide_string"
 require "chef/exceptions"
 
 class Chef
   class Provider
     class WindowsPath < Chef::Provider
-      include Chef::Mixin::WindowsEnvHelper if Chef::Platform.windows?
+      include Chef::Mixin::WindowsEnvHelper if ChefHelpers.windows?
 
       provides :windows_path
 

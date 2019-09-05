@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -201,7 +201,7 @@ RSpec.describe ChefConfig::Config do
       end
 
       before :each do
-        allow(ChefConfig).to receive(:windows?).and_return(is_windows)
+        allow(ChefHelpers).to receive(:windows?).and_return(is_windows)
       end
       describe "class method: windows_installation_drive" do
         before do

@@ -212,7 +212,7 @@ class Chef
 
       def svn_binary
         new_resource.svn_binary ||
-          (Chef::Platform.windows? ? "svn.exe" : "svn")
+          (ChefHelpers.windows? ? "svn.exe" : "svn")
       end
 
       def assert_target_directory_valid!

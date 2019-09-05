@@ -17,7 +17,7 @@
 
 require "chef/mixin/create_path"
 require "fcntl"
-if Chef::Platform.windows?
+if ChefHelpers.windows?
   require "chef/win32/mutex"
 end
 require "chef/config"
@@ -96,7 +96,7 @@ class Chef
     #
     def wait
       Chef::Log.warn("Chef client #{runpid} is running, will wait for it to finish and then run.")
-      if Chef::Platform.windows?
+      if ChefHelpers.windows?
         mutex.wait
       else
         runlock.flock(File::LOCK_EX)
@@ -115,7 +115,7 @@ class Chef
     # Release the system-wide lock.
     def release
       if runlock
-        if Chef::Platform.windows?
+        if ChefHelpers.windows?
           mutex.release
         else
           runlock.flock(File::LOCK_UN)
@@ -137,7 +137,7 @@ class Chef
 
     # @api private solely for race condition tests
     def acquire_lock
-      if Chef::Platform.windows?
+      if ChefHelpers.windows?
         acquire_win32_mutex
       else
         # If we support FD_CLOEXEC, then use it.

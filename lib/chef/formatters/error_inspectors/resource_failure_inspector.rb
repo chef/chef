@@ -51,7 +51,7 @@ class Chef
             error_description.section("Template Context:", "#{exception.source_location}\n#{exception.source_listing}")
           end
 
-          if Chef::Platform.windows?
+          if ChefHelpers.windows?
             require "chef/win32/security"
 
             if !Chef::ReservedNames::Win32::Security.has_admin_privileges?

@@ -514,7 +514,7 @@ class Chef
       content_length = response["Content-Length"]
       if tf.nil?
         tf = Tempfile.open("chef-rest")
-        if Chef::Platform.windows?
+        if ChefHelpers.windows?
           tf.binmode # required for binary files on Windows platforms
         end
       end

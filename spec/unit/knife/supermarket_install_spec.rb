@@ -30,7 +30,7 @@ describe Chef::Knife::SupermarketInstall do
            prepare_to_import: true, finalize_updates_to: true,
            merge_updates_from: true) end
   let(:install_path) do
-    if Chef::Platform.windows?
+    if ChefHelpers.windows?
       "C:/tmp/chef"
     else
       "/var/tmp/chef"

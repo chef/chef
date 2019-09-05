@@ -18,7 +18,7 @@
 
 require "tempfile"
 require "chef/provider/execute"
-require "chef/win32/security" if Chef::Platform.windows?
+require "chef/win32/security" if ChefHelpers.windows?
 require "forwardable"
 
 class Chef
@@ -67,7 +67,7 @@ class Chef
       end
 
       def set_owner_and_group
-        if Chef::Platform.windows?
+        if ChefHelpers.windows?
           # And on Windows also this is a no-op if there is no user specified.
           grant_alternate_user_read_access
         else

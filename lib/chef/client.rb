@@ -20,7 +20,6 @@
 
 require "chef/config"
 require "chef/mixin/params_validate"
-require "chef/mixin/path_sanity"
 require "chef/log"
 require "chef/deprecated"
 require "chef/server_api"
@@ -53,6 +52,7 @@ require "chef/policy_builder"
 require "chef/request_id"
 require "chef/platform/rebooter"
 require "chef/mixin/deprecation"
+require "chef-helpers"
 require "ohai"
 require "rbconfig"
 
@@ -61,8 +61,6 @@ class Chef
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
-    include Chef::Mixin::PathSanity
-
     extend Chef::Mixin::Deprecation
 
     #
@@ -256,7 +254,7 @@ class Chef
         logger.info("Platform: #{RUBY_PLATFORM}")
         logger.info "Chef-client pid: #{Process.pid}"
         logger.debug("Chef-client request_id: #{request_id}")
-        enforce_path_sanity
+        ENV['PATH'] = ChefHelpers::PathSanity.sanitized_path if Chef::Config[:enforce_path_sanity]
         run_ohai
 
         generate_guid
@@ -825,7 +823,7 @@ class Chef
     # @api private
     #
     def do_windows_admin_check
-      if Chef::Platform.windows?
+      if ChefHelpers.windows?
         logger.trace("Checking for administrator privileges....")
 
         if !has_admin_privileges?

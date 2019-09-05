@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,6 +52,7 @@ class Chef
         infector = Module.new do
           define_method(:included) do |subklass|
             super(subklass)
+            puts "infecting #{subclass}"
             subklass.extend(infector)
             parent_klass.descendants.push(subklass)
           end
@@ -68,6 +69,7 @@ class Chef
         super
         classes.each do |klass|
           descendants.each do |descendant|
+            puts "recursively including #{klass} into #{descendant}"
             descendant.send(:include, klass)
           end
         end

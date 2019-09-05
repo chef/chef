@@ -16,12 +16,11 @@
 # limitations under the License.
 
 require "mixlib/shellout"
-require "chef/mixin/path_sanity"
+require "chef-helpers/path_sanity"
 
 class Chef
   module Mixin
     module ShellOut
-      extend Chef::Mixin::PathSanity
 
       # PREFERRED APIS:
       #
@@ -162,7 +161,7 @@ class Chef
             "LC_ALL" => Chef::Config[:internal_locale],
             "LANGUAGE" => Chef::Config[:internal_locale],
             "LANG" => Chef::Config[:internal_locale],
-            env_path => sanitized_path,
+            env_path => ChefHelpers::PathSanity.sanitized_path,
           }.update(options[env_key] || {})
         end
         options
@@ -244,7 +243,7 @@ class Chef
       end
 
       def self.env_path
-        if Chef::Platform.windows?
+        if ChefHelpers.windows?
           "Path"
         else
           "PATH"

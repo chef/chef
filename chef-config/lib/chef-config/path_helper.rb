@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2018, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef-config/windows"
+require "chef-helpers"
 require "chef-config/logger"
 require "chef-config/exceptions"
 
@@ -26,7 +26,7 @@ module ChefConfig
     WIN_MAX_PATH = 259
 
     def self.dirname(path)
-      if ChefConfig.windows?
+      if ChefHelpers.windows?
         # Find the first slash, not counting trailing slashes
         end_slash = path.size
         loop do
@@ -47,7 +47,7 @@ module ChefConfig
     BACKSLASH = '\\'.freeze
 
     def self.path_separator
-      if ChefConfig.windows?
+      if ChefHelpers.windows?
         File::ALT_SEPARATOR || BACKSLASH
       else
         File::SEPARATOR
@@ -71,7 +71,7 @@ module ChefConfig
     end
 
     def self.validate_path(path)
-      if ChefConfig.windows?
+      if ChefHelpers.windows?
         unless printable?(path)
           msg = "Path '#{path}' contains non-printable characters. Check that backslashes are escaped with another backslash (e.g. C:\\\\Windows) in double-quoted strings."
           ChefConfig.logger.error(msg)
@@ -114,7 +114,7 @@ module ChefConfig
       # First remove extra separators and resolve any relative paths
       abs_path = File.absolute_path(path)
 
-      if ChefConfig.windows?
+      if ChefHelpers.windows?
         # Add the \\?\ API prefix on Windows unless add_prefix is false
         # Downcase on Windows where paths are still case-insensitive
         abs_path.gsub!(::File::SEPARATOR, path_separator)
@@ -142,7 +142,7 @@ module ChefConfig
     def self.cleanpath(path)
       path = Pathname.new(path).cleanpath.to_s
       # ensure all forward slashes are backslashes
-      if ChefConfig.windows?
+      if ChefHelpers.windows?
         path = path.gsub(File::SEPARATOR, path_separator)
       end
       path
@@ -219,7 +219,7 @@ module ChefConfig
       paths = []
       paths << ENV[@@per_tool_home_environment] if defined?(@@per_tool_home_environment) && @@per_tool_home_environment && ENV[@@per_tool_home_environment]
       paths << ENV["CHEF_HOME"] if ENV["CHEF_HOME"]
-      if ChefConfig.windows?
+      if ChefHelpers.windows?
         # By default, Ruby uses the the following environment variables to determine Dir.home:
         # HOME
         # HOMEDRIVE HOMEPATH

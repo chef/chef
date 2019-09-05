@@ -104,8 +104,8 @@ describe Chef::NodeMap do
     end
 
     it "returns nil when the platform_family does not match" do
-      allow(node).to receive(:[]).with(:os).and_return("linux")
-      allow(node).to receive(:[]).with(:platform_family).and_return("debian")
+      node.automatic["os"] = "linux"
+      node.automatic["platform_family"] = "debian"
       expect(node_map.get(node, :thing)).to eql(nil)
     end
   end
@@ -174,26 +174,26 @@ describe Chef::NodeMap do
     end
 
     it "returns the value when the node matches" do
-      allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
-      allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
+      node.automatic["platform_family"] = "rhel"
+      node.automatic["platform_version"] = "7.0"
       expect(node_map.get(node, :thing)).to eql(:foo)
     end
 
     it "returns nil when the block does not match" do
-      allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
-      allow(node).to receive(:[]).with(:platform_version).and_return("6.4")
+      node.automatic["platform_family"] = "rhel"
+      node.automatic["platform_version"] = "6.4"
       expect(node_map.get(node, :thing)).to eql(nil)
     end
 
     it "returns nil when the platform_family filter does not match" do
-      allow(node).to receive(:[]).with(:platform_family).and_return("debian")
-      allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
+      node.automatic["platform_family"] = "debian"
+      node.automatic["platform_version"] = "7.0"
       expect(node_map.get(node, :thing)).to eql(nil)
     end
 
     it "returns nil when both do not match" do
-      allow(node).to receive(:[]).with(:platform_family).and_return("debian")
-      allow(node).to receive(:[]).with(:platform_version).and_return("6.0")
+      node.automatic["platform_family"] = "debian"
+      node.automatic["platform_version"] = "6.0"
       expect(node_map.get(node, :thing)).to eql(nil)
     end
 
@@ -203,8 +203,8 @@ describe Chef::NodeMap do
       end
 
       it "returns the value when the node matches" do
-        allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
-        allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
+        node.automatic["platform_family"] = "rhel"
+        node.automatic["platform_version"] = "7.0"
         expect(node_map.get(node, :thing)).to eql(:foo)
       end
     end

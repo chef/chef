@@ -45,10 +45,10 @@ class Chef
         @recursive = true
         @files_owner = nil
         @files_group = nil
-        @files_mode = 0644 unless Chef::Platform.windows?
+        @files_mode = 0644 unless ChefHelpers.windows?
       end
 
-      if Chef::Platform.windows?
+      if ChefHelpers.windows?
         # create a second instance of the 'rights' attribute
         rights_attribute(:files_rights)
       end

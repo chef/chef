@@ -34,10 +34,6 @@ describe Chef::ProviderResolver do
 
   # Root the filesystem under a temp directory so Chef.path_to will point at it
   when_the_repository "is empty" do
-    before do
-      allow(Chef).to receive(:path_to) { |path| File.join(path_to(""), path) }
-    end
-
     let(:resource_name) { :service }
     let(:provider) { nil }
     let(:action) { :start }
@@ -145,51 +141,36 @@ describe Chef::ProviderResolver do
 
     describe "resolving service resource" do
       def stub_service_providers(*services)
-        services.each do |service|
-          case service
-          when :debian
-            file "usr/sbin/update-rc.d", ""
-          when :invokercd
-            file "usr/sbin/invoke-rc.d", ""
-          when :insserv
-            file "sbin/insserv", ""
-          when :upstart
-            file "sbin/initctl", ""
-          when :redhat
-            file "sbin/chkconfig", ""
-          when :systemd
-            file "proc/1/comm", "systemd\n"
-          else
-            raise ArgumentError, service
-          end
+        allowed = [:debianrcd, :invokercd, :insserv, :upstart, :redhatrcd, :systemd]
+
+        (allowed - services).each do |api|
+          allow(Chef::Provider::Service).to receive(:"#{api}?").and_return(false)
+        end
+
+        raise ArgumentError unless (services - allowed).empty?
+
+        services.each do |api|
+          allow(Chef::Provider::Service).to receive(:"#{api}?").and_return(true)
         end
       end
 
       def stub_service_configs(*configs)
-        configs.each do |config|
-          case config
-          when :initd
-            file "etc/init.d/#{service_name}", ""
-          when :upstart
-            file "etc/init/#{service_name}.conf", ""
-          when :xinetd
-            file "etc/xinetd.d/#{service_name}", ""
-          when :etc_rcd
-            file "etc/rc.d/#{service_name}", ""
-          when :usr_local_etc_rcd
-            file "usr/local/etc/rc.d/#{service_name}", ""
-          when :systemd
-            file "proc/1/comm", "systemd\n"
-            file "etc/systemd/system/#{service_name}.service", ""
-          else
-            raise ArgumentError, config
-          end
+        allowed = [:initd, :upstart, :xinetd, :systemd, :etc_rcd]
+
+        (allowed - configs).each do |type|
+          allow(Chef::Provider::Service).to receive(:service_script_exist?).with(type, service_name).and_return(false)
+        end
+
+        raise ArgumentError unless (configs - allowed).empty?
+
+        configs.each do |type|
+          allow(Chef::Provider::Service).to receive(:service_script_exist?).with(type, service_name).and_return(true)
         end
       end
 
       shared_examples_for "an ubuntu platform with upstart, update-rc.d and systemd" do
         before do
-          stub_service_providers(:debian, :invokercd, :upstart, :systemd)
+          stub_service_providers(:debianrcd, :invokercd, :upstart, :systemd)
         end
 
         it "when both the SysV init and Systemd script exists, it returns a Service::Debian provider" do
@@ -213,12 +194,12 @@ describe Chef::ProviderResolver do
         end
 
         it "when only the SysV init script exists, it returns a Service::Systemd provider" do
-          stub_service_configs(:initd)
+          stub_service_configs(:initd, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
 
         it "when both SysV and Upstart scripts exist, it returns a Service::Systemd provider" do
-          stub_service_configs(:initd, :upstart)
+          stub_service_configs(:initd, :systemd, :upstart)
           expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
 
@@ -235,7 +216,7 @@ describe Chef::ProviderResolver do
 
       shared_examples_for "an ubuntu platform with upstart and update-rc.d" do
         before do
-          stub_service_providers(:debian, :invokercd, :upstart)
+          stub_service_providers(:debianrcd, :invokercd, :upstart)
         end
 
         # needs to be handled by the highest priority init.d handler
@@ -362,7 +343,7 @@ describe Chef::ProviderResolver do
       shared_examples_for "a debian platform using the insserv provider" do
         context "with a default install" do
           before do
-            stub_service_providers(:debian, :invokercd, :insserv)
+            stub_service_providers(:debianrcd, :invokercd, :insserv)
           end
 
           it "uses the Service::Insserv Provider to manage sysv init scripts" do
@@ -378,7 +359,7 @@ describe Chef::ProviderResolver do
 
         context "when the user has installed upstart" do
           before do
-            stub_service_providers(:debian, :invokercd, :insserv, :upstart)
+            stub_service_providers(:debianrcd, :invokercd, :insserv, :upstart)
           end
 
           it "when only the SysV init script exists, it returns an Insserv  provider" do
@@ -407,8 +388,8 @@ describe Chef::ProviderResolver do
         it_behaves_like "an ubuntu platform with upstart, update-rc.d and systemd"
 
         it "when the unit-files are missing and system-ctl list-unit-files returns an error" do
-          stub_service_providers(:debian, :invokercd, :upstart, :systemd)
-          stub_service_configs(:initd, :upstart)
+          stub_service_providers(:debianrcd, :invokercd, :upstart, :systemd)
+          stub_service_configs(:initd, :upstart, :systemd)
           mock_shellout_command("/bin/systemctl list-unit-files", exitstatus: 1)
           expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
@@ -445,8 +426,8 @@ describe Chef::ProviderResolver do
 
         it "always returns a Solaris provider" do
           # no matter what we stub on the next two lines we should get a Solaris provider
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-          stub_service_configs(:initd, :upstart, :xinetd, :usr_local_etc_rcd, :systemd)
+          stub_service_providers(:debianrcd, :invokercd, :insserv, :upstart, :redhatrcd, :systemd)
+          stub_service_configs(:initd, :upstart, :xinetd, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Solaris)
         end
       end
@@ -460,8 +441,8 @@ describe Chef::ProviderResolver do
 
         it "always returns a Windows provider" do
           # no matter what we stub on the next two lines we should get a Windows provider
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-          stub_service_configs(:initd, :upstart, :xinetd, :usr_local_etc_rcd, :systemd)
+          stub_service_providers(:debianrcd, :invokercd, :insserv, :upstart, :redhatrcd, :systemd)
+          stub_service_configs(:initd, :upstart, :xinetd, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Windows)
         end
       end
@@ -475,8 +456,8 @@ describe Chef::ProviderResolver do
 
         it "always returns a Macosx provider" do
           # no matter what we stub on the next two lines we should get a Macosx provider
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-          stub_service_configs(:initd, :upstart, :xinetd, :usr_local_etc_rcd, :systemd)
+          stub_service_providers(:debianrcd, :invokercd, :insserv, :upstart, :redhatrcd, :systemd)
+          stub_service_configs(:initd, :upstart, :xinetd, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Macosx)
         end
       end
@@ -484,7 +465,6 @@ describe Chef::ProviderResolver do
       on_platform "freebsd", os: "freebsd", platform_version: "10.3" do
         it "returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
           stub_service_providers
-          stub_service_configs(:usr_local_etc_rcd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
         end
 
@@ -495,15 +475,14 @@ describe Chef::ProviderResolver do
         end
 
         it "always returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
-          # should only care about :usr_local_etc_rcd stub in the service configs
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-          stub_service_configs(:usr_local_etc_rcd, :initd, :upstart, :xinetd, :systemd)
+          stub_service_providers(:debianrcd, :invokercd, :insserv, :upstart, :redhatrcd, :systemd)
+          stub_service_configs(:initd, :upstart, :xinetd, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
         end
 
         it "always returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
           # should only care about :etc_rcd stub in the service configs
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
+          stub_service_providers(:debianrcd, :invokercd, :insserv, :upstart, :redhatrcd, :systemd)
           stub_service_configs(:etc_rcd, :initd, :upstart, :xinetd, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
         end
@@ -518,7 +497,6 @@ describe Chef::ProviderResolver do
       on_platform "netbsd", os: "netbsd", platform_version: "7.0.1" do
         it "returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
           stub_service_providers
-          stub_service_configs(:usr_local_etc_rcd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
         end
 
@@ -529,15 +507,14 @@ describe Chef::ProviderResolver do
         end
 
         it "always returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
-          # should only care about :usr_local_etc_rcd stub in the service configs
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-          stub_service_configs(:usr_local_etc_rcd, :initd, :upstart, :xinetd, :systemd)
+          stub_service_providers(:debianrcd, :invokercd, :insserv, :upstart, :redhatrcd, :systemd)
+          stub_service_configs(:initd, :upstart, :xinetd, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
         end
 
         it "always returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
           # should only care about :etc_rcd stub in the service configs
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
+          stub_service_providers(:debianrcd, :invokercd, :insserv, :upstart, :redhatrcd, :systemd)
           stub_service_configs(:etc_rcd, :initd, :upstart, :xinetd, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
         end

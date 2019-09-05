@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -457,7 +457,7 @@ EOM
   describe "windows_admin_check" do
     context "platform is not windows" do
       before do
-        allow(ChefConfig).to receive(:windows?).and_return(false)
+        allow(ChefHelpers).to receive(:windows?).and_return(false)
       end
 
       it "shouldn't be called" do
@@ -468,7 +468,7 @@ EOM
 
     context "platform is windows" do
       before do
-        allow(ChefConfig).to receive(:windows?).and_return(true)
+        allow(ChefHelpers).to receive(:windows?).and_return(true)
       end
 
       it "should be called" do

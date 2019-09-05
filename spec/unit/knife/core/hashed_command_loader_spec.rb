@@ -19,7 +19,7 @@ require "spec_helper"
 
 describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
   before do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefHelpers).to receive(:windows?) { false }
   end
 
   let(:plugin_manifest) do

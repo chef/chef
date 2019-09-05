@@ -20,7 +20,7 @@
 require "chef/chef_fs/file_system/repository/node"
 require "chef/chef_fs/file_system/repository/directory"
 require "chef/chef_fs/file_system/exceptions"
-require "chef/win32/security" if Chef::Platform.windows?
+require "chef/win32/security" if ChefHelpers.windows?
 
 class Chef
   module ChefFS
@@ -35,7 +35,7 @@ class Chef
           def create_child(child_name, file_contents = nil)
             child = super
             File.chmod(0600, child.file_path)
-            if Chef::Platform.windows?
+            if ChefHelpers.windows?
               read_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_READ
               write_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE
               administrators = Chef::ReservedNames::Win32::Security::SID.Administrators

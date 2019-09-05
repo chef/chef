@@ -78,7 +78,7 @@ class Chef
         # On certain versions of windows links are not supported. Make
         # sure we are not on such a platform.
 
-        if Chef::Platform.windows?
+        if ChefHelpers.windows?
           require "chef/win32/file"
           begin
             Chef::ReservedNames::Win32::File.verify_links_supported!

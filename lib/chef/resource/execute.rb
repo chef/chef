@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,7 +98,7 @@ class Chef
                description: "Windows only: The password of the user specified by the user property. This property is mandatory if user is specified on Windows and may only be specified if user is specified. The sensitive property for this resource will automatically be set to true if password is specified."
 
       # lazy used to set default value of sensitive to true if password is set
-      property :sensitive, [ TrueClass, FalseClass ], default: lazy { |r| r.password ? true : false }
+      property :sensitive, [ TrueClass, FalseClass ], default: lazy { password ? true : false }
 
       property :elevated, [ TrueClass, FalseClass ], default: false,
                introduced: "13.3"

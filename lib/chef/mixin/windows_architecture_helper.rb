@@ -18,8 +18,8 @@
 
 require "chef/exceptions"
 require "chef/platform/query_helpers"
-require "chef/win32/process" if Chef::Platform.windows?
-require "chef/win32/system" if Chef::Platform.windows?
+require "chef/win32/process" if ChefHelpers.windows?
+require "chef/win32/system" if ChefHelpers.windows?
 
 class Chef
   module Mixin
@@ -89,7 +89,7 @@ class Chef
       end
 
       def is_i386_process_on_x86_64_windows?
-        if Chef::Platform.windows?
+        if ChefHelpers.windows?
           Chef::ReservedNames::Win32::Process.is_wow64_process
         else
           false
@@ -97,13 +97,13 @@ class Chef
       end
 
       def disable_wow64_file_redirection( node )
-        if ( node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?
+        if ( node_windows_architecture(node) == :x86_64) && ::ChefHelpers.windows?
           Chef::ReservedNames::Win32::System.wow64_disable_wow64_fs_redirection
         end
       end
 
       def restore_wow64_file_redirection( node, original_redirection_state )
-        if (node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?
+        if (node_windows_architecture(node) == :x86_64) && ::ChefHelpers.windows?
           Chef::ReservedNames::Win32::System.wow64_revert_wow64_fs_redirection(original_redirection_state)
         end
       end

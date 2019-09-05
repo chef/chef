@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,18 @@
 # limitations under the License.
 #
 
+require 'chef-helpers'
+
 class Chef
   class Platform
 
     class << self
       def windows?
-        ChefConfig.windows?
+        ChefHelpers.windows?
       end
 
       def windows_nano_server?
-        return false unless windows?
+        return false unless ChefHelpers.windows?
         require "win32/registry"
 
         # This method may be called before ohai runs (e.g., it may be used to
@@ -47,7 +49,7 @@ class Chef
       end
 
       def supports_msi?
-        return false unless windows?
+        return false unless ChefHelpers.windows?
         require "win32/registry"
 
         key = "System\\CurrentControlSet\\Services\\msiserver"

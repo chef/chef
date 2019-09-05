@@ -173,7 +173,7 @@ class Chef
           # potential issues for the applications that will consume
           # this template.
 
-          if Chef::Platform.windows?
+          if ChefHelpers.windows?
             output = output.gsub(/\r?\n/, "\r\n")
           end
 

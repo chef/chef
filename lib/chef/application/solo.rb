@@ -75,7 +75,7 @@ class Chef::Application::Solo < Chef::Application
   option :color,
     long: "--[no-]color",
     boolean: true,
-    default: !Chef::Platform.windows?,
+    default: !ChefHelpers.windows?,
     description: "Use colored output, defaults to enabled"
 
   option :log_level,
@@ -111,7 +111,7 @@ class Chef::Application::Solo < Chef::Application
     description: "Group to set privilege to",
     proc: nil
 
-  unless Chef::Platform.windows?
+  unless ChefHelpers.windows?
     option :daemonize,
       short: "-d",
       long: "--daemonize",

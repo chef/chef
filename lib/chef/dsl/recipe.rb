@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ require "chef/dsl/reboot_pending"
 require "chef/dsl/audit"
 require "chef/dsl/powershell"
 require "chef/dsl/core"
+require "chef/dsl/universal"
 require "chef/mixin/lazy_module_include"
 
 class Chef

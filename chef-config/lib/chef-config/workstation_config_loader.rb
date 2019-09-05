@@ -20,7 +20,7 @@ require "chef-config/config"
 require "chef-config/exceptions"
 require "chef-config/logger"
 require "chef-config/path_helper"
-require "chef-config/windows"
+require "chef-helpers"
 require "chef-config/mixin/dot_d"
 require "chef-config/mixin/credentials"
 
@@ -139,7 +139,7 @@ module ChefConfig
     end
 
     def working_directory
-      a = if ChefConfig.windows?
+      a = if ChefHelpers.windows?
             env["CD"]
           else
             env["PWD"]

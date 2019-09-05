@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -237,11 +237,6 @@ class Chef
       location ||= Chef::Log.caller_location
       Chef.deprecated(:generic, message, location)
     end
-  end
-
-  # @api private Only for test dependency injection; not evenly implemented as yet.
-  def self.path_to(path)
-    path
   end
 
   reset!

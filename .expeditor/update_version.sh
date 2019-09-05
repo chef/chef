@@ -12,10 +12,11 @@
 set -evx
 
 sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"$(cat VERSION)\"/" chef-config/lib/chef-config/version.rb
+sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"$(cat VERSION)\"/" chef-helpers/lib/chef-helpers/version.rb
 sed -i -r "s/VersionString\.new\(\".+\"\)/VersionString.new(\"$(cat VERSION)\")/" lib/chef/version.rb
 
 # Update the version inside Gemfile.lock
-bundle update chef chef-config --jobs=7
+bundle update chef chef-config chef-helpers --jobs=7
 
 # Once Expeditor finshes executing this script, it will commit the changes and push
 # the commit as a new tag corresponding to the value in the VERSION file.

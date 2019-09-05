@@ -26,14 +26,14 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   include Chef::Mixin::Which
 
-  provides :service, os: "linux" do |node|
-    Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
+  provides :service, os: "linux" do
+    systemd?
   end
 
   attr_accessor :status_check_success
 
   def self.supports?(resource, action)
-    Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:systemd)
+    service_script_exist?(:systemd, resource.service_name)
   end
 
   def load_current_resource

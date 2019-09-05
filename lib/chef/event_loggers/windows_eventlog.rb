@@ -38,7 +38,7 @@ class Chef
       SOURCE = "Chef".freeze
 
       def self.available?
-        Chef::Platform.windows?
+        ChefHelpers.windows?
       end
 
       def initialize

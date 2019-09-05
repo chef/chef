@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/util/windows/logon_session" if Chef::Platform.windows?
+require "chef/util/windows/logon_session" if ChefHelpers.windows?
 
 class Chef
   module Mixin
@@ -26,7 +26,7 @@ class Chef
       # When authentication = :local, we use the credentials to create a logon session against the local system, and then try to access the files.
       # When authentication = :remote, we continue with the current user but pass the provided credentials to the remote system.
       def with_user_context(user, password, domain = nil, authentication = :remote, &block)
-        unless Chef::Platform.windows?
+        unless ChefHelpers.windows?
           raise Exceptions::UnsupportedPlatform, "User context impersonation is supported only on the Windows platform"
         end
 

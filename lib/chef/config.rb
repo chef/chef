@@ -4,7 +4,7 @@
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (<mmzyk@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ require "chef-config/logger"
 ChefConfig.logger = Chef::Log
 
 require "chef-config/config"
+require "chef-helpers"
 require "chef/platform/query_helpers"
 
 # Ohai::Config defines its own log_level and log_location. When loaded, it will
@@ -55,7 +56,7 @@ class Chef
 
     default :event_loggers do
       evt_loggers = []
-      if ChefConfig.windows? && !Chef::Platform.windows_nano_server?
+      if ChefHelpers.windows? && !Chef::Platform.windows_nano_server?
         evt_loggers << :win_evt
       end
       evt_loggers

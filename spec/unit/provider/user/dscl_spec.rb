@@ -1,6 +1,6 @@
 #
 # Author:: Dreamcat4 (<dreamcat4@gmail.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "ostruct"
 
 describe Chef::Provider::User::Dscl do
   before do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefHelpers).to receive(:windows?) { false }
   end
   let(:shellcmdresult) do
     Struct.new(:stdout, :stderr, :exitstatus)

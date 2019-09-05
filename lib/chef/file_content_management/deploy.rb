@@ -18,7 +18,7 @@
 
 require "chef/file_content_management/deploy/cp"
 require "chef/file_content_management/deploy/mv_unix"
-if Chef::Platform.windows?
+if ChefHelpers.windows?
   require "chef/file_content_management/deploy/mv_windows"
 end
 
@@ -27,7 +27,7 @@ class Chef
     class Deploy
       def self.strategy(atomic_update)
         if atomic_update
-          Chef::Platform.windows? ? MvWindows.new() : MvUnix.new()
+          ChefHelpers.windows? ? MvWindows.new() : MvUnix.new()
         else
           Cp.new()
         end

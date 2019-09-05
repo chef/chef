@@ -2,7 +2,7 @@
 # Author:: Adam Leff (<adamleff@chef.io>)
 # Author:: Ryan Cragun (<ryan@chef.io>)
 #
-# Copyright:: Copyright 2012-2017, Chef Software Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -132,7 +132,7 @@ class Chef
       def run_started(current_run_status)
         update_run_status(current_run_status)
 
-        message = Chef::DataCollector::Messages.run_start_message(current_run_status)
+        message = Chef::DataCollector::Messages.construct_message(current_run_status)
         disable_reporter_on_error do
           send_to_data_collector(message)
         end

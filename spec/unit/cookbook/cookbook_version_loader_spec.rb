@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Cookbook::CookbookVersionLoader do
   before do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefHelpers).to receive(:windows?) { false }
   end
 
   describe "loading a cookbook" do

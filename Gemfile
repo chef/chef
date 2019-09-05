@@ -8,6 +8,7 @@ source "https://rubygems.org"
 gem "chef", path: "."
 
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
+gem "chef-helpers", path: File.expand_path("../chef-helpers", __FILE__) if File.exist?(File.expand_path("../chef-helpers", __FILE__))
 gem "cheffish", "~> 14"
 
 group(:omnibus_package) do

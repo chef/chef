@@ -19,16 +19,16 @@
 require "chef/exceptions"
 require "chef/mixin/wide_string"
 require "chef/platform/query_helpers"
-require "chef/win32/error" if Chef::Platform.windows?
-require "chef/win32/api/system" if Chef::Platform.windows?
-require "chef/win32/api/unicode" if Chef::Platform.windows?
+require "chef/win32/error" if ChefHelpers.windows?
+require "chef/win32/api/system" if ChefHelpers.windows?
+require "chef/win32/api/unicode" if ChefHelpers.windows?
 
 class Chef
   module Mixin
     module WindowsEnvHelper
       include Chef::Mixin::WideString
 
-      if Chef::Platform.windows?
+      if ChefHelpers.windows?
         include Chef::ReservedNames::Win32::API::System
       end
 

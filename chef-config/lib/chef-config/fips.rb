@@ -1,6 +1,6 @@
 #
 # Author:: Matt Wrock (<matt@mattwrock.com>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,12 @@
 # limitations under the License.
 #
 
+require 'chef-helpers'
+
 module ChefConfig
 
   def self.fips?
-    if ChefConfig.windows?
+    if ChefHelpers.windows?
       begin
         require "win32/registry"
       rescue LoadError

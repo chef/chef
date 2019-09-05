@@ -27,7 +27,7 @@ class Chef
     class Mount
       # Mount Solaris File systems
       class Solaris < Chef::Provider::Mount
-        provides :mount, platform: %w{openindiana opensolaris nexentacore omnios solaris2 smartos}
+        provides :mount, platform_family: "solaris_based"
 
         extend Forwardable
 

@@ -30,7 +30,7 @@ describe Chef::Mixin::ShellOut do
   subject(:shell_out_obj) { shell_out_class.new }
 
   def env_path
-    if Chef::Platform.windows?
+    if ChefHelpers.windows?
       "Path"
     else
       "PATH"

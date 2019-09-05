@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,11 +18,14 @@
 #
 
 require "chef/resource"
-require "shellwords"
+require "chef-helpers"
 
 class Chef
   class Resource
     class Service < Chef::Resource
+      include ChefHelpers::Service
+      extend ChefHelpers::Service
+
       identity_attr :service_name
 
       state_attrs :enabled, :running, :masked

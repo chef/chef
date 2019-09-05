@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-unless Chef::Platform.windows?
+unless ChefHelpers.windows?
   class Chef
     module ReservedNames
       module Win32
