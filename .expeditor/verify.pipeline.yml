@@ -192,6 +192,7 @@ steps:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
+# Migrate with same version as in Appveyor (Windows 2016) for initial pass
 - label: "Integration Specs Windows :ruby: 2.6"
   commands:
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
@@ -200,9 +201,11 @@ steps:
     executor:
       docker:
         host_os: windows
+        os_version: 2016
         environment:
           - CHEF_LICENSE=accept-no-persist
 
+# Migrate with same version as in Appveyor (Windows 2016) for initial pass
 - label: "Functional Specs Windows :ruby: 2.6"
   commands:
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
@@ -211,6 +214,7 @@ steps:
     executor:
       docker:
         host_os: windows
+        os_version: 2016
         environment:
           - CHEF_LICENSE=accept-no-persist
 
