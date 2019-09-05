@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ class Chef
       allowed_actions :install, :upgrade, :remove, :purge, :reconfig
 
       # windows can't take Array options yet
-      property :options, String,
+      property :options, [String, Array],
         description: "One (or more) additional options that are passed to the command."
 
       property :package_name, [String, Array],
