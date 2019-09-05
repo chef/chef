@@ -41,7 +41,7 @@ class Chef::EncryptedDataBagItem
         Version3Encryptor.new(value, secret, iv)
       else
         raise UnsupportedEncryptedDataBagItemFormat,
-          "Invalid encrypted data bag format version `#{format_version}'. Supported versions is '3'. If you require writing encrypted data bags in version '1' or '2' you will need to use a version of knife before 16.0."
+          "Invalid encrypted data bag format version `#{format_version}'. Supported version is '3'. If you require writing encrypted data bags in version '1' or '2' formats you will need to use a version of knife before 16.0."
       end
     end
 
@@ -51,15 +51,13 @@ class Chef::EncryptedDataBagItem
 
       include Chef::EncryptedDataBagItem::Assertions
 
-      # Create a new Encryptor for +data+, which will be encrypted with the given
-      # +key+.
       #
-      # === Arguments:
-      # * data: An object of any type that can be serialized to json
-      # * key: A String representing the desired passphrase
-      # * iv: The optional +iv+ parameter is intended for testing use only. When
-      # *not* supplied, Encryptor will use OpenSSL to generate a secure random
-      # IV, which is what you want.
+      # Create a new Encryptor for +data+, which will be encrypted with the given +key+.
+      #
+      # @param plaintext_data An object of any type that can be serialized to json
+      # @param key A String representing the desired passphrase
+      # @param iv <description> The optional +iv+ parameter is intended for testing use only. When *not* supplied, Encryptor will use OpenSSL to generate a secure random IV, which is what you want.
+      #
       def initialize(plaintext_data, key, iv = nil)
         @plaintext_data = plaintext_data
         @key = key
@@ -68,8 +66,12 @@ class Chef::EncryptedDataBagItem
         @auth_tag = nil
       end
 
+      #
       # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
       # using as the value in an encrypted data bag item.
+      #
+      # @return [Hash]
+      #
       def for_encrypted_item
         {
           "encrypted_data" => encrypted_data,
@@ -80,7 +82,11 @@ class Chef::EncryptedDataBagItem
         }
       end
 
+      #
       # Returns the used encryption algorithm
+      #
+      # @return [String]
+      #
       def algorithm
         AEAD_ALGORITHM
       end
