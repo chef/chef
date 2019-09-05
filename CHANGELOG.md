@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.3.1 -->
-## [v15.3.1](https://github.com/chef/chef/tree/v15.3.1) (2019-09-04)
+<!-- latest_release 15.3.2 -->
+## [v15.3.2](https://github.com/chef/chef/tree/v15.3.2) (2019-09-05)
 
 #### Merged Pull Requests
-- Update libarchive to 3.4.0 and pin in omnibus_overrides.rb [#8862](https://github.com/chef/chef/pull/8862) ([tas50](https://github.com/tas50))
+- Bump ohai to 15.3.1 [#8863](https://github.com/chef/chef/pull/8863) ([chef-ci](https://github.com/chef-ci))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.2.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ohai to 15.3.1 [#8863](https://github.com/chef/chef/pull/8863) ([chef-ci](https://github.com/chef-ci)) <!-- 15.3.2 -->
 - Update libarchive to 3.4.0 and pin in omnibus_overrides.rb [#8862](https://github.com/chef/chef/pull/8862) ([tas50](https://github.com/tas50)) <!-- 15.3.1 -->
 - Update InSpec to 4.16 and addressable to 2.7.0 [#8857](https://github.com/chef/chef/pull/8857) ([tas50](https://github.com/tas50)) <!-- 15.3.0 -->
 - Deprecate macOS 10.12 and add macOS 10.15 support [#8850](https://github.com/chef/chef/pull/8850) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.35 -->
