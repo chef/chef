@@ -2,6 +2,9 @@
 expeditor:
   defaults:
     buildkite:
+      retry:
+        automatic:
+          limit: 1
       timeout_in_minutes: 30
       retry:
         automatic:
@@ -188,6 +191,44 @@ steps:
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
+
+- label: "Integration Specs Windows :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_win_integration.ps1
+  expeditor:
+    executor:
+      docker:
+        host_os: windows
+        os_version: 2016
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+        shell: ["powershell", "-Command"]
+
+- label: "Functional Specs Windows :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_win_functional.ps1
+  expeditor:
+    executor:
+      docker:
+        host_os: windows
+        os_version: 2016
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+        shell: ["powershell", "-Command"]
+
+- label: "Unit Specs Windows :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_win_unit.ps1
+  expeditor:
+    executor:
+      docker:
+        host_os: windows
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+        shell: ["powershell", "-Command"]
 
 - label: "Chefstyle :ruby: 2.6"
   commands:
