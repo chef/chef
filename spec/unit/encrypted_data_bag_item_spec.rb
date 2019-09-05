@@ -38,7 +38,7 @@ describe Chef::EncryptedDataBagItem::Encryptor do
   let(:plaintext_data) { { "foo" => "bar" } }
   let(:key) { "passwd" }
 
-  it "encrypts to format version 1 by default" do
+  it "encrypts to format version 3 by default" do
     expect(encryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
   end
 
@@ -68,27 +68,6 @@ describe Chef::EncryptedDataBagItem::Encryptor do
       expect(final_data["iv"]).to eq Base64.encode64(encryptor.iv)
       expect(final_data["version"]).to eq 3
       expect(final_data["cipher"]).to eq "aes-256-gcm"
-    end
-  end
-
-  describe "when using version 2 format" do
-
-    before do
-      Chef::Config[:data_bag_encrypt_version] = 2
-    end
-
-    it "creates a version 2 encryptor" do
-      expect(encryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor)
-    end
-
-    it "generates an hmac based on ciphertext with different iv" do
-      encryptor2 = Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, key)
-      expect(encryptor.hmac).not_to eq(encryptor2.hmac)
-    end
-
-    it "includes the hmac in the envelope" do
-      final_data = encryptor.for_encrypted_item
-      expect(final_data["hmac"]).to eq(encryptor.hmac)
     end
   end
 

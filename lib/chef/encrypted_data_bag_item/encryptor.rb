@@ -37,20 +37,15 @@ class Chef::EncryptedDataBagItem
     # +Chef::Config[:data_bag_encrypt_version]+ determines which version is used.
     def self.new(value, secret, iv = nil)
       format_version = Chef::Config[:data_bag_encrypt_version]
-      case format_version
-      when 1
-        Version1Encryptor.new(value, secret, iv)
-      when 2
-        Version2Encryptor.new(value, secret, iv)
-      when 3
+      if format_version == 3
         Version3Encryptor.new(value, secret, iv)
       else
         raise UnsupportedEncryptedDataBagItemFormat,
-          "Invalid encrypted data bag format version `#{format_version}'. Supported versions are '1', '2', '3'"
+          "Invalid encrypted data bag format version `#{format_version}'. Supported versions is '3'. If you require writing encrypted data bags in version '1' or '2' you will need to use a version of knife before 16.0."
       end
     end
 
-    class Version1Encryptor
+    class Version3Encryptor
       attr_reader :key
       attr_reader :plaintext_data
 
@@ -69,101 +64,6 @@ class Chef::EncryptedDataBagItem
         @plaintext_data = plaintext_data
         @key = key
         @iv = iv && Base64.decode64(iv)
-      end
-
-      # Returns the used encryption algorithm
-      def algorithm
-        ALGORITHM
-      end
-
-      # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
-      # using as the value in an encrypted data bag item.
-      def for_encrypted_item
-        {
-          "encrypted_data" => encrypted_data,
-          "iv" => Base64.encode64(iv),
-          "version" => 1,
-          "cipher" => algorithm,
-        }
-      end
-
-      # Generates or returns the IV.
-      def iv
-        # Generated IV comes from OpenSSL::Cipher#random_iv
-        # This gets generated when +openssl_encryptor+ gets created.
-        openssl_encryptor if @iv.nil?
-        @iv
-      end
-
-      # Generates (and memoizes) an OpenSSL::Cipher object and configures
-      # it for the specified iv and encryption key.
-      def openssl_encryptor
-        @openssl_encryptor ||= begin
-          encryptor = OpenSSL::Cipher.new(algorithm)
-          encryptor.encrypt
-          # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
-          encryptor.key = OpenSSL::Digest::SHA256.digest(key)
-          @iv ||= encryptor.random_iv
-          encryptor.iv = @iv
-          encryptor
-        end
-      end
-
-      # Encrypts and Base64 encodes +serialized_data+
-      def encrypted_data
-        @encrypted_data ||= begin
-          enc_data = openssl_encryptor.update(serialized_data)
-          enc_data << openssl_encryptor.final
-          Base64.encode64(enc_data)
-        end
-      end
-
-      # Wraps the data in a single key Hash (JSON Object) and converts to JSON.
-      # The wrapper is required because we accept values (such as Integers or
-      # Strings) that do not produce valid JSON when serialized without the
-      # wrapper.
-      def serialized_data
-        FFI_Yajl::Encoder.encode(json_wrapper: plaintext_data)
-      end
-
-      def self.encryptor_keys
-        %w{ encrypted_data iv version cipher }
-      end
-    end
-
-    class Version2Encryptor < Version1Encryptor
-
-      # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
-      # using as the value in an encrypted data bag item.
-      def for_encrypted_item
-        {
-          "encrypted_data" => encrypted_data,
-          "hmac" => hmac,
-          "iv" => Base64.encode64(iv),
-          "version" => 2,
-          "cipher" => algorithm,
-        }
-      end
-
-      # Generates an HMAC-SHA2-256 of the encrypted data (encrypt-then-mac)
-      def hmac
-        @hmac ||= begin
-          digest = OpenSSL::Digest.new("sha256")
-          raw_hmac = OpenSSL::HMAC.digest(digest, key, encrypted_data)
-          Base64.encode64(raw_hmac)
-        end
-      end
-
-      def self.encryptor_keys
-        super + %w{ hmac }
-      end
-    end
-
-    class Version3Encryptor < Version1Encryptor
-      include Chef::EncryptedDataBagItem::Assertions
-
-      def initialize(plaintext_data, key, iv = nil)
-        super
         assert_aead_requirements_met!(algorithm)
         @auth_tag = nil
       end
@@ -185,6 +85,14 @@ class Chef::EncryptedDataBagItem
         AEAD_ALGORITHM
       end
 
+      # Generates or returns the IV.
+      def iv
+        # Generated IV comes from OpenSSL::Cipher#random_iv
+        # This gets generated when +openssl_encryptor+ gets created.
+        openssl_encryptor if @iv.nil?
+        @iv
+      end
+
       # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
       # Returns the auth_tag.
       def auth_tag
@@ -201,7 +109,12 @@ class Chef::EncryptedDataBagItem
       # it for the specified iv and encryption key using AEAD
       def openssl_encryptor
         @openssl_encryptor ||= begin
-          encryptor = super
+          encryptor = OpenSSL::Cipher.new(algorithm)
+          encryptor.encrypt
+          # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
+          encryptor.key = OpenSSL::Digest::SHA256.digest(key)
+          @iv ||= encryptor.random_iv
+          encryptor.iv = @iv
           encryptor.auth_data = ""
           encryptor
         end
@@ -210,17 +123,24 @@ class Chef::EncryptedDataBagItem
       # Encrypts, Base64 encodes +serialized_data+ and gets the authentication tag
       def encrypted_data
         @encrypted_data ||= begin
-          enc_data_b64 = super
+          enc_data = openssl_encryptor.update(serialized_data)
+          enc_data << openssl_encryptor.final
           @auth_tag = openssl_encryptor.auth_tag
-          enc_data_b64
+          Base64.encode64(enc_data)
         end
       end
 
-      def self.encryptor_keys
-        super + %w{ auth_tag }
+      # Wraps the data in a single key Hash (JSON Object) and converts to JSON.
+      # The wrapper is required because we accept values (such as Integers or
+      # Strings) that do not produce valid JSON when serialized without the
+      # wrapper.
+      def serialized_data
+        FFI_Yajl::Encoder.encode(json_wrapper: plaintext_data)
       end
 
+      def self.encryptor_keys
+        %w{ encrypted_data iv version cipher auth_tag }
+      end
     end
-
   end
 end
