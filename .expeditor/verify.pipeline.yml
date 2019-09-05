@@ -199,6 +199,7 @@ steps:
     executor:
       docker:
         host_os: windows
+        os_version: 2016
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
@@ -211,6 +212,7 @@ steps:
     executor:
       docker:
         host_os: windows
+        os_version: 2016
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
@@ -223,6 +225,7 @@ steps:
     executor:
       docker:
         host_os: windows
+        os_version: 2016
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
