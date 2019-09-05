@@ -1,6 +1,6 @@
 #
 # Author:: Matt Wrock (<matt@mattwrock.com>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) 2016-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,6 +74,24 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     it "raises if package is not found" do
       subject.package_name "blah"
       expect { subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
+    end
+
+    it "installs with an option as a string" do
+      subject.options "--force --confirm"
+      subject.run_action(:install)
+      expect(package_list.call).to eq("#{package_name}|2.0")
+    end
+
+    it "installs with multiple options as a string" do
+      subject.options "--force --confirm"
+      subject.run_action(:install)
+      expect(package_list.call).to eq("#{package_name}|2.0")
+    end
+
+    it "installs with multiple options as an array" do
+      subject.options [ "--force", "--confirm" ]
+      subject.run_action(:install)
+      expect(package_list.call).to eq("#{package_name}|2.0")
     end
   end
 
