@@ -1,5 +1,64 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Infra Client 15.3
+
+## Custom Resource Unified Mode
+
+Chef Infra Client 15.3 introduces an exciting new way to easily write custom resources that mix built-in Chef Infra resources with Ruby code. Previously custom resources would use Chef Infra's standard compile and converge phases, which meant that Ruby would be evaluated first and then the resources would be converged. This often results in confusing and undesirable behavior when you are trying to mix resources with Ruby logic. Many custom resource authors would attempt to get around this by forcing resources to run at compile time so that all the code in their resource would execute during the compile phase.
+
+An example of forcing a resource to run at compile time:
+
+```ruby
+resource_name 'foo' do
+  action :nothing
+end.run_action(:some_action)
+```
+
+With unified mode, you opt in to a single phase per resource where all Ruby and Chef Infra resources are executed at once. This makes it far easier to determine how your code will be evaluated and run. Additionally, you no longer need to force any resources to run at compile time, as all code is run in the compile phase. To enable this new mode just add `unified_mode true` to your resources like this:
+
+```ruby
+property :Some_property, String
+
+unified_mode true
+
+action :create do
+  # some code
+end
+```
+
+## Interval Mode Now Fails on Windows
+
+Chef Infra Client 15.3 will now raise an error if you attempt to keep the chef-client process running long-term by enabling interval runs. Interval runs have already raised failures on non-Windows platforms and we've suggested that users move away from them on Windows for many years. The long-running chef-client process on Windows will load and reload cookbooks over each other in memory. This could produce a running state which is not a representation of the cookbook code that the authors wrote or tested, and behavior that may be wildly different depending on how long the chef-client process has been running and on the sequence that the cookbooks were uploaded.
+
+## Updated Resources
+
+### ifconfig
+
+The `ifconfig` resource has been updated to properly support interfaces with a hyphen in their name. This is most commonly encountered with bridge interfaces that are named `br-1234`.
+
+### archive_file
+
+The `archive_file` now supports archives in the RAR 5.0 format as well as zip files compressed using xz, lzma, ppmd8 and bzip2 compression.
+
+## Platform Support Updates
+
+### macOS 10.15 Support
+
+Chef Infra Client is now validated against macOS 10.15 (Catalina) with packages now available at [downloads.chef.io](https://downloads.chef.io/) and via the [Omnitruck API](https://docs.chef.io/api_omnitruck.html). Additionally, Chef Infra Client will no longer be validated against macOS 10.12.
+
+### AIX 7.2
+
+Chef Infra Client is now validated against AIX 7.2 with packages now available at [downloads.chef.io](https://downloads.chef.io/) and via the [Omnitruck API](https://docs.chef.io/api_omnitruck.html).
+
+## Chef InSpec 4.16
+
+Chef InSpec has been updated from 4.10.4 to 4.16.0 with the following changes:
+
+- A new `postfix_conf` has been added for inspecting Postfix configuration files.
+- A new `plugins` section has been added to the InSpec configuration file which can be used to pass secrets or other configurations into Chef InSpec plugins.
+- The `service` resource now includes a new `startname` property for determining which user is starting the Windows services.
+- The `groups` resource now properly gathers membership information on macOS hosts.
+
 # Chef Infra Client 15.2
 
 ## Updated Resources
