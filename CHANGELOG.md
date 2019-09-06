@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.3.5 -->
-## [v15.3.5](https://github.com/chef/chef/tree/v15.3.5) (2019-09-06)
+<!-- latest_release 15.3.6 -->
+## [v15.3.6](https://github.com/chef/chef/tree/v15.3.6) (2019-09-06)
 
 #### Merged Pull Requests
-- Remove duplicate policy_path config [#8864](https://github.com/chef/chef/pull/8864) ([tas50](https://github.com/tas50))
+- Add Chef 15.3 release notes [#8860](https://github.com/chef/chef/pull/8860) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.2.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Chef 15.3 release notes [#8860](https://github.com/chef/chef/pull/8860) ([tas50](https://github.com/tas50)) <!-- 15.3.6 -->
 - Remove duplicate policy_path config [#8864](https://github.com/chef/chef/pull/8864) ([tas50](https://github.com/tas50)) <!-- 15.3.5 -->
 - convert chocolatey resource to use shell_out splat args [#8861](https://github.com/chef/chef/pull/8861) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.3.4 -->
 - Migrate Appveyor windows testing to Buildkite [#8867](https://github.com/chef/chef/pull/8867) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.3.3 -->
