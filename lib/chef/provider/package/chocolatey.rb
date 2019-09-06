@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -84,13 +84,13 @@ class Chef
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("install -y --version", version, cmd_args, name)
+            choco_command("install", "-y", "--version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
           unless name_nil_versions.empty?
             cmd_names = name_nil_versions.keys
-            choco_command("install -y", cmd_args, *cmd_names)
+            choco_command("install", "-y", cmd_args, *cmd_names)
           end
         end
 
@@ -106,13 +106,13 @@ class Chef
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("upgrade -y --version", version, cmd_args, name)
+            choco_command("upgrade", "-y", "--version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
           unless name_nil_versions.empty?
             cmd_names = name_nil_versions.keys
-            choco_command("upgrade -y", cmd_args, *cmd_names)
+            choco_command("upgrade", "-y", cmd_args, *cmd_names)
           end
         end
 
@@ -121,7 +121,7 @@ class Chef
         # @param names [Array<String>] array of package names to install
         # @param versions [Array<String>] array of versions to install
         def remove_package(names, versions)
-          choco_command("uninstall -y", cmd_args(include_source: false), *names)
+          choco_command("uninstall", "-y", cmd_args(include_source: false), *names)
         end
 
         # Choco does not have dpkg's distinction between purge and remove
@@ -172,7 +172,7 @@ class Chef
         # @param args [String] variable number of string arguments
         # @return [Mixlib::ShellOut] object returned from shell_out!
         def choco_command(*args)
-          shell_out!(args_to_string(choco_exe, *args), returns: new_resource.returns)
+          shell_out!(choco_exe, *args, returns: new_resource.returns)
         end
 
         # Use the available_packages Hash helper to create an array suitable for
@@ -210,18 +210,8 @@ class Chef
         # @return [String] options from new_resource or empty string
         def cmd_args(include_source: true)
           cmd_args = [ new_resource.options ]
-          cmd_args.push( "-source #{new_resource.source}" ) if new_resource.source && include_source
-          args_to_string(*cmd_args)
-        end
-
-        # Helper to nicely convert variable string args into a single command line.  It
-        # will compact nulls or empty strings and join arguments with single spaces, without
-        # introducing any double-spaces for missing args.
-        #
-        # @param args [String] variable number of string arguments
-        # @return [String] nicely concatenated string or empty string
-        def args_to_string(*args)
-          args.reject { |i| i.nil? || i == "" }.join(" ")
+          cmd_args.push([ "-source", new_resource.source ]) if new_resource.source && include_source
+          cmd_args
         end
 
         # Available packages in chocolatey as a Hash of names mapped to versions
@@ -236,8 +226,8 @@ class Chef
           package_name_array.each do |pkg|
             available_versions =
               begin
-                cmd = [ "list -r #{pkg}" ]
-                cmd.push( "-source #{new_resource.source}" ) if new_resource.source
+                cmd = [ "list", "-r", pkg ]
+                cmd.push( [ "-source", new_resource.source ] ) if new_resource.source
                 cmd.push( new_resource.options ) if new_resource.options
 
                 raw = parse_list_output(*cmd)
@@ -255,7 +245,7 @@ class Chef
         #
         # @return [Hash] name-to-version mapping of installed packages
         def installed_packages
-          @installed_packages ||= Hash[*parse_list_output("list -l -r").flatten]
+          @installed_packages ||= Hash[*parse_list_output("list", "-l", "-r").flatten]
           @installed_packages
         end
 
