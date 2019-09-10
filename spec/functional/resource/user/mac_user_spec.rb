@@ -32,6 +32,11 @@ describe "Chef::Resource::User with Chef::Provider::User::MacUser provider", met
       # Raised when the user is already cleaned
   end
 
+  def ensure_file_cache_path_exists
+    path = Chef::Config["file_cache_path"]
+    FileUtils.mkdir_p(path) unless File.directory?(path)
+  end
+
   def user_should_exist
     expect(shell_out("/usr/bin/dscl . -read /Users/#{username}").error?).to be(false)
   end
@@ -89,6 +94,7 @@ describe "Chef::Resource::User with Chef::Provider::User::MacUser provider", met
 
   before do
     clean_user
+    ensure_file_cache_path_exists
   end
 
   after(:each) do
@@ -148,10 +154,23 @@ c5adbbac718b7eb99463a7b679571e0f\
       end
 
       describe "when password is updated" do
-        it "should update the password of the user" do
-          user_resource.password("mykitchen")
-          user_resource.run_action(:create)
-          check_password("mykitchen")
+        describe "without salt" do
+          let(:salt) { nil }
+
+          it "it sets the password" do
+            user_resource.password("mykitchen")
+            user_resource.run_action(:create)
+            check_password("mykitchen")
+          end
+        end
+
+        describe "with salt and plaintext password" do
+          it "raises Chef::Exceptions::User" do
+            expect do
+              user_resource.password("notasha512")
+              user_resource.run_action(:create)
+            end.to raise_error(Chef::Exceptions::User)
+          end
         end
       end
     end

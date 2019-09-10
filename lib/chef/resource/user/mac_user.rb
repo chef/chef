@@ -61,7 +61,7 @@ class Chef
         resource_name :mac_user
 
         provides :mac_user
-        provides :user, os: "darwin", platform_version: ">= 10.14"
+        provides :user, platform: "mac_os_x", platform_version: ">= 10.14"
 
         introduced "15.3"
 
