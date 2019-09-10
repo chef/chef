@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.0 -->
-## [v15.4.0](https://github.com/chef/chef/tree/v15.4.0) (2019-09-10)
+<!-- latest_release 15.3.11 -->
+## [v15.3.11](https://github.com/chef/chef/tree/v15.3.11) (2019-09-10)
 
 #### Merged Pull Requests
-- Update Ruby to 2.6.4 and nokogori to 10.10.4 to resolve CVEs [#8851](https://github.com/chef/chef/pull/8851) ([tas50](https://github.com/tas50))
+- Fix for user resource does not handle a gid specified as a string [#8869](https://github.com/chef/chef/pull/8869) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.2.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix for user resource does not handle a gid specified as a string [#8869](https://github.com/chef/chef/pull/8869) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.3.11 -->
 - Update Ruby to 2.6.4 and nokogori to 10.10.4 to resolve CVEs [#8851](https://github.com/chef/chef/pull/8851) ([tas50](https://github.com/tas50)) <!-- 15.4.0 -->
 - Add mac_user resource that is compatible with macOS &gt;= 10.14 [#8775](https://github.com/chef/chef/pull/8775) ([ryancragun](https://github.com/ryancragun)) <!-- 15.3.9 -->
 - Support to provide --local flag to gem installer. [#8847](https://github.com/chef/chef/pull/8847) ([samshinde](https://github.com/samshinde)) <!-- 15.3.8 -->
