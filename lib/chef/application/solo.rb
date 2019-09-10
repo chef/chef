@@ -56,6 +56,6 @@ class Chef::Application::Solo < Chef::Application::Base
 
   def run
     super
-    # Chef.deprecated(:solo_legacy_mode, "Solo legacy mode is deprecated FIXME WORDS");
+    Chef.deprecated(:solo_legacy_mode, "#{Chef::Dist::SOLOEXEC} --legacy-mode is deprecated and will be removed in #{Chef::Dist::PRODUCT} 16 (April 2020)")
   end
 end
