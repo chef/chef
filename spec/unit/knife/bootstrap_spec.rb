@@ -1021,7 +1021,6 @@ describe Chef::Knife::Bootstrap do
                 verify_host_key: nil,
                 port: 9999,
                 non_interactive: true,
-                pty: true,
               }
             end
 
@@ -1076,7 +1075,6 @@ describe Chef::Knife::Bootstrap do
                 verify_host_key: nil, # Config
                 port: 12, # cli
                 non_interactive: true,
-                pty: true,
               }
             end
 
@@ -1128,7 +1126,6 @@ describe Chef::Knife::Bootstrap do
                 sudo_password: "blah",
                 verify_host_key: true,
                 non_interactive: true,
-                pty: true,
               }
             end
             it "generates a config hash using the CLI options and pulling nothing from Chef::Config" do
@@ -1152,7 +1149,6 @@ describe Chef::Knife::Bootstrap do
               sudo: false,
               verify_host_key: "always",
               non_interactive: true,
-              pty: true,
               connection_timeout: 60,
             }
           end
@@ -1504,7 +1500,6 @@ describe Chef::Knife::Bootstrap do
       let(:default_opts) do
         {
           non_interactive: true,
-          pty: true,
           forward_agent: false,
           connection_timeout: 60,
         }
@@ -2002,6 +1997,19 @@ describe Chef::Knife::Bootstrap do
       expect(Chef::Knife::Bootstrap::TrainConnector).to receive(:new).and_return connection
       expect(connection).to receive(:connect!)
       knife.do_connect({})
+    end
+
+    context "when sshd confgiured with requiretty" do
+      let(:pty_err_msg) { "Sudo requires a TTY. Please see the README on how to configure sudo to allow for non-interactive usage." }
+      let(:expected_error) { Train::UserError.new(pty_err_msg, :sudo_no_tty) }
+      before do
+        allow(connection).to receive(:connect!).and_raise(expected_error)
+      end
+      it "retry with pty true request option" do
+        expect(Chef::Knife::Bootstrap::TrainConnector).to receive(:new).and_return(connection).exactly(2).times
+        expect(knife.ui).to receive(:warn).with("#{pty_err_msg} - trying with pty request")
+        expect { knife.do_connect({}) }.to raise_error(expected_error)
+      end
     end
   end
 

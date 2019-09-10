@@ -672,6 +672,14 @@ class Chef
       def do_connect(conn_options)
         @connection = TrainConnector.new(host_descriptor, connection_protocol, conn_options)
         connection.connect!
+      rescue Train::UserError => e
+        if !conn_options.key?(:pty) && e.reason == :sudo_no_tty
+          ui.warn("#{e.message} - trying with pty request")
+          conn_options[:pty] = true # ensure we can talk to systems with requiretty set true in sshd config
+          retry
+        else
+          raise
+        end
       end
 
       # Fail if both first_boot_attributes and first_boot_attributes_from_file
@@ -895,7 +903,6 @@ class Chef
         opts = {}
         return opts if winrm?
 
-        opts[:pty] = true # ensure we can talk to systems with requiretty set true in sshd config
         opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
         opts[:forward_agent] = (config_value(:ssh_forward_agent) === true)
         opts[:connection_timeout] = session_timeout
