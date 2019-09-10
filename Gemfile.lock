@@ -304,7 +304,7 @@ GEM
     ruby-progressbar (1.10.1)
     ruby-shadow (2.5.0)
     rubyntlm (0.6.2)
-    rubyzip (1.2.3)
+    rubyzip (1.2.4)
     safe_yaml (1.0.5)
     semverse (3.0.0)
     simplecov (0.17.0)
