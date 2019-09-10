@@ -38,7 +38,17 @@ The `ifconfig` resource has been updated to properly support interfaces with a h
 
 ### archive_file
 
-The `archive_file` now supports archives in the RAR 5.0 format as well as zip files compressed using xz, lzma, ppmd8 and bzip2 compression.
+The `archive_file` resource now supports archives in the RAR 5.0 format as well as zip files compressed using xz, lzma, ppmd8 and bzip2 compression.
+
+### user
+
+The `user` resource now allows specifying the `gid` property as a string. For example:
+
+```ruby
+user 'tim' do
+  gid '123'
+end
+```
 
 ## Platform Support Updates
 
