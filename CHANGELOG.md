@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.3.7 -->
-## [v15.3.7](https://github.com/chef/chef/tree/v15.3.7) (2019-09-10)
+<!-- latest_release 15.3.8 -->
+## [v15.3.8](https://github.com/chef/chef/tree/v15.3.8) (2019-09-10)
 
 #### Merged Pull Requests
-- Bootstrap: Set pty true only if required [#8816](https://github.com/chef/chef/pull/8816) ([vsingh-msys](https://github.com/vsingh-msys))
+- Support to provide --local flag to gem installer. [#8847](https://github.com/chef/chef/pull/8847) ([samshinde](https://github.com/samshinde))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.2.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Support to provide --local flag to gem installer. [#8847](https://github.com/chef/chef/pull/8847) ([samshinde](https://github.com/samshinde)) <!-- 15.3.8 -->
 - Bootstrap: Set pty true only if required [#8816](https://github.com/chef/chef/pull/8816) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.3.7 -->
 - Add Chef 15.3 release notes [#8860](https://github.com/chef/chef/pull/8860) ([tas50](https://github.com/tas50)) <!-- 15.3.6 -->
 - Remove duplicate policy_path config [#8864](https://github.com/chef/chef/pull/8864) ([tas50](https://github.com/tas50)) <!-- 15.3.5 -->
