@@ -42,7 +42,7 @@ class Chef
       #         => shadow binary length 128 bytes
       #         => Salt / Iterations are stored separately in the same file
       #
-      # This provider only supports Mac OSX versions 10.7 and above
+      # This provider only supports macOS versions 10.7 to 10.13
       class Dscl < Chef::Provider::User
 
         attr_accessor :user_info
@@ -50,7 +50,7 @@ class Chef
         attr_accessor :password_shadow_conversion_algorithm
 
         provides :dscl_user
-        provides :user, os: "darwin"
+        provides :user, os: "darwin", platform_version: "<= 10.13"
 
         # Just-in-case a recipe calls the user dscl provider without specifying
         # a gid property. Avoids chown issues in move_home when the manage_home

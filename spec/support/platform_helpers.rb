@@ -3,6 +3,7 @@ require "chef/mixin/shell_out"
 require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
 require "chef/mixin/powershell_out"
+require "chef/version_class"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
@@ -105,6 +106,15 @@ def mac_osx_106?
         return true
       end
     end
+  end
+
+  false
+end
+
+def mac_osx_1014?
+  if mac_osx?
+    ver = Chef::Version.new(ohai[:platform_version])
+    return ver.major == 10 && ver.minor == 14
   end
 
   false

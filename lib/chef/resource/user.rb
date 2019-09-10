@@ -47,6 +47,7 @@ class Chef
 
       property :password, String,
         description: "The password shadow hash",
+        sensitive: true,
         desired_state: false
 
       property :non_unique, [ TrueClass, FalseClass ],
