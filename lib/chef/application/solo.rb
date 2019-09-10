@@ -54,7 +54,7 @@ class Chef::Application::Solo < Chef::Application::Base
     super()
   end
 
-  def run
+  def run(enforce_license: false)
     super
     Chef.deprecated(:solo_legacy_mode, "#{Chef::Dist::SOLOEXEC} --legacy-mode is deprecated and will be removed in #{Chef::Dist::PRODUCT} 16 (April 2020)")
   end
