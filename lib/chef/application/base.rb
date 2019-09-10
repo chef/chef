@@ -45,6 +45,9 @@ class Chef::Application::Base < Chef::Application
   # Mimic self_pipe sleep from Unicorn to capture signals safely
   SELF_PIPE = [] # rubocop:disable Style/MutableConstant
 
+  # @return <Boolean> If we have been called from chef-solo
+  attr_reader :solo_flag
+
   option :config_option,
     long: "--config-option OPTION=VALUE",
     description: "Override a single configuration option.",
@@ -294,6 +297,110 @@ class Chef::Application::Base < Chef::Application
   RECONFIGURE_SIGNAL = "H".freeze
 
   attr_reader :chef_client_json
+
+  def reconfigure
+    super
+
+    if Chef::Config[:local_mode] || solo_flag || Chef::Config[:solo_legacy_mode]
+      Chef::Config[:solo] = true
+      unless Chef::Config[:solo_legacy_mode]
+        Chef::Config.local_mode = true
+      end
+    end
+
+    # Load all config files in client.d
+    if Chef::Config[:solo]
+      load_dot_d(Chef::Config[:solo_d_dir]) if Chef::Config[:solo_d_dir]
+    else
+      load_dot_d(Chef::Config[:client_d_dir]) if Chef::Config[:client_d_dir]
+    end
+
+    set_specific_recipes
+
+    Chef::Config[:fips] = config[:fips] if config.key? :fips
+
+    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || "" ), (Chef::Config[:lockfile] || "")
+
+    Chef::Config[:chef_server_url] = config[:chef_server_url] if config.key?(:chef_server_url)
+
+    if Chef::Config.local_mode
+      if Chef::Config.key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
+        Chef::Config.delete(:chef_repo_path)
+        Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
+      end
+
+      if Chef::Config.local_mode && !Chef::Config.key?(:cookbook_path) && !Chef::Config.key?(:chef_repo_path)
+        Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+      end
+    end
+
+    if Chef::Config[:recipe_url]
+      if !Chef::Config.solo
+        Chef::Application.fatal!("recipe-url can be used only in local-mode")
+      else
+        if Chef::Config[:delete_entire_chef_repo]
+          Chef::Log.trace "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
+          FileUtils.rm_rf(Chef::Config.chef_repo_path, secure: true)
+        end
+        Chef::Log.trace "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
+        FileUtils.mkdir_p(Chef::Config.chef_repo_path)
+        tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
+        fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+        Mixlib::Archive.new(tarball_path).extract(Chef::Config.chef_repo_path, perms: false, ignore: /^\.$/)
+        config_path = File.join(Chef::Config.chef_repo_path, "#{Chef::Dist::USER_CONF_DIR}/config.rb")
+        Chef::Config.from_string(IO.read(config_path), config_path) if File.file?(config_path)
+      end
+    end
+
+    Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
+    Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
+
+    if config[:target] || Chef::Config.target
+      Chef::Config.target_mode.enabled = true
+      Chef::Config.target_mode.host = config[:target] || Chef::Config.target
+      Chef::Config.node_name = Chef::Config.target_mode.host unless Chef::Config.node_name
+    end
+
+    if Chef::Config[:daemonize]
+      Chef::Config[:interval] ||= 1800
+    end
+
+    if Chef::Config[:once]
+      Chef::Config[:interval] = nil
+      Chef::Config[:splay] = nil
+    end
+
+    # supervisor processes are enabled by default for interval-running processes but not for one-shot runs
+    if Chef::Config[:client_fork].nil?
+      Chef::Config[:client_fork] = !!Chef::Config[:interval]
+    end
+
+    if Chef::Config[:interval]
+      if Chef::Platform.windows?
+        Chef::Application.fatal!(windows_interval_error_message)
+      elsif !Chef::Config[:client_fork]
+        Chef::Application.fatal!(unforked_interval_error_message)
+      end
+    end
+
+    if Chef::Config[:json_attribs]
+      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
+      @chef_client_json = config_fetcher.fetch_json
+    end
+  end
+
+  def load_config_file
+    if !config.key?(:config_file) && !config[:disable_config]
+      if config[:local_mode]
+        config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
+      else
+        config[:config_file] = Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/client.rb")
+      end
+    end
+
+    # Load the client.rb configuration
+    super
+  end
 
   def setup_application
     Chef::Daemon.change_privilege
