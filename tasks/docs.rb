@@ -327,7 +327,10 @@ The <%= @name %> resource has the following properties:
 <% if @properties.empty? %>This resource does not have any properties.\n<% end -%>
 <%= boilerplate_content %>
 Examples
-==========================================
+=====================================================
+
+The following examples demonstrate various approaches for using resources in recipes:
+
 <%= @examples -%>
 }
 

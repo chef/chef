@@ -21,6 +21,21 @@ class Chef
 
       description "Use the chocolatey_feature resource to enable and disable Chocolatey features."
       introduced "15.1"
+      examples <<~DOC
+        Enable the checksumFiles Chocolatey feature
+        ```ruby
+        chocolatey_feature 'checksumFiles' do
+          action :enable
+        end
+        ```
+
+        Disable the checksumFiles Chocolatey feature
+        ```ruby
+        chocolatey_feature 'checksumFiles' do
+          action :disable
+        end
+        ```
+      DOC
 
       property :feature_name, String, name_property: true,
                description: "The name of the Chocolatey feature to enable or disable."

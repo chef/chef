@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: 2016-2017, Chef Software, Inc.
+# Copyright:: 2016-2019, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,8 +35,9 @@ class Chef
           components ['nginx']
         end
         ```
-         Enable Ubuntu multiverse repositories
-         ```ruby
+
+        Enable Ubuntu multiverse repositories
+        ```ruby
         apt_repository 'security-ubuntu-multiverse' do
           uri          'http://security.ubuntu.com/ubuntu'
           distribution 'trusty-security'
@@ -44,14 +45,16 @@ class Chef
           deb_src      true
         end
         ```
-         Add the Nginx PPA, autodetect the key and repository url
-         ```ruby
+
+        Add the Nginx PPA, autodetect the key and repository url
+        ```ruby
         apt_repository 'nginx-php' do
           uri          'ppa:nginx/stable'
         end
         ```
-         Add the JuJu PPA, grab the key from the keyserver, and add source repo
-         ```ruby
+
+        Add the JuJu PPA, grab the key from the keyserver, and add source repo
+        ```ruby
         apt_repository 'juju' do
           uri 'http://ppa.launchpad.net/juju/stable/ubuntu'
           components ['main']
@@ -62,8 +65,9 @@ class Chef
           deb_src true
         end
         ```
-         Add repository that requires multiple keys to authenticate packages
-         ```ruby
+
+        Add repository that requires multiple keys to authenticate packages
+        ```ruby
         apt_repository 'rundeck' do
           uri 'https://dl.bintray.com/rundeck/rundeck-deb'
           distribution '/'
@@ -72,8 +76,9 @@ class Chef
           action :add
         end
         ```
-         Add the Cloudera Repo of CDH4 packages for Ubuntu 12.04 on AMD64
-         ```ruby
+
+        Add the Cloudera Repo of CDH4 packages for Ubuntu 12.04 on AMD64
+        ```ruby
         apt_repository 'cloudera' do
           uri          'http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh'
           arch         'amd64'
@@ -82,8 +87,9 @@ class Chef
           key          'http://archive.cloudera.com/debian/archive.key'
         end
         ```
-         Remove a repository from the list
-         ```ruby
+
+        Remove a repository from the list
+        ```ruby
         apt_repository 'zenoss' do
           action :remove
         end

@@ -1,5 +1,5 @@
 #
-# Copyright:: 2018, Chef Software, Inc.
+# Copyright:: 2018-2019, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,22 @@ class Chef
 
       description "Use the chocolatey_config resource to add or remove Chocolatey configuration keys."
       introduced "14.3"
+      examples <<~DOC
+        Set the Chocolatey cacheLocation config
+        ```ruby
+        chocolatey_config 'Set cacheLocation config' do
+          config_key 'cacheLocation'
+          value 'C:\temp\choco'
+        end
+        ```
+
+        Unset a Chocolatey config
+        ```ruby
+        chocolatey_config 'BogusConfig' do
+          action :unset
+        end
+        ```
+      DOC
 
       property :config_key, String, name_property: true,
                description: "An optional property to set the config key name if it differs from the resource block's name."
