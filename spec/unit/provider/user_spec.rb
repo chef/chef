@@ -444,35 +444,51 @@ describe Chef::Provider::User do
 
   describe "convert_group_name" do
     before do
-      @new_resource.gid("999")
       @group = EtcGrnamIsh.new("wheel", "*", 999, [])
     end
 
-    it "should lookup the group name locally" do
-      expect(Etc).to receive(:getgrnam).with("999").and_return(@group)
-      expect(@provider.convert_group_name).to eq(999)
+    context "when user passes group name in gid" do
+      before do
+        @new_resource.gid("wheel")
+      end
+
+      it "should lookup the group name locally" do
+        expect(Etc).to receive(:getgrnam).with("wheel").and_return(@group)
+        expect(@provider.convert_group_name).to eq(999)
+      end
+
+      it "should raise an error if we can't translate the group name during resource assertions" do
+        expect(Etc).to receive(:getgrnam).and_raise(ArgumentError)
+        @provider.action = :create
+        @provider.define_resource_requirements
+        @provider.convert_group_name
+        expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::User)
+      end
+
+      it "does not raise an error if we can't translate the group name during resource assertions if we are removing the user" do
+        expect(Etc).to receive(:getgrnam).and_raise(ArgumentError)
+        @provider.action = :remove
+        @provider.define_resource_requirements
+        @provider.convert_group_name
+        expect { @provider.process_resource_requirements }.not_to raise_error
+      end
+
+      it "should set the new resources gid to the integerized version if available" do
+        expect(Etc).to receive(:getgrnam).with("wheel").and_return(@group)
+        @provider.convert_group_name
+        expect(@new_resource.gid).to eq(999)
+      end
     end
 
-    it "should raise an error if we can't translate the group name during resource assertions" do
-      expect(Etc).to receive(:getgrnam).and_raise(ArgumentError)
-      @provider.action = :create
-      @provider.define_resource_requirements
-      @provider.convert_group_name
-      expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::User)
-    end
+    context "when user passes group id in gid" do
+      before do
+        @new_resource.gid(999)
+      end
 
-    it "does not raise an error if we can't translate the group name during resource assertions if we are removing the user" do
-      expect(Etc).to receive(:getgrnam).and_raise(ArgumentError)
-      @provider.action = :remove
-      @provider.define_resource_requirements
-      @provider.convert_group_name
-      expect { @provider.process_resource_requirements }.not_to raise_error
-    end
-
-    it "should set the new resources gid to the integerized version if available" do
-      expect(Etc).to receive(:getgrnam).with("999").and_return(@group)
-      @provider.convert_group_name
-      expect(@new_resource.gid).to eq(999)
+      it "should not call getgrnam" do
+        expect(Etc).not_to receive(:getgrnam)
+        @provider.convert_group_name
+      end
     end
   end
 end
