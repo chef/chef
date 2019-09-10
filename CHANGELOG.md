@@ -425,7 +425,7 @@
 - Restore bootstrap pre-release support [#8442](https://github.com/chef/chef/pull/8442) ([marcparadise](https://github.com/marcparadise))
 - Move more DSL helpers into universal so they&#39;re available everywhere [#8457](https://github.com/chef/chef/pull/8457) ([lamont-granquist](https://github.com/lamont-granquist))
 - [CHEF-8423] Upgrade train-core to 2.1.0 for windows detection over ssh [#8465](https://github.com/chef/chef/pull/8465) ([marcparadise](https://github.com/marcparadise))
-- Add logic to require acceptannce of the Chef license to run the client [#8354](https://github.com/chef/chef/pull/8354) ([tyler-ball](https://github.com/tyler-ball))
+- Add logic to require acceptance of the Chef license to run the client [#8354](https://github.com/chef/chef/pull/8354) ([tyler-ball](https://github.com/tyler-ball))
 - Initial target_mode implementation [#7758](https://github.com/chef/chef/pull/7758) ([btm](https://github.com/btm))
 - Chef 15: Unable to create temp dir on windows system [#8476](https://github.com/chef/chef/pull/8476) ([vsingh-msys](https://github.com/vsingh-msys))
 - Remove the Chef 11 admin flag from knife client create [#8473](https://github.com/chef/chef/pull/8473) ([tas50](https://github.com/tas50))
