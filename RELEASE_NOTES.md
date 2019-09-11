@@ -58,7 +58,7 @@ The `user` resource now supports the creation of users on macOS 10.14 and 10.15 
 
 The `password` property is now set to sensitive to prevent the password from being shown in debug or failure logs.
 
-#### gid property can now be a String
+#### gid property can now be a string
 
 The `gid` property now allowed specifying the user's gid as a string. For example:
 
