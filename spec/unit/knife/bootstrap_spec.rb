@@ -1846,8 +1846,8 @@ describe Chef::Knife::Bootstrap do
 
       let(:expected_error_password_prompt) do
         e = Train::ClientError.new
-        message = "Your SSH Agent has no keys added, and you have not specified a password or a key file"
-        allow(e).to receive(:message).and_return(message)
+        reason = :no_ssh_password_or_key_available
+        allow(e).to receive(:reason).and_return(reason)
         e
       end
 
