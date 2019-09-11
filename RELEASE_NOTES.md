@@ -60,7 +60,7 @@ The `password` property is now set to sensitive to prevent the password from bei
 
 #### gid property can now be a string
 
-The `gid` property now allowed specifying the user's gid as a string. For example:
+The `gid` property now allows specifying the user's gid as a string. For example:
 
 ```ruby
 user 'tim' do
