@@ -87,6 +87,20 @@ Chef InSpec has been updated from 4.10.4 to 4.16.0 with the following changes:
 - The `service` resource now includes a new `startname` property for determining which user is starting the Windows services.
 - The `groups` resource now properly gathers membership information on macOS hosts.
 
+## Security Updates
+
+### Ruby
+
+Ruby has been updated from 2.6.3 to 2.6.4 in order to resolve [CVE-2012-6708](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-6708) and [CVE-2015-9251](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-9251).
+
+### openssl
+
+openssl has been updated from 1.0.2s to 1.0.2s in order to resolve [CVE-2019-1563](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563) and [CVE-2019-1547](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547).
+
+### nokogiri
+
+nokogori has been updated from 1.10.2 to 1.10.4 in order to resolve [CVE-2019-5477](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5477)
+
 # Chef Infra Client 15.2
 
 ## Updated Resources
