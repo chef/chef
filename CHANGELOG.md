@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.3.12 -->
-## [v15.3.12](https://github.com/chef/chef/tree/v15.3.12) (2019-09-11)
+<!-- latest_release 15.3.13 -->
+## [v15.3.13](https://github.com/chef/chef/tree/v15.3.13) (2019-09-11)
 
 #### Merged Pull Requests
-- [macos] fix mac_user platform constraints [#8874](https://github.com/chef/chef/pull/8874) ([ryancragun](https://github.com/ryancragun))
+- Bootstrap: Fix typo when checking for existing chef-client [#8876](https://github.com/chef/chef/pull/8876) ([teknofire](https://github.com/teknofire))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.2.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bootstrap: Fix typo when checking for existing chef-client [#8876](https://github.com/chef/chef/pull/8876) ([teknofire](https://github.com/teknofire)) <!-- 15.3.13 -->
 - [macos] fix mac_user platform constraints [#8874](https://github.com/chef/chef/pull/8874) ([ryancragun](https://github.com/ryancragun)) <!-- 15.3.12 -->
 - Fix for user resource does not handle a gid specified as a string [#8869](https://github.com/chef/chef/pull/8869) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.3.11 -->
 - Update Ruby to 2.6.4 and nokogori to 10.10.4 to resolve CVEs [#8851](https://github.com/chef/chef/pull/8851) ([tas50](https://github.com/tas50)) <!-- 15.4.0 -->
