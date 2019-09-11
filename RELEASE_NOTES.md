@@ -42,7 +42,25 @@ The `archive_file` resource now supports archives in the RAR 5.0 format as well 
 
 ### user
 
-The `user` resource now allows specifying the `gid` property as a string. For example:
+#### macOS 10.14 / 10.15 support
+
+The `user` resource now supports the creation of users on macOS 10.14 and 10.15 systems. The updated resource now complies with macOS TCC policies by using a user with admin privileges to create and modify users. The following new properties have been added for macOS user creation:
+
+* `admin` sets a user to be an admin.
+
+* `admin_username` and `admin_password` define the admin user credentials required for toggling SecureToken for a user. The value of 'admin_username' must correspond to a system user that is part of the 'admin' with SecureToken enabled in order to toggle SecureToken.
+
+* `secure_token` is a boolean property that sets the desired state for SecureToken. SecureToken token is required for FileVault full disk encryption.
+
+* `secure_token_password` is the plaintext password required to enable or disable secure_token for a user. If no salt is specified we assume the 'password' property corresponds to a plaintext password and will attempt to use it in place of secure_token_password if it not set.
+
+#### Password property is now sensitive
+
+The `password` property is now set to sensitive to prevent the password from being shown in debug or failure logs.
+
+#### gid property can now be a String
+
+The `gid` property now allowed specifying the user's gid as a string. For example:
 
 ```ruby
 user 'tim' do
