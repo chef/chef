@@ -134,8 +134,8 @@ class Chef
 
         def create_user
           cmd = [-"-addUser", new_resource.username]
-          cmd += ["-fullName", new_resource.comment] if new_resource.property_is_set?(:comment)
-          cmd += ["-UID", new_resource.uid]          if new_resource.property_is_set?(:uid)
+          cmd += ["-fullName", new_resource.comment] if prop_is_set?(:comment)
+          cmd += ["-UID", new_resource.uid]          if prop_is_set?(:uid)
           cmd += ["-shell", new_resource.shell]
           cmd += ["-home", new_resource.home]
           cmd += ["-admin"] if new_resource.admin
@@ -143,7 +143,7 @@ class Chef
           # We can technically create a new user without the admin credentials
           # but without them the user cannot enable SecureToken, thus they cannot
           # create other secure users or enable FileVault full disk encryption.
-          if new_resource.property_is_set?(:admin_username) && new_resource.property_is_set?(:admin_password)
+          if prop_is_set?(:admin_username) && prop_is_set?(:admin_password)
             cmd += ["-adminUser", new_resource.admin_username]
             cmd += ["-adminPassword", new_resource.admin_password]
           end
@@ -165,7 +165,7 @@ class Chef
           reload_user_plist
           reload_admin_group_plist
 
-          if new_resource.property_is_set?(:password)
+          if prop_is_set?(:password)
             converge_by("set password") { set_password }
           end
 
@@ -181,7 +181,7 @@ class Chef
             end
           end
 
-          if new_resource.property_is_set?(:gid)
+          if prop_is_set?(:gid)
             # NOTE: Here we're managing the primary group of the user which is
             # a departure from previous behavior. We could just set the
             # PrimaryGroupID for the user and move on if we decide that actual
@@ -282,7 +282,7 @@ class Chef
         def remove_user
           cmd = ["-deleteUser", new_resource.username]
           cmd << new_resource.manage_home ? "-secure" : "-keepHome"
-          if new_resource.property_is_set?(:admin_username) && new_resource.property_is_set?(:admin_password)
+          if %i{admin_username admin_password}.all? { |p| prop_is_set?(p) }
             cmd += ["-adminUser", new_resource.admin_username]
             cmd += ["-adminPassword", new_resource.admin_password]
           end
@@ -344,7 +344,7 @@ class Chef
           else
             # Other fields are have been set on current resource so just compare
             # them.
-            new_resource.property_is_set?(prop) && (new_resource.send(prop) != current_resource.send(prop))
+            !new_resource.send(prop).nil? && (new_resource.send(prop) != current_resource.send(prop))
           end
         end
 
@@ -384,14 +384,8 @@ class Chef
         def toggle_secure_token
           # Check for this lazily as we only need to validate for these credentials
           # if we're toggling secure token.
-          unless new_resource.property_is_set?(:admin_username) &&
-              new_resource.property_is_set?(:admin_password) &&
-              # property_is_set? can't handle a default inherited from password
-              # when not using shadow hash data. Hence, we'll just have to
-              # make sure some valid string is there.
-              new_resource.secure_token_password &&
-              new_resource.secure_token_password != ""
-            raise Chef::Exceptions::User, "secure_token_password, admin_user and admin_password properties are required to modify SecureToken"
+          unless %i{admin_username admin_password secure_token_password}.all? { |p| prop_is_set?(p) }
+            raise Chef::Exceptions::User, "secure_token_password, admin_username and admin_password properties are required to modify SecureToken"
           end
 
           cmd = (new_resource.secure_token ? %w{-secureTokenOn} : %w{-secureTokenOff})
@@ -414,11 +408,11 @@ class Chef
           # Therefore, if we're configuring a user based upon existing shadow
           # hash data we'll have to set the password again so that future runs
           # of the client don't show password drift.
-          set_password if new_resource.property_is_set?(:salt)
+          set_password if prop_is_set?(:salt)
         end
 
         def user_group_diverged?
-          return false unless new_resource.property_is_set?(:gid)
+          return false unless prop_is_set?(:gid)
 
           group_name, group_id = user_group_info
 
@@ -439,11 +433,11 @@ class Chef
           #   * Not configuring it
 
           # Check for no desired password configuration
-          return false unless new_resource.property_is_set?(:password)
+          return false unless prop_is_set?(:password)
 
           # Check for ShadowHashData divergence by comparing the entropy,
           # salt, and iterations.
-          if new_resource.property_is_set?(:salt)
+          if prop_is_set?(:salt)
             return true if %i{salt iterations}.any? { |prop| diverged?(prop) }
 
             return new_resource.password != current_resource.password
@@ -473,7 +467,7 @@ class Chef
         end
 
         def set_password
-          if new_resource.property_is_set?(:salt)
+          if prop_is_set?(:salt)
             entropy = StringIO.new(convert_to_binary(new_resource.password))
             salt = StringIO.new(convert_to_binary(new_resource.salt))
           else
@@ -584,6 +578,12 @@ class Chef
           raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
 
           result.stdout
+        end
+
+        def prop_is_set?(prop)
+          v = new_resource.send(prop.to_sym)
+
+          !v.nil? && v != ""
         end
 
         class Plist

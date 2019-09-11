@@ -24,7 +24,7 @@ class Chef
         resource_name :dscl_user
 
         provides :dscl_user
-        provides :user, os: "darwin", platform_version: "<= 10.13"
+        provides :user, platform: "mac_os_x", platform_version: "< 10.14"
 
         property :iterations, Integer,
           description: "macOS platform only. The number of iterations for a password with a SALTED-SHA512-PBKDF2 shadow hash.",
