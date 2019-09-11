@@ -52,7 +52,7 @@ The `user` resource now supports the creation of users on macOS 10.14 and 10.15 
 
 * `secure_token` is a boolean property that sets the desired state for SecureToken. FileVault requires a SecureToken for full disk encryption.
 
-* `secure_token_password` is the plaintext password required to enable or disable secure_token for a user. If no salt is specified we assume the 'password' property corresponds to a plaintext password and will attempt to use it in place of secure_token_password if it not set.
+* `secure_token_password` is the plaintext password required to enable or disable `secure_token` for a user. If no salt is specified we assume the 'password' property corresponds to a plaintext password and will attempt to use it in place of secure_token_password if it is not set.
 
 #### Password property is now sensitive
 
