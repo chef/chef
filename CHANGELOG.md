@@ -1,48 +1,45 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.3.14 -->
-## [v15.3.14](https://github.com/chef/chef/tree/v15.3.14) (2019-09-11)
-
-#### Merged Pull Requests
-- Update openssl to 1.0.2t [#8878](https://github.com/chef/chef/pull/8878) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.2.20 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update openssl to 1.0.2t [#8878](https://github.com/chef/chef/pull/8878) ([tas50](https://github.com/tas50)) <!-- 15.3.14 -->
-- Bootstrap: Fix typo when checking for existing chef-client [#8876](https://github.com/chef/chef/pull/8876) ([teknofire](https://github.com/teknofire)) <!-- 15.3.13 -->
-- [macos] fix mac_user platform constraints [#8874](https://github.com/chef/chef/pull/8874) ([ryancragun](https://github.com/ryancragun)) <!-- 15.3.12 -->
-- Fix for user resource does not handle a gid specified as a string [#8869](https://github.com/chef/chef/pull/8869) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.3.11 -->
-- Update Ruby to 2.6.4 and nokogori to 10.10.4 to resolve CVEs [#8851](https://github.com/chef/chef/pull/8851) ([tas50](https://github.com/tas50)) <!-- 15.4.0 -->
-- Add mac_user resource that is compatible with macOS &gt;= 10.14 [#8775](https://github.com/chef/chef/pull/8775) ([ryancragun](https://github.com/ryancragun)) <!-- 15.3.9 -->
-- Support to provide --local flag to gem installer. [#8847](https://github.com/chef/chef/pull/8847) ([samshinde](https://github.com/samshinde)) <!-- 15.3.8 -->
-- Bootstrap: Set pty true only if required [#8816](https://github.com/chef/chef/pull/8816) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.3.7 -->
-- Add Chef 15.3 release notes [#8860](https://github.com/chef/chef/pull/8860) ([tas50](https://github.com/tas50)) <!-- 15.3.6 -->
-- Remove duplicate policy_path config [#8864](https://github.com/chef/chef/pull/8864) ([tas50](https://github.com/tas50)) <!-- 15.3.5 -->
-- convert chocolatey resource to use shell_out splat args [#8861](https://github.com/chef/chef/pull/8861) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.3.4 -->
-- Migrate Appveyor windows testing to Buildkite [#8867](https://github.com/chef/chef/pull/8867) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.3.3 -->
-- Bump ohai to 15.3.1 [#8863](https://github.com/chef/chef/pull/8863) ([chef-ci](https://github.com/chef-ci)) <!-- 15.3.2 -->
-- Update libarchive to 3.4.0 and pin in omnibus_overrides.rb [#8862](https://github.com/chef/chef/pull/8862) ([tas50](https://github.com/tas50)) <!-- 15.3.1 -->
-- Update InSpec to 4.16 and addressable to 2.7.0 [#8857](https://github.com/chef/chef/pull/8857) ([tas50](https://github.com/tas50)) <!-- 15.3.0 -->
-- Deprecate macOS 10.12 and add macOS 10.15 support [#8850](https://github.com/chef/chef/pull/8850) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.35 -->
-- Bootstrap: Only use sudo when changing ownership if --sudo is passed [#8815](https://github.com/chef/chef/pull/8815) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.2.34 -->
-- Update InSpec to 4.12 and Train to 3.0 [#8854](https://github.com/chef/chef/pull/8854) ([tas50](https://github.com/tas50)) <!-- 15.2.33 -->
-- remove app_server_support spec file [#8852](https://github.com/chef/chef/pull/8852) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.32 -->
-- Fix node[:cookbooks] attribute [#8846](https://github.com/chef/chef/pull/8846) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.31 -->
-- Fail on interval runs on windows as interval runs on Windows don&#39;t entirely work [#6777](https://github.com/chef/chef/pull/6777) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.30 -->
-- ifconfig: fix regex matching interface name with hyphen [#8756](https://github.com/chef/chef/pull/8756) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.2.29 -->
-- Add AIX 7.2 platform [#8832](https://github.com/chef/chef/pull/8832) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.2.28 -->
-- Fix crash when showing error about missing profile [#8828](https://github.com/chef/chef/pull/8828) ([andrewdotn](https://github.com/andrewdotn)) <!-- 15.2.27 -->
-- Add unified_mode for resources [#8668](https://github.com/chef/chef/pull/8668) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.2.26 -->
-- Update omnibus build deps to the latest [#8823](https://github.com/chef/chef/pull/8823) ([tas50](https://github.com/tas50)) <!-- 15.2.25 -->
-- Begin signing MSI&#39;s with renewed Windows Signing Cert [#8813](https://github.com/chef/chef/pull/8813) ([schisamo](https://github.com/schisamo)) <!-- 15.2.24 -->
-- Updated knife cookbook metadata from file command banner [#8812](https://github.com/chef/chef/pull/8812) ([samshinde](https://github.com/samshinde)) <!-- 15.2.23 -->
-- Update the link to our release cadence information [#8807](https://github.com/chef/chef/pull/8807) ([tas50](https://github.com/tas50)) <!-- 15.2.22 -->
-- Improve the auto-generated docs [#8806](https://github.com/chef/chef/pull/8806) ([tas50](https://github.com/tas50)) <!-- 15.2.21 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.3.14](https://github.com/chef/chef/tree/v15.3.14) (2019-09-12)
+
+#### Merged Pull Requests
+- Improve the auto-generated docs [#8806](https://github.com/chef/chef/pull/8806) ([tas50](https://github.com/tas50))
+- Update the link to our release cadence information [#8807](https://github.com/chef/chef/pull/8807) ([tas50](https://github.com/tas50))
+- Updated knife cookbook metadata from file command banner [#8812](https://github.com/chef/chef/pull/8812) ([samshinde](https://github.com/samshinde))
+- Begin signing MSI&#39;s with renewed Windows Signing Cert [#8813](https://github.com/chef/chef/pull/8813) ([schisamo](https://github.com/schisamo))
+- Update omnibus build deps to the latest [#8823](https://github.com/chef/chef/pull/8823) ([tas50](https://github.com/tas50))
+- Add unified_mode for resources [#8668](https://github.com/chef/chef/pull/8668) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix crash when showing error about missing profile [#8828](https://github.com/chef/chef/pull/8828) ([andrewdotn](https://github.com/andrewdotn))
+- Add AIX 7.2 platform [#8832](https://github.com/chef/chef/pull/8832) ([jaymalasinha](https://github.com/jaymalasinha))
+- ifconfig: fix regex matching interface name with hyphen [#8756](https://github.com/chef/chef/pull/8756) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Fail on interval runs on windows as interval runs on Windows don&#39;t entirely work [#6777](https://github.com/chef/chef/pull/6777) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix node[:cookbooks] attribute [#8846](https://github.com/chef/chef/pull/8846) ([lamont-granquist](https://github.com/lamont-granquist))
+- remove app_server_support spec file [#8852](https://github.com/chef/chef/pull/8852) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update InSpec to 4.12 and Train to 3.0 [#8854](https://github.com/chef/chef/pull/8854) ([tas50](https://github.com/tas50))
+- Bootstrap: Only use sudo when changing ownership if --sudo is passed [#8815](https://github.com/chef/chef/pull/8815) ([vsingh-msys](https://github.com/vsingh-msys))
+- Deprecate macOS 10.12 and add macOS 10.15 support [#8850](https://github.com/chef/chef/pull/8850) ([jaymalasinha](https://github.com/jaymalasinha))
+- Update InSpec to 4.16 and addressable to 2.7.0 [#8857](https://github.com/chef/chef/pull/8857) ([tas50](https://github.com/tas50))
+- Update libarchive to 3.4.0 and pin in omnibus_overrides.rb [#8862](https://github.com/chef/chef/pull/8862) ([tas50](https://github.com/tas50))
+- Bump ohai to 15.3.1 [#8863](https://github.com/chef/chef/pull/8863) ([chef-ci](https://github.com/chef-ci))
+- Migrate Appveyor windows testing to Buildkite [#8867](https://github.com/chef/chef/pull/8867) ([jaymalasinha](https://github.com/jaymalasinha))
+- convert chocolatey resource to use shell_out splat args [#8861](https://github.com/chef/chef/pull/8861) ([lamont-granquist](https://github.com/lamont-granquist))
+- Remove duplicate policy_path config [#8864](https://github.com/chef/chef/pull/8864) ([tas50](https://github.com/tas50))
+- Add Chef 15.3 release notes [#8860](https://github.com/chef/chef/pull/8860) ([tas50](https://github.com/tas50))
+- Bootstrap: Set pty true only if required [#8816](https://github.com/chef/chef/pull/8816) ([vsingh-msys](https://github.com/vsingh-msys))
+- Support to provide --local flag to gem installer. [#8847](https://github.com/chef/chef/pull/8847) ([samshinde](https://github.com/samshinde))
+- Add mac_user resource that is compatible with macOS &gt;= 10.14 [#8775](https://github.com/chef/chef/pull/8775) ([ryancragun](https://github.com/ryancragun))
+- Fix for user resource does not handle a gid specified as a string [#8869](https://github.com/chef/chef/pull/8869) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- [macos] fix mac_user platform constraints [#8874](https://github.com/chef/chef/pull/8874) ([ryancragun](https://github.com/ryancragun))
+- Bootstrap: Fix typo when checking for existing chef-client [#8876](https://github.com/chef/chef/pull/8876) ([teknofire](https://github.com/teknofire))
+- Update openssl to 1.0.2t [#8878](https://github.com/chef/chef/pull/8878) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.2.20](https://github.com/chef/chef/tree/v15.2.20) (2019-08-08)
 
 #### Merged Pull Requests
@@ -87,7 +84,6 @@
 - Property: Reorder comparison with NOT_PASSED. [#8781](https://github.com/chef/chef/pull/8781) ([ab](https://github.com/ab))
 - Consistently use NOT_PASSED over alternatives [#8800](https://github.com/chef/chef/pull/8800) ([lamont-granquist](https://github.com/lamont-granquist))
 - Bump ohai to 15.2.5 [#8803](https://github.com/chef/chef/pull/8803) ([chef-ci](https://github.com/chef-ci))
-<!-- latest_stable_release -->
 
 ## [v15.1.36](https://github.com/chef/chef/tree/v15.1.36) (2019-07-01)
 
