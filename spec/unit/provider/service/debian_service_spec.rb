@@ -183,7 +183,7 @@ describe Chef::Provider::Service::Debian do
   describe "enable_service" do
     let(:service_name) { @new_resource.service_name }
     context "when the service doesn't set a priority" do
-      it "calls update-rc.d 'service_name' defaults" do
+      it "calls update-rc.d remove => defaults" do
         expect_commands(@provider, [
           "/usr/sbin/update-rc.d -f #{service_name} remove",
           "/usr/sbin/update-rc.d #{service_name} defaults",
@@ -197,10 +197,10 @@ describe Chef::Provider::Service::Debian do
         @new_resource.priority(75)
       end
 
-      it "calls update-rc.d 'service_name' defaults" do
+      it "calls update-rc.d remove => defaults" do
         expect_commands(@provider, [
           "/usr/sbin/update-rc.d -f #{service_name} remove",
-          "/usr/sbin/update-rc.d #{service_name} defaults 75 25",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
         ])
         @provider.enable_service
       end
@@ -211,10 +211,12 @@ describe Chef::Provider::Service::Debian do
         @new_resource.priority(2 => [:start, 20], 3 => [:stop, 55])
       end
 
-      it "calls update-rc.d 'service_name' with those priorities" do
+      it "calls update-rc.d remove => defaults => enable|disable <runlevel>" do
         expect_commands(@provider, [
           "/usr/sbin/update-rc.d -f #{service_name} remove",
-          "/usr/sbin/update-rc.d #{service_name} start 20 2 . stop 55 3 . ",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} enable 2",
+          "/usr/sbin/update-rc.d #{service_name} disable 3",
         ])
         @provider.enable_service
       end
@@ -224,10 +226,11 @@ describe Chef::Provider::Service::Debian do
   describe "disable_service" do
     let(:service_name) { @new_resource.service_name }
     context "when the service doesn't set a priority" do
-      it "calls update-rc.d -f 'service_name' remove + stop with default priority" do
+      it "calls update-rc.d remove => defaults => disable" do
         expect_commands(@provider, [
           "/usr/sbin/update-rc.d -f #{service_name} remove",
-          "/usr/sbin/update-rc.d -f #{service_name} stop 80 2 3 4 5 .",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} disable",
         ])
         @provider.disable_service
       end
@@ -238,10 +241,27 @@ describe Chef::Provider::Service::Debian do
         @new_resource.priority(75)
       end
 
-      it "calls update-rc.d -f 'service_name' remove + stop with the specified priority" do
+      it "calls update-rc.d remove => defaults => disable" do
         expect_commands(@provider, [
           "/usr/sbin/update-rc.d -f #{service_name} remove",
-          "/usr/sbin/update-rc.d -f #{service_name} stop #{100 - @new_resource.priority} 2 3 4 5 .",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} disable",
+        ])
+        @provider.disable_service
+      end
+    end
+
+    context "when the service sets complex priorities" do
+      before do
+        @new_resource.priority(2 => [:start, 20], 3 => [:stop, 55])
+      end
+
+      it "calls update-rc.d remove => defaults => enable|disable <runlevel>" do
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} enable 2",
+          "/usr/sbin/update-rc.d #{service_name} disable 3",
         ])
         @provider.disable_service
       end

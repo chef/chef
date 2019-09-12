@@ -149,44 +149,42 @@ class Chef
         end
 
         def enable_service
-          if new_resource.priority.is_a? Integer
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
-            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults #{new_resource.priority} #{100 - new_resource.priority}")
-          elsif new_resource.priority.is_a? Hash
+          if new_resource.priority.is_a? Hash
             # we call the same command regardless of we're enabling or disabling
             # users passing a Hash are responsible for setting their own start priorities
             set_priority
-          else # No priority, go with update-rc.d defaults
+          else # No priority or Integer. Either way go with update-rc.d defaults
             shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
             shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults")
           end
         end
 
         def disable_service
-          if new_resource.priority.is_a? Integer
-            # Stop processes in reverse order of start using '100 - start_priority'
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} stop #{100 - new_resource.priority} 2 3 4 5 .")
-          elsif new_resource.priority.is_a? Hash
+          if new_resource.priority.is_a? Hash
             # we call the same command regardless of we're enabling or disabling
             # users passing a Hash are responsible for setting their own stop priorities
             set_priority
-          else
-            # no priority, using '100 - 20 (update-rc.d default)' to stop in reverse order of start
+          else # No priority or Integer. Either way disable in all levels.
             shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} stop 80 2 3 4 5 .")
+            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults")
+            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} disable")
           end
         end
 
         def set_priority
-          args = ""
-          new_resource.priority.each do |level, o|
-            action = o[0]
-            priority = o[1]
-            args += "#{action} #{priority} #{level} . "
-          end
+          # Reset priorities to default values before applying customizations. This way
+          # the final state will always be consistent, regardless if all runlevels were
+          # provided.
           shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
-          shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} #{args}")
+          shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults")
+
+          # Note the `_priority` is not used. update-rc.d does not support priorities
+          # anymore, this feature has been dropped in sysvinit 2.88dsf-42.
+          new_resource.priority.each do |level, (action, _priority)|
+            disable_or_enable = (action == :start ? "enable" : "disable")
+
+            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} #{disable_or_enable} #{level}")
+          end
         end
       end
     end
