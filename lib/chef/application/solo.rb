@@ -17,10 +17,6 @@
 # limitations under the License.
 
 require_relative "base"
-require_relative "../../chef"
-require_relative "client"
-require "fileutils" unless defined?(FileUtils)
-require "pathname" unless defined?(Pathname)
 
 # DO NOT MAKE EDITS, see Chef::Application::Base
 #
@@ -36,14 +32,6 @@ class Chef::Application::Solo < Chef::Application::Base
     default: Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/solo.rb"),
     description: "The configuration file to use."
 
-  unless Chef::Platform.windows?
-    option :daemonize,
-      short: "-d",
-      long: "--daemonize",
-      description: "Daemonize the process.",
-      proc: lambda { |p| true }
-  end
-
   option :recipe_url,
     short: "-r RECIPE_URL",
     long: "--recipe-url RECIPE_URL",
@@ -52,10 +40,5 @@ class Chef::Application::Solo < Chef::Application::Base
   def initialize(solo: true)
     @solo_flag = solo
     super()
-  end
-
-  def run(enforce_license: false)
-    super
-    Chef.deprecated(:solo_legacy_mode, "#{Chef::Dist::SOLOEXEC} --legacy-mode is deprecated and will be removed in #{Chef::Dist::PRODUCT} 16 (April 2020)")
   end
 end

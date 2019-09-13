@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require_relative "../../chef"
 require_relative "../application"
 require_relative "../client"
 require_relative "../log"
@@ -22,9 +23,12 @@ require_relative "../mixin/shell_out"
 require_relative "../config_fetcher"
 require_relative "../dist"
 require_relative "../daemon"
+require_relative "../workstation_config_loader"
 require "chef-config/mixin/dot_d"
 require "license_acceptance/cli_flags/mixlib_cli"
 require "mixlib/archive" unless defined?(Mixlib::Archive)
+require "fileutils" unless defined?(FileUtils)
+require "uri" unless defined?(URI)
 
 # This is a temporary class being used as a part of an effort to reduce duplication
 # between Chef::Application::Client and Chef::Application::Solo.
@@ -163,6 +167,15 @@ class Chef::Application::Base < Chef::Application
     long: "--[no-]fork",
     description: "Fork #{Chef::Dist::PRODUCT} process."
 
+  unless Chef::Platform.windows?
+    option :daemonize,
+      short: "-d [WAIT]",
+      long: "--daemonize [WAIT]",
+      description: "Daemonize the process. Accepts an optional integer which is the " \
+        "number of seconds to wait before the first daemonized run.",
+      proc: lambda { |wait| wait =~ /^\d+$/ ? wait.to_i : true }
+  end
+
   option :why_run,
     short: "-W",
     long: "--why-run",
@@ -179,6 +192,12 @@ class Chef::Application::Base < Chef::Application
         Chef::RunList::RunListItem.new(item)
       end
     }
+
+  option :pid_file,
+    short: "-P PID_FILE",
+    long: "--pid PIDFILE",
+    description: "Set the PID file location, for the #{Chef::Dist::PRODUCT} daemon process. Defaults to /tmp/chef-client.pid.",
+    proc: nil
 
   option :run_lock_timeout,
     long: "--run-lock-timeout SECONDS",
@@ -394,7 +413,11 @@ class Chef::Application::Base < Chef::Application
       if config[:local_mode]
         config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
-        config[:config_file] = Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/client.rb")
+        if Chef::Config[:solo]
+          config[:config_file] = Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/solo.rb")
+        else
+          config[:config_file] = Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/client.rb")
+        end
       end
     end
 
@@ -443,6 +466,25 @@ class Chef::Application::Base < Chef::Application
     else
       interval_run_chef_client
     end
+  end
+
+  def run(enforce_license: false)
+    setup_signal_handlers
+    reconfigure
+    # setup_application does a Dir.chdir("/") and cannot come before reconfigure or many things break
+    setup_application
+    check_license_acceptance if enforce_license
+    for_ezra if Chef::Config[:ez]
+    if Chef::Config[:solo_legacy_mode]
+      Chef.deprecated(:solo_legacy_mode, "#{Chef::Dist::SOLOEXEC} --legacy-mode is deprecated and will be removed in #{Chef::Dist::PRODUCT} 16 (April 2020)")
+    end
+    run_application
+  end
+
+  def configure_logging
+    super
+    Mixlib::Authentication::Log.use_log_devices( Chef::Log )
+    Ohai::Log.use_log_devices( Chef::Log )
   end
 
   private
