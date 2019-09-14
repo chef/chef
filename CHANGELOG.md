@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.3.15 -->
+## [v15.3.15](https://github.com/chef/chef/tree/v15.3.15) (2019-09-14)
+
+#### Merged Pull Requests
+- Revert &quot;Drop privileges before creating files in solo mode&quot; [#8880](https://github.com/chef/chef/pull/8880) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.3.14 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Revert &quot;Drop privileges before creating files in solo mode&quot; [#8880](https://github.com/chef/chef/pull/8880) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.3.15 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
