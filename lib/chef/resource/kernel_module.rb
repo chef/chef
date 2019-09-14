@@ -20,6 +20,9 @@ class Chef
         description: "An optional property to set the kernel module name if it differs from the resource block's name.",
         name_property: true, identity: true
 
+      property :options, Array,
+        description: "An optional property to set options for the kernel module."
+
       property :load_dir, String,
         description: "The directory to load modules from.",
         default: "/etc/modules-load.d"
@@ -30,6 +33,12 @@ class Chef
 
       action :install do
         description "Load kernel module, and ensure it loads on reboot."
+
+        # create options file before loading the module
+        file "#{new_resource.unload_dir}/options_#{new_resource.modname}.conf" do
+          content "options #{new_resource.modname} #{new_resource.options.join(" ")}\n"
+          not_if { new_resource.options.nil? }
+        end.run_action(:create)
 
         # load the module first before installing
         new_resource.run_action(:load)
@@ -62,6 +71,10 @@ class Chef
         file "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf" do
           action :delete
           notifies :run, "execute[update initramfs]", :delayed
+        end
+
+        file "#{new_resource.unload_dir}/options_#{new_resource.modname}.conf" do
+          action :delete
         end
 
         with_run_context :root do
