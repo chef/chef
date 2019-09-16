@@ -95,7 +95,7 @@ Ruby has been updated from 2.6.3 to 2.6.4 in order to resolve [CVE-2012-6708](ht
 
 ### openssl
 
-openssl has been updated from 1.0.2s to 1.0.2s in order to resolve [CVE-2019-1563](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563) and [CVE-2019-1547](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547).
+openssl has been updated from 1.0.2s to 1.0.2t in order to resolve [CVE-2019-1563](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563) and [CVE-2019-1547](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547).
 
 ### nokogiri
 
