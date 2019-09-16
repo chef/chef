@@ -36,10 +36,11 @@ class Chef
         description "Load kernel module, and ensure it loads on reboot."
 
         # create options file before loading the module
-        file "#{new_resource.unload_dir}/options_#{new_resource.modname}.conf" do
-          content "options #{new_resource.modname} #{new_resource.options.join(" ")}\n"
-          not_if { new_resource.options.nil? }
-        end.run_action(:create)
+        unless new_resource.options.nil?
+          file "#{new_resource.unload_dir}/options_#{new_resource.modname}.conf" do
+            content "options #{new_resource.modname} #{new_resource.options.join(" ")}\n"
+          end.run_action(:create)
+        end
 
         # load the module first before installing
         new_resource.run_action(:load)
