@@ -67,7 +67,7 @@ class Chef
         name_property: true, identity: true
 
       property :options, Array,
-        description: "An optional property to set options for the kernel module."
+        description: "An optional property to set options for the kernel module.",
         introduced: "15.4"
 
       property :load_dir, String,
