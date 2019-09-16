@@ -1,6 +1,5 @@
 # THIS IS NOW HAND MANAGED, JUST EDIT THE THING
-# .travis.yml and appveyor.yml consume this,
-# try to keep it machine-parsable.
+# keep it machine-parsable since CI uses it
 #
 # NOTE: You MUST update omnibus-software when adding new versions of
 # software here: bundle exec rake dependencies:update_omnibus_gemfile_lock

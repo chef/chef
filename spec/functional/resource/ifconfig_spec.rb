@@ -24,8 +24,6 @@ require "chef/mixin/shell_out"
 include_flag = !(%w{amazon debian aix}.include?(ohai[:platform_family]) || (ohai[:platform_family] == "rhel" && ohai[:platform_version].to_i < 7))
 
 describe Chef::Resource::Ifconfig, :requires_root, external: include_flag do
-  # This test does not work in travis because there is no eth0
-
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
