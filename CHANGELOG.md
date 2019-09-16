@@ -1,6 +1,6 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.0 -->
-## [v15.4.0](https://github.com/chef/chef/tree/v15.4.0) (2019-09-16)
+<!-- latest_release 15.5.0 -->
+## [v15.5.0](https://github.com/chef/chef/tree/v15.5.0) (2019-09-16)
 
 #### Merged Pull Requests
 - Add more resource examples to the codebase [#8868](https://github.com/chef/chef/pull/8868) ([tas50](https://github.com/tas50))
