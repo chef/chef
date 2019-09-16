@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016-2017, Chef Software Inc.
+# Copyright:: Copyright (c) 2016-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,20 @@ class Chef
 
       description "Use the apt_update resource to manage APT repository updates on Debian and Ubuntu platforms."
       introduced "12.7"
+      examples <<~DOC
+        Update the Apt repository at a specified interval
+        ```ruby
+        apt_update 'all platforms' do
+        frequency 86400
+        action :periodic
+        end
+        ```
+
+        Update the Apt repository at the start of a Chef Infra Client run
+        ```ruby
+        apt_update 'update'
+        ```
+      DOC
 
       # allow bare apt_update with no name
       property :name, String, default: ""
