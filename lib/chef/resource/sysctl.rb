@@ -89,7 +89,7 @@ class Chef
 
           sysctl_lines << "#{new_resource.key} = #{new_resource.value}"
 
-          file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr('/', '.')}.conf" do
+          file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf" do
             content sysctl_lines.join("\n")
           end
 
