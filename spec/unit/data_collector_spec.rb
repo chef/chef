@@ -46,6 +46,8 @@ describe Chef::DataCollector do
 
   let(:run_list) { node.run_list }
 
+  let(:expanded_cookbooks) { node.fetch("cookbooks", {}) }
+
   let(:run_id) { run_status.run_id }
 
   let(:expansion) { Chef::RunList::RunListExpansion.new("_default", run_list.run_list_items) }
@@ -208,6 +210,11 @@ describe Chef::DataCollector do
 
     it "has a run_list" do
       expect_converge_message("run_list" => expected_run_list)
+      send_run_failed_or_completed_event
+    end
+
+    it "has a cookbooks" do
+      expect_converge_message("expanded_cookbooks" => expanded_cookbooks)
       send_run_failed_or_completed_event
     end
 
