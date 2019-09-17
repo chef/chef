@@ -188,24 +188,24 @@ fi
 mkdir -p <%= Chef::Dist::CONF_DIR %>
 
 <% if client_pem -%>
-cat > <%= Chef::Dist::CONF_DIR %>/client.pem <<'EOP'
+(umask 077 && (cat > <%= Chef::Dist::CONF_DIR %>/client.pem <<'EOP'
 <%= ::File.read(::File.expand_path(client_pem)) %>
 EOP
-chmod 0600 <%= Chef::Dist::CONF_DIR %>/client.pem
+)) || exit 1
 <% end -%>
 
 <% if validation_key -%>
-cat > <%= Chef::Dist::CONF_DIR %>/validation.pem <<'EOP'
+(umask 077 && (cat > <%= Chef::Dist::CONF_DIR %>/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
-chmod 0600 <%= Chef::Dist::CONF_DIR %>/validation.pem
+)) || exit 1
 <% end -%>
 
 <% if encrypted_data_bag_secret -%>
-cat > <%= Chef::Dist::CONF_DIR %>/encrypted_data_bag_secret <<'EOP'
+(umask 077 && (cat > <%= Chef::Dist::CONF_DIR %>/encrypted_data_bag_secret <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP
-chmod 0600 <%= Chef::Dist::CONF_DIR %>/encrypted_data_bag_secret
+)) || exit 1
 <% end -%>
 
 <% unless trusted_certs.empty? -%>
