@@ -330,6 +330,7 @@ which results in `/etc/sysctl.d/99-chef-vw.swappiness.conf` as follows
 # than the high water mark in a zone.
 # The default value is 60.
 vm.swappiness = 10
+```
 
 ## New Resources
 
