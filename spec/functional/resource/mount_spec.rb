@@ -25,13 +25,9 @@ require "tmpdir"
 include_flag = !(%w{debian rhel amazon aix solaris2}.include?(ohai[:platform_family]))
 
 describe Chef::Resource::Mount, :requires_root, external: include_flag do
-  # Disabled in travis because it refuses to let us mount a ramdisk. /dev/ramX does not
-  # exist even after loading the kernel module
-
   include Chef::Mixin::ShellOut
 
   # Platform specific setup, cleanup and validation helpers.
-
   def setup_device_for_mount
     # use ramdisk for creating a test device for mount.
     # This can cleaner if we have chef resource/provider for ramdisk.
