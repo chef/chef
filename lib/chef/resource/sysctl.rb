@@ -45,6 +45,10 @@ class Chef
         coerce: proc { |v| coerce_value(v) },
         required: true
 
+      property :comment, [Array, String],
+        description: "Comments, placed above the resource setting in the generated file. For multi-line comments, use an array of strings, one per line.",
+        default: []
+
       property :conf_dir, String,
         description: "The configuration directory to write the config to.",
         default: "/etc/sysctl.d"
@@ -80,8 +84,13 @@ class Chef
 
           directory new_resource.conf_dir
 
-          file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf" do
-            content "#{new_resource.key} = #{new_resource.value}"
+          # construct a string, joining members of new_resource.comment
+          sysctl_lines = Array(new_resource.comment).map { |c| "# #{c.strip}" }
+
+          sysctl_lines << "#{new_resource.key} = #{new_resource.value}"
+
+          file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr('/', '.')}.conf" do
+            content sysctl_lines.join("\n")
           end
 
           execute "Load sysctl values" do
