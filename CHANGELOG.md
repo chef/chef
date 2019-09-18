@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.4 -->
-## [v14.14.4](https://github.com/chef/chef/tree/v14.14.4) (2019-09-18)
+<!-- latest_release 14.14.5 -->
+## [v14.14.5](https://github.com/chef/chef/tree/v14.14.5) (2019-09-18)
 
 #### Merged Pull Requests
-- Backport #8847 into Chef 14: Added support to provide additional options to bundle install [#8901](https://github.com/chef/chef/pull/8901) ([jjustice6](https://github.com/jjustice6))
+- dnf_package fixes for RHEL8 backport to chef-14 [#8894](https://github.com/chef/chef/pull/8894) ([atward](https://github.com/atward))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.13.11 -->
 ### Changes since 14.13.11 release
 
 #### Merged Pull Requests
+- dnf_package fixes for RHEL8 backport to chef-14 [#8894](https://github.com/chef/chef/pull/8894) ([atward](https://github.com/atward)) <!-- 14.14.5 -->
 - Backport #8847 into Chef 14: Added support to provide additional options to bundle install [#8901](https://github.com/chef/chef/pull/8901) ([jjustice6](https://github.com/jjustice6)) <!-- 14.14.4 -->
 - Revert &quot;Drop privileges before creating files in solo mode&quot; [#8881](https://github.com/chef/chef/pull/8881) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.14.3 -->
 - Update Ruby to 2.5.6, add macOS 10.15 builds, switch testing to buildkite [#8870](https://github.com/chef/chef/pull/8870) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.14.2 -->
