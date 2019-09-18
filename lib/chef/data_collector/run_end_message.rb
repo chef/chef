@@ -57,7 +57,7 @@ class Chef
             "resources" => all_action_records(action_collection),
             "run_id" => run_status&.run_id,
             "run_list" => node&.run_list&.for_json || [],
-            "expanded_cookbooks" => node&.fetch("cookbooks", {}) || {},
+            "cookbooks" => ( node && node["cookbooks"] ) || {},
             "policy_name" => node&.policy_name,
             "policy_group" => node&.policy_group,
             "start_time" => run_status.start_time.utc.iso8601,

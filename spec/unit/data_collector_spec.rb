@@ -46,7 +46,7 @@ describe Chef::DataCollector do
 
   let(:run_list) { node.run_list }
 
-  let(:expanded_cookbooks) { node.fetch("cookbooks", {}) }
+  let(:cookbooks) { node.fetch("cookbooks", {}) }
 
   let(:run_id) { run_status.run_id }
 
@@ -214,7 +214,7 @@ describe Chef::DataCollector do
     end
 
     it "has a cookbooks" do
-      expect_converge_message("expanded_cookbooks" => expanded_cookbooks)
+      expect_converge_message("cookbooks" => cookbooks)
       send_run_failed_or_completed_event
     end
 
