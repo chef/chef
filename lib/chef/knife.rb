@@ -234,7 +234,7 @@ class Chef
       dependency_loaders.each(&:call)
     end
 
-    OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack azure google linode push vcenter lpar}.freeze
+    OFFICIAL_PLUGINS = %w{acl azure ec2 google linode lpar opc openstack push rackspace tidy vcenter vsphere windows}.freeze
 
     class << self
       def list_commands(preferred_category = nil)
