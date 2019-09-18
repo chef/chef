@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.5.1 -->
-## [v15.5.1](https://github.com/chef/chef/tree/v15.5.1) (2019-09-16)
+<!-- latest_release 15.4.2 -->
+## [v15.4.2](https://github.com/chef/chef/tree/v15.4.2) (2019-09-18)
 
 #### Merged Pull Requests
-- kernel_module: Add new options property [#8887](https://github.com/chef/chef/pull/8887) ([ramereth](https://github.com/ramereth))
+- Fix for chocolatey_package fails using extra options [#8765](https://github.com/chef/chef/pull/8765) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix for chocolatey_package fails using extra options [#8765](https://github.com/chef/chef/pull/8765) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.4.2 -->
 - kernel_module: Add new options property [#8887](https://github.com/chef/chef/pull/8887) ([ramereth](https://github.com/ramereth)) <!-- 15.5.1 -->
 - Add more resource examples to the codebase [#8868](https://github.com/chef/chef/pull/8868) ([tas50](https://github.com/tas50)) <!-- 15.4.0 -->
 - Revert &quot;Drop privileges before creating files in solo mode&quot; [#8880](https://github.com/chef/chef/pull/8880) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.3.15 -->
