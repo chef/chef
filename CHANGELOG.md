@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.3 -->
-## [v14.14.3](https://github.com/chef/chef/tree/v14.14.3) (2019-09-14)
+<!-- latest_release 14.14.4 -->
+## [v14.14.4](https://github.com/chef/chef/tree/v14.14.4) (2019-09-18)
 
 #### Merged Pull Requests
-- Revert &quot;Drop privileges before creating files in solo mode&quot; [#8881](https://github.com/chef/chef/pull/8881) ([lamont-granquist](https://github.com/lamont-granquist))
+- Backport #8847 into Chef 14: Added support to provide additional options to bundle install [#8901](https://github.com/chef/chef/pull/8901) ([jjustice6](https://github.com/jjustice6))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.13.11 -->
 ### Changes since 14.13.11 release
 
 #### Merged Pull Requests
+- Backport #8847 into Chef 14: Added support to provide additional options to bundle install [#8901](https://github.com/chef/chef/pull/8901) ([jjustice6](https://github.com/jjustice6)) <!-- 14.14.4 -->
 - Revert &quot;Drop privileges before creating files in solo mode&quot; [#8881](https://github.com/chef/chef/pull/8881) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.14.3 -->
 - Update Ruby to 2.5.6, add macOS 10.15 builds, switch testing to buildkite [#8870](https://github.com/chef/chef/pull/8870) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.14.2 -->
 - unified mode backport to Chef-14 [#8841](https://github.com/chef/chef/pull/8841) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.14.1 -->
