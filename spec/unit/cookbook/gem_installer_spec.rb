@@ -101,13 +101,13 @@ describe Chef::Cookbook::GemInstaller do
   it "install metadata when Chef::Config[:skip_gem_metadata_installation] is not true" do
     expect(gem_installer).to receive(:shell_out!).and_return(shell_out)
     expect(Chef::Log).to receive(:info).and_return("")
-    expect(gem_installer.install).to be_nil
+    expect(gem_installer.install).to be_empty
   end
 
   it "install from local cache when Chef::Config[:gem_installer_bundler_options] is set to local" do
     Chef::Config[:gem_installer_bundler_options] = "--local"
     expect(gem_installer).to receive(:shell_out!).with(["bundle", "install", "--local"], any_args).and_return(shell_out)
     expect(Chef::Log).to receive(:info).and_return("")
-    expect(gem_installer.install).to be_nil
+    expect(gem_installer.install).to be_empty
   end
 end
