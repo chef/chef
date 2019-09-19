@@ -18,11 +18,11 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: e1779458769356ae6fed51fb7c3685829b6e2a5b
+  revision: ae2a2f1cae3e8d80197a1cac5311b910300a53ff
   branch: master
   specs:
     omnibus-software (4.0.0)
-      chef-sugar (>= 3.4.0)
+      chef-sugar-ng (>= 5.0.0)
       omnibus (>= 5.6.1)
 
 GEM
@@ -144,7 +144,6 @@ GEM
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-    chef-sugar (5.0.1)
     chef-sugar-ng (5.0.4)
     chef-zero (14.0.12)
       ffi-yajl (~> 2.2)
