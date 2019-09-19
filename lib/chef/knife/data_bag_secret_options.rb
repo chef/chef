@@ -35,8 +35,7 @@ class Chef
 
       def self.included(base)
         base.option :secret,
-          short: "-s SECRET",
-          long: "--secret ",
+          long: "--secret SECRET",
           description: "The secret key to use to encrypt data bag item values. Can also be defaulted in your config with the key 'secret'.",
           # Need to store value from command line in separate variable - knife#merge_configs populates same keys
           # on config object from
