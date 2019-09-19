@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.2 -->
-## [v15.4.2](https://github.com/chef/chef/tree/v15.4.2) (2019-09-18)
+<!-- latest_release 15.4.3 -->
+## [v15.4.3](https://github.com/chef/chef/tree/v15.4.3) (2019-09-19)
 
 #### Merged Pull Requests
-- Fix for chocolatey_package fails using extra options [#8765](https://github.com/chef/chef/pull/8765) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- bump gems [#8907](https://github.com/chef/chef/pull/8907) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- bump gems [#8907](https://github.com/chef/chef/pull/8907) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.3 -->
 - Fix for chocolatey_package fails using extra options [#8765](https://github.com/chef/chef/pull/8765) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.4.2 -->
 - kernel_module: Add new options property [#8887](https://github.com/chef/chef/pull/8887) ([ramereth](https://github.com/ramereth)) <!-- 15.5.1 -->
 - Add more resource examples to the codebase [#8868](https://github.com/chef/chef/pull/8868) ([tas50](https://github.com/tas50)) <!-- 15.4.0 -->
