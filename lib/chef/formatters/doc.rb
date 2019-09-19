@@ -236,11 +236,11 @@ class Chef
       end
 
       def resource_update_progress(resource, current, total, interval)
-        @progress[resource] ||= 0
+        @progress[resource] ||= -1
 
-        percent_complete = (current.to_f / total.to_f * 100).to_i
+        percent_complete = (current.to_f / total.to_f * 100).to_i unless total.to_f == 0.0
 
-        if percent_complete > @progress[resource]
+        if percent_complete && percent_complete > @progress[resource]
 
           @progress[resource] = percent_complete
 
