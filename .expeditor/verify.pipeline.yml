@@ -294,11 +294,11 @@ steps:
   # EXTERNAL GEM TESTING
 #########################################################################
 
-- label: "Test chef-sugar gem :ruby: 2.6"
+- label: "Test chef-sugar-ng gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
-    - bundle exec tasks/bin/run_external_test sethvargo/chef-sugar master rake
+    - bundle exec tasks/bin/run_external_test chef/chef-sugar master rake
   expeditor:
     executor:
       docker:
