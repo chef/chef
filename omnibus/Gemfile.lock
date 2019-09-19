@@ -1,12 +1,12 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: c872e61c30d2b3f88ead03bd1254ff96d37059a3
+  revision: ac881b7f810218323eeb4f71af4a8a4db75c1c92
   branch: master
   specs:
-    omnibus (6.1.3)
+    omnibus (6.1.4)
       aws-sdk-s3 (~> 1)
-      chef-sugar (>= 3.3)
-      cleanroom (~> 1.0)
+      chef-cleanroom (~> 1.0)
+      chef-sugar-ng (>= 3.3)
       ffi-yajl (~> 2.2)
       license_scout (~> 1.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: b9e06cf4c0f6cbd5e5bd5e9bc41b30262dfe635f
+  revision: e1779458769356ae6fed51fb7c3685829b6e2a5b
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -33,8 +33,8 @@ GEM
     artifactory (3.0.5)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.211.0)
-    aws-sdk-core (3.67.0)
+    aws-partitions (1.215.0)
+    aws-sdk-core (3.68.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.1)
@@ -137,6 +137,7 @@ GEM
       win32-service (>= 2.1.2, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
+    chef-cleanroom (1.0.2)
     chef-config (15.2.20)
       addressable
       fuzzyurl
@@ -144,6 +145,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
     chef-sugar (5.0.1)
+    chef-sugar-ng (5.0.4)
     chef-zero (14.0.12)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
@@ -279,7 +281,7 @@ GEM
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    test-kitchen (2.3.2)
+    test-kitchen (2.3.3)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
       license-acceptance (~> 1.0, >= 1.0.11)
