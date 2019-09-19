@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 9982b1e62ed1afb8db57349f536da3fed759749f
+  revision: 12d0d485b09a003500feb8c5f4078f9ba8f119a9
   branch: master
   specs:
     ohai (15.3.1)
@@ -307,7 +307,7 @@ GEM
     rubyzip (1.2.4)
     safe_yaml (1.0.5)
     semverse (3.0.0)
-    simplecov (0.17.0)
+    simplecov (0.17.1)
       docile (~> 1.1)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
@@ -359,7 +359,7 @@ GEM
     unicode-display_width (1.6.0)
     unicode_utils (1.4.0)
     uuidtools (2.1.5)
-    webmock (3.7.2)
+    webmock (3.7.5)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
