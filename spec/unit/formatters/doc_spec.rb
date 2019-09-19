@@ -76,6 +76,24 @@ describe Chef::Formatters::Base do
     expect(formatter.pretty_elapsed_time).to include("10 hours 10 minutes 10 seconds")
   end
 
+  it "shows nothing if total is nil" do
+    res = Chef::Resource::RemoteFile.new("canteloupe")
+    formatter.resource_update_progress(res, 35, nil, 10)
+    expect(out.string).to eq("")
+  end
+
+  it "shows nothing if total is 0" do
+    res = Chef::Resource::RemoteFile.new("canteloupe")
+    formatter.resource_update_progress(res, 35, 0, 10)
+    expect(out.string).to eq("")
+  end
+
+  it "shows nothing if current and total are 0" do
+    res = Chef::Resource::RemoteFile.new("canteloupe")
+    formatter.resource_update_progress(res, 0, 0, 10)
+    expect(out.string).to eq("")
+  end
+
   it "shows the percentage completion of an action" do
     res = Chef::Resource::RemoteFile.new("canteloupe")
     formatter.resource_update_progress(res, 35, 50, 10)
