@@ -954,12 +954,16 @@ module ChefConfig
       default :watchdog_timeout, 2 * (60 * 60) # 2 hours
     end
 
-    # Add an empty and non-strict config_context for chefdk. This lets the user
-    # have code like `chefdk.generator_cookbook "/path/to/cookbook"` in their
-    # config.rb, and it will be ignored by tools like knife and ohai. ChefDK
-    # itself can define the config options it accepts and enable strict mode,
+    # Add an empty and non-strict config_context for chefdk and chefcli.
+    # This lets the user have code like `chefdk.generator_cookbook "/path/to/cookbook"` or
+    # `chefcli[:generator_cookbook] = "/path/to/cookbook"` in their config.rb,
+    # and it will be ignored by tools like knife and ohai. ChefDK and ChefCLI
+    # themselves can define the config options it accepts and enable strict mode,
     # and that will only apply when running `chef` commands.
     config_context :chefdk do
+    end
+
+    config_context :chefcli do
     end
 
     # Configuration options for Data Collector reporting. These settings allow
