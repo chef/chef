@@ -272,11 +272,17 @@ class Chef
         raise ArgumentError, "converge_if_changed must be passed a block!"
       end
 
-      properties = new_resource.class.state_properties.map(&:name) if properties.empty?
-      properties = properties.map(&:to_sym)
+      properties =
+        if properties.empty?
+          new_resource.class.state_properties
+        else
+          properties.map { |property| new_resource.class.properties[property] }
+        end
+
       if current_resource
         # Collect the list of modified properties
-        specified_properties = properties.select { |property| new_resource.property_is_set?(property) }
+        specified_properties = properties.select { |property| property.is_set?(new_resource) || property.has_default? }
+        specified_properties = specified_properties.map(&:name).map(&:to_sym)
         modified = specified_properties.select { |p| new_resource.send(p) != current_resource.send(p) }
         if modified.empty?
           properties_str = if new_resource.sensitive
@@ -309,15 +315,15 @@ class Chef
       else
         # The resource doesn't exist. Mark that we are *creating* this, and
         # write down any properties we are setting.
-        property_size = properties.map(&:size).max
+        property_size = properties.map(&:name).map(&:to_sym).map(&:size).max
         created = properties.map do |property|
-          default = " (default value)" unless new_resource.property_is_set?(property)
-          properties_str = if new_resource.sensitive || new_resource.class.properties[property].sensitive?
+          default = " (default value)" unless property.is_set?(new_resource)
+          properties_str = if new_resource.sensitive || property.sensitive?
                              "(suppressed sensitive property)"
                            else
-                             new_resource.send(property).inspect
+                             new_resource.send(property.name.to_sym).inspect
                            end
-          "  set #{property.to_s.ljust(property_size)} to #{properties_str}#{default}"
+          "  set #{property.name.to_sym.to_s.ljust(property_size)} to #{properties_str}#{default}"
         end
 
         converge_by([ "create #{new_resource.identity}" ] + created, &converge_block)
