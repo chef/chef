@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.5 -->
-## [v15.4.5](https://github.com/chef/chef/tree/v15.4.5) (2019-09-24)
+<!-- latest_release 15.4.6 -->
+## [v15.4.6](https://github.com/chef/chef/tree/v15.4.6) (2019-09-25)
 
 #### Merged Pull Requests
-- fix converge_if_changed to compare default values [#8912](https://github.com/chef/chef/pull/8912) ([lamont-granquist](https://github.com/lamont-granquist))
+- Require train-winrm &gt;= 0.2.5 [#8914](https://github.com/chef/chef/pull/8914) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Require train-winrm &gt;= 0.2.5 [#8914](https://github.com/chef/chef/pull/8914) ([tas50](https://github.com/tas50)) <!-- 15.4.6 -->
 - fix converge_if_changed to compare default values [#8912](https://github.com/chef/chef/pull/8912) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.5 -->
 - Add empty chefcli config_context to fix commands with chefcli in knife.rb [#8911](https://github.com/chef/chef/pull/8911) ([coding-blip](https://github.com/coding-blip)) <!-- 15.4.4 -->
 - bump gems [#8907](https://github.com/chef/chef/pull/8907) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.3 -->
