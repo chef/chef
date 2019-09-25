@@ -623,7 +623,7 @@ class Chef
           end
 
         session.close
-        if exit_status != 0
+        if exit_status && exit_status != 0
           exit exit_status
         else
           exit_status
