@@ -67,11 +67,18 @@ class Chef
         description: "The action of the firewall rule.",
         coerce: proc { |f| f.is_a?(String) ? f.downcase.to_sym : f }
 
-      property :profile, [Symbol, String],
-        default: :any, equal_to: %i{public private domain any notapplicable},
+      property :profile, [Symbol, String, Array],
+        default: :any,
         description: "The profile the firewall rule applies to.",
-        coerce: proc { |p| p.is_a?(String) ? p.downcase.to_sym : p }
-
+        coerce: proc { |p|
+          if p.is_a?(Array)
+            p.map(&:downcase).map(&:to_sym).sort
+          elsif p.is_a?(String)
+            Array(p.downcase.to_sym).sort
+          else
+            Array(p).sort
+          end
+        }
       property :program, String,
         description: "The program the firewall rule applies to."
 
@@ -158,7 +165,7 @@ class Chef
           cmd << " -Direction '#{new_resource.direction}'" if new_resource.direction
           cmd << " -Protocol '#{new_resource.protocol}'" if new_resource.protocol
           cmd << " -Action '#{new_resource.firewall_action}'" if new_resource.firewall_action
-          cmd << " -Profile '#{new_resource.profile}'" if new_resource.profile
+          cmd << " -Profile '#{new_resource.profile.join("', '")}'" if new_resource.profile
           cmd << " -Program '#{new_resource.program}'" if new_resource.program
           cmd << " -Service '#{new_resource.service}'" if new_resource.service
           cmd << " -InterfaceType '#{new_resource.interface_type}'" if new_resource.interface_type
