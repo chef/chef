@@ -234,7 +234,7 @@ class Chef
       dependency_loaders.each(&:call)
     end
 
-    OFFICIAL_PLUGINS = %w{linode lpar openstack push rackspace vcenter}.freeze
+    OFFICIAL_PLUGINS = %w{lpar openstack push rackspace vcenter}.freeze
 
     class << self
       def list_commands(preferred_category = nil)
@@ -273,7 +273,7 @@ class Chef
         if category_commands = guess_category(args)
           list_commands(category_commands)
         elsif OFFICIAL_PLUGINS.include?(args[0]) # command was an uninstalled official chef knife plugin
-          ui.info("Use `#{Chef::Dist::EXEC} gem install knife-#{args[0]}` to install the plugin into ChefDK")
+          ui.info("Use `#{Chef::Dist::EXEC} gem install knife-#{args[0]}` to install the plugin into ChefDK / Chef Workstation")
         else
           list_commands
         end
