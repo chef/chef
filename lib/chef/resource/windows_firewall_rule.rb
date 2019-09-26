@@ -70,15 +70,8 @@ class Chef
       property :profile, [Symbol, String, Array],
         default: :any,
         description: "The profile the firewall rule applies to.",
-        coerce: proc { |p|
-          if p.is_a?(Array)
-            p.map(&:downcase).map(&:to_sym).sort
-          elsif p.is_a?(String)
-            Array(p.downcase.to_sym).sort
-          else
-            Array(p).sort
-          end
-        }
+        coerce: proc { |p| Array(p).map(&:downcase).map(&:to_sym).sort }
+
       property :program, String,
         description: "The program the firewall rule applies to."
 
