@@ -1,4 +1,3 @@
-sh -c '
 <%= "https_proxy=\"#{knife_config[:bootstrap_proxy]}\" export https_proxy" if knife_config[:bootstrap_proxy] %>
 <%= "no_proxy=\"#{knife_config[:bootstrap_no_proxy]}\" export no_proxy" if knife_config[:bootstrap_no_proxy] %>
 
@@ -240,4 +239,4 @@ mkdir -p <%= Chef::Dist::CONF_DIR %>/client.d
 
 echo "Starting the first <%= Chef::Dist::PRODUCT %> Client run..."
 
-<%= start_chef %>'
+<%= start_chef %>
