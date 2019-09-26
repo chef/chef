@@ -190,7 +190,7 @@ class Chef
           #{ui.color("TO FIX THIS ERROR:", :bold)}
 
           If the server you are connecting to uses a self-signed certificate, you must
-          configure chef to trust that server's certificate.
+          configure #{Chef::Dist::PRODUCT} to trust that server's certificate.
 
           By default, the certificate is stored in the following location on the host
           where your chef-server runs:
