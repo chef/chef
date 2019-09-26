@@ -244,7 +244,17 @@ describe Chef::Resource::WindowsFirewallRule do
 
       it "sets LocalPort" do
         resource.local_port("80")
-        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -LocalPort 80 -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -LocalPort '80' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+      end
+
+      it "sets LocalPort with int" do
+        resource.local_port(80)
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -LocalPort '80' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+      end
+
+      it "sets multiple LocalPorts" do
+        resource.local_port(["80", "RPC"])
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -LocalPort '80', 'RPC' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets RemoteAddress" do
@@ -254,7 +264,17 @@ describe Chef::Resource::WindowsFirewallRule do
 
       it "sets RemotePort" do
         resource.remote_port("443")
-        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -RemotePort 443 -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -RemotePort '443' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+      end
+
+      it "sets RemotePort with int" do
+        resource.remote_port(443)
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -RemotePort '443' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+      end
+
+      it "sets multiple RemotePorts" do
+        resource.remote_port(["443", "445"])
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -RemotePort '443', '445' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets Direction" do
@@ -317,7 +337,7 @@ describe Chef::Resource::WindowsFirewallRule do
         resource.service("SomeService")
         resource.interface_type(:remoteaccess)
         resource.enabled(false)
-        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule_the_second' -DisplayName 'test_rule_the_second' -Description 'some other rule' -LocalAddress '192.168.40.40' -LocalPort 80 -RemoteAddress '8.8.4.4' -RemotePort 8081 -Direction 'outbound' -Protocol 'UDP' -Action 'notconfigured' -Profile 'domain' -Program '%WINDIR%\\System32\\lsass.exe' -Service 'SomeService' -InterfaceType 'remoteaccess' -Enabled 'false'")
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule_the_second' -DisplayName 'test_rule_the_second' -Description 'some other rule' -LocalAddress '192.168.40.40' -LocalPort '80' -RemoteAddress '8.8.4.4' -RemotePort '8081' -Direction 'outbound' -Protocol 'UDP' -Action 'notconfigured' -Profile 'domain' -Program '%WINDIR%\\System32\\lsass.exe' -Service 'SomeService' -InterfaceType 'remoteaccess' -Enabled 'false'")
       end
     end
 
@@ -338,7 +358,17 @@ describe Chef::Resource::WindowsFirewallRule do
 
       it "sets LocalPort" do
         resource.local_port("80")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalPort 80 -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalPort '80' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+      end
+
+      it "sets LocalPort with int" do
+        resource.local_port(80)
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalPort '80' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+      end
+
+      it "sets multiple LocalPorts" do
+        resource.local_port(["80", "8080"])
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalPort '80', '8080' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets RemoteAddress" do
@@ -348,7 +378,17 @@ describe Chef::Resource::WindowsFirewallRule do
 
       it "sets RemotePort" do
         resource.remote_port("443")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemotePort 443 -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemotePort '443' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+      end
+
+      it "sets RemotePort with int" do
+        resource.remote_port(443)
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemotePort '443' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+      end
+
+      it "sets multiple RemotePorts" do
+        resource.remote_port(["443", "445"])
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemotePort '443', '445' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets Direction" do
@@ -406,7 +446,7 @@ describe Chef::Resource::WindowsFirewallRule do
         resource.service("SomeService")
         resource.interface_type(:remoteaccess)
         resource.enabled(false)
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule_the_second' -Description 'some other rule' -LocalAddress '192.168.40.40' -LocalPort 80 -RemoteAddress '8.8.4.4' -RemotePort 8081 -Direction 'outbound' -Protocol 'UDP' -Action 'notconfigured' -Profile 'domain' -Program '%WINDIR%\\System32\\lsass.exe' -Service 'SomeService' -InterfaceType 'remoteaccess' -Enabled 'false'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule_the_second' -Description 'some other rule' -LocalAddress '192.168.40.40' -LocalPort '80' -RemoteAddress '8.8.4.4' -RemotePort '8081' -Direction 'outbound' -Protocol 'UDP' -Action 'notconfigured' -Profile 'domain' -Program '%WINDIR%\\System32\\lsass.exe' -Service 'SomeService' -InterfaceType 'remoteaccess' -Enabled 'false'")
       end
     end
   end
