@@ -211,8 +211,8 @@ module Shell
       desc "prints information about chef"
       def version
         puts "This is the #{Chef::Dist::SHELL}.\n" +
-          " Chef Version: #{::Chef::VERSION}\n" +
-          " https://www.chef.io/\n" +
+          " #{Chef::Dist::PRODUCT} Version: #{::Chef::VERSION}\n" +
+          " #{Chef::Dist::WEBSITE}\n" +
           " https://docs.chef.io/"
         :ucanhaz_automation
       end
