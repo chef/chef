@@ -145,25 +145,39 @@ describe Chef::Node::ImmutableMash do
     end
   end
 
-  [
-    :[]=,
-    :clear,
-    :default=,
-    :default_proc=,
-    :delete,
-    :delete_if,
-    :keep_if,
-    :merge!,
-    :update,
-    :reject!,
-    :replace,
-    :select!,
-    :shift,
-    :write,
-    :write!,
-    :unlink,
-    :unlink!,
-  ].each do |mutator|
+  describe "to_yaml" do
+    before do
+      @copy = @immutable_mash.to_yaml
+    end
+
+    it "converts an immutable mash to a new mutable YAML formatted string" do
+      expect(@copy).to be_instance_of(String)
+    end
+
+    it "should create a YAML formatted string with the content" do
+      expect(@copy).to eq("---\ntop:\n  second_level: some value\ntop_level_2:\n- array\n- of\n- values\ntop_level_3:\n- hash_array: 1\n  hash_array_b: 2\ntop_level_4:\n  level2:\n    key: value\n")
+    end
+  end
+
+  %i{
+    []=
+    clear
+    default=
+    default_proc=
+    delete
+    delete_if
+    keep_if
+    merge!
+    update
+    reject!
+    replace
+    select!
+    shift
+    write
+    write!
+    unlink
+    unlink!
+  }.each do |mutator|
     it "doesn't allow mutation via `#{mutator}'" do
       expect { @immutable_mash.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
@@ -316,6 +330,20 @@ describe Chef::Node::ImmutableArray do
 
     it "should allow mutation" do
       expect { @copy << "m" }.not_to raise_error
+    end
+  end
+
+  describe "to_yaml" do
+    before do
+      @copy = @immutable_nested_array.to_yaml
+    end
+
+    it "converts an immutable array to a new YAML formatted mutable string" do
+      expect(@copy).to be_instance_of(String)
+    end
+
+    it "should create a YAML formatted string with content" do
+      expect(@copy).to eq("---\n- level1\n- - foo\n  - bar\n  - baz\n  - 1\n  - 2\n  - 3\n  - \n  - true\n  - false\n  - - el\n    - 0\n    - \n- m: m\n")
     end
   end
 
