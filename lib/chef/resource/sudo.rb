@@ -166,7 +166,7 @@ class Chef
             source new_resource.template
             mode "0440"
             variables new_resource.variables
-            verify "#{new_resource.visudo_binary} -cf %{path}" if visudo_present?
+            verify "cat #{new_resource.config_prefix}/sudoers %{path} | #{new_resource.visudo_binary} -cf -" if visudo_present?
             action :create
           end
         else
@@ -185,7 +185,7 @@ class Chef
                       setenv:             new_resource.setenv,
                       env_keep_add:       new_resource.env_keep_add,
                       env_keep_subtract:  new_resource.env_keep_subtract
-            verify "#{new_resource.visudo_binary} -cf %{path}" if visudo_present?
+            verify "cat #{new_resource.config_prefix}/sudoers %{path} | #{new_resource.visudo_binary} -cf -" if visudo_present?
             action :create
           end
         end
