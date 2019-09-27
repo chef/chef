@@ -199,7 +199,6 @@ steps:
     executor:
       docker:
         host_os: windows
-        os_version: 2016
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
@@ -207,15 +206,20 @@ steps:
 
 - label: "Functional Specs Windows :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_win_functional.ps1
+    - scripts/bk_tests/bk_win_functional.ps1
+  expeditor:
+    executor:
+      windows:
+        privileged: true
+        shell: ["powershell", "-Command"]
+
+- label: "Chocolatey Specs Windows :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_run_choco.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
-        os_version: 2016
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
 
 - label: "Unit Specs Windows :ruby: 2.6"
