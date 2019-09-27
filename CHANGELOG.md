@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.10 -->
-## [v15.4.10](https://github.com/chef/chef/tree/v15.4.10) (2019-09-26)
+<!-- latest_release 15.4.11 -->
+## [v15.4.11](https://github.com/chef/chef/tree/v15.4.11) (2019-09-27)
 
 #### Merged Pull Requests
-- Fix some places where constants from dist.rb were not used. [#8921](https://github.com/chef/chef/pull/8921) ([Tensibai](https://github.com/Tensibai))
+- Enable Windows Buildkite verification on default image Windows… [#8882](https://github.com/chef/chef/pull/8882) ([jaymalasinha](https://github.com/jaymalasinha))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Enable Windows Buildkite verification on default image Windows… [#8882](https://github.com/chef/chef/pull/8882) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.4.11 -->
 - Fix some places where constants from dist.rb were not used. [#8921](https://github.com/chef/chef/pull/8921) ([Tensibai](https://github.com/Tensibai)) <!-- 15.4.10 -->
 - Updated package license for macos and windows. [#8910](https://github.com/chef/chef/pull/8910) ([samshinde](https://github.com/samshinde)) <!-- 15.4.9 -->
 - [knife ssh] Fix interactive mode exit error [#8917](https://github.com/chef/chef/pull/8917) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.8 -->
