@@ -68,8 +68,6 @@ class Chef
 
           file = dir.join("chefignore")
           return file.expand_path.to_s if file.exist?
-
-          Chef::Log.debug("No chefignore file found at #{file}")
         end
 
         nil

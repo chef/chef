@@ -84,11 +84,13 @@ class Chef
       # If no +cookbook_path+ is given, +Chef::Config.cookbook_path+ is used.
       def self.for_cookbook(cookbook_name, cookbook_path = nil)
         cookbook_path ||= Chef::Config.cookbook_path
-        unless cookbook_path
-          raise ArgumentError, "Cannot find cookbook #{cookbook_name} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
+
+        Array(cookbook_path).each do |entry|
+          path = File.expand_path(File.join(entry, cookbook_name.to_s))
+          return new(path) if Dir.exist?(path)
         end
 
-        new(File.join(cookbook_path, cookbook_name.to_s))
+        raise ArgumentError, "Cannot find cookbook #{cookbook_name} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
       end
 
       # Create a new SyntaxCheck object
