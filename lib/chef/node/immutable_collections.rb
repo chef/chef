@@ -96,7 +96,7 @@ class Chef
 
       alias_method :to_array, :to_a
 
-      # As Psych module, not respecting Immutable ImmutableArray object
+      # As Psych module, not respecting ImmutableArray object
       # So first convert it to Hash/Array then parse it to `.to_yaml`
       def to_yaml(*opts)
         to_a.to_yaml(*opts)
