@@ -119,6 +119,7 @@ class Chef
           to_h
           to_plist
           to_set
+          to_yaml
           transpose
           union
           uniq
