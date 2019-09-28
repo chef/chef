@@ -1273,4 +1273,56 @@ describe Chef::Node::Attribute do
       expect { @attributes["foo"]["bar"][0] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
     end
   end
+
+  describe "deep merging with nils" do
+    it "nils when deep merging between default levels knocks out values" do
+      @attributes.default["foo"] = "bar"
+      expect(@attributes["foo"]).to eql("bar")
+      @attributes.force_default["foo"] = nil
+      expect(@attributes["foo"]).to be nil
+    end
+
+    it "nils when deep merging between override levels knocks out values" do
+      @attributes.override["foo"] = "bar"
+      expect(@attributes["foo"]).to eql("bar")
+      @attributes.force_override["foo"] = nil
+      expect(@attributes["foo"]).to be nil
+    end
+
+    it "nils when deep merging between default+override levels knocks out values" do
+      @attributes.default["foo"] = "bar"
+      expect(@attributes["foo"]).to eql("bar")
+      @attributes.override["foo"] = nil
+      expect(@attributes["foo"]).to be nil
+    end
+
+    it "nils when deep merging between normal+automatic levels knocks out values" do
+      @attributes.normal["foo"] = "bar"
+      expect(@attributes["foo"]).to eql("bar")
+      @attributes.automatic["foo"] = nil
+      expect(@attributes["foo"]).to be nil
+    end
+  end
+
+  describe "to_json" do
+    it "should convert to a valid json string" do
+      json = @attributes["hot"].to_json
+      expect { JSON.parse(json) }.not_to raise_error
+    end
+
+    it "should convert to a json based on current state" do
+      expect(@attributes["hot"].to_json).to eq("{\"day\":\"sunday\"}")
+    end
+  end
+
+  describe "to_yaml" do
+    it "should convert to a valid yaml format" do
+      json = @attributes["hot"].to_yaml
+      expect { YAML.parse(json) }.not_to raise_error
+    end
+
+    it "should convert to a yaml based on current state" do
+      expect(@attributes["hot"].to_yaml).to eq("---\nday: sunday\n")
+    end
+  end
 end

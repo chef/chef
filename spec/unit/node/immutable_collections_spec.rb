@@ -19,6 +19,64 @@
 require "spec_helper"
 require "chef/node/immutable_collections"
 
+shared_examples_for "ImmutableMash module" do |param|
+  let(:copy) { @immutable_mash.send(param) }
+
+  it "converts an immutable mash to a new mutable hash" do
+    expect(copy).to be_is_a(Hash)
+  end
+
+  it "converts an immutable nested mash to a new mutable hash" do
+    expect(copy["top_level_4"]["level2"]).to be_is_a(Hash)
+  end
+
+  it "converts an immutable nested array to a new mutable array" do
+    expect(copy["top_level_2"]).to be_instance_of(Array)
+  end
+
+  it "should create a mash with the same content" do
+    expect(copy).to eq(@immutable_mash)
+  end
+
+  it "should allow mutation" do
+    expect { copy["m"] = "m" }.not_to raise_error
+  end
+end
+
+shared_examples_for "ImmutableArray module" do |param|
+  let(:copy) { @immutable_nested_array.send(param) }
+
+  it "converts an immutable array to a new mutable array" do
+    expect(copy).to be_instance_of(Array)
+  end
+
+  it "converts an immutable nested array to a new mutable array" do
+    expect(copy[1]).to be_instance_of(Array)
+  end
+
+  it "converts an immutable nested mash to a new mutable hash" do
+    expect(copy[2]).to be_is_a(Hash)
+  end
+
+  it "should create an array with the same content" do
+    expect(copy).to eq(@immutable_nested_array)
+  end
+
+  it "should allow mutation" do
+    expect { copy << "m" }.not_to raise_error
+  end
+end
+
+shared_examples_for "Immutable#to_yaml" do
+  it "converts an immutable array to a new valid YAML mutable string" do
+    expect { YAML.parse(copy) }.not_to raise_error
+  end
+
+  it "should create a YAML string with content" do
+    expect(copy).to eq(parsed_yaml)
+  end
+end
+
 describe Chef::Node::ImmutableMash do
   before do
     @data_in = { "top" => { "second_level" => "some value" },
@@ -67,96 +125,17 @@ describe Chef::Node::ImmutableMash do
     expect(@mash["test2"]).to eql("bar")
   end
 
-  describe "to_hash" do
-    before do
-      @copy = @immutable_mash.to_hash
-    end
-
-    it "converts an immutable mash to a new mutable hash" do
-      expect(@copy).to be_instance_of(Hash)
-    end
-
-    it "converts an immutable nested mash to a new mutable hash" do
-      expect(@copy["top_level_4"]["level2"]).to be_instance_of(Hash)
-    end
-
-    it "converts an immutable nested array to a new mutable array" do
-      expect(@copy["top_level_2"]).to be_instance_of(Array)
-    end
-
-    it "should create a mash with the same content" do
-      expect(@copy).to eq(@immutable_mash)
-    end
-
-    it "should allow mutation" do
-      expect { @copy["m"] = "m" }.not_to raise_error
-    end
-  end
-
-  describe "dup" do
-    before do
-      @copy = @immutable_mash.dup
-    end
-
-    it "converts an immutable mash to a new mutable hash" do
-      expect(@copy).to be_instance_of(Mash)
-    end
-
-    it "converts an immutable nested mash to a new mutable hash" do
-      expect(@copy["top_level_4"]["level2"]).to be_instance_of(Mash)
-    end
-
-    it "converts an immutable nested array to a new mutable array" do
-      expect(@copy["top_level_2"]).to be_instance_of(Array)
-    end
-
-    it "should create a mash with the same content" do
-      expect(@copy).to eq(@immutable_mash)
-    end
-
-    it "should allow mutation" do
-      expect { @copy["m"] = "m" }.not_to raise_error
-    end
-  end
-
-  describe "to_h" do
-    before do
-      @copy = @immutable_mash.to_h
-    end
-
-    it "converts an immutable mash to a new mutable hash" do
-      expect(@copy).to be_instance_of(Hash)
-    end
-
-    it "converts an immutable nested mash to a new mutable hash" do
-      expect(@copy["top_level_4"]["level2"]).to be_instance_of(Hash)
-    end
-
-    it "converts an immutable nested array to a new mutable array" do
-      expect(@copy["top_level_2"]).to be_instance_of(Array)
-    end
-
-    it "should create a mash with the same content" do
-      expect(@copy).to eq(@immutable_mash)
-    end
-
-    it "should allow mutation" do
-      expect { @copy["m"] = "m" }.not_to raise_error
+  %w{to_h to_hash dup}.each do |immutable_meth|
+    describe "#{immutable_meth}" do
+      include_examples "ImmutableMash module", description
     end
   end
 
   describe "to_yaml" do
-    before do
-      @copy = @immutable_mash.to_yaml
-    end
+    let(:copy) { @immutable_mash.to_yaml }
+    let(:parsed_yaml) { "---\ntop:\n  second_level: some value\ntop_level_2:\n- array\n- of\n- values\ntop_level_3:\n- hash_array: 1\n  hash_array_b: 2\ntop_level_4:\n  level2:\n    key: value\n" }
 
-    it "converts an immutable mash to a new mutable YAML formatted string" do
-      expect(@copy).to be_instance_of(String)
-    end
-
-    it "should create a YAML formatted string with the content" do
-      expect(@copy).to eq("---\ntop:\n  second_level: some value\ntop_level_2:\n- array\n- of\n- values\ntop_level_3:\n- hash_array: 1\n  hash_array_b: 2\ntop_level_4:\n  level2:\n    key: value\n")
-    end
+    include_examples "Immutable#to_yaml"
   end
 
   %i{
@@ -255,96 +234,17 @@ describe Chef::Node::ImmutableArray do
     expect(mutable[0]).to eq(:value)
   end
 
-  describe "to_a" do
-    before do
-      @copy = @immutable_nested_array.to_a
-    end
-
-    it "converts an immutable array to a new mutable array" do
-      expect(@copy).to be_instance_of(Array)
-    end
-
-    it "converts an immutable nested array to a new mutable array" do
-      expect(@copy[1]).to be_instance_of(Array)
-    end
-
-    it "converts an immutable nested mash to a new mutable hash" do
-      expect(@copy[2]).to be_instance_of(Hash)
-    end
-
-    it "should create an array with the same content" do
-      expect(@copy).to eq(@immutable_nested_array)
-    end
-
-    it "should allow mutation" do
-      expect { @copy << "m" }.not_to raise_error
-    end
-  end
-
-  describe "dup" do
-    before do
-      @copy = @immutable_nested_array.dup
-    end
-
-    it "converts an immutable array to a new mutable array" do
-      expect(@copy).to be_instance_of(Array)
-    end
-
-    it "converts an immutable nested array to a new mutable array" do
-      expect(@copy[1]).to be_instance_of(Array)
-    end
-
-    it "converts an immutable nested mash to a new mutable hash" do
-      expect(@copy[2]).to be_instance_of(Mash)
-    end
-
-    it "should create an array with the same content" do
-      expect(@copy).to eq(@immutable_nested_array)
-    end
-
-    it "should allow mutation" do
-      expect { @copy << "m" }.not_to raise_error
-    end
-  end
-
-  describe "to_array" do
-    before do
-      @copy = @immutable_nested_array.to_array
-    end
-
-    it "converts an immutable array to a new mutable array" do
-      expect(@copy).to be_instance_of(Array)
-    end
-
-    it "converts an immutable nested array to a new mutable array" do
-      expect(@copy[1]).to be_instance_of(Array)
-    end
-
-    it "converts an immutable nested mash to a new mutable hash" do
-      expect(@copy[2]).to be_instance_of(Hash)
-    end
-
-    it "should create an array with the same content" do
-      expect(@copy).to eq(@immutable_nested_array)
-    end
-
-    it "should allow mutation" do
-      expect { @copy << "m" }.not_to raise_error
+  %w{to_a to_array dup}.each do |immutable_meth|
+    describe "#{immutable_meth}" do
+      include_examples "ImmutableArray module", description
     end
   end
 
   describe "to_yaml" do
-    before do
-      @copy = @immutable_nested_array.to_yaml
-    end
+    let(:copy) { @immutable_nested_array.to_yaml }
+    let(:parsed_yaml) { "---\n- level1\n- - foo\n  - bar\n  - baz\n  - 1\n  - 2\n  - 3\n  - \n  - true\n  - false\n  - - el\n    - 0\n    - \n- m: m\n" }
 
-    it "converts an immutable array to a new YAML formatted mutable string" do
-      expect(@copy).to be_instance_of(String)
-    end
-
-    it "should create a YAML formatted string with content" do
-      expect(@copy).to eq("---\n- level1\n- - foo\n  - bar\n  - baz\n  - 1\n  - 2\n  - 3\n  - \n  - true\n  - false\n  - - el\n    - 0\n    - \n- m: m\n")
-    end
+    include_examples "Immutable#to_yaml"
   end
 
   describe "#[]" do
