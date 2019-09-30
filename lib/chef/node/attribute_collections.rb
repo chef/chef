@@ -65,6 +65,10 @@ class Chef
         Array.new(map { |e| safe_dup(e) })
       end
 
+      def to_yaml(*opts)
+        to_a.to_yaml(*opts)
+      end
+
       private
 
       def convert_value(value)
@@ -170,6 +174,10 @@ class Chef
 
       def dup
         Mash.new(self)
+      end
+
+      def to_yaml(*opts)
+        to_h.to_yaml(*opts)
       end
 
       prepend Chef::Node::Mixin::StateTracking

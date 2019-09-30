@@ -148,7 +148,9 @@ class Chef
         to_a
         to_h
         to_hash
+        to_json
         to_set
+        to_yaml
         value?
         values
         values_at

@@ -1297,4 +1297,26 @@ describe Chef::Node::Attribute do
       expect(@attributes["foo"]).to be nil
     end
   end
+
+  describe "to_json" do
+    it "should convert to a valid json string" do
+      json = @attributes["hot"].to_json
+      expect { JSON.parse(json) }.not_to raise_error
+    end
+
+    it "should convert to a json based on current state" do
+      expect(@attributes["hot"].to_json).to eq("{\"day\":\"sunday\"}")
+    end
+  end
+
+  describe "to_yaml" do
+    it "should convert to a valid yaml format" do
+      json = @attributes["hot"].to_yaml
+      expect { YAML.parse(json) }.not_to raise_error
+    end
+
+    it "should convert to a yaml based on current state" do
+      expect(@attributes["hot"].to_yaml).to eq("---\nday: sunday\n")
+    end
+  end
 end
