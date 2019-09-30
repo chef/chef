@@ -241,12 +241,14 @@ class Chef
       option :policy_name,
         long: "--policy-name POLICY_NAME",
         description: "Policyfile name to use (--policy-group must also be given).",
+        proc: Proc.new { |u| Chef::Config[:knife][:policy_name] = u },
         default: nil
 
       # runtime - client_builder - set policy group when creating node
       option :policy_group,
         long: "--policy-group POLICY_GROUP",
         description: "Policy group name to use (--policy-name must also be given).",
+        proc: Proc.new { |u| Chef::Config[:knife][:policy_group] = u },
         default: nil
 
       # runtime - client_builder -  node tags
