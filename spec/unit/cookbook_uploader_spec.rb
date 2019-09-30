@@ -21,9 +21,10 @@ require "spec_helper"
 describe Chef::CookbookUploader do
 
   let(:http_client) { double("Chef::ServerAPI") }
+  let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "cookbooks") }
 
   let(:cookbook_loader) do
-    loader = Chef::CookbookLoader.new(File.join(CHEF_SPEC_DATA, "cookbooks"))
+    loader = Chef::CookbookLoader.new(cookbook_path)
     loader.load_cookbooks
     loader.cookbooks_by_name["apache2"].identifier = apache2_identifier
     loader.cookbooks_by_name["java"].identifier = java_identifier
@@ -54,6 +55,11 @@ describe Chef::CookbookUploader do
   let(:policy_mode) { false }
 
   let(:uploader) { described_class.new(cookbooks_to_upload, rest: http_client, policy_mode: policy_mode) }
+
+  before do
+    allow(Chef::Config).to receive(:cookbook_path) { cookbook_path }
+  end
+
 
   it "defaults to not enabling policy mode" do
     expect(described_class.new(cookbooks_to_upload, rest: http_client).policy_mode?).to be(false)
