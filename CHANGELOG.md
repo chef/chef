@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.13 -->
-## [v15.4.13](https://github.com/chef/chef/tree/v15.4.13) (2019-09-30)
+<!-- latest_release 15.4.14 -->
+## [v15.4.14](https://github.com/chef/chef/tree/v15.4.14) (2019-09-30)
 
 #### Merged Pull Requests
-- Add #to_yaml method for ImmutableMash &amp; ImmutableArray [#8927](https://github.com/chef/chef/pull/8927) ([vsingh-msys](https://github.com/vsingh-msys))
+- Update inspec to 4.17.11 and cleanup buildkite testing a bit [#8930](https://github.com/chef/chef/pull/8930) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update inspec to 4.17.11 and cleanup buildkite testing a bit [#8930](https://github.com/chef/chef/pull/8930) ([tas50](https://github.com/tas50)) <!-- 15.4.14 -->
 - Add #to_yaml method for ImmutableMash &amp; ImmutableArray [#8927](https://github.com/chef/chef/pull/8927) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.13 -->
 - Bump inspec-core to 4.17.7 [#8923](https://github.com/chef/chef/pull/8923) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.12 -->
 - Enable Windows Buildkite verification on default image Windows… [#8882](https://github.com/chef/chef/pull/8882) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.4.11 -->
