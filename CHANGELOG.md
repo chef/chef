@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.16 -->
-## [v15.4.16](https://github.com/chef/chef/tree/v15.4.16) (2019-10-01)
+<!-- latest_release 15.4.17 -->
+## [v15.4.17](https://github.com/chef/chef/tree/v15.4.17) (2019-10-01)
 
 #### Merged Pull Requests
-- Swap test gem install of fpm for chef-ruby-lvm [#8934](https://github.com/chef/chef/pull/8934) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.17.15 [#8936](https://github.com/chef/chef/pull/8936) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.17.15 [#8936](https://github.com/chef/chef/pull/8936) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.17 -->
 - Swap test gem install of fpm for chef-ruby-lvm [#8934](https://github.com/chef/chef/pull/8934) ([tas50](https://github.com/tas50)) <!-- 15.4.16 -->
 - Bump inspec-core to 4.17.14 [#8932](https://github.com/chef/chef/pull/8932) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.15 -->
 - Update inspec to 4.17.11 and cleanup buildkite testing a bit [#8930](https://github.com/chef/chef/pull/8930) ([tas50](https://github.com/tas50)) <!-- 15.4.14 -->
