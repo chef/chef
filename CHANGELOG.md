@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.19 -->
-## [v15.4.19](https://github.com/chef/chef/tree/v15.4.19) (2019-10-01)
+<!-- latest_release 15.4.20 -->
+## [v15.4.20](https://github.com/chef/chef/tree/v15.4.20) (2019-10-01)
 
 #### Merged Pull Requests
-- Add testing in Buildkite for Oracle Linux 6/7/8 [#8937](https://github.com/chef/chef/pull/8937) ([tas50](https://github.com/tas50))
+- bump omnibus gems [#8938](https://github.com/chef/chef/pull/8938) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- bump omnibus gems [#8938](https://github.com/chef/chef/pull/8938) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.20 -->
 - Add testing in Buildkite for Oracle Linux 6/7/8 [#8937](https://github.com/chef/chef/pull/8937) ([tas50](https://github.com/tas50)) <!-- 15.4.19 -->
 - Bump inspec-core to 4.17.15 [#8935](https://github.com/chef/chef/pull/8935) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.18 -->
 - Bump inspec-core-bin to 4.17.15 [#8936](https://github.com/chef/chef/pull/8936) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.17 -->
