@@ -142,6 +142,8 @@ RSpec.configure do |config|
   config.filter_run_excluding appveyor_only: true unless ENV["APPVEYOR"]
   config.filter_run_excluding skip_travis: true if ENV["TRAVIS"]
 
+  config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
+
   config.filter_run_excluding windows_only: true unless windows?
   config.filter_run_excluding not_supported_on_mac_osx: true if mac_osx?
   config.filter_run_excluding mac_osx_only: true if !mac_osx?
