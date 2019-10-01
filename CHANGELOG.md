@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.21 -->
-## [v15.4.21](https://github.com/chef/chef/tree/v15.4.21) (2019-10-01)
+<!-- latest_release 15.4.22 -->
+## [v15.4.22](https://github.com/chef/chef/tree/v15.4.22) (2019-10-01)
 
 #### Merged Pull Requests
-- Update openSUSE testing in Buildkite [#8931](https://github.com/chef/chef/pull/8931) ([tas50](https://github.com/tas50))
+- Removing sh -c wrapper around the bootstrapper command string [#8885](https://github.com/chef/chef/pull/8885) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Removing sh -c wrapper around the bootstrapper command string [#8885](https://github.com/chef/chef/pull/8885) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.4.22 -->
 - Update openSUSE testing in Buildkite [#8931](https://github.com/chef/chef/pull/8931) ([tas50](https://github.com/tas50)) <!-- 15.4.21 -->
 - bump omnibus gems [#8938](https://github.com/chef/chef/pull/8938) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.20 -->
 - Add testing in Buildkite for Oracle Linux 6/7/8 [#8937](https://github.com/chef/chef/pull/8937) ([tas50](https://github.com/tas50)) <!-- 15.4.19 -->
