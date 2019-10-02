@@ -10,11 +10,13 @@ class Chef
     class Dispatcher < Base
 
       attr_reader :subscribers
-      attr_reader :event_list
 
       def initialize(*subscribers)
         @subscribers = subscribers
-        @event_list = []
+      end
+
+      def event_list
+        Thread.current[:chef_client_event_list] ||= []
       end
 
       # Add a new subscriber to the list of registered subscribers
