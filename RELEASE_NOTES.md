@@ -43,7 +43,7 @@ The `remote_file` resource now properly shows download progress when the `show_p
 
 ## Custom Resource Unified Mode
 
-Chef Infra Client 15.3 introduces an exciting new way to easily write custom resources that mix built-in Chef Infra resources with Ruby code. Previously custom resources would use Chef Infra's standard compile and converge phases, which meant that Ruby would be evaluated first and then the resources would be converged. This often results in confusing and undesirable behavior when you are trying to mix resources with Ruby logic. Many custom resource authors would attempt to get around this by forcing resources to run at compile time so that all the code in their resource would execute during the compile phase.
+Chef Infra Client 15.3 introduces an exciting new way to easily write custom resources that mix built-in Chef Infra resources with Ruby code. Previously, custom resources would use Chef Infra's standard compile and converge phases, which meant that Ruby would be evaluated first and then the resources would be converged. This often results in confusing and undesirable behavior when you are trying to mix resources with Ruby logic. Many custom resource authors would attempt to get around this by forcing resources to run at compile time so that all the code in their resource would execute during the compile phase.
 
 An example of forcing a resource to run at compile time:
 
