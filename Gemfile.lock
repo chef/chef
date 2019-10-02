@@ -203,7 +203,7 @@ GEM
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
     parallel (1.17.0)
-    parser (2.6.4.1)
+    parser (2.6.5.0)
       ast (~> 2.4.0)
     parslet (1.8.2)
     pastel (0.7.3)
