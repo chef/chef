@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.10 -->
-## [v14.14.10](https://github.com/chef/chef/tree/v14.14.10) (2019-10-02)
+<!-- latest_release 14.14.11 -->
+## [v14.14.11](https://github.com/chef/chef/tree/v14.14.11) (2019-10-02)
 
 #### Merged Pull Requests
-- Backport buildkite kitchen test updates from Chef 15 [#8947](https://github.com/chef/chef/pull/8947) ([tas50](https://github.com/tas50))
+- Test Chef Infra Client on RHEL 8 [#8944](https://github.com/chef/chef/pull/8944) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.13.11 -->
 ### Changes since 14.13.11 release
 
 #### Merged Pull Requests
+- Test Chef Infra Client on RHEL 8 [#8944](https://github.com/chef/chef/pull/8944) ([tas50](https://github.com/tas50)) <!-- 14.14.11 -->
 - Backport buildkite kitchen test updates from Chef 15 [#8947](https://github.com/chef/chef/pull/8947) ([tas50](https://github.com/tas50)) <!-- 14.14.10 -->
 - Bump all deps to to current [#8946](https://github.com/chef/chef/pull/8946) ([tas50](https://github.com/tas50)) <!-- 14.14.9 -->
 - Fix show_progress in remote_file is causing FloatDomainError: Infinity [#8945](https://github.com/chef/chef/pull/8945) ([tas50](https://github.com/tas50)) <!-- 14.14.8 -->
