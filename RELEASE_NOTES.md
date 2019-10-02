@@ -1,6 +1,98 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
-# Chef Client Release Notes 14.13:
+# Chef Client Release Notes 14.14
+
+## Platform Updates
+
+### Newly Supported Platforms
+
+The following platforms are now packaged and tested for Chef Infra Client:
+
+- FreeBSD 12
+- macOS 10.15
+- Windows 2019
+- AIX 7.2
+
+### Deprecated Platforms
+
+The following platforms have reached EOL status and are no longer packaged or tested for Chef Infra Client:
+
+- FreeBSD 10
+- macOS 10.12
+- SUSE Linux Enterprise Server (SLES) 11
+- Ubuntu 14.04
+
+See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
+
+## Updated Resources
+
+### dnf_package
+
+The `dnf_package` resource has been updated to fully support RHEL 8.
+
+### zypper_package
+
+The `zypper_package` resource has been updated to properly update packages when using the `:upgrade` action.
+
+## Improvements
+
+## Custom Resource Unified Mode
+
+Chef Infra Client 15.3 introduces an exciting new way to easily write custom resources that mix built-in Chef Infra resources with Ruby code. Previously custom resources would use Chef Infra's standard compile and converge phases, which meant that Ruby would be evaluated first and then the resources would be converged. This often results in confusing and undesirable behavior when you are trying to mix resources with Ruby logic. Many custom resource authors would attempt to get around this by forcing resources to run at compile time so that all the code in their resource would execute during the compile phase.
+
+An example of forcing a resource to run at compile time:
+
+```ruby
+resource_name 'foo' do
+  action :nothing
+end.run_action(:some_action)
+```
+
+With unified mode, you opt in to a single phase per resource where all Ruby and Chef Infra resources are executed at once. This makes it far easier to determine how your code will be evaluated and run. Additionally, you no longer need to force any resources to run at compile time, as all code is run in the compile phase. To enable this new mode just add `unified_mode true` to your resources like this:
+
+```ruby
+property :Some_property, String
+
+unified_mode true
+
+action :create do
+  # some code
+end
+```
+
+### New Options for installing Ruby Gems From metadata.rb
+
+Chef Infra Client allows gems to be specified in the cookbook metadata.rb, which can be problematic in some environment. When a cookbook is running in an airgapped environment, Chef Infra Client attempts to connect https://rubygems.org/even even if the gem is already on th system. There are now two additional configuration options that can be set in your `client.rb` config:
+    - `gem_installer_bundler_options`: This allows setting additional bundler options for the install such as  --local to install from local cache. Example: ["--local", "--clean"]
+    - `skip_gem_metadata_installation`: If set to true skip gem metadata installation if all gems are already installed.
+
+### SLES / openSUSE 15 detection
+
+Ohai now properly detects SLES and openSUSE 15.x. Thanks for this fix [@balasankarc](https://gitlab.com/balasankarc)
+
+### Performance Improvements
+
+We have improved the performance of Chef Infra Client by resolving bundler errors in our packaging.
+
+### Bootstrapping Chef Infra Client 15 will no fail
+
+Knife will now now fails with a descriptive error message when attempting to bootstrap nodes with Chef Infra Client 15. You will need to bootstrap these nodes using knife from Chef Infra Client 15.x. We recommeend performing this bootstrap from Chef Workstation, which includes the knife CLI in addition to useful tools for managing your infrastructure with Chef Infra.
+
+## Security Updates
+
+### Ruby
+
+Ruby has been updated from 2.6.3 to 2.6.4 in order to resolve [CVE-2012-6708](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-6708) and [CVE-2015-9251](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-9251).
+
+### openssl
+
+openssl has been updated from 1.0.2s to 1.0.2t in order to resolve [CVE-2019-1563](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563) and [CVE-2019-1547](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547).
+
+### nokogiri
+
+nokogori has been updated from 1.10.2 to 1.10.4 in order to resolve [CVE-2019-5477](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5477)
+
+# Chef Client Release Notes 14.13
 
 ## Updated Resources
 
