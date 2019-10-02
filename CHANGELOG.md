@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.6 -->
-## [v14.14.6](https://github.com/chef/chef/tree/v14.14.6) (2019-10-01)
+<!-- latest_release 14.14.7 -->
+## [v14.14.7](https://github.com/chef/chef/tree/v14.14.7) (2019-10-02)
 
 #### Merged Pull Requests
-- Fix Windows Integration and Functional tests for BK [#8940](https://github.com/chef/chef/pull/8940) ([jaymalasinha](https://github.com/jaymalasinha))
+- Update nokogiri to 1.10.4 and openssl to 1.0.2t [#8943](https://github.com/chef/chef/pull/8943) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.13.11 -->
 ### Changes since 14.13.11 release
 
 #### Merged Pull Requests
+- Update nokogiri to 1.10.4 and openssl to 1.0.2t [#8943](https://github.com/chef/chef/pull/8943) ([tas50](https://github.com/tas50)) <!-- 14.14.7 -->
 - Fix Windows Integration and Functional tests for BK [#8940](https://github.com/chef/chef/pull/8940) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.14.6 -->
 - dnf_package fixes for RHEL8 backport to chef-14 [#8894](https://github.com/chef/chef/pull/8894) ([atward](https://github.com/atward)) <!-- 14.14.5 -->
 - Backport #8847 into Chef 14: Added support to provide additional options to bundle install [#8901](https://github.com/chef/chef/pull/8901) ([jjustice6](https://github.com/jjustice6)) <!-- 14.14.4 -->
