@@ -68,7 +68,7 @@ end
 ### New Options for installing Ruby Gems From metadata.rb
 
 Chef Infra Client allows gems to be specified in the cookbook metadata.rb, which can be problematic in some environments. When a cookbook is running in an airgapped environment, Chef Infra Client attempts to connect to rubygems.org even if the gem is already on the system. There are now two additional configuration options that can be set in your `client.rb` config:
-    - `gem_installer_bundler_options`: This allows setting additional bundler options for the install such as  --local to install from local cache. Example: ["--local", "--clean"]
+    - `gem_installer_bundler_options`: This allows setting additional bundler options for the install such as  --local to install from local cache. Example: ["--local", "--clean"].
     - `skip_gem_metadata_installation`: If set to true skip gem metadata installation if all gems are already installed.
 
 ### SLES / openSUSE 15 detection
