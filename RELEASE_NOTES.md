@@ -8,6 +8,7 @@ This file holds "in progress" release notes for the current release under develo
 
 The following platforms are now packaged and tested for Chef Infra Client:
 
+- Red Hat 8
 - FreeBSD 12
 - macOS 10.15
 - Windows 2019
@@ -33,6 +34,10 @@ The `dnf_package` resource has been updated to fully support RHEL 8.
 ### zypper_package
 
 The `zypper_package` resource has been updated to properly update packages when using the `:upgrade` action.
+
+### remote_file
+
+The `remote_file` resource now properly shows download progress when the `show_progress` property is set to true.
 
 ## Improvements
 
