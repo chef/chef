@@ -6,7 +6,7 @@
 # software here: bundle exec rake dependencies:update_omnibus_gemfile_lock
 override :rubygems, version: "2.7.9"
 override :bundler, version: "1.16.6"
-override "nokogiri", version: "1.10.2"
+override "nokogiri", version: "1.10.4"
 override "libffi", version: "3.2.1"
 override "libiconv", version: "1.15"
 override "liblzma", version: "5.2.4"
@@ -22,7 +22,7 @@ override "ruby-windows-devkit-bash", version: "3.1.23-4-msys-1.0.18"
 override "util-macros", version: "1.19.0"
 override "xproto", version: "7.0.28"
 override "zlib", version: "1.2.11"
-override "openssl", version: "1.0.2s"
+override "openssl", version: "1.0.2t"
 
 # we build both a chef and ohai omnibus-software defintion which create the
 # chef-client and ohai binstubs. Out of the box the ohai definition uses whatever
