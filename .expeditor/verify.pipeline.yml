@@ -299,11 +299,11 @@ steps:
   # EXTERNAL GEM TESTING
 #########################################################################
 
-- label: "Test chef-sugar gem :ruby: 2.6"
+- label: "Test chef-sugar-ng gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
-    - bundle exec tasks/bin/run_external_test sethvargo/chef-sugar master rake
+    - bundle exec tasks/bin/run_external_test chef/chef-sugar master rake
   expeditor:
     executor:
       docker:
@@ -492,6 +492,51 @@ steps:
         privileged: true
         single-use: true
 
+- label: "Kitchen Tests Oracle Linux: 6"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-oraclelinux-6
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Oracle Linux: 7"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-oraclelinux-7
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Oracle Linux: 8"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-oraclelinux-8
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
 - label: "Kitchen Tests Fedora: latest"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
@@ -511,7 +556,22 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap-42
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests openSUSE Leap: 15"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap-15
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
