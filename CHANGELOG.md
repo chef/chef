@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.9 -->
-## [v14.14.9](https://github.com/chef/chef/tree/v14.14.9) (2019-10-02)
+<!-- latest_release 14.14.10 -->
+## [v14.14.10](https://github.com/chef/chef/tree/v14.14.10) (2019-10-02)
 
 #### Merged Pull Requests
-- Bump all deps to to current [#8946](https://github.com/chef/chef/pull/8946) ([tas50](https://github.com/tas50))
+- Backport buildkite kitchen test updates from Chef 15 [#8947](https://github.com/chef/chef/pull/8947) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.13.11 -->
 ### Changes since 14.13.11 release
 
 #### Merged Pull Requests
+- Backport buildkite kitchen test updates from Chef 15 [#8947](https://github.com/chef/chef/pull/8947) ([tas50](https://github.com/tas50)) <!-- 14.14.10 -->
 - Bump all deps to to current [#8946](https://github.com/chef/chef/pull/8946) ([tas50](https://github.com/tas50)) <!-- 14.14.9 -->
 - Fix show_progress in remote_file is causing FloatDomainError: Infinity [#8945](https://github.com/chef/chef/pull/8945) ([tas50](https://github.com/tas50)) <!-- 14.14.8 -->
 - Update nokogiri to 1.10.4 and openssl to 1.0.2t [#8943](https://github.com/chef/chef/pull/8943) ([tas50](https://github.com/tas50)) <!-- 14.14.7 -->
