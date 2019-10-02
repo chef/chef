@@ -81,7 +81,7 @@ We have improved the performance of Chef Infra Client by resolving bundler error
 
 ### Bootstrapping Chef Infra Client 15 will no fail
 
-Knife will now now fails with a descriptive error message when attempting to bootstrap nodes with Chef Infra Client 15. You will need to bootstrap these nodes using knife from Chef Infra Client 15.x. We recommeend performing this bootstrap from Chef Workstation, which includes the knife CLI in addition to useful tools for managing your infrastructure with Chef Infra.
+Knife now fails with a descriptive error message when attempting to bootstrap nodes with Chef Infra Client 15. You will need to bootstrap these nodes using Knife from Chef Infra Client 15.x. We recommend performing this bootstrap from Chef Workstation, which includes the Knife CLI in addition to other useful tools for managing your infrastructure with Chef Infra.
 
 ## Security Updates
 
