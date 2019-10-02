@@ -73,7 +73,7 @@ Chef Infra Client allows gems to be specified in the cookbook metadata.rb, which
 
 ### SLES / openSUSE 15 detection
 
-Ohai now properly detects SLES and openSUSE 15.x. Thanks for this fix [@balasankarc](https://gitlab.com/balasankarc)
+Ohai now properly detects SLES and openSUSE 15.x. Thanks for this fix [@balasankarc](https://gitlab.com/balasankarc).
 
 ### Performance Improvements
 
