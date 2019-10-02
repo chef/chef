@@ -19,9 +19,11 @@ lifecycle:
     - remote: /opt/chef/embedded/bin/chef-client -v
     - remote: /opt/chef/embedded/bin/ohai -v
     - remote: /opt/chef/embedded/bin/gem uninstall -x chef-bin # appbundle-updater doesn't remove this when downgrading to 14
-    - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater
+    - remote: /opt/chef/embedded/bin/rake --version
+    - remote: /opt/chef/embedded/bin/bundle -v
+    - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
-    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['TRAVIS_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
+    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/embedded/bin/chef-client -v
     - remote: /opt/chef/embedded/bin/ohai -v
@@ -81,6 +83,29 @@ platforms:
       - RUN yum -y install e2fsprogs
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
+- name: oraclelinux-6
+  driver:
+    image: dokken/oraclelinux-6
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: oraclelinux-7
+  driver:
+    image: dokken/oraclelinux-7
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install e2fsprogs
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: oraclelinux-8
+  driver:
+    image: dokken/oraclelinux-8
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install e2fsprogs
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
 - name: fedora-latest
   driver:
     image: dokken/fedora-latest
@@ -102,9 +127,17 @@ platforms:
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
 
-- name: opensuse-leap
+- name: opensuse-leap-42
   driver:
-    image: dokken/opensuse-leap
+    image: dokken/opensuse-leap-42
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/zypper --non-interactive update
+      - RUN /usr/bin/zypper --non-interactive install cron
+
+- name: opensuse-leap-15
+  driver:
+    image: dokken/opensuse-leap-15
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/zypper --non-interactive update
