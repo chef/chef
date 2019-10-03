@@ -487,6 +487,27 @@ describe Chef::Resource::RpmPackage, :requires_root, external: exclude_test do
     end
   end
 
+  describe ":reinstall" do
+    context "vanilla use case" do
+      let(:package_name) { "chef_rpm" }
+      it "does not reinstall if the package is not installed" do
+        flush_cache
+        dnf_package.run_action(:remove)
+        dnf_package.run_action(:reinstall)
+        expect(dnf_package.updated_by_last_action?).to be false
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
+      end
+
+      it "reinstall the package if installed" do
+        flush_cache
+        dnf_package.run_action(:install)
+        dnf_package.run_action(:reinstall)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
+      end
+    end
+  end
+
   describe ":upgrade" do
     context "downgrades" do
       it "just work with DNF" do

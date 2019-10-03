@@ -652,6 +652,27 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
   end
 
+  describe ":reinstall" do
+    context "vanilla use case" do
+      let(:package_name) { "chef_rpm" }
+
+      it "do not reinstall if the package is not installed" do
+        flush_cache
+        yum_package.run_action(:remove)
+        yum_package.run_action(:reinstall)
+        expect(yum_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^package chef_rpm is not installed$")
+      end
+
+      it "reinstall if package is installed" do
+        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        yum_package.run_action(:reinstall)
+        expect(yum_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
+      end
+    end
+  end
+
   describe ":upgrade" do
 
     context "with source arguments" do

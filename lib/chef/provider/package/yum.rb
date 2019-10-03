@@ -65,7 +65,7 @@ class Chef
         end
 
         def define_resource_requirements
-          requirements.assert(:install, :upgrade, :remove, :purge) do |a|
+          requirements.assert(:install, :reinstall, :upgrade, :remove, :purge) do |a|
             a.assertion { !new_resource.source || ::File.exist?(new_resource.source) }
             a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
             a.whyrun "assuming #{new_resource.source} would have previously been created"
@@ -125,6 +125,12 @@ class Chef
 
         # yum upgrade does not work on uninstalled packaged, while install will upgrade
         alias upgrade_package install_package
+
+        def reinstall_package(names)
+          resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }
+          yum(options, "-y", "reinstall", resolved_names)
+          flushcache
+        end
 
         def remove_package(names, versions)
           resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }

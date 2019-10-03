@@ -43,9 +43,10 @@ describe Chef::Resource::DnfPackage, "defaults" do
     expect(resource.action).to eql([:install])
   end
 
-  it "supports :flush_cache, :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+  it "supports :flush_cache, :install, :reinstall, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
     expect { resource.action :flush_cache }.not_to raise_error
     expect { resource.action :install }.not_to raise_error
+    expect { resource.action :reinstall }.not_to raise_error
     expect { resource.action :lock }.not_to raise_error
     expect { resource.action :purge }.not_to raise_error
     expect { resource.action :reconfig }.not_to raise_error

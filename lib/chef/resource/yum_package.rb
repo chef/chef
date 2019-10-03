@@ -25,11 +25,13 @@ class Chef
       resource_name :yum_package
       provides :package, platform_family: %w{rhel fedora amazon}
 
-      description "Use the yum_package resource to install, upgrade, and remove packages with Yum"\
+      description "Use the yum_package resource to install, reinstall, upgrade, and remove packages with Yum"\
                   " for the Red Hat and CentOS platforms. The yum_package resource is able to resolve"\
                   " provides data for packages much like Yum can do when it is run from the command line."\
                   " This allows a variety of options for installing packages, like minimum versions,"\
                   " virtual provides, and library names."
+
+      allowed_actions :install, :reinstall, :upgrade, :remove, :purge, :reconfig, :lock, :unlock, :flush_cache
 
       # XXX: the coercions here are due to the provider promiscuously updating the properties on the
       # new_resource which causes immutable modification exceptions when passed an immutable node array.
