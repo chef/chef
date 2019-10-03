@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.23 -->
-## [v15.4.23](https://github.com/chef/chef/tree/v15.4.23) (2019-10-03)
+<!-- latest_release 15.4.24 -->
+## [v15.4.24](https://github.com/chef/chef/tree/v15.4.24) (2019-10-03)
 
 #### Merged Pull Requests
-- Bump Ruby to 2.6.5 to address CVEs #8951 [#8952](https://github.com/chef/chef/pull/8952) ([christopher-snapp](https://github.com/christopher-snapp))
+- Bump inspec-core-bin to 4.17.17 [#8953](https://github.com/chef/chef/pull/8953) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.17.17 [#8953](https://github.com/chef/chef/pull/8953) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.24 -->
 - Bump Ruby to 2.6.5 to address CVEs #8951 [#8952](https://github.com/chef/chef/pull/8952) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.4.23 -->
 - Removing sh -c wrapper around the bootstrapper command string [#8885](https://github.com/chef/chef/pull/8885) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.4.22 -->
 - Update openSUSE testing in Buildkite [#8931](https://github.com/chef/chef/pull/8931) ([tas50](https://github.com/tas50)) <!-- 15.4.21 -->
