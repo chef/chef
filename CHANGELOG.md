@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.25 -->
-## [v15.4.25](https://github.com/chef/chef/tree/v15.4.25) (2019-10-03)
+<!-- latest_release 15.4.26 -->
+## [v15.4.26](https://github.com/chef/chef/tree/v15.4.26) (2019-10-03)
 
 #### Merged Pull Requests
-- Revert Gemfile.lock to Bundler 1.17.3 [#8956](https://github.com/chef/chef/pull/8956) ([tas50](https://github.com/tas50))
+- Remove EOL openSUSE Leap 42 testing [#8955](https://github.com/chef/chef/pull/8955) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove EOL openSUSE Leap 42 testing [#8955](https://github.com/chef/chef/pull/8955) ([tas50](https://github.com/tas50)) <!-- 15.4.26 -->
 - Revert Gemfile.lock to Bundler 1.17.3 [#8956](https://github.com/chef/chef/pull/8956) ([tas50](https://github.com/tas50)) <!-- 15.4.25 -->
 - Bump inspec-core-bin to 4.17.17 [#8953](https://github.com/chef/chef/pull/8953) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.24 -->
 - Bump Ruby to 2.6.5 to address CVEs #8951 [#8952](https://github.com/chef/chef/pull/8952) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.4.23 -->
