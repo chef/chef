@@ -183,7 +183,7 @@ class Chef
         end
 
         # Create the command
-        paths = tempfiles.keys.map { |tempfile| tempfile.path }.join(" ")
+        paths = tempfiles.keys.map(&:path).join(" ")
         if config[:replace_all]
           final_command = command.gsub(config[:replace_all], paths)
         elsif config[:replace_first]
@@ -197,7 +197,7 @@ class Chef
 
       def destroy_tempfiles(tempfiles)
         # Unlink the files now that we're done with them
-        tempfiles.each_key { |tempfile| tempfile.close! }
+        tempfiles.each_key(&:close!)
       end
 
       def xargs_files(command, tempfiles)

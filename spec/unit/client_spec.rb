@@ -647,7 +647,7 @@ describe Chef::Client do
           EOM
         end
         it "should not raise an error" do
-          expect { client.load_required_recipe(rest, run_context) }.not_to raise_error()
+          expect { client.load_required_recipe(rest, run_context) }.not_to raise_error
         end
       end
     end

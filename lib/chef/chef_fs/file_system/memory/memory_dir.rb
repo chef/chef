@@ -38,7 +38,7 @@ class Chef
             dir = self
             path_parts.each do |path_part|
               subdir = dir.child(path_part)
-              if !subdir.exists?
+              unless subdir.exists?
                 subdir = MemoryDir.new(path_part, dir)
                 dir.add_child(subdir)
               end

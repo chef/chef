@@ -64,52 +64,52 @@ class Chef
 
     def username(arg = nil)
       set_or_return(:username, arg,
-                    regex: /^[a-z0-9\-_]+$/)
+        regex: /^[a-z0-9\-_]+$/)
     end
 
     def display_name(arg = nil)
       set_or_return(:display_name,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def first_name(arg = nil)
       set_or_return(:first_name,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def middle_name(arg = nil)
       set_or_return(:middle_name,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def last_name(arg = nil)
       set_or_return(:last_name,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def email(arg = nil)
       set_or_return(:email,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def create_key(arg = nil)
       set_or_return(:create_key, arg,
-                    kind_of: [TrueClass, FalseClass])
+        kind_of: [TrueClass, FalseClass])
     end
 
     def public_key(arg = nil)
       set_or_return(:public_key,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def private_key(arg = nil)
       set_or_return(:private_key,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def password(arg = nil)
       set_or_return(:password,
-                    arg, kind_of: String)
+        arg, kind_of: String)
     end
 
     def to_h
@@ -154,6 +154,7 @@ class Chef
         payload[:create_key] = @create_key unless @create_key.nil?
         payload[:middle_name] = @middle_name unless @middle_name.nil?
         raise Chef::Exceptions::InvalidUserAttribute, "You cannot set both public_key and create_key for create." if !@create_key.nil? && !@public_key.nil?
+
         new_user = chef_root_rest_v1.post("users", payload)
 
         # get the private_key out of the chef_key hash if it exists
@@ -168,6 +169,7 @@ class Chef
         # rescue API V0 if 406 and the server supports V0
         supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
         raise e unless supported_versions && supported_versions.include?(0)
+
         payload = {
           username: @username,
           display_name: @display_name,
@@ -311,7 +313,7 @@ class Chef
     # into the form
     # { "USERNAME" => "URI" }
     def self.transform_list_response(response)
-      new_response = Hash.new
+      new_response = {}
       response.each do |u|
         name = u["user"]["username"]
         new_response[name] = Chef::Config[:chef_server_url] + "/users/#{name}"

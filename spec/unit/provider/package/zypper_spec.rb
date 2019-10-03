@@ -112,6 +112,15 @@ describe Chef::Provider::Package::Zypper do
       expect(provider.candidate_version).to eql(["1.0"])
     end
 
+    it "should have differing current and candidate versions if zypper detects an upgrade" do
+      status = double(stdout: "Version        : 1.0                             \nInstalled      : Yes                              \nStatus         : out-of-date (version 0.9 installed)", exitstatus: 0)
+
+      allow(provider).to receive(:shell_out_compacted!).and_return(status)
+      provider.load_current_resource
+      expect(provider.get_current_versions).to eq(["0.9"])
+      expect(provider.get_candidate_versions).to eq(["1.0"])
+    end
+
     it "should return the current resouce" do
       expect(provider.load_current_resource).to eql(current_resource)
     end
@@ -223,7 +232,7 @@ describe Chef::Provider::Package::Zypper do
     context "when package version is not explicitly specified" do
       it "should run zypper remove with the package name" do
         shell_out_expectation!(
-            "zypper", "--non-interactive", "remove", "emacs"
+          "zypper", "--non-interactive", "remove", "emacs"
         )
         provider.remove_package(["emacs"], [nil])
       end
@@ -239,14 +248,14 @@ describe Chef::Provider::Package::Zypper do
       it "should run zypper remove without gpg checks" do
         new_resource.gpg_check false
         shell_out_expectation!(
-            "zypper", "--non-interactive", "--no-gpg-checks", "remove", "emacs=1.0"
+          "zypper", "--non-interactive", "--no-gpg-checks", "remove", "emacs=1.0"
         )
         provider.remove_package(["emacs"], ["1.0"])
       end
       it "should run zypper remove without gpg checks when the config is false" do
         Chef::Config[:zypper_check_gpg] = false
         shell_out_expectation!(
-            "zypper", "--non-interactive", "--no-gpg-checks", "remove", "emacs=1.0"
+          "zypper", "--non-interactive", "--no-gpg-checks", "remove", "emacs=1.0"
         )
         provider.remove_package(["emacs"], ["1.0"])
       end
@@ -453,7 +462,7 @@ describe Chef::Provider::Package::Zypper do
     describe "remove_package" do
       it "should run zypper remove with the package name" do
         shell_out_expectation!(
-           "zypper", "remove", "-y", "emacs"
+          "zypper", "remove", "-y", "emacs"
         )
         provider.remove_package(["emacs"], ["1.0"])
       end

@@ -185,12 +185,12 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife raw -z -i empty.json -m PUT /clients/x" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /clients/x").should_succeed( /"x"/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /clients/x").should_succeed( /"x"/ )
           knife("list --local /clients").should_succeed "/clients/x.json\n"
         end
 
         it "knife cookbook upload works" do
-          knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} x").should_succeed stderr: <<~EOM
+          knife("cookbook upload -z --cookbook-path #{path_to("cookbooks_to_upload")} x").should_succeed stderr: <<~EOM
             Uploading x              [1.0.0]
             Uploaded 1 cookbook.
           EOM
@@ -198,28 +198,28 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife raw -z -i empty.json -m PUT /data/x/y" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /data/x/y").should_succeed( /"y"/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /data/x/y").should_succeed( /"y"/ )
           knife("list --local -Rfp /data_bags").should_succeed "/data_bags/x/\n/data_bags/x/y.json\n"
         end
 
         it "knife raw -z -i empty.json -m PUT /environments/x" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /environments/x").should_succeed( /"x"/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /environments/x").should_succeed( /"x"/ )
           knife("list --local /environments").should_succeed "/environments/x.json\n"
         end
 
         it "knife raw -z -i dummynode.json -m PUT /nodes/x" do
-          knife("raw -z -i #{path_to('dummynode.json')} -m PUT /nodes/x").should_succeed( /"x"/ )
+          knife("raw -z -i #{path_to("dummynode.json")} -m PUT /nodes/x").should_succeed( /"x"/ )
           knife("list --local /nodes").should_succeed "/nodes/x.json\n"
           knife("show -z /nodes/x.json --verbose").should_succeed(/"bar"/)
         end
 
         it "knife raw -z -i empty.json -m PUT /roles/x" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /roles/x").should_succeed( /"x"/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /roles/x").should_succeed( /"x"/ )
           knife("list --local /roles").should_succeed "/roles/x.json\n"
         end
 
         it "After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty" do
-          knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed( /"x"/ )
+          knife("raw -z -i #{path_to("rolestuff.json")} -m PUT /roles/x").should_succeed( /"x"/ )
           expect(IO.read(path_to("roles/x.json"))).to eq <<~EOM.strip
             {
               "name": "x",
@@ -242,12 +242,12 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife raw -z -i empty.json -m POST /clients" do
-          knife("raw -z -i #{path_to('empty.json')} -m POST /clients").should_succeed( /uri/ )
+          knife("raw -z -i #{path_to("empty.json")} -m POST /clients").should_succeed( /uri/ )
           knife("list --local /clients").should_succeed "/clients/z.json\n"
         end
 
         it "knife cookbook upload works" do
-          knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} z").should_succeed stderr: <<~EOM
+          knife("cookbook upload -z --cookbook-path #{path_to("cookbooks_to_upload")} z").should_succeed stderr: <<~EOM
             Uploading z            [1.0.0]
             Uploaded 1 cookbook.
           EOM
@@ -255,34 +255,34 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife raw -z -i empty.json -m POST /data" do
-          knife("raw -z -i #{path_to('empty.json')} -m POST /data").should_succeed( /uri/ )
+          knife("raw -z -i #{path_to("empty.json")} -m POST /data").should_succeed( /uri/ )
           knife("list --local -Rfp /data_bags").should_succeed "/data_bags/z/\n"
         end
 
         it "knife raw -z -i empty.json -m POST /data/x" do
-          knife("raw -z -i #{path_to('empty_x.json')} -m POST /data").should_succeed( /uri/ )
-          knife("raw -z -i #{path_to('empty_id.json')} -m POST /data/x").should_succeed( /"z"/ )
+          knife("raw -z -i #{path_to("empty_x.json")} -m POST /data").should_succeed( /uri/ )
+          knife("raw -z -i #{path_to("empty_id.json")} -m POST /data/x").should_succeed( /"z"/ )
           knife("list --local -Rfp /data_bags").should_succeed "/data_bags/x/\n/data_bags/x/z.json\n"
         end
 
         it "knife raw -z -i empty.json -m POST /environments" do
-          knife("raw -z -i #{path_to('empty.json')} -m POST /environments").should_succeed( /uri/ )
+          knife("raw -z -i #{path_to("empty.json")} -m POST /environments").should_succeed( /uri/ )
           knife("list --local /environments").should_succeed "/environments/z.json\n"
         end
 
         it "knife raw -z -i dummynode.json -m POST /nodes" do
-          knife("raw -z -i #{path_to('dummynode.json')} -m POST /nodes").should_succeed( /uri/ )
+          knife("raw -z -i #{path_to("dummynode.json")} -m POST /nodes").should_succeed( /uri/ )
           knife("list --local /nodes").should_succeed "/nodes/z.json\n"
           knife("show -z /nodes/z.json").should_succeed(/"bar"/)
         end
 
         it "knife raw -z -i empty.json -m POST /roles" do
-          knife("raw -z -i #{path_to('empty.json')} -m POST /roles").should_succeed( /uri/ )
+          knife("raw -z -i #{path_to("empty.json")} -m POST /roles").should_succeed( /uri/ )
           knife("list --local /roles").should_succeed "/roles/z.json\n"
         end
 
         it "After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty" do
-          knife("raw -z -i #{path_to('rolestuff.json')} -m POST /roles").should_succeed( /uri/ )
+          knife("raw -z -i #{path_to("rolestuff.json")} -m POST /roles").should_succeed( /uri/ )
           expect(IO.read(path_to("roles/x.json"))).to eq <<~EOM.strip
             {
               "name": "x",
@@ -388,23 +388,23 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife raw -z -i empty.json -m PUT /clients/x fails with 404" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /clients/x").should_fail( /404/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /clients/x").should_fail( /404/ )
         end
 
         it "knife raw -z -i empty.json -m PUT /data/x/y fails with 404" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /data/x/y").should_fail( /404/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /data/x/y").should_fail( /404/ )
         end
 
         it "knife raw -z -i empty.json -m PUT /environments/x fails with 404" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /environments/x").should_fail( /404/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /environments/x").should_fail( /404/ )
         end
 
         it "knife raw -z -i empty.json -m PUT /nodes/x fails with 404" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /nodes/x").should_fail( /404/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /nodes/x").should_fail( /404/ )
         end
 
         it "knife raw -z -i empty.json -m PUT /roles/x fails with 404" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /roles/x").should_fail( /404/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /roles/x").should_fail( /404/ )
         end
 
       end
@@ -485,12 +485,12 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife raw -z -i empty.json -m PUT /users/x" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /users/x").should_succeed( /"x"/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /users/x").should_succeed( /"x"/ )
           knife("list --local /users").should_succeed "/users/x.json\n"
         end
 
         it "After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty" do
-          knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed( /"x"/ )
+          knife("raw -z -i #{path_to("rolestuff.json")} -m PUT /roles/x").should_succeed( /"x"/ )
           expect(IO.read(path_to("roles/x.json"))).to eq <<~EOM.strip
             {
               "name": "x",
@@ -513,7 +513,7 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife raw -z -i empty.json -m POST /users" do
-          knife("raw -z -i #{path_to('empty.json')} -m POST /users").should_succeed( /uri/ )
+          knife("raw -z -i #{path_to("empty.json")} -m POST /users").should_succeed( /uri/ )
           knife("list --local /users").should_succeed "/users/z.json\n"
         end
       end
@@ -548,7 +548,7 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife raw -z -i empty.json -m PUT /users/x fails with 404" do
-          knife("raw -z -i #{path_to('empty.json')} -m PUT /users/x").should_fail( /404/ )
+          knife("raw -z -i #{path_to("empty.json")} -m PUT /users/x").should_fail( /404/ )
         end
       end
     end

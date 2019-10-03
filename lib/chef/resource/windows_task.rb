@@ -31,98 +31,98 @@ class Chef
       allowed_actions :create, :delete, :run, :end, :enable, :disable, :change
       default_action :create
 
-      property :task_name, String, regex: [/\A[^\/\:\*\?\<\>\|]+\z/],
+      property :task_name, String, regex: [%r{\A[^/\:\*\?\<\>\|]+\z}],
                description: "An optional property to set the task name if it differs from the resource block's name. Example: 'Task Name' or '/Task Name'",
                name_property: true
 
       property :command, String,
-               description: "The command to be executed by the windows scheduled task."
+        description: "The command to be executed by the windows scheduled task."
 
       property :cwd, String,
-               description: "The directory the task will be run from."
+        description: "The directory the task will be run from."
 
       property :user, String,
-               description: "The user to run the task as.",
-               default: lazy { Chef::ReservedNames::Win32::Security::SID.LocalSystem.account_simple_name if Chef::Platform.windows? },
-               default_description: "The localized SYSTEM user for the node."
+        description: "The user to run the task as.",
+        default: lazy { Chef::ReservedNames::Win32::Security::SID.LocalSystem.account_simple_name if Chef::Platform.windows? },
+        default_description: "The localized SYSTEM user for the node."
 
       property :password, String,
-               description: "The user’s password. The user property must be set if using this property."
+        description: "The user’s password. The user property must be set if using this property."
 
-      property :run_level, Symbol, equal_to: [:highest, :limited],
+      property :run_level, Symbol, equal_to: %i{highest limited},
                description: "Run with ':limited' or ':highest' privileges.",
                default: :limited
 
       property :force, [TrueClass, FalseClass],
-               description: "When used with create, will update the task.",
-               default: false
+        description: "When used with create, will update the task.",
+        default: false
 
       property :interactive_enabled, [TrueClass, FalseClass],
-               description: "Allow task to run interactively or non-interactively. Requires user and password to also be set.",
-               default: false
+        description: "Allow task to run interactively or non-interactively. Requires user and password to also be set.",
+        default: false
 
       property :frequency_modifier, [Integer, String],
-               default: 1
+        default: 1
 
-      property :frequency, Symbol, equal_to: [:minute,
-                                              :hourly,
-                                              :daily,
-                                              :weekly,
-                                              :monthly,
-                                              :once,
-                                              :on_logon,
-                                              :onstart,
-                                              :on_idle,
-                                              :none],
+      property :frequency, Symbol, equal_to: %i{minute
+                                              hourly
+                                              daily
+                                              weekly
+                                              monthly
+                                              once
+                                              on_logon
+                                              onstart
+                                              on_idle
+                                              none},
                description: "The frequency with which to run the task."
 
       property :start_day, String,
-               description: "Specifies the first date on which the task runs in MM/DD/YYYY format."
+        description: "Specifies the first date on which the task runs in MM/DD/YYYY format."
 
       property :start_time, String,
-               description: "Specifies the start time to run the task, in HH:mm format."
+        description: "Specifies the start time to run the task, in HH:mm format."
 
       property :day, [String, Integer],
-               description: "The day(s) on which the task runs."
+        description: "The day(s) on which the task runs."
 
       property :months, String,
-               description: "The Months of the year on which the task runs, such as: 'JAN, FEB' or '\*'. Multiple months should be comma delimited. e.g. 'Jan, Feb, Mar, Dec'."
+        description: "The Months of the year on which the task runs, such as: 'JAN, FEB' or '\*'. Multiple months should be comma delimited. e.g. 'Jan, Feb, Mar, Dec'."
 
       property :idle_time, Integer,
-               description: "For :on_idle frequency, the time (in minutes) without user activity that must pass to trigger the task, from 1 - 999."
+        description: "For :on_idle frequency, the time (in minutes) without user activity that must pass to trigger the task, from 1 - 999."
 
       property :random_delay, [String, Integer],
-               description: "Delays the task up to a given time (in seconds)."
+        description: "Delays the task up to a given time (in seconds)."
 
       property :execution_time_limit, [String, Integer],
-               description: "The maximum time (in seconds) the task will run.",
-               default: "PT72H" # 72 hours in ISO8601 duration format
+        description: "The maximum time (in seconds) the task will run.",
+        default: "PT72H" # 72 hours in ISO8601 duration format
 
       property :minutes_duration, [String, Integer],
-               description: ""
+        description: ""
 
       property :minutes_interval, [String, Integer],
-               description: ""
+        description: ""
 
       property :priority, Integer,
-               description: "Use to set Priority Levels range from 0 to 10.",
-               default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
+        description: "Use to set Priority Levels range from 0 to 10.",
+        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
 
       property :disallow_start_if_on_batteries, [TrueClass, FalseClass],
-               introduced: "14.4", default: false,
-               description: "Disallow start of the task if the system is running on battery power."
+        introduced: "14.4", default: false,
+        description: "Disallow start of the task if the system is running on battery power."
 
       property :stop_if_going_on_batteries, [TrueClass, FalseClass],
-               introduced: "14.4", default: false,
-               description: "Scheduled task option when system is switching on battery."
+        introduced: "14.4", default: false,
+        description: "Scheduled task option when system is switching on battery."
 
       property :description, String,
-               introduced: "14.7",
-               description: "The task description."
+        introduced: "14.7",
+        description: "The task description."
 
       property :start_when_available, [TrueClass, FalseClass],
-               introduced: "15.0", default: false,
-               description: "To start the task at any time after its scheduled time has passed."
+        introduced: "15.0", default: false,
+        description: "To start the task at any time after its scheduled time has passed."
 
       attr_accessor :exists, :task, :command_arguments
 
@@ -140,6 +140,7 @@ class Chef
         if execution_time_limit
           execution_time_limit(259200) if execution_time_limit == "PT72H"
           raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(execution_time_limit)
+
           execution_time_limit(sec_to_min(execution_time_limit))
         end
 
@@ -174,7 +175,7 @@ class Chef
       end
 
       def validate_frequency(frequency)
-        if frequency.nil? || !([:minute, :hourly, :daily, :weekly, :monthly, :once, :on_logon, :onstart, :on_idle, :none].include?(frequency))
+        if frequency.nil? || !(%i{minute hourly daily weekly monthly once on_logon onstart on_idle none}.include?(frequency))
           raise ArgumentError, "Frequency needs to be provided. Valid frequencies are :minute, :hourly, :daily, :weekly, :monthly, :once, :on_logon, :onstart, :on_idle, :none."
         end
       end
@@ -200,7 +201,7 @@ class Chef
       end
 
       def validate_random_delay(random_delay, frequency)
-        if [:on_logon, :onstart, :on_idle, :none].include? frequency
+        if %i{on_logon onstart on_idle none}.include? frequency
           raise ArgumentError, "`random_delay` property is supported only for frequency :once, :minute, :hourly, :daily, :weekly and :monthly"
         end
 
@@ -215,7 +216,7 @@ class Chef
 
         # make sure the start_day is in MM/DD/YYYY format: http://rubular.com/r/cgjHemtWl5
         if start_day
-          raise ArgumentError, "`start_day` property must be in the MM/DD/YYYY format." unless /^(0[1-9]|1[012])[- \/.](0[1-9]|[12][0-9]|3[01])[- \/.](19|20)\d\d$/ =~ start_day
+          raise ArgumentError, "`start_day` property must be in the MM/DD/YYYY format." unless %r{^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d$} =~ start_day
         end
       end
 
@@ -255,7 +256,7 @@ class Chef
       alias non_system_user? password_required?
 
       def validate_create_frequency_modifier(frequency, frequency_modifier)
-        if ([:on_logon, :onstart, :on_idle, :none].include?(frequency)) && ( frequency_modifier != 1)
+        if (%i{on_logon onstart on_idle none}.include?(frequency)) && ( frequency_modifier != 1)
           raise ArgumentError, "frequency_modifier property not supported with frequency :#{frequency}"
         end
 
@@ -287,7 +288,7 @@ class Chef
       end
 
       def validate_create_day(day, frequency, frequency_modifier)
-        raise ArgumentError, "day property is only valid for tasks that run monthly or weekly" unless [:weekly, :monthly].include?(frequency)
+        raise ArgumentError, "day property is only valid for tasks that run monthly or weekly" unless %i{weekly monthly}.include?(frequency)
 
         # This has been verified with schtask.exe https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/schtasks#d-dayday--
         # verified with earlier code if day "*" is given with frequency it raised exception Invalid value for /D option
@@ -301,7 +302,7 @@ class Chef
           else
             days.map! { |day| day.to_s.strip.downcase }
             unless (days - VALID_WEEK_DAYS).empty?
-              raise ArgumentError, "day property invalid. Only valid values are: #{VALID_WEEK_DAYS.map(&:upcase).join(', ')}. Multiple values must be separated by a comma."
+              raise ArgumentError, "day property invalid. Only valid values are: #{VALID_WEEK_DAYS.map(&:upcase).join(", ")}. Multiple values must be separated by a comma."
             end
           end
         end
@@ -309,11 +310,12 @@ class Chef
 
       def validate_create_months(months, frequency)
         raise ArgumentError, "months property is only valid for tasks that run monthly" if frequency != :monthly
+
         if months.is_a?(String)
           months = months.split(",")
           months.map! { |month| month.strip.upcase }
           unless (months - VALID_MONTHS).empty?
-            raise ArgumentError, "months property invalid. Only valid values are: #{VALID_MONTHS.join(', ')}. Multiple values must be separated by a comma."
+            raise ArgumentError, "months property invalid. Only valid values are: #{VALID_MONTHS.join(", ")}. Multiple values must be separated by a comma."
           end
         end
       end

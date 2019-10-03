@@ -167,7 +167,7 @@ describe Chef::Resource::Service do
   end
 
   it "allows you to set what features this resource supports as an array" do
-    support_array = [ :status, :restart ]
+    support_array = %i{status restart}
     support_hash = { status: true, restart: true }
     resource.supports(support_array)
     expect(resource.supports).to eq(support_hash)

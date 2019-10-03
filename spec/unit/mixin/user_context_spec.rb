@@ -56,8 +56,7 @@ describe "a class that mixes in user_context" do
 
       let(:block_object) do
         class BlockClass
-          def block_method
-          end
+          def block_method; end
         end
         BlockClass.new
       end

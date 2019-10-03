@@ -40,7 +40,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
     directory = []
     if priority.is_a? Hash
       priority.each do |level, o|
-        directory << "/etc/rc.d/rc#{level}.d/#{(o[0] == :start ? 'S' : 'K')}#{o[1]}#{new_resource.service_name}"
+        directory << "/etc/rc.d/rc#{level}.d/#{(o[0] == :start ? "S" : "K")}#{o[1]}#{new_resource.service_name}"
       end
       directory
     else

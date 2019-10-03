@@ -21,7 +21,8 @@ require "spec_helper"
 describe Chef::Resource::OsxProfile do
   let(:resource) do
     Chef::Resource::OsxProfile.new(
-    "fakey_fakerton")
+      "fakey_fakerton"
+    )
   end
 
   it "has a resource name of profile" do

@@ -121,7 +121,7 @@ class Chef
                 end
 
       @before = nil
-      @params = Hash.new
+      @params = {}
       @provider = nil
       @allowed_actions = self.class.allowed_actions.to_a
       @action = self.class.default_action
@@ -182,7 +182,7 @@ class Chef
           { action: { kind_of: Symbol, equal_to: allowed_actions } }
         )
         # the resource effectively sends a delayed notification to itself
-        run_context.add_delayed_action(Notification.new(self, action, self))
+        run_context.add_delayed_action(Notification.new(self, action, self, run_context.unified_mode))
       end
     end
 
@@ -453,7 +453,6 @@ class Chef
     #
     attr_reader :elapsed_time
 
-    #
     # @return [Boolean] If the resource was executed by the runner
     #
     attr_accessor :executed_by_runner
@@ -516,6 +515,7 @@ class Chef
         result[property.name] = send(property.name)
       end
       return result.values.first if identity_properties.size == 1
+
       result
     end
 
@@ -581,6 +581,7 @@ class Chef
 
       begin
         return if should_skip?(action)
+
         provider_for_action(action).run_action
       rescue StandardError => e
         if ignore_failure
@@ -629,6 +630,7 @@ class Chef
 
     def to_text
       return "suppressed sensitive resource output" if sensitive
+
       text = "# Declared in #{@source_line}\n\n"
       text << "#{resource_name}(\"#{name}\") do\n"
 
@@ -641,7 +643,7 @@ class Chef
         end
       end
 
-      ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
+      ivars = instance_variables.map(&:to_sym) - HIDDEN_IVARS
       ivars.each do |ivar|
         iv = ivar.to_s.sub(/^@/, "")
         if all_props.keys.include?(iv)
@@ -662,7 +664,7 @@ class Chef
     end
 
     def inspect
-      ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
+      ivars = instance_variables.map(&:to_sym) - FORBIDDEN_IVARS
       ivars.inject("<#{self}") do |str, ivar|
         str << " #{ivar}: #{instance_variable_get(ivar).inspect}"
       end << ">"
@@ -672,8 +674,8 @@ class Chef
     # is loaded. activesupport will call as_json and skip over to_json. This ensure
     # json is encoded as expected
     def as_json(*a)
-      safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
-      instance_vars = Hash.new
+      safe_ivars = instance_variables.map(&:to_sym) - FORBIDDEN_IVARS
+      instance_vars = {}
       safe_ivars.each do |iv|
         instance_vars[iv.to_s.sub(/^@/, "")] = instance_variable_get(iv)
       end
@@ -695,10 +697,11 @@ class Chef
       self.class.state_properties.each do |p|
         result[p.name] = p.get(self)
       end
-      safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
+      safe_ivars = instance_variables.map(&:to_sym) - FORBIDDEN_IVARS
       safe_ivars.each do |iv|
         key = iv.to_s.sub(/^@/, "").to_sym
         next if result.key?(key)
+
         result[key] = instance_variable_get(iv)
       end
       result
@@ -746,7 +749,7 @@ class Chef
     # @see Chef::Resource.action_class
     #
     def provider(arg = nil)
-      klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
+      klass = if arg.is_a?(String) || arg.is_a?(Symbol)
                 lookup_provider_constant(arg)
               else
                 arg
@@ -779,7 +782,7 @@ class Chef
     # @return [Array<Symbol>] All property names with desired state.
     #
     def self.state_attrs(*names)
-      state_properties(*names).map { |property| property.name }
+      state_properties(*names).map(&:name)
     end
 
     #
@@ -809,8 +812,9 @@ class Chef
     def self.identity_property(name = nil)
       result = identity_properties(*Array(name))
       if result.size > 1
-        raise Chef::Exceptions::MultipleIdentityError, "identity_property cannot be called on an object with more than one identity property (#{result.map { |r| r.name }.join(", ")})."
+        raise Chef::Exceptions::MultipleIdentityError, "identity_property cannot be called on an object with more than one identity property (#{result.map(&:name).join(", ")})."
       end
+
       result.first
     end
 
@@ -830,7 +834,8 @@ class Chef
     #
     def self.identity_attr(name = nil)
       property = identity_property(name)
-      return nil if !property
+      return nil unless property
+
       property.name
     end
 
@@ -951,7 +956,7 @@ class Chef
         if name
           name = name.to_sym
           # If our class is not already providing this name, provide it.
-          if !Chef::ResourceResolver.includes_handler?(name, self)
+          unless Chef::ResourceResolver.includes_handler?(name, self)
             provides name, canonical: true
           end
           @resource_name = name
@@ -977,6 +982,16 @@ class Chef
     def self.use_automatic_resource_name
       automatic_name = convert_to_snake_case(name.split("::")[-1])
       resource_name automatic_name
+    end
+
+    # If the resource's action should run in separated compile/converge mode.
+    #
+    # @param flag [Boolean] value to set unified_mode to
+    # @return [Boolean] unified_mode value
+    def self.unified_mode(flag = nil)
+      @unified_mode = Chef::Config[:resource_unified_mode_default] if @unified_mode.nil?
+      @unified_mode = flag unless flag.nil?
+      !!@unified_mode
     end
 
     #
@@ -1032,7 +1047,6 @@ class Chef
       default_action action_name
     end
 
-    #
     # Define an action on this resource.
     #
     # The action is defined as a *recipe* block that will be compiled and then
@@ -1070,7 +1084,6 @@ class Chef
       default_action action if Array(default_action) == [:nothing]
     end
 
-    #
     # Define a method to load up this resource's properties with the current
     # actual values.
     #
@@ -1081,7 +1094,6 @@ class Chef
       define_method(:load_current_value!, &load_block)
     end
 
-    #
     # Call this in `load_current_value` to indicate that the value does not
     # exist and that `current_resource` should therefore be `nil`.
     #
@@ -1091,7 +1103,6 @@ class Chef
       raise Chef::Exceptions::CurrentValueDoesNotExist
     end
 
-    #
     # Get the current actual value of this resource.
     #
     # This does not cache--a new value will be returned each time.
@@ -1104,6 +1115,7 @@ class Chef
       if provider.whyrun_mode? && !provider.whyrun_supported?
         raise "Cannot retrieve #{self.class.current_resource} in why-run mode: #{provider} does not support why-run"
       end
+
       provider.load_current_resource
       provider.current_resource
     end
@@ -1147,7 +1159,6 @@ class Chef
       end
     end
 
-    #
     # Ensure the action class actually gets created. This is called
     # when the user does `action :x do ... end`.
     #
@@ -1190,9 +1201,9 @@ class Chef
     #
 
     # FORBIDDEN_IVARS do not show up when the resource is converted to JSON (ie. hidden from data_collector and sending to the chef server via #to_json/to_h/as_json/inspect)
-    FORBIDDEN_IVARS = [:@run_context, :@logger, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message, :@deprecated, :@default_description, :@skip_docs, :@executed_by_runner].freeze
+    FORBIDDEN_IVARS = %i{@run_context @logger @not_if @only_if @enclosing_provider @description @introduced @examples @validation_message @deprecated @default_description @skip_docs @executed_by_runner}.freeze
     # HIDDEN_IVARS do not show up when the resource is displayed to the user as text (ie. in the error inspector output via #to_text)
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@logger, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message, :@deprecated, :@default_description, :@skip_docs, :@executed_by_runner].freeze
+    HIDDEN_IVARS = %i{@allowed_actions @resource_name @source_line @run_context @logger @name @not_if @only_if @elapsed_time @enclosing_provider @description @introduced @examples @validation_message @deprecated @default_description @skip_docs @executed_by_runner}.freeze
 
     include Chef::Mixin::ConvertToClassName
     extend Chef::Mixin::ConvertToClassName
@@ -1204,22 +1215,27 @@ class Chef
     # @return [Chef::RunContext] The run context for this Resource.  This is
     # where the context for the current Chef run is stored, including the node
     # and the resource collection.
+    #
     attr_accessor :run_context
 
     # @return [Mixlib::Log::Child] The logger for this resources. This is a child
     # of the run context's logger, if one exists.
+    #
     attr_reader :logger
 
     # @return [String] The cookbook this resource was declared in.
+    #
     attr_accessor :cookbook_name
 
     # @return [String] The recipe this resource was declared in.
+    #
     attr_accessor :recipe_name
 
     # @return [Chef::Provider] The provider this resource was declared in (if
     #   it was declared in an LWRP).  When you call methods that do not exist
     #   on this Resource, Chef will try to call the method on the provider
     #   as well before giving up.
+    #
     attr_accessor :enclosing_provider
 
     # @return [String] The source line where this resource was declared.
@@ -1227,6 +1243,7 @@ class Chef
     #   of these formats:
     #     /some/path/to/file.rb:80:in `wombat_tears'
     #     C:/some/path/to/file.rb:80 in 1`wombat_tears'
+    #
     attr_accessor :source_line
 
     # @return [String] The actual name that was used to create this resource.
@@ -1235,37 +1252,40 @@ class Chef
     #   user will expect to see the thing they wrote, not the type that was
     #   returned.  May be `nil`, in which case callers should read #resource_name.
     #   See #declared_key.
+    #
     attr_accessor :declared_type
 
-    #
     # Iterates over all immediate and delayed notifications, calling
     # resolve_resource_reference on each in turn, causing them to
     # resolve lazy/forward references.
-    def resolve_notification_references
+    #
+    def resolve_notification_references(always_raise = false)
       run_context.before_notifications(self).each do |n|
-        n.resolve_resource_reference(run_context.resource_collection)
+        n.resolve_resource_reference(run_context.resource_collection, true)
       end
+
       run_context.immediate_notifications(self).each do |n|
-        n.resolve_resource_reference(run_context.resource_collection)
+        n.resolve_resource_reference(run_context.resource_collection, always_raise)
       end
+
       run_context.delayed_notifications(self).each do |n|
-        n.resolve_resource_reference(run_context.resource_collection)
+        n.resolve_resource_reference(run_context.resource_collection, always_raise)
       end
     end
 
     # Helper for #notifies
     def notifies_before(action, resource_spec)
-      run_context.notifies_before(Notification.new(resource_spec, action, self))
+      run_context.notifies_before(Notification.new(resource_spec, action, self, run_context.unified_mode))
     end
 
     # Helper for #notifies
     def notifies_immediately(action, resource_spec)
-      run_context.notifies_immediately(Notification.new(resource_spec, action, self))
+      run_context.notifies_immediately(Notification.new(resource_spec, action, self, run_context.unified_mode))
     end
 
     # Helper for #notifies
     def notifies_delayed(action, resource_spec)
-      run_context.notifies_delayed(Notification.new(resource_spec, action, self))
+      run_context.notifies_delayed(Notification.new(resource_spec, action, self, run_context.unified_mode))
     end
 
     class << self
@@ -1289,7 +1309,7 @@ class Chef
     # life as well.
     @@sorted_descendants = nil
     def self.sorted_descendants
-      @@sorted_descendants ||= descendants.sort_by { |x| x.to_s }
+      @@sorted_descendants ||= descendants.sort_by(&:to_s)
     end
 
     def self.inherited(child)
@@ -1314,7 +1334,6 @@ class Chef
       end
     end
 
-    #
     # This API can be used for backcompat to do:
     #
     # chef_version_for_provides "< 14.0" if defined?(:chef_version_for_provides)
@@ -1336,7 +1355,6 @@ class Chef
       @chef_version_for_provides = constraint
     end
 
-    #
     # Mark this resource as providing particular DSL.
     #
     # Resources have an automatic DSL based on their resource_name, equivalent to
@@ -1376,6 +1394,7 @@ class Chef
     # the declared key we want to fall back on the old to_s key.
     def declared_key
       return to_s if declared_type.nil?
+
       "#{declared_type}[#{@name}]"
     end
 
@@ -1464,7 +1483,6 @@ class Chef
       @default_description
     end
 
-    #
     # The cookbook in which this Resource was defined (if any).
     #
     # @return Chef::CookbookVersion The cookbook in which this Resource was defined.
@@ -1490,7 +1508,6 @@ class Chef
       provider
     end
 
-    #
     # Preface an exception message with generic Resource information.
     #
     # @param e [StandardError] An exception with `e.message`
@@ -1542,10 +1559,10 @@ class Chef
     def self.resource_for_node(short_name, node)
       klass = Chef::ResourceResolver.resolve(short_name, node: node)
       raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
+
       klass
     end
 
-    #
     # Returns the class with the given resource_name.
     #
     # NOTE: Chef::Resource.resource_matching_short_name(:package) returns
@@ -1580,7 +1597,7 @@ class Chef
     def self.remove_canonical_dsl
       if @resource_name
         remaining = Chef.resource_handler_map.delete_canonical(@resource_name, self)
-        if !remaining
+        unless remaining
           Chef::DSL::Resources.remove_resource_dsl(@resource_name)
         end
       end

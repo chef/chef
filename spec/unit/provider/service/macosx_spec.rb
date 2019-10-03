@@ -85,7 +85,7 @@ describe Chef::Provider::Service::Macosx do
             allow(provider).to receive(:shell_out)
               .with(/(#{su_cmd} '#{cmd}'|#{cmd})/, default_env: false)
               .and_return(double("Status",
-                                    stdout: launchctl_stdout, exitstatus: 0))
+                stdout: launchctl_stdout, exitstatus: 0))
             allow(File).to receive(:exists?).and_return([true], [])
             allow(provider).to receive(:shell_out!)
               .with(/plutil -convert xml1 -o/, default_env: false)

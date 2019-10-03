@@ -26,10 +26,10 @@ describe Chef::Cookbook::Metadata do
 
   describe "when comparing for equality" do
     before do
-      @fields = [ :name, :description, :long_description, :maintainer,
-                  :maintainer_email, :license, :platforms, :dependencies,
-                  :providing, :recipes, :version, :source_url, :issues_url,
-                  :privacy, :ohai_versions, :chef_versions, :gems ]
+      @fields = %i{name description long_description maintainer
+                  maintainer_email license platforms dependencies
+                  providing recipes version source_url issues_url
+                  privacy ohai_versions chef_versions gems}
     end
 
     it "does not depend on object identity for equality" do

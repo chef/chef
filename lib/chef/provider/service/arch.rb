@@ -34,6 +34,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   def load_current_resource
     raise Chef::Exceptions::Service, "Could not find /etc/rc.conf" unless ::File.exists?("/etc/rc.conf")
     raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf" unless ::File.read("/etc/rc.conf") =~ /DAEMONS=\((.*)\)/m
+
     super
 
     @current_resource.enabled(daemons.include?(@current_resource.service_name))
@@ -60,7 +61,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 
   # FIXME: Multiple entries of DAEMONS will cause very bad results :)
   def update_daemons(entries)
-    content = ::File.read("/etc/rc.conf").gsub(/DAEMONS=\((.*)\)/m, "DAEMONS=(#{entries.join(' ')})")
+    content = ::File.read("/etc/rc.conf").gsub(/DAEMONS=\((.*)\)/m, "DAEMONS=(#{entries.join(" ")})")
     ::File.open("/etc/rc.conf", "w") do |f|
       f.write(content)
     end

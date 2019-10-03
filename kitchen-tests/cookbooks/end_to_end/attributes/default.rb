@@ -75,4 +75,4 @@ default["resolver"]["search"] = "chef.io"
 # nscd cookbook overrides
 #
 
-default["nscd"]["server_user"] = "nobody"
+default["nscd"]["server_user"] = "nobody" unless platform_family?("suse") # this breaks SLES 15

@@ -1,6 +1,6 @@
 #
 # Author:: Joshua Timberman (<jtimberman@chef.io>)
-# Copyright:: 2011-2018, Chef Software, Inc.
+# Copyright:: 2011-2019, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,59 +25,87 @@ class Chef
 
       description "Use the dmg_package resource to install a dmg 'package'. The resource will retrieve the dmg file from a remote URL, mount it using OS X's hdidutil, copy the application (.app directory) to the specified destination (/Applications), and detach the image using hdiutil. The dmg file will be stored in the Chef::Config[:file_cache_path]."
       introduced "14.0"
+      examples <<~DOC
+        Install Google Chrome via the DMG package
+        ```ruby
+        dmg_package 'Google Chrome' do
+          dmg_name 'googlechrome'
+          source   'https://dl-ssl.google.com/chrome/mac/stable/GGRM/googlechrome.dmg'
+          checksum '7daa2dc5c46d9bfb14f1d7ff4b33884325e5e63e694810adc58f14795165c91a'
+          action   :install
+        end
+        ```
+
+        Install Virtualbox from the .mpkg
+        ```ruby
+        dmg_package 'Virtualbox' do
+          source 'http://dlc.sun.com.edgesuite.net/virtualbox/4.0.8/VirtualBox-4.0.8-71778-OSX.dmg'
+          type   'mpkg'
+        end
+        ```
+
+        Install pgAdmin and automatically accept the EULA
+        ```ruby
+        dmg_package 'pgAdmin3' do
+          source   'http://wwwmaster.postgresql.org/redir/198/h/pgadmin3/release/v1.12.3/osx/pgadmin3-1.12.3.dmg'
+          checksum '9435f79d5b52d0febeddfad392adf82db9df159196f496c1ab139a6957242ce9'
+          accept_eula true
+        end
+        ```
+      DOC
 
       property :app, String,
-               description: "The name of the application as it appears in the /Volumes directory if it differs from the resource block's name.",
-               name_property: true
+        description: "The name of the application as it appears in the /Volumes directory if it differs from the resource block's name.",
+        name_property: true
 
       property :source, String,
-               description: "The remote URL that is used to download the .dmg file, if specified."
+        description: "The remote URL that is used to download the .dmg file, if specified."
 
       property :file, String,
-               description: "The full path to the .dmg file on the local system."
+        description: "The full path to the .dmg file on the local system."
 
       property :owner, [String, Integer],
-               description: "The user that should own the package installation."
+        description: "The user that should own the package installation."
 
       property :destination, String,
-               description: "The directory to copy the .app into.",
-               default: "/Applications"
+        description: "The directory to copy the .app into.",
+        default: "/Applications"
 
       property :checksum, String,
-               description: "The sha256 checksum of the .dmg file to download."
+        description: "The sha256 checksum of the .dmg file to download."
 
       property :volumes_dir, String,
-               description: "The directory under /Volumes where the dmg is mounted if it differs from the name of the .dmg file.",
-               default: lazy { |r| r.app }, default_description: "The value passed for the application name."
+        description: "The directory under /Volumes where the dmg is mounted if it differs from the name of the .dmg file.",
+        default: lazy { app }, default_description: "The value passed for the application name."
 
       property :dmg_name, String,
-               description: "The name of the .dmg file if it differs from that of the app, or if the name has spaces.",
-               desired_state: false,
-               default: lazy { |r| r.app }, default_description: "The value passed for the application name."
+        description: "The name of the .dmg file if it differs from that of the app, or if the name has spaces.",
+        desired_state: false,
+        default: lazy { app }, default_description: "The value passed for the application name."
 
       property :type, String,
-               description: "The type of package.",
-               equal_to: %w{app pkg mpkg},
-               default: "app", desired_state: false
+        description: "The type of package.",
+        equal_to: %w{app pkg mpkg},
+        default: "app", desired_state: false
 
       property :package_id, String,
-               description: "The package ID that is registered with pkgutil when a pkg or mpkg is installed."
+        description: "The package ID that is registered with pkgutil when a pkg or mpkg is installed."
 
       property :dmg_passphrase, String,
-               description: "Specify a passphrase to be used to decrypt the .dmg file during the mount process.",
-               desired_state: false
+        description: "Specify a passphrase to be used to decrypt the .dmg file during the mount process.",
+        desired_state: false
 
       property :accept_eula, [TrueClass, FalseClass],
-               description: "Specify whether to accept the EULA. Certain dmgs require acceptance of EULA before mounting.",
-               default: false, desired_state: false
+        description: "Specify whether to accept the EULA. Certain dmgs require acceptance of EULA before mounting.",
+        default: false, desired_state: false
 
       property :headers, Hash,
-               description: "Allows custom HTTP headers (like cookies) to be set on the remote_file resource.",
-               desired_state: false
+        description: "Allows custom HTTP headers (like cookies) to be set on the remote_file resource.",
+        desired_state: false
 
       property :allow_untrusted, [TrueClass, FalseClass],
-               description: "Allow installation of packages that do not have trusted certificates.",
-               default: false, desired_state: false
+        description: "Allow installation of packages that do not have trusted certificates.",
+        default: false, desired_state: false
 
       load_current_value do |new_resource|
         if ::File.directory?("#{new_resource.destination}/#{new_resource.app}.app")

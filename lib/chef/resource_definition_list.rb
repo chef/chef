@@ -26,7 +26,7 @@ class Chef
     attr_accessor :defines
 
     def initialize
-      @defines = Hash.new
+      @defines = {}
     end
 
     def define(resource_name, prototype_params = nil, &block)

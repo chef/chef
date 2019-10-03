@@ -29,36 +29,36 @@ class Chef
       introduced "14.0"
 
       property :activation_key, [String, Array],
-               coerce: proc { |x| Array(x) },
-               description: "A string or array of activation keys to use when registering; you must also specify the 'organization' property when using this property."
+        coerce: proc { |x| Array(x) },
+        description: "A string or array of activation keys to use when registering; you must also specify the 'organization' property when using this property."
 
       property :satellite_host, String,
-               description: "The FQDN of the Satellite host to register with. If this property is not specified, the host will register with Red Hat's public RHSM service."
+        description: "The FQDN of the Satellite host to register with. If this property is not specified, the host will register with Red Hat's public RHSM service."
 
       property :organization, String,
-               description: "The organization to use when registering; required when using the 'activation_key' property."
+        description: "The organization to use when registering; required when using the 'activation_key' property."
 
       property :environment, String,
-               description: "The environment to use when registering; required when using the username and password properties."
+        description: "The environment to use when registering; required when using the username and password properties."
 
       property :username, String,
-               description: "The username to use when registering. This property is not applicable if using an activation key. If specified, password and environment properties are also required."
+        description: "The username to use when registering. This property is not applicable if using an activation key. If specified, password and environment properties are also required."
 
       property :password, String,
-               description: "The password to use when registering. This property is not applicable if using an activation key. If specified, username and environment are also required."
+        description: "The password to use when registering. This property is not applicable if using an activation key. If specified, username and environment are also required."
 
       property :auto_attach,
-               [TrueClass, FalseClass],
-               description: "If true, RHSM will attempt to automatically attach the host to applicable subscriptions. It is generally better to use an activation key with the subscriptions pre-defined.",
-               default: false
+        [TrueClass, FalseClass],
+        description: "If true, RHSM will attempt to automatically attach the host to applicable subscriptions. It is generally better to use an activation key with the subscriptions pre-defined.",
+        default: false
 
       property :install_katello_agent, [TrueClass, FalseClass],
-               description: "If true, the 'katello-agent' RPM will be installed.",
-               default: true
+        description: "If true, the 'katello-agent' RPM will be installed.",
+        default: true
 
       property :force, [TrueClass, FalseClass],
-               description: "If true, the system will be registered even if it is already registered. Normally, any register operations will fail if the machine has already been registered.",
-               default: false, desired_state: false
+        description: "If true, the system will be registered even if it is already registered. Normally, any register operations will fail if the machine has already been registered.",
+        default: false, desired_state: false
 
       action :register do
         description "Register the node with RHSM."

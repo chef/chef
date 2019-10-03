@@ -234,8 +234,7 @@ class Chef
 
     # The main entry point for report handling. Subclasses should override this
     # method with their own report handling logic.
-    def report
-    end
+    def report; end
 
     # Runs the report handler, rescuing and logging any errors it may cause.
     # This ensures that all handlers get a chance to run even if one fails.

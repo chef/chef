@@ -30,8 +30,7 @@ class Chef
         which "yum"
       end
 
-      def load_current_resource
-      end
+      def load_current_resource; end
 
       action :create do
         declare_resource(:template, "/etc/yum.repos.d/#{new_resource.repositoryid}.repo") do

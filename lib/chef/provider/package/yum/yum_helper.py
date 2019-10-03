@@ -169,7 +169,8 @@ def query(command):
 # to keep process tables clean.  additional error handling should probably be added to the retry loop
 # on the ruby side.
 def exit_handler(signal, frame):
-    base.closeRpmDB()
+    if base is not None:
+        base.closeRpmDB()
     sys.exit(0)
 
 def setup_exit_handler():
@@ -185,27 +186,31 @@ else:
   inpipe = os.fdopen(int(sys.argv[1]), "r")
   outpipe = os.fdopen(int(sys.argv[2]), "w")
 
-while 1:
-    # kill self if we get orphaned (tragic)
-    ppid = os.getppid()
-    if ppid == 1:
-        sys.exit(0)
-    setup_exit_handler()
-    line = inpipe.readline()
+try:
+    while 1:
+        # kill self if we get orphaned (tragic)
+        ppid = os.getppid()
+        if ppid == 1:
+            raise RuntimeError("orphaned")
 
-    try:
-        command = json.loads(line)
-    except ValueError, e:
+        setup_exit_handler()
+        line = inpipe.readline()
+
+        try:
+            command = json.loads(line)
+        except ValueError, e:
+            raise RuntimeError("bad json parse")
+
+        if command['action'] == "whatinstalled":
+            query(command)
+        elif command['action'] == "whatavailable":
+            query(command)
+        elif command['action'] == "versioncompare":
+            versioncompare(command['versions'])
+        elif command['action'] == "installonlypkgs":
+             install_only_packages(command['package'])
+        else:
+            raise RuntimeError("bad command")
+finally:
+    if base is not None:
         base.closeRpmDB()
-        sys.exit(0)
-
-    if command['action'] == "whatinstalled":
-        query(command)
-    elif command['action'] == "whatavailable":
-        query(command)
-    elif command['action'] == "versioncompare":
-        versioncompare(command['versions'])
-    elif command['action'] == "installonlypkgs":
-         install_only_packages(command['package'])
-    else:
-        raise RuntimeError("bad command")

@@ -184,8 +184,8 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   end
 
   let(:dsc_environment_env_var_name) { "dsc_test_cwd" }
-  let(:dsc_environment_no_fail_not_etc_directory) { "#{ENV['systemroot']}\\system32" }
-  let(:dsc_environment_fail_etc_directory) { "#{ENV['systemroot']}\\system32\\drivers\\etc" }
+  let(:dsc_environment_no_fail_not_etc_directory) { "#{ENV["systemroot"]}\\system32" }
+  let(:dsc_environment_fail_etc_directory) { "#{ENV["systemroot"]}\\system32\\drivers\\etc" }
   let(:exception_message_signature) { "LL927-LL928" }
   let(:dsc_environment_config) do
     <<~EOH
@@ -310,7 +310,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
 
       it "should set a registry key according to parameters passed to the configuration" do
         dsc_test_resource.configuration_name(config_name_value)
-        dsc_test_resource.flags({ :"#{reg_key_name_param_name}" => test_registry_key, :"#{reg_key_value_param_name}" => test_registry_value })
+        dsc_test_resource.flags({ "#{reg_key_name_param_name}": test_registry_key, "#{reg_key_value_param_name}": test_registry_value })
         expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(false)
         dsc_test_resource.run_action(:run)
         expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(true)
@@ -347,11 +347,9 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   shared_examples_for "a dsc_script with configuration data that takes parameters" do
     let(:dsc_user_code) { dsc_user_param_code }
     let(:config_param_section) { config_params }
-    let(:config_flags) { { :"#{dsc_user_prefix_param_name}" => (dsc_user_prefix).to_s, :"#{dsc_user_suffix_param_name}" => (dsc_user_suffix).to_s } }
+    let(:config_flags) { { "#{dsc_user_prefix_param_name}": (dsc_user_prefix).to_s, "#{dsc_user_suffix_param_name}": (dsc_user_suffix).to_s } }
     it "does not directly contain the user name" do
-      configuration_script_content = ::File.open(dsc_test_resource.command) do |file|
-        file.read
-      end
+      configuration_script_content = ::File.open(dsc_test_resource.command, &:read)
       expect(configuration_script_content.include?(dsc_user)).to be(false)
     end
     it_behaves_like "a dsc_script with configuration data"
@@ -361,9 +359,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
     let(:dsc_user_code) { dsc_user_env_code }
 
     it "does not directly contain the user name" do
-      configuration_script_content = ::File.open(dsc_test_resource.command) do |file|
-        file.read
-      end
+      configuration_script_content = ::File.open(dsc_test_resource.command, &:read)
       expect(configuration_script_content.include?(dsc_user)).to be(false)
     end
     it_behaves_like "a dsc_script with configuration data"
@@ -464,7 +460,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
           User dsctestusercreate
           {
               UserName = '#{dsc_user}'
-              Password = #{r.ps_credential('jf9a8m49jrajf4#')}
+              Password = #{r.ps_credential("jf9a8m49jrajf4#")}
               Ensure = "Present"
           }
         EOF

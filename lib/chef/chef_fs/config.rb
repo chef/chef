@@ -150,7 +150,7 @@ class Chef
               hosted_everything or allow repo_mode to default}
         end
         # Default to getting *everything* from the server.
-        if !@chef_config[:repo_mode]
+        unless @chef_config[:repo_mode]
           if is_hosted?
             @chef_config[:repo_mode] = "hosted_everything"
           else
@@ -164,7 +164,7 @@ class Chef
       attr_reader :cookbook_version
 
       def is_hosted?
-        @chef_config[:chef_server_url] =~ /\/+organizations\/.+/
+        @chef_config[:chef_server_url] =~ %r{/+organizations/.+}
       end
 
       def chef_fs
@@ -272,6 +272,7 @@ class Chef
             # cookbooks -> cookbook_path
             singular_name = INFLECTIONS[object_name]
             raise "Unknown object name #{object_name}" unless singular_name
+
             variable_name = "#{singular_name}_path"
             paths = Array(@chef_config[variable_name]).flatten
             result[object_name] = paths.map { |path| File.expand_path(path) }

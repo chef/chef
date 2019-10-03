@@ -90,7 +90,7 @@ class Chef
         @current_resource ||= Chef::Resource::File.new(new_resource.name)
         current_resource.path(new_resource.path)
 
-        if !needs_creating?
+        unless needs_creating?
           # we are updating an existing file
           if managing_content?
             logger.trace("#{new_resource} checksumming file at #{new_resource.path}.")
@@ -190,6 +190,7 @@ class Chef
       def managing_content?
         return true if new_resource.checksum
         return true if !new_resource.content.nil? && @action != :create_if_missing
+
         false
       end
 
@@ -339,8 +340,8 @@ class Chef
 
         if tempfile
           new_resource.verify.each do |v|
-            if ! v.verify(tempfile.path)
-              raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{new_resource.sensitive ? '[sensitive]' : v}"
+            unless v.verify(tempfile.path)
+              raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{new_resource.sensitive ? "[sensitive]" : v}"
             end
           end
         end
@@ -459,6 +460,7 @@ class Chef
           # reporting won't work for Windows.
           return
         end
+
         acl_scanner = ScanAccessControl.new(new_resource, resource)
         acl_scanner.set_all!
       end

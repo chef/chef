@@ -95,7 +95,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   # XXX for an extra painful alternative, see: http://support.microsoft.com/kb/180548
   def validate_credentials(passwd)
     token = Security.logon_user(@username, nil, passwd,
-               LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
+      LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
     true
   rescue Chef::Exceptions::Win32APIError => e
     Chef::Log.trace(e)
@@ -103,6 +103,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     if e.to_s =~ /System Error Code: 1326/
       return false
     end
+
     # all other exceptions will assume we cannot logon for a different reason
     Chef::Log.trace("Unable to login with the specified credentials. Assuming the credentials are valid.")
     true
@@ -167,6 +168,6 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   end
 
   def check_enabled
-    (get_info()[:flags] & NetUser::UF_ACCOUNTDISABLE) != 0
+    (get_info[:flags] & NetUser::UF_ACCOUNTDISABLE) != 0
   end
 end

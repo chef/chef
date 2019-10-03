@@ -44,7 +44,7 @@ class Chef
           arg,
           callbacks: {
             "not in valid numeric range" => lambda do |m|
-              if m.kind_of?(String)
+              if m.is_a?(String)
                 m =~ /^0/ || m = "0#{m}"
               end
 
@@ -128,13 +128,13 @@ class Chef
                   if permission < 0 || permission > 1 << 32
                     raise ArgumentError, "permissions flags must be positive and <= 32 bits (#{permission})"
                   end
-                elsif !([:full_control, :modify, :read_execute, :read, :write].include?(permission.to_sym))
+                elsif !(%i{full_control modify read_execute read write}.include?(permission.to_sym))
                   raise ArgumentError, "permissions parameter must be :full_control, :modify, :read_execute, :read, :write or an integer representing Windows permission flags"
                 end
               end
 
               [ principals ].flatten.each do |principal|
-                if !principal.is_a?(String)
+                unless principal.is_a?(String)
                   raise ArgumentError, "principals parameter must be a string or array of strings representing usernames"
                 end
               end

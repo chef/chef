@@ -20,12 +20,12 @@ require "win32/daemon"
 
 class SpecService < ::Win32::Daemon
   def service_init
-    @test_service_file = "#{ENV['TMP']}/spec_service_file"
+    @test_service_file = "#{ENV["TMP"]}/spec_service_file"
   end
 
   def service_main(*startup_parameters)
     while running?
-      if !File.exists?(@test_service_file)
+      unless File.exists?(@test_service_file)
         File.open(@test_service_file, "wb") do |f|
           f.write("This file is created by SpecService")
         end
@@ -39,17 +39,13 @@ class SpecService < ::Win32::Daemon
   # Control Signal Callback Methods
   ################################################################################
 
-  def service_stop
-  end
+  def service_stop; end
 
-  def service_pause
-  end
+  def service_pause; end
 
-  def service_resume
-  end
+  def service_resume; end
 
-  def service_shutdown
-  end
+  def service_shutdown; end
 end
 
 # To run this file as a service, it must be called as a script from within

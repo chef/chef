@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,8 +59,8 @@ class Chef
           # so we want to assert candidates exist for the alternate source
           requirements.assert(:upgrade, :install) do |a|
             a.assertion { candidates_exist_for_all_uninstalled? }
-            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(', ')}")
-            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(', ')} would have been configured")
+            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
+            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
           end
         end
 
@@ -84,13 +84,13 @@ class Chef
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("install -y --version", version, cmd_args, name)
+            choco_command("install", "-y", "--version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
           unless name_nil_versions.empty?
             cmd_names = name_nil_versions.keys
-            choco_command("install -y", cmd_args, *cmd_names)
+            choco_command("install", "-y", cmd_args, *cmd_names)
           end
         end
 
@@ -106,13 +106,13 @@ class Chef
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("upgrade -y --version", version, cmd_args, name)
+            choco_command("upgrade", "-y", "--version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
           unless name_nil_versions.empty?
             cmd_names = name_nil_versions.keys
-            choco_command("upgrade -y", cmd_args, *cmd_names)
+            choco_command("upgrade", "-y", cmd_args, *cmd_names)
           end
         end
 
@@ -121,7 +121,7 @@ class Chef
         # @param names [Array<String>] array of package names to install
         # @param versions [Array<String>] array of versions to install
         def remove_package(names, versions)
-          choco_command("uninstall -y", cmd_args(include_source: false), *names)
+          choco_command("uninstall", "-y", cmd_args(include_source: false), *names)
         end
 
         # Choco does not have dpkg's distinction between purge and remove
@@ -154,6 +154,7 @@ class Chef
               # run before choco.exe gets called from #load_current_resource.
               exe_path = ::File.join(choco_install_path.to_s, "bin", "choco.exe")
               raise Chef::Exceptions::MissingLibrary, CHOCO_MISSING_MSG unless ::File.exist?(exe_path)
+
               exe_path
             end
         end
@@ -171,7 +172,7 @@ class Chef
         # @param args [String] variable number of string arguments
         # @return [Mixlib::ShellOut] object returned from shell_out!
         def choco_command(*args)
-          shell_out!(args_to_string(choco_exe, *args), returns: new_resource.returns)
+          shell_out!(choco_exe, *args, returns: new_resource.returns)
         end
 
         # Use the available_packages Hash helper to create an array suitable for
@@ -209,18 +210,8 @@ class Chef
         # @return [String] options from new_resource or empty string
         def cmd_args(include_source: true)
           cmd_args = [ new_resource.options ]
-          cmd_args.push( "-source #{new_resource.source}" ) if new_resource.source && include_source
-          args_to_string(*cmd_args)
-        end
-
-        # Helper to nicely convert variable string args into a single command line.  It
-        # will compact nulls or empty strings and join arguments with single spaces, without
-        # introducing any double-spaces for missing args.
-        #
-        # @param args [String] variable number of string arguments
-        # @return [String] nicely concatenated string or empty string
-        def args_to_string(*args)
-          args.reject { |i| i.nil? || i == "" }.join(" ")
+          cmd_args += common_options(include_source: include_source)
+          cmd_args
         end
 
         # Available packages in chocolatey as a Hash of names mapped to versions
@@ -230,13 +221,14 @@ class Chef
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
           return @available_packages if @available_packages
+
           @available_packages = {}
           package_name_array.each do |pkg|
             available_versions =
               begin
-                cmd = [ "list -r #{pkg}" ]
-                cmd.push( "-source #{new_resource.source}" ) if new_resource.source
-                cmd.push( new_resource.options ) if new_resource.options
+                cmd = [ "list", "-r", pkg ]
+                cmd += common_options
+                cmd.push( new_resource.list_options ) if new_resource.list_options
 
                 raw = parse_list_output(*cmd)
                 raw.keys.each_with_object({}) do |name, available|
@@ -253,7 +245,7 @@ class Chef
         #
         # @return [Hash] name-to-version mapping of installed packages
         def installed_packages
-          @installed_packages ||= Hash[*parse_list_output("list -l -r").flatten]
+          @installed_packages ||= Hash[*parse_list_output("list", "-l", "-r").flatten]
           @installed_packages
         end
 
@@ -266,6 +258,7 @@ class Chef
           hash = {}
           choco_command(*args).stdout.each_line do |line|
             next if line.start_with?("Chocolatey v")
+
             name, version = line.split("|")
             hash[name.downcase] = version&.chomp
           end
@@ -278,6 +271,14 @@ class Chef
         # @return [Array] same names in lower case
         def lowercase_names(names)
           names.map(&:downcase)
+        end
+
+        def common_options(include_source: true)
+          args = []
+          args.push( [ "-source", new_resource.source ] ) if new_resource.source && include_source
+          args.push( [ "--user", new_resource.user ] ) if new_resource.user
+          args.push( [ "--password", new_resource.password ]) if new_resource.password
+          args
         end
       end
     end

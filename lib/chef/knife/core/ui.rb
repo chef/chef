@@ -69,6 +69,7 @@ class Chef
         stdout.puts message
       rescue Errno::EPIPE => e
         raise e if @config[:verbosity] >= 2
+
         exit 0
       end
 
@@ -85,6 +86,7 @@ class Chef
         unless lines.empty?
           prefix, = first_line.split(":", 2)
           return if prefix.nil?
+
           prefix_len = prefix.length
           prefix_len -= 9 if color? # prefix includes 9 bytes of color escape sequences
           prefix_len += 2 # include room to align to the ": " following PREFIX
@@ -95,6 +97,7 @@ class Chef
         end
       rescue Errno::EPIPE => e
         raise e if @config[:verbosity] >= 2
+
         exit 0
       end
 
@@ -105,28 +108,28 @@ class Chef
       #
       # @param message [String] the text string
       def debug(message)
-        log("#{color('DEBUG:', :blue, :bold)} #{message}")
+        log("#{color("DEBUG:", :blue, :bold)} #{message}")
       end
 
       # Print a warning message
       #
       # @param message [String] the text string
       def warn(message)
-        log("#{color('WARNING:', :yellow, :bold)} #{message}")
+        log("#{color("WARNING:", :yellow, :bold)} #{message}")
       end
 
       # Print an error message
       #
       # @param message [String] the text string
       def error(message)
-        log("#{color('ERROR:', :red, :bold)} #{message}")
+        log("#{color("ERROR:", :red, :bold)} #{message}")
       end
 
       # Print a message describing a fatal error.
       #
       # @param message [String] the text string
       def fatal(message)
-        log("#{color('FATAL:', :red, :bold)} #{message}")
+        log("#{color("FATAL:", :red, :bold)} #{message}")
       end
 
       def color(string, *colors)
@@ -186,6 +189,7 @@ class Chef
         stdout.puts data
       rescue Errno::EPIPE => e
         raise e if @config[:verbosity] >= 2
+
         exit 0
       end
 
@@ -199,7 +203,7 @@ class Chef
 
       def edit_data(data, parse_output = true, object_class: nil)
         output = Chef::JSONCompat.to_json_pretty(data)
-        if !config[:disable_editing]
+        unless config[:disable_editing]
           Tempfile.open([ "knife-edit-", ".json" ]) do |tf|
             tf.sync = true
             tf.puts output

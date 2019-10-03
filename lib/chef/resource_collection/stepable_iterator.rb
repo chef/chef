@@ -82,6 +82,7 @@ class Chef
 
       def step
         return nil if @position == size
+
         call_iterator_block
         @position += 1
       end

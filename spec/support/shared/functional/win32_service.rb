@@ -52,6 +52,6 @@ shared_context "using Win32::Service" do
   # for the file it creates under SYSTEM temp directory
 
   let(:test_service_file) do
-    "#{ENV['SystemDrive']}\\windows\\temp\\spec_service_file"
+    "#{ENV["SystemDrive"]}\\windows\\temp\\spec_service_file"
   end
 end

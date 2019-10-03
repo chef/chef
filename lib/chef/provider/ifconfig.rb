@@ -87,6 +87,7 @@ class Chef
             end
 
             next unless @interfaces.key?(new_resource.device)
+
             @interface = @interfaces.fetch(new_resource.device)
 
             current_resource.target(new_resource.target)
@@ -108,19 +109,21 @@ class Chef
           #       RX errors 0  dropped 0  overruns 0  frame 0
           #       TX packets 1244218  bytes 977339327 (932.0 MiB)
           #       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+          #
+          # Permalink for addr_regex : https://rubular.com/r/JrykUpfjRnYeQD
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
-            addr_regex = /^(\w+):?(\d*):?\ .+$/
+            addr_regex = /^((\w|-)+):?(\d*):?\ .+$/
             if line =~ addr_regex
               if line.match(addr_regex).nil?
                 @int_name = "nil"
-              elsif line.match(addr_regex)[2] == ""
+              elsif line.match(addr_regex)[3] == ""
                 @int_name = line.match(addr_regex)[1]
-                @interfaces[@int_name] = Hash.new
+                @interfaces[@int_name] = {}
                 @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
               else
-                @int_name = "#{line.match(addr_regex)[1]}:#{line.match(addr_regex)[2]}"
-                @interfaces[@int_name] = Hash.new
+                @int_name = "#{line.match(addr_regex)[1]}:#{line.match(addr_regex)[3]}"
+                @interfaces[@int_name] = {}
                 @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
               end
             else
@@ -132,6 +135,7 @@ class Chef
             end
 
             next unless @interfaces.key?(new_resource.device)
+
             @interface = @interfaces.fetch(new_resource.device)
 
             current_resource.target(new_resource.target)
@@ -144,6 +148,7 @@ class Chef
             current_resource.metric(@interface["metric"])
           end
         end
+
         current_resource
       end
 
@@ -162,7 +167,7 @@ class Chef
         unless current_resource.inet_addr
           unless new_resource.device == loopback_device
             command = add_command
-            converge_by("run #{command.join(' ')} to add #{new_resource}") do
+            converge_by("run #{command.join(" ")} to add #{new_resource}") do
               shell_out!(command)
               logger.info("#{new_resource} added")
             end
@@ -177,8 +182,9 @@ class Chef
         # enables, but does not manage config files
         return if current_resource.inet_addr
         return if new_resource.device == loopback_device
+
         command = enable_command
-        converge_by("run #{command.join(' ')} to enable #{new_resource}") do
+        converge_by("run #{command.join(" ")} to enable #{new_resource}") do
           shell_out!(command)
           logger.info("#{new_resource} enabled")
         end
@@ -188,7 +194,7 @@ class Chef
         # check to see if load_current_resource found the interface
         if current_resource.device
           command = delete_command
-          converge_by("run #{command.join(' ')} to delete #{new_resource}") do
+          converge_by("run #{command.join(" ")} to delete #{new_resource}") do
             shell_out!(command)
             logger.info("#{new_resource} deleted")
           end
@@ -203,7 +209,7 @@ class Chef
         # disables, but leaves config files in place.
         if current_resource.device
           command = disable_command
-          converge_by("run #{command.join(' ')} to disable #{new_resource}") do
+          converge_by("run #{command.join(" ")} to disable #{new_resource}") do
             shell_out!(command)
             logger.info("#{new_resource} disabled")
           end
@@ -222,6 +228,7 @@ class Chef
 
       def generate_config
         return unless can_generate_config?
+
         b = binding
         template = ::ERB.new(@config_template)
         config = resource_for_config(@config_path)
@@ -232,6 +239,7 @@ class Chef
 
       def delete_config
         return unless can_generate_config?
+
         config = resource_for_config(@config_path)
         config.run_action(:delete)
         new_resource.updated_by_last_action(true) if config.updated?

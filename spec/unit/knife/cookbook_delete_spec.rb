@@ -76,8 +76,8 @@ describe Chef::Knife::CookbookDelete do
       @knife.cookbook_name = "foobar"
       @knife.version = "1.0.0"
       expect(@knife).to receive(:delete_object).with(Chef::CookbookVersion,
-                                                 "foobar version 1.0.0",
-                                                 "cookbook").and_yield()
+        "foobar version 1.0.0",
+        "cookbook").and_yield
       expect(@knife).to receive(:delete_request).with("cookbooks/foobar/1.0.0")
       @knife.delete_explicit_version
     end

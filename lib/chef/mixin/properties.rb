@@ -102,7 +102,7 @@ class Chef
 
           options = options.inject({}) { |memo, (key, value)| memo[key.to_sym] = value; memo }
 
-          options[:instance_variable_name] = :"@#{name}" if !options.key?(:instance_variable_name)
+          options[:instance_variable_name] = :"@#{name}" unless options.key?(:instance_variable_name)
           options[:name] = name
           options[:declared_in] = self
 
@@ -191,8 +191,8 @@ class Chef
         # @return [Array<Property>] All properties in desired state.
         #
         def state_properties(*names)
-          if !names.empty?
-            names = names.map { |name| name.to_sym }.uniq
+          unless names.empty?
+            names = names.map(&:to_sym).uniq
 
             local_properties = properties(false)
             # Add new properties to the list.
@@ -214,7 +214,7 @@ class Chef
             end
           end
 
-          properties.values.select { |property| property.desired_state? }
+          properties.values.select(&:desired_state?)
         end
 
         #
@@ -240,8 +240,8 @@ class Chef
         # @return [Array<Property>] All identity properties.
         #
         def identity_properties(*names)
-          if !names.empty?
-            names = names.map { |name| name.to_sym }
+          unless names.empty?
+            names = names.map(&:to_sym)
 
             # Add or change properties that are not part of the identity.
             names.each do |name|
@@ -263,7 +263,7 @@ class Chef
             end
           end
 
-          result = properties.values.select { |property| property.identity? }
+          result = properties.values.select(&:identity?)
           result = [ properties[:name] ] if result.empty?
           result
         end
@@ -288,7 +288,8 @@ class Chef
       #
       def property_is_set?(name)
         property = self.class.properties[name.to_sym]
-        raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+        raise ArgumentError, "Property #{name} is not defined in class #{self}" unless property
+
         property.is_set?(self)
       end
 
@@ -301,7 +302,8 @@ class Chef
       #
       def reset_property(name)
         property = self.class.properties[name.to_sym]
-        raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+        raise ArgumentError, "Property #{name} is not defined in class #{self}" unless property
+
         property.reset(self)
       end
 
@@ -312,7 +314,8 @@ class Chef
       # @return [String] The description of the property.
       def property_description(name)
         property = self.class.properties[name.to_sym]
-        raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+        raise ArgumentError, "Property #{name} is not defined in class #{self}" unless property
+
         property.description
       end
 

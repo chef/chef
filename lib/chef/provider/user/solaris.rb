@@ -37,6 +37,7 @@ class Chef
         def manage_user
           manage_password
           return if universal_options.empty? && usermod_options.empty?
+
           shell_out!("usermod", universal_options, usermod_options, new_resource.username)
         end
 
@@ -112,6 +113,7 @@ class Chef
 
         def manage_password
           return unless current_resource.password != new_resource.password && new_resource.password
+
           logger.trace("#{new_resource} setting password to #{new_resource.password}")
           write_shadow_file
         end

@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2016 Chef Software, Inc.
+# Copyright:: Copyright 2016-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,13 @@
 #
 
 require "delegate"
+require_relative "constants"
 
 class Chef
   class Decorator < SimpleDelegator
-    NULL = ::Object.new
-
-    def initialize(obj = NULL)
+    def initialize(obj = NOT_PASSED)
       @__defined_methods__ = []
-      super unless obj.equal?(NULL)
+      super unless obj.equal?(NOT_PASSED)
     end
 
     # if we wrap a nil then decorator.nil? should be true
@@ -38,7 +37,7 @@ class Chef
 
     # if we wrap a Hash then decorator.kind_of?(Hash) should be true
     def kind_of?(klass)
-      __getobj__.kind_of?(klass) || super
+      __getobj__.is_a?(klass) || super
     end
 
     # reset our methods on the instance if the object changes under us (this also

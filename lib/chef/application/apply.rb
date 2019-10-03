@@ -184,7 +184,7 @@ class Chef::Application::Apply < Chef::Application
       @recipe_text = STDIN.read
       temp_recipe_file
     else
-      if !ARGV[0]
+      unless ARGV[0]
         puts opt_parser
         Chef::Application.exit! "No recipe file provided", Chef::Exceptions::RecipeNotFound.new
       end

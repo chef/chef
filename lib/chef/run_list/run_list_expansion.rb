@@ -64,7 +64,7 @@ class Chef
 
       def initialize(environment, run_list_items, source = nil)
         @environment = environment
-        @missing_roles_with_including_role = Array.new
+        @missing_roles_with_including_role = []
 
         @run_list_items = run_list_items.dup
         @source = source
@@ -102,6 +102,7 @@ class Chef
       # nil         if the role does not exist
       def inflate_role(role_name, included_by)
         return false if applied_role?(role_name) # Prevent infinite loops
+
         applied_role(role_name)
         fetch_role(role_name, included_by)
       end
@@ -140,7 +141,7 @@ class Chef
       end
 
       def errors
-        @missing_roles_with_including_role.map { |item| item.first }
+        @missing_roles_with_including_role.map(&:first)
       end
 
       def to_json(*a)

@@ -147,6 +147,7 @@ class Chef
           if @each_running
             raise "each() called on parallel enumerable twice simultaneously!  Bad mojo"
           end
+
           @each_running = true
           begin
             # Grab all the inputs, yielding any responses during enumeration
@@ -197,7 +198,7 @@ class Chef
             # If we exited early, perhaps due to any? finding a result, we want
             # to make sure and throw away any extra results (gracefully) so that
             # the next enumerator can start over.
-            if !finished?
+            unless finished?
               stop
             end
             raise

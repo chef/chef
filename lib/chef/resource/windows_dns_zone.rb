@@ -28,16 +28,16 @@ class Chef
       introduced "15.0"
 
       property :zone_name, String,
-               description: "An optional property to set the dns zone name if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the dns zone name if it differs from the resource block's name.",
+        name_property: true
 
       property :replication_scope, String,
-               description: "The replication scope for the zone, required if server_type set to 'Domain'.",
-               default: "Domain"
+        description: "The replication scope for the zone, required if server_type set to 'Domain'.",
+        default: "Domain"
 
       property :server_type, String,
-               description: "The type of DNS server, Domain or Standalone.",
-               default: "Domain", equal_to: %w{Domain Standalone}
+        description: "The type of DNS server, Domain or Standalone.",
+        default: "Domain", equal_to: %w{Domain Standalone}
 
       action :create do
         description "Creates and updates a DNS Zone."

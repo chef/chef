@@ -28,7 +28,7 @@ class Chef
       description "Use the macosx_service resource to manage services on the macOS platform."
 
       property :plist, String,
-               description: "A plist to use in the case where the filename and label for the service do not match."
+        description: "A plist to use in the case where the filename and label for the service do not match."
 
       property :session_type, String
 

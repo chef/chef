@@ -40,7 +40,7 @@ describe Chef::DSL::PlatformIntrospection::PlatformDependentValue do
   before do
     platform_hash = {
       :openbsd => { default: "free, functional, secure" },
-      [:redhat, :centos, :fedora, :scientific] => { default: '"stable"' },
+      %i{redhat centos fedora scientific} => { default: '"stable"' },
       :ubuntu => { "10.04" => "using upstart more", :default => "using init more" },
       :default => "bork da bork",
     }
@@ -84,7 +84,7 @@ describe Chef::DSL::PlatformIntrospection::PlatformDependentValue do
 end
 describe Chef::DSL::PlatformIntrospection::PlatformFamilyDependentValue do
   before do
-    @array_values = [:stop, :start, :reload]
+    @array_values = %i{stop start reload}
 
     @platform_family_hash = {
       "debian" => "debian value",

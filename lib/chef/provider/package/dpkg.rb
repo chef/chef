@@ -75,17 +75,17 @@ class Chef
 
         def install_package(name, version)
           sources = name.map { |n| name_sources[n] }
-          logger.info("#{new_resource} installing package(s): #{name.join(' ')}")
+          logger.info("#{new_resource} installing package(s): #{name.join(" ")}")
           run_noninteractive("dpkg", "-i", *options, *sources)
         end
 
         def remove_package(name, version)
-          logger.info("#{new_resource} removing package(s): #{name.join(' ')}")
+          logger.info("#{new_resource} removing package(s): #{name.join(" ")}")
           run_noninteractive("dpkg", "-r", *options, *name)
         end
 
         def purge_package(name, version)
-          logger.info("#{new_resource} purging packages(s): #{name.join(' ')}")
+          logger.info("#{new_resource} purging packages(s): #{name.join(" ")}")
           run_noninteractive("dpkg", "-P", *options, *name)
         end
 
@@ -218,7 +218,7 @@ class Chef
         #
         # @return [Boolean] true if we're doing :install or :upgrade
         def installing?
-          [:install, :upgrade].include?(action)
+          %i{install upgrade}.include?(action)
         end
 
       end

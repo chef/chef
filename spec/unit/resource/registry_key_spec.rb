@@ -152,7 +152,7 @@ describe Chef::Resource::RegistryKey, "recursive" do
   end
 
   it "does not allow an array" do
-    expect { resource.recursive([:nose, :chin]) }.to raise_error(ArgumentError)
+    expect { resource.recursive(%i{nose chin}) }.to raise_error(ArgumentError)
   end
 
   it "does not allow a string" do
@@ -167,7 +167,7 @@ end
 describe Chef::Resource::RegistryKey, "architecture" do
   let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
 
-  [ :i386, :x86_64, :machine ].each do |arch|
+  %i{i386 x86_64 machine}.each do |arch|
     it "allows #{arch} as a symbol" do
       resource.architecture(arch)
       expect(resource.architecture).to eql(arch)
@@ -183,7 +183,7 @@ describe Chef::Resource::RegistryKey, "architecture" do
   end
 
   it "does not allow an array" do
-    expect { resource.architecture([:nose, :chin]) }.to raise_error(ArgumentError)
+    expect { resource.architecture(%i{nose chin}) }.to raise_error(ArgumentError)
   end
 
   it "does not allow a string" do

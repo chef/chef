@@ -66,7 +66,7 @@ class Chef
           if !new_resource.members.nil? && !new_resource.excluded_members.nil?
             common_members = new_resource.members & new_resource.excluded_members
             a.assertion { common_members.empty? }
-            a.failure_message(Chef::Exceptions::ConflictingMembersInGroup, "Attempting to both add and remove users from a group: '#{common_members.join(', ')}'")
+            a.failure_message(Chef::Exceptions::ConflictingMembersInGroup, "Attempting to both add and remove users from a group: '#{common_members.join(", ")}'")
             # No why-run alternative
           end
         end
@@ -88,11 +88,12 @@ class Chef
           missing_members = []
           new_resource.members.each do |member|
             next if has_current_group_member?(member)
+
             validate_member!(member)
             missing_members << member
           end
           unless missing_members.empty?
-            @change_desc << "add missing member(s): #{missing_members.join(', ')}"
+            @change_desc << "add missing member(s): #{missing_members.join(", ")}"
           end
 
           members_to_be_removed = []
@@ -102,7 +103,7 @@ class Chef
             end
           end
           unless members_to_be_removed.empty?
-            @change_desc << "remove existing member(s): #{members_to_be_removed.join(', ')}"
+            @change_desc << "remove existing member(s): #{members_to_be_removed.join(", ")}"
           end
         elsif new_resource.members != current_resource.members
           @change_desc << "replace group members with new list of members"
@@ -140,6 +141,7 @@ class Chef
 
       def action_remove
         return unless @group_exists
+
         converge_by("remove group #{new_resource.group_name}") do
           remove_group
           logger.info("#{new_resource} removed")
@@ -148,6 +150,7 @@ class Chef
 
       def action_manage
         return unless @group_exists && compare_group
+
         converge_by(["manage group #{new_resource.group_name}"] + change_desc) do
           manage_group
           logger.info("#{new_resource} managed")
@@ -156,6 +159,7 @@ class Chef
 
       def action_modify
         return unless compare_group
+
         converge_by(["modify group #{new_resource.group_name}"] + change_desc) do
           manage_group
           logger.info("#{new_resource} modified")

@@ -65,7 +65,7 @@ describe "knife cookbook download", :workstation do
         Downloading root_files
         Cookbook downloaded to #{tmpdir}/x-1.0.1
       EOM
-)
+                                                                            )
     end
   end
 end

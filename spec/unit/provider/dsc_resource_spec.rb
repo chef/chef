@@ -36,7 +36,8 @@ describe Chef::Provider::DscResource do
     it "raises a ProviderNotFound exception" do
       expect(provider).not_to receive(:meta_configuration)
       expect { provider.run_action(:run) }.to raise_error(
-              Chef::Exceptions::ProviderNotFound, /5\.0\.10018\.0/)
+        Chef::Exceptions::ProviderNotFound, /5\.0\.10018\.0/
+      )
     end
   end
 
@@ -52,7 +53,8 @@ describe Chef::Provider::DscResource do
         it "raises an exception" do
           expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(false)
           expect { provider.run_action(:run) }.to raise_error(
-            Chef::Exceptions::ProviderNotFound, /Disabled/)
+            Chef::Exceptions::ProviderNotFound, /Disabled/
+          )
         end
       end
       context "and the WMF is 5 RTM or newer" do
@@ -157,7 +159,8 @@ describe Chef::Provider::DscResource do
           [
           { "Module" => { "Name" => "ModuleName1", "Version" => "1.0.0.0" } },
           { "Module" => { "Name" => "ModuleName1", "Version" => "2.0.0.0" } },
-        ] end
+        ]
+        end
 
         it "raises MultipleDscResourcesFound" do
           expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::MultipleDscResourcesFound)

@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,109 +51,111 @@ class Chef
 
       # List of the component attribute hashes, in order of precedence, low to
       # high.
-      COMPONENTS = [
-        :@default,
-        :@env_default,
-        :@role_default,
-        :@force_default,
-        :@normal,
-        :@override,
-        :@role_override,
-        :@env_override,
-        :@force_override,
-        :@automatic,
-      ].freeze
+      COMPONENTS = %i{
+        @default
+        @env_default
+        @role_default
+        @force_default
+        @normal
+        @override
+        @role_override
+        @env_override
+        @force_override
+        @automatic
+      }.freeze
 
-      DEFAULT_COMPONENTS = [
-        :@default,
-        :@env_default,
-        :@role_default,
-        :@force_default,
-      ].freeze
+      DEFAULT_COMPONENTS = %i{
+        @default
+        @env_default
+        @role_default
+        @force_default
+      }.freeze
 
-      OVERRIDE_COMPONENTS = [
-        :@override,
-        :@role_override,
-        :@env_override,
-        :@force_override,
-      ].freeze
+      OVERRIDE_COMPONENTS = %i{
+        @override
+        @role_override
+        @env_override
+        @force_override
+      }.freeze
 
-      ENUM_METHODS = [
-        :all?,
-        :any?,
-        :assoc,
-        :chunk,
-        :collect,
-        :collect_concat,
-        :compare_by_identity,
-        :compare_by_identity?,
-        :count,
-        :cycle,
-        :detect,
-        :drop,
-        :drop_while,
-        :each,
-        :each_cons,
-        :each_entry,
-        :each_key,
-        :each_pair,
-        :each_slice,
-        :each_value,
-        :each_with_index,
-        :each_with_object,
-        :empty?,
-        :entries,
-        :except,
-        :fetch,
-        :find,
-        :find_all,
-        :find_index,
-        :first,
-        :flat_map,
-        :flatten,
-        :grep,
-        :group_by,
-        :has_value?,
-        :include?,
-        :index,
-        :inject,
-        :invert,
-        :key,
-        :keys,
-        :length,
-        :map,
-        :max,
-        :max_by,
-        :merge,
-        :min,
-        :min_by,
-        :minmax,
-        :minmax_by,
-        :none?,
-        :one?,
-        :partition,
-        :rassoc,
-        :reduce,
-        :reject,
-        :reverse_each,
-        :select,
-        :size,
-        :slice_before,
-        :sort,
-        :sort_by,
-        :store,
-        :symbolize_keys,
-        :take,
-        :take_while,
-        :to_a,
-        :to_h,
-        :to_hash,
-        :to_set,
-        :value?,
-        :values,
-        :values_at,
-        :zip,
-      ].freeze
+      ENUM_METHODS = %i{
+        all?
+        any?
+        assoc
+        chunk
+        collect
+        collect_concat
+        compare_by_identity
+        compare_by_identity?
+        count
+        cycle
+        detect
+        drop
+        drop_while
+        each
+        each_cons
+        each_entry
+        each_key
+        each_pair
+        each_slice
+        each_value
+        each_with_index
+        each_with_object
+        empty?
+        entries
+        except
+        fetch
+        find
+        find_all
+        find_index
+        first
+        flat_map
+        flatten
+        grep
+        group_by
+        has_value?
+        include?
+        index
+        inject
+        invert
+        key
+        keys
+        length
+        map
+        max
+        max_by
+        merge
+        min
+        min_by
+        minmax
+        minmax_by
+        none?
+        one?
+        partition
+        rassoc
+        reduce
+        reject
+        reverse_each
+        select
+        size
+        slice_before
+        sort
+        sort_by
+        store
+        symbolize_keys
+        take
+        take_while
+        to_a
+        to_h
+        to_hash
+        to_json
+        to_set
+        to_yaml
+        value?
+        values
+        values_at
+        zip
+      }.freeze
 
       ENUM_METHODS.each do |delegated_method|
         define_method(delegated_method) do |*args, &block|
@@ -341,6 +343,7 @@ class Chef
       def with_deep_merged_return_value(obj, *path, last)
         hash = obj.read(*path)
         return nil unless hash.is_a?(Hash)
+
         ret = hash[last]
         yield
         ret
@@ -357,6 +360,7 @@ class Chef
       # - this API autovivifies (and cannot trainwreck)
       def default!(*args)
         return Decorator::Unchain.new(self, :default!) unless args.length > 0
+
         write(:default, *args)
       end
 
@@ -365,6 +369,7 @@ class Chef
       # - this API autovivifies (and cannot trainwreck)
       def normal!(*args)
         return Decorator::Unchain.new(self, :normal!) unless args.length > 0
+
         write(:normal, *args)
       end
 
@@ -373,6 +378,7 @@ class Chef
       # - this API autovivifies (and cannot trainwreck)
       def override!(*args)
         return Decorator::Unchain.new(self, :override!) unless args.length > 0
+
         write(:override, *args)
       end
 
@@ -381,6 +387,7 @@ class Chef
       # - this API autovivifies (and cannot trainwreck)
       def force_default!(*args)
         return Decorator::Unchain.new(self, :force_default!) unless args.length > 0
+
         value = args.pop
         rm_default(*args)
         write(:force_default, *args, value)
@@ -389,6 +396,7 @@ class Chef
       # clears from all override precedence levels and then sets force_override
       def force_override!(*args)
         return Decorator::Unchain.new(self, :force_override!) unless args.length > 0
+
         value = args.pop
         rm_override(*args)
         write(:force_override, *args, value)
@@ -417,16 +425,19 @@ class Chef
 
       def normal_unless(*args)
         return Decorator::Unchain.new(self, :normal_unless) unless args.length > 0
+
         write(:normal, *args) if normal.read(*args[0...-1]).nil?
       end
 
       def default_unless(*args)
         return Decorator::Unchain.new(self, :default_unless) unless args.length > 0
+
         write(:default, *args) if default.read(*args[0...-1]).nil?
       end
 
       def override_unless(*args)
         return Decorator::Unchain.new(self, :override_unless) unless args.length > 0
+
         write(:override, *args) if override.read(*args[0...-1]).nil?
       end
 
@@ -478,7 +489,7 @@ class Chef
       end
 
       def inspect
-        "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map do |iv|
+        "#<#{self.class} " << (COMPONENTS + %i{@merged_attributes @properties}).map do |iv|
           "#{iv}=#{instance_variable_get(iv).inspect}"
         end.join(", ") << ">"
       end
@@ -573,7 +584,7 @@ class Chef
 
       # needed for __path__
       def convert_key(key)
-        key.kind_of?(Symbol) ? key.to_s : key
+        key.is_a?(Symbol) ? key.to_s : key
       end
 
       NIL = Object.new
@@ -581,7 +592,7 @@ class Chef
       # @api private
       def deep_merge!(merge_onto, merge_with)
         # If there are two Hashes, recursively merge.
-        if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
+        if merge_onto.is_a?(Hash) && merge_with.is_a?(Hash)
           merge_with.each do |key, merge_with_value|
             value =
               if merge_onto.key?(key)
@@ -595,7 +606,7 @@ class Chef
           end
           merge_onto
 
-        elsif merge_onto.kind_of?(Array) && merge_with.kind_of?(Array)
+        elsif merge_onto.is_a?(Array) && merge_with.is_a?(Array)
           merge_onto |= merge_with
 
         # If merge_with is NIL, don't replace merge_onto
@@ -604,9 +615,9 @@ class Chef
 
         # In all other cases, replace merge_onto with merge_with
         else
-          if merge_with.kind_of?(Hash)
+          if merge_with.is_a?(Hash)
             Chef::Node::ImmutableMash.new(merge_with)
-          elsif merge_with.kind_of?(Array)
+          elsif merge_with.is_a?(Array)
             Chef::Node::ImmutableArray.new(merge_with)
           else
             merge_with
@@ -617,7 +628,7 @@ class Chef
       # @api private
       def hash_only_merge!(merge_onto, merge_with)
         # If there are two Hashes, recursively merge.
-        if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
+        if merge_onto.is_a?(Hash) && merge_with.is_a?(Hash)
           merge_with.each do |key, merge_with_value|
             value =
               if merge_onto.key?(key)
@@ -637,9 +648,9 @@ class Chef
 
         # In all other cases, replace merge_onto with merge_with
         else
-          if merge_with.kind_of?(Hash)
+          if merge_with.is_a?(Hash)
             Chef::Node::ImmutableMash.new(merge_with)
-          elsif merge_with.kind_of?(Array)
+          elsif merge_with.is_a?(Array)
             Chef::Node::ImmutableArray.new(merge_with)
           else
             merge_with

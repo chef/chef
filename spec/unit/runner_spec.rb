@@ -295,7 +295,7 @@ describe Chef::Runner do
       # execution, and schedule delayed actions :second and :third on the first
       # resource. The duplicate actions should "collapse" to a single notification
       # and order should be preserved.
-      expect(SnitchyProvider.all_actions_called).to eq([:first, :first, :second, :third])
+      expect(SnitchyProvider.all_actions_called).to eq(%i{first first second third})
     end
 
     it "executes delayed notifications in the order they were declared" do
@@ -321,7 +321,7 @@ describe Chef::Runner do
       third_resource.notifies(:third_action, first_resource, :delayed)
 
       runner.converge
-      expect(SnitchyProvider.all_actions_called).to eq([:first, :first, :second, :third])
+      expect(SnitchyProvider.all_actions_called).to eq(%i{first first second third})
     end
 
     it "does not fire notifications if the resource was not updated by the last action executed" do
@@ -347,7 +347,7 @@ describe Chef::Runner do
       runner.converge
 
       # All of the resources should only fire once:
-      expect(SnitchyProvider.all_actions_called).to eq([:first, :second, :third])
+      expect(SnitchyProvider.all_actions_called).to eq(%i{first second third})
 
       # all of the resources should be marked as updated for reporting purposes
       expect(first_resource).to be_updated

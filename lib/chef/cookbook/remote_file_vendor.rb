@@ -37,13 +37,14 @@ class Chef
       # Chef::Config.cookbook_path file hierarchy for the requested
       # file.
       def get_filename(filename)
-        if filename =~ /([^\/]+)\/(.+)$/
+        if filename =~ %r{([^/]+)/(.+)$}
           segment = $1
         else
           raise "get_filename: Cannot determine segment/filename for incoming filename #{filename}"
         end
 
         raise "No such segment #{segment} in cookbook #{@cookbook_name}" unless @manifest.files_for(segment)
+
         found_manifest_record = @manifest.files_for(segment).find { |manifest_record| manifest_record[:path] == filename }
         raise "No such file #{filename} in #{@cookbook_name}" unless found_manifest_record
 
@@ -68,7 +69,7 @@ class Chef
           Chef::FileCache.move_to(raw_file.path, cache_filename)
         else
           Chef::Log.trace("Not fetching #{cache_filename}, as the cache is up to date.")
-          Chef::Log.trace("Current checksum: #{current_checksum}; manifest checksum: #{found_manifest_record['checksum']})")
+          Chef::Log.trace("Current checksum: #{current_checksum}; manifest checksum: #{found_manifest_record["checksum"]})")
         end
 
         full_path_cache_filename = Chef::FileCache.load(cache_filename, false)

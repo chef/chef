@@ -59,7 +59,7 @@ describe "chef_repo_path tests", :workstation do
 
       it "knife list --local -Rfp --chef-repo-path chef_repo2 / grabs chef_repo2 stuff" do
         Chef::Config.delete(:chef_repo_path)
-        knife("list --local -Rfp --chef-repo-path #{path_to('chef_repo2')} /").should_succeed <<~EOM
+        knife("list --local -Rfp --chef-repo-path #{path_to("chef_repo2")} /").should_succeed <<~EOM
           /clients/
           /clients/client3.json
           /cookbooks/
@@ -79,9 +79,10 @@ describe "chef_repo_path tests", :workstation do
         EOM
       end
 
-      it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only do
+      # "Skipping for BK... As Windows 2019 has 8dot3name disabled by default"
+      it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only, :skip_buildkite do
         Chef::Config.delete(:chef_repo_path)
-        knife("list --local -Rfp --chef-repo-path #{path_to('chef_r~1')} /").should_succeed <<~EOM
+        knife("list --local -Rfp --chef-repo-path #{path_to("chef_r~1")} /").should_succeed <<~EOM
           /clients/
           /clients/client3.json
           /cookbooks/
@@ -101,9 +102,10 @@ describe "chef_repo_path tests", :workstation do
         EOM
       end
 
-      it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only do
+      # "Skipping for BK... As Windows 2019 has 8dot3name disabled by default"
+      it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only, :skip_buildkite do
         Chef::Config.delete(:chef_repo_path)
-        knife("list -z -Rfp --chef-repo-path #{path_to('chef_r~1')} /").should_succeed <<~EOM
+        knife("list -z -Rfp --chef-repo-path #{path_to("chef_r~1")} /").should_succeed <<~EOM
           /acls/
           /acls/clients/
           /acls/clients/client3.json
@@ -157,7 +159,7 @@ describe "chef_repo_path tests", :workstation do
         end
 
         it "knife list --local -Rfp --chef-repo-path chef_repo2 / grabs chef_repo2 stuff" do
-          knife("list --local -Rfp --chef-repo-path #{path_to('chef_repo2')} /").should_succeed <<~EOM
+          knife("list --local -Rfp --chef-repo-path #{path_to("chef_repo2")} /").should_succeed <<~EOM
             /clients/
             /clients/client3.json
             /cookbooks/

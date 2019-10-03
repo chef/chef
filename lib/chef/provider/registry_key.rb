@@ -76,7 +76,7 @@ class Chef
       def define_resource_requirements
         requirements.assert(:create, :create_if_missing, :delete, :delete_key) do |a|
           a.assertion { registry.hive_exists?(new_resource.key) }
-          a.failure_message(Chef::Exceptions::Win32RegHiveMissing, "Hive #{new_resource.key.split("\\").shift} does not exist")
+          a.failure_message(Chef::Exceptions::Win32RegHiveMissing, "Hive #{new_resource.key.split('\\').shift} does not exist")
         end
 
         requirements.assert(:create) do |a|
@@ -122,7 +122,7 @@ class Chef
         new_resource.unscrubbed_values.each do |value|
           if @name_hash.key?(value[:name].downcase)
             current_value = @name_hash[value[:name].downcase]
-            if [:dword, :dword_big_endian, :qword].include? value[:type]
+            if %i{dword dword_big_endian qword}.include? value[:type]
               value[:data] = value[:data].to_i
             end
             unless current_value[:type] == value[:type] && current_value[:data] == value[:data]

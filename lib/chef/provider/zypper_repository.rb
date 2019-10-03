@@ -28,8 +28,7 @@ class Chef
     class ZypperRepository < Chef::Provider
       provides :zypper_repository, platform_family: "suse"
 
-      def load_current_resource
-      end
+      def load_current_resource; end
 
       action :create do
         if new_resource.gpgautoimportkeys
@@ -135,7 +134,7 @@ class Chef
       def key_fingerprint(key_path)
         so = shell_out!("gpg --with-fingerprint #{key_path}")
         # expected output and match: http://rubular.com/r/BpfMjxySQM
-        fingerprint = /pub\s*\S*\/(\S*)/.match(so.stdout)[1].downcase
+        fingerprint = %r{pub\s*\S*/(\S*)}.match(so.stdout)[1].downcase
         logger.trace("GPG fingerprint of key at #{key_path} is #{fingerprint}")
         fingerprint
       end

@@ -265,77 +265,77 @@ describe Chef::DataCollector do
   describe "#should_be_enabled?" do
     shared_examples_for "a solo-like run" do
       it "is disabled in solo-legacy without a data_collector url and token" do
-        expect(data_collector.send(:should_be_enabled?)).to be false
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
       end
 
       it "is disabled in solo-legacy with only a url" do
         Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
-        expect(data_collector.send(:should_be_enabled?)).to be false
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
       end
 
       it "is disabled in solo-legacy with only a token" do
         Chef::Config[:data_collector][:token] = "admit_one"
-        expect(data_collector.send(:should_be_enabled?)).to be false
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
       end
 
       it "is enabled in solo-legacy with both a token and url" do
         Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
         Chef::Config[:data_collector][:token] = "no_cash_value"
-        expect(data_collector.send(:should_be_enabled?)).to be true
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
       end
 
       it "is enabled in solo-legacy with only an output location to a file" do
         Chef::Config[:data_collector][:output_locations] = { files: [ "/always/be/counting/down" ] }
-        expect(data_collector.send(:should_be_enabled?)).to be true
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
       end
 
       it "is disabled in solo-legacy with only an output location to a uri" do
         Chef::Config[:data_collector][:output_locations] = { urls: [ "https://esa.local/ariane5" ] }
-        expect(data_collector.send(:should_be_enabled?)).to be false
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
       end
 
       it "is enabled in solo-legacy with only an output location to a uri with a token" do
         Chef::Config[:data_collector][:output_locations] = { urls: [ "https://esa.local/ariane5" ] }
         Chef::Config[:data_collector][:token] = "good_for_one_fare"
-        expect(data_collector.send(:should_be_enabled?)).to be true
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
       end
 
       it "is enabled in solo-legacy when the mode is :solo" do
         Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
         Chef::Config[:data_collector][:token] = "non_redeemable"
         Chef::Config[:data_collector][:mode] = :solo
-        expect(data_collector.send(:should_be_enabled?)).to be true
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
       end
 
       it "is enabled in solo-legacy when the mode is :both" do
         Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
         Chef::Config[:data_collector][:token] = "non_negotiable"
         Chef::Config[:data_collector][:mode] = :both
-        expect(data_collector.send(:should_be_enabled?)).to be true
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
       end
 
       it "is disabled in solo-legacy when the mode is :client" do
         Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
         Chef::Config[:data_collector][:token] = "NYCTA"
         Chef::Config[:data_collector][:mode] = :client
-        expect(data_collector.send(:should_be_enabled?)).to be false
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
       end
 
       it "is disabled in solo-legacy mode when the mode is :nonsense" do
         Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
         Chef::Config[:data_collector][:token] = "MTA"
         Chef::Config[:data_collector][:mode] = :nonsense
-        expect(data_collector.send(:should_be_enabled?)).to be false
+        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
       end
     end
 
     it "by default it is enabled" do
-      expect(data_collector.send(:should_be_enabled?)).to be true
+      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
     end
 
     it "is disabled in why-run" do
       Chef::Config[:why_run] = true
-      expect(data_collector.send(:should_be_enabled?)).to be false
+      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
     end
 
     describe "a solo legacy run" do
@@ -356,22 +356,22 @@ describe Chef::DataCollector do
 
     it "is enabled in client mode when the mode is :both" do
       Chef::Config[:data_collector][:mode] = :both
-      expect(data_collector.send(:should_be_enabled?)).to be true
+      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
     end
 
     it "is disabled in client mode when the mode is :solo" do
       Chef::Config[:data_collector][:mode] = :solo
-      expect(data_collector.send(:should_be_enabled?)).to be false
+      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
     end
 
     it "is disabled in client mode when the mode is :nonsense" do
       Chef::Config[:data_collector][:mode] = :nonsense
-      expect(data_collector.send(:should_be_enabled?)).to be false
+      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
     end
 
     it "is still enabled if you set a token in client mode" do
       Chef::Config[:data_collector][:token] =  "good_for_one_ride"
-      expect(data_collector.send(:should_be_enabled?)).to be true
+      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
     end
   end
 
@@ -877,6 +877,88 @@ describe Chef::DataCollector do
     let(:shift_jis) { "I have no idea what this character is:\n #{0x83.chr}#{0x80.chr}.\n" }
     it "handles invalid UTF-8 properly" do
       data_collector.send(:send_to_file_location, tempfile, { invalid: shift_jis })
+    end
+  end
+
+  describe "#send_to_datacollector" do
+    def stub_http_client(exception = nil)
+      if exception.nil?
+        expect(http_client).to receive(:post).with(nil, message, data_collector.send(:headers))
+      else
+        expect(http_client).to receive(:post).with(nil, message, data_collector.send(:headers)).and_raise(exception)
+      end
+    end
+
+    let(:message) { "message" }
+    let(:http_client) { instance_double(Chef::ServerAPI) }
+
+    before do
+      expect(data_collector).to receive(:setup_http_client).and_return(http_client)
+    end
+
+    it "does not disable the data_collector when no exception is raised" do
+      stub_http_client
+      expect(data_collector.events).not_to receive(:unregister)
+      data_collector.send(:send_to_data_collector, message)
+    end
+
+    errors = [ Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,
+               Errno::ECONNREFUSED, EOFError, Net::HTTPBadResponse,
+               Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError,
+               Errno::EHOSTDOWN ]
+
+    errors.each do |exception_class|
+      context "when the client raises a #{exception_class} exception" do
+        before do
+          stub_http_client(exception_class)
+        end
+
+        it "disables the reporter" do
+          expect(data_collector.events).to receive(:unregister).with(data_collector)
+          data_collector.send(:send_to_data_collector, message)
+        end
+
+        it "logs an error and raises when raise_on_failure is enabled" do
+          Chef::Config[:data_collector][:raise_on_failure] = true
+          expect(Chef::Log).to receive(:error)
+          expect { data_collector.send(:send_to_data_collector, message) }.to raise_error(exception_class)
+        end
+
+        it "logs a warn message and does not raise an exception when raise_on_failure is disabled" do
+          Chef::Config[:data_collector][:raise_on_failure] = false
+          expect(Chef::Log).to receive(:warn)
+          data_collector.send(:send_to_data_collector, message)
+        end
+      end
+    end
+
+    context "when the client raises a 404 exception" do
+      let(:err) do
+        response = double("Net::HTTP response", code: "404")
+        Net::HTTPClientException.new("Not Found", response)
+      end
+
+      before do
+        stub_http_client(err)
+      end
+
+      it "disables the reporter" do
+        expect(data_collector.events).to receive(:unregister).with(data_collector)
+        data_collector.send(:send_to_data_collector, message)
+      end
+
+      it "logs an error and raises when raise_on_failure is enabled" do
+        Chef::Config[:data_collector][:raise_on_failure] = true
+        expect(Chef::Log).to receive(:error)
+        expect { data_collector.send(:send_to_data_collector, message) }.to raise_error(err)
+      end
+
+      # this is different specifically for 404s
+      it "logs an info message and does not raise an exception when raise_on_failure is disabled" do
+        Chef::Config[:data_collector][:raise_on_failure] = false
+        expect(Chef::Log).to receive(:debug).with(/This is normal if you do not have Chef Automate/)
+        data_collector.send(:send_to_data_collector, message)
+      end
     end
   end
 end

@@ -155,14 +155,41 @@ describe Chef::Knife::Bootstrap::TrainConnector do
     context "under linux and unix-like" do
       let(:family) { "debian" }
       let(:name) { "ubuntu" }
-      it "uses the *nix command to create the temp dir and sets ownership to logged-in user" do
-        expected_command = Chef::Knife::Bootstrap::TrainConnector::MKTEMP_NIX_COMMAND
-        expect(subject).to receive(:run_command!).with(expected_command)
-          .and_return double("result", stdout: "/a/path")
-        expect(subject).to receive(:run_command!).with("chown user1 '/a/path'")
-        expect(subject.temp_dir).to eq "/a/path"
+      let(:random) { "wScHX6" }
+      let(:dir) { "/tmp/chef_#{random}" }
+
+      before do
+        allow(SecureRandom).to receive(:alphanumeric).with(6).and_return(random)
       end
 
+      context "uses the *nix command to create the temp dir and sets ownership to logged-in" do
+        it "with sudo privilege" do
+          subject.config[:sudo] = true
+          expected_command1 = "mkdir -p '#{dir}'"
+          expected_command2 = "chown user1 '#{dir}'"
+          expect(subject).to receive(:run_command!).with(expected_command1)
+            .and_return double("result", stdout: "\r\n")
+          expect(subject).to receive(:run_command!).with(expected_command2)
+            .and_return double("result", stdout: "\r\n")
+          expect(subject.temp_dir).to eq(dir)
+        end
+
+        it "without sudo privilege" do
+          expected_command = "mkdir -p '#{dir}'"
+          expect(subject).to receive(:run_command!).with(expected_command)
+            .and_return double("result", stdout: "\r\n")
+          expect(subject.temp_dir).to eq(dir)
+        end
+      end
+
+      context "with noise in stderr" do
+        it "uses the *nix command to create the temp dir" do
+          expected_command = "mkdir -p '#{dir}'"
+          expect(subject).to receive(:run_command!).with(expected_command)
+            .and_return double("result", stdout: "sudo: unable to resolve host hostname.localhost\r\n" + "#{dir}\r\n")
+          expect(subject.temp_dir).to eq(dir)
+        end
+      end
     end
   end
   context "#upload_file_content!" do

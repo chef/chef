@@ -32,6 +32,7 @@ class Chef
           add_password
           manage_home
           return if universal_options.empty? && usermod_options.empty?
+
           shell_out!("usermod", universal_options, usermod_options, new_resource.username)
         end
 
@@ -107,6 +108,7 @@ class Chef
 
         def add_password
           return unless current_resource.password != new_resource.password && new_resource.password
+
           logger.trace("#{new_resource.username} setting password to #{new_resource.password}")
           command = "echo '#{new_resource.username}:#{new_resource.password}' | chpasswd -e"
           shell_out!(command)
@@ -115,6 +117,7 @@ class Chef
         # Aix specific handling to update users home directory.
         def manage_home
           return unless updating_home? && new_resource.manage_home
+
           # -m option does not work on aix, so move dir.
           if ::File.directory?(current_resource.home)
             logger.trace("Changing users home directory from #{current_resource.home} to #{new_resource.home}")

@@ -39,7 +39,7 @@ class Chef
 
       def run
         if config[:with_uri]
-          cookbooks = Hash.new
+          cookbooks = {}
           get_cookbook_list.each { |k, v| cookbooks[k] = v["cookbook"] }
           ui.output(format_for_display(cookbooks))
         else

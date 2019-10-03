@@ -45,8 +45,8 @@ class Chef
                 false
               end
             end
-            a.failure_message Chef::Exceptions::Group, "Could not add users #{to_add(new_resource.members).join(', ')} to #{new_resource.group_name}: one of these users does not exist"
-            a.whyrun "Could not find one of these users: #{to_add(new_resource.members).join(', ')}. Assuming it will be created by a prior step"
+            a.failure_message Chef::Exceptions::Group, "Could not add users #{to_add(new_resource.members).join(", ")} to #{new_resource.group_name}: one of these users does not exist"
+            a.whyrun "Could not find one of these users: #{to_add(new_resource.members).join(", ")}. Assuming it will be created by a prior step"
           end
         end
 

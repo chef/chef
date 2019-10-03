@@ -401,7 +401,7 @@ describe Chef::Provider::Cron do
       @provider.current_resource = @current_resource
     end
 
-    [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home].each do |property|
+    %i{minute hour day month weekday command mailto path shell home}.each do |property|
       it "should return true if #{property} doesn't match" do
         @new_resource.send(property, "something_else")
         expect(@provider.cron_different?).to eql(true)

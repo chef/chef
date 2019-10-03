@@ -189,7 +189,7 @@ class Chef
         # see https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464(v=vs.85).aspx
         class Translation < FFI::Struct
           layout :w_lang, :WORD,
-          :w_code_page, :WORD
+            :w_code_page, :WORD
         end
 
 =begin
@@ -200,7 +200,7 @@ typedef struct _FILETIME {
 =end
         class FILETIME < FFI::Struct
           layout :dw_low_date_time, :DWORD,
-          :dw_high_date_time, :DWORD
+            :dw_high_date_time, :DWORD
         end
 
 =begin
@@ -212,8 +212,8 @@ typedef struct _SECURITY_ATTRIBUTES {
 =end
         class SECURITY_ATTRIBUTES < FFI::Struct
           layout :n_length, :DWORD,
-          :lp_security_descriptor, :LPVOID,
-          :b_inherit_handle, :DWORD
+            :lp_security_descriptor, :LPVOID,
+            :b_inherit_handle, :DWORD
         end
 
 =begin
@@ -232,15 +232,15 @@ typedef struct _WIN32_FIND_DATA {
 =end
         class WIN32_FIND_DATA < FFI::Struct
           layout :dw_file_attributes, :DWORD,
-          :ft_creation_time, FILETIME,
-          :ft_last_access_time, FILETIME,
-          :ft_last_write_time, FILETIME,
-          :n_file_size_high, :DWORD,
-          :n_file_size_low, :DWORD,
-          :dw_reserved_0, :DWORD,
-          :dw_reserved_1, :DWORD,
-          :c_file_name, [:BYTE, MAX_PATH * 2],
-          :c_alternate_file_name, [:BYTE, 14]
+            :ft_creation_time, FILETIME,
+            :ft_last_access_time, FILETIME,
+            :ft_last_write_time, FILETIME,
+            :n_file_size_high, :DWORD,
+            :n_file_size_low, :DWORD,
+            :dw_reserved_0, :DWORD,
+            :dw_reserved_1, :DWORD,
+            :c_file_name, [:BYTE, MAX_PATH * 2],
+            :c_alternate_file_name, [:BYTE, 14]
         end
 
 =begin
@@ -259,15 +259,15 @@ typedef struct _BY_HANDLE_FILE_INFORMATION {
 =end
         class BY_HANDLE_FILE_INFORMATION < FFI::Struct
           layout :dw_file_attributes, :DWORD,
-          :ft_creation_time, FILETIME,
-          :ft_last_access_time, FILETIME,
-          :ft_last_write_time, FILETIME,
-          :dw_volume_serial_number, :DWORD,
-          :n_file_size_high, :DWORD,
-          :n_file_size_low, :DWORD,
-          :n_number_of_links, :DWORD,
-          :n_file_index_high, :DWORD,
-          :n_file_index_low, :DWORD
+            :ft_creation_time, FILETIME,
+            :ft_last_access_time, FILETIME,
+            :ft_last_write_time, FILETIME,
+            :dw_volume_serial_number, :DWORD,
+            :n_file_size_high, :DWORD,
+            :n_file_size_low, :DWORD,
+            :n_number_of_links, :DWORD,
+            :n_file_index_high, :DWORD,
+            :n_file_index_low, :DWORD
         end
 
 =begin
@@ -369,7 +369,7 @@ HANDLE WINAPI CreateFile(
   __in_opt  HANDLE hTemplateFile
 );
 =end
-        safe_attach_function :CreateFileW, [:LPCTSTR, :DWORD, :DWORD, :LPSECURITY_ATTRIBUTES, :DWORD, :DWORD, :pointer], :HANDLE
+        safe_attach_function :CreateFileW, %i{LPCTSTR DWORD DWORD LPSECURITY_ATTRIBUTES DWORD DWORD pointer}, :HANDLE
 
 =begin
 BOOL WINAPI FindClose(
@@ -393,7 +393,7 @@ DWORD WINAPI GetFinalPathNameByHandle(
   __in   DWORD dwFlags
 );
 =end
-        safe_attach_function :GetFinalPathNameByHandleW, [:HANDLE, :LPTSTR, :DWORD, :DWORD], :DWORD
+        safe_attach_function :GetFinalPathNameByHandleW, %i{HANDLE LPTSTR DWORD DWORD}, :DWORD
 
 =begin
 BOOL WINAPI GetFileInformationByHandle(
@@ -401,7 +401,7 @@ BOOL WINAPI GetFileInformationByHandle(
   __out  LPBY_HANDLE_FILE_INFORMATION lpFileInformation
 );
 =end
-        safe_attach_function :GetFileInformationByHandle, [:HANDLE, :LPBY_HANDLE_FILE_INFORMATION], :BOOL
+        safe_attach_function :GetFileInformationByHandle, %i{HANDLE LPBY_HANDLE_FILE_INFORMATION}, :BOOL
 
 =begin
 HANDLE WINAPI FindFirstFile(
@@ -409,7 +409,7 @@ HANDLE WINAPI FindFirstFile(
   __out  LPWIN32_FIND_DATA lpFindFileData
 );
 =end
-        safe_attach_function :FindFirstFileW, [:LPCTSTR, :LPWIN32_FIND_DATA], :HANDLE
+        safe_attach_function :FindFirstFileW, %i{LPCTSTR LPWIN32_FIND_DATA}, :HANDLE
 
 =begin
 BOOL WINAPI CreateHardLink(
@@ -418,7 +418,7 @@ BOOL WINAPI CreateHardLink(
   __reserved  LPSECURITY_ATTRIBUTES lpSecurityAttributes
 );
 =end
-        safe_attach_function :CreateHardLinkW, [:LPCTSTR, :LPCTSTR, :LPSECURITY_ATTRIBUTES], :BOOLEAN
+        safe_attach_function :CreateHardLinkW, %i{LPCTSTR LPCTSTR LPSECURITY_ATTRIBUTES}, :BOOLEAN
 
 =begin
 BOOLEAN WINAPI CreateSymbolicLink(
@@ -427,7 +427,7 @@ BOOLEAN WINAPI CreateSymbolicLink(
   __in  DWORD dwFlags
 );
 =end
-        safe_attach_function :CreateSymbolicLinkW, [:LPTSTR, :LPTSTR, :DWORD], :BOOLEAN
+        safe_attach_function :CreateSymbolicLinkW, %i{LPTSTR LPTSTR DWORD}, :BOOLEAN
 
 =begin
 DWORD WINAPI GetLongPathName(
@@ -436,7 +436,7 @@ DWORD WINAPI GetLongPathName(
   __in   DWORD cchBuffer
 );
 =end
-        safe_attach_function :GetLongPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
+        safe_attach_function :GetLongPathNameW, %i{LPCTSTR LPTSTR DWORD}, :DWORD
 
 =begin
 DWORD WINAPI GetShortPathName(
@@ -445,7 +445,7 @@ DWORD WINAPI GetShortPathName(
   __in   DWORD cchBuffer
 );
 =end
-        safe_attach_function :GetShortPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
+        safe_attach_function :GetShortPathNameW, %i{LPCTSTR LPTSTR DWORD}, :DWORD
 
 =begin
 BOOL WINAPI DeviceIoControl(
@@ -459,7 +459,7 @@ BOOL WINAPI DeviceIoControl(
   __inout_opt  LPOVERLAPPED lpOverlapped
 );
 =end
-        safe_attach_function :DeviceIoControl, [:HANDLE, :DWORD, :LPVOID, :DWORD, :LPVOID, :DWORD, :LPDWORD, :pointer], :BOOL
+        safe_attach_function :DeviceIoControl, %i{HANDLE DWORD LPVOID DWORD LPVOID DWORD LPDWORD pointer}, :BOOL
 
 # BOOL WINAPI DeleteVolumeMountPoint(
   # _In_ LPCTSTR lpszVolumeMountPoint
@@ -470,14 +470,14 @@ BOOL WINAPI DeviceIoControl(
   # _In_ LPCTSTR lpszVolumeMountPoint,
   # _In_ LPCTSTR lpszVolumeName
 # );
-        safe_attach_function :SetVolumeMountPointW, [:LPCTSTR, :LPCTSTR], :BOOL
+        safe_attach_function :SetVolumeMountPointW, %i{LPCTSTR LPCTSTR}, :BOOL
 
 # BOOL WINAPI GetVolumeNameForVolumeMountPoint(
   # _In_  LPCTSTR lpszVolumeMountPoint,
   # _Out_ LPTSTR  lpszVolumeName,
   # _In_  DWORD   cchBufferLength
 # );
-        safe_attach_function :GetVolumeNameForVolumeMountPointW, [:LPCTSTR, :LPTSTR, :DWORD], :BOOL
+        safe_attach_function :GetVolumeNameForVolumeMountPointW, %i{LPCTSTR LPTSTR DWORD}, :BOOL
 
 =begin
 BOOL WINAPI GetFileVersionInfo(
@@ -487,7 +487,7 @@ BOOL WINAPI GetFileVersionInfo(
   _Out_      LPVOID  lpData
 );
 =end
-        safe_attach_function :GetFileVersionInfoW, [:LPCTSTR, :DWORD, :DWORD, :LPVOID], :BOOL
+        safe_attach_function :GetFileVersionInfoW, %i{LPCTSTR DWORD DWORD LPVOID}, :BOOL
 
 =begin
 DWORD WINAPI GetFileVersionInfoSize(
@@ -495,7 +495,7 @@ DWORD WINAPI GetFileVersionInfoSize(
   _Out_opt_ LPDWORD lpdwHandle
 );
 =end
-        safe_attach_function :GetFileVersionInfoSizeW, [:LPCTSTR, :LPDWORD], :DWORD
+        safe_attach_function :GetFileVersionInfoSizeW, %i{LPCTSTR LPDWORD}, :DWORD
 
 =begin
 BOOL WINAPI VerQueryValue(
@@ -505,7 +505,7 @@ BOOL WINAPI VerQueryValue(
   _Out_ PUINT   puLen
 );
 =end
-        safe_attach_function :VerQueryValueW, [:LPCVOID, :LPCTSTR, :LPVOID, :PUINT], :BOOL
+        safe_attach_function :VerQueryValueW, %i{LPCVOID LPCTSTR LPVOID PUINT}, :BOOL
 
         ###############################################
         # Helpers
@@ -563,7 +563,7 @@ BOOL WINAPI VerQueryValue(
         def file_handle(path)
           path = canonical_encode_path(path)
           handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
-                                nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
+            nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
 
           if handle == INVALID_HANDLE_VALUE
             Chef::ReservedNames::Win32::Error.raise!
@@ -577,7 +577,7 @@ BOOL WINAPI VerQueryValue(
         def symlink_file_handle(path)
           path = encode_path(path)
           handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,
-                                nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
+            nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
 
           if handle == INVALID_HANDLE_VALUE
             Chef::ReservedNames::Win32::Error.raise!

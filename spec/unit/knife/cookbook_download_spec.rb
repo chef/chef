@@ -112,7 +112,7 @@ describe Chef::Knife::CookbookDownload do
 
         it "should print an error and exit if the cookbook download directory already exists" do
           expect(File).to receive(:exists?).with("/var/tmp/chef/foobar-1.0.0").and_return(true)
-          expect(@knife.ui).to receive(:fatal).with(/\/var\/tmp\/chef\/foobar-1\.0\.0 exists/i)
+          expect(@knife.ui).to receive(:fatal).with(%r{/var/tmp/chef/foobar-1\.0\.0 exists}i)
           expect { @knife.run }.to raise_error(SystemExit)
         end
 
@@ -141,7 +141,7 @@ describe Chef::Knife::CookbookDownload do
               expect(@stderr.string).to match /downloading #{segment}/im
             end
             expect(@stderr.string).to match /downloading foobar cookbook version 1\.0\.0/im
-            expect(@stderr.string).to match /cookbook downloaded to \/var\/tmp\/chef\/foobar-1\.0\.0/im
+            expect(@stderr.string).to match %r{cookbook downloaded to /var/tmp/chef/foobar-1\.0\.0}im
           end
 
           describe "with -f or --force" do

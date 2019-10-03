@@ -29,20 +29,20 @@ class Chef
       introduced "14.0"
 
       property :feature_name, [Array, String],
-               description: "The name of the feature(s) or role(s) to install if they differ from the resource name.",
-               coerce: proc { |x| to_formatted_array(x) },
-               name_property: true
+        description: "The name of the feature(s) or role(s) to install if they differ from the resource name.",
+        coerce: proc { |x| to_formatted_array(x) },
+        name_property: true
 
       property :source, String,
-               description: "Specify a local repository for the feature install."
+        description: "Specify a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
-               description: "Install all sub-features. When set to 'true', this is the equivalent of specifying the /All switch to dism.exe",
-               default: false
+        description: "Install all sub-features. When set to 'true', this is the equivalent of specifying the /All switch to dism.exe",
+        default: false
 
       property :timeout, Integer,
-               description: "Specifies a timeout (in seconds) for the feature installation.",
-               default: 600
+        description: "Specifies a timeout (in seconds) for the feature installation.",
+        default: 600
 
       # @return [Array] lowercase the array unless we're on < Windows 2012
       def to_formatted_array(x)
@@ -58,17 +58,18 @@ class Chef
         reload_cached_dism_data unless node["dism_features_cache"]
         fail_if_unavailable # fail if the features don't exist
 
-        logger.trace("Windows features needing installation: #{features_to_install.empty? ? 'none' : features_to_install.join(',')}")
+        logger.trace("Windows features needing installation: #{features_to_install.empty? ? "none" : features_to_install.join(",")}")
         unless features_to_install.empty?
-          message = "install Windows feature#{'s' if features_to_install.count > 1} #{features_to_install.join(',')}"
+          message = "install Windows feature#{"s" if features_to_install.count > 1} #{features_to_install.join(",")}"
           converge_by(message) do
-            install_command = "dism.exe /online /enable-feature #{features_to_install.map { |f| "/featurename:#{f}" }.join(' ')} /norestart"
+            install_command = "dism.exe /online /enable-feature #{features_to_install.map { |f| "/featurename:#{f}" }.join(" ")} /norestart"
             install_command << " /LimitAccess /Source:\"#{new_resource.source}\"" if new_resource.source
             install_command << " /All" if new_resource.all
             begin
               shell_out!(install_command, returns: [0, 42, 127, 3010], timeout: new_resource.timeout)
             rescue Mixlib::ShellOut::ShellCommandFailed => e
               raise "Error 50 returned by DISM related to parent features, try setting the 'all' property to 'true' on the 'windows_feature_dism' resource." if required_parent_feature?(e.inspect)
+
               raise e.message
             end
 
@@ -82,12 +83,12 @@ class Chef
 
         reload_cached_dism_data unless node["dism_features_cache"]
 
-        logger.trace("Windows features needing removal: #{features_to_remove.empty? ? 'none' : features_to_remove.join(',')}")
+        logger.trace("Windows features needing removal: #{features_to_remove.empty? ? "none" : features_to_remove.join(",")}")
         unless features_to_remove.empty?
-          message = "remove Windows feature#{'s' if features_to_remove.count > 1} #{features_to_remove.join(',')}"
+          message = "remove Windows feature#{"s" if features_to_remove.count > 1} #{features_to_remove.join(",")}"
 
           converge_by(message) do
-            shell_out!("dism.exe /online /disable-feature #{features_to_remove.map { |f| "/featurename:#{f}" }.join(' ')} /norestart", returns: [0, 42, 127, 3010], timeout: new_resource.timeout)
+            shell_out!("dism.exe /online /disable-feature #{features_to_remove.map { |f| "/featurename:#{f}" }.join(" ")} /norestart", returns: [0, 42, 127, 3010], timeout: new_resource.timeout)
 
             reload_cached_dism_data # Reload cached dism feature state
           end
@@ -103,11 +104,11 @@ class Chef
 
         fail_if_unavailable # fail if the features don't exist
 
-        logger.trace("Windows features needing deletion: #{features_to_delete.empty? ? 'none' : features_to_delete.join(',')}")
+        logger.trace("Windows features needing deletion: #{features_to_delete.empty? ? "none" : features_to_delete.join(",")}")
         unless features_to_delete.empty?
-          message = "delete Windows feature#{'s' if features_to_delete.count > 1} #{features_to_delete.join(',')} from the image"
+          message = "delete Windows feature#{"s" if features_to_delete.count > 1} #{features_to_delete.join(",")} from the image"
           converge_by(message) do
-            shell_out!("dism.exe /online /disable-feature #{features_to_delete.map { |f| "/featurename:#{f}" }.join(' ')} /Remove /norestart", returns: [0, 42, 127, 3010], timeout: new_resource.timeout)
+            shell_out!("dism.exe /online /disable-feature #{features_to_delete.map { |f| "/featurename:#{f}" }.join(" ")} /Remove /norestart", returns: [0, 42, 127, 3010], timeout: new_resource.timeout)
 
             reload_cached_dism_data # Reload cached dism feature state
           end
@@ -158,7 +159,7 @@ class Chef
 
           # the difference of desired features to install to all features is what's not available
           unavailable = (new_resource.feature_name - all_available)
-          raise "The Windows feature#{'s' if unavailable.count > 1} #{unavailable.join(',')} #{unavailable.count > 1 ? 'are' : 'is'} not available on this version of Windows. Run 'dism /online /Get-Features' to see the list of available feature names." unless unavailable.empty?
+          raise "The Windows feature#{"s" if unavailable.count > 1} #{unavailable.join(",")} #{unavailable.count > 1 ? "are" : "is"} not available on this version of Windows. Run 'dism /online /Get-Features' to see the list of available feature names." unless unavailable.empty?
         end
 
         # run dism.exe to get a list of all available features and their state
@@ -189,7 +190,7 @@ class Chef
               add_to_feature_mash("disabled", feature_details_raw)
             end
           end
-          logger.trace("The cache contains\n#{node['dism_features_cache']}")
+          logger.trace("The cache contains\n#{node["dism_features_cache"]}")
         end
 
         # parse the feature string and add the values to the appropriate array

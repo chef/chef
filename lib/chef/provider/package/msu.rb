@@ -54,6 +54,7 @@ class Chef
           else
             current_resource.version(get_current_versions)
           end
+
           current_resource
         end
 
@@ -125,7 +126,7 @@ class Chef
 
         def extract_msu_contents(msu_file, destination)
           with_os_architecture(nil) do
-            shell_out!("#{ENV['SYSTEMROOT']}\\system32\\expand.exe -f:* #{msu_file} #{destination}")
+            shell_out!("#{ENV["SYSTEMROOT"]}\\system32\\expand.exe -f:* #{msu_file} #{destination}")
           end
         end
 
@@ -148,6 +149,7 @@ class Chef
 
             cab_files
           end
+
           cab_files
         end
 

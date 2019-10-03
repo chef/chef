@@ -881,12 +881,14 @@ class Chef
 
     def start_profiling
       return unless Chef::Config[:profile_ruby]
+
       profiling_prereqs!
       RubyProf.start
     end
 
     def end_profiling
       return unless Chef::Config[:profile_ruby]
+
       profiling_prereqs!
       path = Chef::FileCache.create_cache_path("graph_profile.out", false)
       File.open(path, "w+") do |file|
@@ -900,7 +902,7 @@ class Chef
     end
 
     def is_last_element?(index, object)
-      object.kind_of?(Array) ? index == object.size - 1 : true
+      object.is_a?(Array) ? index == object.size - 1 : true
     end
 
     def assert_cookbook_path_not_empty(run_context)
@@ -909,7 +911,7 @@ class Chef
         # Chef::Config[:cookbook_path] can be a string or an array
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
         cookbook_paths = Array(Chef::Config[:cookbook_path])
-        logger.trace "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(', ')}"
+        logger.trace "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(", ")}"
         if cookbook_paths.all? { |path| empty_directory?(path) }
           msg = "None of the cookbook paths set in Chef::Config[:cookbook_path], #{cookbook_paths.inspect}, contain any cookbooks"
           logger.fatal(msg)

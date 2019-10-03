@@ -31,8 +31,8 @@ class Chef
       allowed_actions :install, :remove, :upgrade
 
       property :accept_license, [TrueClass, FalseClass],
-               default: false, desired_state: false,
-               description: "Accept an end-user license agreement, automatically."
+        default: false, desired_state: false,
+        description: "Accept an end-user license agreement, automatically."
     end
   end
 end

@@ -15,10 +15,16 @@
 # applied so 15.0.260 would be tagged as "latest", "15" and "15.0", as well as "15.0.260".
 
 FROM busybox
-MAINTAINER Chef Software, Inc. <docker@chef.io>
+LABEL maintainer="Chef Software, Inc. <docker@chef.io>"
 
+ARG EXPEDITOR_CHANNEL
 ARG CHANNEL=stable
-ARG VERSION=15.0.300
+ARG EXPEDITOR_VERSION
+ARG VERSION=15.3.14
+
+# Allow the build arg below to be controlled by either build arguments
+ENV VERSION ${EXPEDITOR_VERSION:-${VERSION}}
+ENV CHANNEL ${EXPEDITOR_CHANNEL:-${CHANNEL}}
 
 RUN wget "http://packages.chef.io/files/${CHANNEL}/chef/${VERSION}/el/6/chef-${VERSION}-1.el6.x86_64.rpm" -O /tmp/chef-client.rpm && \
     rpm2cpio /tmp/chef-client.rpm | cpio -idmv && \

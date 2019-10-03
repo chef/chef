@@ -91,7 +91,7 @@ class Chef
 
     # Per environment run lists
     def env_run_lists(env_run_lists = nil)
-      if !env_run_lists.nil?
+      unless env_run_lists.nil?
         unless env_run_lists.key?("_default")
           msg = "_default key is required in env_run_lists.\n"
           msg << "(env_run_lists: #{env_run_lists.inspect})"
@@ -106,7 +106,7 @@ class Chef
     alias :env_run_list :env_run_lists
 
     def env_run_lists_add(env_run_lists = nil)
-      if !env_run_lists.nil?
+      unless env_run_lists.nil?
         env_run_lists.each { |k, v| @env_run_lists[k] = Chef::RunList.new(*Array(v)) }
       end
       @env_run_lists
@@ -143,9 +143,9 @@ class Chef
 
         # Render to_json correctly for run_list items (both run_list and evn_run_lists)
         # so malformed json does not result
-        "run_list" => run_list.run_list.map { |item| item.to_s },
+        "run_list" => run_list.run_list.map(&:to_s),
         "env_run_lists" => env_run_lists_without_default.inject({}) do |accumulator, (k, v)|
-          accumulator[k] = v.map { |x| x.to_s }
+          accumulator[k] = v.map(&:to_s)
           accumulator
         end,
       }
@@ -192,7 +192,7 @@ class Chef
     # Get the list of all roles from the API.
     def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:role) do |n|
           response[n.name] = n unless n.nil?
         end
@@ -226,6 +226,7 @@ class Chef
         chef_server_rest.put("roles/#{@name}", self)
       rescue Net::HTTPClientException => e
         raise e unless e.response.code == "404"
+
         chef_server_rest.post("roles", self)
       end
       self
@@ -248,11 +249,12 @@ class Chef
       paths = Array(Chef::Config[:role_path])
       paths.each do |path|
         roles_files = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "**"))
-        js_files = roles_files.select { |file| file.match(/\/#{name}\.json$/) }
-        rb_files = roles_files.select { |file| file.match(/\/#{name}\.rb$/) }
+        js_files = roles_files.select { |file| file.match(%r{/#{name}\.json$}) }
+        rb_files = roles_files.select { |file| file.match(%r{/#{name}\.rb$}) }
         if js_files.count > 1 || rb_files.count > 1
           raise Chef::Exceptions::DuplicateRole, "Multiple roles of same type found named #{name}"
         end
+
         js_path, rb_path = js_files.first, rb_files.first
 
         if js_path && File.exists?(js_path)

@@ -35,7 +35,7 @@ class Chef
         return nil if exception.response.code != "406" || exception.response["x-ops-server-api-version"].nil?
 
         # intersection of versions the server and client support, will be of length zero if no intersection
-        server_supported_client_versions = Array.new
+        server_supported_client_versions = []
 
         header = Chef::JSONCompat.from_json(exception.response["x-ops-server-api-version"])
         min_server_version = Integer(header["min_version"])

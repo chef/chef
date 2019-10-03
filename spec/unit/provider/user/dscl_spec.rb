@@ -35,6 +35,7 @@ describe Chef::Provider::User::Dscl do
   let(:node) do
     Chef::Node.new.tap do |node|
       node.automatic["os"] = "darwin"
+      node.automatic["platform_version"] = "10.13.0"
     end
   end
 

@@ -56,6 +56,7 @@ class Chef
 
         def candidate_version
           return @candidate_version if @candidate_version
+
           name = nil
           version = nil
           pkg = shell_out!("/opt/local/bin/pkgin", "se", new_resource.package_name, env: nil, returns: [0, 1])

@@ -163,7 +163,7 @@ class Chef
         chef_config[:specific_recipes] =
           cli_arguments.map { |file| File.expand_path(file) }
       else
-        Chef::Application.fatal!("Invalid arguments are not supported by the chef-client: \"" +
+        Chef::Application.fatal!("Invalid argument; could not find the following recipe files: \"" +
           cli_arguments.select { |file| !File.file?(file) }.join('", "') + '"')
       end
     end
@@ -353,6 +353,7 @@ class Chef
     def handle_child_exit(pid_and_status)
       status = pid_and_status[1]
       return true if status.success?
+
       message = if status.signaled?
                   "Chef run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
                 else

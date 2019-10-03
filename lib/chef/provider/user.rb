@@ -34,7 +34,7 @@ class Chef
       end
 
       def convert_group_name
-        if new_resource.gid.is_a? String
+        if new_resource.gid.is_a?(String) && new_resource.gid.to_i == 0
           new_resource.gid(Etc.getgrnam(new_resource.gid).gid)
         end
       rescue ArgumentError
@@ -109,7 +109,7 @@ class Chef
       def compare_user
         return true if !new_resource.home.nil? && Pathname.new(new_resource.home).cleanpath != Pathname.new(current_resource.home).cleanpath
 
-        [ :comment, :shell, :password, :uid, :gid ].each do |user_attrib|
+        %i{comment shell password uid gid}.each do |user_attrib|
           return true if !new_resource.send(user_attrib).nil? && new_resource.send(user_attrib).to_s != current_resource.send(user_attrib).to_s
         end
 
@@ -132,6 +132,7 @@ class Chef
 
       def action_remove
         return unless @user_exists
+
         converge_by("remove user #{new_resource.username}") do
           remove_user
           logger.info("#{new_resource} removed")
@@ -140,6 +141,7 @@ class Chef
 
       def action_manage
         return unless @user_exists && compare_user
+
         converge_by("manage user #{new_resource.username}") do
           manage_user
           logger.info("#{new_resource} managed")
@@ -148,6 +150,7 @@ class Chef
 
       def action_modify
         return unless compare_user
+
         converge_by("modify user #{new_resource.username}") do
           manage_user
           logger.info("#{new_resource} modified")
@@ -213,6 +216,7 @@ class Chef
       def updating_home?
         return false if new_resource.home.nil?
         return true if current_resource.home.nil?
+
         # Pathname#cleanpath matches more edge conditions than File.expand_path()
         new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
       end

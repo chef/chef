@@ -28,28 +28,28 @@ class Chef
       introduced "15.0"
 
       property :namespace_name, String,
-               description: "An optional property to set the dfs namespace if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the dfs namespace if it differs from the resource block's name.",
+        name_property: true
 
       property :description, String,
-               description: "Description of the share.",
-               required: true
+        description: "Description of the share.",
+        required: true
 
       property :full_users, Array,
-               description: "Determines which users should have full access to the share.",
-               default: ['BUILTIN\\administrators']
+        description: "Determines which users should have full access to the share.",
+        default: ['BUILTIN\\administrators']
 
       property :change_users, Array,
-               description: "Determines which users should have change access to the share.",
-               default: []
+        description: "Determines which users should have change access to the share.",
+        default: []
 
       property :read_users, Array,
-               description: "Determines which users should have read access to the share.",
-               default: []
+        description: "Determines which users should have read access to the share.",
+        default: []
 
       property :root, String,
-               description: "The root from which to create the DFS tree. Defaults to C:\\DFSRoots.",
-               default: 'C:\\DFSRoots'
+        description: "The root from which to create the DFS tree. Defaults to C:\\DFSRoots.",
+        default: 'C:\\DFSRoots'
 
       action :create do
         description "Creates the dfs namespace on the server."
@@ -69,17 +69,17 @@ class Chef
 
         powershell_script "Create DFS Namespace" do
           code <<-EOH
-            $needs_creating = (Get-DfsnRoot -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}' -ErrorAction SilentlyContinue) -eq $null
+            $needs_creating = (Get-DfsnRoot -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}' -ErrorAction SilentlyContinue) -eq $null
             if ($needs_creating)
             {
-                New-DfsnRoot -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}' -TargetPath '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}' -Type Standalone -Description '#{new_resource.description}'
+                New-DfsnRoot -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}' -TargetPath '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}' -Type Standalone -Description '#{new_resource.description}'
             }
             else
             {
-                Set-DfsnRoot -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}' -Description '#{new_resource.description}'
+                Set-DfsnRoot -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}' -Description '#{new_resource.description}'
             }
           EOH
-          not_if "return (Get-DfsnRoot -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}' -ErrorAction SilentlyContinue).description -eq '#{new_resource.description}'"
+          not_if "return (Get-DfsnRoot -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}' -ErrorAction SilentlyContinue).description -eq '#{new_resource.description}'"
         end
       end
 
@@ -88,9 +88,9 @@ class Chef
 
         powershell_script "Delete DFS Namespace" do
           code <<-EOH
-            Remove-DfsnRoot -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}' -Force
+            Remove-DfsnRoot -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}' -Force
           EOH
-          only_if "return ((Get-DfsnRoot -Path '\\\\#{ENV['COMPUTERNAME']}\\#{new_resource.namespace_name}') -ne $null)"
+          only_if "return ((Get-DfsnRoot -Path '\\\\#{ENV["COMPUTERNAME"]}\\#{new_resource.namespace_name}') -ne $null)"
         end
 
         windows_share new_resource.namespace_name do

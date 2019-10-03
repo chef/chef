@@ -31,8 +31,8 @@ class Chef
       default_action :add
 
       property :path, String,
-               description: "An optional property to set the path value if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the path value if it differs from the resource block's name.",
+        name_property: true
     end
   end
 end

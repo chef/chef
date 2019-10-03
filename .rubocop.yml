@@ -29,6 +29,3 @@ Lint/IneffectiveAccessModifier:
   Enabled: false
 Lint/ShadowedException:
   Enabled: false
-Layout/AlignHash:
-  Enabled: true
-  EnforcedLastArgumentHashStyle: ignore_implicit

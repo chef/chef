@@ -48,24 +48,24 @@ class Chef
       end
 
       property :target_file, String,
-               description: "An optional property to set the target file if it differs from the resource block's name.",
-               name_property: true, identity: true
+        description: "An optional property to set the target file if it differs from the resource block's name.",
+        name_property: true, identity: true
 
       property :to, String,
-               description: "The actual file to which the link is to be created."
+        description: "The actual file to which the link is to be created."
 
       property :link_type, [String, Symbol],
-               description: "The type of link: :symbolic or :hard.",
-               coerce: proc { |arg| arg.kind_of?(String) ? arg.to_sym : arg },
-               equal_to: [ :symbolic, :hard ], default: :symbolic
+        description: "The type of link: :symbolic or :hard.",
+        coerce: proc { |arg| arg.is_a?(String) ? arg.to_sym : arg },
+        equal_to: %i{symbolic hard}, default: :symbolic
 
       property :group, [String, Integer],
-               description: "A group name or ID number that identifies the group associated with a symbolic link.",
-               regex: [Chef::Config[:group_valid_regex]]
+        description: "A group name or ID number that identifies the group associated with a symbolic link.",
+        regex: [Chef::Config[:group_valid_regex]]
 
       property :owner, [String, Integer],
-               description: "The owner associated with a symbolic link.",
-               regex: [Chef::Config[:user_valid_regex]]
+        description: "The owner associated with a symbolic link.",
+        regex: [Chef::Config[:user_valid_regex]]
 
       # make link quack like a file (XXX: not for public consumption)
       def path

@@ -64,6 +64,7 @@ class Chef
         # temporary hack, skip processing if return_value is false
         # needed to keep conditional get stuff working correctly.
         return [http_response, rest_request, return_value] if return_value == false
+
         response_body = decompress_body(http_response)
         http_response.body.replace(response_body) if http_response.body.respond_to?(:replace)
         [http_response, rest_request, return_value]

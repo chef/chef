@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@
 
 require "chef-config/exceptions"
 require_relative "dist"
+require_relative "constants"
 
 class Chef
   # == Chef::Exceptions
@@ -264,14 +265,12 @@ class Chef
     end
 
     class MissingRole < RuntimeError
-      NULL = Object.new
-
       attr_reader :expansion
 
-      def initialize(message_or_expansion = NULL)
+      def initialize(message_or_expansion = NOT_PASSED)
         @expansion = nil
         case message_or_expansion
-        when NULL
+        when NOT_PASSED
           super()
         when String
           super
@@ -493,9 +492,9 @@ class Chef
         @resources_found = resources_found
         matches_info = @resources_found.each do |r|
           if r["Module"].nil?
-            "Resource #{r['Name']} was found in #{r['Module']['Name']}"
+            "Resource #{r["Name"]} was found in #{r["Module"]["Name"]}"
           else
-            "Resource #{r['Name']} is a binary resource"
+            "Resource #{r["Name"]} is a binary resource"
           end
         end
         super "Found multiple resources matching #{matches_info[0]["Module"]["Name"]}:\n#{(matches_info.map { |f| f["Module"]["Version"] }).uniq.join("\n")}"
@@ -508,6 +507,18 @@ class Chef
     class GemRequirementConflict < RuntimeError
       def initialize(gem_name, option, value1, value2)
         super "Conflicting requirements for gem '#{gem_name}': Both #{value1.inspect} and #{value2.inspect} given for option #{option.inspect}"
+      end
+    end
+
+    class UnifiedModeImmediateSubscriptionEarlierResource < RuntimeError
+      def initialize(notification)
+        super "immediate subscription from #{notification.resource} resource cannot be setup to #{notification.notifying_resource} resource, which has already fired while in unified mode"
+      end
+    end
+
+    class UnifiedModeBeforeSubscriptionEarlierResource < RuntimeError
+      def initialize(notification)
+        super "before subscription from #{notification.resource} resource cannot be setup to #{notification.notifying_resource} resource, which has already fired while in unified mode"
       end
     end
   end

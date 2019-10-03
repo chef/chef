@@ -37,7 +37,7 @@ describe Chef::UserV1 do
     end
 
     it "should throw an ArgumentError if you feed it something lame" do
-      expect { @user.send(method, Hash.new) }.to raise_error(ArgumentError)
+      expect { @user.send(method, {}) }.to raise_error(ArgumentError)
     end
   end
 
@@ -57,7 +57,7 @@ describe Chef::UserV1 do
     end
 
     it "should throw an ArgumentError if you feed it anything but true or false" do
-      expect { @user.send(method, Hash.new) }.to raise_error(ArgumentError)
+      expect { @user.send(method, {}) }.to raise_error(ArgumentError)
     end
   end
 
@@ -95,7 +95,7 @@ describe Chef::UserV1 do
     end
 
     it "should throw an ArgumentError if you feed it anything but a string" do
-      expect { @user.username Hash.new }.to raise_error(ArgumentError)
+      expect { @user.username({}) }.to raise_error(ArgumentError)
     end
   end
 

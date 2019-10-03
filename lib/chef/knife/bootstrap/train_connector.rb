@@ -18,12 +18,13 @@
 require "train"
 require "tempfile" unless defined?(Tempfile)
 require "uri" unless defined?(URI)
+require "securerandom" unless defined?(SecureRandom)
 
 class Chef
   class Knife
     class Bootstrap < Knife
       class TrainConnector
-        SSH_CONFIG_OVERRIDE_KEYS ||= [:user, :port, :proxy].freeze
+        SSH_CONFIG_OVERRIDE_KEYS ||= %i{user port proxy}.freeze
 
         MKTEMP_WIN_COMMAND ||= <<~EOM.freeze
           $parent = [System.IO.Path]::GetTempPath();
@@ -32,7 +33,7 @@ class Chef
           $tmp.FullName
         EOM
 
-        MKTEMP_NIX_COMMAND ||= "bash -c 'd=$(mktemp -d ${TMPDIR:-/tmp}/chef_XXXXXX); echo $d'".freeze
+        DEFAULT_REMOTE_TEMP ||= "/tmp".freeze
 
         def initialize(host_url, default_protocol, opts)
           @host_url = host_url
@@ -114,19 +115,24 @@ class Chef
         #
         # @return [String] the temporary path created on the remote host.
         def temp_dir
-          cmd = windows? ? MKTEMP_WIN_COMMAND : MKTEMP_NIX_COMMAND
           @tmpdir ||= begin
-                        res = run_command!(cmd)
-                        dir = res.stdout.chomp.strip
-                        unless windows?
-                          # Ensure that dir has the correct owner.  We are possibly
-                          # running with sudo right now - so this directory would be owned by root.
-                          # File upload is performed over SCP as the current logged-in user,
-                          # so we'll set ownership to ensure that works.
-                          run_command!("chown #{config[:user]} '#{dir}'")
-                        end
-                        dir
-                      end
+            if windows?
+              run_command!(MKTEMP_WIN_COMMAND).stdout.split.last
+            else
+              # Get a 6 chars string using secure random
+              # eg. /tmp/chef_XXXXXX.
+              # Use mkdir to create TEMP dir to get rid of mktemp
+              dir = "#{DEFAULT_REMOTE_TEMP}/chef_#{SecureRandom.alphanumeric(6)}"
+              run_command!("mkdir -p '#{dir}'")
+              # Ensure that dir has the correct owner.  We are possibly
+              # running with sudo right now - so this directory would be owned by root.
+              # File upload is performed over SCP as the current logged-in user,
+              # so we'll set ownership to ensure that works.
+              run_command!("chown #{config[:user]} '#{dir}'") if config[:sudo]
+
+              dir
+            end
+          end
         end
 
         #
@@ -210,6 +216,7 @@ class Chef
           if result.exit_status != 0
             raise RemoteExecutionFailed.new(hostname, command, result)
           end
+
           result
         end
 
@@ -244,6 +251,7 @@ class Chef
         # Return a hash of winrm options based on configuration already built.
         def opts_inferred_from_winrm(config, opts_in)
           return {} unless config[:backend] == "winrm"
+
           opts_out = {}
 
           if opts_in[:ssl]
@@ -293,6 +301,7 @@ class Chef
         # itself - causing SSH config data to be ignored
         def missing_opts_from_ssh_config(config, opts_in)
           return {} unless config[:backend] == "ssh"
+
           host_cfg = ssh_config_for_host(config[:host])
           opts_out = {}
           opts_in.each do |key, _value|

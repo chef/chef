@@ -636,7 +636,7 @@ EOM
 
         it "knife upload tries and fails" do
           error1 = <<~EOH
-            WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF
+            WARN: Parse error reading #{path_to("environments/x.json")} as JSON: parse error: premature EOF
                                                    {
                                  (right here) ------^
 
@@ -646,7 +646,7 @@ EOM
           EOH
 
           warn = <<~EOH
-            WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF
+            WARN: Parse error reading #{path_to("environments/x.json")} as JSON: parse error: premature EOF
                                                    {
                                  (right here) ------^
 

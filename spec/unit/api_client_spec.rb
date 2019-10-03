@@ -41,7 +41,7 @@ describe Chef::ApiClient do
   end
 
   it "only allows string values for the name" do
-    expect { @client.name Hash.new }.to raise_error(ArgumentError)
+    expect { @client.name({}) }.to raise_error(ArgumentError)
   end
 
   it "has an admin flag attribute" do
@@ -55,7 +55,7 @@ describe Chef::ApiClient do
 
   it "allows only boolean values for the admin flag" do
     expect { @client.admin(false) }.not_to raise_error
-    expect { @client.admin(Hash.new) }.to raise_error(ArgumentError)
+    expect { @client.admin({}) }.to raise_error(ArgumentError)
   end
 
   it "has a 'validator' flag attribute" do
@@ -69,7 +69,7 @@ describe Chef::ApiClient do
 
   it "allows only boolean values for the 'validator' flag" do
     expect { @client.validator(false) }.not_to raise_error
-    expect { @client.validator(Hash.new) }.to raise_error(ArgumentError)
+    expect { @client.validator({}) }.to raise_error(ArgumentError)
   end
 
   it "has a public key attribute" do
@@ -79,7 +79,7 @@ describe Chef::ApiClient do
 
   it "accepts only String values for the public key" do
     expect { @client.public_key "" }.not_to raise_error
-    expect { @client.public_key Hash.new }.to raise_error(ArgumentError)
+    expect { @client.public_key({}) }.to raise_error(ArgumentError)
   end
 
   it "has a private key attribute" do
@@ -89,7 +89,7 @@ describe Chef::ApiClient do
 
   it "accepts only String values for the private key" do
     expect { @client.private_key "" }.not_to raise_error
-    expect { @client.private_key Hash.new }.to raise_error(ArgumentError)
+    expect { @client.private_key({}) }.to raise_error(ArgumentError)
   end
 
   describe "when serializing to JSON" do

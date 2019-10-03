@@ -47,6 +47,7 @@ class Chef
       if resource.resource_name.nil?
         raise Chef::Exceptions::InvalidResourceSpecification, "#{resource}.resource_name is `nil`!  Did you forget to put `provides :blah` or `resource_name :blah` in your resource class?"
       end
+
       resource.source_line = created_at
       resource.declared_type = type
 

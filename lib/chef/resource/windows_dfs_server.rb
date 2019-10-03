@@ -28,27 +28,27 @@ class Chef
       introduced "15.0"
 
       property :use_fqdn, [TrueClass, FalseClass],
-               description: "Indicates whether a DFS namespace server uses FQDNs in referrals. If this parameter has a value of true, the server uses FQDNs in referrals. If this parameter has a value of false, the server uses NetBIOS names.",
-               default: false
+        description: "Indicates whether a DFS namespace server uses FQDNs in referrals. If this parameter has a value of true, the server uses FQDNs in referrals. If this parameter has a value of false, the server uses NetBIOS names.",
+        default: false
 
       property :ldap_timeout_secs, Integer,
-               description: "",
-               default: 30
+        description: "",
+        default: 30
 
       property :prefer_login_dc, [TrueClass, FalseClass],
-               description: "",
-               default: false
+        description: "",
+        default: false
 
       property :enable_site_costed_referrals, [TrueClass, FalseClass],
-               description: "",
-               default: false
+        description: "",
+        default: false
 
       property :sync_interval_secs, Integer,
-               description: "",
-               default: 3600
+        description: "",
+        default: 3600
 
       load_current_value do
-        ps_results = powershell_out("Get-DfsnServerConfiguration -ComputerName '#{ENV['COMPUTERNAME']}' | Select LdapTimeoutSec, PreferLogonDC, EnableSiteCostedReferrals, SyncIntervalSec, UseFqdn | ConvertTo-Json")
+        ps_results = powershell_out("Get-DfsnServerConfiguration -ComputerName '#{ENV["COMPUTERNAME"]}' | Select LdapTimeoutSec, PreferLogonDC, EnableSiteCostedReferrals, SyncIntervalSec, UseFqdn | ConvertTo-Json")
 
         if ps_results.error?
           raise "The dfs_server resource failed to fetch the current state via the Get-DfsnServerConfiguration PowerShell cmlet. Is the DFS Windows feature installed?"
@@ -68,7 +68,7 @@ class Chef
         description "Configure DFS settings."
 
         converge_if_changed do
-          powershell_out("Set-DfsnServerConfiguration -ComputerName '#{ENV['COMPUTERNAME']}' EnableSiteCostedReferrals $#{new_resource.enable_site_costed_referrals} -UseFqdn $#{new_resource.use_fqdn} -LdapTimeoutSec #{new_resource.ldap_timeout_secs} -PreferLogonDC $#{new_resource.prefer_login_dc} -SyncIntervalSec #{new_resource.sync_interval_secs}")
+          powershell_out("Set-DfsnServerConfiguration -ComputerName '#{ENV["COMPUTERNAME"]}' EnableSiteCostedReferrals $#{new_resource.enable_site_costed_referrals} -UseFqdn $#{new_resource.use_fqdn} -LdapTimeoutSec #{new_resource.ldap_timeout_secs} -PreferLogonDC $#{new_resource.prefer_login_dc} -SyncIntervalSec #{new_resource.sync_interval_secs}")
         end
       end
     end

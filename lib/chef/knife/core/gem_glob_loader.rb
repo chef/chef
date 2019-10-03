@@ -111,14 +111,14 @@ class Chef
 
         def check_spec_for_glob(spec, glob)
           dirs = if spec.require_paths.size > 1
-                   "{#{spec.require_paths.join(',')}}"
+                   "{#{spec.require_paths.join(",")}}"
                  else
                    spec.require_paths.first
                  end
 
           glob = File.join(Chef::Util::PathHelper.escape_glob_dir(spec.full_gem_path, dirs), glob)
 
-          Dir[glob].map { |f| f.untaint }
+          Dir[glob].map(&:untaint)
         end
 
         def from_different_chef_version?(path)

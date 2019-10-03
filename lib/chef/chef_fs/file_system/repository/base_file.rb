@@ -122,7 +122,7 @@ class Chef
             if is_ruby_file?
               data_handler.from_ruby(file_path).to_json
             else
-              File.open(file_path, "rb") { |f| f.read }
+              File.open(file_path, "rb", &:read)
             end
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
@@ -132,6 +132,7 @@ class Chef
             if is_ruby_file?
               raise Chef::ChefFS::FileSystem::RubyFileError.new(:write, self)
             end
+
             if content && write_pretty_json && is_json_file?
               content = minimize(content, self)
             end

@@ -7,7 +7,7 @@ describe Chef::ConfigFetcher do
   let(:http) { double("Chef::HTTP::Simple") }
 
   let(:config_location_regex) { Regexp.escape(config_location) }
-  let(:invalid_json_error_regex) { %r{Could not parse the provided JSON file \(#{config_location_regex}\)} }
+  let(:invalid_json_error_regex) { /Could not parse the provided JSON file \(#{config_location_regex}\)/ }
 
   let(:fetcher) { Chef::ConfigFetcher.new(config_location) }
 

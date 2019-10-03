@@ -185,8 +185,8 @@ class Chef
           if fqdns.count != fqdns.uniq.count
             duplicated_fqdns = fqdns.uniq
             ui.send(config[:duplicated_fqdns],
-              "SSH #{duplicated_fqdns.count > 1 ? 'nodes are' : 'node is'} " +
-              "duplicated: #{duplicated_fqdns.join(',')}")
+              "SSH #{duplicated_fqdns.count > 1 ? "nodes are" : "node is"} " +
+              "duplicated: #{duplicated_fqdns.join(",")}")
             exit 10 if config[:duplicated_fqdns] == :fatal
           end
         end
@@ -225,7 +225,7 @@ class Chef
       end
 
       def search_nodes
-        list = Array.new
+        list = []
         query = Chef::Search::Query.new
         required_attributes = { fqdn: ["fqdn"], cloud: ["cloud"] }
 
@@ -245,10 +245,12 @@ class Chef
           # we should skip the loop to next iteration if the item
           # returned by the search is nil
           next if item.nil?
+
           # next if we couldn't find the specified attribute in the
           # returned node object
           host = get_ssh_attribute(item)
           next if host.nil?
+
           prefix = get_prefix_attribute(item)
           ssh_port = item.dig("cloud", "public_ssh_port")
           srv = [host, ssh_port, prefix]
@@ -288,7 +290,7 @@ class Chef
           port ||= ssh_config[:port]
           opts[:port] = port unless port.nil?
           opts[:logger] = Chef::Log.with_child(subsystem: "net/ssh") if Chef::Log.level == :trace
-          if !config[:host_key_verify]
+          unless config[:host_key_verify]
             opts[:verify_host_key] = false
             opts[:user_known_hosts_file] = "/dev/null"
           end
@@ -358,11 +360,12 @@ class Chef
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
         subsession.open_channel do |chan|
           if config[:on_error] && exit_status != 0
-            chan.close()
+            chan.close
           else
             chan.request_pty
             chan.exec command do |ch, success|
               raise ArgumentError, "Cannot execute #{command}" unless success
+
               ch.on_data do |ichannel, data|
                 print_data(ichannel.connection[:prefix], data)
                 if data =~ /^knife sudo password: /
@@ -394,7 +397,7 @@ class Chef
       # line is input.
       def read_line
         loop do
-          command = reader.readline("#{ui.color('knife-ssh>', :bold)} ", true)
+          command = reader.readline("#{ui.color("knife-ssh>", :bold)} ", true)
 
           if command.nil?
             command = "exit"
@@ -430,7 +433,7 @@ class Chef
             break
           when /^on (.+?); (.+)$/
             raw_list = $1.split(" ")
-            server_list = Array.new
+            server_list = []
             session.servers.each do |session_server|
               server_list << session_server if raw_list.include?(session_server.host)
             end
@@ -483,7 +486,7 @@ class Chef
           end.join(" \\; ")
         end
 
-        tmux_name = "'knife ssh #{@name_args[0].tr(':.', '=-')}'"
+        tmux_name = "'knife ssh #{@name_args[0].tr(":.", "=-")}'"
         begin
           server = session.servers_for.first
           cmd = ["tmux new-session -d -s #{tmux_name}",
@@ -545,6 +548,7 @@ class Chef
 
       def get_stripped_unfrozen_value(value)
         return nil if value.nil?
+
         value.strip
       end
 
@@ -594,7 +598,7 @@ class Chef
         @password = config[:ssh_password] if config[:ssh_password]
 
         # If a password was not given, check for SSH identity file.
-        if !@password
+        unless @password
           configure_ssh_identity_file
           configure_ssh_gateway_identity
         end
@@ -619,7 +623,7 @@ class Chef
           end
 
         session.close
-        if exit_status != 0
+        if exit_status && exit_status != 0
           exit exit_status
         else
           exit_status

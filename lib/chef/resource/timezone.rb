@@ -28,8 +28,8 @@ class Chef
       introduced "14.6"
 
       property :timezone, String,
-               description: "An optional property to set the timezone value if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the timezone value if it differs from the resource block's name.",
+        name_property: true
 
       action :set do
         description "Set the timezone."
@@ -126,6 +126,7 @@ class Chef
         def current_windows_tz
           tz_shellout = shell_out("tzutil /g")
           raise "There was an error running the tzutil command" if tz_shellout.exitstatus == 1
+
           tz_shellout.stdout.strip
         end
       end

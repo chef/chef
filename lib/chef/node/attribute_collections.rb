@@ -65,6 +65,10 @@ class Chef
         Array.new(map { |e| safe_dup(e) })
       end
 
+      def to_yaml(*opts)
+        to_a.to_yaml(*opts)
+      end
+
       private
 
       def convert_value(value)
@@ -106,7 +110,7 @@ class Chef
       # Methods that mutate a VividMash. Each of them is overridden so that it
       # also invalidates the cached merged_attributes on the root Attribute
       # object.
-      MUTATOR_METHODS = Chef::Node::Mixin::ImmutablizeHash::DISALLOWED_MUTATOR_METHODS - [ :write, :write!, :unlink, :unlink! ]
+      MUTATOR_METHODS = Chef::Node::Mixin::ImmutablizeHash::DISALLOWED_MUTATOR_METHODS - %i{write write! unlink unlink!}
 
       # For all of the mutating methods on Mash, override them so that they
       # also invalidate the cached `merged_attributes` on the root Attribute
@@ -170,6 +174,10 @@ class Chef
 
       def dup
         Mash.new(self)
+      end
+
+      def to_yaml(*opts)
+        to_h.to_yaml(*opts)
       end
 
       prepend Chef::Node::Mixin::StateTracking

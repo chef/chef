@@ -93,10 +93,8 @@ class Chef
             next if n.nil?
 
             av = available_version(i)
-
             name = av.name # resolve the name via the available/candidate version
-
-            iv = python_helper.package_query(:whatinstalled, av.name_with_arch)
+            iv = python_helper.package_query(:whatinstalled, av.name_with_arch, options: options)
 
             method = "install"
 
@@ -158,7 +156,7 @@ class Chef
         # this will resolve things like `/usr/bin/perl` or virtual packages like `mysql` -- it will not work (well? at all?) with globs that match multiple packages
         def resolved_package_lock_names(names)
           names.each_with_index.map do |name, i|
-            if !name.nil?
+            unless name.nil?
               if installed_version(i).version.nil?
                 available_version(i).name
               else
@@ -188,16 +186,19 @@ class Chef
 
         def version_gt?(v1, v2)
           return false if v1.nil? || v2.nil?
+
           python_helper.compare_versions(v1, v2) == 1
         end
 
         def version_equals?(v1, v2)
           return false if v1.nil? || v2.nil?
+
           python_helper.compare_versions(v1, v2) == 0
         end
 
         def version_compare(v1, v2)
           return false if v1.nil? || v2.nil?
+
           python_helper.compare_versions(v1, v2)
         end
 
@@ -215,7 +216,7 @@ class Chef
             # does not match what the yum library accepts.
             case line
               when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
-                return Version.new($1, "#{$2 == '(none)' ? '0' : $2}:#{$3}-#{$4}", $5)
+                return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)
             end
           end
         end
@@ -237,9 +238,9 @@ class Chef
         def installed_version(index)
           @installed_version ||= []
           @installed_version[index] ||= if new_resource.source
-                                          python_helper.package_query(:whatinstalled, available_version(index).name, arch: safe_arch_array[index])
+                                          python_helper.package_query(:whatinstalled, available_version(index).name, arch: safe_arch_array[index], options: options)
                                         else
-                                          python_helper.package_query(:whatinstalled, package_name_array[index], arch: safe_arch_array[index])
+                                          python_helper.package_query(:whatinstalled, package_name_array[index], arch: safe_arch_array[index], options: options)
                                         end
           @installed_version[index]
         end

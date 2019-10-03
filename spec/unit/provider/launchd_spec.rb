@@ -89,7 +89,8 @@ describe Chef::Provider::Launchd do
         "Weekday" => 7,
       },
       "TimeOut" => 300,
-    } end
+    }
+    end
 
     before(:each) do
       provider.load_current_resource
@@ -197,9 +198,11 @@ describe Chef::Provider::Launchd do
       describe "and the file has been updated" do
         before(:each) do
           allow(provider).to receive(
-            :manage_plist).with(:create).and_return(true)
+            :manage_plist
+          ).with(:create).and_return(true)
           allow(provider).to receive(
-            :manage_service).with(:restart).and_return(true)
+            :manage_service
+          ).with(:restart).and_return(true)
         end
 
         it "should call manage_service with a :restart action" do
@@ -215,9 +218,11 @@ describe Chef::Provider::Launchd do
       describe "and the file has not been updated" do
         before(:each) do
           allow(provider).to receive(
-            :manage_plist).with(:create).and_return(nil)
+            :manage_plist
+          ).with(:create).and_return(nil)
           allow(provider).to receive(
-            :manage_service).with(:enable).and_return(true)
+            :manage_service
+          ).with(:enable).and_return(true)
         end
 
         it "should call manage_service with a :enable action" do
@@ -236,9 +241,11 @@ describe Chef::Provider::Launchd do
         before(:each) do
           allow(File).to receive(:exists?).and_return(true)
           allow(provider).to receive(
-            :manage_service).with(:disable).and_return(true)
+            :manage_service
+          ).with(:disable).and_return(true)
           allow(provider).to receive(
-            :manage_plist).with(:delete).and_return(true)
+            :manage_plist
+          ).with(:delete).and_return(true)
         end
 
         it "should call manage_service with a :disable action" do
@@ -255,7 +262,8 @@ describe Chef::Provider::Launchd do
         before(:each) do
           allow(File).to receive(:exists?).and_return(false)
           allow(provider).to receive(
-            :manage_plist).with(:delete).and_return(true)
+            :manage_plist
+          ).with(:delete).and_return(true)
         end
 
         it "works with action :delete" do

@@ -41,6 +41,7 @@ class Chef
       #
       def with_run_context(rc)
         raise ArgumentError, "with_run_context is useless without a block" unless block_given?
+
         old_run_context = @run_context
         @run_context =
           case rc
@@ -202,6 +203,7 @@ class Chef
       #
       def find_resource!(type, name, run_context: self.run_context)
         raise ArgumentError, "find_resource! does not take a block" if block_given?
+
         run_context.resource_collection.find(type => name)
       end
 

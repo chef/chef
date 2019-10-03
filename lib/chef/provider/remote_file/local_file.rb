@@ -35,7 +35,7 @@ class Chef
 
         # CHEF-4472: Remove the leading slash from windows paths that we receive from a file:// URI
         def fix_windows_path(path)
-          path.gsub(/^\/([a-zA-Z]:)/, '\1')
+          path.gsub(%r{^/([a-zA-Z]:)}, '\1')
         end
 
         def source_path

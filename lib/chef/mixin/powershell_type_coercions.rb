@@ -52,14 +52,14 @@ class Chef
         translated = x.inject([]) do |memo, (k, v)|
           memo << "#{k}=#{translate_type(v)}"
         end
-        "@{#{translated.join(';')}}"
+        "@{#{translated.join(";")}}"
       end
 
       def translate_array(x)
         translated = x.map do |v|
           translate_type(v)
         end
-        "@(#{translated.join(',')})"
+        "@(#{translated.join(",")})"
       end
 
       def unsafe?(s)

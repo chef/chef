@@ -89,7 +89,7 @@ shared_context "use Windows permissions", :windows_only do
   end
 
   def explicit_aces
-    descriptor.dacl.select { |ace| ace.explicit? }
+    descriptor.dacl.select(&:explicit?)
   end
 
   def extract_ace_properties(aces)
@@ -314,7 +314,7 @@ shared_examples_for "a securable resource without existing target" do
     end
 
     it "sets owner when owner is specified with a \\" do
-      resource.owner "#{ENV['COMPUTERNAME']}\\Guest"
+      resource.owner "#{ENV["COMPUTERNAME"]}\\Guest"
       resource.run_action(:create)
       expect(descriptor.owner).to eq(SID.Guest)
     end
@@ -560,16 +560,12 @@ shared_examples_for "a securable resource without existing target" do
 
       # On certain flavors of Windows the default list of ACLs sometimes includes
       # non-inherited ACLs. Filter them out here.
-      parent_inherited_acls = parent_acls.dacl.collect do |ace|
-        ace.inherited?
-      end
+      parent_inherited_acls = parent_acls.dacl.collect(&:inherited?)
 
       resource.run_action(:create)
 
       # Similarly filter out the non-inherited ACLs
-      resource_inherited_acls = descriptor.dacl.collect do |ace|
-        ace.inherited?
-      end
+      resource_inherited_acls = descriptor.dacl.collect(&:inherited?)
 
       expect(resource_inherited_acls).to eq(parent_inherited_acls)
     end

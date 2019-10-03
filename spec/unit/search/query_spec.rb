@@ -149,7 +149,8 @@ describe Chef::Search::Query do
       ],
       "start" => 0,
       "total" => 4,
-    } end
+    }
+    end
 
     let(:big_response_empty) do
       {
@@ -169,7 +170,7 @@ describe Chef::Search::Query do
     it "accepts a type as the first argument" do
       expect { query.search("node") }.not_to raise_error
       expect { query.search(:node) }.not_to raise_error
-      expect { query.search(Hash.new) }.to raise_error(Chef::Exceptions::InvalidSearchQuery, /(Hash)/)
+      expect { query.search({}) }.to raise_error(Chef::Exceptions::InvalidSearchQuery, /(Hash)/)
     end
 
     it "queries for every object of a type by default" do

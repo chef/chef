@@ -57,7 +57,7 @@ describe Shell::ModelWrapper do
     end
 
     it "maps the listed nodes when given a block" do
-      expect(@wrapper.all { |n| n.name }.sort.reverse).to eq(%w{yummy sammich})
+      expect(@wrapper.all(&:name).sort.reverse).to eq(%w{yummy sammich})
     end
   end
 

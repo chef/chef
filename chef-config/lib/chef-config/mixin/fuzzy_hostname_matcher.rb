@@ -32,7 +32,7 @@ module ChefConfig
 
       def fuzzy_hostname_match?(hostname, match)
         # Do greedy matching by adding wildcard if it is not specified
-        match = "*" + match if !match.start_with?("*")
+        match = "*" + match unless match.start_with?("*")
         Fuzzyurl.matches?(Fuzzyurl.mask(hostname: match), hostname)
       end
 

@@ -1,0 +1,38 @@
+#
+# Author:: Ryan Cragun (<ryan@chef.io>)
+# Copyright:: Copyright (c) 2019 Chef Software, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require "spec_helper"
+
+describe Chef::Provider::User::MacUser do
+  before do
+    allow(ChefConfig).to receive(:windows?) { false }
+  end
+
+  let(:new_resource) { Chef::Resource::User::MacUser.new("jane") }
+
+  let(:provider) do
+    node = Chef::Node.new
+    events = Chef::EventDispatch::Dispatcher.new
+    run_context = Chef::RunContext.new(node, {}, events)
+    described_class.new(new_resource, run_context)
+  end
+
+  it "responds to load_current_resource" do
+    expect(provider).to respond_to(:load_current_resource)
+  end
+end

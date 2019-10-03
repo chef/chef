@@ -39,10 +39,11 @@ class Chef
           if powershell_out("$PSVersionTable.PSVersion.Major").stdout.strip.to_i < 5
             raise "Minimum installed PowerShell Version required is 5"
           end
+
           requirements.assert(:install) do |a|
             a.assertion { candidates_exist_for_all_uninstalled? }
-            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(', ')}")
-            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(', ')} would have been configured")
+            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
+            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
           end
         end
 

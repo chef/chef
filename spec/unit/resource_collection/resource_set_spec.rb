@@ -92,7 +92,7 @@ describe Chef::ResourceCollection::ResourceSet do
       collection.insert_as(zen_master)
       collection.insert_as(zen_follower)
       check_by_names(collection.find(zen_master: [zen_master_name], zen_follower: [zen_follower_name]),
-                     zen_master_name, zen_follower_name)
+        zen_master_name, zen_follower_name)
     end
 
     it "should find resources of multiple kinds (:zen_master => a, :zen_follower => b with custom names)" do
@@ -100,7 +100,7 @@ describe Chef::ResourceCollection::ResourceSet do
       collection.insert_as(zen_master2, :zzz, "name2")
       collection.insert_as(zen_follower, :yyy, "name3")
       check_by_names(collection.find(zzz: %w{name1 name2}, yyy: ["name3"]),
-                     zen_master_name, zen_follower_name, zen_master2_name)
+        zen_master_name, zen_follower_name, zen_master2_name)
     end
 
     it "should find a resource by string zen_master[a]" do
@@ -118,7 +118,7 @@ describe Chef::ResourceCollection::ResourceSet do
       collection.insert_as(zen_master)
       collection.insert_as(zen_master2)
       check_by_names(collection.find("zen_master[#{zen_master_name},#{zen_master2_name}]"),
-                     zen_master_name, zen_master2_name)
+        zen_master_name, zen_master2_name)
     end
 
     it "should find array names" do
@@ -138,14 +138,14 @@ describe Chef::ResourceCollection::ResourceSet do
       collection.insert_as(zen_master, :zzz, "name1")
       collection.insert_as(zen_master2, :zzz, "name2")
       check_by_names(collection.find("zzz[name1,name2]"),
-                     zen_master_name, zen_master2_name)
+        zen_master_name, zen_master2_name)
     end
 
     it "should find resources of multiple types by strings of zen_master[a]" do
       collection.insert_as(zen_master)
       collection.insert_as(zen_follower)
       check_by_names(collection.find("zen_master[#{zen_master_name}]", "zen_follower[#{zen_follower_name}]"),
-                     zen_master_name, zen_follower_name)
+        zen_master_name, zen_follower_name)
     end
 
     it "should find resources of multiple types by strings of zen_master[a] with custom names" do
@@ -154,7 +154,7 @@ describe Chef::ResourceCollection::ResourceSet do
       collection.insert_as(zen_master2, :zzz, "name2")
       collection.insert_as(zen_follower, :yyy, "name3")
       check_by_names(collection.find("zzz[name1,name2]", "yyy[name3]"),
-                     zen_master_name, zen_follower_name, zen_master2_name)
+        zen_master_name, zen_follower_name, zen_master2_name)
     end
 
     it "should only keep the last copy when multiple instances of a Resource are inserted" do
@@ -172,7 +172,7 @@ describe Chef::ResourceCollection::ResourceSet do
     end
 
     it "should raise an exception if you pass something other than a string or hash to resource" do
-      expect { collection.find([Array.new]) }.to raise_error(ArgumentError)
+      expect { collection.find([[]]) }.to raise_error(ArgumentError)
     end
 
     it "raises an error when attempting to find a resource that does not exist" do

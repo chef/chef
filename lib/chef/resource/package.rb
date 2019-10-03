@@ -42,23 +42,23 @@ class Chef
       end
 
       property :package_name, [ String, Array ],
-               description: "An optional property to set the package name if it differs from the resource block's name.",
-               identity: true
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
 
       property :version, [ String, Array ],
-               description: "The version of a package to be installed or upgraded."
+        description: "The version of a package to be installed or upgraded."
 
       property :options, [ String, Array ],
-               description: "One (or more) additional command options that are passed to the command.",
-               coerce: proc { |x| x.is_a?(String) ? x.shellsplit : x }
+        description: "One (or more) additional command options that are passed to the command.",
+        coerce: proc { |x| x.is_a?(String) ? x.shellsplit : x }
 
       property :source, String,
-               description: "The optional path to a package on the local file system.",
-               desired_state: false
+        description: "The optional path to a package on the local file system.",
+        desired_state: false
 
       property :timeout, [ String, Integer ],
-               description: "The amount of time (in seconds) to wait before timing out.",
-               desired_state: false
+        description: "The amount of time (in seconds) to wait before timing out.",
+        desired_state: false
 
     end
   end

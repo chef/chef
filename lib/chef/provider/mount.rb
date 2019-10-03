@@ -167,6 +167,7 @@ class Chef
           if (tries -= 1) < 0
             raise Chef::Exceptions::Mount, "Retries exceeded waiting for filesystem to unmount"
           end
+
           sleep 0.1
         end
       end

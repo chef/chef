@@ -443,7 +443,7 @@ describe Chef::ChefFS::Parallelizer do
       threads = 0.upto(99).map do |i|
         Thread.new { outputs[i] = parallelizers[i].to_a }
       end
-      threads.each { |thread| thread.join }
+      threads.each(&:join)
       outputs.each { |output| expect(output.sort).to eq(2.upto(501).to_a) }
     end
   end

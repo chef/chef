@@ -27,22 +27,22 @@ class Chef
       introduced "14.0"
 
       property :path, String,
-               description: "The path where the swap file will be created on the system if it differs from the resource block's name.",
-               name_property: true
+        description: "The path where the swap file will be created on the system if it differs from the resource block's name.",
+        name_property: true
 
       property :size, Integer,
-               description: "The size (in MBs) of the swap file."
+        description: "The size (in MBs) of the swap file."
 
       property :persist, [TrueClass, FalseClass],
-               description: "Persist the swapon.",
-               default: false
+        description: "Persist the swapon.",
+        default: false
 
       property :timeout, Integer,
-               description: "Timeout for 'dd' / 'fallocate' commands.",
-               default: 600
+        description: "Timeout for 'dd' / 'fallocate' commands.",
+        default: 600
 
       property :swappiness, Integer,
-               description: "The swappiness value to set on the system."
+        description: "The swappiness value to set on the system."
 
       action :create do
         description "Create a swapfile."
@@ -51,7 +51,7 @@ class Chef
           Chef::Log.debug("#{new_resource} already created - nothing to do")
         else
           begin
-            Chef::Log.info "starting first create: #{node['virtualization']['system']}"
+            Chef::Log.info "starting first create: #{node["virtualization"]["system"]}"
             do_create(swap_creation_command)
           rescue Mixlib::ShellOut::ShellCommandFailed => e
             Chef::Log.warn("#{new_resource} Rescuing failed swapfile creation for #{new_resource.path}")

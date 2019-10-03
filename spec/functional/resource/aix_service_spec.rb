@@ -77,7 +77,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   include Chef::Mixin::ShellOut
 
   def get_user_id
-    shell_out("id -u #{ENV['USER']}").stdout.chomp
+    shell_out("id -u #{ENV["USER"]}").stdout.chomp
   end
 
   describe "When service is a subsystem" do

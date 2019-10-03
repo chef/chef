@@ -30,7 +30,7 @@ class Chef
           raise Exceptions::UnsupportedPlatform, "User context impersonation is supported only on the Windows platform"
         end
 
-        if ! block_given?
+        unless block_given?
           raise ArgumentError, "You must supply a block to `with_user_context`"
         end
 

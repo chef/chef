@@ -24,11 +24,12 @@ module WEBrick
       unless port
         raise ArgumentError, "must specify port"
       end
+
       res = Socket.getaddrinfo(address, port,
-                                Socket::AF_UNSPEC,   # address family
-                                Socket::SOCK_STREAM, # socket type
-                                0,                   # protocol
-                                Socket::AI_PASSIVE)  # flag
+        Socket::AF_UNSPEC,   # address family
+        Socket::SOCK_STREAM, # socket type
+        0,                   # protocol
+        Socket::AI_PASSIVE)  # flag
       last_error = nil
       sockets = []
       res.each do |ai|
@@ -44,6 +45,7 @@ module WEBrick
         end
       end
       raise last_error if sockets.empty?
+
       sockets
     end
     module_function :create_listeners

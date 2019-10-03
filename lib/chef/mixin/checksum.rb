@@ -29,6 +29,7 @@ class Chef
 
       def short_cksum(checksum)
         return "none" if checksum.nil?
+
         checksum.slice(0, 6)
       end
 

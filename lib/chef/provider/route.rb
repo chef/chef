@@ -111,6 +111,7 @@ class Chef
 
           # Skip formatting lines (header, etc)
           next unless destination && gateway && mask
+
           logger.trace("#{new_resource} system has route: dest=#{destination} mask=#{mask} gw=#{gateway}")
 
           # check if what were trying to configure is already there
@@ -132,7 +133,7 @@ class Chef
           logger.trace("#{new_resource} route already active - nothing to do")
         else
           command = generate_command(:add)
-          converge_by("run #{command.join(' ')} to add route") do
+          converge_by("run #{command.join(" ")} to add route") do
             shell_out!(*command)
             logger.info("#{new_resource} added")
           end
@@ -145,7 +146,7 @@ class Chef
       def action_delete
         if is_running
           command = generate_command(:delete)
-          converge_by("run #{command.join(' ')} to delete route ") do
+          converge_by("run #{command.join(" ")} to delete route ") do
             shell_out!(*command)
             logger.info("#{new_resource} removed")
           end
@@ -164,6 +165,7 @@ class Chef
           # walk the collection
           run_context.resource_collection.each do |resource|
             next unless resource.is_a? Chef::Resource::Route
+
             # default to eth0
             dev = if resource.device
                     resource.device

@@ -28,29 +28,29 @@ class Chef
 
       # https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/user-account-control-group-policy-and-registry-key-settings#user-account-control-virtualize-file-and-registry-write-failures-to-per-user-locations
       property :enable_uac, [TrueClass, FalseClass],
-               description: 'Enable or disable UAC Admin Approval Mode. If this is changed a system restart is required. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA.',
-               default: true # EnableLUA
+        description: 'Enable or disable UAC Admin Approval Mode. If this is changed a system restart is required. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA.',
+        default: true # EnableLUA
 
       property :require_signed_binaries, [TrueClass, FalseClass],
-               description: 'Only elevate executables that are signed and validated. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\ValidateAdminCodeSignatures.',
-               default: false
+        description: 'Only elevate executables that are signed and validated. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\ValidateAdminCodeSignatures.',
+        default: false
 
       property :prompt_on_secure_desktop, [TrueClass, FalseClass],
-               description: 'Switch to the secure desktop when prompting for elevation. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\PromptOnSecureDesktop.',
-               default: true
+        description: 'Switch to the secure desktop when prompting for elevation. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\PromptOnSecureDesktop.',
+        default: true
 
       property :detect_installers, [TrueClass, FalseClass],
-               description: 'Detect application installations and prompt for elevation. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\EnableInstallerDetection.'
+        description: 'Detect application installations and prompt for elevation. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\EnableInstallerDetection.'
 
       property :consent_behavior_admins, Symbol,
-               description: 'Behavior of the elevation prompt for administrators in Admin Approval Mode. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\ConsentPromptBehaviorAdmin.',
-               equal_to: [:no_prompt, :secure_prompt_for_creds, :secure_prompt_for_consent, :prompt_for_creds, :prompt_for_consent, :prompt_for_consent_non_windows_binaries],
-               default: :prompt_for_consent_non_windows_binaries
+        description: 'Behavior of the elevation prompt for administrators in Admin Approval Mode. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\ConsentPromptBehaviorAdmin.',
+        equal_to: %i{no_prompt secure_prompt_for_creds secure_prompt_for_consent prompt_for_creds prompt_for_consent prompt_for_consent_non_windows_binaries},
+        default: :prompt_for_consent_non_windows_binaries
 
       property :consent_behavior_users, Symbol,
-               description: 'Behavior of the elevation prompt for standard users. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\ConsentPromptBehaviorUser.',
-               equal_to: [:auto_deny, :secure_prompt_for_creds, :prompt_for_creds],
-               default: :prompt_for_creds
+        description: 'Behavior of the elevation prompt for standard users. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA\ConsentPromptBehaviorUser.',
+        equal_to: %i{auto_deny secure_prompt_for_creds prompt_for_creds},
+        default: :prompt_for_creds
 
       action :configure do
         description 'Configures UAC by setting registry keys at \'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\''
@@ -79,14 +79,14 @@ class Chef
         #
         # @return [Integer]
         def consent_behavior_admins_symbol_to_reg(sym)
-          [:no_prompt, :secure_prompt_for_creds, :secure_prompt_for_consent, :prompt_for_creds, :prompt_for_consent, :prompt_for_consent_non_windows_binaries].index(sym)
+          %i{no_prompt secure_prompt_for_creds secure_prompt_for_consent prompt_for_creds prompt_for_consent prompt_for_consent_non_windows_binaries}.index(sym)
         end
 
         # converts the symbols we use in the consent_behavior_users property into numbers 0-2 based on their array index
         #
         # @return [Integer]
         def consent_behavior_users_symbol_to_reg(sym)
-          [:auto_deny, :secure_prompt_for_creds, :prompt_for_creds].index(sym)
+          %i{auto_deny secure_prompt_for_creds prompt_for_creds}.index(sym)
         end
       end
     end

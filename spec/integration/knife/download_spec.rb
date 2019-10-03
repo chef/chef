@@ -561,7 +561,7 @@ describe "knife download", :workstation do
         end
         it "knife download succeeds" do
           warning = <<~EOH
-            WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF
+            WARN: Parse error reading #{path_to("environments/x.json")} as JSON: parse error: premature EOF
                                                    {
                                  (right here) ------^
 

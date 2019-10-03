@@ -41,7 +41,7 @@ class Chef
       public
 
       def architecture(arg = nil)
-        assert_architecture_compatible!(arg) if ! arg.nil?
+        assert_architecture_compatible!(arg) unless arg.nil?
         result = set_or_return(
           :architecture,
           arg,

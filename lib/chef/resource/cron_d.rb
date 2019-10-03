@@ -1,5 +1,5 @@
 #
-# Copyright:: 2008-2018, Chef Software, Inc.
+# Copyright:: 2008-2019, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,51 @@ class Chef
 
       introduced "14.4"
       description "Use the cron_d resource to manage cron definitions in /etc/cron.d. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
+      examples <<~DOC
+        To run a program on the fifth hour of the day
+        ```ruby
+        cron_d 'noop' do
+          hour '5'
+          minute '0'
+          command '/bin/true'
+        end
+        ```
+
+        To run an entry if a folder exists
+        ```ruby
+        cron_d 'ganglia_tomcat_thread_max' do
+          command "/usr/bin/gmetric
+            -n 'tomcat threads max'
+            -t uint32
+            -v '/usr/local/bin/tomcat-stat
+            --thread-max'"
+          only_if { ::File.exist?('/home/jboss') }
+        end
+        ```
+
+        To run an entry every Saturday, 8:00 AM
+        ```ruby
+        cron_d 'name_of_cron_entry' do
+          minute '0'
+          hour '8'
+          weekday '6'
+          mailto 'admin@example.com'
+          action :create
+        end
+        ```
+
+        To run an entry at 8:00 PM, every weekday (Monday through Friday), but only in November
+        ```ruby
+        cron_d 'name_of_cron_entry' do
+          minute '0'
+          hour '20'
+          day '*'
+          month '11'
+          weekday '1-5'
+          action :create
+        end
+        ```
+      DOC
 
       # validate a provided value is between two other provided values
       # we also allow * as a valid input
@@ -35,9 +80,11 @@ class Chef
       # @return [Boolean] valid or not?
       def self.validate_numeric(spec, min, max)
         return true if spec == "*"
+
         #  binding.pry
         if spec.respond_to? :to_int
           return false unless spec >= min && spec <= max
+
           return true
         end
 
@@ -45,6 +92,7 @@ class Chef
         spec.split(%r{\/|-|,}).each do |x|
           next if x == "*"
           return false unless x =~ /^\d+$/
+
           x = x.to_i
           return false unless x >= min && x <= max
         end
@@ -56,12 +104,14 @@ class Chef
       # @return [Boolean] valid or not?
       def self.validate_month(spec)
         return true if spec == "*"
+
         if spec.respond_to? :to_int
           validate_numeric(spec, 1, 12)
         elsif spec.respond_to? :to_str
           return true if spec == "*"
           # Named abbreviations are permitted but not as part of a range or with stepping
           return true if %w{jan feb mar apr may jun jul aug sep oct nov dec}.include? spec.downcase
+
           # 1-12 are legal for months
           validate_numeric(spec, 1, 12)
         else
@@ -74,12 +124,14 @@ class Chef
       # @return [Boolean] valid or not?
       def self.validate_dow(spec)
         return true if spec == "*"
+
         if spec.respond_to? :to_int
           validate_numeric(spec, 0, 7)
         elsif spec.respond_to? :to_str
           return true if spec == "*"
           # Named abbreviations are permitted but not as part of a range or with stepping
           return true if %w{sun mon tue wed thu fri sat}.include? spec.downcase
+
           # 0-7 are legal for days of week
           validate_numeric(spec, 0, 7)
         else
@@ -88,78 +140,78 @@ class Chef
       end
 
       property :cron_name, String,
-               description: "An optional property to set the cron name if it differs from the resource block's name.",
-               name_property: true
+        description: "An optional property to set the cron name if it differs from the resource block's name.",
+        name_property: true
 
       property :cookbook, String, desired_state: false
 
       property :predefined_value, String,
-               description: 'Schedule your cron job with one of the special predefined value instead of ** * pattern. This correspond to "@reboot", "@yearly", "@annually", "@monthly", "@weekly", "@daily", "@midnight" or "@hourly".',
-               equal_to: %w{ @reboot @yearly @annually @monthly @weekly @daily @midnight @hourly }
+        description: 'Schedule your cron job with one of the special predefined value instead of ** * pattern. This correspond to "@reboot", "@yearly", "@annually", "@monthly", "@weekly", "@daily", "@midnight" or "@hourly".',
+        equal_to: %w{ @reboot @yearly @annually @monthly @weekly @daily @midnight @hourly }
 
       property :minute, [Integer, String],
-               description: "The minute at which the cron entry should run (0 - 59).",
-               default: "*", callbacks: {
-                 "should be a valid minute spec" => ->(spec) { validate_numeric(spec, 0, 59) },
-               }
+        description: "The minute at which the cron entry should run (0 - 59).",
+        default: "*", callbacks: {
+          "should be a valid minute spec" => ->(spec) { validate_numeric(spec, 0, 59) },
+        }
 
       property :hour, [Integer, String],
-               description: "The hour at which the cron entry should run (0 - 23).",
-               default: "*", callbacks: {
-                 "should be a valid hour spec" => ->(spec) { validate_numeric(spec, 0, 23) },
-               }
+        description: "The hour at which the cron entry is to run (0 - 23).",
+        default: "*", callbacks: {
+          "should be a valid hour spec" => ->(spec) { validate_numeric(spec, 0, 23) },
+        }
 
       property :day, [Integer, String],
-               description: "The day of month at which the cron entry should run (1 - 31).",
-               default: "*", callbacks: {
-                 "should be a valid day spec" => ->(spec) { validate_numeric(spec, 1, 31) },
-               }
+        description: "The day of month at which the cron entry should run (1 - 31).",
+        default: "*", callbacks: {
+          "should be a valid day spec" => ->(spec) { validate_numeric(spec, 1, 31) },
+        }
 
       property :month, [Integer, String],
-               description: "The month in the year on which a cron entry is to run (1 - 12, jan-dec, or *).",
-               default: "*", callbacks: {
-                 "should be a valid month spec" => ->(spec) { validate_month(spec) },
-               }
+        description: "The month in the year on which a cron entry is to run (1 - 12, jan-dec, or *).",
+        default: "*", callbacks: {
+          "should be a valid month spec" => ->(spec) { validate_month(spec) },
+        }
 
       property :weekday, [Integer, String],
-               description: "The day of the week on which this entry is to run (0-7, mon-sun, or *), where Sunday is both 0 and 7.",
-               default: "*", callbacks: {
-                 "should be a valid weekday spec" => ->(spec) { validate_dow(spec) },
-               }
+        description: "The day of the week on which this entry is to run (0-7, mon-sun, or *), where Sunday is both 0 and 7.",
+        default: "*", callbacks: {
+          "should be a valid weekday spec" => ->(spec) { validate_dow(spec) },
+        }
 
       property :command, String,
-               description: "The command to run.",
-               required: true
+        description: "The command to run.",
+        required: true
 
       property :user, String,
-               description: "The name of the user that runs the command.",
-               default: "root"
+        description: "The name of the user that runs the command.",
+        default: "root"
 
       property :mailto, String,
-               description: "Set the MAILTO environment variable in the cron.d file."
+        description: "Set the MAILTO environment variable in the cron.d file."
 
       property :path, String,
-               description: "Set the PATH environment variable in the cron.d file."
+        description: "Set the PATH environment variable in the cron.d file."
 
       property :home, String,
-               description: "Set the HOME environment variable in the cron.d file."
+        description: "Set the HOME environment variable in the cron.d file."
 
       property :shell, String,
-               description: "Set the SHELL environment variable in the cron.d file."
+        description: "Set the SHELL environment variable in the cron.d file."
 
       property :comment, String,
-               description: "A comment to place in the cron.d file."
+        description: "A comment to place in the cron.d file."
 
       property :environment, Hash,
-               description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
-               default: lazy { Hash.new }
+        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
+        default: lazy { {} }
 
       property :mode, [String, Integer],
-               description: "The octal mode of the generated crontab file.",
-               default: "0600"
+        description: "The octal mode of the generated crontab file.",
+        default: "0600"
 
       property :random_delay, Integer,
-               description: "Set the RANDOM_DELAY environment variable in the cron.d file."
+        description: "Set the RANDOM_DELAY environment variable in the cron.d file."
 
       # warn if someone passes the deprecated cookbook property
       def after_created

@@ -34,7 +34,7 @@ class Chef
       end
 
       def action_run
-        if ! test_resource
+        unless test_resource
           converge_by(generate_description) do
             result = set_resource
             reboot_if_required
@@ -42,8 +42,7 @@ class Chef
         end
       end
 
-      def load_current_resource
-      end
+      def load_current_resource; end
 
       def define_resource_requirements
         requirements.assert(:run) do |a|

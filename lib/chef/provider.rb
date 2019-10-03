@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, 2009-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2016, 2009-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -135,8 +135,7 @@ class Chef
       new_resource.cookbook_name
     end
 
-    def check_resource_semantics!
-    end
+    def check_resource_semantics!; end
 
     # a simple placeholder method that will be called / raise if a resource tries to
     # use current_resource without defining a load_current_resource method.
@@ -144,11 +143,9 @@ class Chef
       raise Chef::Exceptions::Override, "You must override load_current_resource in #{self}"
     end
 
-    def define_resource_requirements
-    end
+    def define_resource_requirements; end
 
-    def cleanup_after_converge
-    end
+    def cleanup_after_converge; end
 
     # the :nothing action which is available on all resources by default
     def action_nothing
@@ -241,11 +238,13 @@ class Chef
     def compile_and_converge_action(&block)
       old_run_context = run_context
       @run_context = run_context.create_child
+      @run_context.resource_collection.unified_mode = new_resource.class.unified_mode
+      runner = Chef::Runner.new(@run_context)
       return_value = instance_eval(&block)
-      Chef::Runner.new(run_context).converge
+      runner.converge
       return_value
     ensure
-      if run_context.resource_collection.any? { |r| r.updated? }
+      if run_context.resource_collection.any?(&:updated?)
         new_resource.updated_by_last_action(true)
       end
       @run_context = old_run_context
@@ -269,15 +268,21 @@ class Chef
     # @return [Boolean] whether the block was executed.
     #
     def converge_if_changed(*properties, &converge_block)
-      if !converge_block
+      unless converge_block
         raise ArgumentError, "converge_if_changed must be passed a block!"
       end
 
-      properties = new_resource.class.state_properties.map { |p| p.name } if properties.empty?
-      properties = properties.map { |p| p.to_sym }
+      properties =
+        if properties.empty?
+          new_resource.class.state_properties
+        else
+          properties.map { |property| new_resource.class.properties[property] }
+        end
+
       if current_resource
         # Collect the list of modified properties
-        specified_properties = properties.select { |property| new_resource.property_is_set?(property) }
+        specified_properties = properties.select { |property| property.is_set?(new_resource) || property.has_default? }
+        specified_properties = specified_properties.map(&:name).map(&:to_sym)
         modified = specified_properties.select { |p| new_resource.send(p) != current_resource.send(p) }
         if modified.empty?
           properties_str = if new_resource.sensitive
@@ -296,7 +301,7 @@ class Chef
         end
 
         # Print the pretty green text and run the block
-        property_size = modified.map { |p| p.size }.max
+        property_size = modified.map(&:size).max
         modified.map! do |p|
           properties_str = if new_resource.sensitive || new_resource.class.properties[p].sensitive?
                              "(suppressed sensitive property)"
@@ -310,15 +315,15 @@ class Chef
       else
         # The resource doesn't exist. Mark that we are *creating* this, and
         # write down any properties we are setting.
-        property_size = properties.map { |p| p.size }.max
+        property_size = properties.map(&:name).map(&:to_sym).map(&:size).max
         created = properties.map do |property|
-          default = " (default value)" unless new_resource.property_is_set?(property)
-          properties_str = if new_resource.sensitive || new_resource.class.properties[property].sensitive?
+          default = " (default value)" unless property.is_set?(new_resource)
+          properties_str = if new_resource.sensitive || property.sensitive?
                              "(suppressed sensitive property)"
                            else
-                             new_resource.send(property).inspect
+                             new_resource.send(property.name.to_sym).inspect
                            end
-          "  set #{property.to_s.ljust(property_size)} to #{properties_str}#{default}"
+          "  set #{property.name.to_sym.to_s.ljust(property_size)} to #{properties_str}#{default}"
         end
 
         converge_by([ "create #{new_resource.identity}" ] + created, &converge_block)

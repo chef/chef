@@ -14,8 +14,22 @@ def get_sack():
     global base
     if base is None:
         base = dnf.Base()
+        conf = base.conf
+        conf.read()
+        conf.installroot = '/'
+        subst = conf.substitutions
+        subst.update_from_etc(conf.installroot)
+        try:
+            base.init_plugins()
+            base.pre_configure_plugins()
+        except AttributeError:
+            pass
         base.read_all_repos()
-        base.fill_sack()
+        try:
+            base.configure_plugins()
+        except AttributeError:
+            pass
+        base.fill_sack(load_system_repo='auto')
     return base.sack
 
 # FIXME: leaks memory and does not work

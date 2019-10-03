@@ -6,8 +6,7 @@ class Chef
       # setting the category to deprecated keeps it out of help
       category "deprecated"
 
-      def run
-      end
+      def run; end
     end
   end
 end

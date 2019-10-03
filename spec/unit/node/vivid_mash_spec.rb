@@ -421,8 +421,8 @@ describe Chef::Node::AttrArray do
   context "#compact!" do
     it "VividMashes remain VividMashes" do
       array = Chef::Node::AttrArray.new(
-          [ nil, { "one" => "two" }, nil ],
-          root
+        [ nil, { "one" => "two" }, nil ],
+        root
       )
       expect(array[1].class).to eql(Chef::Node::VividMash)
       array.compact!
@@ -440,8 +440,8 @@ describe Chef::Node::AttrArray do
   context "#flatten!" do
     it "flattens sub-arrays maintaining VividMashes in them" do
       array = Chef::Node::AttrArray.new(
-          [ [ { "one" => "two" } ], [ { "one" => "two" } ] ],
-          root
+        [ [ { "one" => "two" } ], [ { "one" => "two" } ] ],
+        root
       )
       expect(array[0][0].class).to eql(Chef::Node::VividMash)
       array.flatten!

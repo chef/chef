@@ -90,7 +90,7 @@ class Chef
             @children ||= begin
                             result = child_paths.keys.sort.map { |name| make_child_entry(name) }
                             result += CHILDREN.map { |name| make_child_entry(name) }
-                            result.select { |c| c && c.exists? }.sort_by { |c| c.name }
+                            result.select { |c| c && c.exists? }.sort_by(&:name)
                           end
           end
 
@@ -140,7 +140,7 @@ class Chef
           # Used to print out a human-readable file system description
           def fs_description
             repo_paths = root_paths || [ File.dirname(child_paths["cookbooks"][0]) ]
-            result = "repository at #{repo_paths.join(', ')}\n"
+            result = "repository at #{repo_paths.join(", ")}\n"
             if versioned_cookbooks
               result << "  Multiple versions per cookbook\n"
             else
@@ -148,7 +148,7 @@ class Chef
             end
             child_paths.each_pair do |name, paths|
               if paths.any? { |path| !repo_paths.include?(File.dirname(path)) }
-                result << "  #{name} at #{paths.join(', ')}\n"
+                result << "  #{name} at #{paths.join(", ")}\n"
               end
             end
             result
@@ -179,7 +179,8 @@ class Chef
           #
           def make_child_entry(name)
             if CHILDREN.include?(name)
-              return nil if !root_dir
+              return nil unless root_dir
+
               return root_dir.child(name)
             end
 
@@ -187,6 +188,7 @@ class Chef
             if paths.size == 0
               return NonexistentFSObject.new(name, self)
             end
+
             case name
             when "acls"
               dirs = paths.map { |path| AclsDir.new(name, self, path) }

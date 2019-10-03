@@ -21,32 +21,23 @@ module ChefConfig
   # logger for `ChefConfig.logger`
   class NullLogger
 
-    def <<(_msg)
-    end
+    def <<(_msg); end
 
-    def add(_severity, _message = nil, _progname = nil)
-    end
+    def add(_severity, _message = nil, _progname = nil); end
 
-    def trace(_progname = nil, &block)
-    end
+    def trace(_progname = nil, &block); end
 
-    def debug(_progname = nil, &block)
-    end
+    def debug(_progname = nil, &block); end
 
-    def info(_progname = nil, &block)
-    end
+    def info(_progname = nil, &block); end
 
-    def warn(_progname = nil, &block)
-    end
+    def warn(_progname = nil, &block); end
 
-    def deprecation(_progname = nil, &block)
-    end
+    def deprecation(_progname = nil, &block); end
 
-    def error(_progname = nil, &block)
-    end
+    def error(_progname = nil, &block); end
 
-    def fatal(_progname = nil, &block)
-    end
+    def fatal(_progname = nil, &block); end
 
   end
 

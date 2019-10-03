@@ -63,7 +63,7 @@ describe Chef::Resource::Link do
   end
 
   it "does not accept a Hash for the link source via 'to'" do
-    expect { resource.to Hash.new }.to raise_error(ArgumentError)
+    expect { resource.to({}) }.to raise_error(ArgumentError)
   end
 
   it "allows you to set a link source via 'to'" do

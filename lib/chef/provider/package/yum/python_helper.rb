@@ -165,7 +165,7 @@ class Chef
             end
 
             # Special handling for certain action / param combos
-            if [:whatinstalled, :whatavailable].include?(action)
+            if %i{whatinstalled whatavailable}.include?(action)
               add_version(hash, parameters["version"]) unless parameters["version"].nil?
             end
 
@@ -212,6 +212,7 @@ class Chef
               retry
             else
               raise e if output.empty?
+
               raise "yum-helper.py had stderr/stdout output:\n\n#{output}"
             end
           end

@@ -135,7 +135,7 @@ module TinyServer
       if response = response_for_request(env)
         response.call
       else
-        debug_info = { message: "no data matches the request for #{env['REQUEST_URI']}",
+        debug_info = { message: "no data matches the request for #{env["REQUEST_URI"]}",
                        available_routes: @routes, request: env }
         # Uncomment me for glorious debugging
         # pp :not_found => debug_info

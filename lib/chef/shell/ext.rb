@@ -47,8 +47,8 @@ module Shell
 
         unless jobs.respond_to?(:session_select)
           def jobs.select_shell_session(target_context) # rubocop:disable Lint/NestedMethodDefinition
-            session = if target_context.kind_of?(Class)
-                        select_session_by_context { |main| main.kind_of?(target_context) }
+            session = if target_context.is_a?(Class)
+                        select_session_by_context { |main| main.is_a?(target_context) }
                       else
                         select_session_by_context { |main| main.equal?(target_context) }
                       end
@@ -211,8 +211,8 @@ module Shell
       desc "prints information about chef"
       def version
         puts "This is the #{Chef::Dist::SHELL}.\n" +
-          " Chef Version: #{::Chef::VERSION}\n" +
-          " https://www.chef.io/\n" +
+          " #{Chef::Dist::PRODUCT} Version: #{::Chef::VERSION}\n" +
+          " #{Chef::Dist::WEBSITE}\n" +
           " https://docs.chef.io/"
         :ucanhaz_automation
       end

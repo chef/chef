@@ -90,8 +90,8 @@ describe Chef::Provider::RemoteDirectory do
     it "configures access control on files in the directory" do
       @resource.cookbook "berlin_style_tasty_cupcakes"
       cookbook_file = @provider.send(:cookbook_file_resource,
-                                    "/target/destination/path.txt",
-                                    "relative/source/path.txt")
+        "/target/destination/path.txt",
+        "relative/source/path.txt")
       expect(cookbook_file.cookbook_name).to  eq("berlin_style_tasty_cupcakes")
       expect(cookbook_file.source).to         eq("remotedir_root/relative/source/path.txt")
       expect(cookbook_file.mode).to           eq("0640")
@@ -104,14 +104,14 @@ describe Chef::Provider::RemoteDirectory do
       @resource.cookbook "gondola_rides"
       @resource.sensitive true
       cookbook_file = @provider.send(:cookbook_file_resource,
-                                    "/target/destination/path.txt",
-                                    "relative/source/path.txt")
+        "/target/destination/path.txt",
+        "relative/source/path.txt")
       expect(cookbook_file.sensitive).to eq(true)
 
       @resource.sensitive false
       cookbook_file = @provider.send(:cookbook_file_resource,
-                                    "/target/destination/path.txt",
-                                    "relative/source/path.txt")
+        "/target/destination/path.txt",
+        "relative/source/path.txt")
       expect(cookbook_file.sensitive).to eq(false)
     end
   end

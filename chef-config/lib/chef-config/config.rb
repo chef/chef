@@ -103,6 +103,7 @@ module ChefConfig
           if option.empty? || !option.include?("=")
             raise UnparsableConfigOption, "Unparsable config option #{option.inspect}"
           end
+
           # Split including whitespace if someone does truly odd like
           # --config-option "foo = bar"
           key, value = option.split(/\s*=\s*/, 2)
@@ -133,7 +134,7 @@ module ChefConfig
     # @return [Boolean] is the URL valid
     def self.is_valid_url?(uri)
       url = uri.to_s.strip
-      /^http:\/\// =~ url || /^https:\/\// =~ url || /^chefzero:/ =~ url
+      %r{^http://} =~ url || %r{^https://} =~ url || /^chefzero:/ =~ url
     end
 
     # Override the config dispatch to set the value of multiple server options simultaneously
@@ -144,6 +145,7 @@ module ChefConfig
       unless is_valid_url? uri
         raise ConfigurationError, "#{uri} is an invalid chef_server_url. The URL must start with http://, https://, or chefzero://."
       end
+
       uri.to_s.strip
     end
 
@@ -160,7 +162,7 @@ module ChefConfig
     # etc.) work.
     default :chef_repo_path do
       if configuration[:cookbook_path]
-        if configuration[:cookbook_path].kind_of?(String)
+        if configuration[:cookbook_path].is_a?(String)
           File.expand_path("..", configuration[:cookbook_path])
         else
           configuration[:cookbook_path].map do |path|
@@ -192,7 +194,7 @@ module ChefConfig
 
     # @param child_path [String]
     def self.derive_path_from_chef_repo_path(child_path)
-      if chef_repo_path.kind_of?(String)
+      if chef_repo_path.is_a?(String)
         PathHelper.join(chef_repo_path, child_path)
       else
         chef_repo_path.uniq.map { |path| PathHelper.join(path, child_path) }
@@ -262,10 +264,6 @@ module ChefConfig
     # Location of users on disk. String or array of strings.
     # Defaults to <chef_repo_path>/users.
     default(:user_path) { derive_path_from_chef_repo_path("users") }
-
-    # Location of policies on disk. String or array of strings.
-    # Defaults to <chef_repo_path>/policies.
-    default(:policy_path) { derive_path_from_chef_repo_path("policies") }
 
     # Turn on "path sanity" by default.
     default :enforce_path_sanity, false
@@ -401,7 +399,7 @@ module ChefConfig
     default :repo_mode do
       if local_mode && !chef_zero.osc_compat
         "hosted_everything"
-      elsif chef_server_url =~ /\/+organizations\/.+/
+      elsif chef_server_url =~ %r{/+organizations/.+}
         "hosted_everything"
       else
         "everything"
@@ -457,7 +455,7 @@ module ChefConfig
     default(:chef_server_root) do
       # if the chef_server_url is a path to an organization, aka
       # 'some_url.../organizations/*' then remove the '/organization/*' by default
-      if configuration[:chef_server_url] =~ /\/organizations\/\S*$/
+      if configuration[:chef_server_url] =~ %r{/organizations/\S*$}
         configuration[:chef_server_url].split("/")[0..-3].join("/")
       elsif configuration[:chef_server_url] # default to whatever chef_server_url is
         configuration[:chef_server_url]
@@ -873,6 +871,7 @@ module ChefConfig
     #
     # NOTE: CHANGING THIS SETTING MAY CAUSE CORRUPTION, DATA LOSS AND
     # INSTABILITY.
+    #
     default :file_atomic_update, true
 
     # There are 3 possible values for this configuration setting.
@@ -880,18 +879,27 @@ module ChefConfig
     # false => file staging is done via tempfiles under ENV['TMP']
     # :auto => file staging will try using destination directory if possible and
     #   will fall back to ENV['TMP'] if destination directory is not usable.
+    #
     default :file_staging_uses_destdir, :auto
 
     # Exit if another run is in progress and the chef-client is unable to
     # get the lock before time expires. If nil, no timeout is enforced. (Exits
     # immediately if 0.)
+    #
     default :run_lock_timeout, nil
 
     # Number of worker threads for syncing cookbooks in parallel. Increasing
     # this number can result in gateway errors from the server (namely 503 and 504).
     # If you are seeing this behavior while using the default setting, reducing
     # the number of threads will help.
+    #
     default :cookbook_sync_threads, 10
+
+    # True if all resources by default default to unified mode, with all resources
+    # applying in "compile" mode, with no "converge" mode. False is backwards compatible
+    # setting for Chef 11-15 behavior.  This will break forward notifications.
+    #
+    default :resource_unified_mode_default, false
 
     # At the beginning of the Chef Client run, the cookbook manifests are downloaded which
     # contain URLs for every file in every relevant cookbook.  Most of the files
@@ -918,9 +926,9 @@ module ChefConfig
     default :no_lazy_load, true
 
     # A whitelisted array of attributes you want sent over the wire when node
-    # data is saved.
-    # The default setting is nil, which collects all data. Setting to [] will not
-    # collect any data for save.
+    # data is saved. The default setting is nil, which collects all data. Setting
+    # to [] will not collect any data for save.
+    #
     default :automatic_attribute_whitelist, nil
     default :default_attribute_whitelist, nil
     default :normal_attribute_whitelist, nil
@@ -946,12 +954,16 @@ module ChefConfig
       default :watchdog_timeout, 2 * (60 * 60) # 2 hours
     end
 
-    # Add an empty and non-strict config_context for chefdk. This lets the user
-    # have code like `chefdk.generator_cookbook "/path/to/cookbook"` in their
-    # config.rb, and it will be ignored by tools like knife and ohai. ChefDK
-    # itself can define the config options it accepts and enable strict mode,
+    # Add an empty and non-strict config_context for chefdk and chefcli.
+    # This lets the user have code like `chefdk.generator_cookbook "/path/to/cookbook"` or
+    # `chefcli[:generator_cookbook] = "/path/to/cookbook"` in their config.rb,
+    # and it will be ignored by tools like knife and ohai. ChefDK and ChefCLI
+    # themselves can define the config options it accepts and enable strict mode,
     # and that will only apply when running `chef` commands.
     config_context :chefdk do
+    end
+
+    config_context :chefcli do
     end
 
     # Configuration options for Data Collector reporting. These settings allow
@@ -1071,8 +1083,8 @@ module ChefConfig
       # Check if the proxy string contains a scheme. If not, add the url's scheme to the
       # proxy before parsing. The regex /^.*:\/\// matches, for example, http://. Reusing proxy
       # here since we are really just trying to get the string built correctly.
-      proxy = if !proxy_env_var.empty?
-                if proxy_env_var =~ /^.*:\/\//
+      proxy = unless proxy_env_var.empty?
+                if proxy_env_var =~ %r{^.*://}
                   URI.parse(proxy_env_var)
                 else
                   URI.parse("#{scheme}://#{proxy_env_var}")

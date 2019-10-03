@@ -47,13 +47,13 @@ describe Chef::Provider::User::Windows, :windows_only do
   end
 
   def backup_secedit_policy
-    backup_command = "secedit /export /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY"
+    backup_command = "secedit /export /cfg #{ENV["TEMP"]}\\secedit_restore.inf /areas SECURITYPOLICY"
     shell_out(backup_command)
   end
 
   def restore_secedit_policy
     security_database = "C:\\windows\\security\\database\\seceditnew.sdb"
-    restore_command = "secedit /configure /db #{security_database} /cfg #{ENV['TEMP']}\\secedit_restore.inf /areas SECURITYPOLICY"
+    restore_command = "secedit /configure /db #{security_database} /cfg #{ENV["TEMP"]}\\secedit_restore.inf /areas SECURITYPOLICY"
     shell_out(restore_command)
   end
 

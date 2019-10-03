@@ -55,7 +55,7 @@ class Chef
           if Chef::Platform.windows?
             require_relative "../../win32/security"
 
-            if !Chef::ReservedNames::Win32::Security.has_admin_privileges?
+            unless Chef::ReservedNames::Win32::Security.has_admin_privileges?
               error_description.section("Missing Windows Admin Privileges", "#{Chef::Dist::CLIENT} doesn't have administrator privileges. This can be a possible reason for the resource failure.")
             end
           end
@@ -63,9 +63,11 @@ class Chef
 
         def recipe_snippet
           return nil if dynamic_resource?
+
           @snippet ||= begin
             if (file = parse_source) && (line = parse_line(file))
               return nil unless ::File.exists?(file)
+
               lines = IO.readlines(file)
 
               relevant_lines = ["# In #{file}\n\n"]

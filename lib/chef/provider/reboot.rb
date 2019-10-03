@@ -49,7 +49,7 @@ class Chef
           reason: new_resource.reason,
           timestamp: Time.now,
           requested_by: new_resource.name
-          )
+        )
       end
 
       def action_request_reboot

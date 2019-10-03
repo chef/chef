@@ -51,11 +51,11 @@ class Chef
         elsif @name_args.size > 1
           # Check for nested lists and create a single plain one
           entries = @name_args[1..-1].map do |entry|
-            entry.split(",").map { |e| e.strip }
+            entry.split(",").map(&:strip)
           end.flatten
         else
           # Convert to array and remove the extra spaces
-          entries = @name_args[1].split(",").map { |e| e.strip }
+          entries = @name_args[1].split(",").map(&:strip)
         end
 
         set_env_run_list(role, environment, entries )

@@ -35,7 +35,8 @@ class Chef
         def enable_privileges(*privilege_names)
           # Build the list of privileges we want to set
           new_privileges = Chef::ReservedNames::Win32::API::Security::TOKEN_PRIVILEGES.new(
-            FFI::MemoryPointer.new(Chef::ReservedNames::Win32::API::Security::TOKEN_PRIVILEGES.size_with_privileges(privilege_names.length)))
+            FFI::MemoryPointer.new(Chef::ReservedNames::Win32::API::Security::TOKEN_PRIVILEGES.size_with_privileges(privilege_names.length))
+          )
           new_privileges[:PrivilegeCount] = 0
           privilege_names.each do |privilege_name|
             luid = Chef::ReservedNames::Win32::API::Security::LUID.new
@@ -64,6 +65,7 @@ class Chef
           unless Chef::ReservedNames::Win32::API::Security.DuplicateToken(handle.handle, security_impersonation_level, duplicate_token_handle)
             raise Chef::ReservedNames::Win32::Error.raise!
           end
+
           Token.new(Handle.new(duplicate_token_handle.read_ulong))
         end
       end

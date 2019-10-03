@@ -65,6 +65,7 @@ module ChefConfig
       def parse_credentials_file
         credentials_file = credentials_file_path
         return nil unless File.file?(credentials_file)
+
         begin
           Tomlrb.load_file(credentials_file)
         rescue => e
@@ -85,11 +86,13 @@ module ChefConfig
         profile = credentials_profile(profile)
         config = parse_credentials_file
         return if config.nil? # No credentials, nothing to do here.
+
         if config[profile].nil?
           # Unknown profile name. For "default" just silently ignore, otherwise
           # raise an error.
           return if profile == "default"
-          raise ChefConfig::ConfigurationError, "Profile #{profile} doesn't exist. Please add it to #{credentials_file}."
+
+          raise ChefConfig::ConfigurationError, "Profile #{profile} doesn't exist. Please add it to #{credentials_file_path}."
         end
         apply_credentials(config[profile], profile)
       end

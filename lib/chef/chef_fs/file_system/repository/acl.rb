@@ -32,7 +32,7 @@ class Chef
           end
 
           def bare_name
-            if name == "organization" && parent.kind_of?(AclDir)
+            if name == "organization" && parent.is_a?(AclDir)
               "organization.json"
             else
               name

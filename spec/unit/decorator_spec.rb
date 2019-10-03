@@ -28,11 +28,11 @@ def impersonates_a(klass)
   end
 
   it "#kind_of?(#{klass}) is true" do
-    expect(decorator.kind_of?(klass)).to be true
+    expect(decorator.is_a?(klass)).to be true
   end
 
   it "#kind_of?(Chef::Decorator) is true" do
-    expect(decorator.kind_of?(Chef::Decorator)).to be true
+    expect(decorator.is_a?(Chef::Decorator)).to be true
   end
 
   it "#instance_of?(#{klass}) is false" do
