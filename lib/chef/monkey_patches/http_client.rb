@@ -8,7 +8,10 @@ module HTTPClient
     @no_proxy_regexps.clear
     if @no_proxy
       @no_proxy.scan(/([^\s:,]+)(?::(\d+))?/) do |host, port|
+        # Disabling rules to keep a match with source excluding the minimal change
+        # rubocop:disable Style/CharacterLiteral
         if host[0] == ?.
+          # rubocop:enable Style/CharacterLiteral
           regexp = /#{Regexp.quote(host)}\z/i
         else
           regexp = /(\A|\.)#{Regexp.quote(host).gsub('\*', '.+')}\z/i
