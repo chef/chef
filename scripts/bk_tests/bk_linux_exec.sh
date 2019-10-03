@@ -32,9 +32,9 @@ sudo git clone https://github.com/asdf-vm/asdf.git /opt/asdf
 echo "--- Installing Ruby ASDF plugin"
 /opt/asdf/bin/asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
 
-echo "--- Installing Ruby 2.5.6"
-/opt/asdf/bin/asdf install ruby 2.5.6
-/opt/asdf/bin/asdf global ruby 2.5.6
+echo "--- Installing Ruby 2.5.7"
+/opt/asdf/bin/asdf install ruby 2.5.7
+/opt/asdf/bin/asdf global ruby 2.5.7
 
 # Update Gems
 gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
