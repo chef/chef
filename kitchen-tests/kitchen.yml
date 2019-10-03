@@ -83,6 +83,14 @@ platforms:
       - RUN yum -y install e2fsprogs
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
+- name: centos-8
+  driver:
+    image: dokken/centos-8
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install e2fsprogs
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
 - name: oraclelinux-6
   driver:
     image: dokken/oraclelinux-6
