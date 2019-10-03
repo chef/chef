@@ -15,6 +15,11 @@ class Chef
         @subscribers = subscribers
       end
 
+      # Since the cookbook synchronizer will call this object from threads, we
+      # have to deal with concurrent access to this object.  Since we don't want
+      # threads to handle events from other threads, we just use thread local
+      # storage.
+      #
       def event_list
         Thread.current[:chef_client_event_list] ||= []
       end
