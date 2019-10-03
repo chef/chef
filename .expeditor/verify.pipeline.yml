@@ -551,21 +551,6 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests openSUSE Leap: 42"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap-42
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
 - label: "Kitchen Tests openSUSE Leap: 15"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
