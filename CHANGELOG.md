@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.12 -->
-## [v14.14.12](https://github.com/chef/chef/tree/v14.14.12) (2019-10-02)
+<!-- latest_release 14.14.13 -->
+## [v14.14.13](https://github.com/chef/chef/tree/v14.14.13) (2019-10-03)
 
 #### Merged Pull Requests
-- Update omnibus-software to fix build failures [#8949](https://github.com/chef/chef/pull/8949) ([tas50](https://github.com/tas50))
+- Bump Ruby to 2.5.7 to address CVEs [#8951](https://github.com/chef/chef/pull/8951) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.13.11 -->
 ### Changes since 14.13.11 release
 
 #### Merged Pull Requests
+- Bump Ruby to 2.5.7 to address CVEs [#8951](https://github.com/chef/chef/pull/8951) ([tas50](https://github.com/tas50)) <!-- 14.14.13 -->
 - Update omnibus-software to fix build failures [#8949](https://github.com/chef/chef/pull/8949) ([tas50](https://github.com/tas50)) <!-- 14.14.12 -->
 - Test Chef Infra Client on RHEL 8 [#8944](https://github.com/chef/chef/pull/8944) ([tas50](https://github.com/tas50)) <!-- 14.14.11 -->
 - Backport buildkite kitchen test updates from Chef 15 [#8947](https://github.com/chef/chef/pull/8947) ([tas50](https://github.com/tas50)) <!-- 14.14.10 -->
