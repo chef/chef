@@ -60,7 +60,6 @@ describe Chef::CookbookUploader do
     allow(Chef::Config).to receive(:cookbook_path) { cookbook_path }
   end
 
-
   it "defaults to not enabling policy mode" do
     expect(described_class.new(cookbooks_to_upload, rest: http_client).policy_mode?).to be(false)
   end

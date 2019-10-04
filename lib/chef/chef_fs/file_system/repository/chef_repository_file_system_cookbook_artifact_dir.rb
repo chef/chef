@@ -25,7 +25,7 @@ class Chef
         class ChefRepositoryFileSystemCookbookArtifactDir < ChefRepositoryFileSystemCookbookDir
           # Override from parent
           def cookbook_version
-            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, self.chefignore)
+            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, chefignore)
             cookbook_name, _dash, identifier = name.rpartition("-")
             # KLUDGE: We shouldn't have to use instance_variable_set
             loader.instance_variable_set(:@cookbook_name, cookbook_name)
