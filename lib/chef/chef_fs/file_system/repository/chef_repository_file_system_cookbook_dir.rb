@@ -142,7 +142,7 @@ class Chef
           end
 
           def cookbook_version
-            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
+            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, self.chefignore)
             loader.load_cookbooks
             loader.cookbook_version
           end
