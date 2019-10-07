@@ -1,0 +1,1 @@
+This is a Chef cookbook file. It is used to copy content verbatim on to a server.
