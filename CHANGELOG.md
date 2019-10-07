@@ -1,38 +1,36 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.14 -->
-## [v14.14.14](https://github.com/chef/chef/tree/v14.14.14) (2019-10-07)
-
-#### Merged Pull Requests
-- fixup some bad rspec to greenify chef-14  branch [#8964](https://github.com/chef/chef/pull/8964) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.13.11 -->
-### Changes since 14.13.11 release
-
-#### Merged Pull Requests
-- fixup some bad rspec to greenify chef-14  branch [#8964](https://github.com/chef/chef/pull/8964) ([tas50](https://github.com/tas50)) <!-- 14.14.14 -->
-- Bump Ruby to 2.5.7 to address CVEs [#8951](https://github.com/chef/chef/pull/8951) ([tas50](https://github.com/tas50)) <!-- 14.14.13 -->
-- Update omnibus-software to fix build failures [#8949](https://github.com/chef/chef/pull/8949) ([tas50](https://github.com/tas50)) <!-- 14.14.12 -->
-- Test Chef Infra Client on RHEL 8 [#8944](https://github.com/chef/chef/pull/8944) ([tas50](https://github.com/tas50)) <!-- 14.14.11 -->
-- Backport buildkite kitchen test updates from Chef 15 [#8947](https://github.com/chef/chef/pull/8947) ([tas50](https://github.com/tas50)) <!-- 14.14.10 -->
-- Bump all deps to to current [#8946](https://github.com/chef/chef/pull/8946) ([tas50](https://github.com/tas50)) <!-- 14.14.9 -->
-- Fix show_progress in remote_file is causing FloatDomainError: Infinity [#8945](https://github.com/chef/chef/pull/8945) ([tas50](https://github.com/tas50)) <!-- 14.14.8 -->
-- Update nokogiri to 1.10.4 and openssl to 1.0.2t [#8943](https://github.com/chef/chef/pull/8943) ([tas50](https://github.com/tas50)) <!-- 14.14.7 -->
-- Fix Windows Integration and Functional tests for BK [#8940](https://github.com/chef/chef/pull/8940) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.14.6 -->
-- dnf_package fixes for RHEL8 backport to chef-14 [#8894](https://github.com/chef/chef/pull/8894) ([atward](https://github.com/atward)) <!-- 14.14.5 -->
-- Backport #8847 into Chef 14: Added support to provide additional options to bundle install [#8901](https://github.com/chef/chef/pull/8901) ([jjustice6](https://github.com/jjustice6)) <!-- 14.14.4 -->
-- Revert &quot;Drop privileges before creating files in solo mode&quot; [#8881](https://github.com/chef/chef/pull/8881) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.14.3 -->
-- Update Ruby to 2.5.6, add macOS 10.15 builds, switch testing to buildkite [#8870](https://github.com/chef/chef/pull/8870) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.14.2 -->
-- unified mode backport to Chef-14 [#8841](https://github.com/chef/chef/pull/8841) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.14.1 -->
-- Update Chef 14 deps to the latest [#8824](https://github.com/chef/chef/pull/8824) ([tas50](https://github.com/tas50)) <!-- 14.14.0 -->
-- Add AIX 7.2 platform [#8833](https://github.com/chef/chef/pull/8833) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 14.13.16 -->
-- Deprecate Ubuntu 14 + SLES 11 [#8818](https://github.com/chef/chef/pull/8818) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.13.15 -->
-- Chef-14: Raise an error on Chef 14 when trying to bootstrap Chef 15 [#8782](https://github.com/chef/chef/pull/8782) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 14.13.14 -->
-- Stop building Chef Infra Client 14.x on FreeBSD 10 [#8810](https://github.com/chef/chef/pull/8810) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 14.13.13 -->
-- Chef-14: fix zypper_package upgrade provider and unit tests to verify [#8799](https://github.com/chef/chef/pull/8799) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.13.12 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.14.14](https://github.com/chef/chef/tree/v14.14.14) (2019-10-07)
+
+#### Merged Pull Requests
+- Chef-14: fix zypper_package upgrade provider and unit tests to verify [#8799](https://github.com/chef/chef/pull/8799) ([lamont-granquist](https://github.com/lamont-granquist))
+- Stop building Chef Infra Client 14.x on FreeBSD 10 [#8810](https://github.com/chef/chef/pull/8810) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Chef-14: Raise an error on Chef 14 when trying to bootstrap Chef 15 [#8782](https://github.com/chef/chef/pull/8782) ([vsingh-msys](https://github.com/vsingh-msys))
+- Deprecate Ubuntu 14 + SLES 11 [#8818](https://github.com/chef/chef/pull/8818) ([christopher-snapp](https://github.com/christopher-snapp))
+- Add AIX 7.2 platform [#8833](https://github.com/chef/chef/pull/8833) ([jaymalasinha](https://github.com/jaymalasinha))
+- Update Chef 14 deps to the latest [#8824](https://github.com/chef/chef/pull/8824) ([tas50](https://github.com/tas50))
+- unified mode backport to Chef-14 [#8841](https://github.com/chef/chef/pull/8841) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update Ruby to 2.5.6, add macOS 10.15 builds, switch testing to buildkite [#8870](https://github.com/chef/chef/pull/8870) ([jaymalasinha](https://github.com/jaymalasinha))
+- Revert &quot;Drop privileges before creating files in solo mode&quot; [#8881](https://github.com/chef/chef/pull/8881) ([lamont-granquist](https://github.com/lamont-granquist))
+- Backport #8847 into Chef 14: Added support to provide additional options to bundle install [#8901](https://github.com/chef/chef/pull/8901) ([jjustice6](https://github.com/jjustice6))
+- dnf_package fixes for RHEL8 backport to chef-14 [#8894](https://github.com/chef/chef/pull/8894) ([atward](https://github.com/atward))
+- Fix Windows Integration and Functional tests for BK [#8940](https://github.com/chef/chef/pull/8940) ([jaymalasinha](https://github.com/jaymalasinha))
+- Update nokogiri to 1.10.4 and openssl to 1.0.2t [#8943](https://github.com/chef/chef/pull/8943) ([tas50](https://github.com/tas50))
+- Fix show_progress in remote_file is causing FloatDomainError: Infinity [#8945](https://github.com/chef/chef/pull/8945) ([tas50](https://github.com/tas50))
+- Bump all deps to to current [#8946](https://github.com/chef/chef/pull/8946) ([tas50](https://github.com/tas50))
+- Backport buildkite kitchen test updates from Chef 15 [#8947](https://github.com/chef/chef/pull/8947) ([tas50](https://github.com/tas50))
+- Test Chef Infra Client on RHEL 8 [#8944](https://github.com/chef/chef/pull/8944) ([tas50](https://github.com/tas50))
+- Update omnibus-software to fix build failures [#8949](https://github.com/chef/chef/pull/8949) ([tas50](https://github.com/tas50))
+- Bump Ruby to 2.5.7 to address CVEs [#8951](https://github.com/chef/chef/pull/8951) ([tas50](https://github.com/tas50))
+- fixup some bad rspec to greenify chef-14  branch [#8964](https://github.com/chef/chef/pull/8964) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v14.13.11](https://github.com/chef/chef/tree/v14.13.11) (2019-05-30)
 
 #### Merged Pull Requests
@@ -53,7 +51,6 @@
 - Fix for write permissions were not working properly on windows [#8613](https://github.com/chef/chef/pull/8613) ([tas50](https://github.com/tas50))
 - Fix for cron resource get confused by environment/property mismatch [#8610](https://github.com/chef/chef/pull/8610) ([tas50](https://github.com/tas50))
 - 14: backport knife fixes [#8621](https://github.com/chef/chef/pull/8621) ([btm](https://github.com/btm))
-<!-- latest_stable_release -->
 
 ## [v14.12.9](https://github.com/chef/chef/tree/v14.12.9) (2019-04-20)
 
