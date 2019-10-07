@@ -152,6 +152,11 @@ describe Chef::Resource::WindowsFirewallRule do
     expect(resource.profile).to eql([:notapplicable])
   end
 
+  it "the profile property raises on any unknown values" do
+    expect { resource.profile(:other) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.profile([:public, :other]) }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
   it "the profile property coerces strings to symbols" do
     resource.profile("Public")
     expect(resource.profile).to eql([:public])

@@ -70,7 +70,12 @@ class Chef
       property :profile, [Symbol, String, Array],
         default: :any,
         description: "The profile the firewall rule applies to.",
-        coerce: proc { |p| Array(p).map(&:downcase).map(&:to_sym).sort }
+        coerce: proc { |p| Array(p).map(&:downcase).map(&:to_sym).sort },
+        callbacks: {
+          'contains values not in :public, :private :domain, :any or :notapplicable' => lambda {
+            |p| p.all? { |e| %i{public private domain any notapplicable}.include?(e) }
+          }
+        }
 
       property :program, String,
         description: "The program the firewall rule applies to."
