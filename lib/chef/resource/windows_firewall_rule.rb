@@ -74,7 +74,7 @@ class Chef
         callbacks: {
           "contains values not in :public, :private :domain, :any or :notapplicable" => lambda { |p|
             p.all? { |e| %i{public private domain any notapplicable}.include?(e) }
-          }
+          },
         }
 
       property :program, String,
