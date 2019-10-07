@@ -154,19 +154,19 @@ describe Chef::Resource::WindowsFirewallRule do
 
   it "the profile property raises on any unknown values" do
     expect { resource.profile(:other) }.to raise_error(Chef::Exceptions::ValidationFailed)
-    expect { resource.profile([:public, :other]) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.profile(%i{public other}) }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "the profile property coerces strings to symbols" do
     resource.profile("Public")
     expect(resource.profile).to eql([:public])
     resource.profile([:private, "Public"])
-    expect(resource.profile).to eql([:private, :public])
+    expect(resource.profile).to eql(%i{private public})
   end
 
   it "the profile property supports multiple profiles" do
-    resource.profile(["Private", "Public"])
-    expect(resource.profile).to eql([:private, :public])
+    resource.profile(%w{Private Public})
+    expect(resource.profile).to eql(%i{private public})
   end
 
   it "the program property accepts strings" do
@@ -258,7 +258,7 @@ describe Chef::Resource::WindowsFirewallRule do
       end
 
       it "sets multiple LocalPorts" do
-        resource.local_port(["80", "RPC"])
+        resource.local_port(%w{80 RPC})
         expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -LocalPort '80', 'RPC' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
@@ -278,7 +278,7 @@ describe Chef::Resource::WindowsFirewallRule do
       end
 
       it "sets multiple RemotePorts" do
-        resource.remote_port(["443", "445"])
+        resource.remote_port(%w{443 445})
         expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -RemotePort '443', '445' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
@@ -301,9 +301,9 @@ describe Chef::Resource::WindowsFirewallRule do
         resource.profile(:private)
         expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'private' -InterfaceType 'any' -Enabled 'true'")
       end
-      
+
       it "sets multiple Profiles" do
-        resource.profile([:private, :public])
+        resource.profile(%i{private public})
         expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'private', 'public' -InterfaceType 'any' -Enabled 'true'")
       end
 
@@ -372,7 +372,7 @@ describe Chef::Resource::WindowsFirewallRule do
       end
 
       it "sets multiple LocalPorts" do
-        resource.local_port(["80", "8080"])
+        resource.local_port(%w{80 8080})
         expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalPort '80', '8080' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
@@ -392,7 +392,7 @@ describe Chef::Resource::WindowsFirewallRule do
       end
 
       it "sets multiple RemotePorts" do
-        resource.remote_port(["443", "445"])
+        resource.remote_port(%w{443 445})
         expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemotePort '443', '445' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 

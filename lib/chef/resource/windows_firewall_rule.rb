@@ -72,8 +72,8 @@ class Chef
         description: "The profile the firewall rule applies to.",
         coerce: proc { |p| Array(p).map(&:downcase).map(&:to_sym).sort },
         callbacks: {
-          'contains values not in :public, :private :domain, :any or :notapplicable' => lambda {
-            |p| p.all? { |e| %i{public private domain any notapplicable}.include?(e) }
+          "contains values not in :public, :private :domain, :any or :notapplicable" => lambda { |p|
+            p.all? { |e| %i{public private domain any notapplicable}.include?(e) }
           }
         }
 
