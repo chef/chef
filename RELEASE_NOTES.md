@@ -1,5 +1,55 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Infra Client 15.4
+
+## converge_if_changed Improvements
+
+Words go here
+
+## Bootstrap Improvements
+
+Words go here
+
+## Updated Resources
+
+### windows_share
+
+The `windows_share` resource is now fully idemptonent by better validating the provided `path` property from the user. Thanks [@Happycoil](https://github.com/Happycoil) for this fix.
+
+### sudo
+
+The `sudo` resource now runs sudo config validation against all of the sudo configuration files on the system instead of just the file being written. This allows us to detect configuration errors that occur when configs conflict with each other. Thanks for reporting this issue [@drzewiec](https://github.com/drzewiec).
+
+### kernel_module
+
+The `kernel_module` resource includes a new `options` property, which allows users to set module specific parameters and settings. Thanks [@ramereth](https://github.com/ramereth) for this new feature.
+
+Example of a kernel_module resource using the new options property:
+```ruby
+  kernel_module 'loop' do
+  options [ 'max_loop=4', 'max_part=8' ]
+  end
+```
+
+### chocolatey_package
+
+The `chocolatey_package` resource no longer fails when passing options with the `options` property. Thanks for reporting this issue [@kenmacleod](https://github.com/kenmacleod).
+
+### remote_file
+
+The `remote_file` resource has been updated to better display progress when using the `show_progress` resource. Thanks for reporting this issue [@isuftin](https://github.com/isuftin).
+
+## Security Updates
+
+### Ruby
+
+Ruby has been updated from 2.6.4 to 2.6.5 in order to resolve the following CVEs:
+
+- [CVE-2019-16255](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16255): A code injection vulnerability of Shell#[] and Shell#test
+- [CVE-2019-16254](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16254): HTTP response splitting in WEBrick (Additional fix)
+- [CVE-2019-15845](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15845): A NUL injection vulnerability of File.fnmatch and File.fnmatch?
+- [CVE-2019-16201](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16201): Regular Expression Denial of Service vulnerability of WEBrick’s Digest access authentication
+
 # Chef Infra Client 15.3
 
 ## Custom Resource Unified Mode
