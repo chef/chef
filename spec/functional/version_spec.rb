@@ -21,7 +21,7 @@ require "chef/version"
 require "ohai/version"
 require "chef/dist"
 
-describe "Chef Versions" do
+describe "Chef Versions", :executables do
   include Chef::Mixin::ShellOut
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..") }
 
