@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.30 -->
-## [v15.4.30](https://github.com/chef/chef/tree/v15.4.30) (2019-10-08)
+<!-- latest_release 15.4.31 -->
+## [v15.4.31](https://github.com/chef/chef/tree/v15.4.31) (2019-10-08)
 
 #### Merged Pull Requests
-- sudo: perform config validation on the overall sudoers state [#8928](https://github.com/chef/chef/pull/8928) ([samshinde](https://github.com/samshinde))
+- Fix for knife subcommand --help don&#39;t work as intended.  [#8915](https://github.com/chef/chef/pull/8915) ([Vasu1105](https://github.com/Vasu1105))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix for knife subcommand --help don&#39;t work as intended.  [#8915](https://github.com/chef/chef/pull/8915) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.4.31 -->
 - sudo: perform config validation on the overall sudoers state [#8928](https://github.com/chef/chef/pull/8928) ([samshinde](https://github.com/samshinde)) <!-- 15.4.30 -->
 - windows_share: make path idempotent by coercing to backwhacks [#8967](https://github.com/chef/chef/pull/8967) ([Happycoil](https://github.com/Happycoil)) <!-- 15.4.29 -->
 - Add CentOS 8 kitchen testing to buildkite [#8954](https://github.com/chef/chef/pull/8954) ([tas50](https://github.com/tas50)) <!-- 15.4.27 -->
