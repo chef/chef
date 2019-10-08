@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.27 -->
-## [v15.4.27](https://github.com/chef/chef/tree/v15.4.27) (2019-10-03)
+<!-- latest_release 15.4.29 -->
+## [v15.4.29](https://github.com/chef/chef/tree/v15.4.29) (2019-10-08)
 
 #### Merged Pull Requests
-- Add CentOS 8 kitchen testing to buildkite [#8954](https://github.com/chef/chef/pull/8954) ([tas50](https://github.com/tas50))
+- windows_share: make path idempotent by coercing to backwhacks [#8967](https://github.com/chef/chef/pull/8967) ([Happycoil](https://github.com/Happycoil))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- windows_share: make path idempotent by coercing to backwhacks [#8967](https://github.com/chef/chef/pull/8967) ([Happycoil](https://github.com/Happycoil)) <!-- 15.4.29 -->
 - Add CentOS 8 kitchen testing to buildkite [#8954](https://github.com/chef/chef/pull/8954) ([tas50](https://github.com/tas50)) <!-- 15.4.27 -->
 - Remove EOL openSUSE Leap 42 testing [#8955](https://github.com/chef/chef/pull/8955) ([tas50](https://github.com/tas50)) <!-- 15.4.26 -->
 - Revert Gemfile.lock to Bundler 1.17.3 [#8956](https://github.com/chef/chef/pull/8956) ([tas50](https://github.com/tas50)) <!-- 15.4.25 -->
