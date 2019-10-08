@@ -36,4 +36,11 @@ describe Chef::Resource::WindowsShare do
     expect { resource.action :create }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
   end
+
+  it "coerces path to a single path separator format" do
+    resource.path("C:/chef")
+    expect(resource.path).to eql("C:\\chef")
+    resource.path("C:\\chef")
+    expect(resource.path).to eql("C:\\chef")
+  end
 end
