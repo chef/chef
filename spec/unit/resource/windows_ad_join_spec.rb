@@ -36,6 +36,10 @@ describe Chef::Resource::WindowsAdJoin do
     expect { resource.action :join }.not_to raise_error
   end
 
+  it "supports :leave action" do
+    expect { resource.action :leave }.not_to raise_error
+  end
+
   it "only accepts FQDNs for the domain_name property" do
     expect { resource.domain_name "example" }.to raise_error(ArgumentError)
   end
