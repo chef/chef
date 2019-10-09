@@ -34,7 +34,7 @@ class Chef
       end
 
       def convert_group_name
-        if new_resource.gid.is_a? String
+        if new_resource.gid.is_a?(String) && new_resource.gid.to_i == 0
           new_resource.gid(Etc.getgrnam(new_resource.gid).gid)
         end
       rescue ArgumentError
