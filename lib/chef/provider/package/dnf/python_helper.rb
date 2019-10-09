@@ -38,9 +38,16 @@ class Chef
 
           def dnf_command
             # platform-python is used for system tools on RHEL 8 and is installed under /usr/libexec
-            @dnf_command ||= which("platform-python", "python", "python3", "python2", "python2.7", extra_path: "/usr/libexec") do |f|
-              shell_out("#{f} -c 'import dnf'").exitstatus == 0
-            end + " #{DNF_HELPER}"
+            @dnf_command ||= begin
+              cmd = which("platform-python", "python", "python3", "python2", "python2.7", extra_path: "/usr/libexec") do |f|
+                res = shell_out("#{f} -c 'import dnf'")
+                raise res.stderr if res.exitstatus != 0
+
+                true
+              end
+
+              "#{cmd} #{DNF_HELPER}"
+            end
           end
 
           def start
