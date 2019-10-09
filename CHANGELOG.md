@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.20 -->
-## [v14.14.20](https://github.com/chef/chef/tree/v14.14.20) (2019-10-09)
+<!-- latest_release 14.14.21 -->
+## [v14.14.21](https://github.com/chef/chef/tree/v14.14.21) (2019-10-09)
 
 #### Merged Pull Requests
-- ifconfig: fix regex matching interface name with hyphen  [#8978](https://github.com/chef/chef/pull/8978) ([tas50](https://github.com/tas50))
+- Fix for MSYS-1094 user resource does not handle a gid specified as a string [#8979](https://github.com/chef/chef/pull/8979) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix for MSYS-1094 user resource does not handle a gid specified as a string [#8979](https://github.com/chef/chef/pull/8979) ([tas50](https://github.com/tas50)) <!-- 14.14.21 -->
 - ifconfig: fix regex matching interface name with hyphen  [#8978](https://github.com/chef/chef/pull/8978) ([tas50](https://github.com/tas50)) <!-- 14.14.20 -->
 - Fix crash when showing error about missing profile [#8977](https://github.com/chef/chef/pull/8977) ([tas50](https://github.com/tas50)) <!-- 14.14.19 -->
 - Fix knife cookbook metadata from file command banner [#8976](https://github.com/chef/chef/pull/8976) ([tas50](https://github.com/tas50)) <!-- 14.14.18 -->
