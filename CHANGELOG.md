@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.16 -->
-## [v14.14.16](https://github.com/chef/chef/tree/v14.14.16) (2019-10-09)
+<!-- latest_release 14.14.17 -->
+## [v14.14.17](https://github.com/chef/chef/tree/v14.14.17) (2019-10-09)
 
 #### Merged Pull Requests
-- Fix for knife subcommand --help doesn&#39;t work as intended. [#8973](https://github.com/chef/chef/pull/8973) ([tas50](https://github.com/tas50))
+- Fix knife ssh interactive mode exit error [#8975](https://github.com/chef/chef/pull/8975) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix knife ssh interactive mode exit error [#8975](https://github.com/chef/chef/pull/8975) ([tas50](https://github.com/tas50)) <!-- 14.14.17 -->
 - Fix for knife subcommand --help doesn&#39;t work as intended. [#8973](https://github.com/chef/chef/pull/8973) ([tas50](https://github.com/tas50)) <!-- 14.14.16 -->
 - Modify #8901 to not use arrays with mixlib-shellout [#8974](https://github.com/chef/chef/pull/8974) ([tas50](https://github.com/tas50)) <!-- 14.14.15 -->
 <!-- release_rollup -->
