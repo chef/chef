@@ -63,6 +63,12 @@ class Chef
     attr_accessor :name_args
     attr_accessor :ui
 
+    # knife acl subcommands are grouped in this category using this constant to verify.
+    OPSCODE_HOSTED_CHEF_ACCESS_CONTROL = %w{acl group user}.freeze
+
+    # knife opc subcommands are grouped in this category using this constant to verify.
+    CHEF_ORGANIZATION_MANAGEMENT = %w{opc}.freeze
+
     # Configure mixlib-cli to always separate defaults from user-supplied CLI options
     def self.use_separate_defaults?
       true
@@ -269,7 +275,11 @@ class Chef
           ui.info("If this is a recently installed plugin, please run 'knife rehash' to update the subcommands cache.")
         end
 
-        if category_commands = guess_category(args)
+        if CHEF_ORGANIZATION_MANAGEMENT.include?(args[0])
+          list_commands("CHEF ORGANIZATION MANAGEMENT")
+        elsif OPSCODE_HOSTED_CHEF_ACCESS_CONTROL.include?(args[0])
+          list_commands("OPSCODE HOSTED CHEF ACCESS CONTROL")
+        elsif category_commands = guess_category(args)
           list_commands(category_commands)
         elsif OFFICIAL_PLUGINS.include?(args[0]) # command was an uninstalled official chef knife plugin
           ui.info("Use `chef gem install knife-#{args[0]}` to install the plugin into ChefDK")
