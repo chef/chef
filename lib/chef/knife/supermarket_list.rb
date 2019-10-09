@@ -48,29 +48,25 @@ class Chef
         description: "Show cookbooks that are owned by the USER"
 
       def run
-        url_params = []
-        url_params << "&order=#{config[:sort_by]}" if config[:sort_by]
-        url_params << "&user=#{config[:owned_by]}" if config[:owned_by]
-
-        query = url_params.join unless url_params.empty?
-        cookbooks_list = get_cookbook_list(query)
         if config[:with_uri]
-          ui.output(format_for_display(cookbooks_list))
+          ui.output(format_for_display(get_cookbook_list))
         else
-          ui.msg(ui.list(cookbooks_list.keys, :columns_down))
+          ui.msg(ui.list(get_cookbook_list.keys, :columns_down))
         end
       end
 
-      def get_cookbook_list(query, items = 1000, start = 0, cookbook_collection = {})
+      def get_cookbook_list(items = 1000, start = 0, cookbook_collection = {})
         cookbooks_url = "#{config[:supermarket_site]}/api/v1/cookbooks?items=#{items}&start=#{start}"
-        cookbooks_url << query if query
+        cookbooks_url << "&order=#{config[:sort_by]}" if config[:sort_by]
+        cookbooks_url << "&user=#{config[:owned_by]}" if config[:owned_by]
         cr = noauth_rest.get(cookbooks_url)
+
         cr["items"].each do |cookbook|
           cookbook_collection[cookbook["cookbook_name"]] = cookbook["cookbook"]
         end
         new_start = start + items
         if new_start < cr["total"]
-          get_cookbook_list(query, items, new_start, cookbook_collection)
+          get_cookbook_list(items, new_start, cookbook_collection)
         else
           cookbook_collection
         end
