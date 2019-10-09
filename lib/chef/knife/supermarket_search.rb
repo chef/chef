@@ -35,13 +35,13 @@ class Chef
         output(search_cookbook(name_args[0]))
       end
 
-      def search_cookbook(query, items = 10, start = 0, cookbook_collection = {})
+      def search_cookbook(query, items = 1000, start = 0, cookbook_collection = {})
         cookbooks_url = "#{config[:supermarket_site]}/api/v1/search?q=#{query}&items=#{items}&start=#{start}"
         cr = noauth_rest.get(cookbooks_url)
         cr["items"].each do |cookbook|
           cookbook_collection[cookbook["cookbook_name"]] = cookbook
         end
-        new_start = start + cr["items"].length
+        new_start = start + items
         if new_start < cr["total"]
           search_cookbook(query, items, new_start, cookbook_collection)
         else
