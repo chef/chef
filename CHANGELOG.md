@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.14.15 -->
+## [v14.14.15](https://github.com/chef/chef/tree/v14.14.15) (2019-10-09)
+
+#### Merged Pull Requests
+- Modify #8901 to not use arrays with mixlib-shellout [#8974](https://github.com/chef/chef/pull/8974) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.14.14 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Modify #8901 to not use arrays with mixlib-shellout [#8974](https://github.com/chef/chef/pull/8974) ([tas50](https://github.com/tas50)) <!-- 14.14.15 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
