@@ -1,5 +1,5 @@
 require "spec_helper"
-require "bundler/dsl"
+require "bundler"
 
 describe Chef::Cookbook::GemInstaller do
   let(:cookbook_collection) do
@@ -106,7 +106,7 @@ describe Chef::Cookbook::GemInstaller do
 
   it "install from local cache when Chef::Config[:gem_installer_bundler_options] is set to local" do
     Chef::Config[:gem_installer_bundler_options] = "--local"
-    expect(gem_installer).to receive(:shell_out!).with(["bundle", "install", "--local"], any_args).and_return(shell_out)
+    expect(gem_installer).to receive(:shell_out!).with("bundle install --local", any_args).and_return(shell_out)
     expect(Chef::Log).to receive(:info).and_return("")
     expect(gem_installer.install).to be_empty
   end
