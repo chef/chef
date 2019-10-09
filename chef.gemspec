@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 2.5.0"
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
-  s.add_dependency "train-core", "~> 3.0"
+  s.add_dependency "train-core", "~> 3.1"
   s.add_dependency "train-winrm", ">= 0.2.5"
 
   s.add_dependency "license-acceptance", "~> 1.0", ">= 1.0.5"
