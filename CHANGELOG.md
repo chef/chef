@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.35 -->
-## [v15.4.35](https://github.com/chef/chef/tree/v15.4.35) (2019-10-10)
+<!-- latest_release 15.4.36 -->
+## [v15.4.36](https://github.com/chef/chef/tree/v15.4.36) (2019-10-10)
 
 #### Merged Pull Requests
-- windows_service: don&#39;t update the service if the run_as_user ca… [#8981](https://github.com/chef/chef/pull/8981) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Fix yum &amp; dnf shellout if exit with nonzero status [#8972](https://github.com/chef/chef/pull/8972) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix yum &amp; dnf shellout if exit with nonzero status [#8972](https://github.com/chef/chef/pull/8972) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.36 -->
 - windows_service: don&#39;t update the service if the run_as_user ca… [#8981](https://github.com/chef/chef/pull/8981) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.4.35 -->
 - windows_ad_join: Add :leave action to for leaving an AD domain [#8379](https://github.com/chef/chef/pull/8379) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.4.34 -->
 - Require train ~3.1 for bootstrapping and openssl 1.0.2t [#8968](https://github.com/chef/chef/pull/8968) ([tas50](https://github.com/tas50)) <!-- 15.4.33 -->
