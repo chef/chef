@@ -45,6 +45,7 @@ class Chef
                 shell_out("#{f} -c 'import yum'").exitstatus == 0
               end
               raise Chef::Exceptions::Package, "cannot find yum libraries, you may need to use dnf_package" unless cmd
+
               "#{cmd} #{YUM_HELPER}"
             end
           end
