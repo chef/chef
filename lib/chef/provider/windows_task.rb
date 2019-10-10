@@ -444,7 +444,7 @@ class Chef
         def days_of_month
           days_of_month = []
           if new_resource.day
-            days = new_resource.day.split(",")
+            days = new_resource.day.to_s.split(",")
             days.map! { |day| day.to_s.strip.upcase }
             days.delete("LAST") if days.include?("LAST")
             days.delete("LASTDAY") if days.include?("LASTDAY")
@@ -464,7 +464,7 @@ class Chef
           if new_resource.day
             # this line of code is just to support backward compatibility of wild card *
             new_resource.day = "mon, tue, wed, thu, fri, sat, sun" if new_resource.day == "*" && new_resource.frequency == :weekly
-            days = new_resource.day.split(",")
+            days = new_resource.day.to_s.split(",")
             days.map! { |day| day.to_s.strip.upcase }
             weeks_days = get_binary_values_from_constants(days, DAYS_OF_WEEK)
           else
