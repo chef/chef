@@ -4,40 +4,68 @@ This file holds "in progress" release notes for the current release under develo
 
 ## converge_if_changed Improvements
 
-Words go here
+Chef Infra Client will now take into account any `default` values specified in custom resources when making converge determinations with the `converge_if_changed` helper. Previously default values would be ignored which caused necessary changes to be skipped. Note: This may cause behavior changes for some users, but we believe this change is an impacting bug for enough users to make it outside of a major release. Thanks [@ jakauppila](https://github.com/jakauppila) for reporting this.
 
 ## Bootstrap Improvements
 
-Words go here
+Several improvements have been made to the `knife bootstrap` command to make it more reliable and secure:
+
+- File creation is now wrapped in a umask to avoid potential race conditions
+- `NameError` and `RuntimeError` failures during bootstrap have been resolved
+- `Undefined method 'empty?' for nil:NilClass` during bootstrap have been resolved
+- Single quotes in attributes during bootstrap no longer result in bootstrap failures
+- The bootstrap command no longer appears in PS on the host while bootstrapping is running
 
 ## Updated Resources
 
-### windows_share
+### chocolatey_package
 
-The `windows_share` resource is now fully idemptonent by better validating the provided `path` property from the user. Thanks [@Happycoil](https://github.com/Happycoil) for this fix.
-
-### sudo
-
-The `sudo` resource now runs sudo config validation against all of the sudo configuration files on the system instead of just the file being written. This allows us to detect configuration errors that occur when configs conflict with each other. Thanks for reporting this issue [@drzewiec](https://github.com/drzewiec).
+The `chocolatey_package` resource no longer fails when passing options with the `options` property. Thanks for reporting this issue [@kenmacleod](https://github.com/kenmacleod).
 
 ### kernel_module
 
 The `kernel_module` resource includes a new `options` property, which allows users to set module specific parameters and settings. Thanks [@ramereth](https://github.com/ramereth) for this new feature.
 
 Example of a kernel_module resource using the new options property:
+
 ```ruby
   kernel_module 'loop' do
   options [ 'max_loop=4', 'max_part=8' ]
   end
 ```
 
-### chocolatey_package
-
-The `chocolatey_package` resource no longer fails when passing options with the `options` property. Thanks for reporting this issue [@kenmacleod](https://github.com/kenmacleod).
-
 ### remote_file
 
 The `remote_file` resource has been updated to better display progress when using the `show_progress` resource. Thanks for reporting this issue [@isuftin](https://github.com/isuftin).
+
+### sudo
+
+The `sudo` resource now runs sudo config validation against all of the sudo configuration files on the system instead of just the file being written. This allows us to detect configuration errors that occur when configs conflict with each other. Thanks for reporting this issue [@drzewiec](https://github.com/drzewiec).
+
+### windows_ad_join
+
+The `windows_ad_join` has a new `:leave` action for leaving an Active Directory domain and rejoining a workgroup. This new action also has a new `workgroup_name` property for specifying the workgroup to join upon leaving the domain. Thanks [@jasonwbarnett](https://github.com/jasonwbarnett) for adding this new action.
+
+Example of leaving a domain
+
+```ruby
+windows_ad_join 'Leave the domain' do
+  workgroup_name 'local'
+  action :leave
+end
+```
+
+### windows_package
+
+The `windows_package` resource no longer updates environmental variables before installing the package. This prevents potentially modifications that may cause a package installation to fail. Thanks [@jeremyhage](https://github.com/jeremyhage) for this fix.
+
+### windows_service
+
+The `windows_service` resource no longer updates the service and triggers notifications if the case of the `run_as_user` property does not match the user set on the service. Thanks [@jasonwbarnett](https://github.com/jasonwbarnett) for this fix.
+
+### windows_share
+
+The `windows_share` resource is now fully idemptonent by better validating the provided `path` property from the user. Thanks [@Happycoil](https://github.com/Happycoil) for this fix.
 
 ## Security Updates
 
