@@ -273,7 +273,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     Win32::Service.configure(new_config)
     logger.info "#{new_resource} configured."
 
-    grant_service_logon(new_resource.run_as_user) if new_resource.run_as_user.casecmp("localsystem") != 0
+    grant_service_logon(new_resource.run_as_user) if new_resource.run_as_user != "localsystem"
   end
 
   #

@@ -105,4 +105,9 @@ describe Chef::Resource::WindowsService, "initialize" do
       expect(resource.send(prop)).to eq(true)
     end
   end
+
+  it "lowercases run_as_user" do
+    resource.run_as_user = "JohnDoe"
+    expect(resource.run_as_user).to eq("johndoe")
+  end
 end
