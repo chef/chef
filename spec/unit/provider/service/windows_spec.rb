@@ -19,8 +19,16 @@
 
 require "spec_helper"
 
-describe Chef::Provider::Service::Windows, "load_current_resource", :windows_only do
+describe Chef::Provider::Service::Windows, "load_current_resource" do
   include_context "Win32"
+
+  before(:all) do
+    Chef::ReservedNames::Win32::Security = Class.new unless windows?
+  end
+
+  after(:all) do
+    Chef::ReservedNames::Win32.send(:remove_const, :Security) unless windows?
+  end
 
   let(:logger) { double("Mixlib::Log::Child").as_null_object }
 
@@ -105,7 +113,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
     allow(Win32::Service).to receive(:exists?).and_return(true)
     allow(Win32::Service).to receive(:configure).and_return(Win32::Service)
     allow(Chef::ReservedNames::Win32::Security).to receive(:get_account_right).and_return([])
-    allow(Chef::ReservedNames::Win32::Security).to receive(:add_account_right).with("LocalSystem", "SeServiceLogonRight").and_return(0)
+    allow(Chef::ReservedNames::Win32::Security).to receive(:add_account_right).with("localsystem", "SeServiceLogonRight").and_return(0)
   end
 
   after(:each) do
@@ -293,7 +301,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
           start_type: 2,
           error_control: 1,
           binary_path_name: chef_service_binary_path_name,
-          service_start_name: "LocalSystem",
+          service_start_name: "localsystem",
           desired_access: 983551
         )
         provider.action_create
@@ -381,6 +389,18 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
         provider.new_resource.startup_type = :manual
 
         expect(Win32::Service).to receive(:configure)
+        provider.action_configure
+      end
+
+      it "does not configure service when run_as_user case is different" do
+        provider.current_resource.run_as_user = "JohnDoe"
+        provider.new_resource.run_as_user = "johndoe"
+        expect(Win32::Service).not_to receive(:configure)
+        provider.action_configure
+
+        provider.current_resource.run_as_user = "johndoe"
+        provider.new_resource.run_as_user = "JohnDoe"
+        expect(Win32::Service).not_to receive(:configure)
         provider.action_configure
       end
 
