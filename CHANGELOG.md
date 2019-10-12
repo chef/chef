@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.36 -->
-## [v15.4.36](https://github.com/chef/chef/tree/v15.4.36) (2019-10-10)
+<!-- latest_release 15.4.37 -->
+## [v15.4.37](https://github.com/chef/chef/tree/v15.4.37) (2019-10-12)
 
 #### Merged Pull Requests
-- Fix yum &amp; dnf shellout if exit with nonzero status [#8972](https://github.com/chef/chef/pull/8972) ([vsingh-msys](https://github.com/vsingh-msys))
+- Event dispatcher thread local storage [#8950](https://github.com/chef/chef/pull/8950) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Event dispatcher thread local storage [#8950](https://github.com/chef/chef/pull/8950) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.37 -->
 - Fix yum &amp; dnf shellout if exit with nonzero status [#8972](https://github.com/chef/chef/pull/8972) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.36 -->
 - windows_service: don&#39;t update the service if the run_as_user ca… [#8981](https://github.com/chef/chef/pull/8981) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.4.35 -->
 - windows_ad_join: Add :leave action to for leaving an AD domain [#8379](https://github.com/chef/chef/pull/8379) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.4.34 -->
