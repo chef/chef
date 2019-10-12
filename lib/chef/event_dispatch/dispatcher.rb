@@ -10,11 +10,18 @@ class Chef
     class Dispatcher < Base
 
       attr_reader :subscribers
-      attr_reader :event_list
 
       def initialize(*subscribers)
         @subscribers = subscribers
-        @event_list = []
+      end
+
+      # Since the cookbook synchronizer will call this object from threads, we
+      # have to deal with concurrent access to this object.  Since we don't want
+      # threads to handle events from other threads, we just use thread local
+      # storage.
+      #
+      def event_list
+        Thread.current[:chef_client_event_list] ||= []
       end
 
       # Add a new subscriber to the list of registered subscribers
