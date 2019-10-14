@@ -55,7 +55,8 @@ class Chef
         end
       end
 
-      def get_cookbook_list(items = 1000, start = 0, cookbook_collection = {})
+      # In order to avoid pagination items limit set to 9999999
+      def get_cookbook_list(items = 9999999, start = 0, cookbook_collection = {})
         cookbooks_url = "#{config[:supermarket_site]}/api/v1/cookbooks?items=#{items}&start=#{start}"
         cookbooks_url << "&order=#{config[:sort_by]}" if config[:sort_by]
         cookbooks_url << "&user=#{config[:owned_by]}" if config[:owned_by]

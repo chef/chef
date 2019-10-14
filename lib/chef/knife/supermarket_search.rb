@@ -35,7 +35,8 @@ class Chef
         output(search_cookbook(name_args[0]))
       end
 
-      def search_cookbook(query, items = 1000, start = 0, cookbook_collection = {})
+      # In order to avoid pagination items limit set to 9999999
+      def search_cookbook(query, items = 9999999, start = 0, cookbook_collection = {})
         cookbooks_url = "#{config[:supermarket_site]}/api/v1/search?q=#{query}&items=#{items}&start=#{start}"
         cr = noauth_rest.get(cookbooks_url)
         cr["items"].each do |cookbook|
