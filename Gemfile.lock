@@ -27,11 +27,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (15.4.37)
+    chef (15.4.38)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 15.4.37)
+      chef-config (= 15.4.38)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -58,11 +58,11 @@ PATH
       train-winrm (>= 0.2.5)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (15.4.37-universal-mingw32)
+    chef (15.4.38-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 15.4.37)
+      chef-config (= 15.4.38)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -105,13 +105,13 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (15.4.37)
-      chef (= 15.4.37)
+    chef-bin (15.4.38)
+      chef (= 15.4.38)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (15.4.37)
+    chef-config (15.4.38)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
@@ -234,7 +234,7 @@ GEM
     mixlib-shellout (3.0.7-universal-mingw32)
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
-    multi_json (1.13.1)
+    multi_json (1.14.0)
     multipart-post (2.1.1)
     necromancer (0.5.0)
     net-scp (2.0.0)
