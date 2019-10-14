@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.24 -->
-## [v14.14.24](https://github.com/chef/chef/tree/v14.14.24) (2019-10-14)
+<!-- latest_release 14.14.25 -->
+## [v14.14.25](https://github.com/chef/chef/tree/v14.14.25) (2019-10-14)
 
 #### Merged Pull Requests
-- Fix habitat build in expeditor config [#8992](https://github.com/chef/chef/pull/8992) ([christopher-snapp](https://github.com/christopher-snapp))
+- Revert habitat builder artifact to chef-client [#8994](https://github.com/chef/chef/pull/8994) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Revert habitat builder artifact to chef-client [#8994](https://github.com/chef/chef/pull/8994) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.25 -->
 - Fix habitat build in expeditor config [#8992](https://github.com/chef/chef/pull/8992) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.24 -->
 - Update chef-zero to 14.0.13 and rspec to 3.9 [#8983](https://github.com/chef/chef/pull/8983) ([tas50](https://github.com/tas50)) <!-- 14.14.23 -->
 - windows_task: Fix for :day option is not accepting integer value [#8980](https://github.com/chef/chef/pull/8980) ([tas50](https://github.com/tas50)) <!-- 14.14.22 -->
