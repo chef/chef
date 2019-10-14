@@ -1,4 +1,4 @@
-[chef-infra-client]
+[chef-client]
 build_targets = [
   "x86_64-linux",
   "x86_64-linux-kernel2"
