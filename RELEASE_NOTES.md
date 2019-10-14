@@ -1,5 +1,17 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.14.22
+
+## Bug Fixes
+
+- Resolved a regression introduced in Chef Infra Client 14.14.14 that broke installation of gems via chef gem.
+- Fix crash when showing error about missing profile
+- Fix knife subcommand --help not working as intended
+- Fix knife ssh interactive mode exit error
+- Fix for :day option not accepting integer value
+- Fix for user resource not handling a GID specified as a string
+- Fix ifconfig regex interface matching
+
 # Chef Client Release Notes 14.14
 
 ## Platform Updates
