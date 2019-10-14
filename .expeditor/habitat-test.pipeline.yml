@@ -1,0 +1,21 @@
+---
+steps:
+
+- label: ":linux: Validate Habitat Builds of Chef Infra"
+  commands:
+    - hab pkg install chef/chef-infra-client
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: ":windows: Validate Habitat Builds of Chef Infra"
+  commands:
+    - hab pkg install chef/chef-infra-client
+  expeditor:
+    executor:
+      windows:
+        os-version: 2016
+        privileged: true
+        single-use: true
