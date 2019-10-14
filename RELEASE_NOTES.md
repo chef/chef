@@ -4,13 +4,13 @@ This file holds "in progress" release notes for the current release under develo
 
 ## Bug Fixes
 
-- Resolved a regression introduced in Chef Infra Client 14.14.14 that broke installation of gems via chef gem.
-- Fix crash when showing error about missing profile
-- Fix knife subcommand --help not working as intended
-- Fix knife ssh interactive mode exit error
-- Fix for :day option not accepting integer value
-- Fix for user resource not handling a GID specified as a string
-- Fix ifconfig regex interface matching
+- Resolved a regression introduced in Chef Infra Client 14.14.14 that broke installation of gems in some scenarios
+- Fixed crash in knife when displaying a missing profile error message
+- Fixed knife subcommand --help not working as intended for some commands
+- Fixed knife ssh interactive mode exit error
+- Fixed for `:day`` option not accepting integer value in the `windows_task` resource
+- Fixed for `user` resource not handling a GID if it is specified as a string
+- Fixed the `ifconfig` resource to support interfaces with a `-` in the name
 
 # Chef Client Release Notes 14.14
 
