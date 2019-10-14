@@ -17,13 +17,10 @@ rubygems:
 docker_images:
   - chef
 
-habitat_packages:
-  - chef-client:
-      also_build_for_linux_kernel2: true
-
 pipelines:
   - verify:
       public: true
+  - habitat/build
   - omnibus/release
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
@@ -65,9 +62,9 @@ merge_actions:
       ignore_labels:
         - "Expeditor: Skip Changelog"
         - "Expeditor: Skip All"
-  - built_in:trigger_habitat_package_build:
+  - trigger_pipeline:habitat/build:
       ignore_labels:
-        - "Expeditor: Skip Build"
+        - "Expeditor: Skip Habitat"
         - "Expeditor: Skip All"
       only_if: built_in:bump_version
   - trigger_pipeline:omnibus/release:
