@@ -458,7 +458,7 @@ class Chef
       apply_computed_config
 
       # This has to be after apply_computed_config so that Mixlib::Log is configured
-      Chef::Log.info("Using configuration from #{config[:config_file]}") if config[:config_file]
+      Chef::Log.info("Using configuration from #{config_files_from}") unless config_files_from.empty?
 
       begin
         Chef::Config.apply_extra_config_options(extra_config_options)
@@ -469,6 +469,17 @@ class Chef
       end
 
       Chef::Config.export_proxies
+    end
+
+    #
+    # Concat the path of a given config file path or dir
+    #
+    # @return [String] return the path(s) string,
+    def config_files_from
+      files = []
+      files << config[:config_file] if config[:config_file]
+      files << "#{Config[:config_d_dir]}/*" if Config[:config_d_dir]
+      files.join(", ")
     end
 
     def show_usage

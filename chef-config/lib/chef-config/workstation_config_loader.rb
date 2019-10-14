@@ -46,7 +46,7 @@ module ChefConfig
     end
 
     def no_config_found?
-      config_location.nil? && !credentials_found
+      config_location.nil? && !credentials_found && !Config[:config_d_dir]
     end
 
     def config_location
