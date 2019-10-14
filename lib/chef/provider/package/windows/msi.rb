@@ -70,14 +70,14 @@ class Chef
           def install_package
             # We could use MsiConfigureProduct here, but we'll start off with msiexec
             logger.trace("#{new_resource} installing MSI package '#{new_resource.source}'")
-            shell_out!("msiexec /qn /i \"#{new_resource.source}\" #{expand_options(new_resource.options)}", timeout: new_resource.timeout, returns: new_resource.returns)
+            shell_out!("msiexec /qn /i \"#{new_resource.source}\" #{expand_options(new_resource.options)}", default_env: false, timeout: new_resource.timeout, returns: new_resource.returns)
           end
 
           def remove_package
             # We could use MsiConfigureProduct here, but we'll start off with msiexec
             if !new_resource.source.nil? && ::File.exist?(new_resource.source)
               logger.trace("#{new_resource} removing MSI package '#{new_resource.source}'")
-              shell_out!("msiexec /qn /x \"#{new_resource.source}\" #{expand_options(new_resource.options)}", timeout: new_resource.timeout, returns: new_resource.returns)
+              shell_out!("msiexec /qn /x \"#{new_resource.source}\" #{expand_options(new_resource.options)}", default_env: false, timeout: new_resource.timeout, returns: new_resource.returns)
             else
               uninstall_version = new_resource.version || installed_version
               uninstall_entries.select { |entry| [uninstall_version].flatten.include?(entry.display_version) }
@@ -86,7 +86,7 @@ class Chef
                   uninstall_string += expand_options(new_resource.options)
                   uninstall_string += " /q" unless uninstall_string.downcase =~ %r{ /q}
                   logger.trace("#{new_resource} removing MSI package version using '#{uninstall_string}'")
-                  shell_out!(uninstall_string, timeout: new_resource.timeout, returns: new_resource.returns)
+                  shell_out!(uninstall_string, default_env: false, timeout: new_resource.timeout, returns: new_resource.returns)
                 end
             end
           end
