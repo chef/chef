@@ -1,29 +1,27 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.25 -->
-## [v14.14.25](https://github.com/chef/chef/tree/v14.14.25) (2019-10-14)
-
-#### Merged Pull Requests
-- Revert habitat builder artifact to chef-client [#8994](https://github.com/chef/chef/pull/8994) ([christopher-snapp](https://github.com/christopher-snapp))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.14.14 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Revert habitat builder artifact to chef-client [#8994](https://github.com/chef/chef/pull/8994) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.25 -->
-- Fix habitat build in expeditor config [#8992](https://github.com/chef/chef/pull/8992) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.24 -->
-- Update chef-zero to 14.0.13 and rspec to 3.9 [#8983](https://github.com/chef/chef/pull/8983) ([tas50](https://github.com/tas50)) <!-- 14.14.23 -->
-- windows_task: Fix for :day option is not accepting integer value [#8980](https://github.com/chef/chef/pull/8980) ([tas50](https://github.com/tas50)) <!-- 14.14.22 -->
-- Fix for MSYS-1094 user resource does not handle a gid specified as a string [#8979](https://github.com/chef/chef/pull/8979) ([tas50](https://github.com/tas50)) <!-- 14.14.21 -->
-- ifconfig: fix regex matching interface name with hyphen  [#8978](https://github.com/chef/chef/pull/8978) ([tas50](https://github.com/tas50)) <!-- 14.14.20 -->
-- Fix crash when showing error about missing profile [#8977](https://github.com/chef/chef/pull/8977) ([tas50](https://github.com/tas50)) <!-- 14.14.19 -->
-- Fix knife cookbook metadata from file command banner [#8976](https://github.com/chef/chef/pull/8976) ([tas50](https://github.com/tas50)) <!-- 14.14.18 -->
-- Fix knife ssh interactive mode exit error [#8975](https://github.com/chef/chef/pull/8975) ([tas50](https://github.com/tas50)) <!-- 14.14.17 -->
-- Fix for knife subcommand --help doesn&#39;t work as intended. [#8973](https://github.com/chef/chef/pull/8973) ([tas50](https://github.com/tas50)) <!-- 14.14.16 -->
-- Modify #8901 to not use arrays with mixlib-shellout [#8974](https://github.com/chef/chef/pull/8974) ([tas50](https://github.com/tas50)) <!-- 14.14.15 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.14.25](https://github.com/chef/chef/tree/v14.14.25) (2019-10-15)
+
+#### Merged Pull Requests
+- Modify #8901 to not use arrays with mixlib-shellout [#8974](https://github.com/chef/chef/pull/8974) ([tas50](https://github.com/tas50))
+- Fix for knife subcommand --help doesn&#39;t work as intended. [#8973](https://github.com/chef/chef/pull/8973) ([tas50](https://github.com/tas50))
+- Fix knife ssh interactive mode exit error [#8975](https://github.com/chef/chef/pull/8975) ([tas50](https://github.com/tas50))
+- Fix knife cookbook metadata from file command banner [#8976](https://github.com/chef/chef/pull/8976) ([tas50](https://github.com/tas50))
+- Fix crash when showing error about missing profile [#8977](https://github.com/chef/chef/pull/8977) ([tas50](https://github.com/tas50))
+- ifconfig: fix regex matching interface name with hyphen  [#8978](https://github.com/chef/chef/pull/8978) ([tas50](https://github.com/tas50))
+- Fix for MSYS-1094 user resource does not handle a gid specified as a string [#8979](https://github.com/chef/chef/pull/8979) ([tas50](https://github.com/tas50))
+- windows_task: Fix for :day option is not accepting integer value [#8980](https://github.com/chef/chef/pull/8980) ([tas50](https://github.com/tas50))
+- Update chef-zero to 14.0.13 and rspec to 3.9 [#8983](https://github.com/chef/chef/pull/8983) ([tas50](https://github.com/tas50))
+- Fix habitat build in expeditor config [#8992](https://github.com/chef/chef/pull/8992) ([christopher-snapp](https://github.com/christopher-snapp))
+- Revert habitat builder artifact to chef-client [#8994](https://github.com/chef/chef/pull/8994) ([christopher-snapp](https://github.com/christopher-snapp))
+<!-- latest_stable_release -->
+
 ## [v14.14.14](https://github.com/chef/chef/tree/v14.14.14) (2019-10-07)
 
 #### Merged Pull Requests
@@ -47,7 +45,6 @@
 - Update omnibus-software to fix build failures [#8949](https://github.com/chef/chef/pull/8949) ([tas50](https://github.com/tas50))
 - Bump Ruby to 2.5.7 to address CVEs [#8951](https://github.com/chef/chef/pull/8951) ([tas50](https://github.com/tas50))
 - fixup some bad rspec to greenify chef-14  branch [#8964](https://github.com/chef/chef/pull/8964) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.13.11](https://github.com/chef/chef/tree/v14.13.11) (2019-05-30)
 
