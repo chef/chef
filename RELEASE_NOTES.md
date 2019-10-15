@@ -4,7 +4,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ## converge_if_changed Improvements
 
-Chef Infra Client will now take into account any `default` values specified in custom resources when making converge determinations with the `converge_if_changed` helper. Previously default values would be ignored which caused necessary changes to be skipped. Note: This may cause behavior changes for some users, but we believe this change is an impacting bug for enough users to make it outside of a major release. Thanks [@ jakauppila](https://github.com/jakauppila) for reporting this.
+Chef Infra Client will now take into account any `default` values specified in custom resources when making converge determinations with the `converge_if_changed` helper. Previously, default values would be ignored, which caused necessary changes to be skipped. Note: This change may cause behavior changes for some users, but we believe this original behavior is an impacting bug for enough users to make it outside of a major release. Thanks [@ jakauppila](https://github.com/jakauppila) for reporting this.
 
 ## Bootstrap Improvements
 
