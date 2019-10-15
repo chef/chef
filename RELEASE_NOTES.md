@@ -64,7 +64,7 @@ end
 
 ### windows_package
 
-The `windows_package` resource no longer updates environmental variables before installing the package. This prevents potentially modifications that may cause a package installation to fail. Thanks [@jeremyhage](https://github.com/jeremyhage) for this fix.
+The `windows_package` resource no longer updates environmental variables before installing the package. This prevents potential modifications that may cause a package installation to fail. Thanks [@jeremyhage](https://github.com/jeremyhage) for this fix.
 
 ### windows_service
 
