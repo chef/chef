@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.41 -->
-## [v15.4.41](https://github.com/chef/chef/tree/v15.4.41) (2019-10-15)
+<!-- latest_release 15.4.42 -->
+## [v15.4.42](https://github.com/chef/chef/tree/v15.4.42) (2019-10-15)
 
 #### Merged Pull Requests
-- Enhance knife supermarket list &amp; search [#8971](https://github.com/chef/chef/pull/8971) ([vsingh-msys](https://github.com/vsingh-msys))
+- Fix typo for knife download --[no]diff and --[-no]force options. [#8995](https://github.com/chef/chef/pull/8995) ([Vasu1105](https://github.com/Vasu1105))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix typo for knife download --[no]diff and --[-no]force options. [#8995](https://github.com/chef/chef/pull/8995) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.4.42 -->
 - Enhance knife supermarket list &amp; search [#8971](https://github.com/chef/chef/pull/8971) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.41 -->
 - Using umask to avoid race conditions in bootstrap [#8895](https://github.com/chef/chef/pull/8895) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.4.40 -->
 - Avoid a PATH environment variable update before a windows package install [#8961](https://github.com/chef/chef/pull/8961) ([jeremyhage](https://github.com/jeremyhage)) <!-- 15.4.39 -->
