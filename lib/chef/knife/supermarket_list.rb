@@ -37,23 +37,35 @@ class Chef
         default: "https://supermarket.chef.io",
         proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 
+      option :sort_by,
+        long: "--sort-by SORT",
+        description: "Use to sort the records",
+        in: %w{recently_updated recently_added most_downloaded most_followed}
+
+      option :owned_by,
+        short: "-o USER",
+        long: "--owned-by USER",
+        description: "Show cookbooks that are owned by the USER"
+
       def run
         if config[:with_uri]
-          cookbooks = {}
-          get_cookbook_list.each { |k, v| cookbooks[k] = v["cookbook"] }
-          ui.output(format_for_display(cookbooks))
+          ui.output(format_for_display(get_cookbook_list))
         else
-          ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))
+          ui.msg(ui.list(get_cookbook_list.keys, :columns_down))
         end
       end
 
-      def get_cookbook_list(items = 10, start = 0, cookbook_collection = {})
+      # In order to avoid pagination items limit set to 9999999
+      def get_cookbook_list(items = 9999999, start = 0, cookbook_collection = {})
         cookbooks_url = "#{config[:supermarket_site]}/api/v1/cookbooks?items=#{items}&start=#{start}"
+        cookbooks_url << "&order=#{config[:sort_by]}" if config[:sort_by]
+        cookbooks_url << "&user=#{config[:owned_by]}" if config[:owned_by]
         cr = noauth_rest.get(cookbooks_url)
+
         cr["items"].each do |cookbook|
-          cookbook_collection[cookbook["cookbook_name"]] = cookbook
+          cookbook_collection[cookbook["cookbook_name"]] = cookbook["cookbook"]
         end
-        new_start = start + cr["items"].length
+        new_start = start + items
         if new_start < cr["total"]
           get_cookbook_list(items, new_start, cookbook_collection)
         else
