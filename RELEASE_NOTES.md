@@ -47,7 +47,7 @@ The `remote_file` resource has been updated to better display progress when usin
 
 ### sudo
 
-The `sudo` resource now runs sudo config validation against all of the sudo configuration files on the system instead of just the file being written. This allows us to detect configuration errors that occur when configs conflict with each other. Thanks for reporting this issue [@drzewiec](https://github.com/drzewiec).
+The `sudo` resource now runs sudo config validation against all of the sudo configuration files on the system instead of only the file being written. This allows us to detect configuration errors that occur when configs conflict with each other. Thanks for reporting this issue [@drzewiec](https://github.com/drzewiec).
 
 ### windows_ad_join
 
