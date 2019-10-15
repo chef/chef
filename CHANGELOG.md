@@ -1,64 +1,61 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.45 -->
-## [v15.4.45](https://github.com/chef/chef/tree/v15.4.45) (2019-10-15)
-
-#### Merged Pull Requests
-- Update train to 3.1.4 and update omnibus-software to fix AIX ruby [#8997](https://github.com/chef/chef/pull/8997) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.3.14 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update train to 3.1.4 and update omnibus-software to fix AIX ruby [#8997](https://github.com/chef/chef/pull/8997) ([tas50](https://github.com/tas50)) <!-- 15.4.45 -->
-- knife: Improve messaging for installing official plugins into DK / Workstationn [#8899](https://github.com/chef/chef/pull/8899) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.44 -->
-- [knife] Deprecate data bag secret (-s) short option due to conflict with --server-url option [#8909](https://github.com/chef/chef/pull/8909) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.43 -->
-- Fix typo for knife download --[no]diff and --[-no]force options. [#8995](https://github.com/chef/chef/pull/8995) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.4.42 -->
-- Enhance knife supermarket list &amp; search [#8971](https://github.com/chef/chef/pull/8971) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.41 -->
-- Using umask to avoid race conditions in bootstrap [#8895](https://github.com/chef/chef/pull/8895) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.4.40 -->
-- Avoid a PATH environment variable update before a windows package install [#8961](https://github.com/chef/chef/pull/8961) ([jeremyhage](https://github.com/jeremyhage)) <!-- 15.4.39 -->
-- Fix undefined method `each&#39; for String [#8987](https://github.com/chef/chef/pull/8987) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.38 -->
-- Event dispatcher thread local storage [#8950](https://github.com/chef/chef/pull/8950) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.37 -->
-- Fix yum &amp; dnf shellout if exit with nonzero status [#8972](https://github.com/chef/chef/pull/8972) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.36 -->
-- windows_service: don&#39;t update the service if the run_as_user ca… [#8981](https://github.com/chef/chef/pull/8981) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.4.35 -->
-- windows_ad_join: Add :leave action to for leaving an AD domain [#8379](https://github.com/chef/chef/pull/8379) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.4.34 -->
-- Require train ~3.1 for bootstrapping and openssl 1.0.2t [#8968](https://github.com/chef/chef/pull/8968) ([tas50](https://github.com/tas50)) <!-- 15.4.33 -->
-- Fix Bootstrap password prompt [#8856](https://github.com/chef/chef/pull/8856) ([samshinde](https://github.com/samshinde)) <!-- 15.4.32 -->
-- Fix for knife subcommand --help don&#39;t work as intended.  [#8915](https://github.com/chef/chef/pull/8915) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.4.31 -->
-- sudo: perform config validation on the overall sudoers state [#8928](https://github.com/chef/chef/pull/8928) ([samshinde](https://github.com/samshinde)) <!-- 15.4.30 -->
-- windows_share: make path idempotent by coercing to backwhacks [#8967](https://github.com/chef/chef/pull/8967) ([Happycoil](https://github.com/Happycoil)) <!-- 15.4.29 -->
-- Add CentOS 8 kitchen testing to buildkite [#8954](https://github.com/chef/chef/pull/8954) ([tas50](https://github.com/tas50)) <!-- 15.4.27 -->
-- Remove EOL openSUSE Leap 42 testing [#8955](https://github.com/chef/chef/pull/8955) ([tas50](https://github.com/tas50)) <!-- 15.4.26 -->
-- Revert Gemfile.lock to Bundler 1.17.3 [#8956](https://github.com/chef/chef/pull/8956) ([tas50](https://github.com/tas50)) <!-- 15.4.25 -->
-- Bump inspec-core-bin to 4.17.17 [#8953](https://github.com/chef/chef/pull/8953) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.24 -->
-- Bump Ruby to 2.6.5 to address CVEs #8951 [#8952](https://github.com/chef/chef/pull/8952) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.4.23 -->
-- Removing sh -c wrapper around the bootstrapper command string [#8885](https://github.com/chef/chef/pull/8885) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.4.22 -->
-- Update openSUSE testing in Buildkite [#8931](https://github.com/chef/chef/pull/8931) ([tas50](https://github.com/tas50)) <!-- 15.4.21 -->
-- bump omnibus gems [#8938](https://github.com/chef/chef/pull/8938) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.20 -->
-- Add testing in Buildkite for Oracle Linux 6/7/8 [#8937](https://github.com/chef/chef/pull/8937) ([tas50](https://github.com/tas50)) <!-- 15.4.19 -->
-- Bump inspec-core to 4.17.15 [#8935](https://github.com/chef/chef/pull/8935) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.18 -->
-- Bump inspec-core-bin to 4.17.15 [#8936](https://github.com/chef/chef/pull/8936) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.17 -->
-- Swap test gem install of fpm for chef-ruby-lvm [#8934](https://github.com/chef/chef/pull/8934) ([tas50](https://github.com/tas50)) <!-- 15.4.16 -->
-- Bump inspec-core to 4.17.14 [#8932](https://github.com/chef/chef/pull/8932) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.15 -->
-- Update inspec to 4.17.11 and cleanup buildkite testing a bit [#8930](https://github.com/chef/chef/pull/8930) ([tas50](https://github.com/tas50)) <!-- 15.4.14 -->
-- Add #to_yaml method for ImmutableMash &amp; ImmutableArray [#8927](https://github.com/chef/chef/pull/8927) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.13 -->
-- Bump inspec-core to 4.17.7 [#8923](https://github.com/chef/chef/pull/8923) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.4.12 -->
-- Enable Windows Buildkite verification on default image Windows… [#8882](https://github.com/chef/chef/pull/8882) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.4.11 -->
-- Fix some places where constants from dist.rb were not used. [#8921](https://github.com/chef/chef/pull/8921) ([Tensibai](https://github.com/Tensibai)) <!-- 15.4.10 -->
-- Updated package license for macos and windows. [#8910](https://github.com/chef/chef/pull/8910) ([samshinde](https://github.com/samshinde)) <!-- 15.4.9 -->
-- [knife ssh] Fix interactive mode exit error [#8917](https://github.com/chef/chef/pull/8917) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.8 -->
-- [Resource::remote_file] Fix show_progress in remote_file is cau… [#8904](https://github.com/chef/chef/pull/8904) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.7 -->
-- Require train-winrm &gt;= 0.2.5 [#8914](https://github.com/chef/chef/pull/8914) ([tas50](https://github.com/tas50)) <!-- 15.4.6 -->
-- fix converge_if_changed to compare default values [#8912](https://github.com/chef/chef/pull/8912) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.5 -->
-- Add empty chefcli config_context to fix commands with chefcli in knife.rb [#8911](https://github.com/chef/chef/pull/8911) ([coding-blip](https://github.com/coding-blip)) <!-- 15.4.4 -->
-- bump gems [#8907](https://github.com/chef/chef/pull/8907) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.3 -->
-- Fix for chocolatey_package fails using extra options [#8765](https://github.com/chef/chef/pull/8765) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.4.2 -->
-- kernel_module: Add new options property [#8887](https://github.com/chef/chef/pull/8887) ([ramereth](https://github.com/ramereth)) <!-- 15.5.1 -->
-- Add more resource examples to the codebase [#8868](https://github.com/chef/chef/pull/8868) ([tas50](https://github.com/tas50)) <!-- 15.4.0 -->
-- Revert &quot;Drop privileges before creating files in solo mode&quot; [#8880](https://github.com/chef/chef/pull/8880) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.3.15 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.4.45](https://github.com/chef/chef/tree/v15.4.45) (2019-10-15)
+
+#### Merged Pull Requests
+- Revert &quot;Drop privileges before creating files in solo mode&quot; [#8880](https://github.com/chef/chef/pull/8880) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add more resource examples to the codebase [#8868](https://github.com/chef/chef/pull/8868) ([tas50](https://github.com/tas50))
+- Fix for chocolatey_package fails using extra options [#8765](https://github.com/chef/chef/pull/8765) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- bump gems [#8907](https://github.com/chef/chef/pull/8907) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add empty chefcli config_context to fix commands with chefcli in knife.rb [#8911](https://github.com/chef/chef/pull/8911) ([coding-blip](https://github.com/coding-blip))
+- fix converge_if_changed to compare default values [#8912](https://github.com/chef/chef/pull/8912) ([lamont-granquist](https://github.com/lamont-granquist))
+- Require train-winrm &gt;= 0.2.5 [#8914](https://github.com/chef/chef/pull/8914) ([tas50](https://github.com/tas50))
+- [Resource::remote_file] Fix show_progress in remote_file is cau… [#8904](https://github.com/chef/chef/pull/8904) ([vsingh-msys](https://github.com/vsingh-msys))
+- [knife ssh] Fix interactive mode exit error [#8917](https://github.com/chef/chef/pull/8917) ([vsingh-msys](https://github.com/vsingh-msys))
+- Updated package license for macos and windows. [#8910](https://github.com/chef/chef/pull/8910) ([samshinde](https://github.com/samshinde))
+- Fix some places where constants from dist.rb were not used. [#8921](https://github.com/chef/chef/pull/8921) ([Tensibai](https://github.com/Tensibai))
+- Enable Windows Buildkite verification on default image Windows… [#8882](https://github.com/chef/chef/pull/8882) ([jaymalasinha](https://github.com/jaymalasinha))
+- Bump inspec-core to 4.17.7 [#8923](https://github.com/chef/chef/pull/8923) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add #to_yaml method for ImmutableMash &amp; ImmutableArray [#8927](https://github.com/chef/chef/pull/8927) ([vsingh-msys](https://github.com/vsingh-msys))
+- Update inspec to 4.17.11 and cleanup buildkite testing a bit [#8930](https://github.com/chef/chef/pull/8930) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 4.17.14 [#8932](https://github.com/chef/chef/pull/8932) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Swap test gem install of fpm for chef-ruby-lvm [#8934](https://github.com/chef/chef/pull/8934) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.17.15 [#8936](https://github.com/chef/chef/pull/8936) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump inspec-core to 4.17.15 [#8935](https://github.com/chef/chef/pull/8935) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add testing in Buildkite for Oracle Linux 6/7/8 [#8937](https://github.com/chef/chef/pull/8937) ([tas50](https://github.com/tas50))
+- bump omnibus gems [#8938](https://github.com/chef/chef/pull/8938) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update openSUSE testing in Buildkite [#8931](https://github.com/chef/chef/pull/8931) ([tas50](https://github.com/tas50))
+- Removing sh -c wrapper around the bootstrapper command string [#8885](https://github.com/chef/chef/pull/8885) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Bump Ruby to 2.6.5 to address CVEs #8951 [#8952](https://github.com/chef/chef/pull/8952) ([christopher-snapp](https://github.com/christopher-snapp))
+- Bump inspec-core-bin to 4.17.17 [#8953](https://github.com/chef/chef/pull/8953) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Revert Gemfile.lock to Bundler 1.17.3 [#8956](https://github.com/chef/chef/pull/8956) ([tas50](https://github.com/tas50))
+- Remove EOL openSUSE Leap 42 testing [#8955](https://github.com/chef/chef/pull/8955) ([tas50](https://github.com/tas50))
+- Add CentOS 8 kitchen testing to buildkite [#8954](https://github.com/chef/chef/pull/8954) ([tas50](https://github.com/tas50))
+- windows_share: make path idempotent by coercing to backwhacks [#8967](https://github.com/chef/chef/pull/8967) ([Happycoil](https://github.com/Happycoil))
+- sudo: perform config validation on the overall sudoers state [#8928](https://github.com/chef/chef/pull/8928) ([samshinde](https://github.com/samshinde))
+- Fix for knife subcommand --help don&#39;t work as intended.  [#8915](https://github.com/chef/chef/pull/8915) ([Vasu1105](https://github.com/Vasu1105))
+- Fix Bootstrap password prompt [#8856](https://github.com/chef/chef/pull/8856) ([samshinde](https://github.com/samshinde))
+- Require train ~3.1 for bootstrapping and openssl 1.0.2t [#8968](https://github.com/chef/chef/pull/8968) ([tas50](https://github.com/tas50))
+- windows_ad_join: Add :leave action to for leaving an AD domain [#8379](https://github.com/chef/chef/pull/8379) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- windows_service: don&#39;t update the service if the run_as_user ca… [#8981](https://github.com/chef/chef/pull/8981) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Fix yum &amp; dnf shellout if exit with nonzero status [#8972](https://github.com/chef/chef/pull/8972) ([vsingh-msys](https://github.com/vsingh-msys))
+- Event dispatcher thread local storage [#8950](https://github.com/chef/chef/pull/8950) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix undefined method `each&#39; for String [#8987](https://github.com/chef/chef/pull/8987) ([vsingh-msys](https://github.com/vsingh-msys))
+- Avoid a PATH environment variable update before a windows package install [#8961](https://github.com/chef/chef/pull/8961) ([jeremyhage](https://github.com/jeremyhage))
+- Using umask to avoid race conditions in bootstrap [#8895](https://github.com/chef/chef/pull/8895) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Enhance knife supermarket list &amp; search [#8971](https://github.com/chef/chef/pull/8971) ([vsingh-msys](https://github.com/vsingh-msys))
+- Fix typo for knife download --[no]diff and --[-no]force options. [#8995](https://github.com/chef/chef/pull/8995) ([Vasu1105](https://github.com/Vasu1105))
+- [knife] Deprecate data bag secret (-s) short option due to conflict with --server-url option [#8909](https://github.com/chef/chef/pull/8909) ([vsingh-msys](https://github.com/vsingh-msys))
+- knife: Improve messaging for installing official plugins into DK / Workstationn [#8899](https://github.com/chef/chef/pull/8899) ([vsingh-msys](https://github.com/vsingh-msys))
+- Update train to 3.1.4 and update omnibus-software to fix AIX ruby [#8997](https://github.com/chef/chef/pull/8997) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.3.14](https://github.com/chef/chef/tree/v15.3.14) (2019-09-12)
 
 #### Merged Pull Requests
@@ -91,7 +88,6 @@
 - [macos] fix mac_user platform constraints [#8874](https://github.com/chef/chef/pull/8874) ([ryancragun](https://github.com/ryancragun))
 - Bootstrap: Fix typo when checking for existing chef-client [#8876](https://github.com/chef/chef/pull/8876) ([teknofire](https://github.com/teknofire))
 - Update openssl to 1.0.2t [#8878](https://github.com/chef/chef/pull/8878) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.2.20](https://github.com/chef/chef/tree/v15.2.20) (2019-08-08)
 
