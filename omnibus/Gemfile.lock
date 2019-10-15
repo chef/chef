@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 3e901694559a2f3a64105b204ed79f0ffb3410d5
+  revision: 3d99fdfb590b47fe50871bbeef3bbf18c7296704
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -33,7 +33,7 @@ GEM
     artifactory (3.0.5)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.220.0)
+    aws-partitions (1.223.0)
     aws-sdk-core (3.68.1)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1.0)
@@ -42,7 +42,7 @@ GEM
     aws-sdk-kms (1.24.0)
       aws-sdk-core (~> 3, >= 3.61.1)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.48.0)
+    aws-sdk-s3 (1.49.0)
       aws-sdk-core (~> 3, >= 3.61.1)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
@@ -219,7 +219,7 @@ GEM
       wmi-lite (~> 1.0)
     mixlib-versioning (1.2.7)
     molinillo (0.6.6)
-    multi_json (1.13.1)
+    multi_json (1.14.1)
     multipart-post (2.0.0)
     necromancer (0.5.0)
     net-scp (2.0.0)
@@ -304,7 +304,7 @@ GEM
       net-ssh (>= 2.9, < 6.0)
       winrm (~> 2.0)
       winrm-fs (~> 1.0)
-    tty-box (0.4.1)
+    tty-box (0.5.0)
       pastel (~> 0.7.2)
       strings (~> 0.1.6)
       tty-cursor (~> 0.7)
