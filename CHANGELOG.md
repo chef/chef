@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.40 -->
-## [v15.4.40](https://github.com/chef/chef/tree/v15.4.40) (2019-10-14)
+<!-- latest_release 15.4.41 -->
+## [v15.4.41](https://github.com/chef/chef/tree/v15.4.41) (2019-10-15)
 
 #### Merged Pull Requests
-- Using umask to avoid race conditions in bootstrap [#8895](https://github.com/chef/chef/pull/8895) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Enhance knife supermarket list &amp; search [#8971](https://github.com/chef/chef/pull/8971) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Enhance knife supermarket list &amp; search [#8971](https://github.com/chef/chef/pull/8971) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.41 -->
 - Using umask to avoid race conditions in bootstrap [#8895](https://github.com/chef/chef/pull/8895) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.4.40 -->
 - Avoid a PATH environment variable update before a windows package install [#8961](https://github.com/chef/chef/pull/8961) ([jeremyhage](https://github.com/jeremyhage)) <!-- 15.4.39 -->
 - Fix undefined method `each&#39; for String [#8987](https://github.com/chef/chef/pull/8987) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.38 -->
