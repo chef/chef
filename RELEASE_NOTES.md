@@ -16,6 +16,13 @@ Several improvements have been made to the `knife bootstrap` command to make it 
 - Single quotes in attributes during bootstrap no longer result in bootstrap failures
 - The bootstrap command no longer appears in PS on the host while bootstrapping is running
 
+## knife supermarket list Improvements
+
+The `knife supermarket list` command now includes two new options:
+
+- `--sort-by [recently_updated recently_added most_downloaded most_followed]`: Sort cookbooks returned from the Supermarket API
+- `--owned_by`: Limit returned cookbooks to a particular owner
+
 ## Updated Resources
 
 ### chocolatey_package
