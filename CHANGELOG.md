@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.43 -->
-## [v15.4.43](https://github.com/chef/chef/tree/v15.4.43) (2019-10-15)
+<!-- latest_release 15.4.44 -->
+## [v15.4.44](https://github.com/chef/chef/tree/v15.4.44) (2019-10-15)
 
 #### Merged Pull Requests
-- [knife] Deprecate data bag secret (-s) short option due to conflict with --server-url option [#8909](https://github.com/chef/chef/pull/8909) ([vsingh-msys](https://github.com/vsingh-msys))
+- knife: Improve messaging for installing official plugins into DK / Workstationn [#8899](https://github.com/chef/chef/pull/8899) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.3.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- knife: Improve messaging for installing official plugins into DK / Workstationn [#8899](https://github.com/chef/chef/pull/8899) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.44 -->
 - [knife] Deprecate data bag secret (-s) short option due to conflict with --server-url option [#8909](https://github.com/chef/chef/pull/8909) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.43 -->
 - Fix typo for knife download --[no]diff and --[-no]force options. [#8995](https://github.com/chef/chef/pull/8995) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.4.42 -->
 - Enhance knife supermarket list &amp; search [#8971](https://github.com/chef/chef/pull/8971) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.41 -->
