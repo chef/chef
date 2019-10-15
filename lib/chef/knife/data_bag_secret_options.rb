@@ -36,7 +36,7 @@ class Chef
       def self.included(base)
         base.option :secret,
           short: "-s SECRET",
-          long: "--secret ",
+          long: "--secret SECRET",
           description: "The secret key to use to encrypt data bag item values. Can also be defaulted in your config with the key 'secret'.",
           # Need to store value from command line in separate variable - knife#merge_configs populates same keys
           # on config object from
@@ -80,9 +80,16 @@ class Chef
       end
 
       def validate_secrets
-        if has_cl_secret? && has_cl_secret_file?
-          ui.fatal("Please specify only one of --secret, --secret-file")
-          exit(1)
+        if has_cl_secret?
+          if opt_parser.default_argv.include?("-s")
+            ui.warn("Secret short option -s is deprecated and will remove in the future. Please use --secret instead.
+")
+          end
+
+          if has_cl_secret_file?
+            ui.fatal("Please specify only one of --secret, --secret-file")
+            exit(1)
+          end
         end
 
         if knife_config[:secret] && knife_config[:secret_file]
